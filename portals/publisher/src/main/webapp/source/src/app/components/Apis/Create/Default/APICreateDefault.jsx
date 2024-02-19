@@ -55,6 +55,7 @@ const getPolicies = async () => {
  * @returns {JSX} API creation form.
  */
 function APICreateDefault(props) {
+    // const theme = useTheme();
     const {
         isWebSocket, isAPIProduct, history, intl, multiGateway
     } = props;
@@ -474,7 +475,7 @@ function APICreateDefault(props) {
 
     return (
         <APICreateBase title={pageTitle}>
-            <Grid container direction='row' justifyContent='center' alignItems='center' spacing={3}>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 {/* Page error banner */}
                 {(pageError) && (
                     <Grid item xs={11}>
@@ -497,9 +498,7 @@ function APICreateDefault(props) {
                         </Box>
                     )}
                 </Grid>
-                <Grid item md={1} xs={0} />
-                <Grid item md={11} xs={12} data-testid='default-api-form'>
-
+                <Grid item xs={12} data-testid='default-api-form'>
                     <DefaultAPIForm
                         onValidate={handleOnValidate}
                         onChange={handleOnChange}
@@ -509,8 +508,7 @@ function APICreateDefault(props) {
                         isWebSocket={isWebSocket}
                     />
                 </Grid>
-                <Grid item md={1} xs={0} />
-                <Grid item md={11} xs={12}>
+                <Grid item xs={12}>
                     <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             <Button

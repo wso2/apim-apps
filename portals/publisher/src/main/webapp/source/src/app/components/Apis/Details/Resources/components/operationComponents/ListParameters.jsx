@@ -17,13 +17,13 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
-import makeStyles from '@mui/styles/makeStyles';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import IconButton from '@mui/material/IconButton';
@@ -35,12 +35,20 @@ import RequestBody from 'AppComponents/Apis/Details/Resources/components/operati
 import Banner from 'AppComponents/Shared/Banner';
 import EditParameter from './EditParameter';
 
-const useStyles = makeStyles({
-    root: {
+const PREFIX = 'ListParameters';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    table: `${PREFIX}-table`
+};
+
+
+const Root = styled('div')({
+    [`& .${classes.root}`]: {
         width: '100%',
         overflowX: 'auto',
     },
-    table: {
+    [`& .${classes.table}`]: {
         minWidth: 650,
     },
 });
@@ -56,7 +64,7 @@ export default function ListParameters(props) {
     const {
         operation, operationsDispatcher, target, verb, disableUpdate, hideParameterEdit, specVersion, resolvedSpec,
     } = props;
-    const classes = useStyles();
+
     const [editingParameter, setEditingParameter] = useState(null);
     if (!resolvedSpec) {
         return (
@@ -73,134 +81,149 @@ export default function ListParameters(props) {
             />
         );
     }
-    return <>
-        {editingParameter !== null && (
-            <EditParameter
-                operationsDispatcher={operationsDispatcher}
-                target={target}
-                verb={verb}
-                editingParameter={editingParameter}
-                setEditingParameter={setEditingParameter}
-                version={specVersion}
-            />
-        )}
-        <Table className={classes.table} aria-label='parameters list'>
-            <TableHead>
-                <TableRow>
-                    <TableCell align='left'>
-                        <FormattedMessage
-                            id='Apis.Details.Resources.components.operationComponents.ListParameter.parameter.type'
-                            defaultMessage='Parameter Type'
-                        />
-                    </TableCell>
-                    <TableCell>
-                        <FormattedMessage
-                            id='Apis.Details.Resources.components.operationComponents.ListParameter.parameter.name'
-                            defaultMessage='Name/Content Type'
-                        />
-                    </TableCell>
-                    <TableCell align='left'>
-                        <FormattedMessage
-                            id='Apis.Details.Resources.components.operationComponents.ListParameter.data.type'
-                            defaultMessage='Data Type'
-                        />
-                    </TableCell>
-                    <TableCell align='left'>
-                        <FormattedMessage
-                            id='Apis.Details.Resources.components.operationComponents.ListParameter.required'
-                            defaultMessage='Required'
-                        />
-                    </TableCell>
-                    {!disableUpdate && (
+    return (
+        <Root>
+            {editingParameter !== null && (
+                <EditParameter
+                    operationsDispatcher={operationsDispatcher}
+                    target={target}
+                    verb={verb}
+                    editingParameter={editingParameter}
+                    setEditingParameter={setEditingParameter}
+                    version={specVersion}
+                />
+            )}
+            <Table className={classes.table} aria-label='parameters list'>
+                <TableHead>
+                    <TableRow>
                         <TableCell align='left'>
                             <FormattedMessage
-                                id='Apis.Details.Resources.components.operationComponents.ListParameter.actions'
-                                defaultMessage='Actions'
+                                id='Apis.Details.Resources.components.operationComponents.ListParameter.parameter.type'
+                                defaultMessage='Parameter Type'
                             />
                         </TableCell>
-                    )}
-                </TableRow>
-            </TableHead>
-            <TableBody>
-                {operation.parameters
-                    && operation.parameters.map((parameter, index) => {
-                        const isRefParam = isRef(parameter);
-                        const paramCopy = isRefParam
-                            ? resolvedSpec.paths[target][verb].parameters[index] : parameter;
-                        return (
-                            <TableRow
-                                key={paramCopy.name}
-                                id={`param-list-${paramCopy.in}-${paramCopy.name}-${paramCopy.schema
-                                    ? paramCopy.schema.type : paramCopy.type}`}>
-                                <TableCell align='left'>{capitalizeFirstLetter(paramCopy.in)}</TableCell>
-                                <TableCell align='left'>{paramCopy.name}</TableCell>
-                                <TableCell align='left'>
-                                    {capitalizeFirstLetter(paramCopy.schema
-                                        ? paramCopy.schema.type : paramCopy.type)}
-                                </TableCell>
-                                <TableCell align='left'>
-                                    {paramCopy.required
-                                        ? (
-                                            <FormattedMessage
-                                                id={'Apis.Details.Resources.components.operationComponents'
-                                                    + '.ListParameter.yes'}
-                                                defaultMessage='Yes'
-                                            />
-                                        )
-                                        : (
-                                            <FormattedMessage
-                                                id={'Apis.Details.Resources.components.operationComponents'
-                                                    + '.ListParameter.no'}
-                                                defaultMessage='No'
-                                            />
-                                        )}
-                                </TableCell>
-                                {!disableUpdate && (
+                        <TableCell>
+                            <FormattedMessage
+                                id='Apis.Details.Resources.components.operationComponents.ListParameter.parameter.name'
+                                defaultMessage='Name/Content Type'
+                            />
+                        </TableCell>
+                        <TableCell align='left'>
+                            <FormattedMessage
+                                id='Apis.Details.Resources.components.operationComponents.ListParameter.data.type'
+                                defaultMessage='Data Type'
+                            />
+                        </TableCell>
+                        <TableCell align='left'>
+                            <FormattedMessage
+                                id='Apis.Details.Resources.components.operationComponents.ListParameter.required'
+                                defaultMessage='Required'
+                            />
+                        </TableCell>
+                        {!disableUpdate && (
+                            <TableCell align='left'>
+                                <FormattedMessage
+                                    id='Apis.Details.Resources.components.operationComponents.ListParameter.actions'
+                                    defaultMessage='Actions'
+                                />
+                            </TableCell>
+                        )}
+                    </TableRow>
+                </TableHead>
+                <TableBody>
+                    {operation.parameters
+                        && operation.parameters.map((parameter, index) => {
+                            const isRefParam = isRef(parameter);
+                            const paramCopy = isRefParam
+                                ? resolvedSpec.paths[target][verb].parameters[index] : parameter;
+                            return (
+                                <TableRow
+                                    key={paramCopy.name}
+                                    id={`param-list-${paramCopy.in}-${paramCopy.name}-${paramCopy.schema
+                                        ? paramCopy.schema.type : paramCopy.type}`}>
+                                    <TableCell align='left'>{capitalizeFirstLetter(paramCopy.in)}</TableCell>
+                                    <TableCell align='left'>{paramCopy.name}</TableCell>
                                     <TableCell align='left'>
-                                        {!isRefParam && (
+                                        {capitalizeFirstLetter(paramCopy.schema
+                                            ? paramCopy.schema.type : paramCopy.type)}
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                        {paramCopy.required
+                                            ? (
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Resources.components.operationComponents'
+                                                        + '.ListParameter.yes'}
+                                                    defaultMessage='Yes'
+                                                />
+                                            )
+                                            : (
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Resources.components.operationComponents'
+                                                        + '.ListParameter.no'}
+                                                    defaultMessage='No'
+                                                />
+                                            )}
+                                    </TableCell>
+                                    {!disableUpdate && (
+                                        <TableCell align='left'>
+                                            {!isRefParam && (
+                                                <Tooltip title={(
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Resources.components.operationComponents.'
+                                                            + 'ListParameter.edit'}
+                                                        defaultMessage='Edit'
+                                                    />
+                                                )}
+                                                >
+                                                    <IconButton
+                                                        onClick={() => setEditingParameter(parameter)}
+                                                        fontSize='small'
+                                                        size='large'>
+                                                        <EditIcon fontSize='small' />
+                                                    </IconButton>
+                                                </Tooltip>
+                                            )}
                                             <Tooltip title={(
                                                 <FormattedMessage
-                                                    id={'Apis.Details.Resources.components.operationComponents.'
-                                                        + 'ListParameter.edit'}
-                                                    defaultMessage='Edit'
+                                                    id={'Apis.Details.Resources.components.operationComponents'
+                                                        + '.ListParameter.delete'}
+                                                    defaultMessage='Delete'
                                                 />
                                             )}
                                             >
                                                 <IconButton
-                                                    onClick={() => setEditingParameter(parameter)}
+                                                    disabled={disableUpdate}
+                                                    onClick={() => operationsDispatcher({
+                                                        action: 'deleteParameter',
+                                                        data: { target, verb, value: paramCopy },
+                                                    })}
                                                     fontSize='small'
                                                     size='large'>
-                                                    <EditIcon fontSize='small' />
+                                                    <DeleteIcon fontSize='small' />
                                                 </IconButton>
                                             </Tooltip>
-                                        )}
-                                        <Tooltip title={(
-                                            <FormattedMessage
-                                                id={'Apis.Details.Resources.components.operationComponents'
-                                                    + '.ListParameter.delete'}
-                                                defaultMessage='Delete'
-                                            />
-                                        )}
-                                        >
-                                            <IconButton
-                                                disabled={disableUpdate}
-                                                onClick={() => operationsDispatcher({
-                                                    action: 'deleteParameter',
-                                                    data: { target, verb, value: paramCopy },
-                                                })}
-                                                fontSize='small'
-                                                size='large'>
-                                                <DeleteIcon fontSize='small' />
-                                            </IconButton>
-                                        </Tooltip>
-                                    </TableCell>
-                                )}
-                            </TableRow>
-                        );
-                    })}
-                {operation.requestBody && (isRef(operation.requestBody)
-                    ? Object.entries(resolvedSpec.paths[target][verb].requestBody.content).map(
-                        ([contentType, content]) => {
+                                        </TableCell>
+                                    )}
+                                </TableRow>
+                            );
+                        })}
+                    {operation.requestBody && (isRef(operation.requestBody)
+                        ? Object.entries(resolvedSpec.paths[target][verb].requestBody.content).map(
+                            ([contentType, content]) => {
+                                return (
+                                    <RequestBody
+                                        contentType={contentType}
+                                        content={content}
+                                        operation={operation}
+                                        disableUpdate={disableUpdate}
+                                        hideParameterEdit={hideParameterEdit}
+                                        operationsDispatcher={operationsDispatcher}
+                                        target={target}
+                                        verb={verb}
+                                    />
+                                );
+                            },
+                        ) : Object.entries(operation.requestBody.content).map(([contentType, content]) => {
                             return (
                                 <RequestBody
                                     contentType={contentType}
@@ -213,24 +236,11 @@ export default function ListParameters(props) {
                                     verb={verb}
                                 />
                             );
-                        },
-                    ) : Object.entries(operation.requestBody.content).map(([contentType, content]) => {
-                        return (
-                            <RequestBody
-                                contentType={contentType}
-                                content={content}
-                                operation={operation}
-                                disableUpdate={disableUpdate}
-                                hideParameterEdit={hideParameterEdit}
-                                operationsDispatcher={operationsDispatcher}
-                                target={target}
-                                verb={verb}
-                            />
-                        );
-                    }))}
-            </TableBody>
-        </Table>
-    </>;
+                        }))}
+                </TableBody>
+            </Table>
+        </Root>
+    );
 }
 
 ListParameters.defaultProps = {

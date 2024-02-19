@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import ButtonBase from '@mui/material/ButtonBase';
@@ -30,12 +30,27 @@ import APIProduct from 'AppData/APIProduct';
 import ImageGenerator from './ImageGenerator';
 import LetterGenerator from './LetterGenerator';
 
-const useStyles = makeStyles((theme) => ({
-    suppressLinkStyles: {
+const PREFIX = 'BaseThumbnail';
+
+const classes = {
+    suppressLinkStyles: `${PREFIX}-suppressLinkStyles`,
+    thumbButton: `${PREFIX}-thumbButton`,
+    thumbBackdrop: `${PREFIX}-thumbBackdrop`,
+    thumb: `${PREFIX}-thumb`,
+    media: `${PREFIX}-media`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.suppressLinkStyles}`]: {
         textDecoration: 'none',
         color: theme.palette.text.disabled,
     },
-    thumbButton: {
+
+    [`& .${classes.thumbButton}`]: {
         position: 'absolute',
         left: 0,
         right: 0,
@@ -49,7 +64,8 @@ const useStyles = makeStyles((theme) => ({
         padding: 50,
         borderRadius: 5,
     },
-    thumbBackdrop: {
+
+    [`& .${classes.thumbBackdrop}`]: {
         position: 'absolute',
         left: 0,
         right: 0,
@@ -58,7 +74,8 @@ const useStyles = makeStyles((theme) => ({
         backgroundColor: theme.palette.common.black,
         opacity: 0.4,
     },
-    thumb: {
+
+    [`& .${classes.thumb}`]: {
         '&:hover': {
             zIndex: 1,
             '& $thumbBackdrop': {
@@ -66,10 +83,11 @@ const useStyles = makeStyles((theme) => ({
             },
         },
     },
-    media: {
+
+    [`& .${classes.media}`]: {
         // ⚠️ object-fit is not supported by IE11.
         objectFit: 'cover',
-    },
+    }
 }));
 
 const windowURL = window.URL || window.webkitURL;
@@ -88,7 +106,7 @@ const BaseThumbnail = (props) => {
     const {
         apiType, id, type,
     } = api;
-    const classes = useStyles();
+
     const [iconJson, setIconJson] = useState({});
     const {
         key,
@@ -154,10 +172,10 @@ const BaseThumbnail = (props) => {
     }, [imageUpdate]);
     if (!imageLoaded) {
         return (
-            <div className='image-load-frame'>
+            <Root className='image-load-frame'>
                 <div className='image-load-animation1' />
                 <div className='image-load-animation2' />
-            </div>
+            </Root>
         );
     }
     let overviewPath = '';
@@ -193,7 +211,7 @@ const BaseThumbnail = (props) => {
     }
 
     return (
-        <>
+        <Root>
             {isEditable ? (
                 <ButtonBase
                     focusRipple
@@ -234,7 +252,7 @@ const BaseThumbnail = (props) => {
                         : view}
                 </Link>
             )}
-        </>
+        </Root>
     );
 };
 BaseThumbnail.defaultProps = {

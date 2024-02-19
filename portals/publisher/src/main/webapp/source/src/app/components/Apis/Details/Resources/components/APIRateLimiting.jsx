@@ -16,7 +16,7 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
 import Button from '@mui/material/Button';
@@ -39,17 +39,27 @@ import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { FormattedMessage } from 'react-intl';
 
+const PREFIX = 'APIRateLimiting';
+
+const classes = {
+    focusLabel: `${PREFIX}-focusLabel`
+};
+
+const StyledPaper = styled(Paper)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.focusLabel}`]: {
+        boxShadow: '1px 1px 1px 1px #efefef',
+        paddingRight: theme.spacing(1),
+    }
+}));
+
 const RateLimitingLevels = {
     API: 'api',
     RESOURCE: 'resource',
 };
-
-const useStyles = makeStyles((theme) => ({
-    focusLabel: {
-        boxShadow: '1px 1px 1px 1px #efefef',
-        paddingRight: theme.spacing(1),
-    },
-}));
 
 /**
  *
@@ -63,7 +73,7 @@ function APIRateLimiting(props) {
         updateAPI, operationRateLimits, onChange, value: currentApiThrottlingPolicy, isAPIProduct,
         setFocusOperationLevel, focusOperationLevel,
     } = props;
-    const classes = useStyles();
+
     const [apiThrottlingPolicy, setApiThrottlingPolicy] = useState(currentApiThrottlingPolicy);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -139,10 +149,10 @@ function APIRateLimiting(props) {
         );
     }
     return (
-        <Paper>
-            <Grid container direction='row' spacing={3} justifyContent='flex-start' alignItems='flex-start'>
-                <Grid item md={12} xs={12}>
-                    <Box ml={1}>
+        <StyledPaper>
+            <Grid container direction='row' justifyContent='flex-start' alignItems='flex-start'>
+                <Grid item md={12} xs={12} sx={{ p: 1 }}>
+                    <Box>
                         <Typography variant='subtitle1' component='h3' gutterBottom>
                             Operations Configuration
                             <Tooltip
@@ -159,8 +169,7 @@ function APIRateLimiting(props) {
                     </Box>
                     <Divider light variant='middle' />
                 </Grid>
-                <Grid item md={1} xs={1} />
-                <Grid item md={5} xs={11}>
+                <Grid item md={6} xs={12} sx={{ p: 1 }}>
                     <FormControl component='fieldset'>
                         <FormLabel component='legend'>
                             <FormattedMessage
@@ -202,7 +211,7 @@ function APIRateLimiting(props) {
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-                <Grid item md={6} xs={12}>
+                <Grid item md={6} xs={12} sx={{ p: 1 }}>
                     <Box minHeight={70} borderLeft={1} pl={10}>
                         {isResourceLevel ? (
                             operationRateLimitMessage
@@ -261,7 +270,7 @@ function APIRateLimiting(props) {
                     </>
                 )}
             </Grid>
-        </Paper>
+        </StyledPaper>
     );
 }
 APIRateLimiting.defaultProps = {

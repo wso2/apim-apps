@@ -17,6 +17,7 @@
  */
 
 import React, { useState } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import {
     Button,
@@ -28,32 +29,33 @@ import {
     AccordionDetails
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import makeStyles from '@mui/styles/makeStyles';
 import Utils from 'AppData/Utils';
 
-const useStyles = verb => makeStyles((theme) => {
-    const backgroundColor = theme.custom.resourceChipColors[verb];
+const PREFIX = 'GenericOperation';
+
+const classes = {
+    customButton: `${PREFIX}-customButton`,
+    paperStyles: `${PREFIX}-paperStyles`,
+    customDivider: `${PREFIX}-customDivider`,
+    highlightSelected: `${PREFIX}-highlightSelected`,
+    contentNoMargin: `${PREFIX}-contentNoMargin`,
+    targetText: `${PREFIX}-targetText`,
+    title: `${PREFIX}-title`
+};
+
+
+const Root = styled('div')(({ theme }) => {
     return {
-        customButton: {
-            '&:hover': { backgroundColor },
-            backgroundColor,
+        [`& .${classes.customButton}`]: {
             width: theme.spacing(12),
-            color: theme.palette.getContrastText(backgroundColor),
         },
-        paperStyles: {
-            border: `1px solid ${backgroundColor}`,
+        [`& .${classes.paperStyles}`]: {
             borderBottom: '',
         },
-        customDivider: {
-            backgroundColor,
-        },
-        highlightSelected: {
-            backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
-        },
-        contentNoMargin: {
+        [`& .${classes.contentNoMargin}`]: {
             margin: theme.spacing(0),
         },
-        targetText: {
+        [`& .${classes.targetText}`]: {
             maxWidth: 180,
             margin: '0px 20px',
             overflow: 'hidden',
@@ -61,7 +63,7 @@ const useStyles = verb => makeStyles((theme) => {
             textOverflow: 'ellipsis',
             display: 'inline-block',
         },
-        title: {
+        [`& .${classes.title}`]: {
             display: 'inline',
             margin: `0 ${theme.spacing(5)}`,
         },
@@ -82,7 +84,10 @@ function GenericOperation(props) {
         children,
     } = props;
     const [isExpanded, setIsExpanded] = useState(false);
-    const classes = useStyles(verb)();
+    const theme = useTheme();
+    const backgroundColor = theme.custom.resourceChipColors[verb];
+    
+
 
     /**
      * Handle panel expansions when navigation happen between mockimpl options
@@ -94,50 +99,54 @@ function GenericOperation(props) {
         setIsExpanded(expanded);
     }
 
-    return <>
-        <Accordion
-            expanded={isExpanded}
-            onChange={handleExpansion}
-            className={classes.paperStyles}
-        >
-            <AccordionSummary
-                className={classes.highlightSelected}
-                disableRipple
-                disableTouchRipple
-                expandIcon={<ExpandMoreIcon />}
-                id={verb + target}
-                classes={{ content: classes.contentNoMargin }}
+    return (
+        <Root>
+            <Accordion
+                expanded={isExpanded}
+                onChange={handleExpansion}
+                className={classes.paperStyles}
+                sx={{ border: `1px solid ${backgroundColor}` }}
             >
-                <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
-                    <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
-                        <Button
-                            disableFocusRipple
-                            variant='contained'
-                            aria-label={'HTTP verb ' + verb}
-                            size='small'
-                            className={classes.customButton}
-                        >
-                            {verb}
-                        </Button>
-                        <Typography
-                            display='inline-block'
-                            variant='h6'
-                            component='div'
-                            gutterBottom
-                            className={classes.targetText}
-                            title={target}
-                        >
-                            {target}
-                        </Typography>
+                <AccordionSummary
+                    disableRipple
+                    disableTouchRipple
+                    expandIcon={<ExpandMoreIcon />}
+                    id={verb + target}
+                    classes={{ content: classes.contentNoMargin }}
+                    sx={{ backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1) }}
+                >
+                    <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
+                        <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
+                            <Button
+                                disableFocusRipple
+                                variant='contained'
+                                aria-label={'HTTP verb ' + verb}
+                                size='small'
+                                className={classes.customButton}
+                                sx={{ backgroundColor, color: theme.palette.getContrastText(backgroundColor) }}
+                            >
+                                {verb}
+                            </Button>
+                            <Typography
+                                display='inline-block'
+                                variant='h6'
+                                component='div'
+                                gutterBottom
+                                className={classes.targetText}
+                                title={target}
+                            >
+                                {target}
+                            </Typography>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </AccordionSummary>
-            <Divider light className={classes.customDivider} />
-            <AccordionDetails>
-                {children}
-            </AccordionDetails>
-        </Accordion>
-    </>;
+                </AccordionSummary>
+                <Divider light sx={{ backgroundColor }} />
+                <AccordionDetails>
+                    {children}
+                </AccordionDetails>
+            </Accordion>
+        </Root>
+    );
 }
 
 GenericOperation.propTypes = {

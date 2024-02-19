@@ -17,8 +17,9 @@
  */
 import React, { useState, useEffect } from 'react';
 
+import { styled } from '@mui/material/styles';
+
 import { Route, Switch } from 'react-router-dom';
-import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
@@ -31,11 +32,17 @@ import ApiCreateWebSocket from './WebSocket/ApiCreateWebSocket';
 import APICreateStreamingAPI from './StreamingAPI/APICreateStreamingAPI';
 import APICreateAsyncAPI from './AsyncAPI/ApiCreateAsyncAPI';
 
-const styles = {
-    content: {
+const PREFIX = 'APICreateRoutes';
+
+const classes = {
+    content: `${PREFIX}-content`
+};
+
+const Root = styled('div')({
+    [`&.${classes.content}`]: {
         flexGrow: 1,
     },
-};
+});
 
 // Wrapper component to pass additional props
 const WithSomeValue = (Component, additionalProps) => (routeProps) => (
@@ -68,7 +75,7 @@ function APICreateRoutes(props) {
     }, [settings]);
     
     return (
-        <div className={classes.content}>
+        <Root className={classes.content}>
             <Switch>
                 <Route path='/apis/create/rest' component={WithSomeValue(APICreateDefault, { multiGateway: gateway })}/>
                 <Route path='/api-products/create' component={APIProductCreateWrapper} />
@@ -85,7 +92,7 @@ function APICreateRoutes(props) {
                 <Route path='/apis/create/asyncapi' component={APICreateAsyncAPI} />
                 <Route component={ResourceNotFound} />
             </Switch>
-        </div>
+        </Root>
     );
 }
 
@@ -93,4 +100,4 @@ APICreateRoutes.propTypes = {
     classes: PropTypes.shape({ content: PropTypes.string }).isRequired,
 };
 
-export default withStyles(styles)(APICreateRoutes);
+export default (APICreateRoutes);

@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Switch from '@mui/material/Switch';
@@ -29,33 +30,53 @@ import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { isRestricted } from 'AppData/AuthManager';
-import makeStyles from '@mui/styles/makeStyles';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import TextField from '@mui/material/TextField';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'ResponseCaching';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    actionSpace: `${PREFIX}-actionSpace`,
+    subHeading: `${PREFIX}-subHeading`,
+    paper: `${PREFIX}-paper`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(3),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    actionSpace: {
+
+    [`& .${classes.actionSpace}`]: {
         margin: '-7px auto',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(0, 3),
-    },
+    }
 }));
 
 /**
@@ -67,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
  */
 export default function ResponseCaching(props) {
     const { api, configDispatcher } = props;
-    const classes = useStyles();
+
     const [apiFromContext] = useAPI();
     const isResponseCachingEnabled = api.responseCachingEnabled;
 
@@ -81,7 +102,7 @@ export default function ResponseCaching(props) {
     };
 
     return (
-        <>
+        (<Root>
             <WrappedExpansionPanel className={classes.expansionPanel} id='responseCaching'>
                 <AccordionSummary expandIcon={generateElement(api.responseCachingEnabled)}>
                     <Typography className={classes.subHeading} variant='h6' component='h4'>
@@ -148,7 +169,7 @@ export default function ResponseCaching(props) {
                     </Grid>
                 </AccordionDetails>
             </WrappedExpansionPanel>
-        </>
+        </Root>)
     );
 }
 

@@ -1,43 +1,53 @@
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import makeStyles from '@mui/styles/makeStyles';
 import Configurations from 'Config';
 import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import { blue } from '@mui/material/colors';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'LandingMenu';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    boxTransition: `${PREFIX}-boxTransition`,
+    overlayBox: `${PREFIX}-overlayBox`,
+    overlayCloseButton: `${PREFIX}-overlayCloseButton`
+};
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+    [`& .${classes.root}`]: {
         minWidth: theme.spacing(32),
     },
-    boxTransition: {
+
+    [`& .${classes.boxTransition}`]: {
         transition: 'box-shadow 0.9s cubic-bezier(.25,.8,.25,1)',
         cursor: 'pointer',
     },
-    overlayBox: {
+
+    [`& .${classes.overlayBox}`]: {
         cursor: 'auto',
         outline: 'none',
         'border-color': '#f9f9f9', // TODO: take from theme ~tmkb
         'box-shadow': '0 0 6px 4px #f9f9f9',
         'border-radius': '5px',
     },
-    overlayCloseButton: {
+
+    [`& .${classes.overlayCloseButton}`]: {
         float: 'right',
-    },
+    }
 }));
 
-const   LandingMenu = (props) => {
+const LandingMenu = (props) => {
     const {
         title, icon, children, id,
     } = props;
     const [isHover, setIsHover] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isFadeOut, setIsFadeOut] = useState(true);
-    const {
-        boxTransition, overlayBox, overlayCloseButton, root,
-    } = useStyles();
+
     const onMouseOver = () => {
         setIsHover(true);
     };
@@ -46,8 +56,8 @@ const   LandingMenu = (props) => {
     };
 
     return (
-        <Grid
-            className={root}
+        <StyledGrid
+            className={classes.root}
             item
             xs={12}
             sm={5}
@@ -56,7 +66,7 @@ const   LandingMenu = (props) => {
         >
             <Box
                 id={id}
-                className={boxTransition}
+                className={classes.boxTransition}
                 onMouseOver={onMouseOver}
                 onMouseOut={onMouseOut}
                 bgcolor='background.paper'
@@ -109,7 +119,7 @@ const   LandingMenu = (props) => {
                     bgcolor='#f8f8fb'
                     textAlign='center'
                     width='97%'
-                    className={overlayBox}
+                    className={classes.overlayBox}
                     visibility={isFadeOut && 'hidden'}
                 >
                     <Fade
@@ -119,7 +129,7 @@ const   LandingMenu = (props) => {
                     >
                         <Box>
                             <IconButton
-                                className={overlayCloseButton}
+                                className={classes.overlayCloseButton}
                                 onClick={(e) => {
                                     setIsCollapsed(false);
                                     e.preventDefault(); e.stopPropagation();
@@ -132,7 +142,7 @@ const   LandingMenu = (props) => {
                                 direction='row'
                                 justifyContent='flex-start'
                                 alignItems='center'
-                                spacing={4}
+                                spacing={3}
                             >
                                 {/* Menu links or buttons */}
                                 {isCollapsed? children: null}
@@ -141,7 +151,7 @@ const   LandingMenu = (props) => {
                     </Fade>
                 </Box>
             </Box>
-        </Grid>
+        </StyledGrid>
     );
 };
 

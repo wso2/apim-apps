@@ -15,9 +15,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import makeStyles from '@mui/styles/makeStyles';
 import PropTypes from 'prop-types';
 import {
     Button,
@@ -41,11 +41,33 @@ import UploadCertificate from 'AppComponents/Apis/Details/Endpoints/GeneralConfi
 import CertificateUsage from "AppComponents/Apis/Details/Endpoints/GeneralConfiguration/CertificateUsage.tsx";
 import API from '../../../../../data/api';
 
-const useStyles = makeStyles((theme) => ({
-    fileinput: {
+const PREFIX = 'Certificates';
+
+const classes = {
+    fileinput: `${PREFIX}-fileinput`,
+    dropZoneWrapper: `${PREFIX}-dropZoneWrapper`,
+    uploadedFile: `${PREFIX}-uploadedFile`,
+    certificatesHeader: `${PREFIX}-certificatesHeader`,
+    addCertificateBtn: `${PREFIX}-addCertificateBtn`,
+    certificateList: `${PREFIX}-certificateList`,
+    certDetailsHeader: `${PREFIX}-certDetailsHeader`,
+    uploadCertDialogHeader: `${PREFIX}-uploadCertDialogHeader`,
+    alertWrapper: `${PREFIX}-alertWrapper`,
+    warningIcon: `${PREFIX}-warningIcon`,
+    deleteIcon: `${PREFIX}-deleteIcon`,
+    deleteIconDisable: `${PREFIX}-deleteIconDisable`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.fileinput}`]: {
         display: 'none',
     },
-    dropZoneWrapper: {
+
+    [`& .${classes.dropZoneWrapper}`]: {
         height: '100%',
         display: 'flex',
         flexDirection: 'column',
@@ -55,49 +77,60 @@ const useStyles = makeStyles((theme) => ({
             color: theme.palette.primary.main,
         },
     },
-    uploadedFile: {
+
+    [`& .${classes.uploadedFile}`]: {
         fontSize: 11,
     },
-    certificatesHeader: {
+
+    [`& .${classes.certificatesHeader}`]: {
         fontWeight: 600,
         marginTop: theme.spacing(1),
     },
-    addCertificateBtn: {
+
+    [`& .${classes.addCertificateBtn}`]: {
         borderColor: '#c4c4c4',
         borderRadius: '8px',
         borderStyle: 'dashed',
         borderWidth: 'thin',
     },
-    certificateList: {
+
+    [`& .${classes.certificateList}`]: {
         maxHeight: '250px',
         overflow: 'auto',
     },
-    certDetailsHeader: {
+
+    [`& .${classes.certDetailsHeader}`]: {
         fontWeight: '600',
     },
-    uploadCertDialogHeader: {
+
+    [`& .${classes.uploadCertDialogHeader}`]: {
         fontWeight: '600',
     },
-    alertWrapper: {
+
+    [`& .${classes.alertWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    warningIcon: {
+
+    [`& .${classes.warningIcon}`]: {
         marginRight: 13,
         color: theme.custom.warningColor,
         '& .material-icons': {
             fontSize: 30,
         },
     },
-    deleteIcon: {
+
+    [`& .${classes.deleteIcon}`]: {
         color: theme.palette.error.dark,
         cursor: 'pointer',
     },
-    deleteIconDisable: {
+
+    [`& .${classes.deleteIconDisable}`]: {
         color: theme.palette.disabled,
-    },
+    }
 }));
+
 /**
  * TODO: Generalize this component to work in Configuration page , upload mutual SSL certificates action
  * in source/src/app/components/Apis/Details/Configuration/components/APISecurity/components/TransportLevel.jsx ~tmkb
@@ -115,7 +148,7 @@ function Certificates(props) {
     const [certificateUsageDetails, setCertificateUsageDetails] = useState({ count: 0, apiList: [] });
     const [isDeleting, setDeleting] = useState(false);
     const [uploadCertificateOpen, setUploadCertificateOpen] = useState(false);
-    const classes = useStyles();
+
     const [apiFromContext] = useAPI();
 
     /**
@@ -210,7 +243,7 @@ function Certificates(props) {
     }, [certificates]);
 
     return (
-        <Grid container direction='column'>
+        <StyledGrid container direction='column'>
             {/* TODO: Add list of existing certificates */}
             <Grid>
                 <Typography className={classes.certificatesHeader}>
@@ -378,7 +411,7 @@ function Certificates(props) {
                 aliasList={aliasList}
                 api={api}
             />
-        </Grid>
+        </StyledGrid>
     );
 }
 

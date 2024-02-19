@@ -17,6 +17,7 @@
  */
 
 import React, { useState, useContext, useEffect } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -26,7 +27,6 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import LaunchIcon from '@mui/icons-material/Launch';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import { isRestricted } from 'AppData/AuthManager';
-import withStyles from '@mui/styles/withStyles';
 import { Link, useHistory } from 'react-router-dom';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
@@ -43,31 +43,50 @@ import MUIAlert from 'AppComponents/Shared/MuiAlert';
 import DeleteApiButton from './DeleteApiButton';
 import CreateNewVersionButton from './CreateNewVersionButton';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'APIDetailsTopMenu';
+const classes = {
+    root: `${PREFIX}-root`,
+    backLink: `${PREFIX}-backLink`,
+    backIcon: `${PREFIX}-backIcon`,
+    backText: `${PREFIX}-backText`,
+    viewInStoreLauncher: `${PREFIX}-viewInStoreLauncher`,
+    linkText: `${PREFIX}-linkText`,
+    dateWrapper: `${PREFIX}-dateWrapper`,
+    lastUpdatedTypography: `${PREFIX}-lastUpdatedTypography`,
+    apiName: `${PREFIX}-apiName`,
+    downloadApi: `${PREFIX}-downloadApi`,
+    downloadApiFlex: `${PREFIX}-downloadApiFlex`,
+    revisionWrapper: `${PREFIX}-revisionWrapper`,
+    topRevisionStyle: `${PREFIX}-topRevisionStyle`,
+    readOnlyStyle: `${PREFIX}-readOnlyStyle`,
+    active: `${PREFIX}-active`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`.${classes.root}`]: {
         height: theme.custom.apis.topMenu.height,
         background: theme.palette.background.paper,
         borderBottom: 'solid 1px ' + theme.palette.grey.A200,
         display: 'flex',
         alignItems: 'center',
     },
-    backLink: {
+    [`.${classes.backLink}`]: {
         alignItems: 'center',
         textDecoration: 'none',
         display: 'contents',
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
-    backIcon: {
+    [`.${classes.backIcon}`]: {
         color: theme.palette.primary.main,
         fontSize: 56,
         cursor: 'pointer',
     },
-    backText: {
+    [`.${classes.backText}`]: {
         color: theme.palette.primary.main,
         cursor: 'pointer',
         fontFamily: theme.typography.fontFamily,
     },
-    viewInStoreLauncher: {
+    [`.${classes.viewInStoreLauncher}`]: {
         display: 'flex',
         flexDirection: 'column',
         color: theme.palette.getContrastText(theme.palette.background.paper),
@@ -75,23 +94,23 @@ const styles = (theme) => ({
         justifyContent: 'center',
         height: 70,
     },
-    linkText: {
+    [`.${classes.linkText}`]: {
         fontSize: theme.typography.fontSize,
     },
-    dateWrapper: {
+    [`.${classes.dateWrapper}`]: {
         flex: 1,
         alignSelf: 'center',
     },
-    lastUpdatedTypography: {
+    [`.${classes.lastUpdatedTypography}`]: {
         display: 'inline-block',
         minWidth: 30,
     },
-    apiName: {
+    [`.${classes.apiName}`]: {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
     },
-    downloadApi: {
+    [`.${classes.downloadApi}`]: {
         display: 'flex',
         flexDirection: 'column',
         textAlign: 'center',
@@ -100,28 +119,28 @@ const styles = (theme) => ({
         height: 70,
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
-    downloadApiFlex: {
+    [`.${classes.downloadApiFlex}`]: {
         display: 'flex',
         flexDirection: 'column',
     },
-    revisionWrapper: {
+    [`.${classes.revisionWrapper}`]: {
         paddingRight: theme.spacing(2),
     },
-    topRevisionStyle: {
+    [`.${classes.topRevisionStyle}`]: {
         marginLeft: theme.spacing(1),
         maxWidth: 500,
     },
-    readOnlyStyle: {
+    [`.${classes.readOnlyStyle}`]: {
         color: 'red',
     },
-    active: {
+    [`.${classes.active}`]: {
         background: theme.custom.revision.activeRevision.background,
         width: 8,
         height: 8,
         borderRadius: '50%',
         alignItems: 'center',
     },
-});
+}));
 
 const APIDetailsTopMenu = (props) => {
     const {
@@ -197,240 +216,243 @@ const APIDetailsTopMenu = (props) => {
 
     // todo: need to support rev proxy ~tmkb
     return (
-        <div className={classes.root}>
-            <Link
-                to={isAPIProduct
-                    ? `/api-products/${api.id}/overview`
-                    : `/apis/${api.id}/overview`}
-                className={classes.backLink}
-            >
-                <Box width={70} height={50} marginLeft={1}>
-                    <ThumbnailView api={api} width={70} height={50} imageUpdate={imageUpdate}
-                        updateAPI={updateAPI} />
-                </Box>
-                <div style={{ marginLeft: theme.spacing(1), maxWidth: 500 }}>
-                    <Link
-                        to={isAPIProduct
-                            ? `/api-products/${api.id}/overview`
-                            : `/apis/${api.id}/overview`}
-                        className={classes.backLink}
-                    >
-                        <Typography id='itest-api-name-version' variant='h4' component='h1' className={classes.apiName}>
-                            {api.name}
-                            {' :'}
-                            {api.version}
-                        </Typography>
-                        <Typography variant='caption' gutterBottom align='left'>
-                            <FormattedMessage
-                                id='Apis.Details.components.APIDetailsTopMenu.created.by'
-                                defaultMessage='Created by:'
-                            />
-                            {' '}
-                            {api.provider}
-                        </Typography>
-                    </Link>
-                </div>
-            </Link>
-            <VerticalDivider height={70} />
-            <div className={classes.infoItem}>
-                <Typography data-testid='itest-api-state' component='div' variant='subtitle1'>
-                    {lifecycleState}
-                </Typography>
-                <Typography variant='caption' align='left'>
-                    <FormattedMessage
-                        id='Apis.Details.components.APIDetailsTopMenu.state'
-                        defaultMessage='State'
-                    />
-                </Typography>
-            </div>
-
-            <div className={classes.dateWrapper} />
-            {api.isRevision && (
-                <MUIAlert
-                    variant='outlined'
-                    severity='warning'
-                    icon={false}
+        <Root>
+            <div className={classes.root}>
+                <Link
+                    to={isAPIProduct
+                        ? `/api-products/${api.id}/overview`
+                        : `/apis/${api.id}/overview`}
+                    className={classes.backLink}
                 >
-                    <FormattedMessage
-                        id='Apis.Details.components.APIDetailsTopMenu.read.only.label'
-                        defaultMessage='Read only'
-                    />
-                </MUIAlert>
-            )}
-            <div className={classes.dateWrapper} />
-            {(api.advertiseInfo && api.advertiseInfo.advertised) && (
-                <MUIAlert
-                    data-testid='itest-third-party-api-label'
-                    variant='outlined'
-                    severity='warning'
-                    icon={false}
-                >
-                    <FormattedMessage
-                        id='Apis.Details.components.APIDetailsTopMenu.advertise.only.label'
-                        defaultMessage='Third Party'
-                    />
-                </MUIAlert>
-            )}
-            {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
-                <div className={classes.topRevisionStyle}>
-                    <TextField
-                        id='revision-selector'
-                        value={revisionId}
-                        select
-                        SelectProps={{
-                            MenuProps: {
-                                anchorOrigin: {
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                },
-                                getContentAnchorEl: null,
-                            },
-                        }}
-                        name='selectRevision'
-                        onChange={handleChange}
-                        margin='dense'
-                        variant='outlined'
-                    >
-                        {!isAPIProduct ? (
-                            <MenuItem
-                                value={api.isRevision ? api.revisionedApiId : api.id}
-                                component={Link}
-                                to={'/apis/' + (api.isRevision ? api.revisionedApiId : api.id) + '/' + lastIndex}
-                            >
+                    <Box width={70} height={50} marginLeft={1}>
+                        <ThumbnailView api={api} width={70} height={50} imageUpdate={imageUpdate}
+                            updateAPI={updateAPI} />
+                    </Box>
+                    <div style={{ marginLeft: theme.spacing(1), maxWidth: 500 }}>
+                        <Link
+                            to={isAPIProduct
+                                ? `/api-products/${api.id}/overview`
+                                : `/apis/${api.id}/overview`}
+                            className={classes.backLink}
+                        >
+                            <Typography id='itest-api-name-version' variant='h4' component='h1' className={classes.apiName}>
+                                {api.name}
+                                {' :'}
+                                {api.version}
+                            </Typography>
+                            <Typography variant='caption' gutterBottom align='left'>
                                 <FormattedMessage
-                                    id='Apis.Details.components.APIDetailsTopMenu.current.api'
-                                    defaultMessage='Current API'
+                                    id='Apis.Details.components.APIDetailsTopMenu.created.by'
+                                    defaultMessage='Created by:'
                                 />
-                            </MenuItem>
-                        ) : (
-                            <MenuItem
-                                value={api.isRevision ? api.revisionedApiProductId : api.id}
-                                component={Link}
-                                to={'/api-products/' + (api.isRevision
-                                    ? api.revisionedApiProductId : api.id) + '/' + lastIndex}
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.components.APIDetailsTopMenu.current.api'
-                                    defaultMessage='Current API'
-                                />
-                            </MenuItem>
-                        )}
-                        {allRevisions && !isAPIProduct && allRevisions.map((item) => (
-                            <MenuItem value={item.id} component={Link} to={'/apis/' + item.id + '/' + lastIndex}>
-                                <Grid
-                                    container
-                                    direction='row'
-                                    alignItems='center'
-                                >
-                                    <Grid item>
-                                        {item.displayName}
-                                    </Grid>
-                                    {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
-                                        <Grid item>
-                                            <Box ml={2}>
-                                                <Tooltip
-                                                    title={getDeployments(item.id)}
-                                                    placement='bottom'
-                                                >
-                                                    <Grid className={classes.active} />
-                                                </Tooltip>
-                                            </Box>
-                                        </Grid>
-                                    )}
-                                </Grid>
-                            </MenuItem>
-                        ))}
-                        {allRevisions && isAPIProduct && allRevisions.map((item) => (
-                            <MenuItem
-                                value={item.id}
-                                component={Link}
-                                to={'/api-products/' + item.id + '/' + lastIndex}
-                            >
-                                <Grid
-                                    container
-                                    direction='row'
-                                    alignItems='center'
-                                >
-                                    <Grid item>
-                                        {item.displayName}
-                                    </Grid>
-                                    {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
-                                        <Grid item>
-                                            <Box ml={2}>
-                                                <Tooltip
-                                                    title={getDeployments(item.id)}
-                                                    placement='bottom'
-                                                >
-                                                    <Grid className={classes.active} />
-                                                </Tooltip>
-                                            </Box>
-                                        </Grid>
-                                    )}
-                                </Grid>
-                            </MenuItem>
-                        ))}
-                    </TextField>
-                </div>
-            )}
-
-            <VerticalDivider height={70} />
-            <GoTo
-                setOpenPageSearch={setOpenPageSearch}
-                openPageSearch={openPageSearch}
-                api={api}
-                isAPIProduct={isAPIProduct}
-            />
-            {(isVisibleInStore) && <VerticalDivider height={70} />}
-            {(isVisibleInStore) && (
-                <a
-                    target='_blank'
-                    rel='noopener noreferrer'
-                    href={devportalUrl}
-                    className={classes.viewInStoreLauncher}
-                    style={{ minWidth: 90 }}
-                >
-                    <div>
-                        <LaunchIcon />
+                                {' '}
+                                {api.provider}
+                            </Typography>
+                        </Link>
                     </div>
-                    <Typography variant='caption'>
+                </Link>
+                <VerticalDivider height={70} />
+                <div className={classes.infoItem}>
+                    <Typography data-testid='itest-api-state' component='div' variant='subtitle1'>
+                        {lifecycleState}
+                    </Typography>
+                    <Typography variant='caption' align='left'>
                         <FormattedMessage
-                            id='Apis.Details.components.APIDetailsTopMenu.view.in.portal'
-                            defaultMessage='View in Dev Portal'
+                            id='Apis.Details.components.APIDetailsTopMenu.state'
+                            defaultMessage='State'
                         />
                     </Typography>
-                </a>
-            )}
-            {/* Page error banner */}
-            {/* end of Page error banner */}
-            {api.isRevision
-                ? null :
-                <CreateNewVersionButton buttonClass={classes.viewInStoreLauncher}
-                    api={api} isAPIProduct={isAPIProduct} />}
-            {(isDownloadable) && <VerticalDivider height={70} />}
-            <div className={classes.downloadApi}>
-                {(isDownloadable) && (
+                </div>
+
+                <div className={classes.dateWrapper} />
+                {api.isRevision && (
+                    <MUIAlert
+                        variant='outlined'
+                        severity='warning'
+                        icon={false}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.components.APIDetailsTopMenu.read.only.label'
+                            defaultMessage='Read only'
+                        />
+                    </MUIAlert>
+                )}
+                <div className={classes.dateWrapper} />
+                {(api.advertiseInfo && api.advertiseInfo.advertised) && (
+                    <MUIAlert
+                        data-testid='itest-third-party-api-label'
+                        variant='outlined'
+                        severity='warning'
+                        icon={false}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.components.APIDetailsTopMenu.advertise.only.label'
+                            defaultMessage='Third Party'
+                        />
+                    </MUIAlert>
+                )}
+                {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                    <div className={classes.topRevisionStyle}>
+                        <TextField
+                            id='revision-selector'
+                            value={revisionId}
+                            select
+                            SelectProps={{
+                                MenuProps: {
+                                    anchorOrigin: {
+                                        vertical: 'bottom',
+                                        horizontal: 'left',
+                                    },
+                                    getContentAnchorEl: null,
+                                },
+                            }}
+                            name='selectRevision'
+                            onChange={handleChange}
+                            margin='dense'
+                            variant='outlined'
+                        >
+                            {!isAPIProduct ? (
+                                <MenuItem
+                                    value={api.isRevision ? api.revisionedApiId : api.id}
+                                    component={Link}
+                                    to={'/apis/' + (api.isRevision ? api.revisionedApiId : api.id) + '/' + lastIndex}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.components.APIDetailsTopMenu.current.api'
+                                        defaultMessage='Current API'
+                                    />
+                                </MenuItem>
+                            ) : (
+                                <MenuItem
+                                    value={api.isRevision ? api.revisionedApiProductId : api.id}
+                                    component={Link}
+                                    to={'/api-products/' + (api.isRevision
+                                        ? api.revisionedApiProductId : api.id) + '/' + lastIndex}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.components.APIDetailsTopMenu.current.api'
+                                        defaultMessage='Current API'
+                                    />
+                                </MenuItem>
+                            )}
+                            {allRevisions && !isAPIProduct && allRevisions.map((item) => (
+                                <MenuItem value={item.id} component={Link} to={'/apis/' + item.id + '/' + lastIndex}>
+                                    <Grid
+                                        container
+                                        direction='row'
+                                        alignItems='center'
+                                    >
+                                        <Grid item>
+                                            {item.displayName}
+                                        </Grid>
+                                        {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
+                                            <Grid item>
+                                                <Box ml={2}>
+                                                    <Tooltip
+                                                        title={getDeployments(item.id)}
+                                                        placement='bottom'
+                                                    >
+                                                        <Grid className={classes.active} />
+                                                    </Tooltip>
+                                                </Box>
+                                            </Grid>
+                                        )}
+                                    </Grid>
+                                </MenuItem>
+                            ))}
+                            {allRevisions && isAPIProduct && allRevisions.map((item) => (
+                                <MenuItem
+                                    value={item.id}
+                                    component={Link}
+                                    to={'/api-products/' + item.id + '/' + lastIndex}
+                                >
+                                    <Grid
+                                        container
+                                        direction='row'
+                                        alignItems='center'
+                                    >
+                                        <Grid item>
+                                            {item.displayName}
+                                        </Grid>
+                                        {allEnvRevision && allEnvRevision.find((env) => env.id === item.id) && (
+                                            <Grid item>
+                                                <Box ml={2}>
+                                                    <Tooltip
+                                                        title={getDeployments(item.id)}
+                                                        placement='bottom'
+                                                    >
+                                                        <Grid className={classes.active} />
+                                                    </Tooltip>
+                                                </Box>
+                                            </Grid>
+                                        )}
+                                    </Grid>
+                                </MenuItem>
+                            ))}
+                        </TextField>
+                    </div>
+                )}
+
+                <VerticalDivider height={70} />
+                <GoTo
+                    setOpenPageSearch={setOpenPageSearch}
+                    openPageSearch={openPageSearch}
+                    api={api}
+                    isAPIProduct={isAPIProduct}
+                />
+                {(isVisibleInStore) && <VerticalDivider height={70} />}
+                {(isVisibleInStore) && (
                     <a
-                        onClick={exportAPI}
-                        onKeyDown={null}
-                        className={classes.downloadApiFlex}
-                        id='download-api-btn'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        href={devportalUrl}
+                        className={classes.viewInStoreLauncher}
+                        style={{ minWidth: 90 }}
                     >
                         <div>
-                            <CloudDownloadRounded />
+                            <LaunchIcon />
                         </div>
-                        <Typography variant='caption' align='left'>
+                        <Typography variant='caption'>
                             <FormattedMessage
-                                id='Apis.Details.APIDetailsTopMenu.download.api'
-                                defaultMessage='Download API'
+                                id='Apis.Details.components.APIDetailsTopMenu.view.in.portal'
+                                defaultMessage='View in Dev Portal'
                             />
                         </Typography>
                     </a>
                 )}
+                {/* Page error banner */}
+                {/* end of Page error banner */}
+                {api.isRevision
+                    ? null :
+                    <CreateNewVersionButton buttonClass={classes.viewInStoreLauncher}
+                        api={api} isAPIProduct={isAPIProduct} />}
+                {(isDownloadable) && <VerticalDivider height={70} />}
+                <div className={classes.downloadApi}>
+                    {(isDownloadable) && (
+                        <a
+                            onClick={exportAPI}
+                            onKeyDown={null}
+                            className={classes.downloadApiFlex}
+                            id='download-api-btn'
+                        >
+                            <div>
+                                <CloudDownloadRounded />
+                            </div>
+                            <Typography variant='caption' align='left'>
+                                <FormattedMessage
+                                    id='Apis.Details.APIDetailsTopMenu.download.api'
+                                    defaultMessage='Download API'
+                                />
+                            </Typography>
+                        </a>
+                    )}
+                </div>
+                {api.isRevision || isRestricted(['apim:api_create'], api)
+                    ? (<div className={classes.revisionWrapper} />)
+                    : (<DeleteApiButton buttonClass={classes.viewInStoreLauncher} api={api} 
+                        isAPIProduct={isAPIProduct} />)}
             </div>
-            {api.isRevision || isRestricted(['apim:api_create'], api)
-                ? (<div className={classes.revisionWrapper} />)
-                : (<DeleteApiButton buttonClass={classes.viewInStoreLauncher} api={api} isAPIProduct={isAPIProduct} />)}
-        </div>
+        </Root>
     );
 };
 
@@ -442,6 +464,4 @@ APIDetailsTopMenu.propTypes = {
     imageUpdate: PropTypes.number.isRequired,
 };
 
-// export default withStyles(styles, { withTheme: true })(APIDetailsTopMenu);
-
-export default injectIntl(withStyles(styles, { withTheme: true })(APIDetailsTopMenu));
+export default injectIntl(APIDetailsTopMenu);

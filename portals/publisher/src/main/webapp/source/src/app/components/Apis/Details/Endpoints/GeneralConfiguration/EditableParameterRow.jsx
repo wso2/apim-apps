@@ -15,9 +15,9 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
@@ -26,10 +26,16 @@ import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import IconButton from '@mui/material/IconButton';
 
-const useStyles = makeStyles(() => ({
-    link: {
+const PREFIX = 'EditableParameterRow';
+
+const classes = {
+    link: `${PREFIX}-link`
+};
+
+const StyledTableRow = styled(TableRow)(() => ({
+    [`& .${classes.link}`]: {
         cursor: 'pointer',
-    },
+    }
 }));
 
 /**
@@ -115,10 +121,10 @@ function EditableParameterRow(props) {
     };
 
     // Styles definition
-    const classes = useStyles();
+
 
     return (
-        <TableRow>
+        <StyledTableRow>
             {editMode ? (
                 <TableCell>
                     <TextField
@@ -200,7 +206,7 @@ function EditableParameterRow(props) {
                     <DeleteForeverIcon className={classes.buttonIcon} />
                 </IconButton>
             </TableCell>
-        </TableRow>
+        </StyledTableRow>
     );
 }
 

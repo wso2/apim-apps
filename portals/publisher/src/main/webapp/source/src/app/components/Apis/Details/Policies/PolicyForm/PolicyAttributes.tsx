@@ -17,8 +17,8 @@
  */
 
 import React, { FC, useState, } from 'react';
+import { styled } from '@mui/material/styles';
 import { Button , Theme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -40,22 +40,38 @@ import { AddCircle } from '@mui/icons-material';
 import { PolicyAttribute } from './Types';
 import { ACTIONS } from './PolicyCreateForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    attributeProperty: {
+const PREFIX = 'PolicyAttributes';
+
+const classes = {
+    attributeProperty: `${PREFIX}-attributeProperty`,
+    formControlSelect: `${PREFIX}-formControlSelect`,
+    selectRoot: `${PREFIX}-selectRoot`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    requiredToggleButton: `${PREFIX}-requiredToggleButton`,
+    toggleButton: `${PREFIX}-toggleButton`
+};
+
+
+const Root = styled('div')(({theme}: { theme: Theme }) => ({
+    [`& .${classes.attributeProperty}`]: {
         marginLeft: theme.spacing(0.5),
         marginRight: theme.spacing(0.5),
     },
-    formControlSelect: {
+
+    [`& .${classes.formControlSelect}`]: {
         marginTop: theme.spacing(2),
     },
-    selectRoot: {
+
+    [`& .${classes.selectRoot}`]: {
         padding: '11.5px 14px',
         width: 100,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    requiredToggleButton: {
+
+    [`& .${classes.requiredToggleButton}`]: {
         height: '37.28px',
         width: '37.28px',
         '&.Mui-selected, &.Mui-selected:hover': {
@@ -63,10 +79,11 @@ const useStyles = makeStyles((theme: Theme) => ({
             backgroundColor: theme.palette.primary.main,
         }
     },
-    toggleButton: {
+
+    [`& .${classes.toggleButton}`]: {
         height: '37.28px',
         width: '37.28px',
-    },
+    }
 }));
 
 interface PolicyAttributesProps {
@@ -83,7 +100,7 @@ interface PolicyAttributesProps {
 const PolicyAttributes: FC<PolicyAttributesProps> = ({
     policyAttributes, dispatch, isViewMode
 }) => {
-    const classes = useStyles();
+
     const intl = useIntl();
     const [descriptionAnchorEl, setDescriptionAnchorEl] = useState<HTMLElement | null>(null);
     const [valuePropertiesAnchorEl, setValuePropertiesAnchorEl] = useState<HTMLElement | null>(null);
@@ -223,7 +240,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     };
 
     return (
-        <>
+        (<Root>
             <Box display='flex' flexDirection='row' mt={1} pt={3}>
                 <Box width='40%'>
                     <Typography color='inherit' variant='subtitle2' component='div'>
@@ -734,7 +751,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                     ))}
                 </Grid>
             </Box>
-        </>
+        </Root>)
     );
 }
 

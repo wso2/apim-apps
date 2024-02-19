@@ -17,8 +17,7 @@
  */
 
 import React, { useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
-import withStyles from '@mui/styles/withStyles';
+import { styled } from '@mui/material/styles';
 import Accordion from '@mui/material/Accordion';
 import MuiAccordionSummary from '@mui/material/AccordionSummary';
 import MuiAccordionDetails from '@mui/material/AccordionDetails';
@@ -45,60 +44,47 @@ import { useUser } from 'AppComponents/Shared/AppContext';
 import { useIntl } from 'react-intl';
 
 
-const AccordianSummary = withStyles({
-    root: {
-        backgroundColor: '#1a1f2f',
-        paddingLeft: '8px',
-        borderBottom: '1px solid rgba(0, 0, 0, .125)',
-        minHeight: 40,
-        '&$expanded': {
-            minHeight: 40,
-        },
-    },
-    content: {
-        '&$expanded': {
-            margin: 0,
-        },
-    },
-    expanded: {
-        backgroundColor: '#1a1f2f',
-    },
-})(MuiAccordionSummary);
+const PREFIX = 'DevelopSectionMenu';
 
-const AccordionDetails = withStyles((theme) => ({
-    root: {
-        backgroundColor: '#1a1f2f',
-        paddingLeft: theme.spacing(0),
-        paddingRight: theme.spacing(2),
-        paddingTop: '0',
-        paddingBottom: '0',
-    },
-}))(MuiAccordionDetails);
+const classes = {
+    root: `${PREFIX}-root`,
+    content: `${PREFIX}-content`,
+    expanded: `${PREFIX}-expanded`,
+    footeremaillink: `${PREFIX}-footeremaillink`,
+    leftLInkText: `${PREFIX}-leftLInkText`,
+    expandIconColor: `${PREFIX}-expandIconColor`
+};
 
-
-const useStyles = makeStyles((theme) => ({
-    footeremaillink: {
-        marginLeft: theme.custom.leftMenuWidth, /* 4px */
-    },
-    root: {
+const Root = styled('div')(({ theme }) => ({
+    [`&.${classes.root}`]: {
         backgroundColor: theme.palette.background.leftMenu,
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
         paddingTop: '0',
         paddingBottom: '0',
-    },
-    expanded: {
-        '&$expanded': {
-            margin: 0,
-            backgroundColor: theme.palette.background.leftMenu,
+        [`& .MuiAccordionSummary-root`]: {
+            backgroundColor: '#1a1f2f',
+            paddingLeft: '8px',
+            borderBottom: '1px solid rgba(0, 0, 0, .125)',
             minHeight: 40,
-            paddingBottom: 0,
-            paddingLeft: 0,
-            paddingRight: 0,
-            paddingTop: 0,
+            [`&.Mui-expanded`]: {
+                minHeight: 40,
+            },
+        },
+        [`& .MuiAccordionDetails-root`]: {
+            backgroundColor: '#1a1f2f',
+            paddingLeft: theme.spacing(0),
+            paddingRight: theme.spacing(2),
+            paddingTop: '0',
+            paddingBottom: '0',
         },
     },
-    leftLInkText: {
+
+    [`& .${classes.footeremaillink}`]: {
+        marginLeft: theme.custom.leftMenuWidth, /* 4px */
+    },
+
+    [`& .${classes.leftLInkText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.leftMenu),
         textTransform: theme.custom.leftMenuTextStyle,
         width: '100%',
@@ -109,10 +95,17 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 250,
         whiteSpace: 'nowrap',
     },
-    expandIconColor: {
+
+    [`& .${classes.expandIconColor}`]: {
         color: '#ffffff',
     },
 }));
+
+
+const AccordianSummary = MuiAccordionSummary;
+
+const AccordionDetails = MuiAccordionDetails;
+
 
 /**
  *
@@ -136,11 +129,11 @@ export default function DevelopSectionMenu(props) {
             user.setProperty(UserProperties.API_CONFIG_OPEN, isExpanded);
         }
     };
-    const classes = useStyles();
+
     const intl = useIntl();
 
     return (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <Accordion
                 id='itest-api-details-portal-config-acc'
                 defaultExpanded={portalConfigsExpanded}
@@ -250,7 +243,10 @@ export default function DevelopSectionMenu(props) {
                         </IconButton>
                     </Tooltip>
                 </AccordianSummary>
-                <AccordionDetails>
+                <AccordionDetails
+                    classes={{
+                        root: classes.root2
+                    }}>
                     <div>
                         {!isAPIProduct && !api.isWebSocket() && (api.gatewayVendor === 'wso2') && (
                             <LeftMenuItem
@@ -369,6 +365,6 @@ export default function DevelopSectionMenu(props) {
                     </div>
                 </AccordionDetails>
             </Accordion>
-        </div>
+        </Root>
     );
 }

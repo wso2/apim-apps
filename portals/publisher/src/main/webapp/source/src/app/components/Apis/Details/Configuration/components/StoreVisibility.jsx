@@ -17,7 +17,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
@@ -38,12 +38,23 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import CONSTS from 'AppData/Constants';
 import API from 'AppData/api';
 
-const useStyles = makeStyles((theme) => ({
-    tooltip: {
+const PREFIX = 'StoreVisibility';
+
+const classes = {
+    tooltip: `${PREFIX}-tooltip`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tooltip}`]: {
         position: 'absolute',
         right: theme.spacing(-4),
         top: theme.spacing(1),
-    },
+    }
 }));
 
 /**
@@ -60,7 +71,7 @@ export default function StoreVisibility(props) {
     const [invalidRoles, setInvalidRoles] = useState([]);
     const isRestrictedByRoles = api.visibility === 'RESTRICTED';
     const [apiFromContext] = useAPI();
-    const classes = useStyles();
+
     const restApi = new API();
     const [tenants, setTenants] = useState([]);
     useEffect(() => {
@@ -129,7 +140,7 @@ export default function StoreVisibility(props) {
     }
 
     return (
-        <>
+        (<Root>
             <Box style={{ position: 'relative' }}>
                 <TextField
                     fullWidth
@@ -284,7 +295,7 @@ export default function StoreVisibility(props) {
                     />
                 </Box>
             )}
-        </>
+        </Root>)
     );
 }
 

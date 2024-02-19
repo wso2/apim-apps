@@ -19,16 +19,26 @@
 import React, { FC } from 'react';
 import FlowArrowShared from 'AppComponents/Shared/PoliciesUI/FlowArrow';
 import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import Box from '@mui/material/Box';
 
-const useStyles = makeStyles(() => ({
-    arrowColor: {
+const PREFIX = 'FlowArrow';
+
+const classes = {
+    arrowColor: `${PREFIX}-arrowColor`,
+    iconSize: `${PREFIX}-iconSize`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.arrowColor}`]: {
         backgroundColor: 'black',
         opacity: 0.4,
     },
-    iconSize: {
+
+    [`& .${classes.iconSize}`]: {
         fontSize: '2em',
         color: 'black',
         opacity: 0.4,

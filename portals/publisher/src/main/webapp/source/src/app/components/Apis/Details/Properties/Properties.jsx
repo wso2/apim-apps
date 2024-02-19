@@ -19,11 +19,11 @@
 /* eslint-disable react/jsx-no-bind */
 
 import React, { useState, useContext, useEffect  } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import cloneDeep from 'lodash.clonedeep';
 import isEmpty from 'lodash.isempty';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
@@ -49,94 +49,142 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Progress from 'AppComponents/Shared/Progress';
 import EditableRow from './EditableRow';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'Properties';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`,
+    paperRoot: `${PREFIX}-paperRoot`,
+    addNewHeader: `${PREFIX}-addNewHeader`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    addNewWrapper: `${PREFIX}-addNewWrapper`,
+    addProperty: `${PREFIX}-addProperty`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    link: `${PREFIX}-link`,
+    messageBox: `${PREFIX}-messageBox`,
+    actions: `${PREFIX}-actions`,
+    head: `${PREFIX}-head`,
+    marginRight: `${PREFIX}-marginRight`,
+    helpText: `${PREFIX}-helpText`,
+    checkBoxStyles: `${PREFIX}-checkBoxStyles`,
+    tableHead: `${PREFIX}-tableHead`,
+    table: `${PREFIX}-table`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         paddingTop: 0,
         paddingLeft: 0,
         maxWidth: theme.custom.contentAreaWidth,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    FormControl: {
+
+    [`& .${classes.FormControl}`]: {
         padding: 0,
         width: '100%',
         marginTop: 0,
         display: 'flex',
         flexDirection: 'row',
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: 0,
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         marginTop: 0,
     },
-    buttonWrapper: {
+
+    [`& .${classes.buttonWrapper}`]: {
         paddingTop: theme.spacing(3),
     },
-    paperRoot: {
+
+    [`& .${classes.paperRoot}`]: {
         padding: theme.spacing(3),
         marginTop: theme.spacing(3),
     },
-    addNewHeader: {
+
+    [`& .${classes.addNewHeader}`]: {
         padding: theme.spacing(2),
         backgroundColor: theme.palette.grey['300'],
         fontSize: theme.typography.h6.fontSize,
         color: theme.typography.h6.color,
         fontWeight: theme.typography.h6.fontWeight,
     },
-    addNewOther: {
+
+    [`& .${classes.addNewOther}`]: {
         padding: theme.spacing(2),
     },
-    addNewWrapper: {
+
+    [`& .${classes.addNewWrapper}`]: {
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.getContrastText(theme.palette.background.paper),
         border: 'solid 1px ' + theme.palette.grey['300'],
         borderRadius: theme.shape.borderRadius,
         marginTop: theme.spacing(2),
     },
-    addProperty: {
+
+    [`& .${classes.addProperty}`]: {
         marginRight: theme.spacing(2),
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    link: {
+
+    [`& .${classes.link}`]: {
         cursor: 'pointer',
     },
-    messageBox: {
+
+    [`& .${classes.messageBox}`]: {
         marginTop: 20,
     },
-    actions: {
+
+    [`& .${classes.actions}`]: {
         padding: '20px 0',
         '& button': {
             marginLeft: 0,
         },
     },
-    head: {
+
+    [`& .${classes.head}`]: {
         fontWeight: 200,
         marginBottom: 20,
     },
-    marginRight: {
+
+    [`& .${classes.marginRight}`]: {
         marginRight: theme.spacing(1),
     },
-    helpText: {
+
+    [`& .${classes.helpText}`]: {
         paddingTop: theme.spacing(1),
     },
-    checkBoxStyles: {
+
+    [`& .${classes.checkBoxStyles}`]: {
         whiteSpace: 'nowrap',
         marginLeft: 10,
     },
-    tableHead: {
+
+    [`& .${classes.tableHead}`]: {
         fontWeight: 600,
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         '& th': {
             fontWeight: 600,
         },
-    },
+    }
 }));
 
 /**
@@ -151,7 +199,7 @@ function Properties(props) {
      * @param {*} props properties
      */
     const { intl } = props;
-    const classes = useStyles();
+
     const history = useHistory();
     const { api, updateAPI } = useContext(APIContext);
     const customPropertiesTemp = cloneDeep(api.additionalProperties);
@@ -616,7 +664,7 @@ function Properties(props) {
         )
     }
     return (
-        <>
+        <Root>
             <div className={classes.titleWrapper}>
                 {api.apiType === API.CONSTS.APIProduct
                     ? (
@@ -1001,7 +1049,7 @@ function Properties(props) {
                     </Grid>
                 </Grid>
             )}
-        </>
+        </Root>
     );
 }
 

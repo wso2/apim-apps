@@ -17,6 +17,7 @@
 import React, {
     useEffect, useState, useCallback,
 } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     FormControl,
     Grid,
@@ -27,7 +28,6 @@ import {
     Collapse,
     RadioGroup, Checkbox, Dialog, DialogTitle, DialogContent, IconButton, Button, DialogActions, Icon,
 } from '@mui/material';
-import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
@@ -53,70 +53,108 @@ import EndpointSecurity from './GeneralConfiguration/EndpointSecurity';
 import Credentials from './AWSLambda/Credentials.jsx';
 import ServiceEndpoint from './ServiceEndpoint';
 
-const styles = (theme) => ({
-    listing: {
+const PREFIX = 'EndpointOverview';
+
+const classes = {
+    listing: `${PREFIX}-listing`,
+    endpointContainer: `${PREFIX}-endpointContainer`,
+    endpointName: `${PREFIX}-endpointName`,
+    endpointTypesWrapper: `${PREFIX}-endpointTypesWrapper`,
+    sandboxHeading: `${PREFIX}-sandboxHeading`,
+    radioGroup: `${PREFIX}-radioGroup`,
+    endpointsWrapperLeft: `${PREFIX}-endpointsWrapperLeft`,
+    endpointsWrapperRight: `${PREFIX}-endpointsWrapperRight`,
+    endpointsTypeSelectWrapper: `${PREFIX}-endpointsTypeSelectWrapper`,
+    endpointTypesSelectWrapper: `${PREFIX}-endpointTypesSelectWrapper`,
+    defaultEndpointWrapper: `${PREFIX}-defaultEndpointWrapper`,
+    configDialogHeader: `${PREFIX}-configDialogHeader`,
+    addLabel: `${PREFIX}-addLabel`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    button: `${PREFIX}-button`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.listing}`]: {
         margin: theme.spacing(1),
         padding: theme.spacing(1),
     },
-    endpointContainer: {
+
+    [`& .${classes.endpointContainer}`]: {
         paddingLeft: theme.spacing(2),
         padding: theme.spacing(1),
     },
-    endpointName: {
+
+    [`& .${classes.endpointName}`]: {
         paddingLeft: theme.spacing(1),
         fontSize: '1rem',
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(1),
     },
-    endpointTypesWrapper: {
+
+    [`& .${classes.endpointTypesWrapper}`]: {
         padding: theme.spacing(3),
         marginTop: theme.spacing(2),
     },
-    sandboxHeading: {
+
+    [`& .${classes.sandboxHeading}`]: {
         display: 'flex',
         alignItems: 'center',
     },
-    radioGroup: {
+
+    [`& .${classes.radioGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
     },
-    endpointsWrapperLeft: {
+
+    [`& .${classes.endpointsWrapperLeft}`]: {
         padding: theme.spacing(1),
         borderRight: '#c4c4c4',
         borderRightStyle: 'solid',
         borderRightWidth: 'thin',
     },
-    endpointsWrapperRight: {
+
+    [`& .${classes.endpointsWrapperRight}`]: {
         padding: theme.spacing(1),
     },
-    endpointsTypeSelectWrapper: {
+
+    [`& .${classes.endpointsTypeSelectWrapper}`]: {
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
         padding: theme.spacing(1),
         display: 'flex',
         justifyContent: 'space-between',
     },
-    endpointTypesSelectWrapper: {
+
+    [`& .${classes.endpointTypesSelectWrapper}`]: {
         display: 'flex',
     },
-    defaultEndpointWrapper: {
+
+    [`& .${classes.defaultEndpointWrapper}`]: {
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
         marginRight: theme.spacing(1),
     },
-    configDialogHeader: {
+
+    [`& .${classes.configDialogHeader}`]: {
         fontWeight: '600',
     },
-    addLabel: {
+
+    [`& .${classes.addLabel}`]: {
         padding: theme.spacing(2),
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         textTransform: 'none',
-    },
-});
+    }
+}));
 
 const endpointTypes = [
     { key: 'http', value: 'HTTP/REST Endpoint' },
@@ -136,7 +174,6 @@ const endpointTypes = [
  */
 function EndpointOverview(props) {
     const {
-        classes,
         api,
         endpointsDispatcher,
         swaggerDef,
@@ -677,7 +714,7 @@ function EndpointOverview(props) {
     }
 
     return (
-        <div className={classes.overviewWrapper}>
+        <Root className={classes.overviewWrapper}>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
                     {api.type === 'WS' ? <div /> : (
@@ -1295,7 +1332,7 @@ function EndpointOverview(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </div>
+        </Root>
     );
 }
 
@@ -1312,4 +1349,4 @@ EndpointOverview.propTypes = {
     saveAndRedirect: PropTypes.func.isRequired,
 };
 
-export default injectIntl(withStyles(styles)(EndpointOverview));
+export default injectIntl((EndpointOverview));

@@ -19,6 +19,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
@@ -32,9 +33,20 @@ import StreamingAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/Streaming
 import ServiceCatalogMenu from 'AppComponents/Apis/Listing/Landing/Menus/ServiceCatalogMenu';
 import MenuButton from 'AppComponents/Shared/MenuButton';
 
-const useStyles = makeStyles((theme) => {
+const PREFIX = 'APICreateMenu';
+
+const classes = {
+    dividerCls: `${PREFIX}-dividerCls`,
+    popover: `${PREFIX}-popover`
+};
+
+const StyledMenuButton = styled(MenuButton)((
+    {
+        theme
+    }
+) => {
     return {
-        dividerCls: {
+        [`& .${classes.dividerCls}`]: {
             height: '180px',
             position: 'absolute',
             top: '50%',
@@ -42,7 +54,7 @@ const useStyles = makeStyles((theme) => {
             transform: 'translateY(-50%)',
             margin: 'auto',
         },
-        popover: {
+        [`& .${classes.popover}`]: {
             [theme.breakpoints.down('md')]: {
                 width: '95vw',
             },
@@ -92,6 +104,7 @@ const APICreateMenu = () => {
         getGatewayType();
     }, [settings]);
     
+
     const {
         graphqlIcon,
         restApiIcon,
@@ -100,7 +113,7 @@ const APICreateMenu = () => {
     } = theme.custom.landingPage.icons;
     return (
         !AuthManager.isNotCreator() && (
-            <MenuButton
+            <StyledMenuButton
                 buttonProps={{
                     id: 'itest-create-api-menu-button',
                     color: 'primary',
@@ -143,7 +156,7 @@ const APICreateMenu = () => {
                 
             >
                 Create API
-            </MenuButton>
+            </StyledMenuButton>
         )
     );
 };

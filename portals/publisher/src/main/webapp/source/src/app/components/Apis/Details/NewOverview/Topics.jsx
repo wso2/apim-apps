@@ -17,8 +17,7 @@
  */
 
 import React from 'react';
-import withStyles from '@mui/styles/withStyles';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
@@ -31,41 +30,52 @@ import Typography from '@mui/material/Typography';
 import Api from 'AppData/api';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 
-const styles = {
-    root: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    heading: {
-        marginRight: 20,
-    },
-    contentWrapper: {
-        maxHeight: '125px',
-        overflowY: 'auto',
-    },
+const PREFIX = 'Topics';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    customButton: `${PREFIX}-customButton`
 };
 
-function VerbElement(props) {
-    const {
-        verb,
-    } = props;
 
-    const useMenuStyles = makeStyles((theme) => {
-        const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
-        return {
-            customButton: {
-                backgroundColor: '#ffffff',
-                borderColor: backgroundColor,
-                color: backgroundColor,
-                width: theme.spacing(2),
-            },
-        };
-    });
-    const classes = useMenuStyles();
+const Root = styled('div')(({ theme }) => {
+    // const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
+    return {
+        [`& .${classes.customButton}`]: {
+            backgroundColor: '#ffffff',
+            // borderColor: backgroundColor,
+            // color: backgroundColor,
+            width: theme.spacing(2),
+        },
+    };
+});
+
+function VerbElement(props) {
+    const { verb } = props;
+    const theme = useTheme();
+    const verbColor = theme.custom.resourceChipColors[verb.toLowerCase()];
+
+    // const useMenuStyles = makeStyles((
+    //     {
+    //         theme
+    //     }
+    // ) => {
+    //     const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
+    //     return {
+    //         [`& .${classes.customButton}`]: {
+    //             backgroundColor: '#ffffff',
+    //             borderColor: backgroundColor,
+    //             color: backgroundColor,
+    //             width: theme.spacing(2),
+    //         },
+    //     };
+    // });
+    // const classes = useMenuStyles();
     return (
-        <Button disableFocusRipple variant='outlined' className={classes.customButton} size='small'>
+        <Button disableFocusRipple variant='outlined' className={classes.customButton} size='small' 
+            sx={{ borderColor: verbColor, color: verbColor }}>
             {verb.toUpperCase()}
         </Button>
     );
@@ -132,10 +142,10 @@ class Topics extends React.Component {
                 </div>
             );
         }
-        const { classes, parentClasses, api } = this.props;
+        const {  parentClasses, api } = this.props;
 
         return (
-            <>
+            (<Root>
                 <div className={parentClasses.titleWrapper}>
                     <Typography variant='h5' component='h3' className={parentClasses.title}>
                         <FormattedMessage
@@ -184,7 +194,7 @@ class Topics extends React.Component {
                         </Typography>
                     </Link>
                 </Box>
-            </>
+            </Root>)
         );
     }
 }
@@ -201,4 +211,4 @@ Topics.propTypes = {
     api: PropTypes.shape({ id: PropTypes.string }).isRequired,
 };
 
-export default withStyles(styles)(Topics);
+export default (Topics);

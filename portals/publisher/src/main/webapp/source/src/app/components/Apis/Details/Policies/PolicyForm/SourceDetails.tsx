@@ -17,8 +17,8 @@
  */
 
 import React, { FC, useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { Theme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormGroup from '@mui/material/FormGroup';
@@ -37,15 +37,23 @@ import { ACTIONS } from './PolicyCreateForm';
 import UploadPolicyDropzone from './UploadPolicyDropzone';
 import ApiContext from '../../components/ApiContext';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    mandatoryStar: {
+const PREFIX = 'GATEWAY_TYPE_LABELS';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
+    formGroup: `${PREFIX}-formGroup`
+};
+
+const StyledBox = styled(Box)(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    formGroup: {
+
+    [`& .${classes.formGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
-    },
+    }
 }));
 
 export const GATEWAY_TYPE_LABELS = {
@@ -81,7 +89,7 @@ const SourceDetails: FC<SourceDetailsProps> = ({
     policyId,
     isAPISpecific,
 }) => {
-    const classes = useStyles();
+
     const { api } = useContext<any>(ApiContext);
 
     // Validates whether atleast one gateway type (i.e. synapse, or CC ) is selected
@@ -174,52 +182,50 @@ const SourceDetails: FC<SourceDetailsProps> = ({
      * @returns {TSX} Policy download section
      */
     const renderPolicyDownload = () => {
-        return (
-            <>
-                <Box display='flex' flexDirection='row' alignItems='center'>
-                    <Typography
-                        color='inherit'
-                        variant='subtitle2'
-                        component='div'
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title'
-                            defaultMessage='Policy File(s)'
-                        />
-                        <sup className={classes.mandatoryStar}>*</sup>
-                    </Typography>
-                </Box>
-                <Typography color='inherit' variant='caption' component='p'>
-                    <FormattedMessage
-                        id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description'
-                        defaultMessage='Policy file contains the business logic of the policy'
-                    />
-                </Typography>
-                <Box
-                    flex='1'
-                    display='flex'
-                    flexDirection='row'
-                    justifyContent='left'
-                    mt={3}
-                    mb={3}
+        return <>
+            <StyledBox display='flex' flexDirection='row' alignItems='center'>
+                <Typography
+                    color='inherit'
+                    variant='subtitle2'
+                    component='div'
                 >
-                    <Button
-                        aria-label='download-policy'
-                        variant='contained'
-                        data-testid='download-policy-file'
-                        size='large'
-                        color='primary'
-                        onClick={handlePolicyDownload}
-                        endIcon={<CloudDownloadIcon />}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.download'
-                            defaultMessage='Download Policy'
-                        />
-                    </Button>
-                </Box>
-            </>
-        );
+                    <FormattedMessage
+                        id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title'
+                        defaultMessage='Policy File(s)'
+                    />
+                    <sup className={classes.mandatoryStar}>*</sup>
+                </Typography>
+            </StyledBox>
+            <Typography color='inherit' variant='caption' component='p'>
+                <FormattedMessage
+                    id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.description'
+                    defaultMessage='Policy file contains the business logic of the policy'
+                />
+            </Typography>
+            <Box
+                flex='1'
+                display='flex'
+                flexDirection='row'
+                justifyContent='left'
+                mt={3}
+                mb={3}
+            >
+                <Button
+                    aria-label='download-policy'
+                    variant='contained'
+                    data-testid='download-policy-file'
+                    size='large'
+                    color='primary'
+                    onClick={handlePolicyDownload}
+                    endIcon={<CloudDownloadIcon />}
+                >
+                    <FormattedMessage
+                        id='Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.download'
+                        defaultMessage='Download Policy'
+                    />
+                </Button>
+            </Box>
+        </>;
     }
 
     return (

@@ -16,9 +16,9 @@
  * under the License.
  */
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Grid } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
@@ -36,58 +36,77 @@ import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import UpdateComplexity from '../../QueryAnalysis/UpdateComplexity';
 
-const useStyles = makeStyles(() => ({
-    content: {
+const PREFIX = 'QueryAnalysis';
+
+const classes = {
+    content: `${PREFIX}-content`,
+    itemWrapper: `${PREFIX}-itemWrapper`,
+    FormControl: `${PREFIX}-FormControl`,
+    subTitle: `${PREFIX}-subTitle`,
+    subTitleDescription: `${PREFIX}-subTitleDescription`,
+    flowWrapper: `${PREFIX}-flowWrapper`,
+    subHeading: `${PREFIX}-subHeading`,
+    heading: `${PREFIX}-heading`,
+    paper: `${PREFIX}-paper`,
+    editIcon: `${PREFIX}-editIcon`,
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.content}`]: {
         flexGrow: 1,
     },
-    itemWrapper: {
+
+    [`& .${classes.itemWrapper}`]: {
         width: 'auto',
         display: 'flex',
     },
-    FormControl: {
+
+    [`& .${classes.FormControl}`]: {
         padding: 10,
         width: '100%',
         marginTop: 0,
         display: 'flex',
         flexDirection: 'row',
     },
-    subTitle: {
+
+    [`& .${classes.subTitle}`]: {
         marginTop: 20,
     },
-    subTitleDescription: {
+
+    [`& .${classes.subTitleDescription}`]: {
         marginBottom: 10,
     },
-    flowWrapper: {
+
+    [`& .${classes.flowWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         margin: 'auto',
         color: 'rgba(0, 0, 0, 0.40)',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: '10px 24px',
         width: 'auto',
     },
-    editIcon: {
+
+    [`& .${classes.editIcon}`]: {
         position: 'absolute',
         top: 8,
         right: 0,
-    },
-    dialogPaper: {
-        minHeight: '95vh',
-        maxHeight: '95vh',
-        minWidth: '150vh',
-        maxWidth: '150vh',
     },
 }));
 
@@ -102,7 +121,7 @@ export default function GraphQLQueryAnalysis(props) {
         setUpdateComplexityList,
     } = props;
     const [open, setOpen] = useState(false);
-    const classes = useStyles();
+
     const [list, setList] = useState(null);
     const [typelist, setTypeList] = useState([]);
 
@@ -201,7 +220,7 @@ export default function GraphQLQueryAnalysis(props) {
     }
 
     return (
-        <>
+        (<Root>
             <Paper className={classes.paper} spacing={2}>
                 <Grid container spacing={2} alignItems='flex-start'>
                     <Grid item md={12} style={{ position: 'relative', display: 'inline-flex' }}>
@@ -228,9 +247,17 @@ export default function GraphQLQueryAnalysis(props) {
                 </Grid>
             </Paper>
             <Dialog
-                classes={{ paper: classes.dialogPaper }}
                 open={open}
                 aria-labelledby='responsive-dialog-title'
+                sx={{
+                    '& .MuiDialog-container': {
+                        '& .MuiPaper-root': {
+                            width: '100%',
+                            maxWidth: '65vw',
+                            maxHeight: '95vh',
+                        },
+                    },
+                }}
             >
                 <DialogTitle id='responsive-dialog-title'>
                     <Typography className={classes.subHeading} variant='h4'>
@@ -275,7 +302,7 @@ export default function GraphQLQueryAnalysis(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </Root>)
     );
 }
 

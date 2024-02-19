@@ -16,6 +16,7 @@
  * under the License.
  */
 import React, { useReducer, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
@@ -35,13 +36,41 @@ import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import MenuItem from '@mui/material/MenuItem';
 import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
-import makeStyles from '@mui/styles/makeStyles';
 
 import Chip from '@mui/material/Chip';
 import Joi from '@hapi/joi';
 import { upperCaseString } from 'AppData/stringFormatter';
 import ExternalEndpoint from 'AppComponents/Apis/Create/AsyncAPI/ExternalEndpoint';
 import ProvideAsyncAPI from './Steps/ProvideAsyncAPI';
+
+const PREFIX = 'ApiCreateAsyncAPI';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
+    externalEndpointWarning: `${PREFIX}-externalEndpointWarning`,
+    alertTitle: `${PREFIX}-alertTitle`
+};
+
+const StyledAPICreateBase = styled(APICreateBase)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.mandatoryStar}`]: {
+        color: theme.palette.error.main,
+        marginLeft: theme.spacing(0.1),
+    },
+
+    [`& .${classes.externalEndpointWarning}`]: {
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+    },
+
+    [`& .${classes.alertTitle}`]: {
+        fontWeight: theme.typography.fontWeightMedium,
+        marginTop: -2,
+    }
+}));
 
 /**
  * Handle API creation from OpenAPI Definition.
@@ -54,7 +83,7 @@ export default function ApiCreateAsyncAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history } = props;
     // eslint-disable-next-line no-use-before-define
-    const classes = useStyles();
+
     const [hideEndpoint, setHideEndpoint] = useState(true);
     const [hideExternalEndpoint, setHideExternalEndpoint] = useState(true);
     const [isValidExternalEndpoint, setValidExternalEndpoint] = useState(true);
@@ -261,7 +290,7 @@ export default function ApiCreateAsyncAPI(props) {
     }
 
     return (
-        <APICreateBase
+        <StyledAPICreateBase
             title={(
                 <>
                     <Typography variant='h5'>
@@ -279,7 +308,7 @@ export default function ApiCreateAsyncAPI(props) {
                 </>
             )}
         >
-            <Box>
+            <Box sx={{ mb: 2 }}>
                 <Stepper alternativeLabel activeStep={0}>
                     <Step>
                         <StepLabel>
@@ -301,10 +330,8 @@ export default function ApiCreateAsyncAPI(props) {
                 </Stepper>
             </Box>
 
-            <Grid container spacing={3}>
-                <Grid item xs={12} />
-                <Grid item xs={1} />
-                <Grid item xs={11}>
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
                     {wizardStep === 0 && (
                         <ProvideAsyncAPI
                             onValidate={handleOnValidate}
@@ -407,8 +434,7 @@ export default function ApiCreateAsyncAPI(props) {
                         </DefaultAPIForm>
                     )}
                 </Grid>
-                <Grid item xs={1} />
-                <Grid item xs={11}>
+                <Grid item xs={12}>
                     <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (
@@ -456,25 +482,10 @@ export default function ApiCreateAsyncAPI(props) {
                     </Grid>
                 </Grid>
             </Grid>
-        </APICreateBase>
+        </StyledAPICreateBase>
     );
 }
 
 ApiCreateAsyncAPI.propTypes = {
     history: PropTypes.shape({ push: PropTypes.func }).isRequired,
 };
-
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
-        color: theme.palette.error.main,
-        marginLeft: theme.spacing(0.1),
-    },
-    externalEndpointWarning: {
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-    },
-    alertTitle: {
-        fontWeight: theme.typography.fontWeightMedium,
-        marginTop: -2,
-    },
-}));

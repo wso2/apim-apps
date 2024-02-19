@@ -17,8 +17,8 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
@@ -36,12 +36,23 @@ import { red } from '@mui/material/colors/';
 import Alert from 'AppComponents/Shared/Alert';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
-const useStyles = makeStyles((theme) => ({
-    tooltip: {
+const PREFIX = 'AccessControl';
+
+const classes = {
+    tooltip: `${PREFIX}-tooltip`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tooltip}`]: {
         position: 'absolute',
         right: theme.spacing(-4),
         top: theme.spacing(1),
-    },
+    }
 }));
 
 /**
@@ -57,7 +68,7 @@ export default function AccessControl(props) {
     const { api, configDispatcher, setIsDisabled } = props;
     const isNone = api.accessControl === 'NONE';
     const [apiFromContext] = useAPI();
-    const classes = useStyles();
+
 
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [otherValidSystemRoles, setOtherValidSystemRoles] = useState([]);
@@ -148,7 +159,7 @@ export default function AccessControl(props) {
     };
 
     return (
-        <>
+        (<Root>
             <Box style={{ position: 'relative', marginBottom: -12 }}>
                 <TextField
                     fullWidth
@@ -278,7 +289,7 @@ export default function AccessControl(props) {
                     />
                 </Box>
             )}
-        </>
+        </Root>)
     );
 }
 

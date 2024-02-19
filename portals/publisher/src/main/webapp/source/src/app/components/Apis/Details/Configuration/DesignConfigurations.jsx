@@ -23,7 +23,7 @@ import React, {
     useMemo,
     useEffect,
 } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
@@ -51,80 +51,121 @@ import Tags from './components/Tags';
 import Social from './components/Social';
 import APICategories from './components/APICategories';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'DesignConfigurations';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    paper: `${PREFIX}-paper`,
+    paperCenter: `${PREFIX}-paperCenter`,
+    heading: `${PREFIX}-heading`,
+    itemPadding: `${PREFIX}-itemPadding`,
+    arrowForwardIcon: `${PREFIX}-arrowForwardIcon`,
+    arrowBackIcon: `${PREFIX}-arrowBackIcon`,
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    subHeading: `${PREFIX}-subHeading`,
+    btnSpacing: `${PREFIX}-btnSpacing`,
+    tierList: `${PREFIX}-tierList`,
+    dialogTitle: `${PREFIX}-dialogTitle`,
+    closeButton: `${PREFIX}-closeButton`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         padding: theme.spacing(3, 2),
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(3),
     },
-    paperCenter: {
+
+    [`& .${classes.paperCenter}`]: {
         padding: theme.spacing(3),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: '1.1rem',
         fontWeight: 400,
         marginBottom: theme.spacing(0),
     },
-    itemPadding: {
+
+    [`& .${classes.itemPadding}`]: {
         marginBottom: theme.spacing(3),
     },
-    arrowForwardIcon: {
+
+    [`& .${classes.arrowForwardIcon}`]: {
         fontSize: 50,
         color: '#ccc',
         position: 'absolute',
         top: 90,
         right: -43,
     },
-    arrowBackIcon: {
+
+    [`& .${classes.arrowBackIcon}`]: {
         fontSize: 50,
         color: '#ccc',
         position: 'absolute',
         top: 30,
         right: -71,
     },
-    expansionPanel: {
+
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(1),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: '38px',
     },
-    btnSpacing: {
+
+    [`& .${classes.btnSpacing}`]: {
         marginRight: theme.spacing(1),
     },
-    tierList: {
+
+    [`& .${classes.tierList}`]: {
         marginLeft: theme.spacing(1),
         fontFamily: theme.typography.fontFamily,
     },
-    dialogTitle: {
+
+    [`& .${classes.dialogTitle}`]: {
         margin: 0,
         padding: theme.spacing(2),
     },
-    closeButton: {
+
+    [`& .${classes.closeButton}`]: {
         position: 'absolute',
         right: theme.spacing(1),
         top: theme.spacing(1),
         color: theme.palette.grey[500],
-    },
+    }
 }));
 
 /**
@@ -272,7 +313,7 @@ export default function DesignConfigurations() {
     const [errorInTags, setErrorInTags] = useState(false);
     const [errorInExternalEndpoints, setErrorInExternalEndpoints] = useState(false);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
-    const classes = useStyles();
+
     const [descriptionType, setDescriptionType] = useState('');
     const [overview, setOverview] = useState('');
     const [overviewDocument, setOverviewDocument] = useState(null);
@@ -472,7 +513,7 @@ export default function DesignConfigurations() {
     && apiConfig.visibleRoles.length === 0));
 
     return (
-        <>
+        (<Root>
             <Container maxWidth='md'>
                 <Grid container spacing={2}>
                     <Grid item md={12}>
@@ -614,6 +655,6 @@ export default function DesignConfigurations() {
                     open={isOpen}
                 />
             </Container>
-        </>
+        </Root>)
     );
 }

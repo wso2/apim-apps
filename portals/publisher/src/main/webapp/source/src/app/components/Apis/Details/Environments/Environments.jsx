@@ -17,6 +17,7 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import MuiAlert from 'AppComponents/Shared/MuiAlert';
@@ -73,31 +74,99 @@ import { upperCaseString } from 'AppData/stringFormatter';
 import DisplayDevportal from './DisplayDevportal';
 import DeploymentOnbording from './DeploymentOnbording';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'Environments';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    infoIcon: `${PREFIX}-infoIcon`,
+    saveButton: `${PREFIX}-saveButton`,
+    shapeRec: `${PREFIX}-shapeRec`,
+    shapeCircaleBack: `${PREFIX}-shapeCircaleBack`,
+    shapeInnerComplete: `${PREFIX}-shapeInnerComplete`,
+    shapeInnerInactive: `${PREFIX}-shapeInnerInactive`,
+    shapeDottedEnd: `${PREFIX}-shapeDottedEnd`,
+    shapeDottedStart: `${PREFIX}-shapeDottedStart`,
+    plusIconStyle: `${PREFIX}-plusIconStyle`,
+    shapeDottedStart1: `${PREFIX}-shapeDottedStart1`,
+    textShape: `${PREFIX}-textShape`,
+    textShape2: `${PREFIX}-textShape2`,
+    textPadding: `${PREFIX}-textPadding`,
+    textDelete: `${PREFIX}-textDelete`,
+    textShape3: `${PREFIX}-textShape3`,
+    textShape7: `${PREFIX}-textShape7`,
+    primaryEndpoint: `${PREFIX}-primaryEndpoint`,
+    secondaryEndpoint: `${PREFIX}-secondaryEndpoint`,
+    textShape4: `${PREFIX}-textShape4`,
+    textShape8: `${PREFIX}-textShape8`,
+    textShape5: `${PREFIX}-textShape5`,
+    textShape6: `${PREFIX}-textShape6`,
+    button1: `${PREFIX}-button1`,
+    button2: `${PREFIX}-button2`,
+    shapeRecBack: `${PREFIX}-shapeRecBack`,
+    shapeCircle: `${PREFIX}-shapeCircle`,
+    shapeCircleBlack: `${PREFIX}-shapeCircleBlack`,
+    changeCard: `${PREFIX}-changeCard`,
+    noChangeCard: `${PREFIX}-noChangeCard`,
+    cardHeight: `${PREFIX}-cardHeight`,
+    cardContentHeight: `${PREFIX}-cardContentHeight`,
+    cardActionHeight: `${PREFIX}-cardActionHeight`,
+    dialogContent: `${PREFIX}-dialogContent`,
+    textOverlay: `${PREFIX}-textOverlay`,
+    gridOverflow: `${PREFIX}-gridOverflow`,
+    formControl: `${PREFIX}-formControl`,
+    dialogPaper: `${PREFIX}-dialogPaper`,
+    createRevisionDialogStyle: `${PREFIX}-createRevisionDialogStyle`,
+    sectionTitle: `${PREFIX}-sectionTitle`,
+    deployNewRevButtonStyle: `${PREFIX}-deployNewRevButtonStyle`,
+    popover: `${PREFIX}-popover`,
+    paper: `${PREFIX}-paper`,
+    timePaddingStyle: `${PREFIX}-timePaddingStyle`,
+    labelSpace: `${PREFIX}-labelSpace`,
+    labelSpacingDown: `${PREFIX}-labelSpacingDown`,
+    warningText: `${PREFIX}-warningText`,
+    tableCellVhostSelect: `${PREFIX}-tableCellVhostSelect`,
+    vhostSelect: `${PREFIX}-vhostSelect`,
+    textCount: `${PREFIX}-textCount`,
+    containerInline: `${PREFIX}-containerInline`,
+    containerOverflow: `${PREFIX}-containerOverflow`,
+    infoAlert: `${PREFIX}-infoAlert`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    infoIcon: {
+
+    [`& .${classes.infoIcon}`]: {
         fontSize: 'medium',
         marginLeft: theme.spacing(1),
         verticalAlign: 'middle',
     },
-    saveButton: {
+
+    [`& .${classes.saveButton}`]: {
         marginTop: theme.spacing(3),
     },
-    shapeRec: {
+
+    [`& .${classes.shapeRec}`]: {
         backgroundColor: 'black',
         alignSelf: 'center',
         width: 120,
         height: 3,
     },
-    shapeCircaleBack: {
+
+    [`& .${classes.shapeCircaleBack}`]: {
         backgroundColor: '#E2E2E2',
         width: 63,
         height: 63,
     },
-    shapeInnerComplete: {
+
+    [`& .${classes.shapeInnerComplete}`]: {
         backgroundColor: '#095677',
         width: 50,
         height: 50,
@@ -105,7 +174,8 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 6.5,
         placeSelf: 'middle',
     },
-    shapeInnerInactive: {
+
+    [`& .${classes.shapeInnerInactive}`]: {
         backgroundColor: '#BFBFBF',
         width: 50,
         height: 50,
@@ -113,7 +183,8 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 6,
         placeSelf: 'middle',
     },
-    shapeDottedEnd: {
+
+    [`& .${classes.shapeDottedEnd}`]: {
         backgroundColor: '#BFBFBF',
         border: '1px dashed #707070',
         width: 47,
@@ -122,7 +193,8 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 7,
         placeSelf: 'middle',
     },
-    shapeDottedStart: {
+
+    [`& .${classes.shapeDottedStart}`]: {
         backgroundColor: '#1CB1BF',
         border: '2px solid #ffffff',
         width: 47,
@@ -131,12 +203,14 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 6,
         placeSelf: 'middle',
     },
-    plusIconStyle: {
+
+    [`& .${classes.plusIconStyle}`]: {
         marginTop: 8,
         marginLeft: 8,
         fontSize: 30,
     },
-    shapeDottedStart1: {
+
+    [`& .${classes.shapeDottedStart1}`]: {
         backgroundColor: '#1CB1BF',
         width: 50,
         height: 50,
@@ -144,11 +218,13 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 6.5,
         placeSelf: 'middle',
     },
-    textShape: {
+
+    [`& .${classes.textShape}`]: {
         marginTop: 5.5,
         marginLeft: 6.5,
     },
-    textShape2: {
+
+    [`& .${classes.textShape2}`]: {
         display: 'flex',
         alignItems: 'center',
         marginTop: 8,
@@ -156,156 +232,195 @@ const useStyles = makeStyles((theme) => ({
         height: '18px',
         fontFamily: 'sans-serif',
     },
-    textPadding: {
+
+    [`& .${classes.textPadding}`]: {
         height: '25px',
         paddingBottom: '2px',
     },
-    textDelete: {
+
+    [`& .${classes.textDelete}`]: {
         marginTop: 8,
         marginLeft: 120,
         fontFamily: 'sans-serif',
         fontSize: 'small',
     },
-    textShape3: {
+
+    [`& .${classes.textShape3}`]: {
         color: '#38536c',
         marginLeft: 70,
     },
-    textShape7: {
+
+    [`& .${classes.textShape7}`]: {
         color: '#38536c',
     },
-    primaryEndpoint: {
+
+    [`& .${classes.primaryEndpoint}`]: {
         color: '#006E9C',
     },
-    secondaryEndpoint: {
+
+    [`& .${classes.secondaryEndpoint}`]: {
         color: '#415A85',
     },
-    textShape4: {
+
+    [`& .${classes.textShape4}`]: {
         marginTop: 55,
     },
-    textShape8: {
+
+    [`& .${classes.textShape8}`]: {
         marginTop: 80,
     },
-    textShape5: {
+
+    [`& .${classes.textShape5}`]: {
         marginTop: 10,
         marginLeft: 85,
         marginBottom: 10,
     },
-    textShape6: {
+
+    [`& .${classes.textShape6}`]: {
         color: '#1B3A57',
     },
-    button1: {
+
+    [`& .${classes.button1}`]: {
         color: '#1B3A57',
         marginLeft: 7,
     },
-    button2: {
+
+    [`& .${classes.button2}`]: {
         color: '#1B3A57',
         marginLeft: 7,
         marginTop: 10,
     },
-    shapeRecBack: {
+
+    [`& .${classes.shapeRecBack}`]: {
         backgroundColor: 'black',
         alignSelf: 'center',
         width: 40,
         height: 3,
     },
-    shapeCircle: {
+
+    [`& .${classes.shapeCircle}`]: {
         borderRadius: '50%',
     },
-    shapeCircleBlack: {
+
+    [`& .${classes.shapeCircleBlack}`]: {
         backgroundColor: '#000000',
         alignSelf: 'center',
         paddingLeft: '15px',
         width: 15,
         height: 15,
     },
-    changeCard: {
+
+    [`& .${classes.changeCard}`]: {
         boxShadow: 15,
         borderRadius: '10px',
         backgroundColor: theme.palette.secondary.highlight,
     },
-    noChangeCard: {
+
+    [`& .${classes.noChangeCard}`]: {
         boxShadow: 15,
         borderRadius: '10px',
     },
-    cardHeight: {
+
+    [`& .${classes.cardHeight}`]: {
         boxShadow: 1,
         height: '100%',
     },
-    cardContentHeight: {
+
+    [`& .${classes.cardContentHeight}`]: {
         boxShadow: 1,
         height: '50%',
     },
-    cardActionHeight: {
+
+    [`& .${classes.cardActionHeight}`]: {
         boxShadow: 1,
         height: '25%',
     },
-    dialogContent: {
+
+    [`& .${classes.dialogContent}`]: {
         overflow: 'auto',
         height: '90%',
     },
-    textOverlay: {
+
+    [`& .${classes.textOverlay}`]: {
         overflow: 'hidden',
         maxHeight: '100%',
         maxWidth: '100%',
         cursor: 'pointer',
         '&:hover': { overflow: 'visible' },
     },
-    gridOverflow: {
+
+    [`& .${classes.gridOverflow}`]: {
         overflow: 'scroll',
         width: '100%',
     },
-    formControl: {
+
+    [`& .${classes.formControl}`]: {
         margin: theme.spacing(1),
         minWidth: 130,
     },
-    dialogPaper: {
+
+    [`& .${classes.dialogPaper}`]: {
         width: '800px',
         maxHeight: '800px',
     },
-    createRevisionDialogStyle: {
+
+    [`& .${classes.createRevisionDialogStyle}`]: {
         width: '800px',
     },
-    sectionTitle: {
+
+    [`& .${classes.sectionTitle}`]: {
         marginBottom: theme.spacing(2),
     },
-    deployNewRevButtonStyle: {
+
+    [`& .${classes.deployNewRevButtonStyle}`]: {
         marginRight: theme.spacing(3),
         marginBottom: theme.spacing(3),
         marginTop: theme.spacing(3),
     },
-    popover: {
+
+    [`& .${classes.popover}`]: {
         pointerEvents: 'none',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(1),
         maxWidth: '300px',
     },
-    timePaddingStyle: {
+
+    [`& .${classes.timePaddingStyle}`]: {
         marginTop: theme.spacing(1),
     },
-    labelSpace: {
+
+    [`& .${classes.labelSpace}`]: {
         paddingLeft: theme.spacing(1),
     },
-    labelSpacingDown: {
+
+    [`& .${classes.labelSpacingDown}`]: {
         marginBottom: theme.spacing(2),
     },
-    warningText: {
+
+    [`& .${classes.warningText}`]: {
         color: '#ff0000',
     },
-    tableCellVhostSelect: {
+
+    [`& .${classes.tableCellVhostSelect}`]: {
         paddingTop: theme.spacing(0),
         paddingBottom: theme.spacing(0),
     },
-    vhostSelect: {
+
+    [`& .${classes.vhostSelect}`]: {
         marginTop: theme.spacing(3),
     },
-    textCount: {
+
+    [`& .${classes.textCount}`]: {
         marginTop: theme.spacing(-2.5),
     },
-    containerInline: {
+
+    [`& .${classes.containerInline}`]: {
         display: 'inline-flex',
     },
-    containerOverflow: {
+
+    [`& .${classes.containerOverflow}`]: {
         display: 'grid',
         gridGap: '16px',
         paddingLeft: '48px',
@@ -314,11 +429,12 @@ const useStyles = makeStyles((theme) => ({
         gridAutoColumns: 'minmax(160px,1fr)',
         overflowX: 'auto',
     },
-    infoAlert: {
+
+    [`& .${classes.infoAlert}`]: {
         clear: 'both',
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(2),
-    },
+    }
 }));
 
 /**
@@ -1347,7 +1463,7 @@ export default function Environments() {
                                         (o1) => o1.id === allRevisions[revision].id,
                                     ).length !== 0) || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                                     size='small'
-                                    sx={{ color: '#38536c'}}
+                                    sx={{ color: '#38536c' }}
                                     startIcon={<DeleteForeverIcon />}
                                 >
                                     <FormattedMessage
@@ -1397,7 +1513,7 @@ export default function Environments() {
                                         (o1) => o1.id === allRevisions[revision].id,
                                     ).length !== 0) || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                                     size='small'
-                                    sx={{ color: '#38536c'}}
+                                    sx={{ color: '#38536c' }}
                                     startIcon={<DeleteForeverIcon />}
                                 >
                                     <FormattedMessage
@@ -1811,7 +1927,7 @@ export default function Environments() {
 
 
     return (
-        <>
+        <Root>
             {api.advertiseInfo && api.advertiseInfo.advertised && (
                 <MuiAlert severity='info' className={classes.infoAlert}>
                     <Typography variant='body' align='left' data-testid='third-party-api-deployment-dialog'>
@@ -2914,6 +3030,6 @@ export default function Environments() {
                     </TableContainer>
                 </Box>
             )}
-        </>
+        </Root>
     );
 }

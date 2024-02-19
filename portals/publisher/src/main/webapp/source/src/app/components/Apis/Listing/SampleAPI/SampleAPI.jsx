@@ -17,6 +17,7 @@
  */
 
 import React, { useReducer, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
@@ -39,13 +40,21 @@ import Button from '@mui/material/Button';
 import { getSampleAPIData, getSampleOpenAPI } from 'AppData/SamplePizzaShack';
 
 
-const useStyles = makeStyles({
-    modal: {
+const PREFIX = 'SampleAPI';
+
+const classes = {
+    modal: `${PREFIX}-modal`,
+    statusBox: `${PREFIX}-statusBox`
+};
+
+
+const Root = styled('div')({
+    [`& .${classes.modal}`]: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    statusBox: {
+    [`& .${classes.statusBox}`]: {
         outline: 'none',
     },
 });
@@ -79,7 +88,7 @@ const SampleAPI = (props) => {
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, initialTaskStates);
     const [showStatus, setShowStatus] = useState(false);
     const [newSampleAPI, setNewSampleAPI] = useState();
-    const classes = useStyles();
+
     const { data: publisherSettings, isLoading } = usePublisherSettings();
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
@@ -179,7 +188,7 @@ const SampleAPI = (props) => {
         return <Redirect to={url} />;
     }
     return (
-        <>
+        <Root>
             <LandingMenuItem
                 dense={dense}
                 id='itest-id-deploy-sample'
@@ -199,9 +208,7 @@ const SampleAPI = (props) => {
                         + 'rest.d.sample.title'}
                     defaultMessage='Deploy Sample API'
                 />
-
             </LandingMenuItem>
-
             <Modal
                 aria-labelledby='transition-modal-title'
                 aria-describedby='transition-modal-description'
@@ -225,7 +232,7 @@ const SampleAPI = (props) => {
                         <Grid
                             container
                             direction='row'
-                            justify='center'
+                            justifyContent='center'
                             alignItems='center'
                         >
                             <TaskState
@@ -371,7 +378,7 @@ const SampleAPI = (props) => {
                     </Box>
                 </Fade>
             </Modal>
-        </>
+        </Root>
     );
 };
 

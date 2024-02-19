@@ -16,6 +16,7 @@
  * under the License.
  */
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Radio from '@mui/material/Radio';
 import Grid from '@mui/material/Grid';
@@ -24,7 +25,6 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
@@ -46,10 +46,21 @@ import Wsdl from 'AppData/Wsdl';
 import Banner from 'AppComponents/Shared/Banner';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
 
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
+const PREFIX = 'ProvideWSDL';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
-    },
+    }
 }));
 
 /**
@@ -63,7 +74,7 @@ export default function ProvideWSDL(props) {
     const { apiInputs, inputsDispatcher, onValidate } = props;
     const isFileInput = apiInputs.inputType === 'file';
     const isGenerateRESTAPI = apiInputs.type === 'SOAPTOREST';
-    const classes = useStyles();
+
     const [isError, setValidity] = useState(); // If valid value is `null` else an error object will be there
     const [isValidating, setIsValidating] = useState(false);
     const isCreateMode = apiInputs.mode === 'create';
@@ -230,7 +241,7 @@ export default function ProvideWSDL(props) {
             >
                 {isValidating ? (<CircularProgress />)
                     : (
-                        <>
+                        (<Root>
                             { dropBoxControlLabel }
                             <Button
                                 color='primary'
@@ -241,7 +252,7 @@ export default function ProvideWSDL(props) {
                                     defaultMessage='Browse File to Upload'
                                 />
                             </Button>
-                        </>
+                        </Root>)
                     )}
             </DropZoneLocal>
         );

@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import withStyles from '@mui/styles/withStyles';
+import { styled } from '@mui/material/styles';
 import withTheme from '@mui/styles/withTheme';
 import PropTypes from 'prop-types';
 import Chip from '@mui/material/Chip';
@@ -30,6 +30,42 @@ import Typography from '@mui/material/Typography';
 import Api from 'AppData/api';
 import CONSTS from 'AppData/Constants';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
+
+const PREFIX = 'Resources';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+
+    [`& .${classes.heading}`]: {
+        marginRight: 20,
+    },
+
+    [`& .${classes.contentWrapper}`]: {
+        maxHeight: '125px',
+        overflowY: 'auto',
+    },
+
+    [`& .${classes.subHeading}`]: {
+        color: theme.palette.primary.dark,
+    }
+}));
 
 function RenderMethodBase(props) {
     const { theme, method } = props;
@@ -58,25 +94,6 @@ RenderMethodBase.propTypes = {
 };
 
 const RenderMethod = withTheme(RenderMethodBase);
-
-const styles = (theme) => ({
-    root: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    heading: {
-        marginRight: 20,
-    },
-    contentWrapper: {
-        maxHeight: '125px',
-        overflowY: 'auto',
-    },
-    subHeading: {
-        color: theme.palette.primary.dark,
-    },
-});
 
 class Resources extends React.Component {
     constructor(props) {
@@ -129,9 +146,9 @@ class Resources extends React.Component {
                 </div>
             );
         }
-        const { classes, parentClasses, api } = this.props;
+        const {  parentClasses, api } = this.props;
         return (
-            <>
+            (<Root>
                 <div className={parentClasses.titleWrapper}>
                     { api.type === 'GraphQL' ? (
                         <Typography id='resources' variant='h5' component='h2' className={parentClasses.title}>
@@ -186,7 +203,7 @@ class Resources extends React.Component {
                         </Typography>
                     </Link>
                 </Box>
-            </>
+            </Root>)
         );
     }
 }
@@ -197,4 +214,4 @@ Resources.propTypes = {
     api: PropTypes.shape({ id: PropTypes.string }).isRequired,
 };
 
-export default withStyles(styles)(Resources);
+export default (Resources);

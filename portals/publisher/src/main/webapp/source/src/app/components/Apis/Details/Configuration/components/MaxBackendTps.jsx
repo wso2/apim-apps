@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -33,27 +34,43 @@ import Radio from '@mui/material/Radio';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'MaxBackendTps';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(1), // TODO: replace with <Box /> element `mb`
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
-    },
+    }
 }));
 
 /**
@@ -65,10 +82,10 @@ const useStyles = makeStyles((theme) => ({
  */
 export default function MaxBackendTps(props) {
     const { api, configDispatcher } = props;
-    const classes = useStyles();
+
 
     return (
-        <>
+        (<Root>
             <Grid item xs={12}>
                 <WrappedExpansionPanel className={classes.expansionPanel} defaultExpanded id='maxBackendTps'>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -182,7 +199,7 @@ export default function MaxBackendTps(props) {
                     </AccordionDetails>
                 </WrappedExpansionPanel>
             </Grid>
-        </>
+        </Root>)
     );
 }
 

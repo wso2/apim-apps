@@ -17,7 +17,7 @@
  */
 
 import React, { useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
@@ -27,15 +27,32 @@ import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import UsageViewResource from './UsageViewResource';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'UsageViewAPI';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    normalText: `${PREFIX}-normalText`,
+    listHeaderAPI: `${PREFIX}-listHeaderAPI`,
+    listHeaderResource: `${PREFIX}-listHeaderResource`,
+    details: `${PREFIX}-details`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.root}`]: {
         width: '100%',
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
     },
-    normalText: {
+
+    [`& .${classes.normalText}`]: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
         marginRight: 30,
@@ -44,17 +61,20 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    listHeaderAPI: {
+
+    [`& .${classes.listHeaderAPI}`]: {
         fontWeight: '600',
         fontSize: theme.typography.pxToRem(19),
     },
-    listHeaderResource: {
+
+    [`& .${classes.listHeaderResource}`]: {
         fontWeight: '600',
         fontSize: theme.typography.pxToRem(17),
     },
-    details: {
+
+    [`& .${classes.details}`]: {
         alignItems: 'center',
-    },
+    }
 }));
 
 /**
@@ -63,7 +83,7 @@ const useStyles = makeStyles((theme) => ({
 * @returns {any} Returns the rendered UI for view scope usages.
 */
 export default function UsageViewAPI(props) {
-    const classes = useStyles();
+
     const { scopeUsage } = props;
     const [expanded, setExpanded] = useState(false);
     const apiList = scopeUsage.usedApiList;
@@ -76,7 +96,7 @@ export default function UsageViewAPI(props) {
         return <CircularProgress />;
     } else {
         return (
-            <div className={classes.root}>
+            <Root className={classes.root}>
                 <Typography className={classes.listHeaderAPI}>
                     <FormattedMessage
                         id='Scopes.Usage.UsageViewAPI.api.usage'
@@ -151,7 +171,7 @@ export default function UsageViewAPI(props) {
                         </AccordionDetails>
                     </Accordion>
                 ))}
-            </div>
+            </Root>
         );
     }
 }

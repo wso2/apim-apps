@@ -16,6 +16,7 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
@@ -23,7 +24,6 @@ import { InputAdornment, IconButton, Icon } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import APIValidation from 'AppData/APIValidation';
 import FormControl from '@mui/material/FormControl';
@@ -36,12 +36,25 @@ import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
 import { green } from '@mui/material/colors';
 
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
+const PREFIX = 'DefaultAPIForm';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
+    helperTextContext: `${PREFIX}-helperTextContext`,
+    endpointValidChip: `${PREFIX}-endpointValidChip`,
+    endpointInvalidChip: `${PREFIX}-endpointInvalidChip`,
+    endpointErrorChip: `${PREFIX}-endpointErrorChip`,
+    iconButton: `${PREFIX}-iconButton`,
+    iconButtonValid: `${PREFIX}-iconButtonValid`
+};
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    helperTextContext: {
+
+    [`& .${classes.helperTextContext}`]: {
         '& p': {
             textOverflow: 'ellipsis',
             width: 400,
@@ -50,26 +63,32 @@ const useStyles = makeStyles((theme) => ({
             overflow: 'hidden',
         },
     },
-    endpointValidChip: {
+
+    [`& .${classes.endpointValidChip}`]: {
         color: 'green',
         border: '1px solid green',
     },
-    endpointInvalidChip: {
+
+    [`& .${classes.endpointInvalidChip}`]: {
         color: '#ffd53a',
         border: '1px solid #ffd53a',
     },
-    endpointErrorChip: {
+
+    [`& .${classes.endpointErrorChip}`]: {
         color: 'red',
         border: '1px solid red',
     },
-    iconButton: {
+
+    [`& .${classes.iconButton}`]: {
         padding: theme.spacing(1),
     },
-    iconButtonValid: {
+
+    [`& .${classes.iconButtonValid}`]: {
         padding: theme.spacing(1),
         color: green[500],
     },
-    radioOutline: {
+
+    [`& .${classes.radioOutline}`]: {
         display: 'flex',
         alignItems: 'center',
         padding: '10px', // Adjust the padding for the desired outline size
@@ -86,10 +105,12 @@ const useStyles = makeStyles((theme) => ({
             border: `2px solid ${theme.palette.primary.main}`, // Change to blue when selected
         },
     },
-    label: {
+
+    [`& .${classes.label}`]: {
         marginLeft: '10px', // Adjust as needed for spacing between the radio button and label
     },
-    newLabel: {
+
+    [`& .${classes.newLabel}`]: {
         backgroundColor: 'green', // Blue color
         color: 'white',
         fontWeight: 'bold',
@@ -99,6 +120,7 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: '10px', // Adjust margin as needed
         display: 'inline-block', // Ensure inline display
     },
+
 }));
 
 /**
@@ -169,7 +191,7 @@ export default function DefaultAPIForm(props) {
         onChange, onValidate, api, isAPIProduct, multiGateway,
         isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
     } = props;
-    const classes = useStyles();
+
     const [validity, setValidity] = useState({});
     const [isEndpointValid, setIsEndpointValid] = useState();
     const [statusCode, setStatusCode] = useState('');
@@ -351,7 +373,7 @@ export default function DefaultAPIForm(props) {
     }
 
     return (
-        <Grid item md={11}>
+        <StyledGrid item md={12}>
             <form noValidate autoComplete='off'>
                 <TextField
                     autoFocus
@@ -671,7 +693,7 @@ export default function DefaultAPIForm(props) {
                     </Typography>
                 </Grid>
             </Grid>
-        </Grid>
+        </StyledGrid>
     );
 }
 

@@ -17,6 +17,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import {
     Grid,
@@ -29,7 +30,6 @@ import {
     Collapse,
     Radio,
 } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import Button from '@mui/material/Button';
 import Checkbox from '@mui/material/Checkbox';
 import HelpOutline from '@mui/icons-material/HelpOutline';
@@ -40,36 +40,59 @@ import API from 'AppData/api';
 import Configurations from 'Config';
 import Banner from 'AppComponents/Shared/Banner';
 
-const useStyles = makeStyles((theme) => ({
-    typography: {
+const PREFIX = 'Credentials';
+
+const classes = {
+    typography: `${PREFIX}-typography`,
+    textField: `${PREFIX}-textField`,
+    selectField: `${PREFIX}-selectField`,
+    helpButton: `${PREFIX}-helpButton`,
+    helpIcon: `${PREFIX}-helpIcon`,
+    banner: `${PREFIX}-banner`,
+    contentWrapper: `${PREFIX}-contentWrapper`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.typography}`]: {
         display: 'inline-block',
     },
-    textField: {
+
+    [`& .${classes.textField}`]: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         width: 300,
     },
-    selectField: {
+
+    [`& .${classes.selectField}`]: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         width: 300,
     },
-    helpButton: {
+
+    [`& .${classes.helpButton}`]: {
         padding: 0,
         minWidth: 20,
     },
-    helpIcon: {
+
+    [`& .${classes.helpIcon}`]: {
         fontSize: 20,
     },
-    banner: {
+
+    [`& .${classes.banner}`]: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         paddingLeft: theme.spacing(2),
-    },
+    }
 }));
 
 /**
@@ -83,7 +106,7 @@ export default function Credentials(props) {
         endpointConfig,
         endpointsDispatcher,
     } = props;
-    const classes = useStyles();
+
     const [pageError, setPageError] = useState(null);
     const handleChange = (event) => {
         const newEndpointConfig = { ...endpointConfig };
@@ -110,7 +133,7 @@ export default function Credentials(props) {
             });
     }, []);
     return (
-        <>
+        (<Root>
             <Grid item md={12} xs={12}>
                 <Typography className={classes.typography}>
                     <FormattedMessage
@@ -375,7 +398,7 @@ export default function Credentials(props) {
                         />
                     </Grid>
                 )}
-        </>
+        </Root>)
     );
 }
 

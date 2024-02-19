@@ -17,10 +17,10 @@
  */
 
 import React, { Suspense, lazy } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import withStyles from '@mui/styles/withStyles';
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api.js';
 import APIProduct from 'AppData/APIProduct';
@@ -42,17 +42,42 @@ import DeleteMultiple from './DeleteMultiple';
 import Download from './Download';
 import ViewDocument from './ViewDocument';
 
-const TextEditor = lazy(() => import('./TextEditor' /* webpackChunkName: "ListingTextEditor" */));
+const PREFIX = 'Listing';
 
-const styles = theme => ({
-    root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    addNewWrapper: `${PREFIX}-addNewWrapper`,
+    addNewHeader: `${PREFIX}-addNewHeader`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    actionTable: `${PREFIX}-actionTable`,
+    messageBox: `${PREFIX}-messageBox`,
+    actions: `${PREFIX}-actions`,
+    head: `${PREFIX}-head`,
+    genDocumentButton: `${PREFIX}-genDocumentButton`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    subHeading: `${PREFIX}-subHeading`,
+    documentsPaper: `${PREFIX}-documentsPaper`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
     },
-    addNewWrapper: {
+
+    [`& .${classes.addNewWrapper}`]: {
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.getContrastText(theme.palette.background.paper),
         border: 'solid 1px ' + theme.palette.grey['300'],
@@ -60,26 +85,31 @@ const styles = theme => ({
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    addNewHeader: {
+
+    [`& .${classes.addNewHeader}`]: {
         padding: theme.spacing(2),
         backgroundColor: theme.palette.grey['300'],
         fontSize: theme.typography.h6.fontSize,
         color: theme.typography.h6.color,
         fontWeight: theme.typography.h6.fontWeight,
     },
-    addNewOther: {
+
+    [`& .${classes.addNewOther}`]: {
         padding: theme.spacing(2),
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(2),
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingRight: 10,
     },
-    actionTable: {
+
+    [`& .${classes.actionTable}`]: {
         '& td': {
             width: 50,
         },
@@ -87,38 +117,47 @@ const styles = theme => ({
             width: 130,
         },
     },
-    messageBox: {
+
+    [`& .${classes.messageBox}`]: {
         marginTop: 20,
     },
-    actions: {
+
+    [`& .${classes.actions}`]: {
         padding: '20px 0',
         '& button': {
             marginLeft: 0,
         },
     },
-    head: {
+
+    [`& .${classes.head}`]: {
         fontWeight: 200,
         marginBottom: 20,
     },
-    genDocumentButton:{
+
+    [`& .${classes.genDocumentButton}`]: {
         marginRight:10,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         marginBottom: 10,
         display: 'inline-flex',
         lineHeight: 1.5,
     },
-    documentsPaper: {
+
+    [`& .${classes.documentsPaper}`]: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
-    },
-});
- 
+    }
+}));
+
+const TextEditor = lazy(() => import('./TextEditor' /* webpackChunkName: "ListingTextEditor" */));
+
 function LinkGenerator(props) {
     return props.apiType === 'APIPRODUCT' ? (
         <Link to={'/api-products/' + props.apiId + '/documents/' + props.docId + '/details'}>{props.docName}</Link>
@@ -207,7 +246,7 @@ class Listing extends React.Component {
 
 
     render() {
-        const { classes, api, isAPIProduct } = this.props;
+        const {  api, isAPIProduct } = this.props;
         const { docs, showAddDocs, docsToDelete } = this.state;
         const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
         const url = `/${urlPrefix}/${api.id}/documents/create`;
@@ -463,7 +502,7 @@ class Listing extends React.Component {
             return (<Progress />);
         }
         return (
-            <>
+            (<Root>
                 {docsToDelete && (
                     <DeleteMultiple getDocumentsList={this.getDocumentsList} docsToDelete={docsToDelete} docs={docs} />
                 )}
@@ -596,7 +635,7 @@ class Listing extends React.Component {
                     )}
                     
                 </div>
-            </>
+            </Root>)
         );
     }
 }
@@ -610,4 +649,4 @@ Listing.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withAPI(withStyles(styles)(Listing)));
+export default injectIntl(withAPI((Listing)));

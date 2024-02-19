@@ -17,6 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
@@ -27,37 +28,56 @@ import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
-import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'APILevelRateLimitingPolicies';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    actionSpace: `${PREFIX}-actionSpace`,
+    subHeading: `${PREFIX}-subHeading`,
+    keyManagerSelect: `${PREFIX}-keyManagerSelect`
+};
+
+const StyledAccordion = styled(Accordion)((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(3),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
         display: 'inline-flex',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    actionSpace: {
+
+    [`& .${classes.actionSpace}`]: {
         margin: '-7px auto',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
     },
-    keyManagerSelect: {
+
+    [`& .${classes.keyManagerSelect}`]: {
         minWidth: 180,
-    },
+    }
 }));
 
 /**
@@ -68,7 +88,7 @@ const useStyles = makeStyles((theme) => ({
  */
 export default function APILevelRateLimitingPolicies(props) {
     const [apiFromContext] = useAPI();
-    const classes = useStyles();
+
     const {
         configDispatcher,
         api: { apiThrottlingPolicy },
@@ -86,7 +106,7 @@ export default function APILevelRateLimitingPolicies(props) {
     }, []);
 
     return (
-        <Accordion className={classes.expansionPanel} defaultExpanded>
+        <StyledAccordion className={classes.expansionPanel} defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography className={classes.subHeading} variant='h6'>
                     <FormattedMessage
@@ -148,7 +168,7 @@ export default function APILevelRateLimitingPolicies(props) {
                     </Grid>
                 </Grid>
             </AccordionDetails>
-        </Accordion>
+        </StyledAccordion>
     );
 }
 

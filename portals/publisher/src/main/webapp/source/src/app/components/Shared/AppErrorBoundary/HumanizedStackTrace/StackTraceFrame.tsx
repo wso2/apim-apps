@@ -17,10 +17,64 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import StackFrame from 'stackframe';
 
 import { isFilenameAbsolute, makeUrl, makeLinkText } from './utils';
-import useStyles from './styles';
+
+const PREFIX = 'StackTraceFrame';
+
+const classes = {
+    mainStack: `${PREFIX}-mainStack`,
+    message: `${PREFIX}-message`,
+    stack: `${PREFIX}-stack`,
+    frame: `${PREFIX}-frame`,
+    file: `${PREFIX}-file`,
+    linkToFile: `${PREFIX}-linkToFile`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.mainStack}`]: {
+        boxSizing: 'border-box',
+        fontFamily: 'sans-serif',
+        padding: 10,
+        top: '0px',
+        left: '0px',
+        bottom: '0px',
+        right: '0px',
+        width: '100%',
+        background: '#0b1332',
+        color: 'white',
+        textAlign: 'left',
+        fontSize: '16px',
+        lineHeight: 1.2,
+        overflow: 'auto',
+    },
+
+    [`& .${classes.message}`]: {
+        fontWeight: 'bold',
+    },
+
+    [`& .${classes.stack}`]: {
+        fontFamily: 'monospace',
+        marginTop: '2em',
+    },
+
+    [`& .${classes.frame}`]: {
+        marginTop: '1em',
+    },
+
+    [`& .${classes.file}`]: {
+        fontSize: '0.8em',
+        color: 'rgba(255, 255, 255, 0.7)',
+    },
+
+    [`& .${classes.linkToFile}`]: {
+        textDecoration: 'none',
+        color: 'rgba(255, 255, 255, 0.7)',
+    }
+}));
 
 type StackTraceFrameProps = {
     useLines: boolean;
@@ -36,12 +90,12 @@ type StackTraceFrameProps = {
  */
 export default function StackTraceFrame(props: StackTraceFrameProps) {
     const { filename, editorScheme, useLines, useColumns, frames = [] } = props;
-    const classes = useStyles();
+
     if (!frames) {
         return null;
     }
     return (
-        <>
+        (<Root>
             {frames.map((f, index: number) => {
                 let text;
                 let url;
@@ -71,6 +125,6 @@ export default function StackTraceFrame(props: StackTraceFrameProps) {
                     </div>
                 );
             })}
-        </>
+        </Root>)
     );
 }

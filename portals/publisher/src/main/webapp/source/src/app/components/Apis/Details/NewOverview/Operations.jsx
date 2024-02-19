@@ -17,7 +17,7 @@
  */
 
 import React from 'react';
-import withStyles from '@mui/styles/withStyles';
+import { styled } from '@mui/material/styles';
 import withTheme from '@mui/styles/withTheme';
 import PropTypes from 'prop-types';
 import Chip from '@mui/material/Chip';
@@ -31,13 +31,23 @@ import TableRow from '@mui/material/TableRow';
 import Typography from '@mui/material/Typography';
 import ApiContext from '../components/ApiContext';
 
-const styles = (theme) => ({
-    contentWrapper: {
+const PREFIX = 'Operations';
+
+const classes = {
+    contentWrapper: `${PREFIX}-contentWrapper`
+};
+
+const StyledApiContextConsumer = styled(ApiContext.Consumer)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.contentWrapper}`]: {
         marginTop: theme.spacing(2),
         maxHeight: '250px',
         overflowY: 'auto',
-    },
-});
+    }
+}));
 
 /**
  *
@@ -78,9 +88,9 @@ const RenderMethod = withTheme(RenderMethodBase);
  * @param {*} props
  */
 function Operations(props) {
-    const { classes, parentClasses } = props;
+    const {  parentClasses } = props;
     return (
-        <ApiContext.Consumer>
+        <StyledApiContextConsumer>
             {({ api }) => (
                 <>
                     <div className={parentClasses.titleWrapper}>
@@ -129,13 +139,12 @@ function Operations(props) {
                     </div>
                 </>
             )}
-        </ApiContext.Consumer>
+        </StyledApiContextConsumer>
     );
 }
 
 Operations.propTypes = {
     parentClasses: PropTypes.shape({}).isRequired,
-    classes: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles)(Operations);
+export default (Operations);

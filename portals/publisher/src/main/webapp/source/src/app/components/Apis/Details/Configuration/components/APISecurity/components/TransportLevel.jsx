@@ -17,6 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Checkbox from '@mui/material/Checkbox';
@@ -25,7 +26,6 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Typography from '@mui/material/Typography';
-import makeStyles from '@mui/styles/makeStyles';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormHelperText from '@mui/material/FormHelperText';
@@ -46,23 +46,40 @@ import {
     API_SECURITY_API_KEY,
 } from './apiSecurityConstants';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'TransportLevel';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    bottomSpace: `${PREFIX}-bottomSpace`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(1),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    bottomSpace: {
+
+    [`& .${classes.bottomSpace}`]: {
         marginBottom: theme.spacing(4),
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
-    },
+    }
 }));
 
 /**
@@ -79,7 +96,7 @@ function TransportLevel(props) {
     const isMutualSSLEnabled = securityScheme.includes(API_SECURITY_MUTUAL_SSL);
     const [apiFromContext] = useAPI();
     const [clientCertificates, setClientCertificates] = useState([]);
-    const classes = useStyles();
+
 
     /**
      * Method to upload the certificate content by calling the rest api.
@@ -186,7 +203,7 @@ function TransportLevel(props) {
         mandatoryValue = API_SECURITY_MUTUAL_SSL_MANDATORY;
     }
     return (
-        <>
+        (<Root>
             <Grid item xs={12}>
                 <WrappedExpansionPanel className={classes.expansionPanel} id='transportLevel'>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
@@ -275,7 +292,7 @@ function TransportLevel(props) {
                     </AccordionDetails>
                 </WrappedExpansionPanel>
             </Grid>
-        </>
+        </Root>)
     );
 }
 

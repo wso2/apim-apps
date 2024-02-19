@@ -17,9 +17,8 @@
  */
 
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
 import Footer from 'AppComponents/Base/Footer/Footer';
 import Header from 'AppComponents/Base/Header';
 import { Toaster } from 'react-hot-toast';
@@ -27,24 +26,35 @@ import { Helmet } from 'react-helmet';
 import defaultTheme from 'AppData/defaultTheme';
 import userThemes from 'userCustomThemes';
 
-// import CssBaseline from '@mui/material/CssBaseline';
+const PREFIX = 'Base';
 
-const useStyles = makeStyles((theme) => ({
-    wrapper: {
+const classes = {
+    wrapper: `${PREFIX}-wrapper`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    contentRoot: `${PREFIX}-contentRoot`,
+    drawerHeader: `${PREFIX}-drawerHeader`
+};
+
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.wrapper}`]: {
         display: 'flex',
         background: theme.custom.wrapperBackground,
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         flexGrow: 1,
         transition: theme.transitions.create('margin', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
     },
-    contentRoot: {
+
+    [`& .${classes.contentRoot}`]: {
         minHeight: `calc(100vh - ${64 + theme.custom.footer.height}px)`, // 64 coming from default MUI appbar height
     },
-    drawerHeader: {
+
+    [`& .${classes.drawerHeader}`]: {
         display: 'flex',
         alignItems: 'center',
         padding: theme.spacing(0, 1),
@@ -53,7 +63,12 @@ const useStyles = makeStyles((theme) => ({
         justifyContent: 'flex-end',
         minHeight: theme.spacing(8),
     },
+
+    [`.GlobalNavBar-drawer > .MuiDrawer-paper`]: {
+        backgroundColor: theme.palette.background.drawer,
+    }
 }));
+
 /**
  * Base Component for the publisher app
  * Adding a padding to Base container to avoid overlapping content with the Header AppBar
@@ -63,7 +78,7 @@ const useStyles = makeStyles((theme) => ({
  * @extends {React.Component}
  */
 const Base = ({ children, user }) => {
-    const classes = useStyles();
+
     const theme = useTheme();
 
     function getTitle() {
@@ -80,7 +95,7 @@ const Base = ({ children, user }) => {
     }
 
     return (
-        <>
+        (<Root>
             {/* <CssBaseline /> */}
             <Helmet>
                 <title>{getTitle()}</title>
@@ -134,7 +149,7 @@ const Base = ({ children, user }) => {
                     <Footer />
                 </main>
             </div>
-        </>
+        </Root>)
     );
 };
 

@@ -16,8 +16,8 @@
  * under the License.
  */
 import React, { useState, useRef, useReducer } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import MenuItem from '@mui/material/MenuItem';
@@ -40,17 +40,27 @@ import {
     getSupportedDataTypes,
 } from 'AppComponents/Apis/Details/Resources/components/operationComponents/parameterUtils';
 
-const useStyles = makeStyles(() => ({
-    formControl: {
+const PREFIX = 'AddParameter';
+
+const classes = {
+    formControl: `${PREFIX}-formControl`,
+    parameterContainer: `${PREFIX}-parameterContainer`,
+    checkBox: `${PREFIX}-checkBox`
+};
+
+const StyledGrid = styled(Grid)(() => ({
+    [`& .${classes.formControl}`]: {
         minWidth: 120,
     },
-    parameterContainer: {
+
+    [`&.${classes.parameterContainer}`]: {
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    checkBox: {
+
+    [`& .${classes.checkBox}`]: {
         color: '#7c7c7c',
-    },
+    }
 }));
 
 /**
@@ -114,7 +124,7 @@ function AddParameter(props) {
         isParameterExist = false;
     }
 
-    const classes = useStyles();
+
 
     /**
      *
@@ -193,7 +203,7 @@ function AddParameter(props) {
     }
 
     return (
-        <Grid container direction='row' spacing={1} className={classes.parameterContainer}>
+        <StyledGrid container direction='row' spacing={1} className={classes.parameterContainer}>
             <Grid item xs={2} md={2}>
                 <FormControl margin='dense' variant='outlined' className={classes.formControl}>
                     <InputLabel ref={inputLabel} htmlFor={'param-' + verb + target} error={isParameterExist}>
@@ -402,7 +412,7 @@ function AddParameter(props) {
                     </Tooltip>
                 </sup>
             </Grid>
-        </Grid>
+        </StyledGrid>
     );
 }
 

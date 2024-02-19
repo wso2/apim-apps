@@ -17,14 +17,24 @@
  */
 
 import React from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const useStyles = makeStyles((theme) => ({
-    tagClass: {
+const PREFIX = 'GroupOfOperations';
+
+const classes = {
+    tagClass: `${PREFIX}-tagClass`
+};
+
+const StyledAccordion = styled(Accordion)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tagClass}`]: {
         maxWidth: 1000,
         overflow: 'hidden',
         whiteSpace: 'nowrap',
@@ -32,9 +42,8 @@ const useStyles = makeStyles((theme) => ({
         [theme.breakpoints.down('lg')]: {
             maxWidth: 800,
         },
-    },
-}
-));
+    }
+}));
 
 /**
  *
@@ -44,11 +53,11 @@ const useStyles = makeStyles((theme) => ({
  * @returns {React.Component} @inheritdoc
  */
 export default function GroupOfOperations(props) {
-    const classes = useStyles();
+
     const { openAPI, children, tag } = props;
     const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo) => tagInfo.name === tag);
     return (
-        <Accordion defaultExpanded>
+        <StyledAccordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />} id={tag}>
                 <Typography
                     variant='h4'
@@ -64,7 +73,7 @@ export default function GroupOfOperations(props) {
                 )}
             </AccordionSummary>
             <AccordionDetails>{children}</AccordionDetails>
-        </Accordion>
+        </StyledAccordion>
     );
 }
 

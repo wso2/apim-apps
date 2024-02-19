@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     Accordion, 
     AccordionSummary, 
@@ -23,7 +24,6 @@ import {
     Typography,
     Box,
 } from '@mui/material';
-import withStyles from '@mui/styles/withStyles';
 import PropTypes from 'prop-types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { isRestricted } from 'AppData/AuthManager';
@@ -33,38 +33,63 @@ import API from '../../../../data/api'; // TODO: Use webpack aliases instead of 
 import Alert from '../../../Shared/Alert';
 import { endpointsToList } from './endpointUtils';
 
-const styles = (theme) => ({
-    configHeaderContainer: {
+const PREFIX = 'GeneralConfiguration';
+
+const classes = {
+    configHeaderContainer: `${PREFIX}-configHeaderContainer`,
+    generalConfigContent: `${PREFIX}-generalConfigContent`,
+    secondaryHeading: `${PREFIX}-secondaryHeading`,
+    heading: `${PREFIX}-heading`,
+    endpointConfigSection: `${PREFIX}-endpointConfigSection`,
+    generalConfigPanel: `${PREFIX}-generalConfigPanel`,
+    securityHeading: `${PREFIX}-securityHeading`,
+    sandboxEndpointSwitch: `${PREFIX}-sandboxEndpointSwitch`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.configHeaderContainer}`]: {
         display: 'flex',
         justifyContent: 'space-between',
     },
-    generalConfigContent: {
+
+    [`& .${classes.generalConfigContent}`]: {
         boxShadow: 'inset -1px 2px 3px 0px #c3c3c3',
     },
-    secondaryHeading: {
+
+    [`& .${classes.secondaryHeading}`]: {
         fontSize: theme.typography.pxToRem(15),
         color: theme.palette.text.secondary,
         display: 'flex',
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         flexBasis: '33.33%',
         flexShrink: 0,
         fontWeight: '900',
     },
-    endpointConfigSection: {
+
+    [`& .${classes.endpointConfigSection}`]: {
         padding: '10px',
     },
-    generalConfigPanel: {
+
+    [`& .${classes.generalConfigPanel}`]: {
         width: '100%',
     },
-    securityHeading: {
+
+    [`& .${classes.securityHeading}`]: {
         fontWeight: 600,
     },
-    sandboxEndpointSwitch: {
+
+    [`& .${classes.sandboxEndpointSwitch}`]: {
         marginLeft: theme.spacing(2),
-    },
-});
+    }
+}));
 
 /**
  * The component which holds the general configurations of the endpoints.
@@ -77,7 +102,6 @@ function GeneralConfiguration(props) {
         intl,
         epConfig,
         endpointType,
-        classes,
     } = props;
     const [isConfigExpanded, setConfigExpand] = useState(false);
     const [endpointCertificates, setEndpointCertificates] = useState([]);
@@ -196,7 +220,7 @@ function GeneralConfiguration(props) {
     }, []);
 
     return (
-        <>
+        (<Root>
             <Accordion
                 expanded={isConfigExpanded}
                 onChange={() => setConfigExpand(!isConfigExpanded)}
@@ -252,7 +276,7 @@ function GeneralConfiguration(props) {
                     </Grid>
                 </AccordionDetails>
             </Accordion>
-        </>
+        </Root>)
     );
 }
 
@@ -263,4 +287,4 @@ GeneralConfiguration.propTypes = {
     intl: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(GeneralConfiguration));
+export default injectIntl((GeneralConfiguration));

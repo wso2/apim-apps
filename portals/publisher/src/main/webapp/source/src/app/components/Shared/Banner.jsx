@@ -17,6 +17,7 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
@@ -27,27 +28,42 @@ import WarningIcon from '@mui/icons-material/Warning';
 import ErrorIcon from '@mui/icons-material/Error';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import InfoIcon from '@mui/icons-material/Info';
-import makeStyles from '@mui/styles/makeStyles';
 import { FormattedMessage } from 'react-intl';
 import { orange, green } from '@mui/material/colors';
 import { withRouter } from 'react-router';
 import Fade from '@mui/material/Fade';
 
-// Icon size reference https://github.com/mui-org/material-ui/blob/master/packages/material-ui/src/Icon/Icon.js#L48
-const useStyles = makeStyles((theme) => ({
-    xLarge: {
+const PREFIX = 'Banner';
+
+const classes = {
+    xLarge: `${PREFIX}-xLarge`,
+    warningIcon: `${PREFIX}-warningIcon`,
+    checkCircleIcon: `${PREFIX}-checkCircleIcon`,
+    infoIcon: `${PREFIX}-infoIcon`
+};
+
+const StyledFade = styled(Fade)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.xLarge}`]: {
         fontSize: theme.typography.pxToRem(64),
     },
-    warningIcon : {
+
+    [`& .${classes.warningIcon}`]: {
         color: orange[500],
     },
-    checkCircleIcon: {
+
+    [`& .${classes.checkCircleIcon}`]: {
         color: green[800],
     },
-    infoIcon: {
+
+    [`& .${classes.infoIcon}`]: {
         color: theme.palette.primary.dark,
-    },
+    }
 }));
+
 /**
  *
  *
@@ -58,7 +74,7 @@ function Banner(props) {
     const {
         type, message, dense, history, paperProps, disableActions, open, onClose, disableClose,
     } = props;
-    const classes = useStyles();
+
     const [isOpen, setIsOpen] = useState(open);
     const iconProps = {};
     if (dense) {
@@ -100,7 +116,7 @@ function Banner(props) {
             break;
     }
     return (
-        <Fade in={isOpen} unmountOnExit>
+        <StyledFade in={isOpen} unmountOnExit>
             <Box clone pt={dense ? 1 : 2} pr={dense ? 0 : 1} pb={dense ? 0 : 1} pl={dense ? 1 : 2}>
                 <Paper {...paperProps}>
                     <Grid container spacing={2} alignItems='center' wrap='nowrap'>
@@ -137,7 +153,7 @@ function Banner(props) {
                     </Grid>
                 </Paper>
             </Box>
-        </Fade>
+        </StyledFade>
     );
 }
 Banner.defaultProps = {

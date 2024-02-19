@@ -16,8 +16,8 @@
  * under the License.
  */
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
@@ -32,16 +32,28 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 
-const useStyles = makeStyles((theme) => ({
-    formControl: {
+const PREFIX = 'SubscriptionConfig';
+
+const classes = {
+    formControl: `${PREFIX}-formControl`,
+    paper: `${PREFIX}-paper`
+};
+
+const StyledAccordion = styled(Accordion)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.formControl}`]: {
         minWidth: 120,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         paddingLeft: theme.spacing(4),
         paddingTop: theme.spacing(1.5),
         paddingBottom: theme.spacing(0.5),
         marginTop: '12px',
-    },
+    }
 }));
 
 /**
@@ -57,7 +69,7 @@ function SubscriptionConfig(props) {
     } = props;
 
     const [isExpanded, setIsExpanded] = useState(false);
-    const classes = useStyles();
+
     const [enabled, setEnabled] = useState(!!websubSubscriptionConfiguration.enable);
 
     /**
@@ -81,7 +93,7 @@ function SubscriptionConfig(props) {
     }
 
     return (
-        <Accordion
+        <StyledAccordion
             expanded={isExpanded}
             onChange={(e, expanded) => {
                 setIsExpanded(expanded);
@@ -229,7 +241,7 @@ function SubscriptionConfig(props) {
                     <Grid item xs={6} />
                 </Grid>
             </AccordionDetails>
-        </Accordion>
+        </StyledAccordion>
     );
 }
 

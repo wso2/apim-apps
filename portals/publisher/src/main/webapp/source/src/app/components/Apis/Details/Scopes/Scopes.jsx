@@ -17,6 +17,7 @@
  */
 
 import 'react-tagsinput/react-tagsinput.css';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Api from 'AppData/api';
@@ -24,7 +25,6 @@ import { Progress } from 'AppComponents/Shared';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Button from '@mui/material/Button';
-import withStyles from '@mui/styles/withStyles';
 import { Link } from 'react-router-dom';
 import { List, ListItem, ListItemText } from '@mui/material';
 import AddCircle from '@mui/icons-material/AddCircle';
@@ -40,17 +40,34 @@ import Tooltip from '@mui/material/Tooltip';
 
 import Delete from './Delete';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'Scopes';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    buttonProgress: `${PREFIX}-buttonProgress`,
+    headline: `${PREFIX}-headline`,
+    heading: `${PREFIX}-heading`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    content: `${PREFIX}-content`,
+    head: `${PREFIX}-head`
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`&.${classes.root}`]: {
         paddingTop: 0,
         paddingLeft: 0,
     },
-    buttonProgress: {
+
+    [`& .${classes.buttonProgress}`]: {
         position: 'relative',
         margin: theme.spacing(1),
     },
-    headline: { paddingTop: theme.spacing(1.25), paddingLeft: theme.spacing(2.5) },
-    heading: {
+
+    [`& .${classes.headline}`]: { paddingTop: theme.spacing(1.25), paddingLeft: theme.spacing(2.5) },
+
+    [`& .${classes.heading}`]: {
         flexGrow: 1,
         marginTop: 10,
         '& table td:nth-child(2)': {
@@ -60,25 +77,31 @@ const styles = (theme) => ({
             'white-space': 'nowrap',
         },
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(2),
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    content: {
+
+    [`& .${classes.content}`]: {
         margin: `${theme.spacing(2)} 0 ${theme.spacing(2)} 0`,
     },
-    head: {
-        fontWeight: 200,
-    },
-});
+
+    [`& .${classes.head}`]: {
+        // fontWeight: 200,
+    }
+}));
+
 /**
  * Generate the scopes UI in API details page.
  * @class Scopes
@@ -103,9 +126,7 @@ class Scopes extends React.Component {
      * @memberof Scopes
      */
     render() {
-        const {
-            intl, classes, api,
-        } = this.props;
+        const { intl, api } = this.props;
         const urlPrefix = (api.apiType === Api.CONSTS.APIProduct) ? 'api-products' : 'apis';
         const { scopes } = api;
         const url = `/${urlPrefix}/${api.id}/scopes/create`;
@@ -253,7 +274,7 @@ class Scopes extends React.Component {
 
         if (scopes.length === 0) {
             return (
-                <div className={classes.root}>
+                <Root className={classes.root}>
                     <div className={classes.titleWrapper}>
                         <Typography
                             id='itest-api-details-scopes-onboarding-head'
@@ -316,7 +337,7 @@ class Scopes extends React.Component {
                             </div>
                         </div>
                     </InlineMessage>
-                </div>
+                </Root>
             );
         }
 
@@ -390,4 +411,4 @@ Scopes.defaultProps = {
     match: { params: {} },
 };
 
-export default injectIntl(withAPI(withStyles(styles)(Scopes)));
+export default injectIntl(withAPI((Scopes)));

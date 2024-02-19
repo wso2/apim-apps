@@ -18,8 +18,8 @@
 
 import React, { useState, useEffect } from 'react';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { styled } from '@mui/material/styles';
 import { useTheme } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
@@ -31,8 +31,14 @@ import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';
 import GraphqlAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/GraphqlAPIMenu';
 import StreamingAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/StreamingAPIMenu';
 
-const useStyles = makeStyles({
-    root: {
+const PREFIX = 'APILanding';
+
+const classes = {
+    root: `${PREFIX}-root`
+};
+
+const Root = styled('div')({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
     },
 });
@@ -66,7 +72,7 @@ const APILanding = () => {
     } = theme.custom.landingPage.icons;
 
     return (
-        <div className={root}>
+        <Root className={classes.root}>
             <Grid
                 container
                 direction='column'
@@ -113,7 +119,7 @@ const APILanding = () => {
                     </Box>
                 </Grid>
             </Grid>
-        </div>
+        </Root>
     );
 };
 

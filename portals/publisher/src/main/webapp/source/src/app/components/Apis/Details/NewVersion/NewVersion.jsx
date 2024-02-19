@@ -17,9 +17,9 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { Link, Redirect } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import Container from '@mui/material/Container';
@@ -40,40 +40,67 @@ import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
-const styles = (theme) => ({
-    FormControl: {
+const PREFIX = 'NewVersion';
+
+const classes = {
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    FormLabel: `${PREFIX}-FormLabel`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`,
+    root: `${PREFIX}-root`,
+    group: `${PREFIX}-group`,
+    helpButton: `${PREFIX}-helpButton`,
+    helpIcon: `${PREFIX}-helpIcon`,
+    htmlTooltip: `${PREFIX}-htmlTooltip`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.FormControl}`]: {
         padding: 0,
         width: '100%',
         marginTop: 20,
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: 0,
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         marginTop: 0,
     },
-    FormLabel: {
+
+    [`& .${classes.FormLabel}`]: {
         transform: 'translate(0, 1.5px) scale(0.75)',
         transformOrigin: 'top left',
     },
-    buttonWrapper: {
+
+    [`& .${classes.buttonWrapper}`]: {
         paddingTop: 20,
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         padding: 20,
         marginTop: 20,
     },
-    group: {
+
+    [`& .${classes.group}`]: {
         flexDirection: 'row',
     },
-    helpButton: {
+
+    [`& .${classes.helpButton}`]: {
         padding: 0,
         minWidth: 20,
     },
-    helpIcon: {
+
+    [`& .${classes.helpIcon}`]: {
         fontSize: 16,
     },
-    htmlTooltip: {
+
+    [`& .${classes.htmlTooltip}`]: {
         backgroundColor: '#f5f5f9',
         color: 'rgba(0, 0, 0, 0.87)',
         maxWidth: 220,
@@ -82,8 +109,8 @@ const styles = (theme) => ({
         '& b': {
             fontWeight: theme.typography.fontWeightMedium,
         },
-    },
-});
+    }
+}));
 
 /**
  * React component to create a new version of an API
@@ -247,7 +274,7 @@ class CreateNewVersion extends React.Component {
      * @returns {*} CreateNewVersion component
      */
     render() {
-        const { classes, api } = this.props;
+        const {  api } = this.props;
         const {
             isDefaultVersion, newVersion, redirectToReferrer, apiId, valid, serviceVersion, versionList,
         } = this.state;
@@ -267,7 +294,7 @@ class CreateNewVersion extends React.Component {
         }
 
         return (
-            <>
+            (<Root>
                 <Container maxWidth='md'>
                     <div className={classes.titleWrapper}>
                         <Typography variant='h4' component='h2' align='left' className={classes.mainTitle}>
@@ -427,13 +454,12 @@ class CreateNewVersion extends React.Component {
                         </Grid>
                     </Grid>
                 </Container>
-            </>
+            </Root>)
         );
     }
 }
 
 CreateNewVersion.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
     }).isRequired,
@@ -442,4 +468,4 @@ CreateNewVersion.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withAPI(withStyles(styles)(CreateNewVersion)));
+export default injectIntl(withAPI(CreateNewVersion));

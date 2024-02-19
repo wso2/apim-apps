@@ -17,9 +17,9 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Typography from '@mui/material/Typography';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -39,58 +39,94 @@ import Alert from 'AppComponents/Shared/Alert';
 import Configurations from 'Config';
 import { green } from '@mui/material/colors';
 
-const styles = theme => ({
-    button: {
+const PREFIX = 'CreateEditForm';
+
+const classes = {
+    button: `${PREFIX}-button`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    radioGroup: `${PREFIX}-radioGroup`,
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    group: `${PREFIX}-group`,
+    formControlFirst: `${PREFIX}-formControlFirst`,
+    formControl: `${PREFIX}-formControl`,
+    formControlLabel: `${PREFIX}-formControlLabel`,
+    typeTextWrapper: `${PREFIX}-typeTextWrapper`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    acceptDrop: `${PREFIX}-acceptDrop`,
+    dropzone: `${PREFIX}-dropzone`,
+    dropZoneWrapper: `${PREFIX}-dropZoneWrapper`,
+    uploadedFile: `${PREFIX}-uploadedFile`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.primary.main),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
     },
-    addNewOther: {
+
+    [`&.${classes.addNewOther}`]: {
         padding: theme.spacing(2),
     },
-    radioGroup: {
+
+    [`& .${classes.radioGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
         width: 300,
     },
-    expansionPanel: {
+
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(1),
     },
-    group: {
+
+    [`& .${classes.group}`]: {
         display: 'flex',
         flexDirection: 'row',
     },
-    formControlFirst: {
+
+    [`& .${classes.formControlFirst}`]: {
         display: 'block',
     },
-    formControl: {
+
+    [`& .${classes.formControl}`]: {
         display: 'block',
         marginTop: 20,
     },
-    formControlLabel: {
+
+    [`& .${classes.formControlLabel}`]: {
         background: '#efefef',
         borderRadius: 5,
         paddingRight: 10,
         marginLeft: 0,
         marginTop: 10,
     },
-    typeTextWrapper: {
+
+    [`& .${classes.typeTextWrapper}`]: {
         display: 'flex',
         flexDirection: 'column',
         alignItems: 'center',
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: 0,
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         marginTop: 0,
     },
-    acceptDrop: {
+
+    [`& .${classes.acceptDrop}`]: {
         backgroundColor: green[50],
     },
-    dropzone: {
+
+    [`& .${classes.dropzone}`]: {
         border: '1px dashed ' + theme.palette.primary.main,
         borderRadius: '5px',
         cursor: 'pointer',
@@ -101,7 +137,8 @@ const styles = theme => ({
         width: '100%',
         margin: '10px 0',
     },
-    dropZoneWrapper: {
+
+    [`& .${classes.dropZoneWrapper}`]: {
         height: '100%',
         display: 'flex',
         cursor: 'pointer',
@@ -112,10 +149,11 @@ const styles = theme => ({
             color: theme.palette.primary.main,
         },
     },
-    uploadedFile: {
+
+    [`& .${classes.uploadedFile}`]: {
         fontSize: 11,
-    },
-});
+    }
+}));
 
 class CreateEditForm extends React.Component {
     constructor(props) {
@@ -397,7 +435,7 @@ class CreateEditForm extends React.Component {
             urlEmpty,
             visibility
         } = this.state;
-        const { classes, setSaveDisabled } = this.props;
+        const {  setSaveDisabled } = this.props;
         const { settings: settingsContext } = this.context;
         if (
             name !== '' &&
@@ -412,7 +450,7 @@ class CreateEditForm extends React.Component {
             setSaveDisabled(true);
         }
         return (
-            <div className={classes.addNewOther}>
+            <Root className={classes.addNewOther}>
                 <FormControl margin='normal' className={classes.FormControlOdd}>
                     <TextField
                         fullWidth
@@ -806,7 +844,7 @@ class CreateEditForm extends React.Component {
                         </div>
                     </InlineMessage>
                 )}
-            </div>
+            </Root>
         );
     }
 }
@@ -825,4 +863,4 @@ CreateEditForm.propTypes = {
     apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(CreateEditForm));
+export default injectIntl((CreateEditForm));

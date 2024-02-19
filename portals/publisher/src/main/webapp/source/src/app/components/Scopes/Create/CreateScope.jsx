@@ -17,13 +17,13 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import withStyles from '@mui/styles/withStyles';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
@@ -40,75 +40,115 @@ import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'CreateScope';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    titleLink: `${PREFIX}-titleLink`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    FormControlLabel: `${PREFIX}-FormControlLabel`,
+    buttonSection: `${PREFIX}-buttonSection`,
+    saveButton: `${PREFIX}-saveButton`,
+    helpText: `${PREFIX}-helpText`,
+    extraPadding: `${PREFIX}-extraPadding`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    titleGrid: `${PREFIX}-titleGrid`,
+    descriptionForm: `${PREFIX}-descriptionForm`,
+    progress: `${PREFIX}-progress`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
         display: 'flex',
         flexDirection: 'column',
         padding: 20,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
     },
-    titleLink: {
+
+    [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.dark,
         marginRight: theme.spacing(1),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    FormControl: {
+
+    [`& .${classes.FormControl}`]: {
         padding: `0 0 0 ${theme.spacing(1)}`,
         width: '100%',
         marginTop: 0,
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: `0 0 0 ${theme.spacing(1)}`,
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         marginTop: 0,
     },
-    FormControlLabel: {
+
+    [`& .${classes.FormControlLabel}`]: {
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
         fontSize: theme.typography.caption.fontSize,
     },
-    buttonSection: {
+
+    [`& .${classes.buttonSection}`]: {
         paddingTop: theme.spacing(3),
     },
-    saveButton: {
+
+    [`& .${classes.saveButton}`]: {
         marginRight: theme.spacing(1),
     },
-    helpText: {
+
+    [`& .${classes.helpText}`]: {
         color: theme.palette.text.hint,
         marginTop: theme.spacing(1),
     },
-    extraPadding: {
+
+    [`& .${classes.extraPadding}`]: {
         paddingLeft: theme.spacing(2),
     },
-    addNewOther: {
+
+    [`& .${classes.addNewOther}`]: {
         paddingTop: 40,
     },
-    titleGrid: {
+
+    [`& .${classes.titleGrid}`]: {
         ' & .MuiGrid-item': {
             padding: 0,
             margin: 0,
         },
     },
-    descriptionForm: {
+
+    [`& .${classes.descriptionForm}`]: {
         marginTop: theme.spacing(1),
     },
-    progress: {
+
+    [`& .${classes.progress}`]: {
         marginLeft: theme.spacing(1),
-    },
-});
+    }
+}));
 
 /**
  * Create new scopes for an API
@@ -399,22 +439,20 @@ class CreateScope extends React.Component {
      * @memberof CreateScope
      */
     render() {
-        const { classes } = this.props;
         const url = '/scopes';
         const {
             roleValidity, validRoles, invalidRoles, scopeAddDisabled, valid, sharedScope,
         } = this.state;
 
         return (
-            <Grid container spacing={3}>
-                <Grid item sm={12} md={12} />
+            <StyledGrid container>
                 {/*
             Following two grids control the placement of whole create page
             For centering the content better use `container` props, but instead used an empty grid item for flexibility
              */}
                 <Grid item sm={0} md={0} lg={2} />
                 <Grid item sm={12} md={12} lg={8}>
-                    <Grid container spacing={5} className={classes.titleGrid}>
+                    <Grid container className={classes.titleGrid} sx={{ pt: 2 }}>
                         <Grid item md={12}>
                             <div className={classes.titleWrapper}>
                                 <Link to={url} className={classes.titleLink}>
@@ -604,7 +642,7 @@ class CreateScope extends React.Component {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
+            </StyledGrid>
         );
     }
 }
@@ -625,4 +663,4 @@ CreateScope.defaultProps = {
     match: { params: {} },
 };
 
-export default injectIntl(withStyles(styles)(CreateScope));
+export default injectIntl((CreateScope));

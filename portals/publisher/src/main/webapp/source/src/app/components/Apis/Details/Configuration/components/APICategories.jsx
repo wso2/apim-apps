@@ -17,6 +17,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
@@ -27,22 +28,33 @@ import Checkbox from '@mui/material/Checkbox';
 import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
-import makeStyles from '@mui/styles/makeStyles';
 import API from 'AppData/api';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
 
-const useStyles = makeStyles((theme) => ({
-    tooltip: {
+const PREFIX = 'APICategories';
+
+const classes = {
+    tooltip: `${PREFIX}-tooltip`,
+    listItemText: `${PREFIX}-listItemText`
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tooltip}`]: {
         position: 'absolute',
         right: theme.spacing(-4),
         top: theme.spacing(1),
     },
-    listItemText: {
+
+    [`& .${classes.listItemText}`]: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-    },
+    }
 }));
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
@@ -56,7 +68,7 @@ const checkedIcon = <CheckBoxIcon fontSize='small' />;
 function APICategories(props) {
     const [categories, setCategories] = useState({});
     const { api, configDispatcher } = props;
-    const classes = useStyles();
+
     const [apiFromContext] = useAPI();
 
     useEffect(() => {
@@ -67,7 +79,7 @@ function APICategories(props) {
         return null;
     } else {
         return (
-            <Box style={{ position: 'relative', marginTop: 10 }}>
+            <StyledBox style={{ position: 'relative', marginTop: 10 }}>
                 <Autocomplete
                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)
                         || categories.list.length === 0
@@ -140,7 +152,7 @@ function APICategories(props) {
                 >
                     <HelpOutline />
                 </Tooltip>
-            </Box>
+            </StyledBox>
         );
     }
 }

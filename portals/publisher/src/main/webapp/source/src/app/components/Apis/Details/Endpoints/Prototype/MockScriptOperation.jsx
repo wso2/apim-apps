@@ -22,13 +22,29 @@ import React, {
     useContext,
     useState,
 } from 'react';
+import { styled } from '@mui/material/styles';
 import { Grid, Typography, Button } from '@mui/material';
-import makeStyles from '@mui/styles/makeStyles';
 import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
+
+const PREFIX = 'MockScriptOperation';
+
+const classes = {
+    scriptResetButton: `${PREFIX}-scriptResetButton`
+};
+
+const StyledGrid = styled(Grid)(() => {
+    return {
+        [`& .${classes.scriptResetButton}`]: {
+            display: 'flex',
+            justifyContent: 'space-between',
+            marginBottom: '10px',
+        },
+    };
+});
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "GenResourceMonaco" */));
 
@@ -36,16 +52,6 @@ const xMediationScriptProperty = 'x-mediation-script';
 const defaultScript = '/* mc.setProperty(\'CONTENT_TYPE\', \'application/json\');\n\t'
     + 'mc.setPayloadJSON(\'{ "data" : "sample JSON"}\');*/\n'
     + '/*Uncomment the above comment block to send a sample response.*/';
-
-const useStyles = makeStyles(() => {
-    return {
-        scriptResetButton: {
-            display: 'flex',
-            justifyContent: 'space-between',
-            marginBottom: '10px',
-        },
-    };
-});
 
 /**
  * Retrieve mock script for the method of the resource.
@@ -77,7 +83,7 @@ function MockScriptOperation(props) {
     } = props;
     const { api } = useContext(APIContext);
     const [showReset, setShowReset] = useState(false);
-    const classes = useStyles();
+
 
     /**
      * Handles the onChange event of the script editor.
@@ -97,7 +103,7 @@ function MockScriptOperation(props) {
     const originalScript = getGeneratedMockScriptOfAPI(mockScripts, resourcePath, resourceMethod);
 
     return (
-        <Grid container direction='column'>
+        <StyledGrid container direction='column'>
             <Grid item className={classes.scriptResetButton}>
                 <Typography variant='subtitle2'>
                     <FormattedMessage
@@ -141,7 +147,7 @@ function MockScriptOperation(props) {
                     />
                 </Suspense>
             </Grid>
-        </Grid>
+        </StyledGrid>
     );
 }
 

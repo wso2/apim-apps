@@ -17,8 +17,7 @@
  */
 
 import React from 'react';
-import { useTheme } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled, useTheme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
@@ -26,15 +25,25 @@ import Configurations from 'Config';
 
 import FeedbackForm from './FeedbackForm';
 
-const useStyles = makeStyles((theme) => ({
-    footer: {
+const PREFIX = 'Footer';
+
+const classes = {
+    footer: `${PREFIX}-footer`
+};
+
+const Root = styled('footer')((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.footer}`]: {
         background: theme.custom.footer.background,
         paddingLeft: theme.spacing(3),
         height: theme.custom.footer.height,
         alignItems: 'center',
         display: 'flex',
         color: theme.custom.footer.color,
-    },
+    }
 }));
 
 /**
@@ -44,11 +53,11 @@ const useStyles = makeStyles((theme) => ({
  * @returns
  */
 function Footer() {
-    const classes = useStyles();
+
     const theme = useTheme();
 
     return (
-        <footer className={classes.footer}>
+        <Root className={classes.footer}>
             <Grid container direction='row' justifyContent='space-between' alignItems='center'>
                 <Grid item>
                     {theme.custom.footer.text ? theme.custom.footer.text : (
@@ -67,7 +76,7 @@ function Footer() {
                 )}
                 <Grid item />
             </Grid>
-        </footer>
+        </Root>
     );
 }
 

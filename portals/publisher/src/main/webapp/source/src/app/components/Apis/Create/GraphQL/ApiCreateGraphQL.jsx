@@ -223,7 +223,7 @@ export default function ApiCreateGraphQL(props) {
                 </>
             )}
         >
-            <Box>
+            <Box sx={{ mb: 2 }}>
                 {wizardStep === 0 && (
                     <Stepper alternativeLabel activeStep={0}>
                         <Step>
@@ -268,10 +268,8 @@ export default function ApiCreateGraphQL(props) {
                 )}
             </Box>
 
-            <Grid container spacing={3} style={{ marginBottom: 20 }}>
-                <Grid item md={12} />
-                <Grid item md={1} />
-                <Grid item md={11}>
+            <Grid container spacing={2}>
+                <Grid item md={12}>
                     {wizardStep === 0 && (
                         <ProvideGraphQL
                             onValidate={handleOnValidate}
@@ -289,8 +287,7 @@ export default function ApiCreateGraphQL(props) {
                         />
                     )}
                 </Grid>
-                <Grid item md={1} />
-                <Grid item md={9}>
+                <Grid item xs={12}>
                     <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (

@@ -17,6 +17,7 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
@@ -26,34 +27,51 @@ import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import makeStyles from '@mui/styles/makeStyles';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Checkbox from '@mui/material/Checkbox';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'WebSubConfiguration';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    actionSpace: `${PREFIX}-actionSpace`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+const StyledWrappedExpansionPanel = styled(WrappedExpansionPanel)((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(3),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    actionSpace: {
+
+    [`& .${classes.actionSpace}`]: {
         marginLeft: '0px',
         marginTop: '-7px',
         marginBottom: '-7px',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
-    },
+    }
 }));
 
 /**
@@ -66,9 +84,9 @@ const useStyles = makeStyles((theme) => ({
 export default function WebSubConfiguration(props) {
     const { api, configDispatcher } = props;
     const { api: apiFromContext } = useAPI();
-    const classes = useStyles();
+
     return (
-        <WrappedExpansionPanel className={classes.expansionPanel} id='webSubConfiguration'>
+        <StyledWrappedExpansionPanel className={classes.expansionPanel} id='webSubConfiguration'>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                     <FormattedMessage
@@ -134,7 +152,7 @@ export default function WebSubConfiguration(props) {
                     </Grid>
                 </Grid>
             </AccordionDetails>
-        </WrappedExpansionPanel>
+        </StyledWrappedExpansionPanel>
     );
 }
 

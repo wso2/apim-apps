@@ -16,6 +16,7 @@
  * under the License.
  */
 import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import React from 'react';
 import Typography from '@mui/material/Typography';
@@ -24,7 +25,6 @@ import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import withStyles from '@mui/styles/withStyles';
 import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@mui/material/Paper';
 import FormControl from '@mui/material/FormControl';
@@ -38,69 +38,105 @@ import InputAdornment from '@mui/material/InputAdornment';
 import Error from '@mui/material/SvgIcon';
 import Api from 'AppData/api';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'EditScope';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    titleLink: `${PREFIX}-titleLink`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    FormControlLabel: `${PREFIX}-FormControlLabel`,
+    buttonSection: `${PREFIX}-buttonSection`,
+    saveButton: `${PREFIX}-saveButton`,
+    helpText: `${PREFIX}-helpText`,
+    extraPadding: `${PREFIX}-extraPadding`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    titleGrid: `${PREFIX}-titleGrid`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
         display: 'flex',
         flexDirection: 'column',
         padding: 20,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
     },
-    titleLink: {
+
+    [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
         marginRight: theme.spacing(1),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    FormControl: {
+
+    [`& .${classes.FormControl}`]: {
         padding: `0 0 0 ${theme.spacing(1)}`,
         width: '100%',
         marginTop: 0,
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: `0 0 0 ${theme.spacing(1)}`,
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         marginTop: 0,
     },
-    FormControlLabel: {
+
+    [`& .${classes.FormControlLabel}`]: {
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
         fontSize: theme.typography.caption.fontSize,
     },
-    buttonSection: {
+
+    [`& .${classes.buttonSection}`]: {
         paddingTop: theme.spacing(3),
     },
-    saveButton: {
+
+    [`& .${classes.saveButton}`]: {
         marginRight: theme.spacing(2),
     },
-    helpText: {
+
+    [`& .${classes.helpText}`]: {
         color: theme.palette.text.hint,
         marginTop: theme.spacing(1),
     },
-    extraPadding: {
+
+    [`& .${classes.extraPadding}`]: {
         paddingLeft: theme.spacing(2),
     },
-    addNewOther: {
+
+    [`& .${classes.addNewOther}`]: {
         paddingTop: 40,
     },
-    titleGrid: {
+
+    [`& .${classes.titleGrid}`]: {
         ' & .MuiGrid-item': {
             padding: 0,
             margin: 0,
         },
-    },
-});
+    }
+}));
 
 // eslint-disable-next-line valid-jsdoc
 /**
@@ -283,14 +319,14 @@ class EditScope extends React.Component {
      * @returns {JSX} rendered component.
      */
     render() {
-        const { classes, api, isAPIProduct } = this.props;
+        const {  api, isAPIProduct } = this.props;
         const {
             apiScope, roleValidity, validRoles, invalidRoles,
         } = this.state;
         const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
         const url = `/${urlPrefix}/${api.id}/scopes`;
         return (
-            <Grid container spacing={3}>
+            <StyledGrid container spacing={3}>
                 <Grid item sm={12} md={12} />
                 {/*
             Following two grids control the placement of whole create page
@@ -452,7 +488,7 @@ class EditScope extends React.Component {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
+            </StyledGrid>
         );
     }
 }
@@ -480,4 +516,4 @@ EditScope.defaultProps = {
     match: { params: {} },
 };
 
-export default injectIntl(withRouter(withStyles(styles)(EditScope)));
+export default injectIntl(withRouter((EditScope)));

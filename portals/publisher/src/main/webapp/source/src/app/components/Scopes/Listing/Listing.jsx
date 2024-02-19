@@ -17,6 +17,7 @@
  */
 
 import 'react-tagsinput/react-tagsinput.css';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import API from 'AppData/api';
@@ -24,7 +25,6 @@ import { Progress } from 'AppComponents/Shared';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Button from '@mui/material/Button';
-import withStyles from '@mui/styles/withStyles';
 import { Link } from 'react-router-dom';
 import IconButton from '@mui/material/IconButton';
 import FirstPageIcon from '@mui/icons-material/FirstPage';
@@ -44,8 +44,30 @@ import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
 import Delete from '../Delete/Delete';
 import Usage from '../Usage/Usage';
 
-const styles = (theme) => ({
-    contentInside: {
+const PREFIX = 'Listing';
+
+const classes = {
+    contentInside: `${PREFIX}-contentInside`,
+    table: `${PREFIX}-table`,
+    root: `${PREFIX}-root`,
+    buttonProgress: `${PREFIX}-buttonProgress`,
+    heading: `${PREFIX}-heading`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    disableLink: `${PREFIX}-disableLink`,
+    headline: `${PREFIX}-headline`,
+    head: `${PREFIX}-head`,
+    content: `${PREFIX}-content`,
+    buttonLeft: `${PREFIX}-buttonLeft`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.contentInside}`]: {
         padding: theme.spacing(3),
         paddingTop: theme.spacing(2),
         '& > div[class^="MuiPaper-root-"]': {
@@ -53,7 +75,8 @@ const styles = (theme) => ({
             backgroundColor: 'transparent',
         },
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         marginLeft: 'auto',
         marginRight: 'auto',
         '& > td[class^=MUIDataTableBodyCell-cellHide-]': {
@@ -69,19 +92,23 @@ const styles = (theme) => ({
             minWidth: '150px',
         },
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         paddingTop: 0,
         paddingLeft: 0,
     },
-    buttonProgress: {
+
+    [`& .${classes.buttonProgress}`]: {
         position: 'relative',
         margin: theme.spacing(1),
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
@@ -89,30 +116,37 @@ const styles = (theme) => ({
         marginLeft: 'auto',
         marginRight: 'auto',
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    disableLink: {
+
+    [`& .${classes.disableLink}`]: {
         pointerEvents: 'none',
     },
-    headline: {
+
+    [`& .${classes.headline}`]: {
         paddingTop: theme.spacing(1.25),
         paddingLeft: theme.spacing(2.5),
     },
-    head: {
+
+    [`& .${classes.head}`]: {
         paddingBottom: theme.spacing(2),
         fontWeight: 200,
     },
-    content: {
+
+    [`& .${classes.content}`]: {
         paddingBottom: theme.spacing(2),
     },
-    buttonLeft: {
+
+    [`& .${classes.buttonLeft}`]: {
         marginRight: theme.spacing(1),
-    },
-});
+    }
+}));
 
 /**
  * Table pagination for scope table
@@ -162,7 +196,7 @@ function ScopeTablePagination(props) {
     }
 
     return (
-        <div
+        <Root
             style={{ display: 'flex' }}
         >
             <IconButton onClick={handleFirstPageButtonClick} disabled={page === 0} size='large'>
@@ -183,7 +217,7 @@ function ScopeTablePagination(props) {
                 size='large'>
                 <LastPageIcon />
             </IconButton>
-        </div>
+        </Root>
     );
 }
 
@@ -251,9 +285,7 @@ class Listing extends React.Component {
         const { scopes } = this.state;
         const { theme } = this.props;
         const { scopesAddIcon } = theme.custom.landingPage.icons;
-        const {
-            intl, classes,
-        } = this.props;
+        const { intl } = this.props;
         const url = '/scopes/create';
         const editUrl = '/scopes/edit';
         const columns = [
@@ -478,4 +510,7 @@ Listing.defaultProps = {
     match: { params: {} },
 };
 
-export default injectIntl(withAPI(withStyles(styles, { withTheme: true })(Listing)));
+export default injectIntl(withAPI((props) => {
+    const theme = useTheme();
+    return <Listing {...props} theme={theme} />;
+}));

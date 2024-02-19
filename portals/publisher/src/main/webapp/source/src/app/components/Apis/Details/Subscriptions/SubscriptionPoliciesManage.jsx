@@ -17,9 +17,9 @@
  */
 
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import withStyles from '@mui/styles/withStyles';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
 import FormControl from '@mui/material/FormControl';
@@ -31,21 +31,38 @@ import API from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
 import Configurations from 'Config';
 
-const styles = (theme) => ({
-    subscriptionPoliciesPaper: {
+const PREFIX = 'SubscriptionPoliciesManage';
+
+const classes = {
+    subscriptionPoliciesPaper: `${PREFIX}-subscriptionPoliciesPaper`,
+    grid: `${PREFIX}-grid`,
+    gridLabel: `${PREFIX}-gridLabel`,
+    mainTitle: `${PREFIX}-mainTitle`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.subscriptionPoliciesPaper}`]: {
         marginTop: theme.spacing(2),
         padding: theme.spacing(2),
     },
-    grid: {
+
+    [`& .${classes.grid}`]: {
         margin: theme.spacing(1.25),
     },
-    gridLabel: {
+
+    [`& .${classes.gridLabel}`]: {
         marginTop: theme.spacing(1.5),
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
-    },
-});
+    }
+}));
 
 /**
  * Manage subscription policies of the API
@@ -100,7 +117,7 @@ class SubscriptionPoliciesManage extends Component {
     }
 
     render() {
-        const { classes, api, policies } = this.props;
+        const {  api, policies } = this.props;
         const { subscriptionPolicies } = this.state;
 
         /*
@@ -122,7 +139,7 @@ class SubscriptionPoliciesManage extends Component {
         }
 
         return (
-            <>
+            (<Root>
                 <Typography id='itest-api-details-bushiness-plans-head' variant='h4' component='h2'>
                     <FormattedMessage
                         id='Apis.Details.Subscriptions.SubscriptionPoliciesManage.business.plans'
@@ -200,7 +217,7 @@ class SubscriptionPoliciesManage extends Component {
                         </FormGroup>
                     </FormControl>
                 </Paper>
-            </>
+            </Root>)
         );
     }
 }
@@ -213,4 +230,4 @@ SubscriptionPoliciesManage.propTypes = {
     policies: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(SubscriptionPoliciesManage));
+export default injectIntl((SubscriptionPoliciesManage));

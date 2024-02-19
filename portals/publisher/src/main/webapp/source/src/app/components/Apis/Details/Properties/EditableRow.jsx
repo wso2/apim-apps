@@ -19,8 +19,8 @@
 /* eslint-disable react/jsx-no-bind */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import makeStyles from '@mui/styles/makeStyles';
 import TextField from '@mui/material/TextField';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
@@ -35,22 +35,34 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 
-const useStyles = makeStyles(() => ({
-    link: {
+const PREFIX = 'EditableRow';
+
+const classes = {
+    link: `${PREFIX}-link`,
+    checkBoxStyles: `${PREFIX}-checkBoxStyles`,
+    colorPrimary: `${PREFIX}-colorPrimary`,
+    cancelButton: `${PREFIX}-cancelButton`
+};
+
+const StyledTableRow = styled(TableRow)(() => ({
+    [`& .${classes.link}`]: {
         cursor: 'pointer',
     },
-    checkBoxStyles: {
+
+    [`& .${classes.checkBoxStyles}`]: {
         whiteSpace: 'nowrap',
         marginLeft: 0,
         paddingLeft: 0,
     },
-    colorPrimary: {
+
+    [`& .${classes.colorPrimary}`]: {
         marginLeft: 0,
         paddingLeft: 0,
     },
-    cancelButton: {
+
+    [`& .${classes.cancelButton}`]: {
         marginLeft: 4,
-    },
+    }
 }));
 
 /**
@@ -109,10 +121,10 @@ function EditableRow(props) {
     const handleChangeVisibleInStore = (event) => {
         setIsVisibleInStore(event.target.checked);
     };
-    const classes = useStyles();
+
 
     return (
-        <TableRow>
+        <StyledTableRow>
             {editMode ? (
                 <TableCell>
                     <TextField
@@ -253,7 +265,7 @@ function EditableRow(props) {
                     <DeleteForeverIcon className={classes.buttonIcon} />
                 </IconButton>
             </TableCell>
-        </TableRow>
+        </StyledTableRow>
     );
 }
 EditableRow.propTypes = {

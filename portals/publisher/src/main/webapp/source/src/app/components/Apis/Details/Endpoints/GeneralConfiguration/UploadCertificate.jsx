@@ -17,7 +17,7 @@
  */
 
 import React, { useState } from 'react';
-import makeStyles from '@mui/styles/makeStyles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import {
     Button,
@@ -39,6 +39,69 @@ import APIValidation from 'AppData/APIValidation';
 import SelectEndpoint from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/SelectEndpoint';
 import SelectPolicies from '../../../Create/Components/SelectPolicies';
 
+const PREFIX = 'UploadCertificate';
+
+const classes = {
+    fileinput: `${PREFIX}-fileinput`,
+    dropZoneWrapper: `${PREFIX}-dropZoneWrapper`,
+    uploadedFile: `${PREFIX}-uploadedFile`,
+    certificatesHeader: `${PREFIX}-certificatesHeader`,
+    addCertificateBtn: `${PREFIX}-addCertificateBtn`,
+    certificateList: `${PREFIX}-certificateList`,
+    certDetailsHeader: `${PREFIX}-certDetailsHeader`,
+    uploadCertDialogHeader: `${PREFIX}-uploadCertDialogHeader`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.fileinput}`]: {
+        display: 'none',
+    },
+
+    [`& .${classes.dropZoneWrapper}`]: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        '& span.material-icons': {
+            color: theme.palette.primary.main,
+        },
+    },
+
+    [`& .${classes.uploadedFile}`]: {
+        fontSize: 11,
+    },
+
+    [`& .${classes.certificatesHeader}`]: {
+        fontWeight: 600,
+        marginTop: 20,
+    },
+
+    [`& .${classes.addCertificateBtn}`]: {
+        borderColor: '#c4c4c4',
+        borderRadius: '8px',
+        borderStyle: 'dashed',
+        borderWidth: 'thin',
+    },
+
+    [`& .${classes.certificateList}`]: {
+        maxHeight: '250px',
+        overflow: 'scroll',
+    },
+
+    [`& .${classes.certDetailsHeader}`]: {
+        fontWeight: '600',
+    },
+
+    [`& .${classes.uploadCertDialogHeader}`]: {
+        fontWeight: '600',
+    }
+}));
+
 const dropzoneStyles = {
     border: '1px dashed #c4c4c4',
     borderRadius: '5px',
@@ -50,45 +113,6 @@ const dropzoneStyles = {
     width: '100%',
     margin: '10px 0',
 };
-
-const useStyles = makeStyles((theme) => ({
-    fileinput: {
-        display: 'none',
-    },
-    dropZoneWrapper: {
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        '& span.material-icons': {
-            color: theme.palette.primary.main,
-        },
-    },
-    uploadedFile: {
-        fontSize: 11,
-    },
-    certificatesHeader: {
-        fontWeight: 600,
-        marginTop: 20,
-    },
-    addCertificateBtn: {
-        borderColor: '#c4c4c4',
-        borderRadius: '8px',
-        borderStyle: 'dashed',
-        borderWidth: 'thin',
-    },
-    certificateList: {
-        maxHeight: '250px',
-        overflow: 'scroll',
-    },
-    certDetailsHeader: {
-        fontWeight: '600',
-    },
-    uploadCertDialogHeader: {
-        fontWeight: '600',
-    },
-}));
 
 /**
  * This component is used to upload the certificates
@@ -113,7 +137,7 @@ export default function UploadCertificate(props) {
     const [isEndpointEmpty, setIsEndpointEmpty] = useState(false);
     const [isPoliciesEmpty, setPoliciesEmpty] = useState(false);
     const [aliasValidity, setAliasValidity] = useState();
-    const classes = useStyles();
+
     const [isRejected, setIsRejected] = useState(false);
 
     const closeCertificateUpload = () => {
@@ -224,7 +248,7 @@ export default function UploadCertificate(props) {
 
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
     return (
-        <Dialog open={uploadCertificateOpen}>
+        <StyledDialog open={uploadCertificateOpen}>
             <DialogTitle>
                 <Typography className={classes.uploadCertDialogHeader}>
                     <FormattedMessage
@@ -383,7 +407,7 @@ export default function UploadCertificate(props) {
                     {isSaving && <CircularProgress size={24} />}
                 </Button>
             </DialogActions>
-        </Dialog>
+        </StyledDialog>
     );
 }
 
