@@ -409,7 +409,11 @@ export default function ListKeyManagers() {
         return (
             <>
                 <ButtonGroup variant='contained' color='primary' ref={anchorRef} aria-label='split button'>
-                    <Button size='small' onClick={() => onAddButtonClick(selectedIndex)}>
+                    <Button
+                        size='small'
+                        onClick={() => onAddButtonClick(selectedIndex)}
+                        data-testid='add-key-manager-button'
+                    >
                         {getAddKeyManagerButtonLabel(selectedIndex === 1 ? 'global' : 'local')}
                     </Button>
                     <Button
@@ -419,7 +423,6 @@ export default function ListKeyManagers() {
                         aria-expanded={open ? 'true' : undefined}
                         aria-label='select key store type'
                         aria-haspopup='menu'
-                        data-testid='add-key-manager-button'
                         onClick={() => {
                             setOpen((prevOpen) => !prevOpen);
                         }}
