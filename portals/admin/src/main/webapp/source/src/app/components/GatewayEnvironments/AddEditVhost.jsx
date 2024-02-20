@@ -42,7 +42,6 @@ const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.d
 function AddEditVhost(props) {
     const intl = useIntl();
     const { onVhostChange, initialVhosts, gatewayType } = props;
-    const classes = useStyles();
 
     const [userVhosts, setUserVhosts] = useState(initialVhosts);
     const [id, setId] = useState(0);

@@ -20,14 +20,13 @@ import React, { useEffect, useState } from 'react';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import Delete from 'AppComponents/KeyManagers/DeleteKeyManager';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import {
-    Chip, ButtonGroup, ClickAwayListener, MenuItem, MenuList, Popper, Paper,
+    Chip, ButtonGroup, ClickAwayListener, MenuItem, MenuList, Popper, Paper, styled,
 } from '@mui/material';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
@@ -39,21 +38,17 @@ import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import AppBar from '@mui/material/AppBar';
-import { makeStyles } from '@mui/material/styles';
 import MUIDataTable from 'mui-datatables';
 import EditIcon from '@mui/icons-material/Edit';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
-import ArrowDropDownIcon from '@mui/material/ArrowDropDown';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     searchBar: {
         borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    },
-    searchInput: {
-        fontSize: theme.typography.fontSize,
     },
     block: {
         display: 'block',
@@ -70,7 +65,9 @@ const useStyles = makeStyles((theme) => ({
             'white-space': 'normal',
         },
     },
-}));
+};
+
+const StyledDiv = styled('div')({});
 
 const addButtonLabels = ['local', 'global'];
 
@@ -124,7 +121,6 @@ export default function ListKeyManagers() {
     // eslint-disable-next-line no-unused-vars
     const [saving, setSaving] = useState(false);
     const intl = useIntl();
-    const classes = useStyles();
     const [data, setData] = useState(null);
     const [globalKMs, setGlobalKMs] = useState(null);
     const [searchText, setSearchText] = useState('');
@@ -545,7 +541,7 @@ export default function ListKeyManagers() {
                 {...pageProps}
                 pageStyle='small'
             >
-                <Card className={classes.root}>
+                <Card sx={styles.root}>
                     <CardContent>
                         {emptyBoxProps.title}
                         {emptyBoxProps.content}
@@ -578,19 +574,25 @@ export default function ListKeyManagers() {
         <>
             <ContentBase {... pageProps}>
                 <div>
-                    <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+                    <AppBar sx={styles.searchBar} position='static' color='default' elevation={0}>
                         <Toolbar>
                             <Grid container spacing={2} alignItems='center'>
                                 <Grid item>
-                                    <SearchIcon className={classes.block} color='inherit' />
+                                    <SearchIcon sx={styles.block} color='inherit' />
                                 </Grid>
                                 <Grid item xs>
                                     <TextField
+                                        variant='standard'
                                         fullWidth
                                         placeholder=''
+                                        sx={(theme) => ({
+                                            '& .search-input': {
+                                                fontSize: theme.typography.fontSize,
+                                            },
+                                        })}
                                         InputProps={{
                                             disableUnderline: true,
-                                            className: classes.searchInput,
+                                            className: 'search-input',
                                         }}
                                         onChange={filterData}
                                         value={searchText}
@@ -606,14 +608,14 @@ export default function ListKeyManagers() {
                                     )}
                                     >
                                         <IconButton onClick={fetchData}>
-                                            <RefreshIcon className={classes.block} color='inherit' />
+                                            <RefreshIcon sx={styles.block} color='inherit' />
                                         </IconButton>
                                     </Tooltip>
                                 </Grid>
                             </Grid>
                         </Toolbar>
                     </AppBar>
-                    <div className={classes.tableCellWrapper}>
+                    <StyledDiv sx={styles.tableCellWrapper}>
                         {data && data.length > 0 && (
                             <MUIDataTable
                                 title={null}
@@ -622,16 +624,16 @@ export default function ListKeyManagers() {
                                 options={options}
                             />
                         )}
-                    </div>
+                    </StyledDiv>
                     {data && data.length === 0 && (
-                        <div className={classes.contentWrapper}>
+                        <StyledDiv sx={styles.contentWrapper}>
                             <Typography color='textSecondary' align='center'>
                                 <FormattedMessage
                                     id='AdminPages.Addons.ListBase.nodata.message'
                                     defaultMessage='No items yet'
                                 />
                             </Typography>
-                        </div>
+                        </StyledDiv>
                     )}
                 </div>
             </ContentBase>
