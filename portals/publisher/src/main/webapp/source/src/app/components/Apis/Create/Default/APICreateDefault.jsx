@@ -59,13 +59,26 @@ function APICreateDefault(props) {
         isWebSocket, isAPIProduct, history, intl, multiGateway
     } = props;
     const { data: settings, isLoading, error: settingsError } = usePublisherSettings();
-
+    const [isAvailbaleGateway, setIsAvailableGateway] = useState(false);
     const [pageError, setPageError] = useState(null);
     useEffect(() => {
         if (settingsError) {
             setPageError(settingsError.message);
         }
     }, [settingsError]);
+
+    useEffect(() => {
+        if (settings != null) {
+            if (settings.gatewayTypes && settings.gatewayTypes.length === 1) {
+                for (const env of settings.environment) {
+                    if (env.gatewayType === settings.gatewayTypes[0]) {
+                        setIsAvailableGateway(true);
+                        break;
+                    }
+                }
+            }
+        }
+    }, [settings]);
     const [isCreating, setIsCreating] = useState();
     const [isPublishing, setIsPublishing] = useState(false);
 
@@ -106,6 +119,23 @@ function APICreateDefault(props) {
     function handleOnChange(event) {
         const { name: action, value } = event.target;
         inputsDispatcher({ action, value });
+        const settingsEnvList = settings && settings.environment;
+        if (settings && settings.gatewayTypes.length === 2 && (value === 'wso2/synapse' || value === 'wso2/apk')) {
+            for (const env of settingsEnvList) {
+                let tmpEnv = '';
+                if (env.gatewayType === 'APK') {
+                    tmpEnv = 'wso2/apk';
+                } else if (env.gatewayType === 'Regular') {
+                    tmpEnv = 'wso2/synapse';
+                }
+                if (tmpEnv === value) {
+                    setIsAvailableGateway(true);
+                    break;
+                } else {
+                    setIsAvailableGateway(false);
+                }
+            }
+        }
     }
 
     /**
@@ -131,7 +161,7 @@ function APICreateDefault(props) {
 
     useEffect(() => {
         getDefaultCustomProperties();
-    }, [settings]);
+    }, [settings]);  
 
     /**
      *
@@ -212,7 +242,7 @@ function APICreateDefault(props) {
             promisedCreatedAPI = newAPI
                 .save();
             Alert.loading(promisedCreatedAPI, {
-                loading: 'Creating API...' + apiData.gatewayType,
+                loading: 'Creating API...',
                 success: 'API created successfully',
                 error: (error) => {
                     console.error(error);
@@ -273,20 +303,39 @@ function APICreateDefault(props) {
                     );
                     return env && env.vhosts[0].host;
                 };
-                if (envList && envList.length > 0) {
-                    if (envList.includes('Default') && getFirstVhost('Default')) {
-                        body1.push({
-                            name: 'Default',
-                            displayOnDevportal: true,
-                            vhost: getFirstVhost('Default'),
-                        });
-                    } else if (getFirstVhost(envList[0])) {
-                        body1.push({
-                            name: envList[0],
-                            displayOnDevportal: true,
-                            vhost: getFirstVhost(envList[0]),
-                        });
+                if (settings.gatewayTypes && settings.gatewayTypes.length === 1) {
+                    if (envList && envList.length > 0) {
+                        if (envList.includes('Default') && getFirstVhost('Default')) {
+                            body1.push({
+                                name: 'Default',
+                                displayOnDevportal: true,
+                                vhost: getFirstVhost('Default'),
+                            });
+                        } else if (getFirstVhost(envList[0])) {
+                            body1.push({
+                                name: envList[0],
+                                displayOnDevportal: true,
+                                vhost: getFirstVhost(envList[0]),
+                            });
+                        }
                     }
+                } else {
+                    const envList1 = settings.environment;
+                    envList1.forEach((env) => {
+                        let tmpEnv = '';
+                        if (env.gatewayType === 'APK') {
+                            tmpEnv = 'wso2/apk';
+                        } else if (env.gatewayType === 'Regular') {
+                            tmpEnv = 'wso2/synapse';
+                        }
+                        if (tmpEnv === apiInputs.gatewayType && getFirstVhost(env.name)) {
+                            body1.push({
+                                name: env.name,
+                                displayOnDevportal: true,
+                                vhost: getFirstVhost(env.name),
+                            });
+                        }
+                    });
                 }
                 setIsDeploying(true);
                 const promisedDeployment = restApi.deployRevision(api.id, revisionId, body1);
@@ -482,7 +531,7 @@ function APICreateDefault(props) {
                                     id='itest-id-apicreatedefault-createnpublish'
                                     variant='contained'
                                     color='primary'
-                                    disabled={isDeploying || isRevisioning || !isPublishable
+                                    disabled={!isAvailbaleGateway || isDeploying || isRevisioning || !isPublishable
                                         || isAPICreateDisabled || !apiInputs.isFormValid}
                                     onClick={createAndPublish}
                                 >
