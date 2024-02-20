@@ -16,13 +16,10 @@
  * under the License.
  */
 
-import {
-    alpha,
-    createStyles,
-    makeStyles,
-} from '@material-ui/core/styles';
+import { alpha } from '@mui/material/styles';
+import makeStyles from '@mui/styles/makeStyles';
 
-export const useStyles = makeStyles((theme) => createStyles({
+const useStyles = makeStyles((theme) => ({
     tryWithAiMain: {
         height: '100%',
         display: 'flex',
@@ -32,7 +29,7 @@ export const useStyles = makeStyles((theme) => createStyles({
     tryAiBannerCont: {
         display: 'flex',
         gridGap: theme.spacing(1.5),
-        maxWidth: theme.spacing(85),
+        maxWidth: theme.spacing(78),
     },
     tryAiBannerImgWrap: {
         flex: `0 0 ${theme.spacing(15)}px`,
@@ -62,12 +59,12 @@ export const useStyles = makeStyles((theme) => createStyles({
             borderRadius: '50%',
             top: 0,
             right: 0,
-            boxShadow: `${theme.spacing(2.5)}px ${theme.spacing(-3.75)}px 
-                      0 0 ${theme.palette.grey[100]}`,
+            boxShadow: `${theme.spacing(2.5)}px ${theme.spacing(-3.75)}px
+                      0 0 ${theme.palette.common.white}`,
         },
     },
     tryAiBannerContent: {
-        background: theme.palette.grey[100],
+        background: theme.palette.common.white,
         padding: theme.spacing(2),
         borderRadius: theme.spacing(0, 2, 2, 2),
         position: 'relative',
@@ -83,7 +80,7 @@ export const useStyles = makeStyles((theme) => createStyles({
         right: 0,
         marginLeft: theme.spacing(-1),
         marginRight: theme.spacing(-1),
-        background: `linear-gradient(0deg, 
+        background: `linear-gradient(0deg,
             ${alpha(theme.palette.secondary.light, 1)} 80%,
            ${alpha(theme.palette.secondary.light, 0)} 100%)`,
     },

@@ -17,95 +17,96 @@
  */
 
 import React, {
-    useContext, useEffect, useMemo, useRef, useState,
+    useContext, useEffect, useState,
 } from 'react';
 // useContext, useState, useRef, useMemo, useEffect,
-import { Box } from '@material-ui/core';
+// import { Box } from '@material-ui/core';
+import Box from '@mui/material/Box';
 // import { useIntl } from 'react-intl';
 // import API from 'AppData/api';
 // import { AxiosError } from 'axios';
-import cloneDeep from 'lodash.clonedeep';
+// import cloneDeep from 'lodash.clonedeep';
 import API from 'AppData/api';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
-import { useStyles } from './ApiChat.styles';
+import useStyles from './ApiChat.styles';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
-import SamplePrepareResponse from './data/mockData.json';
+// import SamplePrepareResponse from './data/mockData.json';
 // import ApiChatApi from './data/ApiChatApi';
 // import ResultsHeading, {
 //     ExecutionResult,
 // } from './components/ResultsHeading';
 // import { ApiContext } from '../ApiContext';
 
-enum TaskStatus {
-  EXPIRED_TOKEN = 'EXPIRED_TOKEN',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  TERMINATED = 'TERMINATED',
-}
+// enum TaskStatus {
+//   EXPIRED_TOKEN = 'EXPIRED_TOKEN',
+//   IN_PROGRESS = 'IN_PROGRESS',
+//   COMPLETED = 'COMPLETED',
+//   TERMINATED = 'TERMINATED',
+// }
 
-interface Task {
-  taskStatus: TaskStatus;
-  iteration: number;
-}
+// interface Task {
+//   taskStatus: TaskStatus;
+//   iteration: number;
+// }
 
-interface IncomingData {
-  resource: {
-    inputs: {
-      requestBody: any;
-    };
-  };
-  output: {
-    code: number;
-    headers: { [key: string]: any };
-    body: any;
-  };
-}
+// interface IncomingData {
+//   resource: {
+//     inputs: {
+//       requestBody: any;
+//     };
+//   };
+//   output: {
+//     code: number;
+//     headers: { [key: string]: any };
+//     body: any;
+//   };
+// }
 
-interface RearrangedData {
-  inputs: {
-    requestBody: any;
-  };
-  output: {
-    code: number;
-    headers: { [key: string]: any };
-    body: any;
-  };
-}
+// interface RearrangedData {
+//   inputs: {
+//     requestBody: any;
+//   };
+//   output: {
+//     code: number;
+//     headers: { [key: string]: any };
+//     body: any;
+//   };
+// }
 
-/**
- * Rearranges the incoming data to a format that can be used by the UI.
- * @param {initialData} initialData Incoming data from the API.
- * @returns {RearrangedData} Rearranged data.
- */
-function rearrangeData(initialData: IncomingData): RearrangedData {
-    const rearrangedData: RearrangedData = {
-        inputs: {
-            requestBody: initialData.resource.inputs.requestBody,
-        },
-        output: {
-            code: initialData.output.code,
-            headers: initialData.output.headers,
-            body: initialData.output.body,
-        },
-    };
-    return rearrangedData;
-}
+// /**
+//  * Rearranges the incoming data to a format that can be used by the UI.
+//  * @param {JSON} initialData Incoming data from the API.
+//  * @returns {JSON} Rearranged data.
+//  */
+// function rearrangeData(initialData) {
+//     const rearrangedData = {
+//         inputs: {
+//             requestBody: initialData.resource.inputs.requestBody,
+//         },
+//         output: {
+//             code: initialData.output.code,
+//             headers: initialData.output.headers,
+//             body: initialData.output.body,
+//         },
+//     };
+//     return rearrangedData;
+// }
 
-export interface SampleQuery {
-  scenario: string;
-  query: string;
-}
+// export interface SampleQuery {
+//   scenario: string;
+//   query: string;
+// }
 
 /**
  * Renders the API Chat UI.
- * @returns {TSX} API Chat page to render.
+ * @returns {JSX} API Chat page to render.
  */
-const ApiChat: React.FC = () => {
+const ApiChat = () => {
     const classes = useStyles();
-    const intl = useIntl();
+    // const intl = useIntl();
     // const sampleQueriesDrawer = useRightDrawer();
 
     // const [resultView, setResultView] = useState<string | null>('summary');
@@ -130,21 +131,24 @@ const ApiChat: React.FC = () => {
     // const isTokenExpired = useRef(false);
     // const abortControllerRef = useRef(new AbortController());
 
-    const { api } = useContext<any>(ApiContext);
-    const [selectedEndpoint, setSelectedEndpoint] = useState((api.endpointURLs && api.endpointURLs.length > 0)
+    const { api } = useContext(ApiContext);
+    // const [selectedEndpoint, setSelectedEndpoint] = useState((api.endpointURLs && api.endpointURLs.length > 0)
+    //     ? api.endpointURLs[0]
+    //     : null);
+    const selectedEndpoint = (api.endpointURLs && api.endpointURLs.length > 0)
         ? api.endpointURLs[0]
-        : null);
-    const [swagger, setSwagger] = useState<JSON>();
+        : null;
+    const [swagger, setSwagger] = useState();
     // const apiEndpoint = selectedEndpoint ? selectedEndpoint.URLs.https
     //   || selectedEndpoint.URLs.http : '';
 
     useEffect(() => {
         const restApi = new API();
         restApi.getSwaggerByAPIIdAndEnvironment(api.id, selectedEndpoint.environmentName)
-            .then((swaggerResponse: { obj: any; }) => {
+            .then((swaggerResponse) => {
                 setSwagger(swaggerResponse.obj);
             })
-            .catch((error: any) => {
+            .catch((error) => {
                 console.log(error);
                 Alert.error(
                     <FormattedMessage
@@ -1073,6 +1077,7 @@ const ApiChat: React.FC = () => {
             <Box className={classes.tryWithAiMain}>
                 <ApiChatPoweredBy />
                 <ApiChatBanner />
+                <p>{swagger.info}</p>
             </Box>
         </>
     );

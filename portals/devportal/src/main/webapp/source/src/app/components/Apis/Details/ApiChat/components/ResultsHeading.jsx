@@ -18,34 +18,36 @@
 
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { Box, Button, Typography } from '@material-ui/core';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import UnfoldMoreIcon from '@material-ui/icons/UnfoldMore';
 import UnfoldLessIcon from '@material-ui/icons/UnfoldLess';
 import FindInPageIcon from '@material-ui/icons/FindInPage';
 import CodeIcon from '@material-ui/icons/Code';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import { useStyles } from '../ApiChat.styles';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import useStyles from '../ApiChat.styles';
 
-export interface ExecutionResult {
-  id: number;
-  result: string;
-}
+// export interface ExecutionResult {
+//   id: number;
+//   result: string;
+// }
 
-interface ResultsHeadingProps {
-  executionResults: ExecutionResult[];
-  handleExpandAll: () => void;
-  isExpandAllDisabled: boolean;
-  handleCollapseAll: () => void;
-  isCollapseAllDisabled: boolean;
-  resultView: string | null;
-  handleToggleResultView: (
-    event: React.MouseEvent<HTMLElement>,
-    newView: string | null
-  ) => void;
-}
+// interface ResultsHeadingProps {
+//   executionResults: ExecutionResult[];
+//   handleExpandAll: () => void;
+//   isExpandAllDisabled: boolean;
+//   handleCollapseAll: () => void;
+//   isCollapseAllDisabled: boolean;
+//   resultView: string | null;
+//   handleToggleResultView: (
+//     event: React.MouseEvent<HTMLElement>,
+//     newView: string | null
+//   ) => void;
+// }
 
-const ResultsHeading: React.FC<ResultsHeadingProps> = ({
+const ResultsHeading = ({
     executionResults,
     handleExpandAll,
     isExpandAllDisabled,

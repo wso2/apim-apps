@@ -85,10 +85,6 @@ module.exports = {
         'jsx-quotes': ['error', 'prefer-single'],
         'no-else-return': 'off',
         'no-unused-vars': ['error'],
-        'react/jsx-filename-extension': [
-            1,
-            { extensions: ['.js', '.jsx', '.tsx', '.ts'] },
-        ],
         'react/jsx-no-bind': [0, {
             allowFunctions: false,
             allowBind: false,

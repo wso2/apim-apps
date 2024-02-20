@@ -17,45 +17,41 @@
  */
 
 import React from 'react';
-import { useIntl } from 'react-intl';
-import { Box, Button, Typography } from '@material-ui/core';
-import KeyboardBackspaceIcon from '@material-ui/icons/KeyboardBackspace';
-import { useStyles } from '../ApiChat.styles';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import { FormattedMessage } from 'react-intl';
+import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import useStyles from '../ApiChat.styles';
 
-interface ApiChatPoweredByProps {
+// interface ApiChatPoweredByProps {
 //   openSampleQueries: () => void;
 //   showSampleQueries?: boolean;
 //   goBack: () => void;
 //   disableGoBack: boolean;
-}
+// }
 
 /**
  * Renders the API Chat powered by section.
  * @returns {TSX} API Chat powered by section to render.
  */
-const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
-    // openSampleQueries,
-    // showSampleQueries = false,
-    // goBack,
-    // disableGoBack,
-}) => {
+const ApiChatPoweredBy = () => {
     const classes = useStyles();
-    const intl = useIntl();
 
     return (
         <Box className={classes.poweredBy} m={3}>
             <Box display='flex' flexDirection='column' flexGrow={1}>
                 <Typography id='itest-api-details-api-chat-title' variant='h3' component='h3'>
-                    {intl.formatMessage({
-                        id: 'Apis.Details.ApiChat.components.ApiChatPoweredBy.apiChatMainHeader',
-                        defaultMessage: 'API Chat',
-                    })}
+                    <FormattedMessage
+                        id='Apis.Details.ApiChat.components.ApiChatPoweredBy.apiChatMainHeader'
+                        defaultMessage='API Chat'
+                    />
                 </Typography>
                 <Typography variant='body2' color='textSecondary' component='p'>
-                    {intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIPoweredBy.poweredByText',
-                        defaultMessage: 'Powered by Azure OpenAI',
-                    })}
+                    <FormattedMessage
+                        id='Apis.Details.ApiChat.components.ApiChatPoweredBy.poweredByText'
+                        defaultMessage='Powered by Azure OpenAI'
+                    />
                 </Typography>
             </Box>
             <Box>
@@ -70,10 +66,10 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                             // onClick={goBack}
                             // disabled={disableGoBack}
                         >
-                            {intl.formatMessage({
-                                id: 'modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIPoweredBy.goBack',
-                                defaultMessage: 'Go Back',
-                            })}
+                            <FormattedMessage
+                                id='Apis.Details.ApiChat.components.ApiChatPoweredBy.goBack'
+                                defaultMessage='Go Back'
+                            />
                         </Button>
                     </Box>
                     <Box>
@@ -83,10 +79,10 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                             // size='tiny'
                             // onClick={openSampleQueries}
                         >
-                            {intl.formatMessage({
-                                id: 'modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIPoweredBy.sampleQueries',
-                                defaultMessage: 'Sample Queries',
-                            })}
+                            <FormattedMessage
+                                id='Apis.Details.ApiChat.components.ApiChatPoweredBy.sampleQueries'
+                                defaultMessage='Sample Queries'
+                            />
                         </Button>
                     </Box>
                 </Box>

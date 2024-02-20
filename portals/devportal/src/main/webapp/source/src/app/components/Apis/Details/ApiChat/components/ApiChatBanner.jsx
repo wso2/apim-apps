@@ -18,21 +18,21 @@
 
 import React from 'react';
 import { useIntl } from 'react-intl';
-import { Box, Typography } from '@material-ui/core';
-// @ts-ignore
-import { app } from 'Settings';
-import { useStyles } from '../ApiChat.styles';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+// import { app } from 'Settings';
+import useStyles from '../ApiChat.styles';
 
-const ApiChatBanner: React.FC = () => {
+const ApiChatBanner = () => {
     const classes = useStyles();
     const intl = useIntl();
     return (
         <Box className={classes.tryAiBannerCont}>
             <Box className={classes.tryAiBannerImgWrap}>
-                <img
+                {/* <img
                     alt='API Chat'
                     src={`${app.context}/site/public/images/ai/ApiChat.svg`}
-                />
+                /> */}
             </Box>
             <Box className={classes.tryAiBannerContentWrap}>
                 <Box className={classes.tryAiBannerContent}>
