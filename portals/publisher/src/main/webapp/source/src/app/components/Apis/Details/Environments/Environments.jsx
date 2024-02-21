@@ -2013,7 +2013,7 @@ export default function Environments() {
                                         <Grid item xs={4}>
                                             <Card
                                                 style={{
-                                                    opacity: allEnvRevision.some(o1 => {
+                                                    opacity: allEnvRevision && allEnvRevision.some(o1 => {
                                                         return o1.deploymentInfo.some(o2 =>
                                                             o2.name === row.name &&
                                                             o2.status === 'CREATED');
@@ -2029,7 +2029,7 @@ export default function Environments() {
                                                     <CardHeader
                                                         action={
                                                             <>
-                                                                {allEnvRevision.some(o1 => {
+                                                                {allEnvRevision && allEnvRevision.some(o1 => {
                                                                     return o1.deploymentInfo.some(o2 =>
                                                                         o2.name === row.name &&
                                                                         o2.status === 'CREATED');
@@ -2139,7 +2139,7 @@ export default function Environments() {
                                                                 </Tooltip>
                                                             </Grid>
                                                             <Grid item>
-                                                                {allEnvRevision
+                                                                {allEnvRevision && allEnvRevision
                                                                     .filter(o1 => {
                                                                         if (o1.deploymentInfo.some(
                                                                             o2 => o2.name === row.name &&
@@ -2162,7 +2162,7 @@ export default function Environments() {
                                                                     ))}
                                                             </Grid>
                                                             <Grid item>
-                                                                {allEnvRevision
+                                                                {allEnvRevision && allEnvRevision
                                                                     .filter(o1 => {
                                                                         if (o1.deploymentInfo.some(
                                                                             o2 => o2.name === row.name &&

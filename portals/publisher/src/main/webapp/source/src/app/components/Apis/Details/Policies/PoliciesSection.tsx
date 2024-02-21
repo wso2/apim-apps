@@ -90,15 +90,13 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                 </Box>
             ) : (
                 <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}>
-                    {!isChoreoConnectEnabled && (
-                        <Alert severity='info' className={classes.alert} >
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PoliciesSection.info'
-                                defaultMessage='API level policies will execute before operation level policies'
-                            />
-                            
-                        </Alert>
-                    )}
+                    <Alert severity='info' className={classes.alert} >
+                        <FormattedMessage
+                            id='Apis.Details.Policies.PoliciesSection.info'
+                            defaultMessage='API level policies will execute before operation level policies'
+                        />
+                        
+                    </Alert>
                     {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
                         <Grid key={target} item xs={12}>
                             <OperationsGroup openAPI={openAPISpec} tag={target} >

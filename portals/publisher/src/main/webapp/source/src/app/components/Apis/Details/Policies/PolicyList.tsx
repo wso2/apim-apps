@@ -92,21 +92,23 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                 defaultMessage='Policy List'
                             />
                         </Typography>
-                        <Button
-                            onClick={handleAddPolicy}
-                            disabled={false}
-                            variant='outlined'
-                            color='primary'
-                            data-testid='add-new-api-specific-policy'
-                            size='small'
-                            className={classes.addPolicyBtn}
-                        >
-                            <AddCircle className={classes.buttonIcon} />
-                            <FormattedMessage
-                                id='Apis.Details.Policies.PolicyList.add.new.policy'
-                                defaultMessage='Add New Policy'
-                            />
-                        </Button>
+                        {!isChoreoConnectEnabled && (
+                            <Button
+                                onClick={handleAddPolicy}
+                                disabled={false}
+                                variant='outlined'
+                                color='primary'
+                                data-testid='add-new-api-specific-policy'
+                                size='small'
+                                className={classes.addPolicyBtn}
+                            >
+                                <AddCircle className={classes.buttonIcon} />
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.PolicyList.add.new.policy'
+                                    defaultMessage='Add New Policy'
+                                />
+                            </Button>
+                        )}
                     </Box>
                     <Box>
                         <Tabs

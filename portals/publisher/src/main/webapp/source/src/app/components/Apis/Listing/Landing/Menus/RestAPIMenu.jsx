@@ -22,6 +22,7 @@ import queryString from 'query-string';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import LandingMenu from 'AppComponents/Apis/Listing/Landing/components/LandingMenu';
 import APICreateMenuSection from 'AppComponents/Apis/Listing/components/APICreateMenuSection';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import SampleAPI from 'AppComponents/Apis/Listing/SampleAPI/SampleAPI';
 import Divider from '@material-ui/core/Divider';
 import Box from '@material-ui/core/Box';
@@ -30,6 +31,8 @@ import API from 'AppData/api';
 
 const RestAPIMenu = (props) => {
     const { icon, isCreateMenu } = props;
+    const { data: settings } = usePublisherSettings();
+    const apkGatewayType = settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK');
     const Component = isCreateMenu ? APICreateMenuSection : LandingMenu;
     const dense = isCreateMenu;
     const { alwaysShowDeploySampleButton } = Configurations.apis;
@@ -94,7 +97,8 @@ const RestAPIMenu = (props) => {
                     defaultMessage='Import Open API'
                 />
             </LandingMenuItem>
-            {(!isCreateMenu || (isCreateMenu && alwaysShowDeploySampleButton)) && showSampleDeploy && (
+            {(!isCreateMenu || (isCreateMenu && alwaysShowDeploySampleButton)) && showSampleDeploy &&
+                !apkGatewayType && (
                 <>
                     <Box width={1}>
                         <Divider light variant='middle' />
