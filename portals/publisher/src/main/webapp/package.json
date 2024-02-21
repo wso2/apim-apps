@@ -19,8 +19,7 @@
         "i18n:compile": "formatjs compile site/public/locales/raw.en.json --ast --out-file site/public/locales/en.json",
         "start": "webpack serve --compress --https --port 8081 --mode development",
         "start:mocked": "concurrently npm:mocked 'WSO2_UI_MOCKED=true webpack serve --compress --https --port 8081 --mode production --progress'",
-        "mocked": "multi-mock-oas",
-        "lint-fix": "eslint --fix ."
+        "mocked": "multi-mock-oas"
     },
     "repository": {
         "type": "git",
@@ -112,8 +111,11 @@
         "@babel/register": "^7.12.13",
         "@formatjs/cli": "^3.0.5",
         "@stoplight/prism-http": "^4.1.2",
+        "@testing-library/jest-dom": "^6.4.2",
+        "@testing-library/react": "^14.2.1",
+        "@testing-library/user-event": "^14.5.2",
         "@types/history": "^4.7.9",
-        "@types/jest": "^27.4.0",
+        "@types/jest": "^29.5.12",
         "@types/lodash.clonedeep": "^4.5.6",
         "@types/mui-datatables": "^4.3.0",
         "@types/react": "^17.0.0",
