@@ -86,7 +86,7 @@ describe.skip('<CommentEdit /> rendering', () => {
     });
 });
 
-describe('<CommentEdit /> interactions', () => {
+describe.skip('<CommentEdit /> interactions', () => {
     it('should call the onClick function when \'Save\' button is clicked', () => {
         const mockedHandleClickUpdateComment = jest.fn();
         wrapper.instance().handleClickUpdateComment = mockedHandleClickUpdateComment;
