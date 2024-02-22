@@ -26,15 +26,15 @@ describe("Add deny policies", () => {
     it.only("Add deny policies", () => {
         const ipAddress = '127.0.0.1';
         cy.get('[data-testid="Deny Policies-child-link"]').click();
-        cy.get('.MuiButton-label').contains('Add Policy').click();
+        cy.get('[data-testid="form-dialog-base-trigger-btn"]').contains('Add Policy').click();
         cy.get('input[value="IP"]').click();
         cy.get('input[name="fixedIp"]').type(ipAddress);
-        cy.get('button.MuiButton-containedPrimary > span').contains('Deny').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Deny').click();
         cy.get('[data-testid="MuiDataTableBodyCell-1-0"] div').contains(ipAddress).should('exist');
 
         // delete
         cy.get(`[data-testid="IP-actions"] svg`).click();
-        cy.get('button > span').contains('Delete').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
         cy.get('div[role="status"]').should('have.text','Deny Policy successfully deleted.');
     });
 

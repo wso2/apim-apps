@@ -18,33 +18,14 @@
 
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import SearchIcon from '@material-ui/icons/Search';
-import RefreshIcon from '@material-ui/icons/Refresh';
-
-const useStyles = makeStyles((theme) => ({
-    searchBar: {
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    },
-    searchInput: {
-        fontSize: theme.typography.fontSize,
-    },
-    block: {
-        display: 'block',
-    },
-    contentWrapper: {
-        margin: '40px 16px',
-    },
-    button: {
-        borderColor: 'rgba(255, 255, 255, 0.7)',
-    },
-}));
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import RefreshIcon from '@mui/icons-material/Refresh';
 
 /**
  *
@@ -56,22 +37,28 @@ function ListAddOns(props) {
     const {
         searchActive, filterData, onRefresh, searchPlaceholder, children,
     } = props;
-    const classes = useStyles();
+
     return (
-        <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+        <AppBar
+            sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
+            position='static'
+            color='default'
+            elevation={0}
+        >
             <Toolbar>
-                <Grid container spacing={2} direction='row' justify='flex-end' alignItems='center'>
+                <Grid container spacing={2} direction='row' justifyContent='flex-end' alignItems='center'>
                     <Grid item>
-                        {searchActive && (<SearchIcon className={classes.block} color='inherit' />)}
+                        {searchActive && (<SearchIcon sx={{ display: 'block' }} color='inherit' />)}
                     </Grid>
                     <Grid item xs>
                         {searchActive && (
                             <TextField
+                                variant='standard'
                                 fullWidth
                                 placeholder={searchPlaceholder}
                                 InputProps={{
                                     disableUnderline: true,
-                                    className: classes.searchInput,
+                                    style: { fontSize: '12px' },
                                 }}
                                 onChange={filterData}
                             />
@@ -86,9 +73,9 @@ function ListAddOns(props) {
                             />
                         )}
                         >
-                            <IconButton onClick={onRefresh}>
+                            <IconButton onClick={onRefresh} size='large'>
                                 <RefreshIcon
-                                    className={classes.block}
+                                    sx={{ display: 'block' }}
                                     color='inherit'
                                     aria-label='refresh-button-icon'
                                 />

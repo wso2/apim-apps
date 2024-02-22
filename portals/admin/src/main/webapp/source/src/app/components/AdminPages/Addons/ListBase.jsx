@@ -20,49 +20,24 @@
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import SearchIcon from '@material-ui/icons/Search';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
 import MUIDataTable from 'mui-datatables';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 import { Link as RouterLink } from 'react-router-dom';
-import EditIcon from '@material-ui/icons/Edit';
-import Alert from '@material-ui/lab/Alert';
-
-const useStyles = makeStyles((theme) => ({
-    searchBar: {
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    },
-    searchInput: {
-        fontSize: theme.typography.fontSize,
-    },
-    block: {
-        display: 'block',
-    },
-    contentWrapper: {
-        margin: '40px 16px',
-    },
-    button: {
-        borderColor: 'rgba(255, 255, 255, 0.7)',
-    },
-    tableCellWrapper: {
-        '& td': {
-            'word-break': 'break-all',
-            'white-space': 'normal',
-        },
-    },
-}));
+import EditIcon from '@mui/icons-material/Edit';
+import Alert from '@mui/material/Alert';
 
 /**
  * Render a list
@@ -81,7 +56,6 @@ function ListBase(props) {
         addedActions,
     } = props;
 
-    const classes = useStyles();
     const [searchText, setSearchText] = useState('');
     const [data, setData] = useState(null);
     const [error, setError] = useState(null);
@@ -176,7 +150,7 @@ function ListBase(props) {
                                 return (
                                     <div data-testid={`${itemName}-actions`}>
                                         <RouterLink to={editComponentProps.routeTo + artifactId}>
-                                            <IconButton color='primary' component='span'>
+                                            <IconButton color='primary' component='span' size='large'>
                                                 <EditIcon aria-label={`edit-policies+${artifactId}`} />
                                             </IconButton>
                                         </RouterLink>
@@ -236,7 +210,7 @@ function ListBase(props) {
         download: false,
         viewColumns: false,
         customToolbar: null,
-        responsive: 'stacked',
+        responsive: 'vertical',
         searchText,
         onColumnSortChange,
     };
@@ -249,7 +223,7 @@ function ListBase(props) {
                 {...pageProps}
                 pageStyle='small'
             >
-                <Card className={classes.root}>
+                <Card>
                     <CardContent>
                         {emptyBoxTitle}
                         {emptyBoxContent}
@@ -285,21 +259,32 @@ function ListBase(props) {
         <>
             <ContentBase {...pageProps}>
                 {(searchActive || addButtonProps) && (
-                    <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+                    <AppBar
+                        sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
+                        position='static'
+                        color='default'
+                        elevation={0}
+                    >
                         <Toolbar>
                             <Grid container spacing={2} alignItems='center'>
 
                                 <Grid item>
-                                    {searchActive && (<SearchIcon className={classes.block} color='inherit' />)}
+                                    {searchActive && (<SearchIcon sx={{ display: 'block' }} color='inherit' />)}
                                 </Grid>
                                 <Grid item xs>
                                     {searchActive && (
                                         <TextField
+                                            variant='standard'
                                             fullWidth
                                             placeholder={searchPlaceholder}
+                                            sx={(theme) => ({
+                                                '& .search-input': {
+                                                    fontSize: theme.typography.fontSize,
+                                                },
+                                            })}
                                             InputProps={{
                                                 disableUnderline: true,
-                                                className: classes.searchInput,
+                                                className: 'search-input',
                                             }}
                                             // eslint-disable-next-line react/jsx-no-duplicate-props
                                             inputProps={{
@@ -326,10 +311,10 @@ function ListBase(props) {
                                         />
                                     )}
                                     >
-                                        <IconButton onClick={fetchData}>
+                                        <IconButton onClick={fetchData} size='large'>
                                             <RefreshIcon
                                                 aria-label='refresh-advanced-policies'
-                                                className={classes.block}
+                                                sx={{ display: 'block' }}
                                                 color='inherit'
                                             />
                                         </IconButton>
@@ -339,7 +324,7 @@ function ListBase(props) {
                         </Toolbar>
                     </AppBar>
                 )}
-                <div className={classes.tableCellWrapper}>
+                <div>
                     {data && data.length > 0 && (
                         <MUIDataTable
                             title={null}
@@ -350,7 +335,7 @@ function ListBase(props) {
                     )}
                 </div>
                 {data && data.length === 0 && (
-                    <div className={classes.contentWrapper}>
+                    <div>
                         <Typography color='textSecondary' align='center'>
                             {noDataMessage}
                         </Typography>
@@ -411,6 +396,6 @@ ListBase.propTypes = {
     }),
     noDataMessage: PropTypes.element,
     addButtonOverride: PropTypes.element,
-    addedActions: PropTypes.shape({}),
+    addedActions: PropTypes.shape([]),
 };
 export default ListBase;

@@ -25,12 +25,12 @@ describe("Add scope mapping", () => {
         const roleName = 'creator';
 
         cy.get('[data-testid="Scope Assignments-child-link"]').click();
-        cy.get('.MuiButton-label').contains('Add scope mappings').click();
+        cy.get('[data-testid="add-scope-mapping"]').contains('Add scope mappings').click();
         cy.get('#role-input-field-helper-text').type(roleName);
-        cy.get('button.MuiButton-containedPrimary span').contains('Next').click();  
+        cy.get('[data-testid="add-role-wizard-save-button"]').contains('Next').click();  
         cy.get('#role-select-dropdown').click();
-        cy.get('#role-select-dropdown-popup li').contains('Internal/creator').click();
-        cy.get('button.MuiButton-containedPrimary span').contains('Save').click();
+        cy.get('[id^=role-select-dropdown-option-]').contains('Internal/creator').click();
+        cy.get('[data-testid="add-role-wizard-save-button"]').contains('Save').click();
         cy.get('div').contains(roleName).should('exist');
 
         // delete
@@ -43,16 +43,17 @@ describe("Add scope mapping", () => {
         const roleName = 'customRole';
 
         cy.get('[data-testid="Scope Assignments-child-link"]').click();
-        cy.get('.MuiButton-label').contains('Add scope mappings').click();
+        cy.get('[data-testid="add-scope-mapping"]').contains('Add scope mappings').click();
         cy.get('#role-input-field-helper-text').type(roleName);
-        cy.get('button.MuiButton-containedPrimary span').contains('Next').click();  
+        cy.get('[data-testid="add-role-wizard-save-button"]').contains('Next').click();
         cy.get('#role-select-dropdown').click();
-        cy.get('#role-select-dropdown-popup li').contains('Internal/creator').click();
+        cy.get('[id^=role-select-dropdown-option-]').contains('Internal/creator').click();
         cy.get('#role-select-dropdown').click();
-        cy.get('#role-select-dropdown-popup li').contains('Internal/publisher').click();
+        cy.get('[id^=role-select-dropdown-option-]').contains('Internal/publisher').click();
         cy.get('#role-select-dropdown').click();
-        cy.get('#role-select-dropdown-popup li').contains('Internal/subscriber').click();
-        cy.get('button.MuiButton-containedPrimary span').contains('Save').click();
+        cy.get('[id^=role-select-dropdown-option-]').contains('Internal/subscriber').click();
+
+        cy.get('[data-testid="add-role-wizard-save-button"]').contains('Save').click();
         cy.get('div').contains(roleName).should('exist');
         cy.get('[data-testid="Internal/subscriber,Internal/creator,Internal/publisher"]').should('exist');
 

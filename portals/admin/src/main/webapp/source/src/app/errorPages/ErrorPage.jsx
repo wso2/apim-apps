@@ -17,25 +17,18 @@
  */
 
 import React from 'react';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
-import { makeStyles } from '@material-ui/core/styles';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import ErrorList from './ErrorList';
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        marginTop: theme.spacing(15),
-    },
-}));
 
 const ErrorPage = (props) => {
     const { errorCode } = props;
-    const classes = useStyles();
+
     return (
         <>
-            <Container maxWidth='md' className={classes.root}>
+            <Container maxWidth='md' sx={{ mt: 1.5 }}>
                 <Box padding={4}>
                     <Paper elevation={2}>
                         <Box padding={4}>

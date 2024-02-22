@@ -17,22 +17,13 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@mui/material/Typography';
+import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        display: 'flex',
-        '& > * + *': {
-            marginLeft: theme.spacing(2),
-        },
-        justifyContent: 'center',
-        padding: 20,
-    },
-}));
+const Root = styled('div')(() => ({}));
 
 /**
  * Render progress inside a container centering in the container.
@@ -40,10 +31,18 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX} Loading animation.
  */
 function InlineProgress(props) {
-    const classes = useStyles();
     const { message } = props;
     return (
-        <div className={classes.root}>
+        <Root
+            sx={{
+                display: 'flex',
+                '& > * + *': {
+                    marginLeft: 2,
+                },
+                justifyContent: 'center',
+                padding: 20,
+            }}
+        >
             <CircularProgress />
             <Typography color='textSecondary' align='center'>
                 {message || (
@@ -53,7 +52,7 @@ function InlineProgress(props) {
                     />
                 )}
             </Typography>
-        </div>
+        </Root>
     );
 }
 InlineProgress.defaultProps = {

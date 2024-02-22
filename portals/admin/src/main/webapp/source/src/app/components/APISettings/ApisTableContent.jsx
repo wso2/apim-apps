@@ -17,30 +17,29 @@
 */
 
 import React, { useState } from 'react';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
 import API from 'AppData/api';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Alert from 'AppComponents/Shared/Alert';
-import TextField from '@material-ui/core/TextField';
-import EditIcon from '@material-ui/icons/Edit';
+import TextField from '@mui/material/TextField';
+import EditIcon from '@mui/icons-material/Edit';
 import { FormattedMessage } from 'react-intl';
-import { IconButton } from '@material-ui/core';
-import SaveIcon from '@material-ui/icons/Save';
-import CancelIcon from '@material-ui/icons/Cancel';
+import { IconButton, styled } from '@mui/material';
+import SaveIcon from '@mui/icons-material/Save';
+import CancelIcon from '@mui/icons-material/Cancel';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     fullHeight: {
         height: '100%',
     },
-    tableRow: {
+    tableRow: (theme) => ({
         height: theme.spacing(5),
         '& td': {
             padding: theme.spacing(0.5),
         },
-    },
+    }),
     appOwner: {
         pointerEvents: 'none',
     },
@@ -50,11 +49,11 @@ const useStyles = makeStyles((theme) => ({
         },
     },
     button: {
-        marginLeft: theme.spacing(0.5),
-        marginRight: theme.spacing(0.5),
-        marginTop: theme.spacing(1),
+        marginLeft: 0.5,
+        marginRight: 0.5,
+        marginTop: 1,
     },
-    appTablePaper: {
+    appTablePaper: (theme) => ({
         '& table tr td': {
             paddingLeft: theme.spacing(1),
         },
@@ -64,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
         '& table tr td button.Mui-disabled span.material-icons': {
             color: theme.palette.action.disabled,
         },
-    },
+    }),
     tableCellWrapper: {
         '& td': {
             'word-break': 'break-all',
@@ -86,9 +85,9 @@ const useStyles = makeStyles((theme) => ({
     tableCell: {
         marginLeft: 10,
     },
-}));
+};
 
-const StyledTableCell = withStyles((theme) => ({
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
     head: {
         backgroundColor: theme.palette.common.black,
         color: theme.palette.common.white,
@@ -97,26 +96,26 @@ const StyledTableCell = withStyles((theme) => ({
         fontSize: 14,
     },
     root: {
-        '&:first-child': {
+        '&:first-of-type': {
             paddingLeft: theme.spacing(2),
         },
     },
-}))(TableCell);
+}));
 
-const StyledTableRow = withStyles((theme) => ({
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
     root: {
         '&:nth-of-type(odd)': {
             backgroundColor: theme.palette.background.default,
         },
     },
-}))(TableRow);
+}));
+
+const StyledDiv = styled('div')({});
 
 const ApisTableContent = ({ apis, updateApiList }) => {
     const restApi = new API();
     const [provider, setProvider] = useState('');
     const [editableRows, setEditableRows] = useState(new Set());
-
-    const classes = useStyles();
 
     const handleEditClick = (apiId) => {
         setEditableRows((prevRows) => {
@@ -189,35 +188,35 @@ const ApisTableContent = ({ apis, updateApiList }) => {
     };
 
     return (
-        <TableBody className={classes.fullHeight}>
+        <TableBody sx={styles.fullHeight}>
             {apis && apis.map((api) => (
-                <StyledTableRow className={classes.tableRow} key={api.id}>
+                <StyledTableRow sx={styles.tableRow} key={api.id}>
                     <StyledTableCell align='left'>
                         {api.name}
                     </StyledTableCell>
                     <StyledTableCell align='left'>
-                        <div className={classes.tableCell}>
+                        <StyledDiv sx={styles.tableCell}>
                             {api.version}
-                        </div>
+                        </StyledDiv>
                     </StyledTableCell>
                     <StyledTableCell align='left'>
                         {!editableRows.has(api.id) && (
-                            <div className={classes.tableCell}>
+                            <StyledDiv sx={styles.tableCell}>
                                 { api.provider }
                                 <IconButton color='primary' onClick={() => handleEditClick(api.id)}>
                                     <EditIcon aria-label='edit-api-settings' />
                                 </IconButton>
-                            </div>
+                            </StyledDiv>
                         )}
                         { editableRows.has(api.id) && (
-                            <div className={classes.tableActionBtnContainer}>
+                            <StyledDiv sx={styles.tableActionBtnContainer}>
                                 <TextField
                                     id='standard-basic'
                                     label='Provider Name'
                                     variant='standard'
                                     size='small'
                                     defaultValue={api.provider}
-                                    className={classes.textfield}
+                                    sx={styles.textfield}
                                     onChange={(e) => { setProvider(e.target.value); }}
                                 />
                                 <IconButton color='primary' onClick={() => handleSubmitClick(api.id, provider)}>
@@ -226,7 +225,7 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                                 <IconButton onClick={() => handleCancelClick(api.id)}>
                                     <CancelIcon aria-label='edit-api-settings' />
                                 </IconButton>
-                            </div>
+                            </StyledDiv>
                         )}
                     </StyledTableCell>
                 </StyledTableRow>

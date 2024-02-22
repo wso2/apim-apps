@@ -18,11 +18,22 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { withStyles, useTheme } from '@material-ui/core/styles';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import Typography from '@material-ui/core/Typography';
+import { useTheme, styled } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { Toaster } from 'react-hot-toast';
+
+const StyledDiv = styled('div')({});
+
+const StyledNav = styled('nav')({});
+
+const StyledFooter = styled('footer')({
+    padding: 2,
+    background: '#eaeff1',
+    position: 'relative',
+    bottom: 0,
+});
 
 /**
  * Render copyright
@@ -30,7 +41,7 @@ import { Toaster } from 'react-hot-toast';
  */
 function Copyright() {
     return (
-        <Typography variant='body2' color='textSecondary' align='center'>
+        <Typography variant='body2' color='textSecondary' align='center' sx={{ p: '16px' }}>
             <FormattedMessage
                 id='Base.Footer.Footer.product_details'
                 defaultMessage='WSO2 API-M v4.3.0 | © 2024 WSO2 LLC'
@@ -39,33 +50,6 @@ function Copyright() {
     );
 }
 
-const drawerWidth = 256;
-
-const styles = (theme) => ({
-    root: {
-        display: 'flex',
-        minHeight: '100vh',
-    },
-    drawer: {
-        [theme.breakpoints.up('sm')]: {
-            width: drawerWidth,
-            flexShrink: 0,
-        },
-    },
-    app: {
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-    },
-
-    footer: {
-        padding: theme.spacing(2),
-        background: '#eaeff1',
-        position: 'relative',
-        bottom: 0,
-    },
-});
-
 /**
  * Render base page component.
  * @param {JSON} props component props.
@@ -73,7 +57,7 @@ const styles = (theme) => ({
  */
 function Base(props) {
     const {
-        classes, children, leftMenu, header,
+        children, leftMenu, header,
     } = props;
     const theme = useTheme();
     return (
@@ -117,28 +101,41 @@ function Base(props) {
                     },
                 }}
             />
-            <div className={classes.root}>
+            <StyledDiv sx={{ display: 'flex', minHeight: '100vh' }}>
                 <CssBaseline />
-                <nav className={classes.drawer} aria-label='admin-portal-navbar'>
+                <StyledNav
+                    sx={(thm) => ({
+                        [thm.breakpoints.up('sm')]: {
+                            width: 256,
+                            flexShrink: 0,
+                        },
+                    })}
+                    aria-label='admin-portal-navbar'
+                >
                     {leftMenu}
-                </nav>
-                <div className={classes.app}>
+                </StyledNav>
+                <StyledDiv
+                    sx={{
+                        flex: 1,
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                >
                     {header}
                     {children}
-                    <footer className={classes.footer}>
+                    <StyledFooter>
                         <Copyright />
-                    </footer>
-                </div>
-            </div>
+                    </StyledFooter>
+                </StyledDiv>
+            </StyledDiv>
         </>
     );
 }
 
 Base.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     children: PropTypes.element.isRequired,
     header: PropTypes.element.isRequired,
     leftMenu: PropTypes.element.isRequired,
 };
 
-export default withStyles(styles)(Base);
+export default (Base);

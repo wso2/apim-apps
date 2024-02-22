@@ -17,76 +17,12 @@
  */
 
 import React, { Component } from 'react';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-
-/**
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
-    fullHeight: {
-        height: '100%',
-    },
-    tableRow: {
-        height: theme.spacing(5),
-        '& td': {
-            padding: theme.spacing(0.5),
-        },
-    },
-    appOwner: {
-        pointerEvents: 'none',
-    },
-    appName: {
-        '& a': {
-            color: '#1b9ec7 !important',
-        },
-    },
-    appTablePaper: {
-        '& table tr td': {
-            paddingLeft: theme.spacing(1),
-        },
-        '& table tr td:first-child, & table tr th:first-child': {
-            paddingLeft: theme.spacing(2),
-        },
-        '& table tr td button.Mui-disabled span.material-icons': {
-            color: theme.palette.action.disabled,
-        },
-    },
-    tableCellWrapper: {
-        '& td': {
-            'word-break': 'break-all',
-            'white-space': 'normal',
-        },
-    },
-});
-const StyledTableCell = withStyles((theme) => ({
-    head: {
-        backgroundColor: theme.palette.common.black,
-        color: theme.palette.common.white,
-    },
-    body: {
-        fontSize: 14,
-    },
-    root: {
-        '&:first-child': {
-            paddingLeft: theme.spacing(2),
-        },
-    },
-}))(TableCell);
-
-const StyledTableRow = withStyles((theme) => ({
-    root: {
-        '&:nth-of-type(odd)': {
-            backgroundColor: theme.palette.background.default,
-        },
-    },
-}))(TableRow);
 
 /**
  *
@@ -127,7 +63,7 @@ class AppsTableContent extends Component {
      */
     render() {
         const {
-            apps, classes, editComponentProps, apiCall,
+            apps, editComponentProps, apiCall,
         } = this.props;
         const { notFound } = this.state;
 
@@ -135,22 +71,37 @@ class AppsTableContent extends Component {
             return <ResourceNotFound />;
         }
         return (
-            <TableBody className={classes.fullHeight}>
+            <TableBody
+                sx={{
+                    height: '100%',
+                    '& tr:nth-of-type(odd) td': {
+                        backgroundColor: '#f5f5f5',
+                    },
+                    '& tr:nth-of-type(even) td': {
+                        backgroundColor: '#fff',
+                    },
+                }}
+            >
                 {apps && apps.map((app) => {
                     return (
-                        <StyledTableRow className={classes.tableRow} key={app.applicationId}>
-                            <StyledTableCell align='left'>
+                        <TableRow
+                            sx={{ height: 5, '& td': { padding: 0.5 } }}
+                            key={app.applicationId}
+                        >
+                            <TableCell align='left'>
                                 {app.name}
-                            </StyledTableCell>
-                            <StyledTableCell align='left'>{app.owner}</StyledTableCell>
-                            <StyledTableCell align='left'>
+                            </TableCell>
+                            <TableCell align='left'>
+                                {app.owner}
+                            </TableCell>
+                            <TableCell align='left'>
                                 <EditApplication
                                     dataRow={app}
                                     updateList={apiCall}
                                     {...editComponentProps}
                                 />
-                            </StyledTableCell>
-                        </StyledTableRow>
+                            </TableCell>
+                        </TableRow>
                     );
                 })}
             </TableBody>
@@ -161,4 +112,4 @@ AppsTableContent.propTypes = {
     toggleDeleteConfirmation: PropTypes.func.isRequired,
     apps: PropTypes.instanceOf(Map).isRequired,
 };
-export default withStyles(styles)(AppsTableContent);
+export default (AppsTableContent);

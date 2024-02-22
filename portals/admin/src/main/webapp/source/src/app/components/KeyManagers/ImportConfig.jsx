@@ -17,23 +17,19 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import { useIntl, FormattedMessage } from 'react-intl';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
-import TextField from '@material-ui/core/TextField';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import TextField from '@mui/material/TextField';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        color: theme.palette.error.dark,
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * Render delete dialog box.
@@ -42,7 +38,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function ImportConfig(props) {
     const intl = useIntl();
-    const classes = useStyles();
+
 
     const { settings } = useAppContext();
 
@@ -135,9 +131,10 @@ function ImportConfig(props) {
                         defaultMessage='Key Manager Type'
                         id='Admin.KeyManager.form.type'
                     />
-                    <span className={classes.error}>*</span>
+                    <StyledSpan>*</StyledSpan>
                 </InputLabel>
                 <Select
+                    variant='standard'
                     name='type'
                     value={type}
                     onChange={onChange}
@@ -169,7 +166,7 @@ function ImportConfig(props) {
                             id='KeyManagers.ImportConfig.form.url'
                             defaultMessage='Url'
                         />
-                        <span className={classes.error}>*</span>
+                        <StyledSpan>*</StyledSpan>
                     </span>
                 )}
                 fullWidth

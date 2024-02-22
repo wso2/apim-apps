@@ -19,40 +19,36 @@
 import React, { useEffect, useState } from 'react';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import Delete from 'AppComponents/KeyManagers/DeleteKeyManager';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
-import Switch from '@material-ui/core/Switch';
-import Button from '@material-ui/core/Button';
+import Switch from '@mui/material/Switch';
+import Button from '@mui/material/Button';
 import {
-    Chip, ButtonGroup, ClickAwayListener, MenuItem, MenuList, Popper, Paper,
-} from '@material-ui/core';
+    Chip, ButtonGroup, ClickAwayListener, MenuItem, MenuList, Popper, Paper, styled,
+} from '@mui/material';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import Toolbar from '@material-ui/core/Toolbar';
-import Grid from '@material-ui/core/Grid';
-import SearchIcon from '@material-ui/icons/Search';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import AppBar from '@material-ui/core/AppBar';
-import { makeStyles } from '@material-ui/core/styles';
+import Toolbar from '@mui/material/Toolbar';
+import Grid from '@mui/material/Grid';
+import SearchIcon from '@mui/icons-material/Search';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import AppBar from '@mui/material/AppBar';
 import MUIDataTable from 'mui-datatables';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
-import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     searchBar: {
         borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    },
-    searchInput: {
-        fontSize: theme.typography.fontSize,
     },
     block: {
         display: 'block',
@@ -69,7 +65,9 @@ const useStyles = makeStyles((theme) => ({
             'white-space': 'normal',
         },
     },
-}));
+};
+
+const StyledDiv = styled('div')({});
 
 const addButtonLabels = ['local', 'global'];
 
@@ -123,7 +121,6 @@ export default function ListKeyManagers() {
     // eslint-disable-next-line no-unused-vars
     const [saving, setSaving] = useState(false);
     const intl = useIntl();
-    const classes = useStyles();
     const [data, setData] = useState(null);
     const [globalKMs, setGlobalKMs] = useState(null);
     const [searchText, setSearchText] = useState('');
@@ -412,7 +409,11 @@ export default function ListKeyManagers() {
         return (
             <>
                 <ButtonGroup variant='contained' color='primary' ref={anchorRef} aria-label='split button'>
-                    <Button size='small' onClick={() => onAddButtonClick(selectedIndex)}>
+                    <Button
+                        size='small'
+                        onClick={() => onAddButtonClick(selectedIndex)}
+                        data-testid='add-key-manager-button'
+                    >
                         {getAddKeyManagerButtonLabel(selectedIndex === 1 ? 'global' : 'local')}
                     </Button>
                     <Button
@@ -422,7 +423,6 @@ export default function ListKeyManagers() {
                         aria-expanded={open ? 'true' : undefined}
                         aria-label='select key store type'
                         aria-haspopup='menu'
-                        data-testid='add-km-dropdown'
                         onClick={() => {
                             setOpen((prevOpen) => !prevOpen);
                         }}
@@ -544,7 +544,7 @@ export default function ListKeyManagers() {
                 {...pageProps}
                 pageStyle='small'
             >
-                <Card className={classes.root}>
+                <Card sx={styles.root}>
                     <CardContent>
                         {emptyBoxProps.title}
                         {emptyBoxProps.content}
@@ -577,19 +577,25 @@ export default function ListKeyManagers() {
         <>
             <ContentBase {... pageProps}>
                 <div>
-                    <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+                    <AppBar sx={styles.searchBar} position='static' color='default' elevation={0}>
                         <Toolbar>
                             <Grid container spacing={2} alignItems='center'>
                                 <Grid item>
-                                    <SearchIcon className={classes.block} color='inherit' />
+                                    <SearchIcon sx={styles.block} color='inherit' />
                                 </Grid>
                                 <Grid item xs>
                                     <TextField
+                                        variant='standard'
                                         fullWidth
                                         placeholder=''
+                                        sx={(theme) => ({
+                                            '& .search-input': {
+                                                fontSize: theme.typography.fontSize,
+                                            },
+                                        })}
                                         InputProps={{
                                             disableUnderline: true,
-                                            className: classes.searchInput,
+                                            className: 'search-input',
                                         }}
                                         onChange={filterData}
                                         value={searchText}
@@ -605,14 +611,14 @@ export default function ListKeyManagers() {
                                     )}
                                     >
                                         <IconButton onClick={fetchData}>
-                                            <RefreshIcon className={classes.block} color='inherit' />
+                                            <RefreshIcon sx={styles.block} color='inherit' />
                                         </IconButton>
                                     </Tooltip>
                                 </Grid>
                             </Grid>
                         </Toolbar>
                     </AppBar>
-                    <div className={classes.tableCellWrapper}>
+                    <StyledDiv sx={styles.tableCellWrapper}>
                         {data && data.length > 0 && (
                             <MUIDataTable
                                 title={null}
@@ -621,16 +627,16 @@ export default function ListKeyManagers() {
                                 options={options}
                             />
                         )}
-                    </div>
+                    </StyledDiv>
                     {data && data.length === 0 && (
-                        <div className={classes.contentWrapper}>
+                        <StyledDiv sx={styles.contentWrapper}>
                             <Typography color='textSecondary' align='center'>
                                 <FormattedMessage
                                     id='AdminPages.Addons.ListBase.nodata.message'
                                     defaultMessage='No items yet'
                                 />
                             </Typography>
-                        </div>
+                        </StyledDiv>
                     )}
                 </div>
             </ContentBase>

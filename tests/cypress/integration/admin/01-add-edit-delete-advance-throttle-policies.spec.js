@@ -31,7 +31,7 @@ describe("Add Edit Delete advance throttle policies", () => {
         cy.get('textarea[name="description"]').type('allow 30 requests per minute');
         cy.get('input[name="requestCount"]').type('30');
         cy.get('input[name="unitTime"]').type('1');
-        cy.get('button.MuiButton-containedPrimary > span').contains('Add').click();
+        cy.get('[data-testid="throttling-advanced-save-button"]').contains('Add').click();
         cy.get('table tr td a').contains(policyName).should('exist');
 
         // editing
@@ -39,13 +39,13 @@ describe("Add Edit Delete advance throttle policies", () => {
         cy.get('table tr td a').contains(policyName).click();
         cy.wait('@getPolicy', { timeout: 3000 }).then(() => {
             cy.get('input[name="requestCount"]').clear().type('31');
-            cy.get('button.MuiButton-containedPrimary > span').contains('Update').click();
+            cy.get('[data-testid="throttling-advanced-save-button"]').contains('Update').click();
             cy.get('table tr td').contains('31').should('exist');
         });
 
         // delete
         cy.get(`[data-testid="${policyName}-actions"] > span svg`).click();
-        cy.get('button > span').contains('Delete').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
         cy.get('table tr td a').contains(policyName).should('not.exist');
     });
 

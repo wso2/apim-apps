@@ -17,14 +17,14 @@
  */
 import React, { useState } from 'react';
 import { useIntl } from 'react-intl';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import Alert from 'AppComponents/Shared/Alert';
 
@@ -90,8 +90,11 @@ export default function DeletePermission(props) {
                 fullWidth
                 maxWidth='xs'
                 open={open}
-                disableBackdropClick={isDeleting}
-                onClose={handleClose}
+                onClose={(event, reason) => {
+                    if (reason !== 'backdropClick' || !isDeleting) {
+                        handleClose(event, reason);
+                    }
+                }}
                 aria-labelledby='delete-confirmation'
             >
                 <DialogTitle id='delete-confirmation'>
@@ -102,7 +105,7 @@ export default function DeletePermission(props) {
                     ?
                 </DialogTitle>
                 <DialogContent dividers>
-                    <Box pl={5} mt={2} mb={2}>
+                    <Box mt={2} mb={2} ml={1}>
                         Are you sure you want to delete scope assignments for
                         {' '}
                         <b>{role}</b>
@@ -111,7 +114,7 @@ export default function DeletePermission(props) {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose}>Cancel</Button>
+                    <Button onClick={handleClose} variant='outlined'>Cancel</Button>
                     <Button
                         size='small'
                         variant='contained'

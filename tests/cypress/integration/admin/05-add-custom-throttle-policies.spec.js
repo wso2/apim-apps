@@ -32,11 +32,11 @@ describe("Add custom throttle policies", () => {
         const policyName = '5reqPerMin';
         const secondDesc = 'For an Admin users allow 5 requests per minute';
         cy.get('[data-testid="Custom Policies-child-link"]', {timeout: Cypress.config().largeTimeout}).click();
-        cy.get('.MuiButton-label').contains('Define Policy').click();
+        cy.get('[data-testid="throttling-custom-add-button"]').contains('Define Policy').click();
         cy.get('input[name="policyName"]').type(policyName);
         cy.get('input[name="description"]').type('Allow 5 requests per minute for an Admin user');
         cy.get('input[name="keyTemplate"]').type('$userId');
-        cy.get('button.MuiButton-containedPrimary > span').contains('Add').click();
+        cy.get('[data-testid="throttling-custom-save-button"]').contains('Add').click();
         cy.get(`[data-testid="${policyName}-actions"]`).should('exist');
 
         // editing
@@ -45,14 +45,14 @@ describe("Add custom throttle policies", () => {
         cy.get('input[name="description"]').clear().type(secondDesc);
 
         cy.intercept('GET', '**/throttling/policies/custom').as('getCustomPolicies');
-        cy.get('button.MuiButton-containedPrimary > span').contains('Edit').click();
+        cy.get('[data-testid="throttling-custom-save-button"]').contains('Edit').click();
         cy.wait('@getCustomPolicies', {timeout: Cypress.config().largeTimeout}).then(() => {
             cy.get('td').contains(secondDesc).should('exist');
         });
 
         // delete
         cy.get(`[data-testid="${policyName}-actions"] > span:nth-child(2)`).click();
-        cy.get('button > span').contains('Delete').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
         cy.get('div[role="status"]').should('have.text','Custom Policy successfully deleted.');
     });
 

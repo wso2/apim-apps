@@ -19,62 +19,41 @@
 
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
-import SearchIcon from '@material-ui/icons/Search';
-import RefreshIcon from '@material-ui/icons/Refresh';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
 import MUIDataTable from 'mui-datatables';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 import Alert from 'AppComponents/Shared/Alert';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
-import DescriptionIcon from '@material-ui/icons/Description';
-import Link from '@material-ui/core/Link';
+import DescriptionIcon from '@mui/icons-material/Description';
+import Link from '@mui/material/Link';
 import Configurations from 'Config';
 import API from 'AppData/api';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import * as dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import CheckIcon from '@material-ui/icons/Check';
-import ClearIcon from '@material-ui/icons/Clear';
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CheckIcon from '@mui/icons-material/Check';
+import ClearIcon from '@mui/icons-material/Clear';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import WarningBase from 'AppComponents/AdminPages/Addons/WarningBase';
-import { Alert as MUIAlert } from '@material-ui/lab';
-
-const useStyles = makeStyles((theme) => ({
-    searchInput: {
-        fontSize: theme.typography.fontSize,
-    },
-    block: {
-        display: 'block',
-    },
-    contentWrapper: {
-        margin: theme.spacing(2),
-    },
-    approveButton: {
-        textDecoration: 'none',
-        backgroundColor: theme.palette.success.light,
-    },
-    rejectButton: {
-        textDecoration: 'none',
-        backgroundColor: theme.palette.error.light,
-    },
-}));
+import { Alert as MUIAlert } from '@mui/material';
 
 /**
  * Render a list
@@ -85,7 +64,7 @@ function ListLabels() {
     const intl = useIntl();
     const [data, setData] = useState(null);
     const restApi = new API();
-    const classes = useStyles();
+
     const [searchText, setSearchText] = useState('');
     const [isUpdating, setIsUpdating] = useState(null);
     const [buttonValue, setButtonValue] = useState();
@@ -197,6 +176,7 @@ function ListLabels() {
                             href={Configurations.app.docUrl
                         + 'learn/consume-api/manage-application/advanced-topics/'
                         + 'adding-an-application-creation-workflow/#adding-an-application-creation-workflow'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage
@@ -296,7 +276,7 @@ function ListLabels() {
                         <div>
                             <Box component='span' m={1}>
                                 <Button
-                                    className={classes.approveButton}
+                                    color='success'
                                     variant='contained'
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'APPROVED')}
@@ -311,7 +291,7 @@ function ListLabels() {
                                 </Button>
                                 &nbsp;&nbsp;
                                 <Button
-                                    className={classes.rejectButton}
+                                    color='error'
                                     variant='contained'
                                     size='small'
                                     onClick={() => updateStatus(referenceId, 'REJECTED')}
@@ -364,7 +344,7 @@ function ListLabels() {
         download: false,
         viewColumns: false,
         customToolbar: null,
-        responsive: 'stacked',
+        responsive: 'vertical',
         searchText,
     };
     if (data && data.length === 0) {
@@ -373,7 +353,7 @@ function ListLabels() {
                 {...pageProps}
                 pageStyle='small'
             >
-                <Card className={classes.root}>
+                <Card>
                     <CardContent>
                         <Typography gutterBottom variant='h5' component='h2'>
                             <FormattedMessage
@@ -438,20 +418,26 @@ function ListLabels() {
         <>
             <ContentBase {...pageProps}>
                 {(searchActive || addButtonProps) && (
-                    <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+                    <AppBar position='static' color='default' elevation={0}>
                         <Toolbar>
                             <Grid container spacing={2} alignItems='center'>
                                 <Grid item>
-                                    {searchActive && (<SearchIcon className={classes.block} color='inherit' />)}
+                                    {searchActive && (<SearchIcon color='inherit' />)}
                                 </Grid>
                                 <Grid item xs>
                                     {searchActive && (
                                         <TextField
+                                            variant='standard'
                                             fullWidth
                                             placeholder={searchPlaceholder}
+                                            sx={(theme) => ({
+                                                '& .search-input': {
+                                                    fontSize: theme.typography.fontSize,
+                                                },
+                                            })}
                                             InputProps={{
                                                 disableUnderline: true,
-                                                className: classes.searchInput,
+                                                className: 'search-input',
                                             }}
                                             onChange={filterData}
                                         />
@@ -472,8 +458,8 @@ function ListLabels() {
                                         />
                                     )}
                                     >
-                                        <IconButton onClick={fetchData}>
-                                            <RefreshIcon className={classes.block} color='inherit' />
+                                        <IconButton onClick={fetchData} size='large'>
+                                            <RefreshIcon color='inherit' />
                                         </IconButton>
                                     </Tooltip>
                                 </Grid>
@@ -490,7 +476,7 @@ function ListLabels() {
                     />
                 )}
                 {data && data.length === 0 && (
-                    <div className={classes.contentWrapper}>
+                    <div>
                         <Typography color='textSecondary' align='center'>
                             {noDataMessage}
                         </Typography>

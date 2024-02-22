@@ -26,12 +26,12 @@ describe("Add Edit Delete application throttle policies", () => {
     it.only("Add Edit Delete application throttle policies", () => {
         const policyName = '80PerMin';
         cy.get('[data-testid="Application Policies-child-link"]').click();
-        cy.get('.MuiButton-label').contains('Add Policy').click();
+        cy.get('[data-testid="form-dialog-base-trigger-btn"]').contains('Add Policy').click();
         cy.get('input[name="policyName"]').type(policyName);
         cy.get('input[name="description"]').type('allow 30 requests per minute');
         cy.get('input[name="requestCount"]').type('80');
         cy.get('input[name="unitTime"]').type('1');
-        cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Save').click();
         cy.get(`[data-testid="${policyName}-actions"]`).should('exist');
 
         // editing
@@ -41,12 +41,12 @@ describe("Add Edit Delete application throttle policies", () => {
             cy.get('input[name="requestCount"]').clear().type('81');
         });
         cy.intercept('GET', '**/throttling/policies/application').as('getPolicies');
-        cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Save').click();
         cy.wait('@getPolicies', { timeout: 3000 });
 
         // delete
         cy.get(`[data-testid="${policyName}-actions"] > span:nth-child(2)`).click();
-        cy.get('button > span').contains('Delete').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
         cy.get(`[data-testid="${policyName}-actions"]`).should('not.exist');
     });
 

@@ -17,28 +17,19 @@
  * under the License.
  */
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import WarningIcon from '@material-ui/icons/Warning';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import WarningIcon from '@mui/icons-material/Warning';
 
-const useStyles = makeStyles((theme) => ({
-    root: {},
-    warningIcon: {
-        color: theme.palette.warning.dark,
-        fontSize: 44,
-    },
-}));
 /**
  * Adds two numbers together.
  * @param {JSON} props The first number.
  * @returns {JSX} Render the inline warning message
  */
 export default function SimplePaper(props) {
-    const classes = useStyles();
     const { content, title, pageProps } = props;
 
     return (
@@ -46,10 +37,10 @@ export default function SimplePaper(props) {
             {...pageProps}
             pageStyle='small'
         >
-            <Card className={classes.root}>
+            <Card>
                 <CardContent>
                     <Box display='flex' flexDirection='row'>
-                        <WarningIcon className={classes.warningIcon} />
+                        <WarningIcon sx={(theme) => ({ fontSize: 44, color: theme.palette.warning.dark })} />
                         <Typography variant='h5' component='h2'>
                             {title}
                         </Typography>

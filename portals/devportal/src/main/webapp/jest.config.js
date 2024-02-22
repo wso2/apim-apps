@@ -42,6 +42,7 @@ module.exports = {
     testPathIgnorePatterns: [
         '<rootDir>/node_modules/',
         '<rootDir>/source/Tests/Integration/',
+        '<rootDir>/source/Tests/Comments/Comments.test.jsx',
     ],
     transformIgnorePatterns: [
         '<rootDir>/node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)',

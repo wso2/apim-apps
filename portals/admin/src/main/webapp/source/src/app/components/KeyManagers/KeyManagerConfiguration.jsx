@@ -1,27 +1,20 @@
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Box from '@material-ui/core/Box';
-import FormLabel from '@material-ui/core/FormLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormGroup from '@material-ui/core/FormGroup';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
+import { styled } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Box from '@mui/material/Box';
+import FormLabel from '@mui/material/FormLabel';
+import FormControl from '@mui/material/FormControl';
+import FormGroup from '@mui/material/FormGroup';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import { FormattedMessage } from 'react-intl';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import { makeStyles } from '@material-ui/core/styles';
+import InputLabel from '@mui/material/InputLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 import CustomInputField from 'AppComponents/KeyManagers/CustomInputField';
 
-const useStyles = makeStyles((theme) => ({
-    inputLabel: {
-        transform: 'translate(14px, 11px) scale(1)',
-    },
-    error: {
-        color: theme.palette.error.dark,
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * @export
@@ -38,7 +31,7 @@ export default function KeyManagerConfiguration(props) {
         keymanagerConnectorConfigurations, additionalProperties,
         setAdditionalProperties, hasErrors, validating,
     } = props;
-    const classes = useStyles();
+
     const onChange = (e) => {
         let finalValue;
         const { name, value, type } = e.target;
@@ -71,9 +64,9 @@ export default function KeyManagerConfiguration(props) {
             if (keymanagerConnectorConfiguration.mask) {
                 return (
                     <FormControl variant='outlined' fullWidth>
-                        <InputLabel className={classes.inputLabel}>
+                        <InputLabel sx={{ bgcolor: 'white' }}>
                             {keymanagerConnectorConfiguration.label}
-                            {keymanagerConnectorConfiguration.required && (<span className={classes.error}>*</span>)}
+                            {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
                         </InputLabel>
                         <CustomInputField
                             value={value}
@@ -97,7 +90,7 @@ export default function KeyManagerConfiguration(props) {
                     label={(
                         <span>
                             {keymanagerConnectorConfiguration.label}
-                            {keymanagerConnectorConfiguration.required && (<span className={classes.error}>*</span>)}
+                            {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
                         </span>
                     )}
                     fullWidth
@@ -111,7 +104,7 @@ export default function KeyManagerConfiguration(props) {
             );
         } else if (keymanagerConnectorConfiguration.type === 'select') {
             return (
-                <FormControl component='fieldset'>
+                <FormControl variant='standard' component='fieldset'>
                     <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
                     <FormGroup>
                         {keymanagerConnectorConfiguration.values.map((selection) => (
@@ -133,7 +126,7 @@ export default function KeyManagerConfiguration(props) {
             );
         } else if (keymanagerConnectorConfiguration.type === 'checkbox') {
             return (
-                <FormControl component='fieldset'>
+                <FormControl variant='standard' component='fieldset'>
                     <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
                     <FormGroup>
                         {keymanagerConnectorConfiguration.values.map((selection) => (
@@ -155,7 +148,7 @@ export default function KeyManagerConfiguration(props) {
             );
         } else if (keymanagerConnectorConfiguration.type === 'options') {
             return (
-                <FormControl component='fieldset'>
+                <FormControl variant='standard' component='fieldset'>
                     <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
                     <RadioGroup
                         aria-label={keymanagerConnectorConfiguration.label}

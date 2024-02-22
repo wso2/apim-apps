@@ -17,44 +17,23 @@
  */
 
 import React, { useReducer, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import TextField from '@mui/material/TextField';
+import DialogContentText from '@mui/material/DialogContentText';
 import { useIntl, FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import {
     Typography, RadioGroup, Radio, FormControlLabel, FormControl, Grid, FormHelperText, Switch, Checkbox,
-} from '@material-ui/core';
-import { green } from '@material-ui/core/colors';
+} from '@mui/material';
+import { green } from '@mui/material/colors';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        color: theme.palette.error.dark,
-    },
-    dialog: {
-        minWidth: theme.spacing(150),
-
-    },
-    unitTime: {
-        display: 'flex',
-        marginTop: theme.spacing(2),
-    },
-    helperText: {
-        color: green[600],
-        fontSize: theme.spacing(1.6),
-        marginLeft: theme.spacing(-1),
-    },
-    invertCondition: {
-        fontSize: theme.spacing(1.8),
-        marginRight: theme.spacing(3),
-        marginTop: theme.spacing(1.2),
-    },
-    addForm: {
-        minHeight: theme.spacing(24),
-    },
+const StyledFormHelperText = styled(FormHelperText)(({ theme }) => ({
+    color: green[600],
+    fontSize: theme.spacing(1.6),
+    marginLeft: theme.spacing(-1),
 }));
 
 /**
@@ -97,7 +76,6 @@ function reducer(state, newValue) {
  * @returns {JSX} Header AppBar components.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const {
         updateList, icon, triggerButtonText, title,
     } = props;
@@ -289,7 +267,6 @@ function AddEdit(props) {
             icon={icon}
             triggerButtonText={triggerButtonText}
             formSaveCallback={formSaveCallback}
-            className={classes.addForm}
         >
             <DialogContentText>
                 <Typography variant='h6'>
@@ -299,7 +276,7 @@ function AddEdit(props) {
                     />
                 </Typography>
             </DialogContentText>
-            <FormControl component='fieldset' className={classes.addForm}>
+            <FormControl variant='standard' component='fieldset' sx={{ minHeight: 24 }}>
                 <RadioGroup
                     row
                     aria-label='position'
@@ -352,8 +329,8 @@ function AddEdit(props) {
                         helperText={(
                             <>
                                 {/* eslint-disable-next-line no-template-curly-in-string */ }
-                                <FormHelperText className={classes.helperText}>{'Format : ${context}'}</FormHelperText>
-                                <FormHelperText className={classes.helperText}>Eg : /test/1.0.0</FormHelperText>
+                                <StyledFormHelperText>{'Format : ${context}'}</StyledFormHelperText>
+                                <StyledFormHelperText>Eg : /test/1.0.0</StyledFormHelperText>
                             </>
                         )}
                     />
@@ -370,13 +347,13 @@ function AddEdit(props) {
                         required
                         helperText={(
                             <>
-                                <FormHelperText className={classes.helperText}>
+                                <StyledFormHelperText>
                                     {/* eslint-disable-next-line no-template-curly-in-string */}
                                     {'Format : ${userName}:${applicationName}'}
-                                </FormHelperText>
-                                <FormHelperText className={classes.helperText}>
+                                </StyledFormHelperText>
+                                <StyledFormHelperText>
                                     Eg : admin:DefaultApplication
-                                </FormHelperText>
+                                </StyledFormHelperText>
                             </>
                         )}
                     />
@@ -393,13 +370,13 @@ function AddEdit(props) {
                         required
                         helperText={(
                             <>
-                                <FormHelperText className={classes.helperText}>
+                                <StyledFormHelperText>
                                     {/* eslint-disable-next-line no-template-curly-in-string */}
                                     {'Format : ${ip}'}
-                                </FormHelperText>
-                                <FormHelperText className={classes.helperText}>
+                                </StyledFormHelperText>
+                                <StyledFormHelperText>
                                     Eg : 127.0.0.1
-                                </FormHelperText>
+                                </StyledFormHelperText>
                             </>
                         )}
                     />
@@ -428,8 +405,8 @@ function AddEdit(props) {
                     </>
                 )}
                 {(conditionType === 'IP' || conditionType === 'IPRANGE') && (
-                    <Grid className={classes.unitTime}>
-                        <Typography className={classes.invertCondition}>
+                    <Grid sx={{ display: 'flex', mt: 2 }}>
+                        <Typography sx={{ fontSize: 14, mr: 3, mt: 1.2 }}>
                             <FormattedMessage
                                 id='Admin.Throttling.Blacklist.policy.add.invert.condition'
                                 defaultMessage='Invert Condition: '
@@ -455,13 +432,13 @@ function AddEdit(props) {
                         required
                         helperText={(
                             <>
-                                <FormHelperText className={classes.helperText}>
+                                <StyledFormHelperText>
                                     {/* eslint-disable-next-line no-template-curly-in-string */}
                                     {'Format : ${userName}'}
-                                </FormHelperText>
-                                <FormHelperText className={classes.helperText}>
+                                </StyledFormHelperText>
+                                <StyledFormHelperText>
                                     Eg : admin
-                                </FormHelperText>
+                                </StyledFormHelperText>
                             </>
                         )}
                     />

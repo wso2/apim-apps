@@ -17,44 +17,31 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
-import FormGroup from '@material-ui/core/FormGroup';
-import Grid from '@material-ui/core/Grid';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Paper from '@material-ui/core/Paper';
-import { Button } from '@material-ui/core';
-import Dialog from '@material-ui/core/Dialog';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Divider from '@material-ui/core/Divider';
+import TextField from '@mui/material/TextField';
+import FormGroup from '@mui/material/FormGroup';
+import Grid from '@mui/material/Grid';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Paper from '@mui/material/Paper';
+import { Button } from '@mui/material';
+import Dialog from '@mui/material/Dialog';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContentText from '@mui/material/DialogContentText';
+import Divider from '@mui/material/Divider';
 import { FormattedMessage, useIntl } from 'react-intl';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        color: theme.palette.error.dark,
-    },
-    vhostPaper: {
-        padding: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    portDivider: {
-        backgroundColor: 'LightGray',
-        margin: theme.spacing(1),
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 function AddEditVhost(props) {
     const intl = useIntl();
     const { onVhostChange, initialVhosts, gatewayType } = props;
-    const classes = useStyles();
 
     const [userVhosts, setUserVhosts] = useState(initialVhosts);
     const [id, setId] = useState(0);
@@ -148,7 +135,10 @@ function AddEditVhost(props) {
             <Grid container spacing={0}>
                 {userVhosts && userVhosts.map((vhost) => (
                     <Grid item xs={12}>
-                        <Paper variant='outlined' className={classes.vhostPaper}>
+                        <Paper
+                            variant='outlined'
+                            sx={(theme) => ({ padding: theme.spacing(1), marginBottom: theme.spacing(1) })}
+                        >
                             <Grid container direction='row' spacing={0}>
                                 {/* VHost's host name */}
                                 <Grid item xs={9}>
@@ -165,7 +155,7 @@ function AddEditVhost(props) {
                                                 />
                                                 -
                                                 {vhostCounter++}
-                                                <span className={classes.error}>*</span>
+                                                <StyledSpan>*</StyledSpan>
                                             </span>
                                         )}
                                         value={vhost.host}
@@ -176,7 +166,7 @@ function AddEditVhost(props) {
                                 </Grid>
                                 {/* Remove VHost Button */}
                                 <Grid item xs={3}>
-                                    <Grid container justify='flex-end'>
+                                    <Grid container justifyContent='flex-end'>
                                         <Button
                                             name={vhost.key}
                                             variant='outlined'
@@ -233,15 +223,15 @@ function AddEditVhost(props) {
                                 </Grid>
                                 {/* Advanced Settings */}
                                 <Grid item xs={12} style={{ marginTop: '16px' }}>
-                                    <ExpansionPanel>
-                                        <ExpansionPanelSummary
+                                    <Accordion>
+                                        <AccordionSummary
                                             expandIcon={<ExpandMoreIcon />}
                                             aria-controls='panel1a-content'
                                             id='panel1a-header'
                                         >
-                                            <Typography className={classes.heading}>Advanced Settings</Typography>
-                                        </ExpansionPanelSummary>
-                                        <ExpansionPanelDetails>
+                                            <Typography>Advanced Settings</Typography>
+                                        </AccordionSummary>
+                                        <AccordionDetails>
                                             <Grid container>
                                                 {/* HTTP Context and Ports */}
                                                 <Grid item xs={12}>
@@ -289,7 +279,13 @@ function AddEditVhost(props) {
                                                     </Grid>
                                                 </Grid>
                                                 <Grid item xs={12}>
-                                                    <Divider variant='middle' className={classes.portDivider} />
+                                                    <Divider
+                                                        variant='middle'
+                                                        sx={(theme) => ({
+                                                            borderColor: 'LightGray',
+                                                            margin: theme.spacing(1),
+                                                        })}
+                                                    />
                                                 </Grid>
                                                 {/* WS Ports */}
                                                 {gatewayType === 'Regular' && (
@@ -333,8 +329,8 @@ function AddEditVhost(props) {
                                                     </Grid>
                                                 )}
                                             </Grid>
-                                        </ExpansionPanelDetails>
-                                    </ExpansionPanel>
+                                        </AccordionDetails>
+                                    </Accordion>
                                 </Grid>
                             </Grid>
                         </Paper>

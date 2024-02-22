@@ -17,19 +17,15 @@
  */
 
 import React, { useReducer, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import Alert from 'AppComponents/Shared/Alert';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        color: theme.palette.error.dark,
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * Reducer
@@ -54,7 +50,6 @@ function reducer(state, { field, value }) {
  * @returns {JSX}.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const {
         updateList, dataRow, icon, triggerButtonText, title,
     } = props;
@@ -196,7 +191,7 @@ function AddEdit(props) {
                 label={(
                     <span>
                         <FormattedMessage id='AdminPages.ApiCategories.AddEdit.form.name' defaultMessage='Name' />
-                        <span className={classes.error}>*</span>
+                        <StyledSpan>*</StyledSpan>
                     </span>
                 )}
                 fullWidth
@@ -234,7 +229,10 @@ AddEdit.propTypes = {
         name: PropTypes.string.isRequired,
     }),
     icon: PropTypes.element,
-    triggerButtonText: PropTypes.shape({}).isRequired,
+    triggerButtonText: PropTypes.oneOfType([
+        PropTypes.element.isRequired,
+        PropTypes.string.isRequired,
+    ]).isRequired,
     title: PropTypes.shape({}).isRequired,
 };
 

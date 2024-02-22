@@ -18,40 +18,32 @@
 
 import React, { useReducer, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import TextField from '@mui/material/TextField';
+import DialogContentText from '@mui/material/DialogContentText';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import {
     Typography, RadioGroup, Radio, FormControlLabel, FormControl, Grid, Select, MenuItem,
-} from '@material-ui/core';
+} from '@mui/material';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import Joi from '@hapi/joi';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        color: theme.palette.error.dark,
-    },
-    dialog: {
-        minWidth: theme.spacing(150),
-
-    },
+const styles = {
     quotaHeading: {
-        marginTop: theme.spacing(3),
-        marginBottom: theme.spacing(2),
+        marginTop: 3,
+        marginBottom: 2,
     },
     unitTime: {
         display: 'flex',
-        minWidth: theme.spacing(60),
+        minWidth: 60,
     },
     unitTimeSelection: {
-        marginTop: theme.spacing(2.6),
-        marginLeft: theme.spacing(2),
-        minWidth: theme.spacing(15),
+        marginTop: 1,
+        marginLeft: 2,
+        minWidth: 140,
     },
-}));
+};
 
 /**
  * Reducer
@@ -116,7 +108,6 @@ function reducer(state, { field, value }) {
  * @returns {JSX} Header AppBar components.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const intl = useIntl();
     const {
         updateList, icon, triggerButtonText, title, dataRow,
@@ -302,6 +293,10 @@ function AddEdit(props) {
             };
         }
 
+        if (!applicationThrottlingPolicy.burstLimit.rateLimitCount) {
+            applicationThrottlingPolicy.burstLimit = null;
+        }
+
         if (dataRow) {
             const policyId = dataRow[4];
             promisedAddApplicationPolicy = restApi.updateApplicationThrottlingPolicy(policyId,
@@ -458,14 +453,14 @@ function AddEdit(props) {
                 onChange={onChange}
             />
             <DialogContentText>
-                <Typography variant='h6' className={classes.quotaHeading}>
+                <Typography variant='h6' sx={styles.quotaHeading}>
                     <FormattedMessage
                         id='Admin.Throttling.Application.Throttling.Policy.add.quota.limits.details'
                         defaultMessage='Quota Limits'
                     />
                 </Typography>
             </DialogContentText>
-            <FormControl component='fieldset'>
+            <FormControl variant='outlined' component='fieldset'>
                 <RadioGroup
                     row
                     aria-label='position'
@@ -514,7 +509,7 @@ function AddEdit(props) {
                             )}
                     />
                 ) : (
-                    <Grid className={classes.unitTime}>
+                    <Grid sx={styles.unitTime}>
                         <TextField
                             margin='dense'
                             name='dataAmount'
@@ -540,13 +535,13 @@ function AddEdit(props) {
                                     />
                                 )}
                         />
-                        <FormControl className={classes.unitTimeSelection}>
+                        <FormControl variant='outlined' sx={styles.unitTimeSelection}>
                             <Select
+                                variant='outlined'
                                 labelId='demo-simple-select-label'
                                 name='dataUnit'
                                 value={dataUnit}
                                 onChange={onChange}
-                                fullWidth
                             >
                                 <MenuItem value='KB'>KB</MenuItem>
                                 <MenuItem value='MB'>MB</MenuItem>
@@ -556,7 +551,7 @@ function AddEdit(props) {
                     </Grid>
 
                 )}
-                <Grid className={classes.unitTime}>
+                <Grid sx={styles.unitTime}>
                     <TextField
                         margin='dense'
                         name='unitTime'
@@ -581,8 +576,9 @@ function AddEdit(props) {
                                 />
                             )}
                     />
-                    <FormControl className={classes.unitTimeSelection}>
+                    <FormControl variant='outlined' sx={styles.unitTimeSelection}>
                         <Select
+                            variant='outlined'
                             labelId='demo-simple-select-label'
                             name='timeUnit'
                             value={timeUnit}
@@ -601,7 +597,7 @@ function AddEdit(props) {
             </FormControl>
             {/* Burst Control (Rate Limiting) */}
             <DialogContentText>
-                <Typography variant='h6' className={classes.quotaHeading}>
+                <Typography variant='h6' sx={styles.quotaHeading}>
                     <FormattedMessage
                         id='Admin.Throttling.Application.Throttling.Policy.add.burst.limits.details'
                         defaultMessage='Burst Control (Rate Limiting)'
@@ -614,7 +610,7 @@ function AddEdit(props) {
                     />
                 </Typography>
             </DialogContentText>
-            <Grid className={classes.unitTime}>
+            <Grid sx={styles.unitTime}>
                 <TextField
                     margin='dense'
                     name='rateLimitCount'
@@ -634,8 +630,9 @@ function AddEdit(props) {
                     })}
                     variant='outlined'
                 />
-                <FormControl className={classes.unitTimeSelection}>
+                <FormControl variant='outlined' sx={styles.unitTimeSelection}>
                     <Select
+                        variant='outlined'
                         name='rateLimitTimeUnit'
                         value={rateLimitTimeUnit}
                         fullWidth

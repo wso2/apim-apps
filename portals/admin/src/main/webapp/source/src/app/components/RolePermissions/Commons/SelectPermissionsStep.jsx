@@ -16,13 +16,13 @@
  * under the License.
  */
 import React from 'react';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 
 import PermissionTree from '../TreeView/PermissionTree';
 
@@ -41,7 +41,7 @@ export default function SelectPermissionsStep(props) {
     const { ROLE_ALIAS, SELECT_PERMISSIONS } = SelectPermissionsStep.CONST;
 
     return (
-        <FormControl style={{ width: '100%' }} component='fieldset'>
+        <FormControl variant='standard' style={{ width: '100%' }} component='fieldset'>
             <RadioGroup
                 aria-label='mapping-type'
                 name='mapping-type'

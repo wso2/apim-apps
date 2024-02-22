@@ -20,13 +20,11 @@ import React, {
     useReducer, useState, Suspense, lazy, useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { useIntl, FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
 import {
     Typography, Box, Grid, FormHelperText, Button,
-} from '@material-ui/core';
-import { green } from '@material-ui/core/colors';
+} from '@mui/material';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import { format } from 'sql-formatter';
@@ -35,43 +33,9 @@ import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import { Link as RouterLink } from 'react-router-dom';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Joi from '@hapi/joi';
+import { green } from '@mui/material/colors';
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "CustomPolicyAddMonacoEditor" */));
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        marginBottom: theme.spacing(15),
-    },
-    error: {
-        color: theme.palette.error.dark,
-    },
-    dialog: {
-        minWidth: theme.spacing(150),
-
-    },
-    siddhiQueryHeading: {
-        marginBottom: theme.spacing(1),
-    },
-    showSampleButton: {
-        marginTop: theme.spacing(2),
-    },
-    helperText: {
-        color: green[600],
-        fontSize: theme.spacing(1.6),
-        marginLeft: theme.spacing(1),
-    },
-    infoBox: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(2),
-    },
-    buttonBox: {
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-    },
-    saveButton: {
-        marginRight: theme.spacing(2),
-    },
-}));
 
 const sampleSiddhiQuery = "FROM RequestStream SELECT userId, ( userId == 'admin@carbon.super' ) "
 + "AS isEligible , str:concat('admin@carbon.super','') as throttleKey "
@@ -107,7 +71,6 @@ function reducer(state, { field, value }) {
  * @returns {JSX} Header AppBar components.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const {
         updateList, history,
     } = props;
@@ -321,7 +284,7 @@ function AddEdit(props) {
                     defaultMessage: 'Custom Rate Limiting Policy - Define Policy',
                 })}
         >
-            <Box component='div' m={2} className={classes.root}>
+            <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={12} lg={12}>
                         <TextField
@@ -390,20 +353,20 @@ function AddEdit(props) {
                                 />
                             )}
                         />
-                        <FormHelperText className={classes.helperText}>
+                        <FormHelperText sx={(theme) => ({ color: green[600], ml: 1, fontSize: theme.spacing(1.6) })}>
                             Eg: $userId:$apiContext:$apiVersion
                         </FormHelperText>
                     </Grid>
                     <Grid item xs={12} md={12} lg={12}>
-                        <Typography className={classes.siddhiQueryHeading}>
+                        <Typography sx={{ mb: 1 }}>
                             <FormattedMessage
                                 id='Admin.Throttling.Custom.policy.add.siddhi.query'
                                 defaultMessage='Siddhi Query: '
                             />
                         </Typography>
                         {!editMode && (
-                            <InlineMessage type='info' height={50} className={classes.infoBox}>
-                                <div className={classes.contentWrapper}>
+                            <InlineMessage type='info' height={50} sx={{ mt: 1, mb: 2 }}>
+                                <div>
                                     <Typography>
                                         <FormattedMessage
                                             id='Admin.Throttling.Custom.policy.add.siddhi.query.description'
@@ -430,14 +393,14 @@ function AddEdit(props) {
                             />
                         </Suspense>
                     </Grid>
-                    <Box component='span' className={classes.buttonBox}>
+                    <Box component='span' sx={{ mt: 2, mb: 2, ml: 2 }}>
                         <Button
+                            sx={{ mr: 2 }}
                             variant='contained'
-                            color='primary'
-                            className={classes.saveButton}
                             onClick={formSaveCallback}
                             disabled={validationError && validationError.length !== 0
                                 && Object.values(validationError)[0] !== false}
+                            data-testid='throttling-custom-save-button'
                         >
                             {!editMode && (
                                 <FormattedMessage
@@ -453,7 +416,7 @@ function AddEdit(props) {
                             )}
                         </Button>
                         <RouterLink to='/throttling/custom'>
-                            <Button variant='contained'>
+                            <Button variant='outlined'>
                                 <FormattedMessage
                                     id='Throttling.Custom.AddEdit.form.cancel'
                                     defaultMessage='Cancel'

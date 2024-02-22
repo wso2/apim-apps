@@ -17,10 +17,10 @@
  */
 
 import React from 'react';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
 
 import { useTableContext } from './AdminTableContext';
 
@@ -151,10 +151,11 @@ function AdminTableBody(props) {
                                     component='th'
                                     label={labelId}
                                     scope='row'
-                                    padding={multiSelect ? 'none' : 'default'}
+                                    padding={multiSelect ? 'none' : 'normal'}
                                     align={index === 0 ? 'left' : 'right'}
                                     data-testid={column}
                                     style={{ maxWidth: '800px' }}
+                                    key={index} // eslint-disable-line react/no-array-index-key
                                 >
                                     {column}
                                 </TableCell>

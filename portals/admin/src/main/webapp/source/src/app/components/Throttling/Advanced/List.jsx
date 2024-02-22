@@ -19,13 +19,13 @@
 
 import React from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import Delete from 'AppComponents/Throttling/Advanced/Delete';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import { Link as RouterLink } from 'react-router-dom';
 import HelpLinks from 'AppComponents/Throttling/Advanced/HelpLinks';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import API from 'AppData/api';
 
 /**
@@ -176,7 +176,7 @@ export default function ListMG() {
     If the add button wants to route to a new page, we need to override the Button component completely.
     Send the following prop to ListBase component.
     import { Link as RouterLink } from 'react-router-dom';
-    import Button from '@material-ui/core/Button';
+    import Button from '@mui/material/Button';
 
     const addButtonOverride = (
         <RouterLink to='/'>
@@ -206,7 +206,7 @@ export default function ListMG() {
     To make the edit link go to a new page send a react-router-dom as the EditComponent.
     Ex:
     import { Link as RouterLink } from 'react-router-dom';
-    import EditIcon from '@material-ui/icons/Edit';
+    import EditIcon from '@mui/icons-material/Edit';
     .....
     .....
     EditComponent={() => <RouterLink to='/'>

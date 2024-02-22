@@ -17,25 +17,35 @@
  */
 
 import React from 'react';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { withStyles } from '@material-ui/core/styles';
-import green from '@material-ui/core/colors/green';
-import { Button } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import CircularProgress from '@mui/material/CircularProgress';
+import { green } from '@mui/material/colors';
+import { Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
-const styles = (theme) => ({
-    wrapper: {
+const PREFIX = 'InteractiveButton';
+
+const classes = {
+    wrapper: `${PREFIX}-wrapper`,
+    buttonSuccess: `${PREFIX}-buttonSuccess`,
+    buttonProgress: `${PREFIX}-buttonProgress`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`&.${classes.wrapper}`]: {
         margin: theme.spacing(1),
         position: 'relative',
     },
-    buttonSuccess: {
+
+    [`& .${classes.buttonSuccess}`]: {
         backgroundColor: green[500],
         '&:hover': {
             backgroundColor: green[700],
         },
     },
-    buttonProgress: {
+
+    [`& .${classes.buttonProgress}`]: {
         color: green[500],
         position: 'absolute',
         top: '50%',
@@ -43,7 +53,7 @@ const styles = (theme) => ({
         marginTop: -12,
         marginLeft: -12,
     },
-});
+}));
 
 /**
  * Provide animating button element with loading animation and success icon.
@@ -56,7 +66,6 @@ const InteractiveButton = (props) => {
         loading,
         success,
         children,
-        classes,
         color,
         disableFocusRipple,
         disableRipple,
@@ -80,12 +89,12 @@ const InteractiveButton = (props) => {
         [classes.buttonSuccess]: success,
     });
     return (
-        <div className={classes.wrapper}>
+        <Root className={classes.wrapper}>
             <Button {...buttonProps} className={buttonClassName} disabled={loading}>
                 {children}
             </Button>
             {loading && <CircularProgress size={24} className={classes.buttonProgress} />}
-        </div>
+        </Root>
     );
 };
 
@@ -158,4 +167,4 @@ InteractiveButton.propTypes = {
      */
     variant: PropTypes.oneOf(['flat', 'raised', 'fab']),
 };
-export default withStyles(styles)(InteractiveButton);
+export default (InteractiveButton);

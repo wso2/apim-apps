@@ -60,14 +60,14 @@ const AppThemes = {
         overrides: {
             MuiRadio: {
                 colorSecondary: {
-                    '&$checked': { color: '#009be5' },
-                    '&$disabled': {
+                    '&.Mui-checked': { color: '#009be5' },
+                    '&.Mui-disabled': {
                         color: 'rgba(0, 0, 0, 0.26)',
                     },
                 },
             },
             MuiButton: {
-                label: {
+                root: {
                     textTransform: 'none',
                 },
                 contained: {
@@ -96,6 +96,17 @@ const AppThemes = {
                     padding: 0,
                 },
             },
+            MuiTableCell: {
+                root: {
+                    '&:first-of-type': {
+                        paddingLeft: 16,
+                        paddingRight: 4,
+                        paddingTop: 4,
+                        paddingBottom: 4,
+                    },
+                    borderBottom: '1px solid #e0e0e0',
+                },
+            },
             MuiIconButton: {
                 root: {
                     padding: 8,
@@ -109,6 +120,7 @@ const AppThemes = {
             MuiDivider: {
                 root: {
                     backgroundColor: '#404854',
+                    borderColor: '#404854',
                 },
             },
             MuiListItemText: {
@@ -144,6 +156,38 @@ const AppThemes = {
                         paddingTop: 8,
                         paddingBottom: 8,
                     },
+                },
+            },
+            MuiInputLabel: {
+                root: {
+                    display: 'block',
+                    transformOrigin: 'top left',
+                },
+                outlined: {
+                    zIndex: 1,
+                    transform: 'translate(14px, 12px) scale(1)',
+                    pointerEvents: 'none',
+                    '&.MuiInputLabel-shrink': {
+                        transform: 'translate(14px, -6px) scale(0.75)',
+                    },
+                    '&.MuiInputLabel-marginDense': {
+                        transform: 'translate(10px, 12px) scale(1)',
+                    },
+                },
+            },
+            MuiOutlinedInput: {
+                root: {
+                    position: 'relative',
+                    borderRadius: '8px',
+                },
+                input: {
+                    padding: '10.5px 14px',
+                },
+                multiline: {
+                    padding: '10.5px 14px',
+                },
+                marginDense: {
+                    padding: '10.5px 14px',
                 },
             },
         },
