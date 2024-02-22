@@ -191,7 +191,7 @@ function View(props) {
     };
     return (
         <>
-            {(doc.summary && doc.otherTypeName !== '_overview') && (
+            {(doc.summary && doc.otherTypeName !== 'overview') && (
                 <Typography variant='body1' className={classes.docSummary}>
                     {doc.summary}
                 </Typography>

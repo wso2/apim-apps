@@ -222,7 +222,7 @@ function Overview() {
         const restApi = new API();
         return restApi.getDocumentsByAPIId(api.id)
             .then((response) => {
-                const overviewDoc = response.body.list.filter((item) => item.otherTypeName === '_overview');
+                const overviewDoc = response.body.list.filter((item) => item.otherTypeName === 'overview');
                 if (overviewDoc.length > 0) {
                     // We can override the UI with this content
                     setOverviewDocOverride(overviewDoc[0]); // Only one doc we can render

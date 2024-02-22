@@ -167,7 +167,7 @@ class Listing extends React.Component {
             const apiProduct = new APIProduct();
             const docs = apiProduct.getDocuments(api.id);
             docs.then((response) => {
-                const documentList = response.body.list.filter((item) => item.otherTypeName !== '_overview');
+                const documentList = response.body.list.filter((item) => item.otherTypeName !== 'overview');
                 documentList.sort(getSortOrder('name'));
                 this.setState({ docs: documentList });
             }).catch((errorResponse) => {
@@ -184,7 +184,7 @@ class Listing extends React.Component {
             const newApi = new API();
             const docs = newApi.getDocuments(api.id);
             docs.then((response) => {
-                const documentList = response.body.list.filter((item) => item.otherTypeName !== '_overview');
+                const documentList = response.body.list.filter((item) => item.otherTypeName !== 'overview');
                 documentList.sort(getSortOrder('name'));
                 this.setState({ docs: documentList });
             }).catch((errorResponse) => {
