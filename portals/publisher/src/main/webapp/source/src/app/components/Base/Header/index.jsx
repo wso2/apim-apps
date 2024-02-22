@@ -36,6 +36,5 @@ export default function Header(props) {
 }
 
 Header.propTypes = {
-    avatar: PropTypes.element.isRequired,
     user: PropTypes.shape({ name: PropTypes.string.isRequired }).isRequired,
 };

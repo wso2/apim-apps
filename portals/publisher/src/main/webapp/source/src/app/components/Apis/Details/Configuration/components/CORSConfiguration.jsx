@@ -17,46 +17,63 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
-import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
-import Checkbox from '@material-ui/core/Checkbox';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
+import Checkbox from '@mui/material/Checkbox';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { makeStyles } from '@material-ui/core/styles';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Switch from '@material-ui/core/Switch';
+import { AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'CORSConfiguration';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    actionSpace: `${PREFIX}-actionSpace`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+const StyledWrappedExpansionPanel = styled(WrappedExpansionPanel)((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(3),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    actionSpace: {
+
+    [`& .${classes.actionSpace}`]: {
         marginLeft: theme.spacing(20),
         marginTop: '-7px',
         marginBottom: '-7px',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
-    },
+    }
 }));
 
 /**
@@ -75,7 +92,7 @@ export default function CORSConfiguration(props) {
     const isCorsEnabled = corsConfiguration.corsConfigurationEnabled;
     const isAllowAllOrigins = corsConfiguration.accessControlAllowOrigins[0] === '*'
         && corsConfiguration.accessControlAllowOrigins.length === 1;
-    const classes = useStyles();
+
     const generateElement = (isEnabled) => {
         if (isEnabled) {
             return (
@@ -85,8 +102,8 @@ export default function CORSConfiguration(props) {
         return (null);
     };
     return (
-        <WrappedExpansionPanel className={classes.expansionPanel} id='corsConfiguration'>
-            <ExpansionPanelSummary expandIcon={generateElement(corsConfiguration.corsConfigurationEnabled)}>
+        <StyledWrappedExpansionPanel className={classes.expansionPanel} id='corsConfiguration'>
+            <AccordionSummary expandIcon={generateElement(corsConfiguration.corsConfigurationEnabled)}>
                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.CORSConfiguration.cors.configuration'
@@ -123,8 +140,8 @@ export default function CORSConfiguration(props) {
                         />
                     )}
                 />
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+            </AccordionSummary>
+            <AccordionDetails className={classes.expansionPanelDetails}>
                 <Grid container>
                     <Grid item md={12}>
                         {isCorsEnabled && (
@@ -327,8 +344,8 @@ export default function CORSConfiguration(props) {
                         )}
                     </Grid>
                 </Grid>
-            </ExpansionPanelDetails>
-        </WrappedExpansionPanel>
+            </AccordionDetails>
+        </StyledWrappedExpansionPanel>
     );
 }
 

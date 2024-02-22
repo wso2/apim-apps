@@ -17,18 +17,26 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
 
-const useStyles = makeStyles((theme) => ({
-    cardIcons: {
+const PREFIX = 'OnboardingMenuCard';
+
+const classes = {
+    cardIcons: `${PREFIX}-cardIcons`,
+    cardContainer: `${PREFIX}-cardContainer`
+};
+
+const StyledGrid = styled(Grid)(({ theme }) => ({
+    [`& .${classes.cardIcons}`]: {
         width: 190,
     },
-    cardContainer: {
+
+    [`& .${classes.cardContainer}`]: {
         height: theme.spacing(63),
-    },
+    }
 }));
 
 /**
@@ -40,15 +48,15 @@ function OnboardingMenuCard(props) {
     const {
         iconSrc, heading, subHeading, description, children,
     } = props;
-    const classes = useStyles();
+
 
     return (
-        <Grid item xs={12} md={4} lg={3}>
+        <StyledGrid item xs={12} md={4} lg={3}>
             <Paper>
                 <Grid
                     container
                     direction='row'
-                    justify='center'
+                    justifyContent='center'
                     alignItems='flex-end'
                     className={classes.cardContainer}
                 >
@@ -97,7 +105,7 @@ function OnboardingMenuCard(props) {
                     </Grid>
                 </Grid>
             </Paper>
-        </Grid>
+        </StyledGrid>
     );
 }
 

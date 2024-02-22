@@ -19,13 +19,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
+import { createTheme, ThemeProvider, StyledEngineProvider, adaptV4Theme, styled, useTheme } from '@mui/material/styles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import queryString from 'query-string';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import ApiThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/ApiThumb';
 import DocThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/DocThumb';
 import { Progress } from 'AppComponents/Shared';
@@ -36,8 +36,20 @@ import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import SampleAPIProduct from 'AppComponents/Apis/Listing/SampleAPI/SampleAPIProduct';
 import Alert from 'AppComponents/Shared/Alert';
 
-const styles = (theme) => ({
-    contentInside: {
+const PREFIX = 'TableView';
+
+const classes = {
+    contentInside: `${PREFIX}-contentInside`,
+    apiNameLink: `${PREFIX}-apiNameLink`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.contentInside}`]: {
         padding: theme.spacing(3),
         paddingTop: theme.spacing(2),
         '& > div[class^="MuiPaper-root-"]': {
@@ -45,7 +57,8 @@ const styles = (theme) => ({
             backgroundColor: 'transparent',
         },
     },
-    apiNameLink: {
+
+    [`& .${classes.apiNameLink}`]: {
         display: 'flex',
         alignItems: 'center',
         '& span': {
@@ -57,8 +70,8 @@ const styles = (theme) => ({
             marginRight: theme.spacing(),
             fontSize: 18,
         },
-    },
-});
+    }
+}));
 
 /**
  * Table view for api listing
@@ -188,7 +201,7 @@ class TableView extends React.Component {
             };
         }
         muiTheme = Object.assign(theme, muiTheme, themeAdditions);
-        return createMuiTheme(muiTheme);
+        return createTheme(adaptV4Theme(muiTheme));
     };
 
     // get apisAndApiProducts
@@ -288,9 +301,7 @@ class TableView extends React.Component {
      * @memberof TableView
      */
     render() {
-        const {
-            intl, isAPIProduct, classes, query,
-        } = this.props;
+        const { intl, isAPIProduct, query } = this.props;
         const {
             loading, totalCount, rowsPerPage, apisAndApiProducts, notFound, listType, page,
         } = this.state;
@@ -458,7 +469,7 @@ class TableView extends React.Component {
         }
         if (apisAndApiProducts.length === 0 && !query) {
             return (
-                <>
+                (<Root>
                     <TopMenu
                         data={apisAndApiProducts}
                         count={totalCount}
@@ -472,43 +483,40 @@ class TableView extends React.Component {
                     ) : (
                         <APILanding />
                     )}
-                </>
+                </Root>)
             );
         }
 
-        return (
-            <>
-                <TopMenu
-                    data={apisAndApiProducts}
-                    count={totalCount}
-                    setListType={this.setListType}
-                    isAPIProduct={isAPIProduct}
-                    listType={listType}
-                    showToggle={this.showToggle}
-                    query={query}
-                />
-                <div className={classes.contentInside}>
-                    {loading ? (
-                        <Progress
-                            per={96}
-                            message='Updating page ...'
-                        />
-                    )
-                        : (
-                            <MuiThemeProvider theme={this.getMuiTheme()}>
+        return <>
+            <TopMenu
+                data={apisAndApiProducts}
+                count={totalCount}
+                setListType={this.setListType}
+                isAPIProduct={isAPIProduct}
+                listType={listType}
+                showToggle={this.showToggle}
+                query={query}
+            />
+            <div className={classes.contentInside}>
+                {loading ? (
+                    <Progress
+                        per={96}
+                        message='Updating page ...'
+                    />
+                )
+                    : (
+                        <StyledEngineProvider injectFirst>
+                            <ThemeProvider theme={this.getMuiTheme()}>
                                 <MUIDataTable title='' data={apisAndApiProducts} columns={columns} options={options} />
-                            </MuiThemeProvider>
-                        )}
-                </div>
-            </>
-        );
+                            </ThemeProvider>
+                        </StyledEngineProvider>
+                    )}
+            </div>
+        </>;
     }
 }
 
-export default injectIntl(withStyles(styles, { withTheme: true })(TableView));
-
 TableView.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({ formatMessage: PropTypes.func.isRequired }).isRequired,
     isAPIProduct: PropTypes.bool.isRequired,
     theme: PropTypes.shape({
@@ -520,3 +528,8 @@ TableView.propTypes = {
 TableView.defaultProps = {
     query: '',
 };
+
+export default injectIntl((props) => {
+    const theme = useTheme();
+    return <TableView {...props} theme={theme} />;
+});

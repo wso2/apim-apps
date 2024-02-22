@@ -17,45 +17,63 @@
  */
 
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import MuiDialogContent from '@material-ui/core/DialogContent';
-import MuiDialogActions from '@material-ui/core/DialogActions';
-import IconButton from '@material-ui/core/IconButton';
-import CloseIcon from '@material-ui/icons/Close';
-import Typography from '@material-ui/core/Typography';
+import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import MuiDialogTitle from '@mui/material/DialogTitle';
+import MuiDialogContent from '@mui/material/DialogContent';
+import MuiDialogActions from '@mui/material/DialogActions';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import LinkIcon from '@material-ui/icons/Link';
-import Box from '@material-ui/core/Box';
-// import Link from '@material-ui/core/Link';
-import Divider from '@material-ui/core/Divider';
+import DialogContentText from '@mui/material/DialogContentText';
+import LinkIcon from '@mui/icons-material/Link';
+import Box from '@mui/material/Box';
+// import Link from '@mui/material/Link';
+import Divider from '@mui/material/Divider';
 import { Link as RouterLink } from 'react-router-dom';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'PublishWithoutDeployProduct';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    root2: `${PREFIX}-root2`,
+    root3: `${PREFIX}-root3`,
+    closeButton: `${PREFIX}-closeButton`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root3}`]: {
         margin: 0,
         padding: theme.spacing(2),
     },
-    closeButton: {
+
+    [`& .${classes.closeButton}`]: {
         position: 'absolute',
         right: theme.spacing(1),
         top: theme.spacing(1),
         color: theme.palette.grey[500],
-    },
-});
+    }
+}));
 
-const DialogTitle = withStyles(styles)((props) => {
+const DialogTitle = ((props) => {
     const {
-        children, classes, onClose, ...other
+        children, onClose, ...other
     } = props;
     return (
         <MuiDialogTitle disableTypography className={classes.root} {...other}>
             <Typography variant='h6'>{children}</Typography>
             {onClose ? (
-                <IconButton aria-label='close' className={classes.closeButton} onClick={onClose}>
+                <IconButton
+                    aria-label='close'
+                    className={classes.closeButton}
+                    onClick={onClose}
+                    size='large'>
                     <CloseIcon />
                 </IconButton>
             ) : null}
@@ -63,18 +81,9 @@ const DialogTitle = withStyles(styles)((props) => {
     );
 });
 
-const DialogContent = withStyles((theme) => ({
-    root: {
-        padding: theme.spacing(2),
-    },
-}))(MuiDialogContent);
+const DialogContent = MuiDialogContent;
 
-const DialogActions = withStyles((theme) => ({
-    root: {
-        margin: 0,
-        padding: theme.spacing(1),
-    },
-}))(MuiDialogActions);
+const DialogActions = MuiDialogActions;
 
 /**
  *
@@ -86,7 +95,8 @@ export default function PublishWithoutDeployProduct(props) {
     } = props;
 
     return (
-        <Dialog onClose={handleClose} aria-labelledby='publish-api-confirmation' open={open} fullWidth maxWidth='md'>
+        <StyledDialog onClose={handleClose} aria-labelledby='publish-api-confirmation' open={open} fullWidth 
+            maxWidth='md'>
             <DialogTitle id='itest-publish-confirmation' onClose={handleClose}>
                 <FormattedMessage
                     id='Apis.Details.LifeCycle.components.confirm.publish.apiProducts.title'
@@ -94,7 +104,10 @@ export default function PublishWithoutDeployProduct(props) {
                 />
             </DialogTitle>
             <Divider light />
-            <DialogContent>
+            <DialogContent
+                classes={{
+                    root: classes.root
+                }}>
                 <Box my={1}>
                     <DialogContentText id='itest-confirm-publish-text'>
                         <Typography variant='subtitle1' display='block' gutterBottom>
@@ -107,7 +120,10 @@ export default function PublishWithoutDeployProduct(props) {
                 </Box>
 
             </DialogContent>
-            <DialogActions>
+            <DialogActions
+                classes={{
+                    root: classes.root2
+                }}>
                 <Button
                     variant='contained'
                     color='primary'
@@ -125,6 +141,6 @@ export default function PublishWithoutDeployProduct(props) {
                     </Box>
                 </Button>
             </DialogActions>
-        </Dialog>
+        </StyledDialog>
     );
 }

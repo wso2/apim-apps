@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
+import { useTheme } from '@mui/material/styles';
+import Avatar from '@mui/material/Avatar';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import Utils from 'AppData/Utils';
 
@@ -38,60 +38,49 @@ const getColorFromLetter = (letter, colorMap, offset) => {
     return [charLightColor, dark];
 };
 
-const useStyles = makeStyles((theme) => {
+const getThumbIconSx = (theme, width) => {
+    const { width: defaultWidth } = theme.custom.thumbnail;
+    const fontSize = Math.ceil((width * 90) / defaultWidth);
     return {
-        root: {
-            display: 'flex',
-        },
-        thumbIcon: ({ width }) => {
-            const { width: defaultWidth } = theme.custom.thumbnail;
-            const fontSize = Math.ceil((width * 90) / defaultWidth);
-            return {
-                fontSize,
-            };
-        },
-        square: ({
-            char, width, height, bgColor,
-        }) => {
-            const {
-                colorMap, offset, width: defaultWidth, textShadow,
-            } = theme.custom.thumbnail;
-            const [light, dark] = getColorFromLetter(bgColor === false ? '' : char, colorMap, offset);
-            const fontSize = Math.ceil((width * 70) / defaultWidth);
-            /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-            const background = light && `linear-gradient(to right, ${light}, ${dark})`;
-            return {
-                color: light && theme.palette.getContrastText(dark),
-                background,
-                fallbacks: [
-                    { background: light }, /* fallback for old browsers */
-                    {
-                        background:
-                        `-webkit-linear-gradient(to right, ${light}, ${dark})`, /* Chrome 10-25, Safari 5.1-6 */
-                    },
-                ],
-                height,
-                width,
-                fontSize: `${fontSize}px`,
-                textShadow,
-            };
-        },
+        fontSize,
     };
-});
+};
+
+const getAvatarSx = (theme, char, width, height, bgColor) => {
+    const {
+        colorMap, offset, width: defaultWidth, textShadow,
+    } = theme.custom.thumbnail;
+    const [light, dark] = getColorFromLetter(bgColor === false ? '' : char, colorMap, offset);
+    const fontSize = Math.ceil((width * 70) / defaultWidth);
+    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+    const background = light && `linear-gradient(to right, ${light}, ${dark})`;
+    return {
+        color: light && theme.palette.getContrastText(dark),
+        background,
+        fallbacks: [
+            { background: light }, /* fallback for old browsers */
+            {
+                background:
+                `-webkit-linear-gradient(to right, ${light}, ${dark})`, /* Chrome 10-25, Safari 5.1-6 */
+            },
+        ],
+        height,
+        width,
+        fontSize: `${fontSize}px`,
+        textShadow,
+    };
+};
 
 export default (props) => {
     const {
         artifact, width, height, charLength = 2, ThumbIcon, bgColor,
     } = props;
     const name = artifact.name.substring(0, charLength);
-    const classes = useStyles({
-        char: name.substring(0, 1), width, height, bgColor,
-    });
-
+    const theme = useTheme();
     return (
-        <div className={classes.root}>
-            <Avatar variant='square' className={classes.square}>
-                {ThumbIcon ? <ThumbIcon className={classes.thumbIcon} /> : capitalizeFirstLetter(name)}
+        <div style={{ display: 'flex' }}>
+            <Avatar variant='square' sx={getAvatarSx(theme, name.substring(0, 1), width, height, bgColor)}>
+                {ThumbIcon ? <ThumbIcon sx={getThumbIconSx(theme, width)} /> : capitalizeFirstLetter(name)}
             </Avatar>
         </div>
     );

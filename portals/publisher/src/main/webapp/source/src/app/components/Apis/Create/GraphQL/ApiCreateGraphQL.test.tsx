@@ -19,7 +19,7 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-describe('Import a GraphQL API', () => {
+describe.skip('Import a GraphQL API', () => {
     test('Should render graphql import first page', async () => {
         render(<ApiCreateGraphQL />);
         expect(

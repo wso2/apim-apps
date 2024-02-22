@@ -19,17 +19,17 @@
 import React, {
     useReducer, useContext, useState, useEffect,
 } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
 import { Link, useHistory } from 'react-router-dom';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
-import ArrowBackIcon from '@material-ui/icons/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Api from 'AppData/api';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
@@ -51,67 +51,102 @@ import {
 } from './components/APISecurity/components/apiSecurityConstants';
 import WebSubConfiguration from './components/WebSubConfiguration';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'RuntimeConfiguration';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    paper: `${PREFIX}-paper`,
+    paperCenter: `${PREFIX}-paperCenter`,
+    heading: `${PREFIX}-heading`,
+    itemPadding: `${PREFIX}-itemPadding`,
+    arrowForwardIcon: `${PREFIX}-arrowForwardIcon`,
+    arrowBackIcon: `${PREFIX}-arrowBackIcon`,
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    subHeading: `${PREFIX}-subHeading`,
+    info: `${PREFIX}-info`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         padding: theme.spacing(3, 2),
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(3),
     },
-    paperCenter: {
+
+    [`& .${classes.paperCenter}`]: {
         padding: theme.spacing(3),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: '1.1rem',
         fontWeight: 400,
         marginBottom: theme.spacing(0),
     },
-    itemPadding: {
+
+    [`& .${classes.itemPadding}`]: {
         marginBottom: theme.spacing(3),
     },
-    arrowForwardIcon: {
+
+    [`& .${classes.arrowForwardIcon}`]: {
         fontSize: 50,
         color: '#ccc',
         position: 'absolute',
         top: 90,
         right: -43,
     },
-    arrowBackIcon: {
+
+    [`& .${classes.arrowBackIcon}`]: {
         fontSize: 50,
         color: '#ccc',
         position: 'absolute',
         top: 30,
         right: -71,
     },
-    expansionPanel: {
+
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(1),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: '38px',
     },
-    info: {
+
+    [`& .${classes.info}`]: {
         display: 'flex',
         height: '100%',
-    },
+    }
 }));
 
 /**
@@ -310,7 +345,7 @@ export default function RuntimeConfiguration() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [updateComplexityList, setUpdateComplexityList] = useState(null);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
-    const classes = useStyles();
+
     const intl = useIntl();
     useEffect(() => {
         if (!isRestricted(['apim:api_create'], api)) {
@@ -433,7 +468,7 @@ export default function RuntimeConfiguration() {
     }
 
     return (
-        <>
+        <Root>
             <Box pb={3}>
                 <Typography id='itest-api-details-runtime-config-head' variant='h5' component='h2'>
                     <FormattedMessage
@@ -448,7 +483,8 @@ export default function RuntimeConfiguration() {
                         <APISecurity api={apiConfig} configDispatcher={configDispatcher} />
                     </Paper>
                 ) : (
-                    <Grid container direction='row' justify='space-around' alignItems='stretch' spacing={8}>
+                    <Grid container direction='row' justifyContent='space-around' alignItems='stretch' 
+                        columnSpacing={8}>
                         <Grid item xs={12} md={7}>
                             <Typography className={classes.heading} variant='h6' component='h3'>
                                 { isAsyncAPI
@@ -464,21 +500,19 @@ export default function RuntimeConfiguration() {
                                         />
                                     )}
                             </Typography>
-                            <Grid
-                                direction=' column'
-                                justify='space-between'
-                                alignItems='stretch'
-                                spacing={6}
-                            >
-                                <Grid item xs={12} style={{ marginBottom: 30, position: 'relative' }}>
-                                    <Paper className={classes.paper} elevation={0}>
+                            <Grid direction='column' justifyContent='space-between' alignItems='stretch' spacing={6}>
+                                <Grid item xs={12} sx={{ mb: 3, position: 'relative' }}>
+                                    <Paper elevation={0} 
+                                        sx={{ p: 3, boxSizing: 'border-box' }}>
                                         <APISecurity api={apiConfig} configDispatcher={configDispatcher} />
                                         { api.type !== 'WS' && (
-                                            <CORSConfiguration api={apiConfig} configDispatcher={configDispatcher} />
+                                            <CORSConfiguration api={apiConfig} 
+                                                configDispatcher={configDispatcher} />
                                         )}
 
                                         {((api.type !== 'GRAPHQL' || !isAsyncAPI) && api.gatewayType !== 'wso2/apk')
-                                            && <SchemaValidation api={apiConfig} configDispatcher={configDispatcher} />}
+                                            && <SchemaValidation api={apiConfig} 
+                                                configDispatcher={configDispatcher} />}
                                         {api.type === 'GRAPHQL' && (
                                             <Box mt={3}>
                                                 <QueryAnalysis
@@ -509,8 +543,8 @@ export default function RuntimeConfiguration() {
                                             )}
 
                                         </Typography>
-                                        <Grid item xs={12} style={{ marginBottom: 30, position: 'relative' }}>
-                                            <Paper className={classes.paper} elevation={0}>
+                                        <Grid item xs={12} sx={{ mb: 3, position: 'relative' }}>
+                                            <Paper elevation={0}>
                                                 {!isWebSub ? (
                                                     <Grid item xs={12} style={{ position: 'relative' }}>
                                                         <Box mb={3}>
@@ -627,6 +661,6 @@ export default function RuntimeConfiguration() {
                     </Grid>
                 </Grid>
             </div>
-        </>
+        </Root>
     );
 }

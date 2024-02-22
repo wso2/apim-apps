@@ -16,9 +16,8 @@
  * under the License.
  */
 import React from 'react';
-import PropTypes from 'prop-types';
 import moment from 'moment';
-import { Typography, Tooltip } from '@material-ui/core';
+import { Typography, Tooltip } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 
 /**
@@ -46,9 +45,5 @@ function LastUpdatedTime(props) {
         </div>
     );
 }
-
-LastUpdatedTime.propTypes = {
-    lastUpdatedTime: PropTypes.shape({ content: PropTypes.string }).isRequired,
-};
 
 export default (LastUpdatedTime);

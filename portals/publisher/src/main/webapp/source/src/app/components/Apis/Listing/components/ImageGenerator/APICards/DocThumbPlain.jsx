@@ -1,32 +1,53 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import { styled } from '@mui/material/styles';
+import Icon from '@mui/material/Icon';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'DocThumbPlain';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    bullet: `${PREFIX}-bullet`,
+    title: `${PREFIX}-title`,
+    pos: `${PREFIX}-pos`,
+    thumbHeader: `${PREFIX}-thumbHeader`,
+    contextBox: `${PREFIX}-contextBox`,
+    caption: `${PREFIX}-caption`,
+    imageDisplay: `${PREFIX}-imageDisplay`
+};
+
+const StyledCard = styled(Card)((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.root}`]: {
         minWidth: 200,
         marginTop: 10,
         marginRight: 10,
         marginBottom: 10,
     },
-    bullet: {
+
+    [`& .${classes.bullet}`]: {
         display: 'inline-block',
         margin: '0 2px',
         transform: 'scale(0.8)',
     },
-    title: {
+
+    [`& .${classes.title}`]: {
         fontSize: 14,
     },
-    pos: {
+
+    [`& .${classes.pos}`]: {
         marginBottom: 12,
     },
-    thumbHeader: {
+
+    [`& .${classes.thumbHeader}`]: {
         width: '150px',
         color: '#444',
         whiteSpace: 'nowrap',
@@ -36,19 +57,22 @@ const useStyles = makeStyles((theme) => ({
         margin: 0,
         'padding-left': '5px',
     },
-    contextBox: {
+
+    [`& .${classes.contextBox}`]: {
         maxWidth: 120,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    caption: {
+
+    [`& .${classes.caption}`]: {
         color: theme.palette.grey[700],
     },
-    imageDisplay: {
+
+    [`& .${classes.imageDisplay}`]: {
         maxWidth: '40px',
         maxHeight: '40px',
-    },
+    }
 }));
 
 /**
@@ -57,10 +81,10 @@ const useStyles = makeStyles((theme) => ({
  * @returns {JSX} Thumbnail rendered output.
  */
 function DocThumbPlain(props) {
-    const classes = useStyles();
+
     const { doc } = props;
     return (
-        <Card className={classes.root} variant='outlined'>
+        <StyledCard className={classes.root} variant='outlined' sx={{ border: '2px solid purple'}}>
             <CardContent>
                 <Box>
                     <Link to={'/apis/' + doc.apiUUID + '/documents/' + doc.id + '/details'} aria-hidden='true'>
@@ -130,7 +154,7 @@ function DocThumbPlain(props) {
 
 
             </CardContent>
-        </Card>
+        </StyledCard>
     );
 }
 

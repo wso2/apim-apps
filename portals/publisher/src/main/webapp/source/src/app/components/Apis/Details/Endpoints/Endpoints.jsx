@@ -17,12 +17,12 @@
 import React, {
     useContext, useEffect, useState, useReducer,
 } from 'react';
-import { Grid } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { styled } from '@mui/material/styles';
+import { Grid } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { Link, withRouter } from 'react-router-dom';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import NewEndpointCreate from 'AppComponents/Apis/Details/Endpoints/NewEndpointCreate';
@@ -32,35 +32,58 @@ import { isRestricted } from 'AppData/AuthManager';
 import EndpointOverview from './EndpointOverview';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
 
-const styles = (theme) => ({
-    endpointTypesWrapper: {
+const PREFIX = 'Endpoints';
+
+const classes = {
+    endpointTypesWrapper: `${PREFIX}-endpointTypesWrapper`,
+    root: `${PREFIX}-root`,
+    buttonSection: `${PREFIX}-buttonSection`,
+    radioGroup: `${PREFIX}-radioGroup`,
+    endpointValidityMessage: `${PREFIX}-endpointValidityMessage`,
+    errorMessageContainer: `${PREFIX}-errorMessageContainer`,
+    implSelectRadio: `${PREFIX}-implSelectRadio`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.endpointTypesWrapper}`]: {
         display: 'flex',
         alignItems: 'center',
         flexDirection: 'row',
         margin: '2px',
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         paddingRight: '10px',
     },
-    buttonSection: {
+
+    [`& .${classes.buttonSection}`]: {
         marginTop: theme.spacing(2),
     },
-    radioGroup: {
+
+    [`& .${classes.radioGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
         marginLeft: theme.spacing(2),
     },
-    endpointValidityMessage: {
+
+    [`& .${classes.endpointValidityMessage}`]: {
         color: theme.palette.error.main,
     },
-    errorMessageContainer: {
+
+    [`& .${classes.errorMessageContainer}`]: {
         marginTop: theme.spacing(1),
     },
-    implSelectRadio: {
+
+    [`& .${classes.implSelectRadio}`]: {
         padding: theme.spacing(1) / 2,
-    },
-});
+    }
+}));
 
 const defaultSwagger = { paths: {} };
 
@@ -70,7 +93,7 @@ const defaultSwagger = { paths: {} };
  * @returns {any} HTML representation.
  */
 function Endpoints(props) {
-    const { classes, intl, history } = props;
+    const {  intl, history } = props;
     const { api, updateAPI } = useContext(APIContext);
     const [swagger, setSwagger] = useState(defaultSwagger);
     const [endpointValidity, setAPIEndpointsValid] = useState({ isValid: true, message: '' });
@@ -482,7 +505,7 @@ function Endpoints(props) {
     };
 
     return (
-        <>
+        (<Root>
             {/* Since the api is set to the state in component did mount, check both the api and the apiObject. */}
             {(api.endpointConfig === null && apiObject.endpointConfig === null)
                 ? <NewEndpointCreate generateEndpointConfig={generateEndpointConfig} apiType={apiObject.type} />
@@ -571,8 +594,7 @@ function Endpoints(props) {
                         </div>
                     </div>
                 )}
-        </>
-
+        </Root>)
     );
 }
 
@@ -588,4 +610,4 @@ Endpoints.propTypes = {
     history: PropTypes.shape({}).isRequired,
 };
 
-export default withRouter(injectIntl(withStyles(styles)(Endpoints)));
+export default withRouter(injectIntl((Endpoints)));

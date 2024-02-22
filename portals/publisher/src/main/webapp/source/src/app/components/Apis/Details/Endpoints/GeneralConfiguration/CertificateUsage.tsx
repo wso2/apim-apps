@@ -17,19 +17,45 @@
  */
 
 import React, {useEffect, useState} from 'react';
+import { styled } from '@mui/material/styles';
 import {FormattedMessage} from 'react-intl';
-import {makeStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
-import {Typography} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import UsageIcon from '@material-ui/icons/List';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import {Typography} from '@mui/material';
+import Button from '@mui/material/Button';
+import UsageIcon from '@mui/icons-material/List';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import API from 'AppData/api';
 import MUIDataTable from "mui-datatables";
-import CircularProgress from "@material-ui/core/CircularProgress";
+import CircularProgress from '@mui/material/CircularProgress';
+
+const PREFIX = 'CertificateUsage';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    usageDialogHeader: `${PREFIX}-usageDialogHeader`,
+    buttonIcon: `${PREFIX}-buttonIcon`
+};
+
+const Root = styled('div')(() => ({
+    [`&.${classes.root}`]: {
+        width: '100%',
+        flexDirection: 'row',
+        display: 'flex',
+    },
+
+    [`& .${classes.usageDialogHeader}`]: {
+        fontWeight: '600',
+        fontSize: 'h6.fontSize',
+        marginRight: 10,
+    },
+
+    [`& .${classes.buttonIcon}`]: {
+        marginRight: 10,
+    }
+}));
 
 type CertificateUsageProps = {
     certAlias: string
@@ -43,23 +69,6 @@ type APIMetaData = {
     provider: string
 }
 
-// @ts-ignore
-const useStyles = makeStyles(() => ({
-    root: {
-        width: '100%',
-        flexDirection: 'row',
-        display: 'flex',
-    },
-    usageDialogHeader: {
-        fontWeight: '600',
-        fontSize: 'h6.fontSize',
-        marginRight: 10,
-    },
-    buttonIcon: {
-        marginRight: 10,
-    },
-}));
-
 /**
  *
  * @param {any} props Props for usage function.
@@ -67,7 +76,7 @@ const useStyles = makeStyles(() => ({
  */
 export const CertificateUsage = (props: CertificateUsageProps) => {
     const { certAlias } = props;
-    const classes = useStyles();
+
     const [open, setOpen] = useState<boolean>(false);
     const [usageData, setUsageData] = useState<any>( []);
     const [page, setPage] = useState<number>(0);
@@ -153,7 +162,7 @@ export const CertificateUsage = (props: CertificateUsageProps) => {
 
 
     const dialogTitle = (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <Typography className={classes.usageDialogHeader}>
                 <FormattedMessage
                     id='APIs.details.endpoints.certificate.usage'
@@ -167,7 +176,7 @@ export const CertificateUsage = (props: CertificateUsageProps) => {
                     />
                 )}
             </Typography>
-        </div>
+        </Root>
     );
 
     const dialogContent = (

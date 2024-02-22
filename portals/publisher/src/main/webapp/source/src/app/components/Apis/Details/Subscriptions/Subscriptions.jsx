@@ -17,12 +17,11 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import { CircularProgress, Grid } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { CircularProgress, Grid } from '@mui/material';
 import PropTypes from 'prop-types';
-import withStyles from '@material-ui/core/styles/withStyles';
 import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import Alert from 'AppComponents/Shared/Alert';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
@@ -35,13 +34,26 @@ import SubscriptionsTable from './SubscriptionsTable';
 import SubscriptionPoliciesManage from './SubscriptionPoliciesManage';
 import SubscriptionAvailability from './SubscriptionAvailability';
 
-const useStyles = makeStyles((theme) => ({
-    buttonSection: {
+const PREFIX = 'Subscriptions';
+
+const classes = {
+    buttonSection: `${PREFIX}-buttonSection`,
+    emptyBox: `${PREFIX}-emptyBox`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.buttonSection}`]: {
         marginTop: theme.spacing(2),
     },
-    emptyBox: {
+
+    [`& .${classes.emptyBox}`]: {
         marginTop: theme.spacing(2),
-    },
+    }
 }));
 
 /**
@@ -51,7 +63,7 @@ const useStyles = makeStyles((theme) => ({
  * @extends {Component}
  */
 function Subscriptions(props) {
-    const classes = useStyles();
+
     const [api] = useAPI();
     const { updateAPI } = props;
     const restApi = new API();
@@ -100,7 +112,7 @@ function Subscriptions(props) {
 
     if (typeof tenants !== 'number' || typeof subscriptions !== 'number') {
         return (
-            <Grid container direction='row' justify='center' alignItems='center'>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 <Grid item>
                     <CircularProgress />
                 </Grid>
@@ -108,7 +120,7 @@ function Subscriptions(props) {
         );
     }
     return (
-        <>
+        (<Root>
             {(api.gatewayVendor === 'wso2')
             && (<SubscriptionPoliciesManage api={api} policies={policies} setPolices={setPolices} />)}
             {tenants !== 0 && settings.crossTenantSubscriptionEnabled && (
@@ -158,7 +170,7 @@ function Subscriptions(props) {
                 </Grid>
             )}
             <SubscriptionsTable api={api} />
-        </>
+        </Root>)
     );
 }
 
@@ -166,4 +178,4 @@ Subscriptions.propTypes = {
     updateAPI: PropTypes.func.isRequired,
 };
 
-export default withStyles(makeStyles)(Subscriptions);
+export default (Subscriptions);

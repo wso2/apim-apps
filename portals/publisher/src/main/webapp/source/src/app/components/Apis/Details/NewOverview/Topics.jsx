@@ -17,54 +17,65 @@
  */
 
 import React from 'react';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
-import LaunchIcon from '@material-ui/icons/Launch';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import LaunchIcon from '@mui/icons-material/Launch';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import Api from 'AppData/api';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 
-const styles = {
-    root: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    heading: {
-        marginRight: 20,
-    },
-    contentWrapper: {
-        maxHeight: '125px',
-        overflowY: 'auto',
-    },
+const PREFIX = 'Topics';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    customButton: `${PREFIX}-customButton`
 };
 
-function VerbElement(props) {
-    const {
-        verb,
-    } = props;
 
-    const useMenuStyles = makeStyles((theme) => {
-        const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
-        return {
-            customButton: {
-                backgroundColor: '#ffffff',
-                borderColor: backgroundColor,
-                color: backgroundColor,
-                width: theme.spacing(2),
-            },
-        };
-    });
-    const classes = useMenuStyles();
+const Root = styled('div')(({ theme }) => {
+    // const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
+    return {
+        [`& .${classes.customButton}`]: {
+            backgroundColor: '#ffffff',
+            // borderColor: backgroundColor,
+            // color: backgroundColor,
+            width: theme.spacing(2),
+        },
+    };
+});
+
+function VerbElement(props) {
+    const { verb } = props;
+    const theme = useTheme();
+    const verbColor = theme.custom.resourceChipColors[verb.toLowerCase()];
+
+    // const useMenuStyles = makeStyles((
+    //     {
+    //         theme
+    //     }
+    // ) => {
+    //     const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
+    //     return {
+    //         [`& .${classes.customButton}`]: {
+    //             backgroundColor: '#ffffff',
+    //             borderColor: backgroundColor,
+    //             color: backgroundColor,
+    //             width: theme.spacing(2),
+    //         },
+    //     };
+    // });
+    // const classes = useMenuStyles();
     return (
-        <Button disableFocusRipple variant='outlined' className={classes.customButton} size='small'>
+        <Button disableFocusRipple variant='outlined' className={classes.customButton} size='small' 
+            sx={{ borderColor: verbColor, color: verbColor }}>
             {verb.toUpperCase()}
         </Button>
     );
@@ -131,10 +142,10 @@ class Topics extends React.Component {
                 </div>
             );
         }
-        const { classes, parentClasses, api } = this.props;
+        const {  parentClasses, api } = this.props;
 
         return (
-            <>
+            (<Root>
                 <div className={parentClasses.titleWrapper}>
                     <Typography variant='h5' component='h3' className={parentClasses.title}>
                         <FormattedMessage
@@ -183,7 +194,7 @@ class Topics extends React.Component {
                         </Typography>
                     </Link>
                 </Box>
-            </>
+            </Root>)
         );
     }
 }
@@ -200,4 +211,4 @@ Topics.propTypes = {
     api: PropTypes.shape({ id: PropTypes.string }).isRequired,
 };
 
-export default withStyles(styles)(Topics);
+export default (Topics);

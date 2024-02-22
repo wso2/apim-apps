@@ -17,10 +17,10 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
 import Configurations from 'Config';
 import Delete from 'AppComponents/ServiceCatalog/Listing/Delete';
 import Usages from 'AppComponents/ServiceCatalog/Listing/Usages';
@@ -31,11 +31,25 @@ import { FormattedMessage } from 'react-intl';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 
-dayjs.extend(relativeTime);
+const PREFIX = 'ServicesTableView';
 
+const classes = {
+    contentInside: `${PREFIX}-contentInside`,
+    serviceNameLink: `${PREFIX}-serviceNameLink`,
+    buttonStyle: `${PREFIX}-buttonStyle`,
+    content: `${PREFIX}-content`,
+    helpDiv: `${PREFIX}-helpDiv`,
+    helpIcon: `${PREFIX}-helpIcon`,
+    horizontalDivider: `${PREFIX}-horizontalDivider`,
+    tableStyle: `${PREFIX}-tableStyle`
+};
 
-const useStyles = makeStyles((theme) => ({
-    contentInside: {
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.contentInside}`]: {
         padding: theme.spacing(3),
         paddingTop: theme.spacing(2),
         paddingLeft: theme.spacing(3),
@@ -45,7 +59,8 @@ const useStyles = makeStyles((theme) => ({
             backgroundColor: 'transparent',
         },
     },
-    serviceNameLink: {
+
+    [`& .${classes.serviceNameLink}`]: {
         display: 'flex',
         alignItems: 'center',
         '& span': {
@@ -58,29 +73,35 @@ const useStyles = makeStyles((theme) => ({
             fontSize: 18,
         },
     },
-    buttonStyle: {
+
+    [`& .${classes.buttonStyle}`]: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
         marginRight: theme.spacing(2),
     },
-    content: {
+
+    [`& .${classes.content}`]: {
         display: 'flex',
         flex: 1,
         flexDirection: 'column',
         paddingBottom: theme.spacing(3),
     },
-    helpDiv: {
+
+    [`& .${classes.helpDiv}`]: {
         marginTop: theme.spacing(0.5),
     },
-    helpIcon: {
+
+    [`& .${classes.helpIcon}`]: {
         fontSize: 20,
     },
-    horizontalDivider: {
+
+    [`& .${classes.horizontalDivider}`]: {
         marginTop: theme.spacing(3),
         borderTop: '0px',
         width: '100%',
     },
-    tableStyle: {
+
+    [`&.${classes.tableStyle}`]: {
         marginTop: theme.spacing(4),
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -96,8 +117,11 @@ const useStyles = makeStyles((theme) => ({
         '& th': {
             minWidth: '150px',
         },
-    },
+    }
 }));
+
+dayjs.extend(relativeTime);
+
 
 /**
  * Listing for service catalog entries
@@ -108,7 +132,7 @@ const useStyles = makeStyles((theme) => ({
 function ServicesTableView(props) {
     const { serviceList, onDelete } = props;
 
-    const classes = useStyles();
+
 
     const getDefinitionTypeDisplayName = (definitionType) => {
         return Configurations.serviceCatalogDefinitionTypes[definitionType] || definitionType;
@@ -327,10 +351,9 @@ function ServicesTableView(props) {
     };
 
     return (
-
-        <div className={classes.tableStyle}>
+        <Root className={classes.tableStyle}>
             <MUIDataTable title='' data={serviceList} columns={columns} options={options} />
-        </div>
+        </Root>
     );
 }
 

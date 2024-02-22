@@ -17,44 +17,60 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { withStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { FormattedMessage } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { isRestricted } from 'AppData/AuthManager';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 
-const styles = (theme) => ({
-    subHeading: {
+const PREFIX = 'SchemaValidation';
+
+const classes = {
+    subHeading: `${PREFIX}-subHeading`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    actionSpace: `${PREFIX}-actionSpace`,
+    paper: `${PREFIX}-paper`
+};
+
+const StyledPaper = styled(Paper)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 2.5,
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    actionSpace: {
+
+    [`& .${classes.actionSpace}`]: {
         marginLeft: theme.spacing(20),
     },
-    paper: {
+
+    [`&.${classes.paper}`]: {
         padding: theme.spacing(0, 3),
         marginBottom: theme.spacing(3),
-    },
-});
+    }
+}));
 
 /**
  *
@@ -112,12 +128,12 @@ class SchemaValidation extends React.Component {
      * @memberof SchemaValidation
      */
     render() {
-        const { api, configDispatcher, classes } = this.props;
+        const { api, configDispatcher, } = this.props;
         const { isOpen } = this.state;
         const { api: apiFromContext } = this.context;
 
         return (
-            <Paper className={classes.paper}>
+            <StyledPaper className={classes.paper}>
                 <Grid container spacing={1} alignItems='flex-start'>
                     <Grid item md={12}>
                         <Typography className={classes.subHeading} variant='h6' component='h4'>
@@ -220,7 +236,7 @@ class SchemaValidation extends React.Component {
                         </Button>
                     </DialogActions>
                 </Dialog>
-            </Paper>
+            </StyledPaper>
         );
     }
 }
@@ -233,4 +249,4 @@ SchemaValidation.propTypes = {
 
 SchemaValidation.contextType = ApiContext;
 
-export default withStyles(styles)(SchemaValidation);
+export default (SchemaValidation);

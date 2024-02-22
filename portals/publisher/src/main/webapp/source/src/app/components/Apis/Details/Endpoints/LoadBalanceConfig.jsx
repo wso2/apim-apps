@@ -15,15 +15,33 @@
  */
 
 import React, { useEffect, useState, useContext } from 'react';
-import {
-    TextField, MenuItem, Grid, Button, withStyles,
-} from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { TextField, MenuItem, Grid, Button } from '@mui/material';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+
+const PREFIX = 'LoadBalanceConfig';
+
+const classes = {
+    configButtonContainer: `${PREFIX}-configButtonContainer`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.configButtonContainer}`]: {
+        display: 'flex',
+        justifyContent: 'flex-end',
+        paddingTop: theme.spacing(1),
+    }
+}));
 
 const algorithms = [
     {
@@ -47,14 +65,6 @@ const defaultTemplateObj = {
     failOver: false,
 };
 
-const styles = (theme) => ({
-    configButtonContainer: {
-        display: 'flex',
-        justifyContent: 'flex-end',
-        paddingTop: theme.spacing(1),
-    },
-});
-
 /**
  * The component for loadbalance endpoint configuration.
  * @param {any} props The props that are being passed.
@@ -69,7 +79,6 @@ function LoadBalanceConfig(props) {
         failOver,
         handleLBConfigChange,
         closeLBConfigDialog,
-        classes,
     } = props;
     const [lbConfig, setLbConfigObject] = useState(defaultTemplateObj);
     const [algoClassNameError, setAlgoClassNameError] = useState(false);
@@ -139,7 +148,7 @@ function LoadBalanceConfig(props) {
     };
 
     return (
-        <>
+        (<Root>
             <Grid container direction='column'>
                 <TextField
                     id='algorithmSelect'
@@ -259,7 +268,7 @@ function LoadBalanceConfig(props) {
                     />
                 </Button>
             </Grid>
-        </>
+        </Root>)
     );
 }
 
@@ -275,4 +284,4 @@ LoadBalanceConfig.propTypes = {
     closeLBConfigDialog: PropTypes.func.isRequired,
 };
 
-export default injectIntl(withStyles(styles)(LoadBalanceConfig));
+export default injectIntl((LoadBalanceConfig));

@@ -17,8 +17,8 @@
  */
 
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import Progress from './Progress';
 
@@ -29,7 +29,7 @@ const Redirecting = (props) => {
 
     return (
         <div className='redirect-flex-container'>
-            <Grid container justify='center' alignItems='center' spacing={0} className='redirect-grid-container'>
+            <Grid container justifyContent='center' alignItems='center' spacing={0} className='redirect-grid-container'>
                 <Grid item lg={6} md={8} xs={10}>
                     <Grid container alignItems='center'>
                         <Grid item sm={2} xs={12}>

@@ -50,7 +50,6 @@ export default function HTMLRender(props) {
         replace: customReplace,
     });
     // Remove tags from html
-
     return (
         <>{parsedHtml}</>
     )

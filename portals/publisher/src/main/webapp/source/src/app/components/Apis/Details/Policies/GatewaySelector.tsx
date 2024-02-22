@@ -17,8 +17,8 @@
  */
 
 import React, { FC, useState } from 'react';
-import { HelpOutline } from '@material-ui/icons';
-import Tooltip from '@material-ui/core/Tooltip';
+import { HelpOutline } from '@mui/icons-material';
+import Tooltip from '@mui/material/Tooltip';
 import {
     Dialog,
     DialogTitle,
@@ -26,15 +26,15 @@ import {
     Button,
     DialogActions,
     Radio,
-} from '@material-ui/core';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+} from '@mui/material';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import Grid from '@mui/material/Grid';
+import FormControl from '@mui/material/FormControl';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { FormattedMessage } from 'react-intl';
@@ -106,7 +106,7 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
 
     return (
         <Paper>
-            <Grid container direction='row' spacing={3}>
+            <Grid container direction='row'>
                 <Grid item md={12} xs={12}>
                     <Box
                         display='flex'
@@ -126,9 +126,8 @@ const GatewaySelector: FC<GatewaySelectorProps> = ({
                                 <Tooltip
                                     title='Policy list is dependant on the selected Gateway'
                                     placement='right-start'
-                                    interactive
                                 >
-                                    <IconButton aria-label='API Gateway selector help text'>
+                                    <IconButton aria-label='API Gateway selector help text' size='large'>
                                         <HelpOutline />
                                     </IconButton>
                                 </Tooltip>

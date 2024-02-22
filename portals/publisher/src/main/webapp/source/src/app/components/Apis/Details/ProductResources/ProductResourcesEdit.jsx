@@ -19,32 +19,46 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["operationObj"] }] */
 
 import React, { useState, useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link, useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import cloneDeep from 'lodash.clonedeep';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import ProductResourcesEditWorkspace from './ProductResourcesEditWorkspace';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'ProductResourcesEdit';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         paddingBottom: theme.spacing(2),
     },
-    buttonWrapper: {
+
+    [`& .${classes.buttonWrapper}`]: {
         marginTop: theme.spacing(4),
-    },
+    }
 }));
 
 /**
@@ -53,7 +67,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns
  */
 function ProductResourcesEdit() {
-    const classes = useStyles();
+
 
     // Get the current api product object from the context
     const { api, updateAPI } = useContext(APIContext);
@@ -107,7 +121,7 @@ function ProductResourcesEdit() {
     };
 
     return (
-        <div className={classes.root}>
+        <Root className={classes.root} style={{ border: '2px solid red'}}>
             <div className={classes.titleWrapper}>
                 <Typography variant='h4' align='left' className={classes.mainTitle}>
                     <FormattedMessage
@@ -149,7 +163,7 @@ function ProductResourcesEdit() {
                     </Grid>
                 </div>
             </div>
-        </div>
+        </Root>
     );
 }
 

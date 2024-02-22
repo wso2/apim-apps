@@ -18,10 +18,10 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';

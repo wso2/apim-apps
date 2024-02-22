@@ -17,33 +17,44 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Tooltip from '@material-ui/core/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import Tooltip from '@mui/material/Tooltip';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
 import APIValidation from 'AppData/APIValidation';
 import base64url from 'base64url';
-import Error from '@material-ui/icons/Error';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Chip from '@material-ui/core/Chip';
-import { red } from '@material-ui/core/colors/';
+import Error from '@mui/icons-material/Error';
+import InputAdornment from '@mui/material/InputAdornment';
+import Chip from '@mui/material/Chip';
+import { red } from '@mui/material/colors/';
 import Alert from 'AppComponents/Shared/Alert';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import CONSTS from 'AppData/Constants';
 import API from 'AppData/api';
 
-const useStyles = makeStyles((theme) => ({
-    tooltip: {
+const PREFIX = 'StoreVisibility';
+
+const classes = {
+    tooltip: `${PREFIX}-tooltip`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tooltip}`]: {
         position: 'absolute',
         right: theme.spacing(-4),
         top: theme.spacing(1),
-    },
+    }
 }));
 
 /**
@@ -60,7 +71,7 @@ export default function StoreVisibility(props) {
     const [invalidRoles, setInvalidRoles] = useState([]);
     const isRestrictedByRoles = api.visibility === 'RESTRICTED';
     const [apiFromContext] = useAPI();
-    const classes = useStyles();
+
     const restApi = new API();
     const [tenants, setTenants] = useState([]);
     useEffect(() => {
@@ -129,7 +140,7 @@ export default function StoreVisibility(props) {
     }
 
     return (
-        <>
+        (<Root>
             <Box style={{ position: 'relative' }}>
                 <TextField
                     fullWidth
@@ -284,7 +295,7 @@ export default function StoreVisibility(props) {
                     />
                 </Box>
             )}
-        </>
+        </Root>)
     );
 }
 

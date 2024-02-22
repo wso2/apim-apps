@@ -16,68 +16,91 @@
  * under the License.
  */
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
-import Paper from '@material-ui/core/Paper';
-import CloseIcon from '@material-ui/icons/Close';
-import CheckIcon from '@material-ui/icons/Check';
-import green from '@material-ui/core/colors/green';
-import yellow from '@material-ui/core/colors/yellow';
-import LaunchIcon from '@material-ui/icons/Launch';
+import Paper from '@mui/material/Paper';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckIcon from '@mui/icons-material/Check';
+import LaunchIcon from '@mui/icons-material/Launch';
 
-const useStyles = makeStyles((theme) => ({
-    stateButton: {
+import { green, yellow } from '@mui/material/colors';
+
+const PREFIX = 'CheckboxLabels';
+
+const classes = {
+    stateButton: `${PREFIX}-stateButton`,
+    paperCenter: `${PREFIX}-paperCenter`,
+    iconTrue: `${PREFIX}-iconTrue`,
+    iconFalse: `${PREFIX}-iconFalse`,
+    iconWarn: `${PREFIX}-iconWarn`,
+    grid: `${PREFIX}-grid`,
+    labelsGrid: `${PREFIX}-labelsGrid`
+};
+
+const StyledPaper = styled(Paper)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.stateButton}`]: {
         marginRight: theme.spacing(),
     },
-    paperCenter: {
+
+    [`&.${classes.paperCenter}`]: {
         padding: theme.spacing(2),
         display: 'block',
         alignItems: 'left',
         justifyContent: 'center',
     },
-    iconTrue: {
+
+    [`& .${classes.iconTrue}`]: {
         color: green[500],
         marginRight: theme.spacing(1),
         display: 'block',
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
-    iconFalse: {
+
+    [`& .${classes.iconFalse}`]: {
         color: theme.palette.grey[500],
         marginRight: theme.spacing(1),
         display: 'block',
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
-    iconWarn: {
+
+    [`& .${classes.iconWarn}`]: {
         color: yellow[700],
         marginRight: theme.spacing(1),
         display: 'block',
         justifyContent: 'flex-start',
         alignItems: 'center',
     },
-    grid: {
+
+    [`& .${classes.grid}`]: {
         marginTop: theme.spacing(2),
         display: 'flex',
         flexDirection: 'row',
         justifyContent: 'left',
         alignItems: 'left',
     },
-    labelsGrid: {
+
+    [`& .${classes.labelsGrid}`]: {
         fontWeight: 600,
         marginTop: theme.spacing(3),
-    },
+    }
 }));
+
 /**
  * This component renders the requirements list
  * @param {*} props
  */
 export default function CheckboxLabels(props) {
-    const classes = useStyles();
+
     const {
         api, isMutualSSLEnabled, isCertAvailable, isAppLayerSecurityMandatory, isBusinessPlanAvailable, isAPIProduct,
         isMandatoryPropertiesAvailable, isMandatoryPropertiesConfigured
@@ -88,7 +111,7 @@ export default function CheckboxLabels(props) {
     const lcState = isAPIProduct ? api.state : api.lifeCycleStatus;
 
     return (
-        <Paper className={classes.paperCenter}>
+        <StyledPaper className={classes.paperCenter}>
             <Grid xs={12}>
                 <Typography variant='h6' component='h4'>
                     <FormattedMessage
@@ -195,7 +218,7 @@ export default function CheckboxLabels(props) {
                     </Grid>
                 </>
             )}
-        </Paper>
+        </StyledPaper>
     );
 }
 

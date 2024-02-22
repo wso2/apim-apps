@@ -22,139 +22,196 @@ import React, {
     lazy,
     Suspense,
 } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import Icon from '@mui/material/Icon';
 import Configurations from 'Config';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Tooltip from '@material-ui/core/Tooltip';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Tooltip from '@mui/material/Tooltip';
 import { Progress } from 'AppComponents/Shared';
 import Alert from 'AppComponents/Shared/Alert';
 import ServiceCatalog from 'AppData/ServiceCatalog';
-import Container from '@material-ui/core/Container';
+import Container from '@mui/material/Container';
 import Utils from 'AppData/Utils';
-import CloudDownloadRounded from '@material-ui/icons/CloudDownloadRounded';
+import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import OpenInNewIcon from '@material-ui/icons/OpenInNew';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import CreateApi from 'AppComponents/ServiceCatalog/CreateApi';
 import Usages from 'AppComponents/ServiceCatalog/Listing/Usages';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
-import Dialog from '@material-ui/core/Dialog';
-import IconButton from '@material-ui/core/IconButton';
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
 import { isRestricted } from 'AppData/AuthManager';
 import YAML from 'js-yaml';
-import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
+import Box from '@mui/material/Box';
+import Breadcrumbs from '@mui/material/Breadcrumbs';
 import { Link } from 'react-router-dom';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import LocalOfferOutlinedIcon from '@material-ui/icons/LocalOfferOutlined';
+import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import beautify from 'xml-beautifier';
+
+const PREFIX = 'Overview';
+
+const classes = {
+    preview: `${PREFIX}-preview`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    iconAligner: `${PREFIX}-iconAligner`,
+    tableIcon: `${PREFIX}-tableIcon`,
+    bodyStyle: `${PREFIX}-bodyStyle`,
+    contentTopBarStyle: `${PREFIX}-contentTopBarStyle`,
+    table: `${PREFIX}-table`,
+    iconTextWrapper: `${PREFIX}-iconTextWrapper`,
+    versionBarStyle: `${PREFIX}-versionBarStyle`,
+    topBarDetailsSectionStyle: `${PREFIX}-topBarDetailsSectionStyle`,
+    versionStyle: `${PREFIX}-versionStyle`,
+    apiUsageStyle: `${PREFIX}-apiUsageStyle`,
+    headingSpacing: `${PREFIX}-headingSpacing`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`,
+    buttonSection: `${PREFIX}-buttonSection`,
+    paperStyle: `${PREFIX}-paperStyle`,
+    downloadServiceFlex: `${PREFIX}-downloadServiceFlex`,
+    downloadServiceGroup: `${PREFIX}-downloadServiceGroup`,
+    iconSpacing: `${PREFIX}-iconSpacing`,
+    button: `${PREFIX}-button`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    downloadButtonSpacing: `${PREFIX}-downloadButtonSpacing`,
+    editorPane: `${PREFIX}-editorPane`,
+    editorRoot: `${PREFIX}-editorRoot`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.preview}`]: {
+        height: theme.spacing(16),
+        marginBottom: theme.spacing(3),
+        marginLeft: theme.spacing(1),
+    },
+
+    [`& .${classes.contentWrapper}`]: {
+        marginTop: theme.spacing(3),
+        alignItems: 'center',
+    },
+
+    [`& .${classes.iconAligner}`]: {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+
+    [`& .${classes.tableIcon}`]: {
+        width: theme.spacing(3),
+    },
+
+    [`& .${classes.bodyStyle}`]: {
+        marginLeft: theme.spacing(2),
+        marginBottom: theme.spacing(3),
+    },
+
+    [`& .${classes.contentTopBarStyle}`]: {
+        display: 'flex',
+    },
+
+    [`& .${classes.table}`]: {
+        minWidth: '100%',
+    },
+
+    [`& .${classes.iconTextWrapper}`]: {
+        display: 'inline-block',
+        paddingLeft: 20,
+    },
+
+    [`& .${classes.versionBarStyle}`]: {
+        marginTop: theme.spacing(1),
+        display: 'flex',
+    },
+
+    [`& .${classes.topBarDetailsSectionStyle}`]: {
+        marginLeft: theme.spacing(5),
+    },
+
+    [`& .${classes.versionStyle}`]: {
+        marginLeft: theme.spacing(1),
+    },
+
+    [`& .${classes.apiUsageStyle}`]: {
+        marginTop: theme.spacing(3),
+    },
+
+    [`& .${classes.headingSpacing}`]: {
+        marginTop: theme.spacing(3),
+    },
+
+    [`& .${classes.buttonWrapper}`]: {
+        paddingTop: 10,
+    },
+
+    [`& .${classes.buttonSection}`]: {
+        paddingTop: theme.spacing(1),
+        marginLeft: theme.spacing(2),
+    },
+
+    [`& .${classes.paperStyle}`]: {
+        marginBottom: theme.spacing(3),
+    },
+
+    [`& .${classes.downloadServiceFlex}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        marginLeft: -8,
+    },
+
+    [`& .${classes.downloadServiceGroup}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        marginLeft: -8,
+    },
+
+    [`& .${classes.iconSpacing}`]: {
+        marginRight: theme.spacing(1),
+    },
+
+    [`& .${classes.button}`]: {
+        marginLeft: theme.spacing(2),
+    },
+
+    [`& .${classes.buttonIcon}`]: {
+        marginRight: theme.spacing(1),
+    },
+
+    [`& .${classes.downloadButtonSpacing}`]: {
+        marginLeft: theme.spacing(1),
+    },
+
+    [`& .${classes.editorPane}`]: {
+        width: '50%',
+        height: '100%',
+        overflow: 'scroll',
+    },
+
+    [`& .${classes.editorRoot}`]: {
+        height: '100%',
+    }
+}));
 
 dayjs.extend(relativeTime);
 // disabled because webpack magic comment for chunk name require to be in the same line
 // eslint-disable-next-line max-len
 const SwaggerUI = lazy(() => import('AppComponents/Apis/Details/APIDefinition/swaggerUI/SwaggerUI' /* webpackChunkName: "ServiceOverviewSwaggerUI" */));
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
-
-const useStyles = makeStyles((theme) => ({
-    preview: {
-        height: theme.spacing(16),
-        marginBottom: theme.spacing(3),
-        marginLeft: theme.spacing(1),
-    },
-    contentWrapper: {
-        marginTop: theme.spacing(3),
-        alignItems: 'center',
-    },
-    iconAligner: {
-        display: 'flex',
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-    },
-    tableIcon: {
-        width: theme.spacing(3),
-    },
-    bodyStyle: {
-        marginLeft: theme.spacing(2),
-        marginBottom: theme.spacing(3),
-    },
-    contentTopBarStyle: {
-        display: 'flex',
-    },
-    table: {
-        minWidth: '100%',
-    },
-    iconTextWrapper: {
-        display: 'inline-block',
-        paddingLeft: 20,
-    },
-    versionBarStyle: {
-        marginTop: theme.spacing(1),
-        display: 'flex',
-    },
-    topBarDetailsSectionStyle: {
-        marginLeft: theme.spacing(5),
-    },
-    versionStyle: {
-        marginLeft: theme.spacing(1),
-    },
-    apiUsageStyle: {
-        marginTop: theme.spacing(3),
-    },
-    headingSpacing: {
-        marginTop: theme.spacing(3),
-    },
-    buttonWrapper: {
-        paddingTop: 10,
-    },
-    buttonSection: {
-        paddingTop: theme.spacing(1),
-        marginLeft: theme.spacing(2),
-    },
-    paperStyle: {
-        marginBottom: theme.spacing(3),
-    },
-    downloadServiceFlex: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'space-between',
-        marginLeft: -8,
-    },
-    downloadServiceGroup: {
-        display: 'flex',
-        flexDirection: 'row',
-        marginLeft: -8,
-    },
-    iconSpacing: {
-        marginRight: theme.spacing(1),
-    },
-    button: {
-        marginLeft: theme.spacing(2),
-    },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
-    downloadButtonSpacing: {
-        marginLeft: theme.spacing(1),
-    },
-    editorPane: {
-        width: '50%',
-        height: '100%',
-        overflow: 'scroll',
-    },
-    editorRoot: {
-        height: '100%',
-    },
-}));
 
 /**
  * Service Catalog Overview Page
@@ -163,7 +220,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {any} Overview page of a service
  */
 function Overview(props) {
-    const classes = useStyles();
+
     const intl = useIntl();
     const { match, history } = props;
     const serviceId = match.params.service_uuid;
@@ -397,7 +454,7 @@ function Overview(props) {
     };
 
     return (
-        <>
+        <Root>
             <Container maxWidth='md'>
                 <Box mb={3} className={classes.headingSpacing}>
                     <Breadcrumbs aria-label='breadcrumb'>
@@ -583,7 +640,7 @@ function Overview(props) {
                                                                     defaultMessage='Close'
                                                                 />
                                                             )}
-                                                        >
+                                                            size='large'>
                                                             <Icon>close</Icon>
                                                         </IconButton>
                                                     </Paper>
@@ -703,7 +760,7 @@ function Overview(props) {
                     </Box>
                 </Paper>
             </Container>
-        </>
+        </Root>
     );
 }
 

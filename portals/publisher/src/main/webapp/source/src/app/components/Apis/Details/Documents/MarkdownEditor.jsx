@@ -17,58 +17,70 @@
  */
 
 import React, { useState, useContext, Suspense, lazy } from 'react';
+import { styled } from '@mui/material/styles';
 import { withRouter } from 'react-router-dom';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Slide from '@material-ui/core/Slide';
-import Icon from '@material-ui/core/Icon';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Slide from '@mui/material/Slide';
+import Icon from '@mui/material/Icon';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
 import Api from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus , vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Configurations from 'Config';
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "MDMonacoEditor" */));
-const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "MDReactMarkdown" */));
+const PREFIX = 'MarkdownEditor';
 
-const styles = {
-    appBar: {
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    flex: `${PREFIX}-flex`,
+    popupHeader: `${PREFIX}-popupHeader`,
+    splitWrapper: `${PREFIX}-splitWrapper`,
+    docName: `${PREFIX}-docName`,
+    markdownViewWrapper: `${PREFIX}-markdownViewWrapper`,
+    button: `${PREFIX}-button`
+};
+
+const Root = styled('div')({
+    [`& .${classes.appBar}`]: {
         position: 'relative',
     },
-    flex: {
+    [`& .${classes.flex}`]: {
         flex: 1,
     },
-    popupHeader: {
+    [`& .${classes.popupHeader}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    splitWrapper: {
+    [`& .${classes.splitWrapper}`]: {
         padding: 0,
     },
-    docName: {
+    [`& .${classes.docName}`]: {
         alignItems: 'center',
         display: 'flex',
     },
-    markdownViewWrapper: {
+    [`& .${classes.markdownViewWrapper}`]: {
         height: '100vh',
         overflowY: 'auto',
     },
-    button: {
+    [`& .${classes.button}`]: {
         height: 30,
         marginLeft: 30,
     },
-};
+});
+
+const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "MDMonacoEditor" */));
+const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "MDReactMarkdown" */));
 
 function Transition(props) {
     return <Slide direction="up" {...props} />;
@@ -161,9 +173,9 @@ function MarkdownEditor(props) {
 
     const markdownWithApiData = addApiContent(docContent);
 
-    const { classes, docName } = props;
+    const {  docName } = props;
     return (
-        <div>
+        <Root>
             <Button onClick={toggleOpen} disabled={api.isRevision}  aria-label={'Edit Content of ' + docName}>
                 <Icon>code</Icon>
                 <FormattedMessage
@@ -173,7 +185,7 @@ function MarkdownEditor(props) {
             </Button>
             <Dialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
                 <Paper square className={classes.popupHeader}>
-                    <IconButton color="inherit" onClick={toggleOpen} aria-label="Close">
+                    <IconButton color="inherit" onClick={toggleOpen} aria-label="Close" size='large'>
                         <Icon>close</Icon>
                     </IconButton>
                     <Typography variant="h4" className={classes.docName}>
@@ -236,7 +248,7 @@ function MarkdownEditor(props) {
                                                     <code className={className} {...props}>
                                                         {children}
                                                     </code>
-                                                )
+                                                );
                                             }
                                         }}
                                     />                                
@@ -246,7 +258,7 @@ function MarkdownEditor(props) {
                     </Grid>
                 </div>
             </Dialog>
-        </div>
+        </Root>
     );
 }
 
@@ -255,4 +267,4 @@ MarkdownEditor.propTypes = {
     intl: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withRouter(withStyles(styles)(MarkdownEditor)));
+export default injectIntl(withRouter((MarkdownEditor)));

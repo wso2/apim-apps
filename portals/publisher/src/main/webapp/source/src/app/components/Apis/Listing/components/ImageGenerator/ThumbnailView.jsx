@@ -1,39 +1,20 @@
-/*
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
- *
- * WSO2 Inc. licenses this file to you under the Apache License,
- * Version 2.0 (the "License"); you may not use this file except
- * in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing,
- * software distributed under the License is distributed on an
- * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
- * KIND, either express or implied. See the License for the
- * specific language governing permissions and limitations
- * under the License.
- */
-import { withStyles } from '@material-ui/core/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
 import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Grid from '@material-ui/core/Grid';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Paper from '@material-ui/core/Paper';
-import Slide from '@material-ui/core/Slide';
-import Typography from '@material-ui/core/Typography';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Grid from '@mui/material/Grid';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Paper from '@mui/material/Paper';
+import Slide from '@mui/material/Slide';
+import Typography from '@mui/material/Typography';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
+import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
 import Dropzone from 'react-dropzone';
 import Api from 'AppData/api';
@@ -42,8 +23,124 @@ import MaterialIcons from 'MaterialIcons';
 import Alert from 'AppComponents/Shared/Alert';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Configurations from 'Config';
-
+import { green, red } from '@mui/material/colors';
 import BaseThumbnail from './BaseThumbnail';
+
+const PREFIX = 'ThumbnailView';
+
+const classes = {
+    acceptDrop: `${PREFIX}-acceptDrop`,
+    dropzone: `${PREFIX}-dropzone`,
+    dropZoneWrapper: `${PREFIX}-dropZoneWrapper`,
+    preview: `${PREFIX}-preview`,
+    rejectDrop: `${PREFIX}-rejectDrop`,
+    group: `${PREFIX}-group`,
+    popupHeader: `${PREFIX}-popupHeader`,
+    iconView: `${PREFIX}-iconView`,
+    subtitle: `${PREFIX}-subtitle`,
+    subtitleWrapper: `${PREFIX}-subtitleWrapper`,
+    body: `${PREFIX}-body`,
+    imageGenWrapper: `${PREFIX}-imageGenWrapper`,
+    backgroundSelection: `${PREFIX}-backgroundSelection`,
+    actionBox: `${PREFIX}-actionBox`,
+    imageContainer: `${PREFIX}-imageContainer`
+};
+
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+    [`& .${classes.acceptDrop}`]: {
+        backgroundColor: green[50],
+    },
+
+    [`& .${classes.dropzone}`]: {
+        border: '1px dashed ' + theme.palette.primary.main,
+        borderRadius: '5px',
+        cursor: 'pointer',
+        height: 'calc(100vh - 10em)',
+        padding: `${theme.spacing(2)} 0px`,
+        position: 'relative',
+        textAlign: 'center',
+        width: '100%',
+        margin: '10px 0',
+    },
+
+    [`& .${classes.dropZoneWrapper}`]: {
+        height: '100%',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        '& span': {
+            fontSize: 100,
+            color: theme.palette.primary.main,
+        },
+    },
+
+    [`& .${classes.preview}`]: {
+        height: theme.spacing(25),
+    },
+
+    [`& .${classes.rejectDrop}`]: {
+        backgroundColor: red[50],
+    },
+
+    [`& .${classes.group}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        padding: '0 0 0 20px',
+    },
+
+    [`& .${classes.popupHeader}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+    },
+
+    [`& .${classes.iconView}`]: {
+        width: 30,
+        margin: 10,
+        cursor: 'pointer',
+    },
+
+    [`& .${classes.subtitle}`]: {
+        marginRight: 20,
+    },
+
+    [`& .${classes.subtitleWrapper}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginTop: 20,
+        marginBottom: 10,
+    },
+
+    [`& .${classes.body}`]: {
+        marginBottom: 10,
+    },
+
+    [`& .${classes.imageGenWrapper}`]: {
+        '& > div': {
+            position: 'fixed',
+            marginTop: 20,
+        },
+    },
+
+    [`& .${classes.backgroundSelection}`]: {
+        cursor: 'pointer',
+        marginRight: 10,
+        display: 'inline-block',
+        border: 'solid 1px #ccc',
+    },
+
+    [`& .${classes.actionBox}`]: {
+        boxShadow:
+            '0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)',
+        justifyContent: 'flex-start',
+        padding: '10px 0 10px 10px',
+    },
+
+    [`& .${classes.imageContainer}`]: {
+        paddingTop: 10,
+    }
+}));
 
 const windowURL = window.URL || window.webkitURL;
 const dropzoneStyles = {
@@ -57,86 +154,6 @@ const dropzoneStyles = {
     width: '100%',
     margin: '10px 0',
 };
-const styles = (theme) => ({
-    acceptDrop: {
-        backgroundColor: green[50],
-    },
-    dropzone: {
-        border: '1px dashed ' + theme.palette.primary.main,
-        borderRadius: '5px',
-        cursor: 'pointer',
-        height: 'calc(100vh - 10em)',
-        padding: `${theme.spacing(2)}px 0px`,
-        position: 'relative',
-        textAlign: 'center',
-        width: '100%',
-        margin: '10px 0',
-    },
-    dropZoneWrapper: {
-        height: '100%',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        '& span': {
-            fontSize: 100,
-            color: theme.palette.primary.main,
-        },
-    },
-    preview: {
-        height: theme.spacing(25),
-    },
-    rejectDrop: {
-        backgroundColor: red[50],
-    },
-    group: {
-        display: 'flex',
-        flexDirection: 'row',
-        padding: '0 0 0 20px',
-    },
-    popupHeader: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
-    iconView: {
-        width: 30,
-        margin: 10,
-        cursor: 'pointer',
-    },
-    subtitle: {
-        marginRight: 20,
-    },
-    subtitleWrapper: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginTop: 20,
-        marginBottom: 10,
-    },
-    body: {
-        marginBottom: 10,
-    },
-    imageGenWrapper: {
-        '& > div': {
-            position: 'fixed',
-            marginTop: 20,
-        },
-    },
-    backgroundSelection: {
-        cursor: 'pointer',
-        marginRight: 10,
-        display: 'inline-block',
-        border: 'solid 1px #ccc',
-    },
-    actionBox: {
-        boxShadow:
-            '0px 1px 5px 0px rgba(0,0,0,0.2), 0px 2px 2px 0px rgba(0,0,0,0.14), 0px 3px 1px -2px rgba(0,0,0,0.12)',
-        justifyContent: 'flex-start',
-        padding: '10px 0 10px 10px',
-    },
-    imageContainer: {
-        paddingTop: 10,
-    },
-});
 
 /**
  * Slide up transition for modal
@@ -347,7 +364,7 @@ class ThumbnailView extends Component {
      */
     render() {
         const {
-            api, classes, width, height, isEditable, intl, imageUpdate,
+            api, width, height, isEditable, intl, imageUpdate,
         } = this.props;
         const maxSize = 1000000;
         const {
@@ -363,7 +380,7 @@ class ThumbnailView extends Component {
         if (!category) category = MaterialIcons.categories[0].name;
 
         return (
-            <>
+            <div>
                 <BaseThumbnail
                     isEditable={isEditable}
                     onClick={this.handleClick('btnEditAPIThumb', intl)}
@@ -377,19 +394,22 @@ class ThumbnailView extends Component {
                     height={height}
                     imageUpdate={imageUpdate}
                 />
-
-                <Dialog
+                <StyledDialog
                     TransitionComponent={Transition}
                     aria-labelledby='thumb-dialog-title'
-                    disableBackdropClick
                     open={this.state.open}
                     onClose={this.handleClose}
-                    fullWidth='true'
+                    fullWidth
                     maxWidth='lg'
                     fullScreen
+                    sx={{ border: '1px solid green' }}
                 >
                     <Paper square className={classes.popupHeader}>
-                        <IconButton color='inherit' onClick={this.handleClose} aria-label='Close'>
+                        <IconButton
+                            color='inherit'
+                            onClick={this.handleClose}
+                            aria-label='Close'
+                            size='large'>
                             <Icon>close</Icon>
                         </IconButton>
                         <RadioGroup
@@ -544,8 +564,8 @@ class ThumbnailView extends Component {
                             />
                         </Button>
                     </DialogActions>
-                </Dialog>
-            </>
+                </StyledDialog>
+            </div>
         );
     }
 }
@@ -559,14 +579,15 @@ ThumbnailView.defaultProps = {
 
 ThumbnailView.propTypes = {
     api: PropTypes.shape({}).isRequired,
-    setImageUpdate: PropTypes.shape({}),
     imageUpdate: PropTypes.number.isRequired,
-    classes: PropTypes.shape({}).isRequired,
     height: PropTypes.number,
     width: PropTypes.number,
     isEditable: PropTypes.bool,
     intl: PropTypes.shape({}).isRequired,
-    theme: PropTypes.shape({}).isRequired,
+    setImageUpdate: PropTypes.func,
 };
 
-export default injectIntl(withAPI(withStyles(styles, { withTheme: true })(ThumbnailView)));
+export default injectIntl(withAPI((props) => {
+    const { theme } = useTheme();
+    return <ThumbnailView {...props} theme={theme} />;
+}));

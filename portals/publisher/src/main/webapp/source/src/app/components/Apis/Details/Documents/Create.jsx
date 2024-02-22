@@ -17,16 +17,16 @@
  */
 
 import React, { useRef, useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link, withRouter } from 'react-router-dom';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import Icon from '@mui/material/Icon';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
@@ -34,23 +34,46 @@ import CreateEditForm from './CreateEditForm';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import GoToEdit from './GoToEdit';
 
-const styles = theme => ({
-    root: {
+const PREFIX = 'Create';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    titleLink: `${PREFIX}-titleLink`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    addNewWrapper: `${PREFIX}-addNewWrapper`,
+    addNewHeader: `${PREFIX}-addNewHeader`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    button: `${PREFIX}-button`,
+    mainTitle: `${PREFIX}-mainTitle`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    titleLink: {
+
+    [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
     },
-    addNewWrapper: {
+
+    [`& .${classes.addNewWrapper}`]: {
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.getContrastText(theme.palette.background.paper),
         border: 'solid 1px ' + theme.palette.grey['300'],
@@ -58,30 +81,34 @@ const styles = theme => ({
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(3),
     },
-    addNewHeader: {
+
+    [`& .${classes.addNewHeader}`]: {
         padding: theme.spacing(2),
         backgroundColor: theme.palette.grey['300'],
         fontSize: theme.typography.h6.fontSize,
         color: theme.typography.h6.color,
         fontWeight: theme.typography.h6.fontWeight,
     },
-    addNewOther: {
+
+    [`& .${classes.addNewOther}`]: {
         padding: theme.spacing(2),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         color: theme.palette.primary.dark,
-    },
-});
+    }
+}));
 
 function Create(props) {
     const { api, isAPIProduct } = useContext(APIContext);
     const [newDoc, setNewDoc] = useState(null);
     const [saveDisabled, setSaveDisabled] = useState(true);
-    const { classes, intl, history } = props;
+    const {  intl, history } = props;
     const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
     const listingPath = `/${urlPrefix}/${api.id}/documents`;
     const restAPI = api.apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
@@ -130,7 +157,7 @@ function Create(props) {
             });
     };
     return (
-        <React.Fragment>
+        <Root>
             <Grid container spacing={3}>
                 <Grid item sm={12} md={12} />
                 {/*
@@ -199,7 +226,7 @@ function Create(props) {
                 </Grid>
             </Grid>
             {newDoc && <GoToEdit doc={newDoc} />}
-        </React.Fragment>
+        </Root>
     );
 }
 
@@ -209,4 +236,4 @@ Create.propTypes = {
     apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]).isRequired,
 };
 
-export default injectIntl(withRouter(withStyles(styles)(Create)));
+export default injectIntl(withRouter((Create)));

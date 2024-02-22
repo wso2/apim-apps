@@ -16,16 +16,33 @@
  * under the License.
  */
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid/Grid';
-import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';
 import Utils from 'AppData/Utils';
 
-const styles = (theme) => ({
-    link: {
+const PREFIX = 'CommentOptions';
+
+const classes = {
+    link: `${PREFIX}-link`,
+    time: `${PREFIX}-time`,
+    verticalSpace: `${PREFIX}-verticalSpace`,
+    disable: `${PREFIX}-disable`,
+    commentIcon: `${PREFIX}-commentIcon`,
+    commentText: `${PREFIX}-commentText`,
+    root: `${PREFIX}-root`,
+    contentWrapper: `${PREFIX}-contentWrapper`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.link}`]: {
         color: theme.palette.getContrastText(theme.palette.primary.main),
         '& span.MuiButton-label': {
             color: theme.palette.primary.main,
@@ -33,36 +50,43 @@ const styles = (theme) => ({
         },
         cursor: 'pointer',
     },
-    time: {
+
+    [`& .${classes.time}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         marginTop: theme.spacing(0.3),
     },
-    verticalSpace: {
+
+    [`&.${classes.verticalSpace}`]: {
         display: 'flex',
         alignItems: 'center',
     },
-    disable: {
+
+    [`& .${classes.disable}`]: {
         color: theme.palette.grey[200],
     },
-    commentIcon: {
+
+    [`& .${classes.commentIcon}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    commentText: {
+
+    [`& .${classes.commentText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         marginTop: theme.spacing.unig,
         width: '100%',
         whiteSpace: 'pre-wrap',
         overflowWrap: 'break-word',
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         marginTop: theme.spacing(2.5),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
         paddingLeft: theme.spacing(2),
         paddingTop: theme.spacing.unig,
-    },
-});
+    }
+}));
 
 /**
  * Component to display options of the comment
@@ -143,16 +167,14 @@ class CommentOptions extends React.Component {
      * @memberof CommentOptions
      */
     render() {
-        const {
-            classes, comment,
-        } = this.props;
+        const { comment } = this.props;
         const user = AuthManager.getUser();
         const username = Utils.getUserNameWithoutDomain(user.name);
         const canDelete = (comment.createdBy === username) || user.isAdmin();
         const canReply = !user.isCreator() || user.isAdmin();
         // const canModify = comment.createdBy === username;
         return (
-            <Grid container spacing={1} className={classes.verticalSpace} key={comment.id}>
+            <StyledGrid container spacing={1} className={classes.verticalSpace} key={comment.id}>
 
                 {/* only the comment owner or admin can delete a comment */}
                 {canDelete && [
@@ -197,7 +219,7 @@ class CommentOptions extends React.Component {
                     </Grid>,
                 ]} */}
 
-            </Grid>
+            </StyledGrid>
         );
     }
 }
@@ -207,7 +229,6 @@ CommentOptions.defaultProps = {
 };
 
 CommentOptions.propTypes = {
-    classes: PropTypes.instanceOf(Object).isRequired,
     editIndex: PropTypes.number.isRequired,
     comment: PropTypes.instanceOf(Object).isRequired,
     handleClickOpen: PropTypes.func.isRequired,
@@ -216,4 +237,7 @@ CommentOptions.propTypes = {
     theme: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(CommentOptions);
+export default ((props) => {
+    const theme = useTheme();
+    return <CommentOptions {...props} theme={theme} />;
+});

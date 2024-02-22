@@ -17,13 +17,13 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
 import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
@@ -115,52 +115,46 @@ const ViewPolicy: React.FC<ViewPolicyProps> = ({
         return <></>;
     }
 
-    return (
-        <>
-            <Dialog
-                maxWidth='md'
-                open={dialogOpen}
-                aria-labelledby='form-dialog-title'
-                onClose={handleDialogClose}
-                onClick={stopPropagation}
-                fullWidth
+    return <>
+        <Dialog
+            maxWidth='md'
+            open={dialogOpen}
+            aria-labelledby='form-dialog-title'
+            onClose={handleDialogClose}
+            onClick={stopPropagation}
+            fullWidth
+        >
+            <Box
+                display='flex'
+                justifyContent='space-between'
+                alignItems='center'
+                flexDirection='row'
+                px={3}
+                pt={3}
             >
-                <Box
-                    display='flex'
-                    justifyContent='space-between'
-                    alignItems='center'
-                    flexDirection='row'
-                    px={3}
-                    pt={3}
-                >
-                    <Box display='flex'>
-                        <Typography variant='h4' component='h2'>
-                            {policyObj.displayName}
-                        </Typography>
-                    </Box>
-                    <Box display='flex'>
-                        <IconButton
-                            color='inherit'
-                            onClick={toggleOpen}
-                            aria-label='Close'
-                        >
-                            <Icon>close</Icon>
-                        </IconButton>
-                    </Box>
+                <Box display='flex'>
+                    <Typography variant='h4' component='h2'>
+                        {policyObj.displayName}
+                    </Typography>
                 </Box>
-                <DialogContent>
-                    <Box my={2}>
-                        <DialogContentText>
-                            <PolicyViewForm
-                                policySpec={policySpec}
-                                onDone={toggleOpen}
-                            />
-                        </DialogContentText>
-                    </Box>
-                </DialogContent>
-            </Dialog>
-        </>
-    );
+                <Box display='flex'>
+                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close' size='large'>
+                        <Icon>close</Icon>
+                    </IconButton>
+                </Box>
+            </Box>
+            <DialogContent>
+                <Box my={2}>
+                    <DialogContentText>
+                        <PolicyViewForm
+                            policySpec={policySpec}
+                            onDone={toggleOpen}
+                        />
+                    </DialogContentText>
+                </Box>
+            </DialogContent>
+        </Dialog>
+    </>;
 };
 
 export default ViewPolicy;

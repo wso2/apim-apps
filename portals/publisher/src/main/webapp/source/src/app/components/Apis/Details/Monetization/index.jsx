@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import PropTypes from 'prop-types';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
-import { Grid, Paper, Typography } from '@material-ui/core';
+import { Grid, Paper, Typography } from '@mui/material';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';
 import { Progress } from 'AppComponents/Shared';
@@ -17,33 +17,53 @@ import { isRestricted } from 'AppData/AuthManager';
 
 import BusinessPlans from './BusinessPlans';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'index';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    container: `${PREFIX}-container`,
+    margin: `${PREFIX}-margin`,
+    paper: `${PREFIX}-paper`,
+    grid: `${PREFIX}-grid`,
+    button: `${PREFIX}-button`
+};
+
+const Root = styled('form')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
     },
-    container: {
+
+    [`& .${classes.container}`]: {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    margin: {
+
+    [`& .${classes.margin}`]: {
         margin: theme.spacing(),
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(2),
         textAlign: 'left',
         color: theme.palette.text.secondary,
         paddingBottom: '10px',
     },
-    grid: {
+
+    [`& .${classes.grid}`]: {
         paddingLeft: '10px',
         paddingRight: '10px',
         paddingBottom: '10px',
         minWidth: '50%',
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         margin: theme.spacing(),
-    },
-});
+    }
+}));
 
 /**
  *
@@ -179,7 +199,7 @@ class Monetization extends Component {
     }
 
     render() {
-        const { api, classes } = this.props;
+        const { api, } = this.props;
         const { monetizationAttributes, monStatus } = this.state;
         if (api && isRestricted(['apim:api_publish'], api)) {
             return (
@@ -206,7 +226,7 @@ class Monetization extends Component {
             return <Progress />;
         }
         return (
-            <form method='post' onSubmit={this.handleSubmit}>
+            <Root method='post' onSubmit={this.handleSubmit}>
                 <Grid container xs={6} spacing={2}>
                     <Grid item xs={12}>
                         <Typography id='itest-api-details-api-monetization-head' variant='h4' component='h2'>
@@ -303,7 +323,7 @@ class Monetization extends Component {
                         </Button>
                     </Grid>
                 </Grid>
-            </form>
+            </Root>
         );
     }
 }
@@ -316,4 +336,4 @@ Monetization.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withRouter(withStyles(styles)(Monetization)));
+export default injectIntl(withRouter((Monetization)));

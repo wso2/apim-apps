@@ -16,40 +16,51 @@
  * under the License.
  */
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Radio from '@material-ui/core/Radio';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import { makeStyles } from '@material-ui/core/styles';
+import Radio from '@mui/material/Radio';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 import { FormattedMessage } from 'react-intl';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import CheckIcon from '@material-ui/icons/Check';
+import CircularProgress from '@mui/material/CircularProgress';
+import InputAdornment from '@mui/material/InputAdornment';
+import Button from '@mui/material/Button';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import CheckIcon from '@mui/icons-material/Check';
 
 import APIValidation from 'AppData/APIValidation';
 import Wsdl from 'AppData/Wsdl';
 import Banner from 'AppComponents/Shared/Banner';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
 
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
+const PREFIX = 'ProvideWSDL';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
-    },
+    }
 }));
 
 /**
@@ -63,7 +74,7 @@ export default function ProvideWSDL(props) {
     const { apiInputs, inputsDispatcher, onValidate } = props;
     const isFileInput = apiInputs.inputType === 'file';
     const isGenerateRESTAPI = apiInputs.type === 'SOAPTOREST';
-    const classes = useStyles();
+
     const [isError, setValidity] = useState(); // If valid value is `null` else an error object will be there
     const [isValidating, setIsValidating] = useState(false);
     const isCreateMode = apiInputs.mode === 'create';
@@ -189,7 +200,7 @@ export default function ProvideWSDL(props) {
                                 inputsDispatcher({ action: 'inputValue', value: null });
                                 inputsDispatcher({ action: 'isFormValid', value: false });
                             }}
-                        >
+                            size='large'>
                             <DeleteIcon />
                         </IconButton>
                     </ListItemSecondaryAction>
@@ -230,7 +241,7 @@ export default function ProvideWSDL(props) {
             >
                 {isValidating ? (<CircularProgress />)
                     : (
-                        <>
+                        (<Root>
                             { dropBoxControlLabel }
                             <Button
                                 color='primary'
@@ -241,7 +252,7 @@ export default function ProvideWSDL(props) {
                                     defaultMessage='Browse File to Upload'
                                 />
                             </Button>
-                        </>
+                        </Root>)
                     )}
             </DropZoneLocal>
         );

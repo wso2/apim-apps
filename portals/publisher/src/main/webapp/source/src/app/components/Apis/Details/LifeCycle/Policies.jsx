@@ -17,26 +17,33 @@
  */
 
 import React, { Component } from 'react';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Select from '@material-ui/core/Select';
+import { styled } from '@mui/material/styles';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Select from '@mui/material/Select';
 import { FormattedMessage } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import Alert from 'AppComponents/Shared/Alert';
 
 import API from 'AppData/api';
 
-const styles = () => ({
-    FormControl: {
+const PREFIX = 'Policies';
+
+const classes = {
+    FormControl: `${PREFIX}-FormControl`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.FormControl}`]: {
         padding: 0,
         width: '100%',
         marginTop: 0,
-    },
-});
+    }
+}));
 
 /**
  *
@@ -100,7 +107,7 @@ class Policies extends Component {
             return 'Loading . . .';
         }
         return (
-            <>
+            (<Root>
                 <FormControl className={classes.FormControl}>
                     <InputLabel htmlFor='policy-selector'>
                         <FormattedMessage
@@ -153,7 +160,7 @@ class Policies extends Component {
                             )}
                     </FormHelperText>
                 </FormControl>
-            </>
+            </Root>)
         );
     }
 }
@@ -164,4 +171,4 @@ Policies.propTypes = {
     policies: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles)(Policies);
+export default (Policies);

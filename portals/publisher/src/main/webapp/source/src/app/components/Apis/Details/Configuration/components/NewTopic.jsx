@@ -17,39 +17,75 @@
  */
 
 import React, { useReducer } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import green from '@material-ui/core/colors/green';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import { green } from '@mui/material/colors';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'NewTopic';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    buttonSuccess: `${PREFIX}-buttonSuccess`,
+    checkItem: `${PREFIX}-checkItem`,
+    divider: `${PREFIX}-divider`,
+    chip: `${PREFIX}-chip`,
+    imageContainer: `${PREFIX}-imageContainer`,
+    imageWrapper: `${PREFIX}-imageWrapper`,
+    subtitle: `${PREFIX}-subtitle`,
+    specialGap: `${PREFIX}-specialGap`,
+    resourceTitle: `${PREFIX}-resourceTitle`,
+    ListRoot: `${PREFIX}-ListRoot`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    title: `${PREFIX}-title`,
+    helpButton: `${PREFIX}-helpButton`,
+    helpIcon: `${PREFIX}-helpIcon`,
+    htmlTooltip: `${PREFIX}-htmlTooltip`,
+    lifecycleWrapper: `${PREFIX}-lifecycleWrapper`,
+    lifecycleIcon: `${PREFIX}-lifecycleIcon`,
+    leftSideWrapper: `${PREFIX}-leftSideWrapper`,
+    notConfigured: `${PREFIX}-notConfigured`,
+    url: `${PREFIX}-url`
+};
+
+const StyledPaper = styled(Paper)((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.root}`]: {
         ...theme.mixins.gutters(),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         marginTop: theme.spacing(2),
     },
-    buttonSuccess: {
+
+    [`& .${classes.buttonSuccess}`]: {
         backgroundColor: green[500],
         '&:hover': {
             backgroundColor: green[700],
         },
     },
-    checkItem: {
+
+    [`& .${classes.checkItem}`]: {
         textAlign: 'center',
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         marginTop: 20,
         marginBottom: 20,
     },
-    chip: {
+
+    [`& .${classes.chip}`]: {
         margin: theme.spacing(0.5),
         padding: 0,
         height: 'auto',
@@ -57,39 +93,50 @@ const styles = (theme) => ({
             padding: '0 5px',
         },
     },
-    imageContainer: {
+
+    [`& .${classes.imageContainer}`]: {
         display: 'flex',
     },
-    imageWrapper: {
+
+    [`& .${classes.imageWrapper}`]: {
         marginRight: theme.spacing(3),
     },
-    subtitle: {
+
+    [`& .${classes.subtitle}`]: {
         marginTop: theme.spacing(0),
     },
-    specialGap: {
+
+    [`& .${classes.specialGap}`]: {
         marginTop: theme.spacing(3),
     },
-    resourceTitle: {
+
+    [`& .${classes.resourceTitle}`]: {
         marginBottom: theme.spacing(3),
     },
-    ListRoot: {
+
+    [`& .${classes.ListRoot}`]: {
         padding: 0,
         margin: 0,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
     },
-    title: {
+
+    [`& .${classes.title}`]: {
         flex: 1,
     },
-    helpButton: {
+
+    [`& .${classes.helpButton}`]: {
         padding: 0,
         minWidth: 20,
     },
-    helpIcon: {
+
+    [`& .${classes.helpIcon}`]: {
         fontSize: 16,
     },
-    htmlTooltip: {
+
+    [`& .${classes.htmlTooltip}`]: {
         backgroundColor: '#f5f5f9',
         color: 'rgba(0, 0, 0, 0.87)',
         maxWidth: 220,
@@ -99,28 +146,33 @@ const styles = (theme) => ({
             fontWeight: theme.typography.fontWeightMedium,
         },
     },
-    lifecycleWrapper: {
+
+    [`& .${classes.lifecycleWrapper}`]: {
         display: 'flex',
         alignItems: 'center',
     },
-    lifecycleIcon: {
+
+    [`& .${classes.lifecycleIcon}`]: {
         fontSize: 36,
         color: 'green',
         marginRight: theme.spacing(1),
     },
-    leftSideWrapper: {
+
+    [`& .${classes.leftSideWrapper}`]: {
         paddingRight: theme.spacing(2),
     },
-    notConfigured: {
+
+    [`& .${classes.notConfigured}`]: {
         color: 'rgba(0, 0, 0, 0.40)',
     },
-    url: {
+
+    [`& .${classes.url}`]: {
         maxWidth: '100%',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-    },
-});
+    }
+}));
 
 /**
  * API Topics page
@@ -142,7 +194,7 @@ function Topics(props) {
         return currentState;
     }
 
-    const { classes, handleAddTopic, handleCancelAddTopic } = props;
+    const {  handleAddTopic, handleCancelAddTopic } = props;
     // eslint-disable-next-line no-unused-vars
     // const { api, updateAPI } = useContext(APIContext);
     const [topic, inputsDispatcher] = useReducer(configReducer, {
@@ -155,8 +207,8 @@ function Topics(props) {
     }
 
     return (
-        <Paper className={classes.root}>
-            <Grid container direction='row' justify='center' alignItems='center'>
+        <StyledPaper className={classes.root}>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 <Grid item xs={12}>
                     <Typography component='h4' align='left'>
                         Add New Topic
@@ -189,7 +241,7 @@ function Topics(props) {
                         }}
                     />
                 </Grid>
-                <Grid container direction='row' justify='flex-start' alignItems='center' spacing={2}>
+                <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                     <Grid item>
                         <Button
                             id='itest-id-apitopics-addtopic'
@@ -212,7 +264,7 @@ function Topics(props) {
                     </Grid>
                 </Grid>
             </Grid>
-        </Paper>
+        </StyledPaper>
     );
 }
 
@@ -220,4 +272,4 @@ Topics.propTypes = {
     classes: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles)(Topics);
+export default (Topics);

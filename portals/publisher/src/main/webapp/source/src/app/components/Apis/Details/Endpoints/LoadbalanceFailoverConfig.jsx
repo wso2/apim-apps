@@ -15,78 +15,109 @@
  */
 
 import React, { useContext, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     Dialog,
     DialogContent,
     DialogTitle,
-    ExpansionPanel,
-    ExpansionPanelDetails,
-    ExpansionPanelSummary,
+    Accordion, 
+    AccordionSummary, 
+    AccordionDetails,
     Grid,
     Icon,
     IconButton,
     MenuItem,
     TextField,
     Typography,
-    withStyles,
-} from '@material-ui/core';
+} from '@mui/material';
 import PropTypes from 'prop-types';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import cloneDeep from 'lodash.clonedeep';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import EndpointListing from 'AppComponents/Apis/Details/Endpoints/EndpointListing';
 import LoadBalanceConfig from 'AppComponents/Apis/Details/Endpoints/LoadBalanceConfig';
-import Collapse from '@material-ui/core/Collapse';
+import Collapse from '@mui/material/Collapse';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { getEndpointTypeProperty } from './endpointUtils';
 
-const styles = (theme) => ({
-    endpointTypeSelect: {
+const PREFIX = 'LoadbalanceFailoverConfig';
+
+const classes = {
+    endpointTypeSelect: `${PREFIX}-endpointTypeSelect`,
+    configHeaderContainer: `${PREFIX}-configHeaderContainer`,
+    generalConfigContent: `${PREFIX}-generalConfigContent`,
+    secondaryHeading: `${PREFIX}-secondaryHeading`,
+    heading: `${PREFIX}-heading`,
+    endpointConfigSection: `${PREFIX}-endpointConfigSection`,
+    generalConfigPanel: `${PREFIX}-generalConfigPanel`,
+    endpointsTypeSelectWrapper: `${PREFIX}-endpointsTypeSelectWrapper`,
+    lbConfigBtn: `${PREFIX}-lbConfigBtn`,
+    endpointName: `${PREFIX}-endpointName`,
+    wrapper: `${PREFIX}-wrapper`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.endpointTypeSelect}`]: {
         width: '50%',
         marginTop: theme.spacing(1),
     },
-    configHeaderContainer: {
+
+    [`& .${classes.configHeaderContainer}`]: {
         display: 'flex',
         justifyContent: 'space-between',
     },
-    generalConfigContent: {
+
+    [`& .${classes.generalConfigContent}`]: {
         boxShadow: 'inset -1px 2px 3px 0px #c3c3c3',
     },
-    secondaryHeading: {
+
+    [`& .${classes.secondaryHeading}`]: {
         fontSize: theme.typography.pxToRem(15),
         color: theme.palette.text.secondary,
         display: 'flex',
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         flexBasis: '33.33%',
         flexShrink: 0,
         fontWeight: '900',
     },
-    endpointConfigSection: {
+
+    [`& .${classes.endpointConfigSection}`]: {
         padding: '10px',
     },
-    generalConfigPanel: {
+
+    [`& .${classes.generalConfigPanel}`]: {
         width: '100%',
     },
-    endpointsTypeSelectWrapper: {
+
+    [`& .${classes.endpointsTypeSelectWrapper}`]: {
         display: 'flex',
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    lbConfigBtn: {
+
+    [`& .${classes.lbConfigBtn}`]: {
         position: 'relative',
         top: '10px',
     },
-    endpointName: {
+
+    [`& .${classes.endpointName}`]: {
         fontWeight: 600,
     },
-    wrapper: {
+
+    [`& .${classes.wrapper}`]: {
         width: '100%',
-    },
-});
+    }
+}));
 
 const endpointTypes = [
     { key: 'none', value: 'None' },
@@ -103,7 +134,6 @@ const endpointTypes = [
 function LoadbalanceFailoverConfig(props) {
     const {
         epConfig,
-        classes,
         endpointsDispatcher,
         toggleAdvanceConfig,
         toggleESConfig,
@@ -218,13 +248,13 @@ function LoadbalanceFailoverConfig(props) {
     };
 
     return (
-        <>
-            <ExpansionPanel
+        <Root>
+            <Accordion
                 expanded={isConfigExpanded || endpointType === 'load_balance' || endpointType === 'failover'}
                 onChange={() => setConfigExpand(!isConfigExpanded)}
                 className={classes.generalConfigPanel}
             >
-                <ExpansionPanelSummary
+                <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls='panel1bh-content'
                     id='panel1bh-header'
@@ -233,8 +263,8 @@ function LoadbalanceFailoverConfig(props) {
                     <Typography className={classes.secondaryHeading}>
                         {getEndpointTypeHeading()}
                     </Typography>
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails className={classes.generalConfigContent}>
+                </AccordionSummary>
+                <AccordionDetails className={classes.generalConfigContent}>
                     {(!epConfig.production_endpoints && !epConfig.sandbox_endpoints)
                         ? (
                             <InlineMessage>
@@ -283,7 +313,7 @@ function LoadbalanceFailoverConfig(props) {
                                             disabled={epConfig.endpoint_type !== 'load_balance'}
                                             aria-label='Delete'
                                             onClick={() => setLBConfigOpen(true)}
-                                        >
+                                            size='large'>
                                             <Icon>
                                                 settings
                                             </Icon>
@@ -366,8 +396,8 @@ function LoadbalanceFailoverConfig(props) {
                                 </Grid>
                             </Grid>
                         )}
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                </AccordionDetails>
+            </Accordion>
             <Dialog open={isLBConfigOpen}>
                 <DialogTitle>
                     <Typography className={classes.configDialogHeader}>
@@ -389,7 +419,7 @@ function LoadbalanceFailoverConfig(props) {
                     />
                 </DialogContent>
             </Dialog>
-        </>
+        </Root>
     );
 }
 
@@ -406,4 +436,4 @@ LoadbalanceFailoverConfig.propTypes = {
     intl: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(LoadbalanceFailoverConfig));
+export default injectIntl((LoadbalanceFailoverConfig));

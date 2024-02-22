@@ -20,17 +20,17 @@ import React, {
     useState, Suspense, lazy, useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import Button from '@material-ui/core/Button';
-import EditIcon from '@material-ui/icons/Edit';
-import Paper from '@material-ui/core/Paper';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import Box from '@material-ui/core/Box';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import CircularProgress from '@mui/material/CircularProgress';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import Button from '@mui/material/Button';
+import EditIcon from '@mui/icons-material/Edit';
+import Paper from '@mui/material/Paper';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import Box from '@mui/material/Box';
 
 import PolicyEditor from './PolicyEditor';
 

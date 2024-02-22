@@ -17,120 +17,174 @@
  */
 
 import React from 'react';
-import Select from '@material-ui/core/Select';
-import Checkbox from '@material-ui/core/Checkbox';
-import MenuItem from '@material-ui/core/MenuItem';
-import Chip from '@material-ui/core/Chip';
-import { withStyles } from '@material-ui/core/styles';
+import { styled, useTheme } from '@mui/material/styles';
+import Select from '@mui/material/Select';
+import Checkbox from '@mui/material/Checkbox';
+import MenuItem from '@mui/material/MenuItem';
+import Chip from '@mui/material/Chip';
 import PropTypes from 'prop-types';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import ListSubheader from '@material-ui/core/ListSubheader';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import ListSubheader from '@mui/material/ListSubheader';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import TextField from '@material-ui/core/TextField';
-import { Typography } from '@material-ui/core';
-import Switch from '@material-ui/core/Switch';
+import TextField from '@mui/material/TextField';
+import { Typography } from '@mui/material';
+import Switch from '@mui/material/Switch';
 import { isRestricted } from 'AppData/AuthManager';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'Operation';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    container: `${PREFIX}-container`,
+    textField: `${PREFIX}-textField`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    scopes: `${PREFIX}-scopes`,
+    dropDown: `${PREFIX}-dropDown`,
+    divider: `${PREFIX}-divider`,
+    chip: `${PREFIX}-chip`,
+    chipActive: `${PREFIX}-chipActive`,
+    paper: `${PREFIX}-paper`,
+    link: `${PREFIX}-link`,
+    listItem: `${PREFIX}-listItem`,
+    formControl: `${PREFIX}-formControl`,
+    resourceRoot: `${PREFIX}-resourceRoot`,
+    deleteButton: `${PREFIX}-deleteButton`,
+    pathDisplay: `${PREFIX}-pathDisplay`,
+    descriptionWrapper: `${PREFIX}-descriptionWrapper`,
+    scopeSelect: `${PREFIX}-scopeSelect`,
+    descriptionWrapperUp: `${PREFIX}-descriptionWrapperUp`,
+    addParamRow: `${PREFIX}-addParamRow`,
+    propsForm: `${PREFIX}-propsForm`,
+    deleteLink: `${PREFIX}-deleteLink`,
+    row: `${PREFIX}-row`
+};
+
+const StyledTableRow = styled(TableRow)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    container: {
+
+    [`& .${classes.container}`]: {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    textField: {
+
+    [`& .${classes.textField}`]: {
         marginLeft: theme.spacing(),
         marginRight: theme.spacing(),
         width: 400,
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 20,
     },
-    scopes: {
+
+    [`& .${classes.scopes}`]: {
         width: 400,
     },
-    dropDown: {
+
+    [`& .${classes.dropDown}`]: {
         width: theme.spacing(11.25),
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         marginTop: 20,
         marginBottom: 20,
     },
-    chip: {
+
+    [`& .${classes.chip}`]: {
         margin: theme.spacing(),
         color: theme.palette.text.secondary,
         minWidth: 100,
     },
-    chipActive: {
+
+    [`& .${classes.chipActive}`]: {
         margin: theme.spacing(),
         color: theme.palette.text.secondary,
         background: theme.palette.background.active,
         minWidth: 100,
         borderRadius: theme.shape.borderRadius,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: 20,
     },
-    link: {
+
+    [`& .${classes.link}`]: {
         cursor: 'pointer',
     },
-    listItem: {
+
+    [`& .${classes.listItem}`]: {
         paddingLeft: 0,
         display: 'flex',
         alignItems: 'center',
     },
-    formControl: {
+
+    [`& .${classes.formControl}`]: {
         paddingRight: 0,
         marginRight: 0,
     },
-    resourceRoot: {
+
+    [`& .${classes.resourceRoot}`]: {
         background: theme.palette.grey['100'],
         paddingLeft: theme.spacing(),
         paddingRight: theme.spacing(),
         borderRadius: theme.shape.borderRadius,
         marginBottom: theme.spacing(),
     },
-    deleteButton: {
+
+    [`& .${classes.deleteButton}`]: {
         marginLeft: 'auto',
     },
-    pathDisplay: {
+
+    [`& .${classes.pathDisplay}`]: {
         marginRight: theme.spacing(2),
         marginLeft: theme.spacing(2),
     },
-    descriptionWrapper: {
+
+    [`& .${classes.descriptionWrapper}`]: {
         paddingTop: theme.spacing(),
         paddingBottom: theme.spacing(),
     },
-    scopeSelect: {
+
+    [`& .${classes.scopeSelect}`]: {
         width: '100%',
     },
-    descriptionWrapperUp: {
+
+    [`& .${classes.descriptionWrapperUp}`]: {
         paddingBottom: '0 !important',
     },
-    addParamRow: {
+
+    [`& .${classes.addParamRow}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    propsForm: {
+
+    [`& .${classes.propsForm}`]: {
         display: 'flex',
         alignItems: 'center',
     },
-    deleteLink: {
+
+    [`& .${classes.deleteLink}`]: {
         cursor: 'pointer',
     },
-    row: {
+
+    [`& .${classes.row}`]: {
         '& td': {
             borderBottom: 'none',
             verticalAlign: 'bottom',
             width: '33%',
             paddingLeft: 0,
         },
-    },
-});
+    }
+}));
 
 /**
  *
@@ -201,7 +255,7 @@ class Operation extends React.Component {
      */
     render() {
         const {
-            operation, theme, classes, apiPolicies, scopes, isOperationRateLimiting, sharedScopes, intl,
+            operation, theme, apiPolicies, scopes, isOperationRateLimiting, sharedScopes, intl,
         } = this.props;
         const dropdownScopes = [...scopes];
         const { isSecurity } = this.state;
@@ -219,7 +273,7 @@ class Operation extends React.Component {
             );
         }
         return (
-            <TableRow style={{ borderStyle: 'hidden' }} data-testid={operation.target + '-tbl-row'}>
+            <StyledTableRow style={{ borderStyle: 'hidden' }} data-testid={operation.target + '-tbl-row'}>
                 <TableCell>
                     <Typography variant='body1'>
                         {operation.target}
@@ -355,7 +409,7 @@ class Operation extends React.Component {
                         data-testid={operation.target + '-security-btn'}
                     />
                 </TableCell>
-            </TableRow>
+            </StyledTableRow>
         );
     }
 }
@@ -383,4 +437,7 @@ Operation.propTypes = {
     sharedScopes: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(Operation));
+export default injectIntl((props) => {
+    const theme = useTheme();
+    return <Operation {...props} theme={theme} />;
+});

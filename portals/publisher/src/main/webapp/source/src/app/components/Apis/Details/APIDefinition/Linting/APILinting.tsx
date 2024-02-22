@@ -12,22 +12,39 @@
  * associated services.
  */
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     Spectral,
     Document,
     ISpectralDiagnostic,
 } from '@stoplight/spectral-core';
-import { green, orange } from '@material-ui/core/colors';
+import { green, orange } from '@mui/material/colors';
 import { oas } from '@stoplight/spectral-rulesets';
 import { FormattedMessage } from 'react-intl';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import Box from '@material-ui/core/Box';
-import WarningIcon from '@material-ui/icons/Warning';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import {makeStyles} from "@material-ui/core/styles";
+import ToggleButton from '@mui/lab/ToggleButton';
+import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup';
+import Box from '@mui/material/Box';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
+import InfoIcon from '@mui/icons-material/Info';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+const PREFIX = 'APILinting';
+
+const classes = {
+    activeButton: `${PREFIX}-activeButton`
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.activeButton}`]: {
+        "&:selected": {
+            backgroundColor: theme.palette.background.default,
+        }
+    }
+}));
 
 // TODO tmkasun: Possible to extend AsyncAPI rule set as well
 const defaultRuleSet = { extends: [oas], rules: {} };
@@ -62,17 +79,9 @@ export const spectralSeverityMap: { [key: number]: JSX.Element } = {
     3: <HelpOutlineIcon style={{ color: green[500] }} />,
 };
 
-const useStyles = makeStyles((theme) => ({
-    activeButton: {
-        "&:selected": {
-            backgroundColor: theme.palette.background.default,
-        }
-    }
-}));
-
 export const APILinting = (props: APILintingProps) => {
     const { document: apiDocument, setIsSwaggerUI, linterResults, setLinterResults } = props;
-    const classes = useStyles();
+
     const [isSwaggerUIButtonSelected, setIsSwaggerUIButtonSelected] = useState<boolean>(true);
 
     useEffect(() => {
@@ -99,7 +108,7 @@ export const APILinting = (props: APILintingProps) => {
         });
     }
     return (
-        <Box ml={3}>
+        <StyledBox ml={3}>
             {linterResults === null && (
                 <FormattedMessage
                     id="Apis.Details.APIDefinition.Linting.APILinting.loading"
@@ -147,7 +156,7 @@ export const APILinting = (props: APILintingProps) => {
                     </ToggleButton>
                 </ToggleButtonGroup>
             )}
-        </Box>
+        </StyledBox>
     );
 };
 

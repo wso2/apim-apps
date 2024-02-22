@@ -17,38 +17,52 @@
  */
 
 import React, { useReducer } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import FormHelperText from '@mui/material/FormHelperText';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 
-const useStyles = makeStyles((theme) => ({
-    form: {
+const PREFIX = 'EditPayloadProperty';
+
+const classes = {
+    form: `${PREFIX}-form`,
+    formControl: `${PREFIX}-formControl`,
+    formControlLabel: `${PREFIX}-formControlLabel`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.form}`]: {
         display: 'flex',
         flexDirection: 'column',
         margin: 'auto',
         width: 'fit-content',
     },
-    formControl: {
+
+    [`& .${classes.formControl}`]: {
         marginTop: theme.spacing(2),
         minWidth: 120,
     },
-    formControlLabel: {
+
+    [`& .${classes.formControlLabel}`]: {
         marginTop: theme.spacing(1),
-    },
+    }
 }));
 
 /**
@@ -83,7 +97,7 @@ export default function EditPayloadProperty(props) {
     }
 
     const [property, propertyActionDispatcher] = useReducer(propertyActionReducer, editingProperty);
-    const classes = useStyles();
+
 
     const handleClose = () => {
         setEditingProperty(null);
@@ -103,8 +117,8 @@ export default function EditPayloadProperty(props) {
         return null;
     }
     return (
-        <Dialog fullWidth maxWidth='md' open={isEditing} onClose={handleClose} aria-labelledby='edit-property'>
-            <DialogTitle disableTypography id='edit-property'>
+        <StyledDialog fullWidth maxWidth='md' open={isEditing} onClose={handleClose} aria-labelledby='edit-property'>
+            <DialogTitle id='edit-property'>
                 <Typography variant='h6'>
                     <FormattedMessage
                         id='Apis.Details.Resources.components.operationComponents.EditPayloadProperty.title'
@@ -117,7 +131,7 @@ export default function EditPayloadProperty(props) {
                 </Typography>
             </DialogTitle>
             <DialogContent>
-                <Grid container direction='row' spacing={2} justify='flex-start' alignItems='center'>
+                <Grid container direction='row' spacing={2} justifyContent='flex-start' alignItems='center'>
                     <Grid item md={6}>
                         <FormControl
                             required
@@ -210,7 +224,7 @@ export default function EditPayloadProperty(props) {
                     />
                 </Button>
             </DialogActions>
-        </Dialog>
+        </StyledDialog>
     );
 }
 

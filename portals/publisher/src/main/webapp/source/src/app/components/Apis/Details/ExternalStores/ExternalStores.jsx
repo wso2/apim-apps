@@ -17,6 +17,7 @@
  */
 
 import React, { useContext, useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
@@ -24,35 +25,48 @@ import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 
 import 'react-tagsinput/react-tagsinput.css';
 import { FormattedMessage, useIntl, defineMessages } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
 import Alert from 'AppComponents/Shared/Alert';
-import Paper from '@material-ui/core/Paper';
+import Paper from '@mui/material/Paper';
 import API from '../../../../data/api';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'ExternalStores';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    table: `${PREFIX}-table`,
+    viewInExStoreLink: `${PREFIX}-viewInExStoreLink`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         width: theme.custom.contentAreaWidth,
         marginTop: theme.spacing(3),
         overflowX: 'auto',
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         minWidth: 650,
     },
-    viewInExStoreLink: {
+
+    [`& .${classes.viewInExStoreLink}`]: {
         color: theme.palette.common.black,
         textDecoration: 'underline',
-    },
+    }
 }));
 
 /**
@@ -66,7 +80,7 @@ export default function ExternalStores() {
     const [allExternalStores, setAllExternalStores] = useState([]);
     const [publishedExternalStores, setPublishedExternalStores] = useState([]);
     const [isUpdating, setUpdating] = useState(false);
-    const classes = useStyles();
+
     const intl = useIntl();
     if (!settings.externalStoresEnabled) {
         const resourceNotFoundMessageText = defineMessages({
@@ -142,150 +156,148 @@ export default function ExternalStores() {
     }
 
     return (
-        <div>
-            <div>
-                <Typography variant='h4' align='left'>
-                    <FormattedMessage
-                        id='Apis.Details.ExternalStores.ExternalStores.external-stores'
-                        defaultMessage='External Developer Portals'
-                    />
-                </Typography>
-                <Paper className={classes.root}>
-                    <Table className={classes.table}>
-                        <TableHead>
-                            <TableRow>
-                                <TableCell />
-                                <TableCell>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id='Apis.Details.ExternalStores.ExternalStores.name'
-                                            defaultMessage='Name'
-                                        />
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id='Apis.Details.ExternalStores.ExternalStores.type'
-                                            defaultMessage='Type'
-                                        />
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography>
-                                        <FormattedMessage
-                                            id='Apis.Details.ExternalStores.ExternalStores.endpoint'
-                                            defaultMessage='Endpoint'
-                                        />
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
-                        </TableHead>
-                        <TableBody>
-                            {allExternalStores.map((row) => (
-                                <TableRow key={row.id}>
-                                    <TableCell padding='checkbox'>
-                                        <Checkbox
-                                            data-testid={'portal-checkbox-' + row.id}
-                                            checked={publishedExternalStores.includes(row.id)}
-                                            disabled={api.lifeCycleStatus !== 'PUBLISHED'
-                                                || isRestricted(['apim:api_publish'], api)}
-                                            onChange={
-                                                (event) => {
-                                                    const { checked, name } = event.target;
-                                                    if (checked) {
-                                                        if (!publishedExternalStores.includes(name)) {
-                                                            setPublishedExternalStores([
-                                                                ...publishedExternalStores, name]);
-                                                        }
-                                                    } else {
-                                                        setPublishedExternalStores(publishedExternalStores
-                                                            .filter((store) => store !== name));
+        <Root>
+            <Typography variant='h4' align='left'>
+                <FormattedMessage
+                    id='Apis.Details.ExternalStores.ExternalStores.external-stores'
+                    defaultMessage='External Developer Portals'
+                />
+            </Typography>
+            <Paper className={classes.root}>
+                <Table className={classes.table}>
+                    <TableHead>
+                        <TableRow>
+                            <TableCell />
+                            <TableCell>
+                                <Typography>
+                                    <FormattedMessage
+                                        id='Apis.Details.ExternalStores.ExternalStores.name'
+                                        defaultMessage='Name'
+                                    />
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography>
+                                    <FormattedMessage
+                                        id='Apis.Details.ExternalStores.ExternalStores.type'
+                                        defaultMessage='Type'
+                                    />
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <Typography>
+                                    <FormattedMessage
+                                        id='Apis.Details.ExternalStores.ExternalStores.endpoint'
+                                        defaultMessage='Endpoint'
+                                    />
+                                </Typography>
+                            </TableCell>
+                        </TableRow>
+                    </TableHead>
+                    <TableBody>
+                        {allExternalStores.map((row) => (
+                            <TableRow key={row.id}>
+                                <TableCell padding='checkbox'>
+                                    <Checkbox
+                                        data-testid={'portal-checkbox-' + row.id}
+                                        checked={publishedExternalStores.includes(row.id)}
+                                        disabled={api.lifeCycleStatus !== 'PUBLISHED'
+                                            || isRestricted(['apim:api_publish'], api)}
+                                        onChange={
+                                            (event) => {
+                                                const { checked, name } = event.target;
+                                                if (checked) {
+                                                    if (!publishedExternalStores.includes(name)) {
+                                                        setPublishedExternalStores([
+                                                            ...publishedExternalStores, name]);
                                                     }
+                                                } else {
+                                                    setPublishedExternalStores(publishedExternalStores
+                                                        .filter((store) => store !== name));
                                                 }
                                             }
-                                            name={row.id}
-                                            color='primary'
-                                        />
-                                    </TableCell>
-                                    <TableCell component='th' scope='row'>
-                                        <Typography>
-                                            {' '}
-                                            {row.displayName}
-                                            {' '}
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        {' '}
-                                        <Typography>{row.type}</Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <a
-                                            target='_blank'
-                                            rel='noopener noreferrer'
-                                            href={row.endpoint}
-                                            className={classes.viewInExStoreLink}
-                                        >
-                                            <Typography>
-                                                {row.endpoint}
-                                            </Typography>
-                                        </a>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
-                        </TableBody>
-                    </Table>
-                </Paper>
-                <Grid container>
-                    <Grid
-                        container
-                        direction='row'
-                        alignItems='center'
-                        spacing={4}
-                        style={{ marginTop: 20 }}
-                    >
-                        <Grid item>
-                            <Button
-                                type='submit'
-                                variant='contained'
-                                color='primary'
-                                disabled={isUpdating || api.lifeCycleStatus !== 'PUBLISHED'
-                                    || isRestricted(['apim:api_publish'], api)}
-                                onClick={updateStores}
-                                id='stores-save-btn'
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.ExternalStores.ExternalStores.save'
-                                    defaultMessage='Save'
-                                />
-                                {isUpdating && <CircularProgress size={20} />}
-                            </Button>
-                        </Grid>
-                        <Grid item>
-                            <Link to={'/apis/' + api.id + '/overview'}>
-                                <Button>
-                                    <FormattedMessage
-                                        id='Apis.Details.ExternalStores.ExternalStores.cancel'
-                                        defaultMessage='Cancel'
+                                        }
+                                        name={row.id}
+                                        color='primary'
                                     />
-                                </Button>
-                            </Link>
-                        </Grid>
-                        {(isRestricted(['apim:api_publish'], api))
-                            && (
-                                <Grid item>
-                                    <Typography variant='body2' color='primary'>
-                                        <FormattedMessage
-                                            id='Apis.Details.ExternalStores.ExternalStores.update.not.allowed'
-                                            defaultMessage={'* You are not authorized to publish the API'
-                                                + ' to external developer portals due to insufficient permissions'}
-                                        />
+                                </TableCell>
+                                <TableCell component='th' scope='row'>
+                                    <Typography>
+                                        {' '}
+                                        {row.displayName}
+                                        {' '}
                                     </Typography>
-                                </Grid>
-                            )}
+                                </TableCell>
+                                <TableCell>
+                                    {' '}
+                                    <Typography>{row.type}</Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <a
+                                        target='_blank'
+                                        rel='noopener noreferrer'
+                                        href={row.endpoint}
+                                        className={classes.viewInExStoreLink}
+                                    >
+                                        <Typography>
+                                            {row.endpoint}
+                                        </Typography>
+                                    </a>
+                                </TableCell>
+                            </TableRow>
+                        ))}
+                    </TableBody>
+                </Table>
+            </Paper>
+            <Grid container>
+                <Grid
+                    container
+                    direction='row'
+                    alignItems='center'
+                    spacing={4}
+                    style={{ marginTop: 20 }}
+                >
+                    <Grid item>
+                        <Button
+                            type='submit'
+                            variant='contained'
+                            color='primary'
+                            disabled={isUpdating || api.lifeCycleStatus !== 'PUBLISHED'
+                                || isRestricted(['apim:api_publish'], api)}
+                            onClick={updateStores}
+                            id='stores-save-btn'
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.ExternalStores.ExternalStores.save'
+                                defaultMessage='Save'
+                            />
+                            {isUpdating && <CircularProgress size={20} />}
+                        </Button>
                     </Grid>
+                    <Grid item>
+                        <Link to={'/apis/' + api.id + '/overview'}>
+                            <Button>
+                                <FormattedMessage
+                                    id='Apis.Details.ExternalStores.ExternalStores.cancel'
+                                    defaultMessage='Cancel'
+                                />
+                            </Button>
+                        </Link>
+                    </Grid>
+                    {(isRestricted(['apim:api_publish'], api))
+                        && (
+                            <Grid item>
+                                <Typography variant='body2' color='primary'>
+                                    <FormattedMessage
+                                        id='Apis.Details.ExternalStores.ExternalStores.update.not.allowed'
+                                        defaultMessage={'* You are not authorized to publish the API'
+                                            + ' to external developer portals due to insufficient permissions'}
+                                    />
+                                </Typography>
+                            </Grid>
+                        )}
                 </Grid>
-            </div>
-        </div>
+            </Grid>
+        </Root>
     );
 }

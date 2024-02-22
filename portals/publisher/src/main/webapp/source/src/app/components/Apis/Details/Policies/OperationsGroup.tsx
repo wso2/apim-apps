@@ -17,24 +17,31 @@
  */
 
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Box } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { Accordion, AccordionSummary, AccordionDetails , Box } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const useStyles = makeStyles((theme) => ({
-    tagClass: {
+const PREFIX = 'OperationGroup';
+
+const classes = {
+    tagClass: `${PREFIX}-tagClass`
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tagClass}`]: {
         maxWidth: 1000,
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        [theme.breakpoints.down('md')]: {
+        [theme.breakpoints.down('lg')]: {
             maxWidth: 800,
         },
-    },
+    }
 }));
 
 interface OperationGroupProps {
@@ -46,14 +53,14 @@ interface OperationGroupProps {
 const OperationGroup: FC<OperationGroupProps> = ({
     openAPI, children, tag
 }) => {
-    const classes = useStyles();
+
     const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo: any) => tagInfo.name === tag);
-    let borderColor = "";
+    const borderColor = "";
 
     return (
-        <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}>
-            <ExpansionPanel defaultExpanded>
-                <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} id={tag}>
+        <StyledBox m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}>
+            <Accordion defaultExpanded>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} id={tag}>
                     <Typography
                         variant='h4'
                         className={classes.tagClass}
@@ -69,10 +76,10 @@ const OperationGroup: FC<OperationGroupProps> = ({
                             {currentTagInfo.description}
                         </Typography>
                     )}
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails>{children}</ExpansionPanelDetails>
-            </ExpansionPanel>
-        </Box>
+                </AccordionSummary>
+                <AccordionDetails>{children}</AccordionDetails>
+            </Accordion>
+        </StyledBox>
     );
 };
 

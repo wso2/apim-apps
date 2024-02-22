@@ -1,14 +1,15 @@
 import React from 'react';
 
+import { styled } from '@mui/material/styles';
+
 import {
     Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-} from '@material-ui/core/';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Box from '@material-ui/core/Box';
+} from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Box from '@mui/material/Box';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
+import IconButton from '@mui/material/IconButton';
 import API from 'AppData/api';
 import { resourceMethod, resourcePath, ScopeValidation } from 'AppData/ScopeValidation';
 import Alert from 'AppComponents/Shared/Alert';
@@ -17,36 +18,60 @@ import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 import { isRestricted } from 'AppData/AuthManager';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'DeleteApiButton';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    backLink: `${PREFIX}-backLink`,
+    backIcon: `${PREFIX}-backIcon`,
+    backText: `${PREFIX}-backText`,
+    deleteWrapper: `${PREFIX}-deleteWrapper`,
+    delete: `${PREFIX}-delete`,
+    linkText: `${PREFIX}-linkText`,
+    inlineBlock: `${PREFIX}-inlineBlock`,
+    flexBox: `${PREFIX}-flexBox`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         height: 70,
         background: theme.palette.background.paper,
         borderBottom: 'solid 1px ' + theme.palette.grey.A200,
         display: 'flex',
         alignItems: 'center',
     },
-    backLink: {
+
+    [`& .${classes.backLink}`]: {
         alignItems: 'center',
         textDecoration: 'none',
         display: 'flex',
     },
-    backIcon: {
+
+    [`& .${classes.backIcon}`]: {
         color: theme.palette.primary.main,
         fontSize: 56,
         cursor: 'pointer',
     },
-    backText: {
+
+    [`& .${classes.backText}`]: {
         color: theme.palette.primary.main,
         cursor: 'pointer',
         fontFamily: theme.typography.fontFamily,
     },
-    deleteWrapper: {
+
+    [`& .${classes.deleteWrapper}`]: {
         flex: 0,
         display: 'flex',
         justifyContent: 'flex-end',
         paddingRight: theme.spacing(2),
     },
-    delete: {
+
+    [`& .${classes.delete}`]: {
         color: theme.custom.apis.listing.deleteButtonColor,
         cursor: 'pointer',
         padding: theme.spacing(0.4),
@@ -55,18 +80,21 @@ const styles = (theme) => ({
         textAlign: 'center',
         justifyContent: 'center',
     },
-    linkText: {
+
+    [`& .${classes.linkText}`]: {
         fontSize: theme.typography.fontSize,
     },
-    inlineBlock: {
+
+    [`& .${classes.inlineBlock}`]: {
         display: 'inline-block',
         paddingRight: 10,
     },
-    flexBox: {
+
+    [`& .${classes.flexBox}`]: {
         display: 'flex',
         paddingRight: 10,
-    },
-});
+    }
+}));
 
 /**
  * Handle Delete an API from API Overview/Details page
@@ -174,9 +202,7 @@ class DeleteApiButton extends React.Component {
      * @memberof DeleteApiButton
      */
     render() {
-        const {
-            api, onClick, classes, updateData,
-        } = this.props;
+        const { api, onClick, updateData } = this.props;
         const type = api.apiType === API.CONSTS.APIProduct ? 'API Product ' : 'API ';
         const version = api.apiType === API.CONSTS.APIProduct ? null : '-' + api.version;
         const deleteHandler = onClick || this.handleApiDelete;
@@ -188,7 +214,7 @@ class DeleteApiButton extends React.Component {
         }
 
         return (
-            <>
+            <Root>
                 {/* allowing delete based on scopes */}
                 <ScopeValidation resourceMethod={resourceMethod.DELETE} resourcePath={path}>
                     <Box
@@ -204,7 +230,7 @@ class DeleteApiButton extends React.Component {
                                 aria-label='delete'
                                 disableFocusRipple
                                 disableRipple
-                            >
+                                size='large'>
                                 <DeleteIcon />
                             </IconButton>
                             <Box
@@ -264,7 +290,7 @@ class DeleteApiButton extends React.Component {
                         </Button>
                     </DialogActions>
                 </Dialog>
-            </>
+            </Root>
         );
     }
 }
@@ -278,10 +304,7 @@ DeleteApiButton.propTypes = {
         delete: PropTypes.func,
     }).isRequired,
     history: PropTypes.shape({ push: PropTypes.func }).isRequired,
-    classes: PropTypes.shape({}).isRequired,
     setLoading: PropTypes.func,
-    updateData: PropTypes.func.isRequired,
-    isAPIProduct: PropTypes.bool.isRequired,
 };
 
-export default withRouter(withStyles(styles, { withTheme: true })(DeleteApiButton));
+export default withRouter((DeleteApiButton));

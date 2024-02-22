@@ -17,25 +17,31 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
 import { Redirect } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import LaunchIcon from '@material-ui/icons/Launch';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import LaunchIcon from '@mui/icons-material/Launch';
 import ServiceCatalog from 'AppData/ServiceCatalog';
 import Alert from 'AppComponents/Shared/Alert';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import OnboardingMenuCard from 'AppComponents/ServiceCatalog/Listing/components/OnboardingMenuCard';
 import Configurations from 'Config';
 import { getSampleServiceMeta, getSampleOpenAPI } from 'AppData/SamplePizzaShack';
 
-const useStyles = makeStyles((theme) => ({
-    actionStyle: {
+const PREFIX = 'Onboarding';
+
+const classes = {
+    actionStyle: `${PREFIX}-actionStyle`
+};
+
+const StyledBox = styled(Box)(({ theme }) => ({
+    [`& .${classes.actionStyle}`]: {
         paddingLeft: theme.spacing(4),
         paddingRight: theme.spacing(4),
-    },
+    }
 }));
 
 /**
@@ -44,7 +50,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {void} Onboarding page for Services
  */
 function Onboarding() {
-    const classes = useStyles();
+
     const intl = useIntl();
     const [deployStatus, setDeployStatus] = useState({ inprogress: false, completed: false, error: false });
 
@@ -73,11 +79,11 @@ function Onboarding() {
         return <Redirect to={url} />;
     }
     return (
-        <Box id='itest-service-catalog-onboarding' pt={10}>
+        <StyledBox id='itest-service-catalog-onboarding' pt={10}>
             <Grid
                 container
                 direction='row'
-                justify='center'
+                justifyContent='center'
                 alignItems='center'
                 spacing={5}
             >
@@ -163,7 +169,7 @@ function Onboarding() {
                     </Button>
                 </OnboardingMenuCard>
             </Grid>
-        </Box>
+        </StyledBox>
     );
 }
 

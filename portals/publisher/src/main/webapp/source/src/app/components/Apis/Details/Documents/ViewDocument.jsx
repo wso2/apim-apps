@@ -17,48 +17,61 @@
  */
 
 import React, {useState, useRef, useContext} from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import IconButton from '@material-ui/core/IconButton';
-import Slide from '@material-ui/core/Slide';
-import Icon from '@material-ui/core/Icon';
-import Paper from '@material-ui/core/Paper';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import Slide from '@mui/material/Slide';
+import Icon from '@mui/material/Icon';
+import Paper from '@mui/material/Paper';
 import Api from 'AppData/api';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import GenerateDocument from './GenerateDocument';
 
 
-const styles = {
-    appBar: {
+const PREFIX = 'ViewDocument';
+
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    flex: `${PREFIX}-flex`,
+    popupHeader: `${PREFIX}-popupHeader`,
+    splitWrapper: `${PREFIX}-splitWrapper`,
+    docName: `${PREFIX}-docName`,
+    button: `${PREFIX}-button`,
+    viewButton: `${PREFIX}-viewButton`
+};
+
+
+const Root = styled('div')({
+    [`& .${classes.appBar}`]: {
         position: 'relative',
     },
-    flex: {
+    [`& .${classes.flex}`]: {
         flex: 1,
     },
-    popupHeader: {
+    [`& .${classes.popupHeader}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    splitWrapper: {
+    [`& .${classes.splitWrapper}`]: {
         padding: 0,
     },
-    docName: {
+    [`& .${classes.docName}`]: {
         alignItems: 'center',
         display: 'flex',
     },
-    button: {
+    [`& .${classes.button}`]: {
         height: 30,
         marginLeft: 30,
     },
-    viewButton: {
+    [`& .${classes.viewButton}`]: {
         whiteSpace: 'nowrap',
         marginRight: 50,
     },
-};
+});
 
 function Transition(props) {
     return <Slide direction='up' {...props} />;
@@ -77,9 +90,9 @@ function ViewDocument(props) {
         setOpen(!open);
     };
 
-    const { classes, apiId, docName } = props;
+    const {  apiId, docName } = props;
     return (
-        <React.Fragment>
+        <Root>
             <Button
                 id='view-generated-document-btn'
                 data-testid='view-generated-document-btn'
@@ -96,14 +109,14 @@ function ViewDocument(props) {
             </Button>
             <Dialog open={open} onClose={toggleOpen} TransitionComponent={Transition} fullScreen> 
                 <Paper square className={classes.popupHeader}>
-                        <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
+                        <IconButton color='inherit' onClick={toggleOpen} aria-label='Close' size='large'>
                             <Icon>close</Icon>
                         </IconButton>
                 </Paper>
                 <div className='apim_elements'><GenerateDocument /></div>
                 
             </Dialog>
-        </React.Fragment>
+        </Root>
     );
 }
 ViewDocument.propTypes = {
@@ -112,4 +125,4 @@ ViewDocument.propTypes = {
     intl: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(ViewDocument));
+export default injectIntl((ViewDocument));

@@ -17,38 +17,54 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     Grid,
     Tooltip,
     InputAdornment,
-    withStyles,
     IconButton, Icon,
-} from '@material-ui/core';
+} from '@mui/material';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import Autocomplete from 'AppComponents/Shared/Autocomplete';
 import { isRestricted } from 'AppData/AuthManager';
 
 
-const styles = (theme) => ({
-    endpointInputWrapper: {
+const PREFIX = 'ServiceEndpoint';
+
+const classes = {
+    endpointInputWrapper: `${PREFIX}-endpointInputWrapper`,
+    textField: `${PREFIX}-textField`,
+    input: `${PREFIX}-input`,
+    iconButton: `${PREFIX}-iconButton`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.endpointInputWrapper}`]: {
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
     },
-    textField: {
+
+    [`& .${classes.textField}`]: {
         width: '100%',
     },
-    input: {
+
+    [`& .${classes.input}`]: {
         marginLeft: theme.spacing(1),
         flex: 1,
     },
-    iconButton: {
-        padding: theme.spacing(1),
-    },
 
-});
+    [`& .${classes.iconButton}`]: {
+        padding: theme.spacing(1),
+    }
+}));
 
 /**
  * This is Service endpoint component.
@@ -59,7 +75,6 @@ const styles = (theme) => ({
 function ServiceEndpoint(props) {
     const {
         category,
-        classes,
         api,
         services,
         type,
@@ -87,7 +102,7 @@ function ServiceEndpoint(props) {
     };
 
     return (
-        <>
+        <Root>
             <div>
                 <Grid container spacing={2}>
                     <Grid item xs={4} className={classes.endpointInputWrapper}>
@@ -98,7 +113,7 @@ function ServiceEndpoint(props) {
                                 defaultValue={category === 'production_endpoints' && defaultService}
                                 options={services}
                                 getOptionLabel={(option) => option.serviceKey}
-                                style={{ width:  '100%' }}
+                                fullWidth
                                 renderInput={(params) => <TextField {...params} label={name} variant='outlined'
                                     margin='normal' defaultValue={category === 'production_endpoints' 
                                      && defaultService.serviceUrl} />}
@@ -124,7 +139,7 @@ function ServiceEndpoint(props) {
                                                     aria-label='Settings'
                                                     onClick={() => setAdvancedConfigOpen(index, type, category)}
                                                     disabled={(isRestricted(['apim:api_create'], api))}
-                                                >
+                                                    size='large'>
                                                     <Tooltip
                                                         placement='top-start'
                                                         interactive
@@ -146,7 +161,7 @@ function ServiceEndpoint(props) {
                                                     aria-label='Security'
                                                     onClick={() => setESConfigOpen(type, esCategory)}
                                                     disabled={(isRestricted(['apim:api_create'], api))}
-                                                >
+                                                    size='large'>
                                                     <Tooltip
                                                         placement='top-start'
                                                         interactive
@@ -173,8 +188,8 @@ function ServiceEndpoint(props) {
 
                 </Grid>
             </div>
-        </>
-    )
+        </Root>
+    );
 }
 
 
@@ -200,4 +215,4 @@ ServiceEndpoint.propTypes = {
     }).isRequired,
 };
 
-export default withStyles(styles)(ServiceEndpoint);
+export default (ServiceEndpoint);

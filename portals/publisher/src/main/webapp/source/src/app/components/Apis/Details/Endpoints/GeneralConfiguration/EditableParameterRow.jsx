@@ -15,21 +15,27 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import EditIcon from '@material-ui/icons/Edit';
-import SaveIcon from '@material-ui/icons/Save';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import IconButton from '@material-ui/core/IconButton';
+import TextField from '@mui/material/TextField';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import IconButton from '@mui/material/IconButton';
 
-const useStyles = makeStyles(() => ({
-    link: {
+const PREFIX = 'EditableParameterRow';
+
+const classes = {
+    link: `${PREFIX}-link`
+};
+
+const StyledTableRow = styled(TableRow)(() => ({
+    [`& .${classes.link}`]: {
         cursor: 'pointer',
-    },
+    }
 }));
 
 /**
@@ -115,10 +121,10 @@ function EditableParameterRow(props) {
     };
 
     // Styles definition
-    const classes = useStyles();
+
 
     return (
-        <TableRow>
+        <StyledTableRow>
             {editMode ? (
                 <TableCell>
                     <TextField
@@ -173,7 +179,7 @@ function EditableParameterRow(props) {
                             onKeyDown={() => {}}
                             disabled={validateEmpty(newName) || validateEmpty(newValue)}
                             color='inherit'
-                        >
+                            size='large'>
                             <SaveIcon className={classes.buttonIcon} />
                         </IconButton>
                     </>
@@ -185,7 +191,7 @@ function EditableParameterRow(props) {
                         onKeyDown={() => {}}
                         color='inherit'
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                    >
+                        size='large'>
                         <EditIcon className={classes.buttonIcon} />
                     </IconButton>
                 )}
@@ -196,11 +202,11 @@ function EditableParameterRow(props) {
                     onKeyDown={() => {}}
                     color='inherit'
                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                >
+                    size='large'>
                     <DeleteForeverIcon className={classes.buttonIcon} />
                 </IconButton>
             </TableCell>
-        </TableRow>
+        </StyledTableRow>
     );
 }
 

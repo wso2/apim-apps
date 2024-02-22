@@ -16,30 +16,30 @@
  * under the License.
  */
 import React, { useState, useEffect, useCallback } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Radio from '@material-ui/core/Radio';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import { makeStyles } from '@material-ui/core/styles';
+import Radio from '@mui/material/Radio';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
 import { FormattedMessage } from 'react-intl';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import CheckIcon from '@material-ui/icons/Check';
-import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
-import Button from '@material-ui/core/Button';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
-import IconButton from '@material-ui/core/IconButton';
-import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import DeleteIcon from '@material-ui/icons/Delete';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
+import CircularProgress from '@mui/material/CircularProgress';
+import InputAdornment from '@mui/material/InputAdornment';
+import CheckIcon from '@mui/icons-material/Check';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import Button from '@mui/material/Button';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import IconButton from '@mui/material/IconButton';
+import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
 import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-datatable as a transitive dependency
 import YAML from 'js-yaml';
 
@@ -50,10 +50,21 @@ import {
     getLinterResultsFromContent } from "../../../Details/APIDefinition/Linting/Linting";
 import ValidationResults from './ValidationResults';
 
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
+const PREFIX = 'ProvideOpenAPI';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
-    },
+    }
 }));
 
 /**
@@ -67,7 +78,7 @@ export default function ProvideOpenAPI(props) {
     const { apiInputs, inputsDispatcher, onValidate, onLinterLineSelect } = props;
     const isFileInput = apiInputs.inputType === 'file';
     const { inputType, inputValue } = apiInputs;
-    const classes = useStyles();
+
     // If valid value is `null`,that means valid, else an error object will be there
     const [isValid, setValidity] = useState({});
     const [linterResults, setLinterResults] = useState ([]);
@@ -252,9 +263,9 @@ export default function ProvideOpenAPI(props) {
     }
 
     return (
-        <>
-            <Grid container spacing={2}>
-                <Grid item xs={12} md={12}>
+        <Root>
+            <Grid container>
+                <Grid item xs={12} sx={{ mb: 2 }}>
                     <FormControl component='fieldset'>
                         <FormLabel component='legend'>
                             <>
@@ -290,7 +301,7 @@ export default function ProvideOpenAPI(props) {
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-                <Grid item xs={10} md={11}>
+                <Grid item xs={12}>
                     {isFileInput ? (
                         <>
                             {apiInputs.inputValue ? (
@@ -306,11 +317,7 @@ export default function ProvideOpenAPI(props) {
                                     ${humanFileSize(apiInputs.inputValue.size)}`}
                                         />
                                         <ListItemSecondaryAction>
-                                            <IconButton
-                                                edge='end'
-                                                aria-label='delete'
-                                                onClick={reset}
-                                            >
+                                            <IconButton edge='end' aria-label='delete' onClick={reset} size='large'>
                                                 <DeleteIcon />
                                             </IconButton>
                                         </ListItemSecondaryAction>
@@ -336,6 +343,7 @@ export default function ProvideOpenAPI(props) {
                                                 variant='contained'
                                                 id='browse-to-upload-btn'
                                                 onClick={ reset }
+                                                sx={{ mt: 1 }}
                                             >
                                                 <FormattedMessage
                                                     id='Apis.Create.OpenAPI.Steps.ProvideOpenAPI.Input.file.upload'
@@ -384,7 +392,7 @@ export default function ProvideOpenAPI(props) {
                 />
                 <Grid item xs={2} md={5} />
             </Grid>
-        </>
+        </Root>
     );
 }
 

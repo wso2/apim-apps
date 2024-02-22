@@ -17,11 +17,12 @@
  */
 
 import React, { FC, useEffect, useReducer, useState } from 'react';
-import { CircularProgress, makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
+import { styled } from '@mui/material/styles';
+import { CircularProgress , Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
@@ -32,17 +33,25 @@ import uuidv4 from '../Utils';
 import GeneralDetails from './GeneralDetails';
 import SourceDetails from './SourceDetails';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    root: {
+const PREFIX = 'PolicyCreateForm';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    cancelBtn: `${PREFIX}-cancelBtn`
+};
+
+const StyledPaper = styled(Paper)(({ theme }: { theme: Theme }) => ({
+    [`&.${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
         display: 'flex',
         flexDirection: 'column',
         padding: 20,
     },
-    cancelBtn: {
+
+    [`& .${classes.cancelBtn}`]: {
         marginLeft: theme.spacing(1),
-    },
+    }
 }));
 
 export const ACTIONS = {
@@ -171,7 +180,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
     onCancel,
     saving,
 }) => {
-    const classes = useStyles();
+
     const initialState: NewPolicyState = {
         displayName: null,
         version: null,
@@ -278,7 +287,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
     };
 
     return (
-        <Paper elevation={0} className={classes.root} data-testid='create-policy-form'>
+        <StyledPaper elevation={0} className={classes.root} data-testid='create-policy-form'>
             {/* General details of policy */}
             <GeneralDetails
                 displayName={state.displayName}
@@ -338,7 +347,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                     />
                 </Button>
             </Box>
-        </Paper>
+        </StyledPaper>
     );
 };
 

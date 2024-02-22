@@ -17,11 +17,11 @@
  */
 
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
 import ApiContext, { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import {
@@ -35,13 +35,26 @@ import {
 import ApplicationLevel from './components/ApplicationLevel';
 import TransportLevel from './components/TransportLevel';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'APISecurity';
+
+const classes = {
+    error: `${PREFIX}-error`,
+    bottomSpace: `${PREFIX}-bottomSpace`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.main,
     },
-    bottomSpace: {
+
+    [`& .${classes.bottomSpace}`]: {
         marginBottom: theme.spacing(4),
-    },
+    }
 }));
 
 /**
@@ -75,7 +88,7 @@ export default function APISecurity(props) {
         || securityScheme.includes(
             DEFAULT_API_SECURITY_OAUTH2,
         ) || securityScheme.includes(API_SECURITY_API_KEY));
-    const classes = useStyles();
+
     const [apiFromContext] = useAPI();
 
     // Check the validation conditions and return an error message
@@ -132,26 +145,30 @@ export default function APISecurity(props) {
         return null; // No errors :-)
     };
     return (
-        <>
-            <Grid container spacing={2} alignItems='flex-start'>
+        (<Root>
+            <Grid container alignItems='flex-start' rowSpacing={1}>
                 {(isAPIProduct || (!isEndpointAvailable || (isEndpointAvailable && !isPrototyped)))
                 && (
                     <>
-                        <TransportLevel
-                            haveMultiLevelSecurity={haveMultiLevelSecurity}
-                            securityScheme={securityScheme}
-                            configDispatcher={configDispatcher}
-                            api={api}
-                            id={id}
-                        />
-                        <ApplicationLevel
-                            haveMultiLevelSecurity={haveMultiLevelSecurity}
-                            securityScheme={securityScheme}
-                            api={api}
-                            configDispatcher={configDispatcher}
-                            id={id}
-                        />
-                        <Grid item>
+                        <Grid item xs={12}>
+                            <TransportLevel
+                                haveMultiLevelSecurity={haveMultiLevelSecurity}
+                                securityScheme={securityScheme}
+                                configDispatcher={configDispatcher}
+                                api={api}
+                                id={id}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
+                            <ApplicationLevel
+                                haveMultiLevelSecurity={haveMultiLevelSecurity}
+                                securityScheme={securityScheme}
+                                api={api}
+                                configDispatcher={configDispatcher}
+                                id={id}
+                            />
+                        </Grid>
+                        <Grid item xs={12}>
                             <span className={classes.error}>
                                 <Validate />
                             </span>
@@ -159,7 +176,7 @@ export default function APISecurity(props) {
                     </>
                 )}
             </Grid>
-        </>
+        </Root>)
     );
 }
 

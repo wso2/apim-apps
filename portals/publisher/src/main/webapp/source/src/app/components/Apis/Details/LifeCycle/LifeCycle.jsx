@@ -17,12 +17,12 @@
  */
 
 import React, { Component } from 'react';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
-import { withStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
@@ -31,22 +31,38 @@ import APIProduct from 'AppData/APIProduct';
 import LifeCycleUpdate from './LifeCycleUpdate';
 import LifeCycleHistory from './LifeCycleHistory';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'LifeCycle';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    historyHead: `${PREFIX}-historyHead`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
         maxWidth: theme.custom.contentAreaWidth,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    historyHead: {
+
+    [`& .${classes.historyHead}`]: {
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
-    },
-});
+    }
+}));
+
 /**
  *
  *
@@ -180,7 +196,7 @@ class LifeCycle extends Component {
      * @memberof LifeCycle
      */
     render() {
-        const { classes, isAPIProduct } = this.props;
+        const {  isAPIProduct } = this.props;
         const {
             api, lcState, checkList, lcHistory, certList,
         } = this.state;
@@ -206,7 +222,7 @@ class LifeCycle extends Component {
             return <Progress />;
         }
         return (
-            <>
+            (<Root>
                 <Typography id='itest-api-details-lifecycle-head' variant='h4' component='h2' gutterBottom>
                     <FormattedMessage id='Apis.Details.LifeCycle.LifeCycle.lifecycle' defaultMessage='Lifecycle' />
                 </Typography>
@@ -243,7 +259,7 @@ class LifeCycle extends Component {
                         </Grid>
                     </Grid>
                 </div>
-            </>
+            </Root>)
         );
     }
 }
@@ -255,4 +271,4 @@ LifeCycle.propTypes = {
 
 LifeCycle.contextType = ApiContext;
 
-export default withStyles(styles)(LifeCycle);
+export default (LifeCycle);

@@ -17,9 +17,9 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import TablePagination from '@material-ui/core/TablePagination';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import TablePagination from '@mui/material/TablePagination';
 import ServiceCard from './ServiceCard';
 
 /**
@@ -45,33 +45,31 @@ export default function ServicesCardView(props) {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-    return (
-        <>
-            <Grid
-                container
-                direction='row'
-                justify={numberOfServices > 5 ? 'center' : 'flex-start'}
-                alignItems='flex-start'
-                spacing={4}
-            >
-                {serviceList.map((service) => (
-                    <Grid item>
-                        <ServiceCard onDelete={onDelete} service={service} />
-                    </Grid>
-                ))}
-            </Grid>
-            <Box justifyContent='flex-end' mx={3} display='flex'>
-                {pagination.total > 10 && (
-                    <TablePagination
-                        component='div'
-                        count={pagination.total}
-                        page={page}
-                        onChangePage={handleChangePage}
-                        rowsPerPage={rowsPerPage}
-                        onChangeRowsPerPage={handleChangeRowsPerPage}
-                    />
-                )}
-            </Box>
-        </>
-    );
+    return <>
+        <Grid
+            container
+            direction='row'
+            justifyContent={numberOfServices > 5 ? 'center' : 'flex-start'}
+            alignItems='flex-start'
+            spacing={4}
+        >
+            {serviceList.map((service) => (
+                <Grid item>
+                    <ServiceCard onDelete={onDelete} service={service} />
+                </Grid>
+            ))}
+        </Grid>
+        <Box justifyContent='flex-end' mx={3} display='flex'>
+            {pagination.total > 10 && (
+                <TablePagination
+                    component='div'
+                    count={pagination.total}
+                    page={page}
+                    onPageChange={handleChangePage}
+                    rowsPerPage={rowsPerPage}
+                    onRowsPerPageChange={handleChangeRowsPerPage}
+                />
+            )}
+        </Box>
+    </>;
 }

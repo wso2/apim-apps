@@ -17,20 +17,20 @@
  */
 
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
 import Api from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { withRouter } from 'react-router';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
@@ -39,78 +39,121 @@ import { isRestricted } from 'AppData/AuthManager';
 import APIRateLimiting from '../Resources/components/APIRateLimiting';
 import Operation from './Operation';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'Operations';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    container: `${PREFIX}-container`,
+    textField: `${PREFIX}-textField`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    scopes: `${PREFIX}-scopes`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    button: `${PREFIX}-button`,
+    buttonMain: `${PREFIX}-buttonMain`,
+    addNewWrapper: `${PREFIX}-addNewWrapper`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    addNewHeader: `${PREFIX}-addNewHeader`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    radioGroup: `${PREFIX}-radioGroup`,
+    addResource: `${PREFIX}-addResource`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    container: {
+
+    [`& .${classes.container}`]: {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    textField: {
+
+    [`& .${classes.textField}`]: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         width: 400,
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    scopes: {
+
+    [`& .${classes.scopes}`]: {
         width: 400,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.primary.main),
     },
-    buttonMain: {
+
+    [`& .${classes.buttonMain}`]: {
         color: theme.palette.getContrastText(theme.palette.primary.main),
         marginRight: theme.spacing(1),
     },
-    addNewWrapper: {
+
+    [`& .${classes.addNewWrapper}`]: {
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.getContrastText(theme.palette.background.paper),
         border: 'solid 1px ' + theme.palette.grey['300'],
         borderRadius: theme.shape.borderRadius,
         marginTop: theme.spacing(2),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
     },
-    addNewHeader: {
+
+    [`& .${classes.addNewHeader}`]: {
         padding: theme.spacing(2),
         backgroundColor: theme.palette.grey['300'],
         fontSize: theme.typography.h6.fontSize,
         color: theme.typography.h6.color,
         fontWeight: theme.typography.h6.fontWeight,
     },
-    addNewOther: {
+
+    [`& .${classes.addNewOther}`]: {
         padding: theme.spacing(2),
     },
-    radioGroup: {
+
+    [`& .${classes.radioGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
         width: 300,
     },
-    addResource: {
+
+    [`& .${classes.addResource}`]: {
         width: 600,
         marginTop: 0,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
     },
-    expansionPanel: {
+
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(1),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
-    },
-});
+    }
+}));
 
 /**
  * This class defined for operation List
@@ -313,9 +356,8 @@ class Operations extends React.Component {
         if (!operations && apiPolicies.length === 0) {
             return <Progress />;
         }
-        const { classes } = this.props;
         return (
-            <>
+            (<Root>
                 <Box pb={3}>
                     <Typography variant='h5'>
                         <FormattedMessage
@@ -324,7 +366,6 @@ class Operations extends React.Component {
                         />
                     </Typography>
                 </Box>
-
                 <Grid container spacing={2}>
                     <Grid item md={12}>
                         <APIRateLimiting
@@ -449,7 +490,7 @@ class Operations extends React.Component {
                         </Grid>
                     </Grid>
                 </Grid>
-            </>
+            </Root>)
         );
     }
 }
@@ -474,4 +515,4 @@ Operations.propTypes = {
     updateAPI: PropTypes.func.isRequired,
 };
 
-export default withRouter(injectIntl(withStyles(styles)(Operations)));
+export default withRouter(injectIntl((Operations)));

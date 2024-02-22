@@ -19,22 +19,22 @@
 /* eslint no-param-reassign: ["error", { "props": true, "ignorePropertyModificationsFor": ["operationObj"] }] */
 
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import Icon from '@material-ui/core/Icon';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import Icon from '@mui/material/Icon';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Checkbox from '@mui/material/Checkbox';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
 import queryString from 'query-string';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import cloneDeep from 'lodash.clonedeep';
 import PropTypes from 'prop-types';
 import API from 'AppData/api';
@@ -44,8 +44,38 @@ import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import CONSTS from 'AppData/Constants';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 
-const useStyles = makeStyles((theme) => ({
-    searchWrapper: {
+const PREFIX = 'ProductResourcesEdit';
+
+const classes = {
+    searchWrapper: `${PREFIX}-searchWrapper`,
+    paper: `${PREFIX}-paper`,
+    apiWrapper: `${PREFIX}-apiWrapper`,
+    ResourceWrapper: `${PREFIX}-ResourceWrapper`,
+    SelectedResourceWrapper: `${PREFIX}-SelectedResourceWrapper`,
+    leftMost: `${PREFIX}-leftMost`,
+    rightMost: `${PREFIX}-rightMost`,
+    colTitle: `${PREFIX}-colTitle`,
+    treeItemMain: `${PREFIX}-treeItemMain`,
+    treeItemMainWrapper: `${PREFIX}-treeItemMainWrapper`,
+    treeItem: `${PREFIX}-treeItem`,
+    hr: `${PREFIX}-hr`,
+    methodView: `${PREFIX}-methodView`,
+    middleText: `${PREFIX}-middleText`,
+    selectedApi: `${PREFIX}-selectedApi`,
+    selectedTitle: `${PREFIX}-selectedTitle`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`,
+    selectedApiDescription: `${PREFIX}-selectedApiDescription`,
+    messageWrapper: `${PREFIX}-messageWrapper`,
+    tootBar: `${PREFIX}-tootBar`,
+    inactiveIcon: `${PREFIX}-inactiveIcon`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.searchWrapper}`]: {
         padding: 0,
         marginTop: theme.spacing(1),
         '& input': {
@@ -53,15 +83,18 @@ const useStyles = makeStyles((theme) => ({
         },
         display: 'flex',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         height: '100%',
         borderRadius: 0,
     },
-    apiWrapper: {
+
+    [`& .${classes.apiWrapper}`]: {
         overflowY: 'auto',
         height: 349,
     },
-    ResourceWrapper: {
+
+    [`& .${classes.ResourceWrapper}`]: {
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
         '& .frame': {
@@ -88,37 +121,44 @@ const useStyles = makeStyles((theme) => ({
             height: 369,
         },
     },
-    SelectedResourceWrapper: {
+
+    [`& .${classes.SelectedResourceWrapper}`]: {
         overflowY: 'auto',
         overflowX: 'auto',
         height: 321,
     },
-    leftMost: {
+
+    [`& .${classes.leftMost}`]: {
         background: theme.palette.grey[700],
         color: theme.palette.getContrastText(theme.palette.grey[700]),
         padding: theme.spacing(1),
     },
-    rightMost: {
+
+    [`& .${classes.rightMost}`]: {
         background: theme.palette.grey[600],
         color: theme.palette.getContrastText(theme.palette.grey[600]),
         padding: theme.spacing(1),
     },
-    colTitle: {
+
+    [`& .${classes.colTitle}`]: {
         background: theme.palette.grey[400],
         color: theme.palette.getContrastText(theme.palette.grey[400]),
         padding: theme.spacing(1),
         fontWeight: 200,
         minHeight: 25,
     },
-    treeItemMain: {
+
+    [`& .${classes.treeItemMain}`]: {
         background: theme.palette.grey[100],
         color: theme.palette.getContrastText(theme.palette.grey[100]),
         padding: theme.spacing(1),
     },
-    treeItemMainWrapper: {
+
+    [`& .${classes.treeItemMainWrapper}`]: {
         paddingLeft: theme.spacing(2),
     },
-    treeItem: {
+
+    [`& .${classes.treeItem}`]: {
         '& .material-icons': {
             fontSize: theme.spacing(2),
             cursor: 'pointer',
@@ -128,36 +168,45 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         padding: '6px 0',
     },
-    hr: {
+
+    [`& .${classes.hr}`]: {
         flex: 1,
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         color: theme.palette.getContrastText(theme.palette.grey[100]),
     },
-    methodView: {
+
+    [`& .${classes.methodView}`]: {
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
     },
-    middleText: {
+
+    [`& .${classes.middleText}`]: {
         flex: 1,
     },
-    selectedApi: {
+
+    [`& .${classes.selectedApi}`]: {
         background: theme.palette.grey[100],
     },
-    selectedTitle: {
+
+    [`& .${classes.selectedTitle}`]: {
         padding: theme.spacing(2),
     },
-    buttonWrapper: {
+
+    [`& .${classes.buttonWrapper}`]: {
         marginTop: theme.spacing(2),
         textDecorate: 'none',
     },
-    selectedApiDescription: {
+
+    [`& .${classes.selectedApiDescription}`]: {
         padding: '0px 16px',
     },
-    messageWrapper: {
+
+    [`& .${classes.messageWrapper}`]: {
         padding: theme.spacing(3),
     },
-    tootBar: {
+
+    [`& .${classes.tootBar}`]: {
         display: 'flex',
         justifyContent: 'flex-end',
         alignItems: 'center',
@@ -173,9 +222,10 @@ const useStyles = makeStyles((theme) => ({
             alignItems: 'center',
         },
     },
-    inactiveIcon: {
+
+    [`& .${classes.inactiveIcon}`]: {
         color: theme.palette.grey[300],
-    },
+    }
 }));
 
 const resourceMethod = {
@@ -195,7 +245,7 @@ const resourceMethod = {
  * @returns
  */
 function ProductResourcesEdit(props) {
-    const classes = useStyles();
+
     const {
         apiResources, setApiResources, isStateCreate, api, resourceNotFountMessage,
     } = props;
@@ -485,7 +535,7 @@ function ProductResourcesEdit(props) {
         return <ResourceNotFound message={resourceNotFountMessage} />;
     }
     return (
-        <>
+        <Root style={{ border: '2px solid blue'}}>
             {allApis.length === 0 && !fromSearch ? (
                 <Grid container>
                     <Typography className={classes.messageWrapper}>
@@ -637,86 +687,84 @@ function ProductResourcesEdit(props) {
                                                 const labelId = `checkbox-list-label_${key}`;
                                                 return Object.keys(path).map((innerKey) => {
                                                     const methodObj = path[innerKey];
-                                                    return (
-                                                        CONSTS.HTTP_METHODS.includes(innerKey) && (
-                                                            <ListItem
-                                                                key={`${innerKey} - ${key}`}
-                                                                role={undefined}
-                                                                dense
-                                                            >
-                                                                <ListItemIcon style={{ minWidth: 35 }}>
-                                                                    <Checkbox
-                                                                        edge='start'
-                                                                        checked={methodObj.checked}
-                                                                        tabIndex={-1}
-                                                                        disableRipple
-                                                                        onChange={() => updateCheckBox(key, innerKey)}
-                                                                        color='primary'
-                                                                        disabled={methodObj.allreadyAdded}
-                                                                        inputProps={
-                                                                            {
-                                                                                'aria-label': 'Select API resource',
-                                                                            }
-                                                                        }
-                                                                    />
-                                                                </ListItemIcon>
-                                                                <ListItemText
-                                                                    id={labelId + innerKey}
-                                                                    primary={(
-                                                                        <div>
-                                                                            <MethodView
-                                                                                method={innerKey}
-                                                                                className={classes.methodView}
-                                                                            />
-                                                                            <span>{key}</span>
-                                                                        </div>
-                                                                    )}
-                                                                    secondary={
-                                                                        methodObj['x-auth-type']
-                                                                    && methodObj['x-throttling-tier']
-                                                                    && `${methodObj['x-auth-type']} - ${
-                                                                        methodObj['x-throttling-tier']
-                                                                    }`
-                                                                    }
-                                                                    onClick={() => updateResourceTree(
+                                                    return CONSTS.HTTP_METHODS.includes(innerKey) && (
+                                                        <ListItem
+                                                            key={`${innerKey} - ${key}`}
+                                                            role={undefined}
+                                                            dense
+                                                        >
+                                                            <ListItemIcon style={{ minWidth: 35 }}>
+                                                                <Checkbox
+                                                                    edge='start'
+                                                                    checked={methodObj.checked}
+                                                                    tabIndex={-1}
+                                                                    disableRipple
+                                                                    onChange={() => updateCheckBox(key, innerKey)}
+                                                                    color='primary'
+                                                                    disabled={methodObj.allreadyAdded}
+                                                                    inputProps={
                                                                         {
-                                                                            target: key,
-                                                                            verb: innerKey,
-                                                                            apiId: selectedApi.id,
-                                                                            name: selectedApi.name,
-                                                                            version: selectedApi.version,
-                                                                        },
-                                                                        'add',
-                                                                    )}
-                                                                    className={classes.middleText}
+                                                                            'aria-label': 'Select API resource',
+                                                                        }
+                                                                    }
                                                                 />
-                                                                <ListItemSecondaryAction>
-                                                                    {methodObj.allreadyAdded && (
-                                                                        <Icon className={classes.inactiveIcon}>
-                                                                            chevron_right
-                                                                        </Icon>
-                                                                    )}
-                                                                    {!methodObj.allreadyAdded && (
-                                                                        <IconButton
-                                                                            edge='end'
-                                                                            aria-label='comments'
-                                                                            onClick={() => updateResourceTree(
-                                                                                {
-                                                                                    target: key,
-                                                                                    verb: innerKey,
-                                                                                    apiId: selectedApi.id,
-                                                                                    name: selectedApi.name,
-                                                                                    version: selectedApi.version,
-                                                                                },
-                                                                                'add',
-                                                                            )}
-                                                                        >
-                                                                            <Icon>chevron_right</Icon>
-                                                                        </IconButton>
-                                                                    )}
-                                                                </ListItemSecondaryAction>
-                                                            </ListItem>
-                                                        )
+                                                            </ListItemIcon>
+                                                            <ListItemText
+                                                                id={labelId + innerKey}
+                                                                primary={(
+                                                                    <div>
+                                                                        <MethodView
+                                                                            method={innerKey}
+                                                                            className={classes.methodView}
+                                                                        />
+                                                                        <span>{key}</span>
+                                                                    </div>
+                                                                )}
+                                                                secondary={
+                                                                    methodObj['x-auth-type']
+                                                                && methodObj['x-throttling-tier']
+                                                                && `${methodObj['x-auth-type']} - ${
+                                                                    methodObj['x-throttling-tier']
+                                                                }`
+                                                                }
+                                                                onClick={() => updateResourceTree(
+                                                                    {
+                                                                        target: key,
+                                                                        verb: innerKey,
+                                                                        apiId: selectedApi.id,
+                                                                        name: selectedApi.name,
+                                                                        version: selectedApi.version,
+                                                                    },
+                                                                    'add',
+                                                                )}
+                                                                className={classes.middleText}
+                                                            />
+                                                            <ListItemSecondaryAction>
+                                                                {methodObj.allreadyAdded && (
+                                                                    <Icon className={classes.inactiveIcon}>
+                                                                        chevron_right
+                                                                    </Icon>
+                                                                )}
+                                                                {!methodObj.allreadyAdded && (
+                                                                    <IconButton
+                                                                        edge='end'
+                                                                        aria-label='comments'
+                                                                        onClick={() => updateResourceTree(
+                                                                            {
+                                                                                target: key,
+                                                                                verb: innerKey,
+                                                                                apiId: selectedApi.id,
+                                                                                name: selectedApi.name,
+                                                                                version: selectedApi.version,
+                                                                            },
+                                                                            'add',
+                                                                        )}
+                                                                        size='large'>
+                                                                        <Icon>chevron_right</Icon>
+                                                                    </IconButton>
+                                                                )}
+                                                            </ListItemSecondaryAction>
+                                                        </ListItem>
                                                     );
                                                 });
                                             })}
@@ -793,7 +841,7 @@ function ProductResourcesEdit(props) {
                                                                         aria-label={
                                                                             'delete resource ' + apiResource.name
                                                                         }
-                                                                    >
+                                                                        size='large'>
                                                                         <Icon>
                                                                             delete
                                                                         </Icon>
@@ -812,7 +860,7 @@ function ProductResourcesEdit(props) {
                     </Grid>
                 </>
             )}
-        </>
+        </Root>
     );
 }
 ProductResourcesEdit.propTypes = {

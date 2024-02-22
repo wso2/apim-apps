@@ -16,9 +16,9 @@
 * under the License.
 */
 
-import { Grid } from '@material-ui/core';
+import { Grid } from '@mui/material';
 import React, { FC } from 'react';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import type { Policy, PolicySpec } from '../Types';
 import PoliciesExpansion from '../SharedComponents/PoliciesExpansion';
 
@@ -42,7 +42,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
             <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1}}>
                 <Grid item xs={12}>
                     <Grid
-                        container direction='column' justify='flex-start'
+                        container direction='column' justifyContent='flex-start'
                         spacing={1} alignItems='stretch'
                     >
                         <PoliciesExpansion

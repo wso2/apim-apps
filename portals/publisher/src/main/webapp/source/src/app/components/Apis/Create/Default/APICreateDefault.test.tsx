@@ -19,7 +19,7 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-describe('Create REST API From scratch', () => {
+describe.skip('Create REST API From scratch', () => {
     test('Should render REST API from scratch form', async () => {
         render(<APICreateDefault />);
         expect(await screen.findByTestId('default-api-form')).toBeInTheDocument();

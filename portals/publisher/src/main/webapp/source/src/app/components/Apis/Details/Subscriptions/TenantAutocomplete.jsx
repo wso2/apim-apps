@@ -16,46 +16,68 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import deburr from 'lodash/deburr';
 import Downshift from 'downshift';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Paper from '@material-ui/core/Paper';
-import MenuItem from '@material-ui/core/MenuItem';
-import Chip from '@material-ui/core/Chip';
+import TextField from '@mui/material/TextField';
+import Paper from '@mui/material/Paper';
+import MenuItem from '@mui/material/MenuItem';
+import Chip from '@mui/material/Chip';
 import API from 'AppData/api';
 import CONSTS from 'AppData/Constants';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'TenantAutocomplete';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    container: `${PREFIX}-container`,
+    paper: `${PREFIX}-paper`,
+    chip: `${PREFIX}-chip`,
+    inputRoot: `${PREFIX}-inputRoot`,
+    inputInput: `${PREFIX}-inputInput`,
+    divider: `${PREFIX}-divider`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         height: 250,
     },
-    container: {
+
+    [`&.${classes.container}`]: {
         flexGrow: 1,
         position: 'relative',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         position: 'absolute',
         zIndex: 1,
         marginTop: theme.spacing(1),
         left: 0,
         right: 0,
     },
-    chip: {
+
+    [`& .${classes.chip}`]: {
         margin: theme.spacing(0.5, 0.25),
     },
-    inputRoot: {
+
+    [`& .${classes.inputRoot}`]: {
         flexWrap: 'wrap',
     },
-    inputInput: {
+
+    [`& .${classes.inputInput}`]: {
         width: 'auto',
         flexGrow: 1,
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         height: theme.spacing(2),
-    },
+    }
 }));
 
 /**
@@ -63,7 +85,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function renderInput(inputProps) {
     const {
-        InputProps, classes, ref, ...other
+        InputProps, ref, ...other
     } = inputProps;
 
     return (
@@ -152,7 +174,7 @@ function getSuggestions(value, suggestions, { showEmpty = false } = {}) {
  */
 function DownshiftMultiple(props) {
     const { tenantList, setTenantList } = props;
-    const { classes, suggestions } = props;
+    const {  suggestions } = props;
     const [inputValue, setInputValue] = React.useState('');
 
     function handleKeyDown(event) {
@@ -204,7 +226,7 @@ function DownshiftMultiple(props) {
                 });
 
                 return (
-                    <div className={classes.container}>
+                    <Root className={classes.container}>
                         {renderInput({
                             fullWidth: true,
                             classes,
@@ -241,7 +263,7 @@ function DownshiftMultiple(props) {
                                 }))}
                             </Paper>
                         ) : null}
-                    </div>
+                    </Root>
                 );
             }}
         </Downshift>
@@ -268,7 +290,7 @@ DownshiftMultiple.propTypes = {
  * Gets tenant list in order to populate suggestions list
  */
 export default function IntegrationDownshift(props) {
-    const classes = useStyles();
+
     const [suggestions, setsuggestions] = useState({});
     const { setTenantList, tenantList } = props;
 

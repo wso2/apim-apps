@@ -18,12 +18,32 @@
 
 import React, { FC, useContext, useEffect, useState } from 'react';
 import PoliciesExpansionShared from 'AppComponents/Shared/PoliciesUI/PoliciesExpansion';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import Typography from '@mui/material/Typography';
+import { Theme } from '@mui/material/styles';
+import { FormattedMessage } from 'react-intl';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import PolicyDropzone from './PolicyDropzone';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import FlowArrow from './components/FlowArrow';
 import ApiOperationContext from './ApiOperationContext';
+
+const PREFIX = 'PoliciesExpansion';
+
+const classes = {
+    flowSpecificPolicyAttachGrid: `${PREFIX}-flowSpecificPolicyAttachGrid`
+};
+
+const StyledAccordionDetails = styled(AccordionDetails)(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.flowSpecificPolicyAttachGrid}`]: {
+        marginTop: theme.spacing(1),
+        overflowX: 'scroll',
+    }
+}));
 
 const defaultPolicyForMigration = {
     id: '',

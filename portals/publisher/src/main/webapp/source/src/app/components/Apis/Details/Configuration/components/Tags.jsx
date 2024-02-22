@@ -18,12 +18,12 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
+import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import Chip from '@material-ui/core/Chip';
-import { red } from '@material-ui/core/colors/';
+import Chip from '@mui/material/Chip';
+import { red } from '@mui/material/colors/';
 
 /**
  *

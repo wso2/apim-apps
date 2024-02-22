@@ -17,36 +17,46 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Icon from '@material-ui/core/Icon';
+import { styled, Theme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
 import type { CreatePolicySpec } from 'AppComponents/Apis/Details/Policies/Types';
 import PolicyCreateForm from 'AppComponents/Apis/Details/Policies/PolicyForm/PolicyCreateForm';
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import CONSTS from 'AppData/Constants';
 
-const useStyles = makeStyles((theme: any) => ({
-    titleWrapper: {
+const PREFIX = 'CreatePolicy';
+
+const classes = {
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    titleLink: `${PREFIX}-titleLink`,
+    titleGrid: `${PREFIX}-titleGrid`
+};
+
+const StyledGrid = styled(Grid)(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
     },
-    titleLink: {
+
+    [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.dark,
         marginRight: theme.spacing(1),
     },
-    titleGrid: {
+
+    [`& .${classes.titleGrid}`]: {
         ' & .MuiGrid-item': {
             padding: 0,
             margin: 0,
         },
-    },
+    }
 }));
 
 /**
@@ -54,7 +64,7 @@ const useStyles = makeStyles((theme: any) => ({
  * @returns {TSX} Create common policy UI to render.
  */
 const CreatePolicy: React.FC = () => {
-    const classes = useStyles();
+
     const history = useHistory();
     const api = new API();
     const [synapsePolicyDefinitionFile, setSynapsePolicyDefinitionFile] = useState<any[]>([]);
@@ -104,7 +114,7 @@ const CreatePolicy: React.FC = () => {
     };
 
     return (
-        <Grid container spacing={3}>
+        <StyledGrid container spacing={3}>
             <Grid item sm={12} md={12} />
             <Grid item sm={2} md={2} />
             <Grid item sm={12} md={8}>
@@ -147,7 +157,7 @@ const CreatePolicy: React.FC = () => {
             <Grid item sm={12} md={12}>
                 <Box mb={5} />
             </Grid>
-        </Grid>
+        </StyledGrid>
     );
 };
 

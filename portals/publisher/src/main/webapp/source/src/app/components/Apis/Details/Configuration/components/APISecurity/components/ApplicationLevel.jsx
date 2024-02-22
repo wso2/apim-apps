@@ -17,25 +17,24 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@mui/material/Grid';
+import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AuthorizationHeader from 'AppComponents/Apis/Details/Configuration/components/AuthorizationHeader.jsx';
 import ApiKeyHeader from "AppComponents/Apis/Details/Configuration/components/ApiKeyHeader";
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormHelperText from '@mui/material/FormHelperText';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -50,26 +49,45 @@ import {
     API_SECURITY_MUTUAL_SSL,
 } from './apiSecurityConstants';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'ApplicationLevel';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    bottomSpace: `${PREFIX}-bottomSpace`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(1),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    bottomSpace: {
+
+    [`& .${classes.bottomSpace}`]: {
         marginBottom: theme.spacing(4),
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
-    },
+    }
 }));
 
 /**
@@ -84,7 +102,7 @@ export default function ApplicationLevel(props) {
         haveMultiLevelSecurity, securityScheme, configDispatcher, api,
     } = props;
     const [apiFromContext] = useAPI();
-    const classes = useStyles();
+
     let mandatoryValue = null;
     let hasResourceWithSecurity;
     if (apiFromContext.apiType === API.CONSTS.APIProduct) {
@@ -115,10 +133,10 @@ export default function ApplicationLevel(props) {
     }
 
     return (
-        <>
+        (<Root>
             <Grid item xs={12}>
                 <WrappedExpansionPanel className={classes.expansionPanel} id='applicationLevel'>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography className={classes.subHeading} variant='h6' component='h4'>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Components.APISecurity.Components.
@@ -145,8 +163,8 @@ export default function ApplicationLevel(props) {
                                 <HelpOutline className={classes.iconSpace} />
                             </Tooltip>
                         </Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                    </AccordionSummary>
+                    <AccordionDetails className={classes.expansionPanelDetails}>
                         <FormGroup style={{ display: 'flow-root' }}>
                             <FormControlLabel
                                 control={(
@@ -263,10 +281,10 @@ export default function ApplicationLevel(props) {
                                 </FormHelperText>
                             )}
                         </FormControl>
-                    </ExpansionPanelDetails>
+                    </AccordionDetails>
                 </WrappedExpansionPanel>
             </Grid>
-        </>
+        </Root>)
     );
 }
 

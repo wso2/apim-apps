@@ -16,41 +16,61 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { Typography } from '@material-ui/core/';
-import { withStyles } from '@material-ui/core/styles';
-import AccountBox from '@material-ui/icons/AccountBox';
-import Grid from '@material-ui/core/Grid';
+import { Typography } from '@mui/material';
+import AccountBox from '@mui/icons-material/AccountBox';
+import Grid from '@mui/material/Grid';
 import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
 import API from 'AppData/api';
 import CommentEdit from './CommentEdit';
 import CommentOptions from './CommentOptions';
 
-const styles = (theme) => ({
-    link: {
+const PREFIX = 'CommentReply';
+
+const classes = {
+    link: `${PREFIX}-link`,
+    commentIcon: `${PREFIX}-commentIcon`,
+    commentText: `${PREFIX}-commentText`,
+    root: `${PREFIX}-root`,
+    contentWrapper: `${PREFIX}-contentWrapper`
+};
+
+const StyledConfirmDialog
+ = styled(ConfirmDialog
+)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.link}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         cursor: 'pointer',
     },
-    commentIcon: {
+
+    [`& .${classes.commentIcon}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    commentText: {
+
+    [`& .${classes.commentText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         marginTop: theme.spacing(1),
         width: '100%',
         whiteSpace: 'pre-wrap',
         overflowWrap: 'break-word',
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         marginTop: theme.spacing(2.5),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
         paddingLeft: theme.spacing(2),
         paddingTop: theme.spacing(1),
-    },
-});
+    }
+}));
 
 /**
  * Display a particular comment and details
@@ -266,4 +286,4 @@ CommentReply.propTypes = {
     comments: PropTypes.instanceOf(Array).isRequired,
 };
 
-export default withStyles(styles)(CommentReply);
+export default (CommentReply);

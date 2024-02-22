@@ -19,27 +19,27 @@
 /* eslint-disable react/jsx-no-bind */
 
 import React, { useState, useContext, useEffect  } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link, useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import cloneDeep from 'lodash.clonedeep';
 import isEmpty from 'lodash.isempty';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
-import AddCircle from '@material-ui/icons/AddCircle';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import AddCircle from '@mui/icons-material/AddCircle';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Box from '@material-ui/core/Box';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Box from '@mui/material/Box';
 import APIContext, { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api.js';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
@@ -49,94 +49,142 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Progress from 'AppComponents/Shared/Progress';
 import EditableRow from './EditableRow';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'Properties';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`,
+    paperRoot: `${PREFIX}-paperRoot`,
+    addNewHeader: `${PREFIX}-addNewHeader`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    addNewWrapper: `${PREFIX}-addNewWrapper`,
+    addProperty: `${PREFIX}-addProperty`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    link: `${PREFIX}-link`,
+    messageBox: `${PREFIX}-messageBox`,
+    actions: `${PREFIX}-actions`,
+    head: `${PREFIX}-head`,
+    marginRight: `${PREFIX}-marginRight`,
+    helpText: `${PREFIX}-helpText`,
+    checkBoxStyles: `${PREFIX}-checkBoxStyles`,
+    tableHead: `${PREFIX}-tableHead`,
+    table: `${PREFIX}-table`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         paddingTop: 0,
         paddingLeft: 0,
         maxWidth: theme.custom.contentAreaWidth,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    FormControl: {
+
+    [`& .${classes.FormControl}`]: {
         padding: 0,
         width: '100%',
         marginTop: 0,
         display: 'flex',
         flexDirection: 'row',
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: 0,
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         marginTop: 0,
     },
-    buttonWrapper: {
+
+    [`& .${classes.buttonWrapper}`]: {
         paddingTop: theme.spacing(3),
     },
-    paperRoot: {
+
+    [`& .${classes.paperRoot}`]: {
         padding: theme.spacing(3),
         marginTop: theme.spacing(3),
     },
-    addNewHeader: {
+
+    [`& .${classes.addNewHeader}`]: {
         padding: theme.spacing(2),
         backgroundColor: theme.palette.grey['300'],
         fontSize: theme.typography.h6.fontSize,
         color: theme.typography.h6.color,
         fontWeight: theme.typography.h6.fontWeight,
     },
-    addNewOther: {
+
+    [`& .${classes.addNewOther}`]: {
         padding: theme.spacing(2),
     },
-    addNewWrapper: {
+
+    [`& .${classes.addNewWrapper}`]: {
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.getContrastText(theme.palette.background.paper),
         border: 'solid 1px ' + theme.palette.grey['300'],
         borderRadius: theme.shape.borderRadius,
         marginTop: theme.spacing(2),
     },
-    addProperty: {
+
+    [`& .${classes.addProperty}`]: {
         marginRight: theme.spacing(2),
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    link: {
+
+    [`& .${classes.link}`]: {
         cursor: 'pointer',
     },
-    messageBox: {
+
+    [`& .${classes.messageBox}`]: {
         marginTop: 20,
     },
-    actions: {
+
+    [`& .${classes.actions}`]: {
         padding: '20px 0',
         '& button': {
             marginLeft: 0,
         },
     },
-    head: {
+
+    [`& .${classes.head}`]: {
         fontWeight: 200,
         marginBottom: 20,
     },
-    marginRight: {
+
+    [`& .${classes.marginRight}`]: {
         marginRight: theme.spacing(1),
     },
-    helpText: {
+
+    [`& .${classes.helpText}`]: {
         paddingTop: theme.spacing(1),
     },
-    checkBoxStyles: {
+
+    [`& .${classes.checkBoxStyles}`]: {
         whiteSpace: 'nowrap',
         marginLeft: 10,
     },
-    tableHead: {
+
+    [`& .${classes.tableHead}`]: {
         fontWeight: 600,
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         '& th': {
             fontWeight: 600,
         },
-    },
+    }
 }));
 
 /**
@@ -151,7 +199,7 @@ function Properties(props) {
      * @param {*} props properties
      */
     const { intl } = props;
-    const classes = useStyles();
+
     const history = useHistory();
     const { api, updateAPI } = useContext(APIContext);
     const customPropertiesTemp = cloneDeep(api.additionalProperties);
@@ -616,7 +664,7 @@ function Properties(props) {
         )
     }
     return (
-        <>
+        <Root>
             <div className={classes.titleWrapper}>
                 {api.apiType === API.CONSTS.APIProduct
                     ? (
@@ -1001,7 +1049,7 @@ function Properties(props) {
                     </Grid>
                 </Grid>
             )}
-        </>
+        </Root>
     );
 }
 

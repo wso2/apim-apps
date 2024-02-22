@@ -17,35 +17,47 @@
 */
 
 import React, { useState, FC } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import CardContent from '@material-ui/core/CardContent';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import CardContent from '@mui/material/CardContent';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
 import CONSTS from 'AppData/Constants';
 import type { Policy } from '../Types';
 import TabPanel from '../SharedComponents/TabPanel';
 
-const useStyles = makeStyles(() => ({
-    flowTabs: {
+const PREFIX = 'PolicyList';
+
+const classes = {
+    flowTabs: `${PREFIX}-flowTabs`,
+    flowTab: `${PREFIX}-flowTab`,
+    paper: `${PREFIX}-paper`,
+    policyList: `${PREFIX}-policyList`
+};
+
+const StyledPaper = styled(Paper)(() => ({
+    [`& .${classes.flowTabs}`]: {
         '& button': {
             minWidth: 50,
         },
     },
-    flowTab: {
+
+    [`& .${classes.flowTab}`]: {
         fontSize: 'smaller',
     },
-    paper: {
+
+    [`&.${classes.paper}`]: {
         display: 'flex',
         flexDirection: 'column',
         flex: 1,
         width: '35%',
     },
-    policyList: {
+
+    [`& .${classes.policyList}`]: {
         overflowY: 'auto', 
         maxHeight: '100%', 
         paddingRight: '20px'
@@ -63,12 +75,12 @@ interface PolicyListPorps {
  * @returns {TSX} - List of policies local to the API segment.
  */
 const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies}) => {
-    const classes = useStyles();
+
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const gatewayType = CONSTS.GATEWAY_TYPE.synapse;
 
     return (
-        <Paper className={classes.paper} style={{ flex: '0 0 auto', marginLeft: '20px' }}>
+        <StyledPaper className={classes.paper} style={{ flex: '0 0 auto', marginLeft: '20px' }}>
             <Card variant='outlined'>
                 <CardContent>
                     <Box height='100vh'>
@@ -165,7 +177,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies}) => {
                     </Box>
                 </CardContent>
             </Card>
-        </Paper>
+        </StyledPaper>
     );
 };
 

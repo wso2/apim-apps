@@ -17,14 +17,27 @@
 */
 
 import React, { FC } from 'react';
-import { Grid, makeStyles, Theme, Typography } from '@material-ui/core';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
+import { styled } from '@mui/material/styles';
+import { Grid, Theme, Typography } from '@mui/material';
+import green from '@mui/material/colors/green';
+import red from '@mui/material/colors/red';
 import clsx from 'clsx';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    dropzoneDiv: {
+const PREFIX = 'PolicyDropzoneShared';
+
+const classes = {
+    dropzoneDiv: `${PREFIX}-dropzoneDiv`,
+    acceptDrop: `${PREFIX}-acceptDrop`,
+    rejectDrop: `${PREFIX}-rejectDrop`,
+    alignLeft: `${PREFIX}-alignLeft`,
+    alignRight: `${PREFIX}-alignRight`,
+    alignCenter: `${PREFIX}-alignCenter`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.dropzoneDiv}`]: {
         border: '1px dashed',
         borderColor: theme.palette.primary.main,
         height: '8rem',
@@ -38,23 +51,28 @@ const useStyles = makeStyles((theme: Theme) => ({
         alignItems: 'center',
         overflowX: 'scroll',
     },
-    acceptDrop: {
+
+    [`& .${classes.acceptDrop}`]: {
         backgroundColor: green[50],
         borderColor: 'green',
     },
-    rejectDrop: {
+
+    [`& .${classes.rejectDrop}`]: {
         backgroundColor: red[50],
         borderColor: 'red',
     },
-    alignLeft: {
+
+    [`& .${classes.alignLeft}`]: {
         justifyContent: 'left',
     },
-    alignRight: {
+
+    [`& .${classes.alignRight}`]: {
         justifyContent: 'right',
     },
-    alignCenter: {
+
+    [`& .${classes.alignCenter}`]: {
         justifyContent: 'center',
-    },
+    }
 }));
 
 interface PolicyDropzoneSharedProps {
@@ -90,9 +108,9 @@ const PolicyDropzoneShared: FC<PolicyDropzoneSharedProps> = ({
     AttachedPolicyList,
     PolicyConfiguringDrawer
 }) => {
-    const classes = useStyles();
+
     return (
-        <>
+        (<Root>
             <Grid container>
                 <div
                     ref={drop}
@@ -137,7 +155,7 @@ const PolicyDropzoneShared: FC<PolicyDropzoneSharedProps> = ({
                     isAPILevelPolicy={isAPILevelPolicy}
                 />
             )}
-        </>
+        </Root>)
     );
 }
 

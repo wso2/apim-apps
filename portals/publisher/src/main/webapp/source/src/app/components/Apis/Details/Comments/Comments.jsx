@@ -16,11 +16,11 @@
  * under the License.
  */
 import React, { Component } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Grid from '@material-ui/core/Grid/Grid';
+import { Typography } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
@@ -28,14 +28,35 @@ import CommentsAPI from 'AppData/Comments';
 import Comment from './Comment';
 import CommentAdd from './CommentAdd';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'Comments';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    paper: `${PREFIX}-paper`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    contentWrapperOverview: `${PREFIX}-contentWrapperOverview`,
+    titleSub: `${PREFIX}-titleSub`,
+    link: `${PREFIX}-link`,
+    verticalSpace: `${PREFIX}-verticalSpace`,
+    loadMoreLink: `${PREFIX}-loadMoreLink`,
+    genericMessageWrapper: `${PREFIX}-genericMessageWrapper`,
+    paperProgress: `${PREFIX}-paperProgress`,
+    dialogContainer: `${PREFIX}-dialogContainer`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         display: 'flex',
         alignItems: 'center',
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         marginRight: theme.spacing(3),
         paddingBottom: theme.spacing(3),
         paddingRight: theme.spacing(2),
@@ -43,47 +64,56 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    contentWrapper: {
+
+    [`&.${classes.contentWrapper}`]: {
         paddingLeft: theme.spacing(3),
         marginTop: theme.spacing(1),
         '& span, & h5, & label, & td, & li, & div, & input': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    contentWrapperOverview: {
+
+    [`& .${classes.contentWrapperOverview}`]: {
         padding: 0,
         width: '100%',
         boxShadow: 'none',
     },
-    titleSub: {
+
+    [`& .${classes.titleSub}`]: {
         cursor: 'pointer',
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    link: {
+
+    [`& .${classes.link}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         cursor: 'pointer',
     },
-    verticalSpace: {
+
+    [`& .${classes.verticalSpace}`]: {
         marginTop: theme.spacing(0.2),
     },
-    loadMoreLink: {
+
+    [`& .${classes.loadMoreLink}`]: {
         textDecoration: 'none',
     },
-    genericMessageWrapper: {
+
+    [`& .${classes.genericMessageWrapper}`]: {
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
         marginRight: theme.spacing(3),
     },
-    paperProgress: {
+
+    [`& .${classes.paperProgress}`]: {
         padding: theme.spacing(3),
         marginTop: theme.spacing(2),
         textAlign: 'center',
     },
-    dialogContainer: {
+
+    [`& .${classes.dialogContainer}`]: {
         width: 1000,
         padding: theme.spacing(2),
-    },
-});
+    }
+}));
 
 /**
  * Display a comment list
@@ -256,12 +286,12 @@ class Comments extends Component {
      * @memberof Comments
      */
     render() {
-        const { classes, api } = this.props;
+        const {  api } = this.props;
         const {
             comments, allComments, totalComments, loading,
         } = this.state;
         return (
-            <div className={classes.contentWrapper}>
+            <Root className={classes.contentWrapper}>
                 <div className={classes.root}>
                     <Typography id='itest-api-details-comments-head' variant='h4' className={classes.titleSub}>
                         {totalComments > 0 ? totalComments + (' ') : ''}
@@ -336,15 +366,17 @@ class Comments extends Component {
                         </Grid>
                     </div>
                 )}
-            </div>
+            </Root>
         );
     }
 }
 
 Comments.propTypes = {
-    classes: PropTypes.instanceOf(Object).isRequired,
     api: PropTypes.instanceOf(Object).isRequired,
     theme: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(Comments));
+export default injectIntl((props) => {
+    const theme = useTheme();
+    return <Comments theme={theme} {...props} />;
+});

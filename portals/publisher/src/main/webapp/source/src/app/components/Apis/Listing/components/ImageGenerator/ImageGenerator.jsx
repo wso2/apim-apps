@@ -16,23 +16,30 @@
  * under the License.
  */
 import React, { PureComponent } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import Background from './Background';
 
 import getIcon from './APICards/ImageUtils';
 
-const styles = {
-    icon: {},
-    iconWrapper: {
+const PREFIX = 'ImageGenerator';
+
+const classes = {
+    icon: `${PREFIX}-icon`,
+    iconWrapper: `${PREFIX}-iconWrapper`
+};
+
+const Root = styled('div')({
+    [`& .${classes.icon}`]: {},
+    [`&.${classes.iconWrapper}`]: {
         position: 'relative',
         '& span': {
             position: 'absolute',
             left: '50%',
         },
     },
-};
+});
 
 /**
  * Generate dynamic API thumbnail image (SVG), Use PureComponent to avoid unnessasary re-rendering when hover ect
@@ -48,9 +55,7 @@ class ImageGenerator extends PureComponent {
      * @memberof ImageGenerator
      */
     render() {
-        const {
-            classes, api, width, height, theme, fixedIcon,
-        } = this.props;
+        const { api, width, height, theme, fixedIcon } = this.props;
 
         const {
             category, key, color, backgroundIndex,
@@ -75,14 +80,14 @@ class ImageGenerator extends PureComponent {
             colorPair = colorPairs[randomBackgroundIndex];
         }
         return (
-            <div className={classes.iconWrapper} style={{ width }}>
+            <Root className={classes.iconWrapper} style={{ width }}>
                 <Icon className={classes.icon} style={{ fontSize: height, marginLeft: -height / 2, color }}>
                     {iconElement}
                 </Icon>
                 {(!theme.custom.thumbnailTemplates || !theme.custom.thumbnailTemplates.active) && (
                     <Background width={width} height={height} colorPair={colorPair} />
                 )}
-            </div>
+            </Root>
         );
     }
 }
@@ -99,7 +104,6 @@ ImageGenerator.defaultProps = {
 };
 
 ImageGenerator.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     height: PropTypes.number,
     width: PropTypes.number,
     fixedIcon: PropTypes.shape({}),
@@ -108,4 +112,7 @@ ImageGenerator.propTypes = {
     theme: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(ImageGenerator);
+export default ((props) => {
+    const { theme } = useTheme();
+    return <ImageGenerator {...props} theme={theme} />;
+});

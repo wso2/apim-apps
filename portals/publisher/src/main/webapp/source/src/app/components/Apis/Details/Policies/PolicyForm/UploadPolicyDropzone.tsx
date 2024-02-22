@@ -17,32 +17,44 @@
  */
 
 import React, { FC } from 'react';
-import { List, makeStyles, IconButton, Theme } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import { styled } from '@mui/material/styles';
+import { List, IconButton , Theme } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import ListItemText from '@material-ui/core/ListItemText';
-import Tooltip from '@material-ui/core/Tooltip';
-import Avatar from '@material-ui/core/Avatar';
-import InsertDriveFile from '@material-ui/icons/InsertDriveFile';
-import DeleteIcon from '@material-ui/icons/Delete';
+import ListItem from '@mui/material/ListItem';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import ListItemText from '@mui/material/ListItemText';
+import Tooltip from '@mui/material/Tooltip';
+import Avatar from '@mui/material/Avatar';
+import InsertDriveFile from '@mui/icons-material/InsertDriveFile';
+import DeleteIcon from '@mui/icons-material/Delete';
 import Dropzone from 'react-dropzone';
 import clsx from 'clsx';
-import green from '@material-ui/core/colors/green';
-import red from '@material-ui/core/colors/red';
-import Icon from '@material-ui/core/Icon';
-import { HelpOutline } from '@material-ui/icons';
+import Icon from '@mui/material/Icon';
+import { HelpOutline } from '@mui/icons-material';
+import { green, red } from '@mui/material/colors';
 import { GATEWAY_TYPE_LABELS } from './SourceDetails';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    dropZoneWrapper: {
+
+const PREFIX = 'UploadPolicyDropzone';
+
+const classes = {
+    dropZoneWrapper: `${PREFIX}-dropZoneWrapper`,
+    acceptDrop: `${PREFIX}-acceptDrop`,
+    rejectDrop: `${PREFIX}-rejectDrop`,
+    uploadedFileDetails: `${PREFIX}-uploadedFileDetails`,
+    mandatoryStar: `${PREFIX}-mandatoryStar`
+};
+
+
+const Root = styled('div')(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.dropZoneWrapper}`]: {
         border: '1px dashed ' + theme.palette.primary.main,
         borderRadius: '5px',
         cursor: 'pointer',
-        padding: `${theme.spacing(2)}px ${theme.spacing(2)}px`,
+        padding: `${theme.spacing(2)} ${theme.spacing(2)}`,
         position: 'relative',
         textAlign: 'center',
         width: '75%',
@@ -56,21 +68,25 @@ const useStyles = makeStyles((theme: Theme) => ({
             color: theme.palette.primary.main,
         },
     },
-    acceptDrop: {
+
+    [`& .${classes.acceptDrop}`]: {
         backgroundColor: green[50],
         borderColor: 'green',
     },
-    rejectDrop: {
+
+    [`& .${classes.rejectDrop}`]: {
         backgroundColor: red[50],
         borderColor: 'red',
     },
-    uploadedFileDetails: {
+
+    [`& .${classes.uploadedFileDetails}`]: {
         width: '75%',
     },
-    mandatoryStar: {
+
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
-    },
+    }
 }));
 
 interface UploadPolicyDropzoneProps {
@@ -89,7 +105,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
     setPolicyDefinitionFile,
     gateway,
 }) => {
-    const classes = useStyles();
+
 
     const handleDrop = (policyDefinition: any) => {
         setPolicyDefinitionFile(policyDefinition);
@@ -137,7 +153,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
     };
 
     return (
-        <>
+        <Root>
             <Box display='flex' flexDirection='row' alignItems='center'>
                 <Box mt={2}>
                     <Typography
@@ -158,9 +174,8 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                                     : 'Choreo Connect only supports .gotmpl file uploads'
                             }
                             placement='right'
-                            interactive
                         >
-                            <IconButton aria-label='policy-file-upload-helper-text'>
+                            <IconButton aria-label='policy-file-upload-helper-text' size='large'>
                                 <HelpOutline fontSize='small' />
                             </IconButton>
                         </Tooltip>
@@ -192,7 +207,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                                     edge='end'
                                     aria-label='delete'
                                     onClick={() => setPolicyDefinitionFile([])}
-                                >
+                                    size='large'>
                                     <DeleteIcon />
                                 </IconButton>
                             </ListItemSecondaryAction>
@@ -200,7 +215,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                     </List>
                 )}
             </Box>
-        </>
+        </Root>
     );
 };
 

@@ -1,29 +1,39 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { Link as RouterLink } from 'react-router-dom';
-import Link from '@material-ui/core/Link';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 
-const useStyles = makeStyles((theme) => ({
-    linkRoot: {
+const PREFIX = 'LandingMenuItem';
+
+const classes = {
+    linkRoot: `${PREFIX}-linkRoot`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.linkRoot}`]: {
         color: theme.custom.landingPage.menu.primary,
         '&:hover': {
             backgroundColor: '#0B78F014',
             textDecoration: 'none',
         },
-    },
+    }
 }));
 
 const LandingMenuItem = (props) => {
     const {
         helperText, children, id, linkTo, component = 'Link', onClick, dense, disabled = false,
     } = props;
-    const { linkRoot } = useStyles();
+
     return (
-        <Grid
+        <StyledGrid
             item
             xs={12}
         >
@@ -35,7 +45,7 @@ const LandingMenuItem = (props) => {
                 Pattern as suggested in https://material-ui.com/guides/composition/#link */}
                 {component.toLowerCase() === 'link' && (
                     <Link
-                        className={linkRoot}
+                        className={classes.linkRoot}
                         id={id}
                         component={RouterLink}
                         to={linkTo}
@@ -64,7 +74,7 @@ const LandingMenuItem = (props) => {
             >
                 {helperText}
             </Box>
-        </Grid>
+        </StyledGrid>
     );
 };
 

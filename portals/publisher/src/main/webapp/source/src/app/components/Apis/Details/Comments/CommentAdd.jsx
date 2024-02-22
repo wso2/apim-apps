@@ -16,36 +16,55 @@
  * under the License.
  */
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import {
     TextField, Button, Typography, InputLabel,
-} from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+} from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import CommentsAPI from 'AppData/Comments';
 import { isRestricted } from 'AppData/AuthManager';
 
-const styles = (theme) => ({
-    commentIcon: {
+const PREFIX = 'CommentAdd';
+
+const classes = {
+    commentIcon: `${PREFIX}-commentIcon`,
+    content: `${PREFIX}-content`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    textField: `${PREFIX}-textField`,
+    commentAddWrapper: `${PREFIX}-commentAddWrapper`,
+    commentAddButton: `${PREFIX}-commentAddButton`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.commentIcon}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    content: {
+
+    [`& .${classes.content}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    contentWrapper: {
+
+    [`&.${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
         paddingLeft: theme.spacing(2),
         paddingTop: theme.spacing(1),
         marginTop: theme.spacing(2),
     },
-    textField: {
+
+    [`& .${classes.textField}`]: {
         marginTop: 0,
         marginRight: 5,
         width: '100%',
     },
-    commentAddWrapper: {
+
+    [`& .${classes.commentAddWrapper}`]: {
         display: 'flex',
         alignItems: 'top',
         flexFlow: 'column',
@@ -53,12 +72,13 @@ const styles = (theme) => ({
             marginBottom: theme.spacing(1),
         },
     },
-    commentAddButton: {
+
+    [`& .${classes.commentAddButton}`]: {
         '& > span': {
             color: theme.palette.getContrastText(theme.palette.primary.main) + '! important',
         },
-    },
-});
+    }
+}));
 
 /**
    * Display a component to add a new comment
@@ -161,11 +181,11 @@ class CommentAdd extends React.Component {
      */
     render() {
         const {
-            classes, cancelButton, theme, intl, api,
+            cancelButton, theme, intl, api,
         } = this.props;
         const { content, currentLength } = this.state;
         return (
-            <Grid container spacing={2} className={classes.contentWrapper}>
+            <StyledGrid container spacing={2} className={classes.contentWrapper}>
                 <Grid item xs zeroMinWidth>
                     <div className={classes.commentAddWrapper}>
                         <InputLabel htmlFor='standard-multiline-flexible'>
@@ -226,7 +246,7 @@ class CommentAdd extends React.Component {
                         )}
                     </Grid>
                 </Grid>
-            </Grid>
+            </StyledGrid>
         );
     }
 }
@@ -237,7 +257,6 @@ CommentAdd.defaultProps = {
 };
 
 CommentAdd.propTypes = {
-    classes: PropTypes.instanceOf(Object).isRequired,
     cancelButton: PropTypes.bool.isRequired,
     api: PropTypes.instanceOf(Object).isRequired,
     replyTo: PropTypes.string,
@@ -248,4 +267,7 @@ CommentAdd.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(CommentAdd));
+export default injectIntl((props) => {
+    const theme = useTheme();
+    return <CommentAdd {...props} theme={theme} />;
+});

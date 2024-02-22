@@ -16,33 +16,43 @@
  * under the License.
  */
 import React, { useReducer } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import TextField from '@material-ui/core/TextField';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import ClearIcon from '@material-ui/icons/Clear';
-import Tooltip from '@material-ui/core/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import FormHelperText from '@mui/material/FormHelperText';
+import TextField from '@mui/material/TextField';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import Select from '@mui/material/Select';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import ClearIcon from '@mui/icons-material/Clear';
+import Tooltip from '@mui/material/Tooltip';
 import { isRestricted } from 'AppData/AuthManager';
 
-const useStyles = makeStyles(() => ({
-    formControl: {
+const PREFIX = 'AddPayloadProperty';
+
+const classes = {
+    formControl: `${PREFIX}-formControl`,
+    parameterContainer: `${PREFIX}-parameterContainer`,
+    checkBox: `${PREFIX}-checkBox`
+};
+
+const StyledGrid = styled(Grid)(() => ({
+    [`& .${classes.formControl}`]: {
         minWidth: 120,
     },
-    parameterContainer: {
+
+    [`&.${classes.parameterContainer}`]: {
         alignItems: 'center',
         justifyContent: 'space-between',
     },
-    checkBox: {
+
+    [`& .${classes.checkBox}`]: {
         color: '#7c7c7c',
-    },
+    }
 }));
 
 /**
@@ -85,7 +95,7 @@ function AddPayloadProperty(props) {
     }
 
     const [property, newPropertyDispatcher] = useReducer(newPropertyReducer, { });
-    const classes = useStyles();
+
 
     /**
      * Get supported data types for properies.
@@ -116,7 +126,7 @@ function AddPayloadProperty(props) {
     }
 
     return (
-        <Grid container direction='row' spacing={1} className={classes.parameterContainer}>
+        <StyledGrid container direction='row' spacing={1} className={classes.parameterContainer}>
             <Grid item xs={2} md={2}>
                 <TextField
                     id='parameter-name'
@@ -255,7 +265,7 @@ function AddPayloadProperty(props) {
                     </Tooltip>
                 </sup>
             </Grid>
-        </Grid>
+        </StyledGrid>
     );
 }
 

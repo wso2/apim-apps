@@ -17,35 +17,43 @@
 */
 
 import React, { FC, useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
 import {
     Drawer,
-    makeStyles,
     ListItemIcon,
     Theme,
     Typography,
-} from '@material-ui/core';
-import IconButton from '@material-ui/core/IconButton';
-import { Settings, Close } from '@material-ui/icons';
-import Divider from '@material-ui/core/Divider';
+} from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import { Settings, Close } from '@mui/icons-material';
+import Divider from '@mui/material/Divider';
 import { Progress } from 'AppComponents/Shared';
 import General from './General';
 import { PolicySpec, GlobalPolicy, Policy } from '../Types';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    drawerPaper: {
+const PREFIX = 'PolicyConfiguringDrawer';
+
+const classes = {
+    drawerPaper: `${PREFIX}-drawerPaper`,
+    iconSize: `${PREFIX}-iconSize`
+};
+
+const StyledDrawer = styled(Drawer)(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.drawerPaper}`]: {
         backgroundColor: 'white',
         width: '30%',
     },
-    iconSize: {
+
+    [`& .${classes.iconSize}`]: {
         height: '1.2em',
         width: '1.2em',
         color: theme.palette.grey[700],
-    },
+    }
 }));
 
 interface PolicyConfiguringDrawerProps {
@@ -71,7 +79,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     verb,
     allPolicies, 
 }) => {
-    const classes = useStyles();
+
     const [drawerOpen, setDrawerOpen] = useState(!!policyObj);
     const [policySpec, setPolicySpec] = useState<PolicySpec>();
 
@@ -125,7 +133,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
     };
 
     return (
-        <Drawer
+        <StyledDrawer
             anchor='right'
             open={drawerOpen}
             onClose={handleDrawerClose}
@@ -170,7 +178,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                     isEditMode={false}
                 />
             </Box>
-        </Drawer>
+        </StyledDrawer>
     );
 };
 

@@ -17,15 +17,22 @@
  */
 // TODO: DO we need this component ? this is a pure proxy just passing the props through this to children ? ~tmkb
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import TableView from './TableView/TableView';
 
-const styles = {
-    content: {
+const PREFIX = 'Listing';
+
+const classes = {
+    content: `${PREFIX}-content`
+};
+
+const Root = styled('div')({
+    [`&.${classes.content}`]: {
         flexGrow: 1,
     },
-};
+});
+
 /**
  * Render the APIs Listing page, This is the Default Publisher Landing page as well
  *
@@ -33,14 +40,12 @@ const styles = {
  * @returns {React.Component} @inheritdoc
  */
 function Listing(props) {
-    const {
-        classes, isAPIProduct, theme, location: { search },
-    } = props;
+    const { isAPIProduct, theme, location: { search } } = props;
     // TODO: need to handle this search case separately ~tmkb
     return (
-        <div className={classes.content}>
+        <Root className={classes.content}>
             <TableView isAPIProduct={isAPIProduct} theme={theme} query={search} />
-        </div>
+        </Root>
     );
 }
 
@@ -64,4 +69,4 @@ Listing.defaultProps = {
     }),
 };
 
-export default withStyles(styles, { withTheme: true })(Listing);
+export default (Listing);

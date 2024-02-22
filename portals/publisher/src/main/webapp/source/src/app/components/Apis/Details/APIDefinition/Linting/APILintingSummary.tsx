@@ -13,16 +13,34 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     ISpectralDiagnostic,
 } from '@stoplight/spectral-core';
 import { oas } from '@stoplight/spectral-rulesets';
 import { FormattedMessage } from 'react-intl';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from "@material-ui/core/styles";
+import Box from '@mui/material/Box';
 import { spectralSeverityMap, spectralSeverityNames } from "./Linting"
-import { Grid, Tooltip, Typography } from '@material-ui/core';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { Grid, Tooltip, Typography } from '@mui/material';
+import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
+const PREFIX = 'APILintingSummary';
+
+const classes = {
+    activeButton: `${PREFIX}-activeButton`
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.activeButton}`]: {
+        "&:selected": {
+            backgroundColor: theme.palette.background.default,
+        }
+    }
+}));
+
 // TODO tmkasun: Possible to extend AsyncAPI rule set as well
 const defaultRuleSet = { extends: [oas], rules: {} };
 type APILintingProps = {
@@ -30,16 +48,9 @@ type APILintingProps = {
     handleChange: Function,
 };
 
-const useStyles = makeStyles((theme) => ({
-    activeButton: {
-        "&:selected": {
-            backgroundColor: theme.palette.background.default,
-        }
-    }
-}));
 export const APILintingSummary = (props: APILintingProps) => {
     const { linterResults, handleChange } = props;
-    const classes = useStyles();
+
     const [selectedSeverity, setSelectedSeverity] = useState(null);
     const severityCounts: { [key: number]: number } = {};
     
@@ -50,7 +61,7 @@ export const APILintingSummary = (props: APILintingProps) => {
     }
     
     return (
-        <Box ml={3}>
+        <StyledBox ml={3}>
             {linterResults === null && (
                 <FormattedMessage
                     id="Apis.Details.APIDefinition.Linting.APILintingSummary.loading"
@@ -90,7 +101,7 @@ export const APILintingSummary = (props: APILintingProps) => {
                     </ToggleButtonGroup>
                 </Tooltip>
             )}
-        </Box>
+        </StyledBox>
     );
 };
 export default APILintingSummary;

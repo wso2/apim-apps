@@ -12,36 +12,52 @@
  * associated services.
  */
 import React from 'react';
-import Paper from '@material-ui/core/Paper';
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
 import { spectralSeverityMap as severityMap} from '../Linting/Linting'
 
-const useStyles = makeStyles((theme) => ({
+const PREFIX = 'LinterUI';
 
-    tableCell: {
+const classes = {
+    tableCell: `${PREFIX}-tableCell`,
+    headerTableCell: `${PREFIX}-headerTableCell`,
+    tableRow: `${PREFIX}-tableRow`,
+    tableWrapper: `${PREFIX}-tableWrapper`,
+    headerTableRow: `${PREFIX}-headerTableRow`
+};
+
+const StyledPaper = styled(Paper)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tableCell}`]: {
         border: 'none',
         fontSize: '10px !important',
     },
-    headerTableCell: {
+
+    [`& .${classes.headerTableCell}`]: {
         background: 'transparent',
         fontSize: 10,
         fontWeight: 'bold',
         border: 'none',
     },
-    tableRow: {
+
+    [`& .${classes.tableRow}`]: {
         '&:nth-of-type(odd)': {
             backgroundColor: theme.palette.action.hover,
         },
         cursor: 'pointer',
     },
-    tableWrapper: {
+
+    [`& .${classes.tableWrapper}`]: {
         '& table tr td:first-child': {
             width: 10,
         },
@@ -49,17 +65,17 @@ const useStyles = makeStyles((theme) => ({
             width: 10,
         },
     },
-    headerTableRow: {
+
+    [`& .${classes.headerTableRow}`]: {
         display: 'flex',
     }
-
 }));
 
 export default function LinterUI(props) {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const { linterResults, handleRowClick } = props;
-    const classes = useStyles();
+
 
     function getData(type, line, message, code) {
         return { type, line, message, code};
@@ -99,7 +115,7 @@ export default function LinterUI(props) {
     };
 
     return (
-        <Paper sx={{ width: '100%', overflow: 'hidden' }}>
+        <StyledPaper sx={{ width: '100%', overflow: 'hidden' }}>
             <TableContainer sx={{ maxHeight: 440 }} className={classes.tableWrapper}>
                 <Table stickyHeader aria-label='linter-table'>
                     <TableHead>
@@ -154,6 +170,6 @@ export default function LinterUI(props) {
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
-        </Paper>
+        </StyledPaper>
     );
 }

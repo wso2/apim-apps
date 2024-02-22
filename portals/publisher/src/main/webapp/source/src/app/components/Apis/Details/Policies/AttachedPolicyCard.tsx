@@ -16,8 +16,17 @@
  * under the License.
  */
 
-import React, { FC, useContext, useState } from 'react';
+import React, { CSSProperties, FC, useContext, useState } from 'react';
+import { styled } from '@mui/material/styles';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import { useSortable } from '@dnd-kit/sortable';
+import { CSS } from '@dnd-kit/utilities';
 import { Alert } from 'AppComponents/Shared';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import API from 'AppData/api.js';
 import Utils from 'AppData/Utils';
 import { FormattedMessage } from 'react-intl';

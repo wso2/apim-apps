@@ -17,65 +17,91 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Autosuggest from 'react-autosuggest';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import InfoIcon from '@material-ui/icons/InfoOutlined';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
 import {
     renderInput, renderSuggestion, getSuggestions, getSuggestionValue, buildSearchQuery,
 } from './SearchUtils';
 
-const styles = (theme) => ({
-    container: {
+const PREFIX = 'HeaderSearch';
+
+const classes = {
+    container: `${PREFIX}-container`,
+    smContainer: `${PREFIX}-smContainer`,
+    suggestionsContainerOpen: `${PREFIX}-suggestionsContainerOpen`,
+    suggestion: `${PREFIX}-suggestion`,
+    suggestionsList: `${PREFIX}-suggestionsList`,
+    input: `${PREFIX}-input`,
+    inputFocused: `${PREFIX}-inputFocused`,
+    searchBox: `${PREFIX}-searchBox`,
+    infoButton: `${PREFIX}-infoButton`,
+    InfoToolTip: `${PREFIX}-InfoToolTip`,
+    ariaLabel: `${PREFIX}-ariaLabel`
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.container}`]: {
         flexGrow: 0,
     },
-    smContainer: {
+
+    [`& .${classes.smContainer}`]: {
         position: 'absolute',
         left: 0,
     },
-    suggestionsContainerOpen: {
+
+    [`& .${classes.suggestionsContainerOpen}`]: {
         marginTop: theme.spacing(1),
         display: 'block',
         position: 'absolute',
         width: '400px',
         zIndex: theme.zIndex.modal + 1,
     },
-    suggestion: {
+
+    [`& .${classes.suggestion}`]: {
         display: 'block',
     },
-    suggestionsList: {
+
+    [`& .${classes.suggestionsList}`]: {
         margin: 0,
         padding: 0,
         listStyleType: 'none',
     },
-    input: {
+
+    [`& .${classes.input}`]: {
         width: '300px',
         borderRadius: theme.shape.borderRadius * 5,
         background: theme.palette.getContrastText(theme.palette.background.appBar),
         '-webkit-transition': 'all .35s ease-in-out',
         transition: 'all .35s ease-in-out',
         padding: '5px 5px 5px 5px',
+        height: '40px'
     },
-    inputFocused: {
+
+    [`& .${classes.inputFocused}`]: {
         width: '400px',
         background: theme.palette.getContrastText(theme.palette.background.appBar),
         padding: '5px 5px 5px 5px',
     },
-    searchBox: {
+
+    [`& .${classes.searchBox}`]: {
         padding: '5px 5px 5px 5px',
     },
-    infoButton: {
+
+    [`& .${classes.infoButton}`]: {
         margin: theme.spacing(1),
         color: theme.palette.background.paper,
     },
-    InfoToolTip: {
+
+    [`& .${classes.InfoToolTip}`]: {
         backgroundColor: '#f5f5f9',
         color: 'rgba(0,0,0,0.87)',
         maxWidth: 350,
@@ -85,12 +111,13 @@ const styles = (theme) => ({
         borderRadius: '5px',
         padding: '15px 10px 0 18px',
     },
-    ariaLabel: {
+
+    [`& .${classes.ariaLabel}`]: {
         width: 0,
         height: 0,
         color: '#215088',
-    },
-});
+    }
+}));
 
 /**
  * Render search bar in top AppBar
@@ -231,7 +258,7 @@ class HeaderSearch extends React.Component {
      */
     render() {
         const { intl } = this.props;
-        const { classes, smSearch } = this.props;
+        const {  smSearch } = this.props;
         const { searchText, isLoading, suggestions } = this.state;
         let autoFocus = false;
         let responsiveContainer = classes.container;
@@ -240,119 +267,121 @@ class HeaderSearch extends React.Component {
             responsiveContainer = classes.smContainer;
         }
         return (
-            <Box display='flex' alignItems='center' justifyContent='space-between' flexDirection='row' width={1}>
-                <Autosuggest
-                    theme={{
-                        container: responsiveContainer,
-                        suggestionsContainerOpen: classes.suggestionsContainerOpen,
-                        suggestionsList: classes.suggestionsList,
-                        suggestion: classes.suggestion,
-                    }}
-                    suggestions={suggestions}
-                    renderInputComponent={renderInput}
-                    onSuggestionsFetchRequested={this.handleSuggestionsFetchRequested}
-                    onSuggestionsClearRequested={this.handleSuggestionsClearRequested}
-                    getSuggestionValue={getSuggestionValue}
-                    renderSuggestion={renderSuggestion}
-                    renderSuggestionsContainer={this.renderSuggestionsContainer}
-                    onSuggestionSelected={this.onSuggestionSelected}
-                    inputProps={{
-                        autoFocus,
-                        classes,
-                        placeholder: intl.formatMessage({
-                            id: 'Base.Header.headersearch.HeaderSearch.search_api.tooltip',
-                            defaultMessage: 'Search',
-                        }),
-                        value: searchText,
-                        onChange: this.handleChange,
-                        onKeyDown: this.onKeyDown,
-                        onBlur: this.clearOnBlur,
-                        isLoading,
-                        disableUnderline: true,
-                    }}
-                />
-                <Tooltip
-                    interactive
-                    placement='top'
-                    classes={{
-                        tooltip: classes.InfoToolTip,
-                    }}
-                    title={(
-                        <>
-                            <FormattedMessage
-                                id='Base.Header.headersearch.HeaderSearch.tooltip.title'
-                                defaultMessage='Search Options for APIs and APIProducts'
-                            />
-                            <ol style={{ marginLeft: '-20px', marginTop: '8px' }}>
-                                <li style={{ marginTop: '5px' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.headersearch.HeaderSearch.tooltip.option0'
-                                        defaultMessage='Content [ Default ]'
-                                    />
-                                </li>
-                                <li style={{ marginTop: '5px' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.headersearch.HeaderSearch.tooltip.option1'
-                                        defaultMessage='Name [ Syntax - name:xxxx ]'
-                                    />
-                                </li>
-                                <li style={{ marginTop: '5px' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.headersearch.HeaderSearch.tooltip.option2'
-                                        defaultMessage='Provider [ Syntax - provider:xxxx ]'
-                                    />
-                                </li>
-                                <li style={{ marginTop: '5px' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.headersearch.HeaderSearch.tooltip.option3'
-                                        defaultMessage='Version [ Syntax - version:xxxx ]'
-                                    />
-                                </li>
-                                <li style={{ marginTop: '5px' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.headersearch.HeaderSearch.tooltip.option4'
-                                        defaultMessage='Context [ Syntax - context:xxxx ]'
-                                    />
-                                </li>
-                                <li style={{ marginTop: '5px' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.headersearch.HeaderSearch.tooltip.option5'
-                                        defaultMessage='Status [ Syntax - status:xxxx ]'
-                                    />
-                                </li>
-                                <li style={{ marginTop: '5px' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.headersearch.HeaderSearch.tooltip.option6'
-                                        defaultMessage='Description [ Syntax - description:xxxx ]'
-                                    />
-                                </li>
-                                <li style={{ marginTop: '5px' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.headersearch.HeaderSearch.tooltip.option11'
-                                        defaultMessage='Tags [ Syntax - tags:xxxx ]'
-                                    />
-                                </li>
-                                <li style={{ marginTop: '5px' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.headersearch.HeaderSearch.tooltip.option12'
-                                        defaultMessage='Api Category [ Syntax - api-category:xxxx ]'
-                                    />
-                                </li>
-                                <li style={{ marginTop: '5px' }}>
-                                    <FormattedMessage
-                                        id='Base.Header.headersearch.HeaderSearch.tooltip.option10'
-                                        defaultMessage='Properties [Syntax - property_name:property_value]'
-                                    />
-                                </li>
-                            </ol>
-                        </>
-                    )}
-                >
-                    <IconButton className={classes.infoButton}>
-                        <InfoIcon />
-                    </IconButton>
-                </Tooltip>
-            </Box>
+            <Root>
+                <Box display='flex' alignItems='center' justifyContent='space-between' flexDirection='row' width={1}>
+                    <Autosuggest
+                        theme={{
+                            container: responsiveContainer,
+                            suggestionsContainerOpen: classes.suggestionsContainerOpen,
+                            suggestionsList: classes.suggestionsList,
+                            suggestion: classes.suggestion,
+                        }}
+                        suggestions={suggestions}
+                        renderInputComponent={renderInput}
+                        onSuggestionsFetchRequested={this.handleSuggestionsFetchRequested}
+                        onSuggestionsClearRequested={this.handleSuggestionsClearRequested}
+                        getSuggestionValue={getSuggestionValue}
+                        renderSuggestion={renderSuggestion}
+                        renderSuggestionsContainer={this.renderSuggestionsContainer}
+                        onSuggestionSelected={this.onSuggestionSelected}
+                        inputProps={{
+                            autoFocus,
+                            classes,
+                            placeholder: intl.formatMessage({
+                                id: 'Base.Header.headersearch.HeaderSearch.search_api.tooltip',
+                                defaultMessage: 'Search',
+                            }),
+                            value: searchText,
+                            onChange: this.handleChange,
+                            onKeyDown: this.onKeyDown,
+                            onBlur: this.clearOnBlur,
+                            isLoading,
+                            disableUnderline: true,
+                        }}
+                    />
+                    <Tooltip
+                        interactive
+                        placement='top'
+                        classes={{
+                            tooltip: classes.InfoToolTip,
+                        }}
+                        title={(
+                            <>
+                                <FormattedMessage
+                                    id='Base.Header.headersearch.HeaderSearch.tooltip.title'
+                                    defaultMessage='Search Options for APIs and APIProducts'
+                                />
+                                <ol style={{ marginLeft: '-20px', marginTop: '8px' }}>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option0'
+                                            defaultMessage='Content [ Default ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option1'
+                                            defaultMessage='Name [ Syntax - name:xxxx ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option2'
+                                            defaultMessage='Provider [ Syntax - provider:xxxx ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option3'
+                                            defaultMessage='Version [ Syntax - version:xxxx ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option4'
+                                            defaultMessage='Context [ Syntax - context:xxxx ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option5'
+                                            defaultMessage='Status [ Syntax - status:xxxx ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option6'
+                                            defaultMessage='Description [ Syntax - description:xxxx ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option11'
+                                            defaultMessage='Tags [ Syntax - tags:xxxx ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option12'
+                                            defaultMessage='Api Category [ Syntax - api-category:xxxx ]'
+                                        />
+                                    </li>
+                                    <li style={{ marginTop: '5px' }}>
+                                        <FormattedMessage
+                                            id='Base.Header.headersearch.HeaderSearch.tooltip.option10'
+                                            defaultMessage='Properties [Syntax - property_name:property_value]'
+                                        />
+                                    </li>
+                                </ol>
+                            </>
+                        )}
+                    >
+                        <IconButton className={classes.infoButton} size='large'>
+                            <InfoIcon />
+                        </IconButton>
+                    </Tooltip>
+                </Box>
+            </Root>
         );
     }
 }
@@ -362,7 +391,6 @@ HeaderSearch.defaultProps = {
     toggleSmSearch: undefined,
 };
 HeaderSearch.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     smSearch: PropTypes.bool,
     toggleSmSearch: PropTypes.func,
     history: PropTypes.shape({
@@ -373,4 +401,4 @@ HeaderSearch.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withRouter(withStyles(styles)(HeaderSearch)));
+export default injectIntl(withRouter((HeaderSearch)));

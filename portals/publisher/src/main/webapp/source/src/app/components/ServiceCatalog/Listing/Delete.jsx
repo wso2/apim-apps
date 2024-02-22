@@ -19,11 +19,11 @@
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
+import Button from '@mui/material/Button';
+import Icon from '@mui/material/Icon';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
 
 /**
 * Service Catalog service delete
@@ -48,56 +48,54 @@ function Delete(props) {
         setOpen(!open);
     };
 
-    return (
-        <>
-            {isIconButton ? (
-                <IconButton
-                    id={id}
-                    disableRipple
-                    disableFocusRipple
-                    aria-label={`Delete ${serviceDisplayName}`}
-                    onClick={toggleOpen}
-                >
-                    <DeleteIcon />
-                </IconButton>
-            ) : (
-                <Button id={id} onClick={toggleOpen}>
-                    <Icon>delete_forever</Icon>
-                </Button>
+    return <>
+        {isIconButton ? (
+            <IconButton
+                id={id}
+                disableRipple
+                disableFocusRipple
+                aria-label={`Delete ${serviceDisplayName}`}
+                onClick={toggleOpen}
+                size='large'>
+                <DeleteIcon />
+            </IconButton>
+        ) : (
+            <Button id={id} onClick={toggleOpen}>
+                <Icon>delete_forever</Icon>
+            </Button>
+        )}
+        <ConfirmDialog
+            key='key-dialog'
+            labelCancel={(
+                <FormattedMessage
+                    id='ServiceCatalog.Listing.Delete.cancel'
+                    defaultMessage='Cancel'
+                />
             )}
-            <ConfirmDialog
-                key='key-dialog'
-                labelCancel={(
-                    <FormattedMessage
-                        id='ServiceCatalog.Listing.Delete.cancel'
-                        defaultMessage='Cancel'
-                    />
-                )}
-                title={(
-                    <FormattedMessage
-                        id='ServiceCatalog.Listing.Delete.confirm'
-                        defaultMessage='Confirm Delete'
-                    />
-                )}
-                message={(
-                    <FormattedMessage
-                        id='ServiceCatalog.Listing.Delete.ok.confirm'
-                        defaultMessage='Are you sure you want to delete the service {service} ?'
-                        values={{ service: serviceDisplayName }}
-                    />
-                )}
-                labelOk={(
-                    <FormattedMessage
-                        id='ServiceCatalog.Listing.Delete.ok.yes'
-                        defaultMessage='Yes'
-                    />
-                )}
-                idOk='itest-service-card-delete-confirm'
-                callback={runAction}
-                open={open}
-            />
-        </>
-    );
+            title={(
+                <FormattedMessage
+                    id='ServiceCatalog.Listing.Delete.confirm'
+                    defaultMessage='Confirm Delete'
+                />
+            )}
+            message={(
+                <FormattedMessage
+                    id='ServiceCatalog.Listing.Delete.ok.confirm'
+                    defaultMessage='Are you sure you want to delete the service {service} ?'
+                    values={{ service: serviceDisplayName }}
+                />
+            )}
+            labelOk={(
+                <FormattedMessage
+                    id='ServiceCatalog.Listing.Delete.ok.yes'
+                    defaultMessage='Yes'
+                />
+            )}
+            idOk='itest-service-card-delete-confirm'
+            callback={runAction}
+            open={open}
+        />
+    </>;
 }
 Delete.propTypes = {
     serviceDisplayName: PropTypes.string.isRequired,

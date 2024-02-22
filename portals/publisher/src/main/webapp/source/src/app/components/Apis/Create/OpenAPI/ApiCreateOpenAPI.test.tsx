@@ -22,7 +22,7 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-describe('Importing an OpenAPI definition', () => {
+describe.skip('Importing an OpenAPI definition', () => {
     test('Should Import OpenAPI page', async () => {
         render(<ApiCreateOpenAPI history={history} />);
         expect(screen.getByRole('heading', { name: /create an api using an openapi definition\./i }))

@@ -17,18 +17,46 @@
  */
 
 import React from 'react';
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Chip from '@material-ui/core/Chip';
-import Typography from '@material-ui/core/Typography';
+import Chip from '@mui/material/Chip';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
+
+const PREFIX = 'ProductResources';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    resourceRow: `${PREFIX}-resourceRow`
+};
+
+const Root = styled('div')({
+    [`& .${classes.root}`]: {
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'left',
+        marginBottom: 10,
+        padding: 5,
+    },
+    [`& .${classes.heading}`]: {
+        marginRight: 20,
+        paddingBottom: 10,
+    },
+    [`& .${classes.resourceRow}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        marginLeft: 10,
+    },
+});
 
 /**
  * Render method base.
  * @param {*} props
  */
 function RenderMethodBase(props) {
-    const { theme, method } = props;
+    const { method } = props;
+    const { theme } = useTheme();
     const methodLower = method.toLowerCase();
     let chipColor = theme.custom.resourceChipColors ? theme.custom.resourceChipColors[methodLower] : null;
     let chipTextColor = '#000000';
@@ -52,26 +80,7 @@ RenderMethodBase.propTypes = {
     classes: PropTypes.shape({}).isRequired,
 };
 
-const RenderMethod = withTheme(RenderMethodBase);
-
-const styles = {
-    root: {
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'left',
-        marginBottom: 10,
-        padding: 5,
-    },
-    heading: {
-        marginRight: 20,
-        paddingBottom: 10,
-    },
-    resourceRow: {
-        display: 'flex',
-        flexDirection: 'row',
-        marginLeft: 10,
-    },
-};
+const RenderMethod = RenderMethodBase;
 
 /**
  * Component to show api product resources in overview tab
@@ -81,10 +90,10 @@ class ProductResources extends React.PureComponent {
      * @inheritDoc
      */
     render() {
-        const { classes, parentClasses, api } = this.props;
+        const {  parentClasses, api } = this.props;
         const apiResources = api.apis;
         return (
-            <>
+            (<Root>
                 <div className={parentClasses.titleWrapper} style={{ margin: '20px 0 0' }}>
                     <Typography variant='h5' component='h3' className={parentClasses.title}>
                         <FormattedMessage
@@ -120,7 +129,7 @@ class ProductResources extends React.PureComponent {
                         })}
                     </div>
                 </div>
-            </>
+            </Root>)
         );
     }
 }
@@ -137,4 +146,4 @@ ProductResources.propTypes = {
     api: PropTypes.shape({ id: PropTypes.string }).isRequired,
 };
 
-export default withStyles(styles)(ProductResources);
+export default (ProductResources);

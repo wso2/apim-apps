@@ -19,38 +19,50 @@
 /* eslint-disable react/jsx-no-bind */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import EditIcon from '@material-ui/icons/Edit';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import TextField from '@mui/material/TextField';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import EditIcon from '@mui/icons-material/Edit';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import IconButton from '@material-ui/core/IconButton';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import VisibilityIcon from '@material-ui/icons/Visibility';
+import IconButton from '@mui/material/IconButton';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import VisibilityIcon from '@mui/icons-material/Visibility';
 
-const useStyles = makeStyles(() => ({
-    link: {
+const PREFIX = 'EditableRow';
+
+const classes = {
+    link: `${PREFIX}-link`,
+    checkBoxStyles: `${PREFIX}-checkBoxStyles`,
+    colorPrimary: `${PREFIX}-colorPrimary`,
+    cancelButton: `${PREFIX}-cancelButton`
+};
+
+const StyledTableRow = styled(TableRow)(() => ({
+    [`& .${classes.link}`]: {
         cursor: 'pointer',
     },
-    checkBoxStyles: {
+
+    [`& .${classes.checkBoxStyles}`]: {
         whiteSpace: 'nowrap',
         marginLeft: 0,
         paddingLeft: 0,
     },
-    colorPrimary: {
+
+    [`& .${classes.colorPrimary}`]: {
         marginLeft: 0,
         paddingLeft: 0,
     },
-    cancelButton: {
+
+    [`& .${classes.cancelButton}`]: {
         marginLeft: 4,
-    },
+    }
 }));
 
 /**
@@ -109,10 +121,10 @@ function EditableRow(props) {
     const handleChangeVisibleInStore = (event) => {
         setIsVisibleInStore(event.target.checked);
     };
-    const classes = useStyles();
+
 
     return (
-        <TableRow>
+        <StyledTableRow>
             {editMode ? (
                 <TableCell>
                     <TextField
@@ -238,7 +250,7 @@ function EditableRow(props) {
                         onKeyDown={() => { }}
                         color='inherit'
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                    >
+                        size='large'>
                         <EditIcon className={classes.buttonIcon} />
                     </IconButton>
                 )}
@@ -249,11 +261,11 @@ function EditableRow(props) {
                     onKeyDown={() => { }}
                     color='inherit'
                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                >
+                    size='large'>
                     <DeleteForeverIcon className={classes.buttonIcon} />
                 </IconButton>
             </TableCell>
-        </TableRow>
+        </StyledTableRow>
     );
 }
 EditableRow.propTypes = {

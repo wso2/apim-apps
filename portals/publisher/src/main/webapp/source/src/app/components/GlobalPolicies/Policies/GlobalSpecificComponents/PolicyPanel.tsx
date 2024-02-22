@@ -16,7 +16,7 @@
 * under the License.
 */
 
-import { Box } from '@material-ui/core';
+import { Box } from '@mui/material';
 import React, { FC } from 'react';
 import PoliciesSection from './PoliciesSection';
 import type { Policy, PolicySpec } from '../Types';

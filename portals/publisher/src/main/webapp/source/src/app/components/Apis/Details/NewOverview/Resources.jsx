@@ -17,21 +17,57 @@
  */
 
 import React from 'react';
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Chip from '@material-ui/core/Chip';
+import Chip from '@mui/material/Chip';
 import { FormattedMessage } from 'react-intl';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
-import LaunchIcon from '@material-ui/icons/Launch';
+import LaunchIcon from '@mui/icons-material/Launch';
 
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import Api from 'AppData/api';
 import CONSTS from 'AppData/Constants';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 
+const PREFIX = 'Resources';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+
+    [`& .${classes.heading}`]: {
+        marginRight: 20,
+    },
+
+    [`& .${classes.contentWrapper}`]: {
+        maxHeight: '125px',
+        overflowY: 'auto',
+    },
+
+    [`& .${classes.subHeading}`]: {
+        color: theme.palette.primary.dark,
+    }
+}));
+
 function RenderMethodBase(props) {
-    const { theme, method } = props;
+    const { method } = props;
+    const theme = useTheme();
     let chipColor = theme.custom.resourceChipColors ? theme.custom.resourceChipColors[method] : null;
     let chipTextColor = '#000000';
     if (!chipColor) {
@@ -56,26 +92,7 @@ RenderMethodBase.propTypes = {
     classes: PropTypes.shape({}).isRequired,
 };
 
-const RenderMethod = withTheme(RenderMethodBase);
-
-const styles = (theme) => ({
-    root: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    heading: {
-        marginRight: 20,
-    },
-    contentWrapper: {
-        maxHeight: '125px',
-        overflowY: 'auto',
-    },
-    subHeading: {
-        color: theme.palette.primary.dark,
-    },
-});
+const RenderMethod = RenderMethodBase;
 
 class Resources extends React.Component {
     constructor(props) {
@@ -128,9 +145,9 @@ class Resources extends React.Component {
                 </div>
             );
         }
-        const { classes, parentClasses, api } = this.props;
+        const {  parentClasses, api } = this.props;
         return (
-            <>
+            (<Root>
                 <div className={parentClasses.titleWrapper}>
                     { api.type === 'GraphQL' ? (
                         <Typography id='resources' variant='h5' component='h2' className={parentClasses.title}>
@@ -185,7 +202,7 @@ class Resources extends React.Component {
                         </Typography>
                     </Link>
                 </Box>
-            </>
+            </Root>)
         );
     }
 }
@@ -196,4 +213,4 @@ Resources.propTypes = {
     api: PropTypes.shape({ id: PropTypes.string }).isRequired,
 };
 
-export default withStyles(styles)(Resources);
+export default (Resources);
