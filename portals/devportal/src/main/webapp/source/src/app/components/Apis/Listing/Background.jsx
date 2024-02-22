@@ -16,16 +16,22 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 
-const styles = {
-    svgImage: {
+const PREFIX = 'Background';
+
+const classes = {
+    svgImage: `${PREFIX}-svgImage`,
+};
+
+const Root = styled('svg')({
+    [`&.${classes.svgImage}`]: {
         cursor: 'pointer',
         // ⚠️ object-fit is not supported by IE11.
         objectFit: 'cover',
     },
-};
+});
 
 function aHexToOpacity(aHex) {
     const alphaValue = '0x' + aHex.substring(7, 9);
@@ -46,7 +52,7 @@ function getColorWithoutAlpha(aHex) {
  */
 function Background(props) {
     const {
-        classes, colorPair, width, height,
+        colorPair, width, height,
     } = props;
     // Creating the background
 
@@ -77,10 +83,10 @@ function Background(props) {
     }
     const primeColor = '#' + colorPair.prime.toString(16);
     return (
-        <svg width={width} height={height} className={classes.svgImage} aria-hidden='true'>
+        <Root width={width} height={height} className={classes.svgImage} aria-hidden='true'>
             <rect {...thumbnailBox} fill={getColorWithoutAlpha(primeColor)} fillOpacity={aHexToOpacity(primeColor)} />
             {rects}
-        </svg>
+        </Root>
     );
 }
 
@@ -91,4 +97,4 @@ Background.propTypes = {
     colorPair: PropTypes.shape({ sub: PropTypes.number, prime: PropTypes.number }).isRequired,
 };
 
-export default withStyles(styles)(Background);
+export default (Background);

@@ -17,28 +17,40 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
-import { Typography } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
+import { Typography } from '@mui/material';
+import Button from '@mui/material/Button';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 
-const useStyles = makeStyles((theme) => ({
-    appContent: {
+const PREFIX = 'genericDisplayDialog';
+
+const classes = {
+    appContent: `${PREFIX}-appContent`,
+    button: `${PREFIX}-button`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.appContent}`]: {
         margin: theme.spacing(2),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         color: theme.palette.getContrastText(theme.palette.primary.main),
-    },
-  }));
+    }
+}));
 
 const genericDisplayDialog = (props) => {
     const {
         handleClick, heading, caption, buttonText,
     } = props;
-    const classes = useStyles();
+
     return (
-        <div className={classes.appContent}>
+        <Root className={classes.appContent}>
             <InlineMessage type='info' className={classes.dialogContainer}>
                 <Typography variant='h5' component='h2'>
                     {heading}
@@ -58,7 +70,7 @@ const genericDisplayDialog = (props) => {
                     </Button>
                 </ScopeValidation>
             </InlineMessage>
-        </div>
+        </Root>
     );
 };
 

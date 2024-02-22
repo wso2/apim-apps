@@ -17,17 +17,29 @@
  */
 
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import ViewToken from 'AppComponents/Shared/AppsAndKeys/ViewToken';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
-import { Box } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
+import { Box } from '@mui/material';
+import Grid from '@mui/material/Grid';
 import { useHistory } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
 import ButtonPanel from './ButtonPanel';
 
-const useStyles = makeStyles((theme) => ({
-    tokenWrapper: {
+const PREFIX = 'copyAccessTokenStep';
+
+const classes = {
+    tokenWrapper: `${PREFIX}-tokenWrapper`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.tokenWrapper}`]: {
         paddingLeft: theme.spacing(2),
+        paddingRight: theme.spacing(2),
+        width: '160%',
     },
 }));
 
@@ -40,10 +52,9 @@ const copyAccessTokenStep = (props) => {
     const completeStep = () => {
         updateSubscriptionData(history.push(`/apis/${api.id}/credentials`));
     };
-    const classes = useStyles();
 
     return (
-        <div className={classes.tokenWrapper}>
+        <Root className={classes.tokenWrapper}>
             <Grid md={10}>
                 <Box my={1} mx={2}>
                     <ViewToken token={{ ...createdToken, isOauth: true }} />
@@ -55,7 +66,7 @@ const copyAccessTokenStep = (props) => {
                 handleCurrentStep={completeStep}
                 handleReset={handleReset}
             />
-        </div>
+        </Root>
     );
 };
 

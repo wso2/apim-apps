@@ -16,17 +16,29 @@
  * under the License.
  */
 import React from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import { styled, useTheme } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { app } from 'Settings';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'NoApi';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    messageWrapper: `${PREFIX}-messageWrapper`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.root}`]: {
         flexGrow: 1,
     },
-    messageWrapper: {
+
+    [`& .${classes.messageWrapper}`]: {
         marginTop: theme.spacing(4),
         padding: theme.spacing(2),
         textAlign: 'center',
@@ -39,11 +51,10 @@ const useStyles = makeStyles((theme) => ({
  * @returns {void}
  */
 export default function NoApi() {
-    const classes = useStyles();
     const theme = useTheme();
 
     return (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <Grid container spacing={3}>
                 <Grid item xs={12} className={classes.messageWrapper}>
                     <img alt='API icon' src={app.context + theme.custom.noApiImage} className={classes.messageWrapper} />
@@ -58,6 +69,6 @@ export default function NoApi() {
                     </Typography>
                 </Grid>
             </Grid>
-        </div>
+        </Root>
     );
 }

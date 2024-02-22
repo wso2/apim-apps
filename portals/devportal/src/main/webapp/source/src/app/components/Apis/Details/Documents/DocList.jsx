@@ -20,60 +20,107 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import Autocomplete from '@material-ui/lab/Autocomplete';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import Details from 'AppComponents/Apis/Details/Documents/Details';
 import GenerateDocument from './GenerateDocument';
 
-const styles = (theme) => ({
-    apiDocTitle: {
+const PREFIX = 'DocList';
+
+const classes = {
+    apiDocTitle: `${PREFIX}-apiDocTitle`,
+    autocomplete: `${PREFIX}-autocomplete`,
+    autocompleteText: `${PREFIX}-autocompleteText`,
+    paper: `${PREFIX}-paper`,
+    paperMenu: `${PREFIX}-paperMenu`,
+    docContent: `${PREFIX}-docContent`,
+    parentListItem: `${PREFIX}-parentListItem`,
+    listRoot: `${PREFIX}-listRoot`,
+    nested: `${PREFIX}-nested`,
+    childList: `${PREFIX}-childList`,
+    title: `${PREFIX}-title`,
+    titleSub: `${PREFIX}-titleSub`,
+    selectDocuments: `${PREFIX}-selectDocuments`,
+    generateCredentialWrapper: `${PREFIX}-generateCredentialWrapper`,
+    generatedDocument: `${PREFIX}-generatedDocument`,
+    genericMessageWrapper: `${PREFIX}-genericMessageWrapper`,
+    typeText: `${PREFIX}-typeText`,
+    docLinkRoot: `${PREFIX}-docLinkRoot`,
+    toggler: `${PREFIX}-toggler`,
+    togglerTextParent: `${PREFIX}-togglerTextParent`,
+    togglerText: `${PREFIX}-togglerText`,
+    toggleWrapper: `${PREFIX}-toggleWrapper`,
+    docsWrapper: `${PREFIX}-docsWrapper`,
+    docContainer: `${PREFIX}-docContainer`,
+    docListWrapper: `${PREFIX}-docListWrapper`,
+    docView: `${PREFIX}-docView`,
+    listItemRoot: `${PREFIX}-listItemRoot`,
+    formcontrol: `${PREFIX}-formcontrol`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.apiDocTitle}`]: {
         width: '50%',
         marginTop: theme.spacing(1),
     },
-    autocomplete: {
+
+    [`& .${classes.autocomplete}`]: {
         display: 'flex',
         width: 300,
         padding: 0,
     },
-    autocompleteText: {
+
+    [`& .${classes.autocompleteText}`]: {
         paddingTop: 0,
         paddingBottom: 0,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(2),
         color: theme.palette.text.secondary,
         minHeight: 400,
         position: 'relative',
     },
-    paperMenu: {
+
+    [`& .${classes.paperMenu}`]: {
         color: theme.palette.text.secondary,
         minHeight: 400 + theme.spacing(4),
         height: '100%',
         background: theme.custom.apiDetailPages.documentBackground,
     },
-    docContent: {
+
+    [`& .${classes.docContent}`]: {
         paddingTop: theme.spacing(1),
     },
-    parentListItem: {
+
+    [`& .${classes.parentListItem}`]: {
         borderTop: 'solid 1px #ccc',
         borderBottom: 'solid 1px #ccc',
         color: theme.palette.grey[100],
         background: theme.palette.grey[100],
         cursor: 'default',
     },
-    listRoot: {
+
+    [`& .${classes.listRoot}`]: {
         paddingTop: 0,
     },
-    nested: {
+
+    [`& .${classes.nested}`]: {
         paddingLeft: theme.spacing(3),
         paddingTop: 3,
         paddingBottom: 3,
     },
-    childList: {
+
+    [`& .${classes.childList}`]: {
         paddingTop: 0,
         marginTop: 0,
         paddingBottom: 0,
@@ -81,40 +128,49 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    title: {
+
+    [`& .${classes.title}`]: {
         display: 'flex',
         alignItems: 'flex-start',
     },
-    titleSub: {
+
+    [`& .${classes.titleSub}`]: {
         marginLeft: theme.spacing(2),
         padding: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    selectDocuments: {
+
+    [`& .${classes.selectDocuments}`]: {
         marginLeft: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    generateCredentialWrapper: {
+
+    [`& .${classes.generateCredentialWrapper}`]: {
         marginLeft: 0,
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
     },
-    generatedDocument: {
+
+    [`& .${classes.generatedDocument}`]: {
         width: '100%',
     },
-    genericMessageWrapper: {
+
+    [`& .${classes.genericMessageWrapper}`]: {
         margin: theme.spacing(2),
     },
-    typeText: {
+
+    [`& .${classes.typeText}`]: {
         color: '#000',
     },
-    docLinkRoot: {
+
+    [`& .${classes.docLinkRoot}`]: {
         paddingLeft: 0,
         color: theme.palette.text.primary,
     },
-    toggler: {
+
+    [`& .${classes.toggler}`]: {
         height: '100%',
         padding: '20px 0 0 0',
         cursor: 'pointer',
@@ -123,42 +179,51 @@ const styles = (theme) => ({
         minWidth: 'inherit',
         flexDirection: 'column',
     },
-    togglerTextParent: {
+
+    [`& .${classes.togglerTextParent}`]: {
         writingMode: 'vertical-rl',
         transform: 'rotate(180deg)',
     },
-    togglerText: {
+
+    [`& .${classes.togglerText}`]: {
         textOrientation: 'sideways',
     },
-    toggleWrapper: {
+
+    [`& .${classes.toggleWrapper}`]: {
         position: 'relative',
         paddingLeft: 20,
         background: theme.custom.apiDetailPages.documentBackground,
     },
-    docsWrapper: {
+
+    [`& .${classes.docsWrapper}`]: {
         margin: 0,
         background: theme.custom.apiDetailPages.documentBackground,
     },
-    docContainer: {
+
+    [`& .${classes.docContainer}`]: {
         display: 'flex',
         marginLeft: 20,
         marginRight: 20,
         marginTop: 20,
     },
-    docListWrapper: {
+
+    [`& .${classes.docListWrapper}`]: {
         width: 285,
     },
-    docView: {
+
+    [`& .${classes.docView}`]: {
         flex: 1,
     },
-    listItemRoot: {
+
+    [`& .${classes.listItemRoot}`]: {
         minWidth: 30,
     },
-    formcontrol: {
+
+    [`& .${classes.formcontrol}`]: {
         margin: theme.spacing(1),
         minWidth: 120,
     },
-});
+}));
 
 /**
  * Show document list.
@@ -167,7 +232,7 @@ const styles = (theme) => ({
  */
 function DocList(props) {
     const {
-        classes, documentList, apiId, selectedDoc, setbreadcrumbDocument,
+        documentList, apiId, selectedDoc, setbreadcrumbDocument,
     } = props;
     const [viewDocument, setViewDocument] = useState(selectedDoc);
     useEffect(() => {
@@ -178,7 +243,7 @@ function DocList(props) {
         setViewDocument(selectedDoc);
     }, [selectedDoc]);
     return (
-        <>
+        <Root>
             <div className={classes.title}>
                 <Typography variant='h4' className={classes.titleSub}>
                     <FormattedMessage
@@ -218,7 +283,7 @@ function DocList(props) {
                 { viewDocument.name !== 'Default'
                 && <Details documentList={documentList} selectedDoc={viewDocument} apiId={apiId} /> }
             </div>
-        </>
+        </Root>
     );
 }
 
@@ -226,4 +291,4 @@ DocList.propTypes = {
     classes: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(DocList));
+export default injectIntl((DocList));

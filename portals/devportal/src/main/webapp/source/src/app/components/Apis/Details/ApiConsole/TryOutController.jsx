@@ -19,65 +19,92 @@
 import React, {
     useEffect, useState,
 } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import withStyles from '@material-ui/core/styles/withStyles';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import {
     Radio, RadioGroup, FormControlLabel, FormControl, CircularProgress, Tooltip,
-} from '@material-ui/core';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import IconButton from '@material-ui/core/IconButton';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Icon from '@material-ui/core/Icon';
+} from '@mui/material';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import IconButton from '@mui/material/IconButton';
+import InputAdornment from '@mui/material/InputAdornment';
+import Icon from '@mui/material/Icon';
 import AuthManager from 'AppData/AuthManager';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import WarningIcon from '@material-ui/icons/Warning';
-import Visibility from '@material-ui/icons/Visibility';
-import VisibilityOff from '@material-ui/icons/VisibilityOff';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpandLessIcon from '@material-ui/icons/ExpandLess';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import WarningIcon from '@mui/icons-material/Warning';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import AdvertiseDetailsPanel from 'AppComponents/Apis/Details/ApiConsole/AdvertiseDetailsPanel';
 import Progress from '../../../Shared/Progress';
 import Api from '../../../../data/api';
 import Application from '../../../../data/Application';
 import SelectAppPanel from './SelectAppPanel';
 
-/**
- * @inheritdoc
- * @param {*} theme theme
- */
-const styles = makeStyles((theme) => ({
-    centerItems: {
-        margin: 'auto',
+const PREFIX = 'TryOutController';
+
+const classes = {
+    centerItems: `${PREFIX}-centerItems`,
+    tokenType: `${PREFIX}-tokenType`,
+    paper: `${PREFIX}-paper`,
+    grid: `${PREFIX}-grid`,
+    tryoutHeading: `${PREFIX}-tryoutHeading`,
+    genKeyButton: `${PREFIX}-genKeyButton`,
+    gatewayEnvironment: `${PREFIX}-gatewayEnvironment`,
+    categoryHeading: `${PREFIX}-categoryHeading`,
+    tooltip: `${PREFIX}-tooltip`,
+    menuItem: `${PREFIX}-menuItem`,
+    warningIcon: `${PREFIX}-warningIcon`,
+    loadMoreLink: `${PREFIX}-loadMoreLink`,
+    link: `${PREFIX}-link`,
+    authHeader: `${PREFIX}-authHeader`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
     },
-    tokenType: {
+) => ({
+    [`& .${classes.centerItems}`]: {
+        margin: 'auto',
+        // width: theme.spacing(100),
+        width: 1200,
+    },
+
+    [`& .${classes.tokenType}`]: {
         margin: 'auto',
         display: 'flex',
         '& .MuiButton-contained.Mui-disabled span.MuiButton-label': {
             color: '#6d6d6d',
         },
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         margin: theme.spacing(1),
         padding: theme.spacing(1),
     },
-    grid: {
+
+    [`& .${classes.grid}`]: {
         marginTop: theme.spacing(4),
         marginBottom: theme.spacing(4),
         paddingRight: theme.spacing(2),
         justifyContent: 'center',
     },
-    tryoutHeading: {
+
+    [`& .${classes.tryoutHeading}`]: {
         fontWeight: 400,
         display: 'block',
     },
-    genKeyButton: {
+
+    [`& .${classes.genKeyButton}`]: {
+        background: theme.palette.grey[300],
         width: theme.spacing(20),
         height: theme.spacing(5),
         marginTop: theme.spacing(2.5),
@@ -87,35 +114,43 @@ const styles = makeStyles((theme) => ({
             background: theme.palette.grey[50],
         },
     },
-    gatewayEnvironment: {
+
+    [`& .${classes.gatewayEnvironment}`]: {
         marginTop: theme.spacing(4),
     },
-    categoryHeading: {
+
+    [`& .${classes.categoryHeading}`]: {
         marginBottom: theme.spacing(2),
         marginLeft: theme.spacing(-5),
     },
-    tooltip: {
+
+    [`& .${classes.tooltip}`]: {
         marginLeft: theme.spacing(1),
     },
-    menuItem: {
+
+    [`& .${classes.menuItem}`]: {
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
-    warningIcon: {
+
+    [`& .${classes.warningIcon}`]: {
         color: '#ff9a00',
         fontSize: 25,
         marginRight: 10,
     },
-    loadMoreLink: {
+
+    [`& .${classes.loadMoreLink}`]: {
         textDecoration: 'none',
         margin: 'auto',
         display: 'flex',
         justifyContent: 'center',
     },
-    link: {
+
+    [`& .${classes.link}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         cursor: 'pointer',
     },
-    authHeader: {
+
+    [`& .${classes.authHeader}`]: {
         marginBottom: '20px',
     },
 }));
@@ -138,7 +173,6 @@ function TryOutController(props) {
     let { selectedKeyManager } = props;
     selectedKeyManager = selectedKeyManager || 'Resident Key Manager';
 
-    const classes = styles();
     const [showToken, setShowToken] = useState(false);
     const [showPassword, setShowPassword] = useState(false);
     const [isUpdating, setIsUpdating] = useState(false);
@@ -476,7 +510,7 @@ function TryOutController(props) {
     const authHeader = `${authorizationHeader}: ${prefix}`;
 
     return (
-        <>
+        <Root>
             <Grid x={12} md={6} className={classes.centerItems}>
                 <Box>
                     {securitySchemeType !== 'TEST' && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
@@ -535,7 +569,7 @@ function TryOutController(props) {
                                     defaultMessage='Security Type'
                                 />
                             </Typography>
-                            <FormControl component='fieldset'>
+                            <FormControl variant='standard' component='fieldset'>
                                 <RadioGroup
                                     name='securityScheme'
                                     value={securitySchemeType}
@@ -682,6 +716,7 @@ function TryOutController(props) {
                                                                 edge='end'
                                                                 aria-label='toggle password visibility'
                                                                 onClick={() => setShowPassword(!showPassword)}
+                                                                size='large'
                                                             >
                                                                 {showPassword ? <Visibility /> : <VisibilityOff />}
                                                             </IconButton>
@@ -723,6 +758,7 @@ function TryOutController(props) {
                                                         edge='end'
                                                         aria-label='Toggle token visibility'
                                                         onClick={handleClickShowToken}
+                                                        size='large'
                                                     >
                                                         {showToken ? <Icon>visibility_off</Icon>
                                                             : <Icon>visibility</Icon>}
@@ -749,6 +785,7 @@ function TryOutController(props) {
                                             onClick={securitySchemeType === 'API-KEY' ? generateApiKey
                                                 : generateAccessToken}
                                             variant='contained'
+                                            color='grey'
                                             className={classes.genKeyButton}
                                             disabled={!user || (subscriptions && subscriptions.length === 0)
                                                         || (!ksGenerated && securitySchemeType === 'OAUTH')}
@@ -759,7 +796,7 @@ function TryOutController(props) {
                                             )}
                                             <FormattedMessage
                                                 id='Apis.Details.ApiCOnsole.generate.test.key'
-                                                defaultMessage='GET TEST KEY '
+                                                defaultMessage='GET TEST KEY'
                                             />
                                         </Button>
                                         <Tooltip
@@ -778,6 +815,7 @@ function TryOutController(props) {
                                             <Box m={1} mt={2}>
                                                 <IconButton
                                                     aria-label='Use existing Access Token or generate a new Test Key'
+                                                    size='large'
                                                 >
                                                     <HelpOutline />
                                                 </IconButton>
@@ -932,7 +970,7 @@ function TryOutController(props) {
                     )}
                 </Box>
             </Grid>
-        </>
+        </Root>
     );
 }
 
@@ -945,4 +983,4 @@ TryOutController.propTypes = {
     }).isRequired,
 };
 
-export default withStyles(makeStyles)(TryOutController);
+export default (TryOutController);

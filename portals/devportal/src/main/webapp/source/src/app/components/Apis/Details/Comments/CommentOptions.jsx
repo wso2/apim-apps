@@ -16,52 +16,76 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import AuthManager from '../../../../data/AuthManager';
 
-const styles = theme => ({
-    link: {
-        color: theme.palette.getContrastText(theme.palette.primary.main),
+const PREFIX = 'CommentOptions';
+
+const classes = {
+    link: `${PREFIX}-link`,
+    time: `${PREFIX}-time`,
+    verticalSpace: `${PREFIX}-verticalSpace`,
+    disable: `${PREFIX}-disable`,
+    commentIcon: `${PREFIX}-commentIcon`,
+    commentText: `${PREFIX}-commentText`,
+    root: `${PREFIX}-root`,
+    contentWrapper: `${PREFIX}-contentWrapper`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.link}`]: {
+        fontWeight: 400,
         '& span.MuiButton-label': {
             color: theme.palette.primary.main,
             fontWeight: '400',
         },
         cursor: 'pointer',
     },
-    time: {
+
+    [`& .${classes.time}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         marginTop: theme.spacing(0.3),
     },
-    verticalSpace: {
+
+    [`&.${classes.verticalSpace}`]: {
         display: 'flex',
         alignItems: 'center',
     },
-    disable: {
+
+    [`& .${classes.disable}`]: {
         color: theme.palette.grey[200],
     },
-    commentIcon: {
+
+    [`& .${classes.commentIcon}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    commentText: {
+
+    [`& .${classes.commentText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         marginTop: theme.spacing.unig,
         width: '100%',
         whiteSpace: 'pre-wrap',
         overflowWrap: 'break-word',
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         marginTop: theme.spacing(2.5),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
         paddingLeft: theme.spacing(2),
         paddingTop: theme.spacing.unig,
-    },
-});
+    }
+}));
 
 /**
  * Component to display options of the comment
@@ -142,13 +166,13 @@ class CommentOptions extends React.Component {
      */
     render() {
         const {
-            classes, comment, editIndex, index, theme,
+            comment, editIndex,
         } = this.props;
         const user = AuthManager.getUser();
         const username = user && user.name;
         const canDelete = (comment.createdBy === username) || user && user.isAdmin();
         return (
-            <Grid container className={classes.verticalSpace} key={comment.id}>
+            <StyledGrid container className={classes.verticalSpace} key={comment.id}>
                 {/* only the comment owner or admin can delete a comment */}
                 {canDelete && [
                         <Grid item key='key-delete'>
@@ -218,7 +242,7 @@ class CommentOptions extends React.Component {
                             </Typography>
                         </Grid>,
                     ]}  */}
-            </Grid>
+            </StyledGrid>
         );
     }
 }
@@ -237,4 +261,4 @@ CommentOptions.propTypes = {
     showAddComment: PropTypes.func,
 };
 
-export default withStyles(styles, { withTheme: true })(CommentOptions);
+export default (CommentOptions);

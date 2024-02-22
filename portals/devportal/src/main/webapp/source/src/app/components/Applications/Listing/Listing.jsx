@@ -18,17 +18,16 @@
  */
 
 import React, { Component } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import Table from '@material-ui/core/Table';
-import TablePagination from '@material-ui/core/TablePagination';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import TableFooter from '@material-ui/core/TableFooter';
-import TableRow from '@material-ui/core/TableRow';
-import Box from '@material-ui/core/Box';
+import Table from '@mui/material/Table';
+import TablePagination from '@mui/material/TablePagination';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
+import TableFooter from '@mui/material/TableFooter';
+import TableRow from '@mui/material/TableRow';
+import Box from '@mui/material/Box';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
@@ -38,152 +37,16 @@ import Loading from 'AppComponents/Base/Loading/Loading';
 import Application from 'AppData/Application';
 import Settings from 'AppComponents/Shared/SettingsContext';
 import { appSettings } from 'Settings';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import SearchIcon from '@material-ui/icons/Search';
-import HighlightOffRoundedIcon from '@material-ui/icons/HighlightOffRounded';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import SearchIcon from '@mui/icons-material/Search';
+import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
 import AppsTableContent from './AppsTableContent';
 import ApplicationTableHead from './ApplicationTableHead';
 import DeleteConfirmation from './DeleteConfirmation';
-
-/**
- *
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
-    noDataMessage: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        padding: 40,
-    },
-    clearSearch: {
-        position: 'absolute',
-        right: 111,
-        top: 13,
-    },
-    paper: {
-        margin: 30,
-    },
-    searchBar: {
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    },
-    searchInput: {
-        fontSize: theme.typography.fontSize,
-        height: 50,
-    },
-    block: {
-        display: 'block',
-    },
-    addUser: {
-        marginRight: theme.spacing(1),
-    },
-    contentWrapper: {
-        margin: 0,
-    },
-    card: {
-        minWidth: 275,
-        paddingBottom: 20,
-    },
-    bullet: {
-        display: 'inline-block',
-        margin: '0 2px',
-        transform: 'scale(0.8)',
-    },
-    pos: {
-        marginBottom: 12,
-        color: theme.palette.text.secondary,
-    },
-    createAppWrapper: {
-        textDecoration: 'none',
-    },
-    divider: {
-        marginBottom: 20,
-    },
-    createButton: {
-        textDecoration: 'none',
-        display: 'inline-block',
-        marginLeft: 20,
-        alignSelf: 'flex-start',
-    },
-    titleWrapper: {
-        display: 'flex',
-    },
-    // New styles
-    // //////////////////////
-    content: {
-        flexGrow: 1,
-    },
-    root: {
-        minHeight: 80,
-        background: theme.custom.infoBar.background,
-        color: theme.palette.getContrastText(theme.custom.infoBar.background),
-        borderBottom: `solid 1px ${theme.palette.grey.A200}`,
-        display: 'block',
-    },
-    mainIconWrapper: {
-        paddingTop: theme.spacing(1.5),
-        paddingLeft: theme.spacing(3),
-        paddingRight: theme.spacing(2.5),
-    },
-    mainTitleWrapper: {
-        display: 'flex',
-    },
-    createLinkWrapper: {
-        paddingLeft: theme.spacing(2),
-    },
-    appContent: {
-        marginTop: 0,
-        margin: 'auto',
-        maxHeight: theme.spacing(90),
-        height: theme.spacing(90),
-        overflow: 'scroll',
-    },
-    dialogContainer: {
-        width: 1000,
-        padding: theme.spacing(2),
-    },
-    container: {
-        height: '100%',
-    },
-    appTablePaper: {
-        '& table tr td': {
-            paddingLeft: theme.spacing(1),
-        },
-        '& table tr td:first-child, & table tr th:first-child': {
-            paddingLeft: theme.spacing(2),
-        },
-        '& table tr:nth-child(even)': {
-            backgroundColor: theme.custom.listView.tableBodyEvenBackgrund,
-            '& td, & a, & .material-icons': {
-                color: theme.palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund),
-            },
-        },
-        '& table tr:nth-child(odd)': {
-            backgroundColor: theme.custom.listView.tableBodyOddBackgrund,
-            '& td, & a, & .material-icons': {
-                color: theme.palette.getContrastText(theme.custom.listView.tableBodyOddBackgrund),
-            },
-        },
-        '& table th': {
-            backgroundColor: theme.custom.listView.tableHeadBackground,
-            color: theme.palette.getContrastText(theme.custom.listView.tableHeadBackground),
-            paddingLeft: theme.spacing(1),
-        },
-        '& table tr td button.Mui-disabled span.material-icons': {
-            color: theme.palette.action.disabled,
-        },
-    },
-    clearSearchLink: {
-        color: theme.palette.primary.light,
-        cursor: 'pointer',
-    },
-});
 
 /**
  * @inheritdoc
@@ -426,24 +289,49 @@ class Listing extends Component {
             data, order, orderBy, rowsPerPage, page, isApplicationSharingEnabled,
             isDeleteOpen, totalApps, query,
         } = this.state;
-        const { classes, theme, intl } = this.props;
-        const strokeColorMain = theme.palette.getContrastText(theme.custom.infoBar.background);
+        const { intl } = this.props;
         const paginationEnabled = totalApps > Listing.rowsPerPage;
         return (
-            <div className={classes.content}>
-                <div className={classes.root}>
+            <Box sx={{ flexGrow: 1 }}>
+                <Box sx={(theme) => ({
+                    minHeight: 80,
+                    background: theme.custom.infoBar.background,
+                    color: theme.palette.getContrastText(theme.custom.infoBar.background),
+                    borderBottom: `solid 1px ${theme.palette.grey.A200}`,
+                    display: 'block',
+                })}
+                >
                     <Box display='flex' flexDirection='row' justifyContent='flex-start' alignItems='center'>
-                        <div className={classes.mainIconWrapper}>
-                            <CustomIcon strokeColor={strokeColorMain} width={42} height={42} icon='applications' />
-                        </div>
-                        <div className={classes.mainTitleWrapper}>
-                            <Typography variant='h4' component='h1' className={classes.mainTitle}>
+                        <Box sx={(theme) => ({
+                            paddingTop: theme.spacing(1.5),
+                            paddingLeft: theme.spacing(3),
+                            paddingRight: theme.spacing(2.5),
+                        })}
+                        >
+                            <CustomIcon
+                                strokeColor='#1a1f2f'
+                                width={42}
+                                height={42}
+                                icon='applications'
+                            />
+                        </Box>
+                        <Box sx={{ display: 'flex' }}>
+                            <Typography
+                                variant='h4'
+                                component='h1'
+                                sx={{
+                                    paddingTop: 1,
+                                }}
+                            >
                                 <FormattedMessage
                                     id='Applications.Listing.Listing.applications'
                                     defaultMessage='Applications'
                                 />
                             </Typography>
-                            <div className={classes.createLinkWrapper}>
+                            <Box sx={(theme) => ({
+                                paddingLeft: theme.spacing(2),
+                            })}
+                            >
                                 <ScopeValidation
                                     resourcePath={resourcePaths.APPLICATIONS}
                                     resourceMethod={resourceMethods.POST}
@@ -460,8 +348,8 @@ class Listing extends Component {
                                         </Button>
                                     </Link>
                                 </ScopeValidation>
-                            </div>
-                        </div>
+                            </Box>
+                        </Box>
                     </Box>
                     <Box display='flex' pl={4}>
                         <Typography variant='caption' gutterBottom align='left'>
@@ -474,16 +362,17 @@ class Listing extends Component {
                             />
                         </Typography>
                     </Box>
-                </div>
-                <Paper className={classes.paper}>
-                    <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+                </Box>
+                <Paper sx={{ margin: 4 }}>
+                    <AppBar sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }} position='static' color='default' elevation={0}>
                         <Toolbar>
                             <Grid container spacing={2} alignItems='center'>
                                 <Grid item>
-                                    <SearchIcon className={classes.block} color='inherit' />
+                                    <SearchIcon sx={{ display: 'block' }} color='inherit' />
                                 </Grid>
                                 <Grid item xs>
                                     <TextField
+                                        variant='standard'
                                         fullWidth
                                         id='search-label'
                                         label={intl.formatMessage({
@@ -496,7 +385,10 @@ class Listing extends Component {
                                         })}
                                         InputProps={{
                                             disableUnderline: true,
-                                            className: classes.searchInput,
+                                            className: (theme) => ({
+                                                fontSize: theme.typography.fontSize,
+                                                height: 50,
+                                            }),
                                         }}
                                         value={query}
                                         onChange={this.setQuery}
@@ -508,14 +400,31 @@ class Listing extends Component {
                                             id: 'Applications.Listing.Listing.clear.search',
                                         })}
                                         >
-                                            <IconButton aria-label='delete' className={classes.clearSearch} onClick={this.clearSearch}>
+                                            <IconButton
+                                                aria-label='delete'
+                                                sx={{
+                                                    position: 'absolute',
+                                                    right: 111,
+                                                    top: 13,
+                                                }}
+                                                onClick={this.clearSearch}
+                                                size='large'
+                                            >
                                                 <HighlightOffRoundedIcon />
                                             </IconButton>
                                         </Tooltip>
                                     )}
                                 </Grid>
                                 <Grid item>
-                                    <Button variant='contained' className={classes.addUser} onClick={this.filterApps}>
+                                    <Button
+                                        variant='contained'
+                                        color='grey'
+                                        sx={(theme) => ({
+                                            marginRight: theme.spacing(1),
+                                            background: theme.palette.grey[300],
+                                        })}
+                                        onClick={this.filterApps}
+                                    >
                                         <FormattedMessage
                                             id='Applications.Listing.Listing.applications.search'
                                             defaultMessage='Search'
@@ -528,15 +437,51 @@ class Listing extends Component {
                         </Toolbar>
                     </AppBar>
                     {!data && (
-                        <div className={classes.contentWrapper}>
+                        <Box sx={{ margin: 0 }}>
                             <Loading />
-                        </div>
+                        </Box>
                     )}
                     {data && (
-                        <div className={classes.contentWrapper}>
+                        <Box sx={{ margin: 0 }}>
                             {data.size > 0 ? (
-                                <div className={classes.appContent}>
-                                    <Paper className={classes.appTablePaper}>
+                                <Box sx={(theme) => ({
+                                    marginTop: 0,
+                                    margin: 'auto',
+                                    maxHeight: theme.spacing(90),
+                                    height: theme.spacing(90),
+                                    overflow: 'scroll',
+                                })}
+                                >
+                                    <Paper sx={(theme) => ({
+                                        '& table tr td': {
+                                            paddingLeft: theme.spacing(1),
+                                        },
+                                        '& table tr td:first-child, & table tr th:first-child': {
+                                            paddingLeft: theme.spacing(2),
+                                        },
+                                        '& table tr:nth-child(even)': {
+                                            backgroundColor: theme.custom.listView.tableBodyEvenBackgrund,
+                                            '& td, & a, & .material-icons': {
+                                                color: theme
+                                                    .palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund),
+                                            },
+                                        },
+                                        '& table tr:nth-child(odd)': {
+                                            backgroundColor: theme.custom.listView.tableBodyOddBackgrund,
+                                            '& td, & a, & .material-icons': {
+                                                color: theme.palette.getContrastText(theme.custom.listView.tableBodyOddBackgrund),
+                                            },
+                                        },
+                                        '& table th': {
+                                            backgroundColor: theme.custom.listView.tableHeadBackground,
+                                            color: theme.palette.getContrastText(theme.custom.listView.tableHeadBackground),
+                                            paddingLeft: theme.spacing(1),
+                                        },
+                                        '& table tr td button.Mui-disabled span.material-icons': {
+                                            color: theme.palette.action.disabled,
+                                        },
+                                    })}
+                                    >
                                         <Table id='itest-application-list-table'>
                                             <ApplicationTableHead
                                                 order={order}
@@ -570,18 +515,25 @@ class Listing extends Component {
                                                                 nextIconButtonProps={{
                                                                     'aria-label': 'Next Page',
                                                                 }}
-                                                                onChangePage={this.handleChangePage}
-                                                                onChangeRowsPerPage={this.handleChangeRowsPerPage}
+                                                                onPageChange={this.handleChangePage}
+                                                                onRowsPerPageChange={this.handleChangeRowsPerPage}
                                                             />
                                                         </TableRow>
                                                     </TableFooter>
                                                 )}
                                         </Table>
                                     </Paper>
-                                </div>
+                                </Box>
                             ) : (
                                 query === '' ? (
-                                    <div className={classes.noDataMessage}>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        justifyContent: 'center',
+                                        flexDirection: 'column',
+                                        padding: 40,
+                                    }}
+                                    >
                                         <Typography variant='h6' gutterBottom>
                                             <FormattedMessage
                                                 id='Applications.Listing.Listing.noapps.display.title'
@@ -593,7 +545,10 @@ class Listing extends Component {
                                             <a
                                                 onClick={this.handleClickOpen}
                                                 onKeyDown={this.handleClickOpen}
-                                                className={classes.clearSearchLink}
+                                                className={(theme) => ({
+                                                    color: theme.palette.primary.light,
+                                                    cursor: 'pointer',
+                                                })}
                                             >
                                                 <FormattedMessage
                                                     id='Applications.Listing.Listing.noapps.display.link.text'
@@ -601,10 +556,17 @@ class Listing extends Component {
                                                 />
                                             </a>
                                         </Typography>
-                                    </div>
+                                    </Box>
                                 )
                                     : (
-                                        <div className={classes.noDataMessage}>
+                                        <Box sx={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            flexDirection: 'column',
+                                            padding: 40,
+                                        }}
+                                        >
                                             <Typography variant='h6' gutterBottom>
                                                 <FormattedMessage
                                                     id='Applications.Listing.Listing.applications.no.search.results.title'
@@ -619,7 +581,10 @@ class Listing extends Component {
                                                 <a
                                                     onClick={this.clearSearch}
                                                     onKeyDown={this.clearSearch}
-                                                    className={classes.clearSearchLink}
+                                                    className={(theme) => ({
+                                                        color: theme.palette.primary.light,
+                                                        cursor: 'pointer',
+                                                    })}
                                                 >
                                                     <FormattedMessage
                                                         id='Applications.Listing.Listing.applications.no.search.results.body.sufix'
@@ -627,7 +592,7 @@ class Listing extends Component {
                                                     />
                                                 </a>
                                             </Typography>
-                                        </div>
+                                        </Box>
                                     )
                             )}
                             <DeleteConfirmation
@@ -635,11 +600,11 @@ class Listing extends Component {
                                 isDeleteOpen={isDeleteOpen}
                                 toggleDeleteConfirmation={this.toggleDeleteConfirmation}
                             />
-                        </div>
+                        </Box>
                     )}
 
                 </Paper>
-            </div>
+            </Box>
         );
     }
 }
@@ -662,4 +627,4 @@ Listing.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(Listing));
+export default injectIntl((Listing));

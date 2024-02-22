@@ -22,9 +22,9 @@ import React, {
 import GraphiQL from 'graphiql';
 import 'graphiql/graphiql.css';
 import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
-import GraphiQLExplorer from 'graphiql-explorer';
-import Collapse from '@material-ui/core/Collapse';
+import Box from '@mui/material/Box';
+import GraphiQLExplorer from 'graphiql-explorer-continue';
+import Collapse from '@mui/material/Collapse';
 import { createGraphiQLFetcher } from '@graphiql/toolkit';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';

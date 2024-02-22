@@ -16,21 +16,20 @@
  * under the License.
  */
 import React, { useState } from 'react';
-import Box from '@material-ui/core/Box';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
 import cloneDeep from 'lodash.clonedeep';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import TextField from '@mui/material/TextField';
+import FormHelperText from '@mui/material/FormHelperText';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Settings from 'Settings';
 import PropTypes from 'prop-types';
@@ -38,55 +37,89 @@ import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Validation from 'AppData/Validation';
 import AppConfiguration from './AppConfiguration';
 
-const styles = (theme) => ({
-    FormControl: {
+const PREFIX = 'KeyConfiguration';
+
+const classes = {
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    button: `${PREFIX}-button`,
+    quotaHelp: `${PREFIX}-quotaHelp`,
+    checkboxWrapper: `${PREFIX}-checkboxWrapper`,
+    checkboxWrapperColumn: `${PREFIX}-checkboxWrapperColumn`,
+    group: `${PREFIX}-group`,
+    removeHelperPadding: `${PREFIX}-removeHelperPadding`,
+    iconStyle: `${PREFIX}-iconStyle`,
+    iconButton: `${PREFIX}-iconButton`,
+    titleColumn: `${PREFIX}-titleColumn`,
+    keyInfoTable: `${PREFIX}-keyInfoTable`,
+    leftCol: `${PREFIX}-leftCol`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.FormControl}`]: {
         paddingTop: 0,
         paddingBottom: theme.spacing(2),
         paddingLeft: 0,
         width: '100%',
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: theme.spacing(2),
         width: '100%',
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(1),
     },
-    quotaHelp: {
+
+    [`& .${classes.quotaHelp}`]: {
         position: 'relative',
     },
-    checkboxWrapper: {
+
+    [`& .${classes.checkboxWrapper}`]: {
         display: 'flex',
     },
-    checkboxWrapperColumn: {
+
+    [`& .${classes.checkboxWrapperColumn}`]: {
         display: 'flex',
         flexWrap: 'wrap',
         flexDirection: 'row',
         whiteSpace: 'nowrap',
     },
-    group: {
+
+    [`& .${classes.group}`]: {
         flexDirection: 'row',
     },
-    removeHelperPadding: {
+
+    [`& .${classes.removeHelperPadding}`]: {
         '& p': {
             margin: '8px 0px',
         },
     },
-    iconStyle: {
+
+    [`& .${classes.iconStyle}`]: {
         cursor: 'pointer',
         padding: '0 0 0 10px',
     },
-    iconButton: {
+
+    [`& .${classes.iconButton}`]: {
         padding: '0 0 0 10px',
         '& .material-icons': {
             fontSize: 16,
         },
     },
-    titleColumn: {
+
+    [`& .${classes.titleColumn}`]: {
         width: 150,
         fontWeight: 500,
     },
-    keyInfoTable: {
+
+    [`& .${classes.keyInfoTable}`]: {
         marginBottom: 20,
         borderCollapse: 'collapse',
         '& td': {
@@ -94,10 +127,12 @@ const styles = (theme) => ({
             borderBottom: 'solid 1px #cccc',
         },
     },
-    leftCol: {
+
+    [`& .${classes.leftCol}`]: {
         width: 180,
-    },
-});
+    }
+}));
+
 /**
  *
  *
@@ -109,7 +144,7 @@ const KeyConfiguration = (props) => {
     const [callbackHelper, setCallbackHelper] = useState(false);
     const intl = useIntl();
     const {
-        classes, notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError,mode,
+        notFound, isUserOwner, keyManagerConfig, updateKeyRequest, keyRequest, updateHasError, callbackError,mode,
     } = props;
     const {
         selectedGrantTypes, callbackUrl,
@@ -241,7 +276,7 @@ const KeyConfiguration = (props) => {
 
     // Check for additional properties for token endpoint and revoke endpoints.
     return (
-        <>
+        <Root>
             <Box display='flex' alignItems='center'>
                 <Table className={classes.table}>
                     <TableBody>
@@ -270,17 +305,14 @@ const KeyConfiguration = (props) => {
                                         placement='right'
                                         className={classes.iconStyle}
                                     >
-                                        <CopyToClipboard
-                                            text={tokenEndpoint}
-                                            onCopy={onCopy}
+                                        <IconButton
+                                            aria-label='Copy to clipboard'
+                                            classes={{ root: classes.iconButton }}
+                                            size="large"
+                                            onClick={() => {navigator.clipboard.writeText(tokenEndpoint).then(onCopy())}}
                                         >
-                                            <IconButton
-                                                aria-label='Copy to clipboard'
-                                                classes={{ root: classes.iconButton }}
-                                            >
-                                                <Icon color='secondary'>file_copy</Icon>
-                                            </IconButton>
-                                        </CopyToClipboard>
+                                            <Icon color='secondary'>file_copy</Icon>
+                                        </IconButton>
                                     </Tooltip>
                                 </TableCell>
                             </TableRow>
@@ -310,17 +342,14 @@ const KeyConfiguration = (props) => {
                                         placement='right'
                                         className={classes.iconStyle}
                                     >
-                                        <CopyToClipboard
-                                            text={revokeEndpoint}
-                                            onCopy={onCopy}
+                                        <IconButton
+                                            aria-label='Copy to clipboard'
+                                            classes={{ root: classes.iconButton }}
+                                            size="large"
+                                            onClick={() => {navigator.clipboard.writeText(revokeEndpoint).then(onCopy())}}
                                         >
-                                            <IconButton
-                                                aria-label='Copy to clipboard'
-                                                classes={{ root: classes.iconButton }}
-                                            >
-                                                <Icon color='secondary'>file_copy</Icon>
-                                            </IconButton>
-                                        </CopyToClipboard>
+                                            <Icon color='secondary'>file_copy</Icon>
+                                        </IconButton>
                                     </Tooltip>
                                 </TableCell>
                             </TableRow>
@@ -350,17 +379,14 @@ const KeyConfiguration = (props) => {
                                         placement='right'
                                         className={classes.iconStyle}
                                     >
-                                        <CopyToClipboard
-                                            text={userInfoEndpoint}
-                                            onCopy={onCopy}
+                                        <IconButton
+                                            aria-label='Copy to clipboard'
+                                            classes={{ root: classes.iconButton }}
+                                            size="large"
+                                            onClick={() => {navigator.clipboard.writeText(userInfoEndpoint).then(onCopy())}}
                                         >
-                                            <IconButton
-                                                aria-label='Copy to clipboard'
-                                                classes={{ root: classes.iconButton }}
-                                            >
-                                                <Icon color='secondary'>file_copy</Icon>
-                                            </IconButton>
-                                        </CopyToClipboard>
+                                            <Icon color='secondary'>file_copy</Icon>
+                                        </IconButton>
                                     </Tooltip>
                                 </TableCell>
                             </TableRow>
@@ -387,7 +413,7 @@ const KeyConfiguration = (props) => {
                                                         onChange={(e) => handleChange('grantType', e)}
                                                         value={value}
                                                         disabled={!isUserOwner}
-                                                        color='primary'
+                                                        color='grey'
                                                         data-testid={key}
                                                     />
                                                 )}
@@ -421,6 +447,7 @@ const KeyConfiguration = (props) => {
                                     <TextField
                                         margin='dense'
                                         id='callbackURL'
+                                        size='small'
                                         label={(
                                             <FormattedMessage
                                                 defaultMessage='Callback URL'
@@ -464,7 +491,7 @@ const KeyConfiguration = (props) => {
                     </TableBody>
                 </Table>
             </Box>
-        </>
+        </Root>
     );
 };
 KeyConfiguration.defaultProps = {
@@ -489,4 +516,4 @@ KeyConfiguration.propTypes = {
 };
 
 
-export default withStyles(styles)(KeyConfiguration);
+export default (KeyConfiguration);

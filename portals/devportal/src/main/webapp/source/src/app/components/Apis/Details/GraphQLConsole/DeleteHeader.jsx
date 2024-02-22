@@ -19,8 +19,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DeleteIcon from '@material-ui/icons/Delete';
+import DialogContentText from '@mui/material/DialogContentText';
+import DeleteIcon from '@mui/icons-material/Delete';
 import FormDialogBase from 'AppComponents/Apis/Details/GraphQLConsole/FormDialogBase';
 
 /**

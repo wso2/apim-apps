@@ -17,14 +17,29 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import classNames from 'classnames';
 import { app } from 'Settings';
+import { useTheme } from '@mui/material';
 
-const styles = (theme) => ({
-    parallax: {
+const PREFIX = 'ParallaxScroll';
+
+const classes = {
+    parallax: `${PREFIX}-parallax`,
+    slideContentWrapper: `${PREFIX}-slideContentWrapper`,
+    slideContentTitle: `${PREFIX}-slideContentTitle`,
+    slideContentContent: `${PREFIX}-slideContentContent`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.parallax}`]: {
         /* Set a specific height */
         minHeight: 200,
 
@@ -37,7 +52,8 @@ const styles = (theme) => ({
         marginTop: theme.spacing(3),
         marginBottom: theme.spacing(3),
     },
-    slideContentWrapper: {
+
+    [`& .${classes.slideContentWrapper}`]: {
         position: 'absolute',
         background: '#00000044',
         color: theme.palette.getContrastText('#000000'),
@@ -46,15 +62,17 @@ const styles = (theme) => ({
         margin: '0 100px',
         alignItem: 'center',
     },
-    slideContentTitle: {
+
+    [`& .${classes.slideContentTitle}`]: {
         fontWeight: theme.typography.fontWeightLight,
         fontSize: theme.typography.h3.fontSize,
     },
-    slideContentContent: {
+
+    [`& .${classes.slideContentContent}`]: {
         fontWeight: theme.typography.fontWeightLight,
         fontSize: theme.typography.body1.fontSize,
     },
-});
+}));
 
 /**
  * Renders parallax scroll section.
@@ -62,11 +80,12 @@ const styles = (theme) => ({
  * @returns {JSX} rendered parallax scroll view.
  */
 function ParallaxScroll(props) {
-    const { classes, theme, index } = props;
+    const { index } = props;
+    const theme = useTheme();
     const slide = theme.custom.landingPage.parallax.content[index];
 
     return (
-        <>
+        <Root>
             <div
                 className={classes.parallax}
                 style={{ backgroundImage: 'url("' + app.context + slide.src + '")' }}
@@ -81,7 +100,7 @@ function ParallaxScroll(props) {
                     </div>
                 </div>
             </div>
-        </>
+        </Root>
     );
 }
 
@@ -90,4 +109,4 @@ ParallaxScroll.propTypes = {
     index: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
 };
-export default withStyles(styles, { withTheme: true })(ParallaxScroll);
+export default (ParallaxScroll);

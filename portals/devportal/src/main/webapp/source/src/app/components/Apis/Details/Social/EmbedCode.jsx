@@ -1,11 +1,53 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Modal from '@material-ui/core/Modal';
-import CodeIcon from '@material-ui/icons/Code';
+import { styled } from '@mui/material/styles';
+import Modal from '@mui/material/Modal';
+import CodeIcon from '@mui/icons-material/Code';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
-import Icon from '@material-ui/core/Icon';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import FileCopy from '@mui/icons-material/FileCopy';
+
+const PREFIX = 'EmbedCode';
+
+const classes = {
+    paper: `${PREFIX}-paper`,
+    codeIcon: `${PREFIX}-codeIcon`,
+    code: `${PREFIX}-code`,
+    iconStyle: `${PREFIX}-iconStyle`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.paper}`]: {
+        position: 'absolute',
+        width: 400,
+        backgroundColor: theme.palette.background.paper,
+        border: '2px solid #000',
+        boxShadow: theme.shadows[5],
+        padding: theme.spacing(2, 4, 3),
+    },
+
+    [`& .${classes.codeIcon}`]: {
+        cursor: 'pointer',
+        color: theme.palette.getContrastText(theme.custom.infoBar.background),
+    },
+
+    [`& .${classes.code}`]: {
+        background: '#efefef',
+        color: 'cc0000',
+        border: 'solid 1px #ccc',
+        padding: theme.spacing(1),
+    },
+
+    [`& .${classes.iconStyle}`]: {
+        position: 'absolute',
+        top: 60,
+        right: 30,
+    },
+}));
 
 /**
  * Position the modal
@@ -22,32 +64,6 @@ function getModalStyle() {
     };
 }
 
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        position: 'absolute',
-        width: 400,
-        backgroundColor: theme.palette.background.paper,
-        border: '2px solid #000',
-        boxShadow: theme.shadows[5],
-        padding: theme.spacing(2, 4, 3),
-    },
-    codeIcon: {
-        cursor: 'pointer',
-        color: theme.palette.getContrastText(theme.custom.infoBar.background),
-    },
-    code: {
-        background: '#efefef',
-        color: 'cc0000',
-        border: 'solid 1px #ccc',
-        padding: theme.spacing(1),
-    },
-    iconStyle: {
-        position: 'absolute',
-        top: 60,
-        right: 30,
-    },
-}));
-
 /**
  * Adds two numbers together.
  * @param {JSON} props props passed from parent
@@ -55,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function EmbedCode(props) {
     const { intl } = props;
-    const classes = useStyles();
+
     // getModalStyle is not a pure function, we roll the style only on the first render
     const [modalStyle] = React.useState(getModalStyle);
     const [open, setOpen] = React.useState(false);
@@ -79,7 +95,7 @@ function EmbedCode(props) {
         + url + '" frameBorder="0" allowFullScreen title="Embed API" />';
 
     return (
-        <div>
+        <Root>
             <CodeIcon className={classes.codeIcon} onClick={handleOpen} />
             <Modal
                 open={open}
@@ -112,16 +128,18 @@ function EmbedCode(props) {
                         placement='right'
                         className={classes.iconStyle}
                     >
-                        <CopyToClipboard
-                            text={embedCode}
-                            onCopy={onCopy}
+                        <IconButton
+                            id='copy-to-clipbord-icon'
+                            aria-label='Copy to clipboard'
+                            size='large'
+                            onClick={() => { navigator.clipboard.writeText(embedCode).then(onCopy()); }}
                         >
-                            <Icon color='secondary'>file_copy</Icon>
-                        </CopyToClipboard>
+                            <FileCopy color='secondary'>file_copy</FileCopy>
+                        </IconButton>
                     </Tooltip>
                 </div>
             </Modal>
-        </div>
+        </Root>
     );
 }
 

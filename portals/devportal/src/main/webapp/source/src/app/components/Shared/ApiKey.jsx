@@ -16,23 +16,33 @@
  * under the License.
  */
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import Validation from 'AppData/Validation';
 
-// Styles for Grid and Paper elements
-const styles = theme => ({
-    FormControl: {
+const PREFIX = 'ApiKey';
+
+const classes = {
+    FormControl: `${PREFIX}-FormControl`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.FormControl}`]: {
         'margin-bottom': '8px',
         width: '100%',
         padding: '0px 10px',
-    },
-});
+    }
+}));
 
 /**
  * Used to display generate api key in UI
@@ -76,17 +86,17 @@ const tokens = (props) => {
         }
         updateAccessTokenRequest(newRequest);
     };
-    const { classes, intl, accessTokenRequest } = props;
+    const {  intl, accessTokenRequest } = props;
 
     return (
-        <React.Fragment>
-            <FormControl margin='normal' className={classes.FormControl}>
+        <Root>
+            <FormControl variant="standard" margin='normal' className={classes.FormControl}>
                 <FormControlLabel
                     control={<Checkbox
                         checked={infiniteValidity}
                         onChange={e => handleChange('infiniteValidity', e)}
                         value={accessTokenRequest.timeout}
-                        color='primary'
+                        color='grey'
                     />}
                     label={intl.formatMessage({
                         defaultMessage: 'API Key with infinite validity period',
@@ -94,6 +104,7 @@ const tokens = (props) => {
                     })}
                 />
                 {!infiniteValidity && <TextField
+                    variant="standard"
                     required
                     label={intl.formatMessage({
                         defaultMessage: 'API Key validity period',
@@ -131,10 +142,10 @@ const tokens = (props) => {
                 />
                 }
             </FormControl>
-        </React.Fragment>
+        </Root>
     );
 };
 tokens.contextTypes = {
     intl: PropTypes.shape({}).isRequired,
 };
-export default injectIntl(withStyles(styles)(tokens));
+export default injectIntl((tokens));

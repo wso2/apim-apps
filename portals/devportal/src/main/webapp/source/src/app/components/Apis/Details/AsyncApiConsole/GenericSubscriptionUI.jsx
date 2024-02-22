@@ -17,71 +17,26 @@
  */
 
 import React, { useState } from 'react';
-import Accordion from '@material-ui/core/ExpansionPanel';
-import AccordionDetails from '@material-ui/core/ExpansionPanelDetails';
-import AccordionSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import AccordionActions from '@material-ui/core/ExpansionPanelActions';
-import Button from '@material-ui/core/Button';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import TextField from '@material-ui/core/TextField';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Typography from '@mui/material/Typography';
+import AccordionActions from '@mui/material/AccordionActions';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
 import Alert from 'AppComponents/Shared/Alert';
-import { makeStyles } from '@material-ui/core/styles/index';
 import { FormattedMessage } from 'react-intl';
 import Utils from 'AppData/Utils';
-import Grid from '@material-ui/core/Grid';
-import Badge from '@material-ui/core/Badge';
+import Grid from '@mui/material/Grid';
+import Badge from '@mui/material/Badge';
+import { useTheme } from '@mui/material';
 
 export default function GenericSubscriptionUI(props) {
     const verb = props.topic.type.toLowerCase();
     const trimmedVerb = verb === 'publish' || verb === 'subscribe' ? verb.substr(0, 3) : verb;
-    const useStyles = makeStyles((theme) => {
-        const backgroundColor = theme.custom.resourceChipColors[trimmedVerb];
-        return {
-            bootstrapRoot: {
-                padding: 0,
-                'label + &': {
-                    marginTop: theme.spacing(1),
-                },
-            },
-            bootstrapCurl: {
-                borderRadius: 4,
-                backgroundColor: theme.custom.curlGenerator.backgroundColor,
-                color: theme.custom.curlGenerator.color,
-                border: '1px solid #ced4da',
-                padding: '5px 12px',
-                marginTop: '11px',
-                marginBottom: '11px',
-                width: '100%',
-                transition: theme.transitions.create(['border-color', 'box-shadow']),
-                '&:focus': {
-                    borderColor: '#80bdff',
-                    boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
-                },
-                fontSize: 12,
-                fontFamily: 'monospace',
-                fontWeight: 600,
-            },
-            subscriptionSummary: {
-                backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
-                maxHeight: '40px',
-                '&$expanded': {
-                    maxHeight: '40px',
-                },
-            },
-            customButton: {
-                backgroundColor: '#ffffff',
-                borderColor: backgroundColor,
-                color: backgroundColor,
-                width: theme.spacing(2),
-            },
-            subscription: {
-                marginBottom: '10px',
-                border: `1px solid ${backgroundColor}`,
-            },
-        };
-    });
+    const theme = useTheme();
+    const backgroundColor = theme.custom.resourceChipColors[trimmedVerb];
     const { generateGenericSubscriptionCommand, topic, expandable } = props;
     const [command, setCommand] = useState(generateGenericSubscriptionCommand(topic));
 
@@ -89,24 +44,39 @@ export default function GenericSubscriptionUI(props) {
         setCommand(generateGenericSubscriptionCommand(topic));
     };
 
-    const classes = useStyles();
-
     return (
-        <Accordion className={classes.subscription} style={{ pointerEvents: expandable ? 'auto' : 'none' }}>
+        <Accordion
+            sx={{
+                marginBottom: '10px',
+                border: `1px solid ${backgroundColor}`,
+            }}
+            style={{ pointerEvents: expandable ? 'auto' : 'none' }}
+        >
             <AccordionSummary
                 expandIcon={expandable && (<ExpandMoreIcon />)}
                 aria-controls='generic-subscription-content'
                 id='generic-subscription-header'
-                className={classes.subscriptionSummary}
+                sx={{
+                    backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
+                    maxHeight: '40px',
+                    '&$expanded': {
+                        maxHeight: '40px',
+                    },
+                }}
             >
-                <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
+                <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
                     <Grid item md={11}>
                         <Badge invisible='false' color='error' variant='dot'>
                             <Button
                                 disableFocusRipple
                                 variant='outlined'
                                 size='small'
-                                className={classes.customButton}
+                                sx={{
+                                    backgroundColor: '#ffffff',
+                                    borderColor: backgroundColor,
+                                    color: backgroundColor,
+                                    width: theme.spacing(2),
+                                }}
                             >
                                 {trimmedVerb.toUpperCase()}
                             </Button>
@@ -120,6 +90,7 @@ export default function GenericSubscriptionUI(props) {
             <AccordionDetails>
                 <Grid container direction='column' wrap='nowrap'>
                     <TextField
+                        variant='filled'
                         label='cURL'
                         defaultValue=''
                         value={command}
@@ -127,13 +98,34 @@ export default function GenericSubscriptionUI(props) {
                         InputProps={{
                             disableUnderline: true,
                             classes: {
-                                root: classes.bootstrapRoot,
-                                input: classes.bootstrapCurl,
+                                root: {
+                                    padding: 0,
+                                    'label + &': {
+                                        marginTop: theme.spacing(1),
+                                    },
+                                },
+                                input: {
+                                    borderRadius: 4,
+                                    backgroundColor: theme.custom.curlGenerator.backgroundColor,
+                                    color: theme.custom.curlGenerator.color,
+                                    border: '1px solid #ced4da',
+                                    padding: '5px 12px',
+                                    marginTop: '11px',
+                                    marginBottom: '11px',
+                                    width: '100%',
+                                    transition: theme.transitions.create(['border-color', 'box-shadow']),
+                                    '&:focus': {
+                                        borderColor: '#80bdff',
+                                        boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
+                                    },
+                                    fontSize: 12,
+                                    fontFamily: 'monospace',
+                                    fontWeight: 600,
+                                },
                             },
                         }}
                         InputLabelProps={{
                             shrink: true,
-                            className: classes.bootstrapFormLabel,
                         }}
                     />
                 </Grid>
@@ -142,16 +134,16 @@ export default function GenericSubscriptionUI(props) {
                 <Button size='small' onClick={handleClick}>
                     <FormattedMessage id='Apis.Details.AsyncApiConsole.Curl' defaultMessage='Generate Curl' />
                 </Button>
-                <CopyToClipboard
-                    text={command}
-                    onCopy={() => Alert.info(
-                        <FormattedMessage id='Apis.Details.AsyncApiConsole.Copied' defaultMessage='cURL copied' />,
-                    )}
+                <Button
+                    size='small'
+                    onClick={() => {
+                        navigator.clipboard.writeText(command).then(() => Alert.info(
+                            <FormattedMessage id='Apis.Details.AsyncApiConsole.Copied' defaultMessage='cURL copied' />,
+                        ));
+                    }}
                 >
-                    <Button size='small'>
-                        <FormattedMessage id='Apis.Details.AsyncApiConsole.Copy' defaultMessage='Copy Curl' />
-                    </Button>
-                </CopyToClipboard>
+                    <FormattedMessage id='Apis.Details.AsyncApiConsole.Copy' defaultMessage='Copy Curl' />
+                </Button>
             </AccordionActions>
         </Accordion>
     );

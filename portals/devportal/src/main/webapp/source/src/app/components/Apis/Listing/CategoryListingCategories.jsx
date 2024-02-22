@@ -16,34 +16,54 @@
  * under the License.
  */
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
 import { FormattedMessage } from 'react-intl';
 import APICategoryThumb from './APICategoryThumb';
 
-const useStyles = makeStyles((theme) => ({
-    mainTitle: {
-        paddingTop: 10,
+const PREFIX = 'CategoryListingCategories';
+
+const classes = {
+    mainTitle: `${PREFIX}-mainTitle`,
+    mainTitleWrapper: `${PREFIX}-mainTitleWrapper`,
+    listContentWrapper: `${PREFIX}-listContentWrapper`,
+    textWrapper: `${PREFIX}-textWrapper`,
+    tagWiseThumbWrapper: `${PREFIX}-tagWiseThumbWrapper`,
+    filterTitle: `${PREFIX}-filterTitle`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
     },
-    mainTitleWrapper: {
+) => ({
+    [`&.${classes.mainTitle}`]: {
+        paddingTop: 0,
+    },
+
+    [`& .${classes.mainTitleWrapper}`]: {
         flexGrow: 1,
     },
-    listContentWrapper: {
-        padding: `0 ${theme.spacing(3)}px`,
+
+    [`& .${classes.listContentWrapper}`]: {
+        padding: `0 ${theme.spacing(3)}`,
     },
-    textWrapper: {
+
+    [`& .${classes.textWrapper}`]: {
         color: theme.custom.tagCloud.leftMenu.color,
         '& .material-icons': {
             color: theme.custom.tagCloud.leftMenu.color,
         },
     },
-    tagWiseThumbWrapper: {
+
+    [`& .${classes.tagWiseThumbWrapper}`]: {
         display: 'flex',
     },
-    filterTitle: {
+
+    [`& .${classes.filterTitle}`]: {
         fontWeight: 200,
         paddingLeft: theme.spacing(2),
         background: theme.custom.tagCloud.leftMenu.titleBackground,
@@ -61,7 +81,6 @@ const useStyles = makeStyles((theme) => ({
  * @extends {Component}
  */
 function CategoryListingCategories(props) {
-    const classes = useStyles();
     const theme = useTheme();
     const {
         custom: {
@@ -83,7 +102,7 @@ function CategoryListingCategories(props) {
 
     return allCategories && allCategories.length > 0 ? (
         (
-            <>
+            <Root className={classNames(classes.mainTitle, 'category-listing-categories-empty')}>
                 <Typography variant='h6' gutterBottom className={classNames(classes.filterTitle, 'api-cat-title')}>
                     <FormattedMessage defaultMessage='API Categories' id='Apis.Listing.CategoryListingCategories.title' />
                 </Typography>
@@ -92,17 +111,17 @@ function CategoryListingCategories(props) {
                         return <APICategoryThumb key={key} category={allCategories[key]} path={tagWiseURL} style={style} />;
                     })}
                 </List>
-            </>
+            </Root>
         )
     ) : (
-        <div className={classNames(classes.mainTitle, 'category-listing-categories-empty')}>
+        <Root className={classNames(classes.mainTitle, 'category-listing-categories-empty')}>
             <Typography variant='subtitle1' gutterBottom align='center'>
                 <FormattedMessage
                     defaultMessage='Categories cannot be found'
                     id='Apis.Listing.CategoryListingCategories.categoriesNotFound'
                 />
             </Typography>
-        </div>
+        </Root>
     );
 }
 

@@ -17,16 +17,17 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
-import { withStyles } from '@material-ui/core/styles';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
 import classNames from 'classnames';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import Settings from 'AppComponents/Shared/SettingsContext';
 import API from 'AppData/api';
+import { useTheme } from '@mui/material';
 import ApiBreadcrumbs from './ApiBreadcrumbs';
 import ApiTableView from './ApiTableView';
 import { ApiContext } from '../Details/ApiContext';
@@ -36,24 +37,58 @@ import ApiTagCloud from './ApiTagCloud';
 import Recommendations from './Recommendations';
 import AuthManager from '../../../data/AuthManager';
 
-const styles = (theme) => ({
-    rightIcon: {
+const PREFIX = 'CommonListingLegacy';
+
+const classes = {
+    rightIcon: `${PREFIX}-rightIcon`,
+    button: `${PREFIX}-button`,
+    buttonRight: `${PREFIX}-buttonRight`,
+    ListingWrapper: `${PREFIX}-ListingWrapper`,
+    appBar: `${PREFIX}-appBar`,
+    mainIconWrapper: `${PREFIX}-mainIconWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    mainTitleWrapper: `${PREFIX}-mainTitleWrapper`,
+    listContentWrapper: `${PREFIX}-listContentWrapper`,
+    iconDefault: `${PREFIX}-iconDefault`,
+    iconSelected: `${PREFIX}-iconSelected`,
+    content: `${PREFIX}-content`,
+    contentWithTags: `${PREFIX}-contentWithTags`,
+    contentWithoutTags: `${PREFIX}-contentWithoutTags`,
+    contentWithTagsHidden: `${PREFIX}-contentWithTagsHidden`,
+    LeftMenu: `${PREFIX}-LeftMenu`,
+    LeftMenuForSlider: `${PREFIX}-LeftMenuForSlider`,
+    sliderButton: `${PREFIX}-sliderButton`,
+    rotatedText: `${PREFIX}-rotatedText`,
+    recommendationsBar: `${PREFIX}-recommendationsBar`,
+    apiListingWrapper: `${PREFIX}-apiListingWrapper`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.rightIcon}`]: {
         marginLeft: theme.spacing(1),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         margin: theme.spacing(1),
         marginBottom: 0,
     },
-    buttonRight: {
+
+    [`& .${classes.buttonRight}`]: {
         alignSelf: 'flex-end',
         display: 'flex',
     },
-    ListingWrapper: {
+
+    [`& .${classes.ListingWrapper}`]: {
         paddingTop: 10,
         paddingLeft: 35,
         maxWidth: theme.custom.contentAreaWidth,
     },
-    appBar: {
+
+    [`& .${classes.appBar}`]: {
         height: 70,
         background: theme.custom.infoBar.background,
         color: theme.palette.getContrastText(theme.custom.infoBar.background),
@@ -62,44 +97,56 @@ const styles = (theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    mainIconWrapper: {
+
+    [`& .${classes.mainIconWrapper}`]: {
         paddingTop: 13,
         paddingLeft: 20,
         paddingRight: 20,
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingTop: 10,
     },
-    mainTitleWrapper: {
+
+    [`& .${classes.mainTitleWrapper}`]: {
         flexGrow: 1,
     },
-    listContentWrapper: {
-        padding: `0 ${theme.spacing(3)}px`,
+
+    [`& .${classes.listContentWrapper}`]: {
+        padding: `0 ${theme.spacing(3)}`,
         display: 'flex',
+        marginLeft: -40,
     },
-    iconDefault: {
+
+    [`& .${classes.iconDefault}`]: {
         color: theme.palette.getContrastText(theme.custom.infoBar.background),
     },
-    iconSelected: {
+
+    [`& .${classes.iconSelected}`]: {
         color: theme.custom.infoBar.listGridSelectedColor,
     },
-    content: {
+
+    [`& .${classes.content}`]: {
         flexGrow: 1,
         display: 'flex',
         flex: 1,
         flexDirection: 'column',
         paddingBottom: theme.spacing(3),
     },
-    contentWithTags: {
+
+    [`& .${classes.contentWithTags}`]: {
         marginLeft: theme.custom.tagCloud.leftMenu.width,
     },
-    contentWithoutTags: {
+
+    [`& .${classes.contentWithoutTags}`]: {
         marginLeft: -4,
     },
-    contentWithTagsHidden: {
+
+    [`& .${classes.contentWithTagsHidden}`]: {
         marginLeft: theme.custom.tagCloud.leftMenu.sliderWidth,
     },
-    LeftMenu: {
+
+    [`& .${classes.LeftMenu}`]: {
         backgroundColor: theme.custom.tagCloud.leftMenu.background,
         color: theme.custom.tagCloud.leftMenu.color,
         textAlign: 'left',
@@ -112,7 +159,8 @@ const styles = (theme) => ({
         left: 0,
         overflowY: 'auto',
     },
-    LeftMenuForSlider: {
+
+    [`& .${classes.LeftMenuForSlider}`]: {
         backgroundColor: theme.custom.tagCloud.leftMenu.background,
         color: theme.custom.tagCloud.leftMenu.color,
         textAlign: 'left',
@@ -126,7 +174,8 @@ const styles = (theme) => ({
         overflowY: 'auto',
         display: 'flex',
     },
-    sliderButton: {
+
+    [`& .${classes.sliderButton}`]: {
         fontWeight: 200,
         background: theme.custom.tagCloud.leftMenu.sliderBackground,
         color: theme.palette.getContrastText(theme.custom.tagCloud.leftMenu.sliderBackground),
@@ -137,7 +186,8 @@ const styles = (theme) => ({
         right: 0,
         cursor: 'pointer',
     },
-    rotatedText: {
+
+    [`& .${classes.rotatedText}`]: {
         transform: 'rotate(270deg)',
         transformOrigin: 'left bottom 0',
         position: 'absolute',
@@ -146,7 +196,8 @@ const styles = (theme) => ({
         marginLeft: 23,
         cursor: 'pointer',
     },
-    recommendationsBar: {
+
+    [`& .${classes.recommendationsBar}`]: {
         height: 60,
         background: theme.custom.infoBar.background,
         color: theme.palette.getContrastText(theme.custom.infoBar.background),
@@ -155,18 +206,19 @@ const styles = (theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    apiListingWrapper: {
+
+    [`&.${classes.apiListingWrapper}`]: {
         width: '100%',
     },
-});
+}));
 
 /**
  * Shared listing page
  *
- * @class CommonListing
+ * @class CommonListingLegacy
  * @extends {Component}
  */
-class CommonListing extends React.Component {
+class CommonListingLegacy extends React.Component {
     /**
      * Constructor
      *
@@ -196,7 +248,7 @@ class CommonListing extends React.Component {
     /**
      *
      * Get all tags
-     * @memberof CommonListing
+     * @memberof CommonListingLegacy
      */
     componentDidMount() {
         const restApiClient = new API();
@@ -224,7 +276,7 @@ class CommonListing extends React.Component {
      *
      * Switch the view between grid and list view
      * @param {String} value view type
-     * @memberof CommonListing
+     * @memberof CommonListingLegacy
      */
      setListType = (value) => {
          localStorage.setItem('portal.listType', value);
@@ -257,12 +309,11 @@ class CommonListing extends React.Component {
      *
      * @inheritdoctheme
      * @returns {React.Component} @inheritdoc
-     * @memberof CommonListing
+     * @memberof CommonListingLegacy
      */
     render() {
         const {
             theme,
-            classes,
             location: { search },
         } = this.props;
         const user = AuthManager.getUser();
@@ -296,7 +347,7 @@ class CommonListing extends React.Component {
         const tagPaneVisible = allTags && allTags.length > 0 && (tagCloudActive || active);
         const categoryPaneVisible = allCategories && allCategories.length > 0;
         return (
-            <div className={classNames(classes.apiListingWrapper, 'api-listing-wrapper')}>
+            <Root className={classNames(classes.apiListingWrapper, 'api-listing-wrapper')}>
                 {(categoryPaneVisible || tagPaneVisible) && showLeftMenu && (
                     <div className={classNames(classes.LeftMenu, 'api-listing-left-menu')}>
                         <div
@@ -359,6 +410,7 @@ class CommonListing extends React.Component {
                                     className={classes.button}
                                     onClick={() => this.setListType('list')}
                                     disabled={listType === 'list'}
+                                    size='large'
                                 >
                                     <Icon
                                         className={classNames(
@@ -374,6 +426,7 @@ class CommonListing extends React.Component {
                                     className={classes.button}
                                     onClick={() => this.setListType('grid')}
                                     disabled={listType === 'grid'}
+                                    size='large'
                                 >
                                     <Icon
                                         className={classNames(
@@ -419,13 +472,13 @@ class CommonListing extends React.Component {
                             </div>
                         )}
                 </div>
-            </div>
+            </Root>
         );
     }
 }
-CommonListing.contextType = Settings;
+CommonListingLegacy.contextType = Settings;
 
-CommonListing.propTypes = {
+CommonListingLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
     location: PropTypes.shape({
@@ -433,10 +486,20 @@ CommonListing.propTypes = {
     }),
 };
 
-CommonListing.defaultProps = {
+CommonListingLegacy.defaultProps = {
     location: PropTypes.shape({
         search: '',
     }),
 };
 
-export default withStyles(styles, { withTheme: true })(CommonListing);
+function CommonListing(props) {
+    const theme = useTheme();
+    return (
+        <CommonListingLegacy
+            {...props}
+            theme={theme}
+        />
+    );
+}
+
+export default (CommonListing);

@@ -16,44 +16,58 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import { FormattedMessage, injectIntl, } from 'react-intl';
-import { TextField, Button, Typography } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Grid from '@material-ui/core/Grid';
+import {TextField, Button, Typography, useTheme} from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Grid from '@mui/material/Grid';
 import Alert from '../../../Shared/Alert';
 import API from '../../../../data/api';
 
-const styles = theme => ({
-    textField: {
+const PREFIX = 'CommentEditLegacy';
+
+const classes = {
+    textField: `${PREFIX}-textField`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    category: `${PREFIX}-category`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.textField}`]: {
         marginTop: 0,
         width: '87.5%',
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
         paddingLeft: theme.spacing(2),
         paddingTop: theme.spacing.unig,
         marginTop: theme.spacing(2),
     },
-    category: {
+
+    [`& .${classes.category}`]: {
         width: '12%',
         marginRight: '0.5%',
-    },
-});
+    }
+}));
 
 /**
  * Display a component to edit a comment
  * @class CommmentEdit
  * @extends {React.Component}
  */
-class CommentEdit extends React.Component {
+class CommentEditLegacy extends React.Component {
     /**
-     * Creates an instance of CommentEdit
+     * Creates an instance of CommentEditLegacy
      * @param {*} props properies passed by the parent element
-     * @memberof CommentEdit
+     * @memberof CommentEditLegacy
      */
     constructor(props) {
         super(props);
@@ -85,7 +99,7 @@ class CommentEdit extends React.Component {
     /**
      * Handles the comment text when input changes
      * @param {Object} {target} target element
-     * @memberof CommentEdit
+     * @memberof CommentEditLegacy
      */
     inputChange({ target }) {
         this.setState({ commentText: target.value, currentLength: target.value.length });
@@ -93,7 +107,7 @@ class CommentEdit extends React.Component {
 
     /**
      * Hides the component to edit a comment when cancelled
-     * @memberof CommentEdit
+     * @memberof CommentEditLegacy
      */
     handleClickCancel() {
         const { toggleShowEdit, commentsUpdate, allComments } = this.props;
@@ -104,7 +118,7 @@ class CommentEdit extends React.Component {
     /**
      * Handles category when the category is changed
      * @param {any} event Drop down select event
-     * @memberof CommentEdit
+     * @memberof CommentEditLegacy
      */
     handleCategoryChange(event) {
         this.setState({ category: event.target.value });
@@ -130,7 +144,7 @@ class CommentEdit extends React.Component {
 
     /**
      * Handles updating a comment
-     * @memberof CommentEdit
+     * @memberof CommentEditLegacy
      */
     handleClickUpdateComment() {
         const {
@@ -185,15 +199,15 @@ class CommentEdit extends React.Component {
     /**
      * Render method of the component
      * @returns {React.Component} Comment html component
-     * @memberof CommentEdit
+     * @memberof CommentEditLegacy
      */
     render() {
-        const { classes, theme, intl } = this.props;
+        const {  theme, intl } = this.props;
         const { category, commentText, currentLength } = this.state;
         return (
-            <div>
-                <FormControl className={classes.category}>
-                    <Select value={category} onChange={this.handleCategoryChange}>
+            <Root>
+                <FormControl variant="standard" className={classes.category}>
+                    <Select variant="standard" value={category} onChange={this.handleCategoryChange}>
                         <MenuItem value='General'>
                             <FormattedMessage id='Apis.Details.Comments.CommentEdit.general' defaultMessage='General' />
                         </MenuItem>
@@ -212,6 +226,7 @@ class CommentEdit extends React.Component {
                     </Select>
                 </FormControl>
                 <TextField
+                    variant="standard"
                     id='multiline-static'
                     autoFocus
                     multiline
@@ -243,16 +258,16 @@ class CommentEdit extends React.Component {
                         </Button>
                     </Grid>
                 </Grid>
-            </div>
+            </Root>
         );
     }
 }
 
-CommentEdit.defaultProps = {
+CommentEditLegacy.defaultProps = {
     commentsUpdate: null,
 };
 
-CommentEdit.propTypes = {
+CommentEditLegacy.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
     apiId: PropTypes.string.isRequired,
     allComments: PropTypes.instanceOf(Array).isRequired,
@@ -265,4 +280,20 @@ CommentEdit.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(CommentEdit));
+function CommentEdit(props) {
+    const { comment, toggleShowEdit, commentsUpdate, allComments, apiId, intl } = props;
+    const theme = useTheme();
+    return (
+        <CommentEditLegacy
+            comment={comment}
+            toggleShowEdit={toggleShowEdit}
+            commentsUpdate={commentsUpdate}
+            allComments={allComments}
+            apiId={apiId}
+            intl={intl}
+            theme={theme}
+        />
+    );
+}
+
+export default injectIntl((CommentEdit));

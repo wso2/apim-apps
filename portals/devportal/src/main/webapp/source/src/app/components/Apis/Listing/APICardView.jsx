@@ -16,8 +16,8 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import { injectIntl } from 'react-intl';
 import API from 'AppData/api';
@@ -27,14 +27,22 @@ import Alert from 'AppComponents/Shared/Alert';
 import ResourceNotFound from '../../Base/Errors/ResourceNotFound';
 import SubscriptionPolicySelect from './SubscriptionPolicySelect';
 
-const styles = () => ({
-    root: {
+const PREFIX = 'APICardView';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    buttonGap: `${PREFIX}-buttonGap`,
+};
+
+const Root = styled('div')(() => ({
+    [`& .${classes.root}`]: {
         display: 'flex',
     },
-    buttonGap: {
+
+    [`& .${classes.buttonGap}`]: {
         marginRight: 10,
     },
-});
+}));
 
 /**
  * @class APICardView
@@ -316,14 +324,14 @@ class APICardView extends React.Component {
             return <NoApi />;
         }
         return (
-            <div id='subscribe-to-api-table'>
+            <Root id='subscribe-to-api-table'>
                 <MUIDataTable
                     title=''
                     data={data}
                     columns={columns}
                     options={options}
                 />
-            </div>
+            </Root>
         );
     }
 }
@@ -333,4 +341,4 @@ APICardView.propTypes = {
         formatMessage: PropTypes.func,
     }).isRequired,
 };
-export default injectIntl(withStyles(styles, { withTheme: true })(APICardView));
+export default injectIntl((APICardView));

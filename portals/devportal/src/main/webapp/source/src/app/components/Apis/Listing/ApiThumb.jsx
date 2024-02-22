@@ -1,5 +1,5 @@
 import React from 'react';
-import { useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material/styles';
 import ApiThumbClassic from 'AppComponents/Apis/Listing/APICards/ApiThumbClassic';
 import APIThumbPlain from 'AppComponents/Apis/Listing/APICards/APIThumbPlain';
 

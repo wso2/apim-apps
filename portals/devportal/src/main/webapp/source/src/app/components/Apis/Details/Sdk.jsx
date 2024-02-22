@@ -17,60 +17,80 @@
  */
 
 import React from 'react';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardMedia from '@material-ui/core/CardMedia';
-import Icon from '@material-ui/core/Icon';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
+import { styled } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardMedia from '@mui/material/CardMedia';
+import Icon from '@mui/material/Icon';
+import Divider from '@mui/material/Divider';
+import Grid from '@mui/material/Grid';
 import JSFileDownload from 'js-file-download';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import AuthManager from 'AppData/AuthManager';
 import { app } from 'Settings';
+import { useTheme } from '@mui/material';
 import Api from '../../../data/api';
 
-const styles = (theme) => ({
-    genericMessageWrapper: {
+const PREFIX = 'Sdk';
+
+const classes = {
+    genericMessageWrapper: `${PREFIX}-genericMessageWrapper`,
+    titleSub: `${PREFIX}-titleSub`,
+    gridRoot: `${PREFIX}-gridRoot`,
+    titleWrappper: `${PREFIX}-titleWrappper`,
+    cardTitle: `${PREFIX}-cardTitle`,
+    cardRoot: `${PREFIX}-cardRoot`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.genericMessageWrapper}`]: {
         margin: theme.spacing(2),
     },
-    titleSub: {
+
+    [`& .${classes.titleSub}`]: {
         marginLeft: theme.spacing(3),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    gridRoot: {
+
+    [`& .${classes.gridRoot}`]: {
         marginLeft: theme.spacing(2),
     },
-    titleWrappper: {
+
+    [`& .${classes.titleWrappper}`]: {
         display: 'flex',
         alignItems: 'center',
         '& h4': {
             marginRight: theme.spacing(1),
         },
     },
-    cardTitle: {
+
+    [`& .${classes.cardTitle}`]: {
         background: theme.palette.grey[50],
     },
-    cardRoot: {
+
+    [`& .${classes.cardRoot}`]: {
         background: theme.custom.apiDetailPages.sdkBackground,
     },
-});
+}));
 
 /**
  * @class Sdk
  * @extends {React.Component}
  */
-class Sdk extends React.Component {
+class SdkLegacy extends React.Component {
     /**
-     * Create instance of Sdk
+     * Create instance of SdkLegacy
      * @param {JSON} props props passed from parent
      */
     constructor(props) {
@@ -89,7 +109,7 @@ class Sdk extends React.Component {
     }
 
     /**
-     * @memberof Sdk
+     * @memberof SdkLegacy
      */
     componentDidMount() {
         const api = new Api();
@@ -118,7 +138,7 @@ class Sdk extends React.Component {
      *
      * @param {string} apiId api id
      * @param {string} language language selected
-     * @memberof Sdk
+     * @memberof SdkLegacy
      */
     getSdkForApi(apiId, language) {
         const api = new Api();
@@ -141,7 +161,7 @@ class Sdk extends React.Component {
      * Handle the click event of the download button
      * @param {event} _event click event
      * @param {string} item selected language
-     * @memberof Sdk
+     * @memberof SdkLegacy
      */
     handleClick = (_event, item) => {
         const apiId = this.api_uuid;
@@ -152,7 +172,7 @@ class Sdk extends React.Component {
     /**
      * Handle the change event of the Search input field
      * @param {event} event click event
-     * @memberof Sdk
+     * @memberof SdkLegacy
      */
     handleChange = (event) => {
         const { sdkLanguages } = this.state;
@@ -166,7 +186,7 @@ class Sdk extends React.Component {
     /**
      * Handle sdk image not found issue. Point to a default image
      * @param {event} ev click event
-     * @memberof Sdk
+     * @memberof SdkLegacy
      */
     addDefaultSrc = (ev) => {
         const evLocal = ev;
@@ -175,12 +195,12 @@ class Sdk extends React.Component {
 
     /**
      * @returns  {JSX} rendered sdk ui
-     * @memberof Sdk
+     * @memberof SdkLegacy
      */
     render() {
         const languageList = this.state.items;
         const {
-            onlyIcons, intl, classes, theme,
+            onlyIcons, intl, theme,
         } = this.props;
         const {
             custom: {
@@ -193,7 +213,7 @@ class Sdk extends React.Component {
         if (onlyIcons) {
             return (
                 filteredLanguageList && (
-                    <>
+                    <Root>
                         {filteredLanguageList.map((language, index) => index < 3 && (
                             <Grid item xs={4} key={language}>
                                 <Button
@@ -220,12 +240,12 @@ class Sdk extends React.Component {
                                 </Button>
                             </Grid>
                         ))}
-                    </>
+                    </Root>
                 )
             );
         }
         return (
-            <>
+            <Root>
                 <div className={classes.titleWrappper}>
                     <Typography variant='h4' component='h2' className={classes.titleSub}>
                         <FormattedMessage id='Apis.Details.Sdk.title' defaultMessage='Software Development Kits (SDKs)' />
@@ -248,7 +268,7 @@ class Sdk extends React.Component {
                 {filteredLanguageList ? (
                     <Grid container spacing={0} className={classes.gridRoot}>
                         <Grid item xs={12} sm={6} md={9} lg={9} xl={10}>
-                            <Grid container justify='flex-start' spacing={4}>
+                            <Grid container justifyContent='flex-start' spacing={4}>
                                 {filteredLanguageList.map((language) => (
                                     <Grid key={language} item>
                                         <div style={{ width: 'auto', textAlign: 'center', margin: '10px' }}>
@@ -272,7 +292,7 @@ class Sdk extends React.Component {
                                                     />
                                                 </CardMedia>
                                                 <CardActions>
-                                                    <Grid container justify='center'>
+                                                    <Grid container justifyContent='center'>
                                                         <Button
                                                             color='secondary'
                                                             onClick={(event) => this.handleClick(event, language)}
@@ -309,13 +329,25 @@ class Sdk extends React.Component {
                         </InlineMessage>
                     </div>
                 )}
-            </>
+            </Root>
         );
     }
 }
 
-Sdk.propTypes = {
-    classes: PropTypes.instanceOf(Object).isRequired,
-};
+function Sdk(props) {
+    const {
+        match, apiId, onlyIcons, intl,
+    } = props;
+    const theme = useTheme();
+    return (
+        <SdkLegacy
+            match={match}
+            apiId={apiId}
+            onlyIcons={onlyIcons}
+            intl={intl}
+            theme={theme}
+        />
+    );
+}
 
-export default injectIntl(withStyles(styles, { withTheme: true })(Sdk));
+export default injectIntl((Sdk));

@@ -18,15 +18,15 @@
 
 import 'react-app-polyfill/ie11';
 import 'react-app-polyfill/stable';
-import ReactDOM from 'react-dom';
 import React from 'react';
-import { hot } from 'react-hot-loader/root'; // Added to do the Hot Module Replacement(HMR)
+import { createRoot } from 'react-dom/client';
 import DevPortal from './src/DevPortal';
 import './customPolyfill';
 
-// What about production? # https://github.com/gaearon/react-hot-loader#what-about-production
-const HotApp = hot(DevPortal);
-ReactDOM.render(
-    <HotApp />,
-    document.getElementById('react-root'),
+const rootElement = document.getElementById('react-root');
+const root = createRoot(rootElement);
+root.render(
+    <React.StrictMode>
+        <DevPortal />
+    </React.StrictMode>,
 );

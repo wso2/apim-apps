@@ -18,12 +18,12 @@
 
 import React, { useMemo } from 'react';
 import 'swagger-ui-react/swagger-ui.css';
-import LockIcon from '@material-ui/icons//Lock';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import Grid from '@material-ui/core/Grid';
+import LockIcon from '@mui/icons-material//Lock';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 /**
  *
@@ -55,11 +55,11 @@ function CustomPadLock(props) {
 
     return (
         <div>
-            <Grid container direction='row' justify='space-between' alignItems='center'>
+            <Grid container direction='row' justifyContent='space-between' alignItems='center'>
                 <Grid item md={11}>
                     <BaseLayout {...oldProps} />
                 </Grid>
-                <Grid item justify='flex-end' alignItems='right'>
+                <Grid item justifyContent='flex-end' alignItems='right'>
                     <Tooltip
                         title={
                             (securityEnabled)
@@ -84,9 +84,7 @@ function CustomPadLock(props) {
                             />
                         )}
                     >
-                        <IconButton
-                            aria-label='Security'
-                        >
+                        <IconButton aria-label='Security' size='large'>
                             {(securityEnabled)
                                 ? <LockIcon fontSize='small' />
                                 : <LockOpenIcon fontSize='small' />}

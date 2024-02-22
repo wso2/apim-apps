@@ -17,25 +17,37 @@
  */
 
 import React, { useState, useEffect, useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import ApplicationCreateForm from 'AppComponents/Shared/AppsAndKeys/ApplicationCreateForm';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import cloneDeep from 'lodash.clonedeep';
 import { injectIntl, FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import ButtonPanel from './ButtonPanel';
 
-const useStyles = makeStyles((theme) => ({
-    appCreateFormWrapper: {
+const PREFIX = 'CreateAppStep';
+
+const classes = {
+    appCreateFormWrapper: `${PREFIX}-appCreateFormWrapper`,
+    warningIcon: `${PREFIX}-warningIcon`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.appCreateFormWrapper}`]: {
         paddingLeft: theme.spacing(2),
     },
-    warningIcon: {
+
+    [`& .${classes.warningIcon}`]: {
         color: '#ff9a00',
         fontSize: 43,
         marginRight: 10,
@@ -228,11 +240,10 @@ const createAppStep = (props) => {
             });
     }, []);
 
-    const classes = useStyles();
     if (!hasValidKM) {
         return (
             <Box mb={1} ml={4}>
-                <InlineMessage type='warn'>
+                <InlineMessage type='warning'>
                     <FormattedMessage
                         id='Apis.Details.Credentials.Wizard.CreateAppStep.default.km.msg'
                         defaultMessage={'Wizard is only accessible via the Resident Key Manager.'
@@ -254,7 +265,7 @@ const createAppStep = (props) => {
     }
 
     return (
-        <div className={classes.appCreateFormWrapper}>
+        <Root className={classes.appCreateFormWrapper}>
             <Box px={2} display='flex' justifyContent='flex-start'>
                 <Grid item xs={10} md={6}>
                     <ApplicationCreateForm
@@ -277,7 +288,7 @@ const createAppStep = (props) => {
                 currentStep={currentStep}
                 handleCurrentStep={createApplication}
             />
-        </div>
+        </Root>
     );
 };
 

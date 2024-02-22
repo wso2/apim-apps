@@ -16,14 +16,14 @@
  * under the License.
  */
 import React from 'react';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import Image404 from './Custom404Image';
 
 const ResourceNotFound = (props) => {
@@ -32,7 +32,7 @@ const ResourceNotFound = (props) => {
             <Box padding={4}>
                 <Paper elevation={0}>
                     <Box padding={4}>
-                        <Grid container alignItems='center' justify='center' style={{ height: '100%' }}>
+                        <Grid container alignItems='center' justifyContent='center' style={{ height: '100%' }}>
                             <Grid item xs={12} md={6}>
                                 <Typography variant='h5' gutterBottom>
                                     <FormattedMessage

@@ -17,32 +17,48 @@
  */
 
 import React from 'react';
+import {
+    styled,
+    createTheme,
+    ThemeProvider,
+    StyledEngineProvider,
+    adaptV4Theme,
+} from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
 import queryString from 'query-string';
 import API from 'AppData/api';
-import { withTheme } from '@material-ui/styles';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import Configurations from 'Config';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import Alert from 'AppComponents/Shared/Alert';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import DefaultConfigurations from 'AppData/defaultTheme';
+import { useTheme } from '@mui/material';
 import ImageGenerator from './APICards/ImageGenerator';
 import ApiThumb from './ApiThumb';
 import DocThumb from './APICards/DocThumb';
 import { ApiContext } from '../Details/ApiContext';
 import NoApi from './NoApi';
 
-const styles = (theme) => ({
-    apiNameLink: {
+const PREFIX = 'ApiTableViewLegacy';
+
+const classes = {
+    apiNameLink: `${PREFIX}-apiNameLink`,
+};
+
+const StyledStyledEngineProvider = styled(StyledEngineProvider)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.apiNameLink}`]: {
         display: 'flex',
         alignItems: 'center',
         '& span': {
@@ -55,18 +71,19 @@ const styles = (theme) => ({
             fontSize: `${theme.custom.thumbnail.listViewIconSize}px !important`,
         },
     },
-});
+}));
+
 /**
  * Table view for api listing
  *
- * @class ApiTableView
+ * @class ApiTableViewLegacy
  * @extends {React.Component}
  */
-class ApiTableView extends React.Component {
+class ApiTableViewLegacy extends React.Component {
     /**
      * @inheritdoc
      * @param {*} props properties
-     * @memberof ApiTableView
+     * @memberof ApiTableViewLegacy
      */
     constructor(props) {
         super(props);
@@ -217,7 +234,7 @@ class ApiTableView extends React.Component {
         }
         const systemTheme = merge({}, DefaultConfigurations, Configurations, { custom: cloneDeep(theme.custom) });
         const dataTableTheme = merge({}, muiTheme, systemTheme, themeAdditions);
-        return createMuiTheme(dataTableTheme);
+        return createTheme(adaptV4Theme(dataTableTheme));
     };
 
     // get data
@@ -299,7 +316,7 @@ class ApiTableView extends React.Component {
     /**
      * @inheritdoc
      * @returns {Component}x
-     * @memberof ApiTableView
+     * @memberof ApiTableViewLegacy
      */
     render() {
         const { intl, gridView, theme } = this.props;
@@ -340,7 +357,6 @@ class ApiTableView extends React.Component {
                             const artifact = tableViewObj.state.data[tableMeta.rowIndex];
                             const apiName = tableMeta.rowData[2];
                             const apiId = tableMeta.rowData[0];
-                            const { classes } = this.props;
 
                             if (artifact) {
                                 if (artifact.type === 'DOC') {
@@ -600,13 +616,32 @@ class ApiTableView extends React.Component {
             return <NoApi />;
         }
         return (
-            <MuiThemeProvider theme={this.getMuiTheme()}>
-                <MUIDataTable title='' data={data} columns={columns} options={options} />
-            </MuiThemeProvider>
+            <StyledStyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.getMuiTheme()}>
+                    <MUIDataTable title='' data={data} columns={columns} options={options} />
+                </ThemeProvider>
+            </StyledStyledEngineProvider>
         );
     }
 }
 
-ApiTableView.contextType = ApiContext;
+ApiTableViewLegacy.contextType = ApiContext;
 
-export default withSettings(injectIntl(withTheme(withStyles(styles)(ApiTableView))));
+function ApiTableView(props) {
+    const {
+        query, selectedTag, gridView, intl, setTenantDomain,
+    } = props;
+    const theme = useTheme();
+    return (
+        <ApiTableViewLegacy
+            query={query}
+            selectedTag={selectedTag}
+            gridView={gridView}
+            intl={intl}
+            setTenantDomain={setTenantDomain}
+            theme={theme}
+        />
+    );
+}
+
+export default withSettings(injectIntl(ApiTableView));

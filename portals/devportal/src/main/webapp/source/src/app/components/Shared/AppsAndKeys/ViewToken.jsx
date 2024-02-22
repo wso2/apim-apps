@@ -16,25 +16,35 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
-import FileCopy from '@material-ui/icons/FileCopy';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import FileCopy from '@mui/icons-material/FileCopy';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
+import FormHelperText from '@mui/material/FormHelperText';
+import IconButton from '@mui/material/IconButton';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import InlineMessage from '../InlineMessage';
 import ViewSecret from './ViewSecret';
-/**
- *
- *
- * @param {*} theme
- */
-const styles = (theme) => ({
-    bootstrapRoot: {
+const PREFIX = 'ViewToken';
+
+const classes = {
+    bootstrapRoot: `${PREFIX}-bootstrapRoot`,
+    bootstrapInput: `${PREFIX}-bootstrapInput`,
+    epWrapper: `${PREFIX}-epWrapper`,
+    secretWrapper: `${PREFIX}-secretWrapper`,
+    prodLabel: `${PREFIX}-prodLabel`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    root: `${PREFIX}-root`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.bootstrapRoot}`]: {
         padding: 0,
         'label + &': {
             marginTop: theme.spacing(3),
@@ -42,7 +52,8 @@ const styles = (theme) => ({
         flex: 1,
         marginRight: theme.spacing(1),
     },
-    bootstrapInput: {
+
+    [`& .${classes.bootstrapInput}`]: {
         borderRadius: 4,
         backgroundColor: theme.custom.apiDetailPages.tokenTextBoxBackground,
         color: theme.palette.getContrastText(theme.custom.apiDetailPages.tokenTextBoxBackground),
@@ -58,32 +69,38 @@ const styles = (theme) => ({
             boxShadow: '0 0 0 0.2rem rgba(0,123,255,.25)',
         },
     },
-    epWrapper: {
+
+    [`& .${classes.epWrapper}`]: {
         display: 'flex',
         marginTop: 20,
     },
-    secretWrapper: {
+
+    [`& .${classes.secretWrapper}`]: {
         display: 'flex',
         marginBottom: 20,
     },
-    prodLabel: {
+
+    [`& .${classes.prodLabel}`]: {
         lineHeight: '30px',
         marginRight: 10,
         width: 100,
         'text-align-last': 'center',
         whiteSpace: 'nowrap',
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth - theme.custom.leftMenu.width,
     },
-    root: {
+
+    [`&.${classes.root}`]: {
         marginTop: 20,
         '& span, & h5, & label, & td, & li, & div, & input': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
 
-    },
-});
+    }
+}));
+
 /**
  *
  *
@@ -135,7 +152,7 @@ class ViewToken extends React.Component {
      */
     render() {
         const {
-            classes, token, consumerSecret, isTokenExchange, intl, isResidenceTokenAvailable,
+            token, consumerSecret, isTokenExchange, intl, isResidenceTokenAvailable,
         } = this.props;
         const { tokenCopied } = this.state;
 
@@ -151,13 +168,13 @@ class ViewToken extends React.Component {
             )
         } else {
             return (
-            <div className={classes.root}>
+            <Root className={classes.root}>
                 {consumerSecret && (
                     <div className={classes.secretWrapper}>
                         <ViewSecret secret={{consumerSecret}}/>
                     </div>
                 )}
-                <InlineMessage type='warn'>
+                <InlineMessage type='warning'>
                     <Typography variant='h5' component='h3'>
                         {(token.isOauth) && (
                             <FormattedMessage
@@ -197,6 +214,7 @@ class ViewToken extends React.Component {
                         )}
                     </label>
                     <TextField
+                        variant="standard"
                         defaultValue={token.accessToken}
                         id='access-token'
                         multiline
@@ -228,11 +246,14 @@ class ViewToken extends React.Component {
                         }
                         placement='right'
                     >
-                        <CopyToClipboard text={token.accessToken} onCopy={this.onCopy('tokenCopied')}>
-                            <IconButton id = 'copy-to-clipbord-icon' aria-label='Copy to clipboard'>
-                                <FileCopy color='secondary'>file_copy</FileCopy>
-                            </IconButton>
-                        </CopyToClipboard>
+                        <IconButton
+                            id = 'copy-to-clipbord-icon'
+                            aria-label='Copy to clipboard'
+                            size="large"
+                            onClick={() => {navigator.clipboard.writeText(token.accessToken).then(this.onCopy('tokenCopied'))}}
+                        >
+                            <FileCopy color='secondary'>file_copy</FileCopy>
+                        </IconButton>
                     </Tooltip>
                 </div>
                 <FormHelperText>
@@ -260,7 +281,7 @@ class ViewToken extends React.Component {
                     )}
                     .
                 </FormHelperText>
-            </div>
+            </Root>
         )};
     }
 }
@@ -279,4 +300,4 @@ ViewToken.propTypes = {
     consumerSecret: PropTypes.string,
 };
 
-export default injectIntl(withStyles(styles)(ViewToken));
+export default injectIntl((ViewToken));

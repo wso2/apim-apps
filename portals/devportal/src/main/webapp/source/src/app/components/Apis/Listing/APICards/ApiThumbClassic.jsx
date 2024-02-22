@@ -18,12 +18,12 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import { withStyles } from '@material-ui/core/styles';
-import Chip from '@material-ui/core/Chip';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
@@ -31,29 +31,66 @@ import MaterialIcons from 'MaterialIcons';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import { app, apis } from 'Settings';
 import classNames from 'classnames';
-import Box from '@material-ui/core/Box';
-import Popover from '@material-ui/core/Popover';
-import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
-import EmailIcon from '@material-ui/icons/Email';
-import Divider from '@material-ui/core/Divider';
+import Box from '@mui/material/Box';
+import Popover from '@mui/material/Popover';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import EmailIcon from '@mui/icons-material/Email';
+import Divider from '@mui/material/Divider';
+import { useTheme } from '@mui/material';
 import ImageGenerator from './ImageGenerator';
 import Api from '../../../../data/api';
 import { ApiContext } from '../../Details/ApiContext';
 import LetterGenerator from './LetterGenerator';
 
-/**
- *
- *
- * @param {*} theme
- */
-const styles = (theme) => ({
-    card: {
+const PREFIX = 'ApiThumbClassicLegacy';
+
+const classes = {
+    card: `${PREFIX}-card`,
+    apiDetails: `${PREFIX}-apiDetails`,
+    suppressLinkStyles: `${PREFIX}-suppressLinkStyles`,
+    row: `${PREFIX}-row`,
+    thumbBy: `${PREFIX}-thumbBy`,
+    media: `${PREFIX}-media`,
+    thumbContent: `${PREFIX}-thumbContent`,
+    thumbLeft: `${PREFIX}-thumbLeft`,
+    thumbLeftAction: `${PREFIX}-thumbLeftAction`,
+    thumbRight: `${PREFIX}-thumbRight`,
+    thumbInfo: `${PREFIX}-thumbInfo`,
+    thumbHeader: `${PREFIX}-thumbHeader`,
+    contextBox: `${PREFIX}-contextBox`,
+    context: `${PREFIX}-context`,
+    thumbWrapper: `${PREFIX}-thumbWrapper`,
+    deleteIcon: `${PREFIX}-deleteIcon`,
+    textWrapper: `${PREFIX}-textWrapper`,
+    imageWrapper: `${PREFIX}-imageWrapper`,
+    imageOverlap: `${PREFIX}-imageOverlap`,
+    chipWrapper: `${PREFIX}-chipWrapper`,
+    chipWrapper2: `${PREFIX}-chipWrapper2`,
+    chipWrapper3: `${PREFIX}-chipWrapper3`,
+    ratingWrapper: `${PREFIX}-ratingWrapper`,
+    textblock: `${PREFIX}-textblock`,
+    actionArea: `${PREFIX}-actionArea`,
+    ribbon: `${PREFIX}-ribbon`,
+    truncate: `${PREFIX}-truncate`,
+    businessDetail: `${PREFIX}-businessDetail`,
+    popover: `${PREFIX}-popover`,
+    paper: `${PREFIX}-paper`,
+    typo: `${PREFIX}-typo`,
+};
+
+const StyledCard = styled(Card)((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.card}`]: {
         margin: theme.spacing(3 / 2),
         maxWidth: theme.custom.thumbnail.width,
         transition: 'box-shadow 0.3s ease-in-out',
         position: 'relative',
     },
-    apiDetails: {
+
+    [`& .${classes.apiDetails}`]: {
         background: theme.custom.thumbnail.contentBackgroundColor,
         padding: theme.spacing(1),
         color: theme.palette.getContrastText(theme.custom.thumbnail.contentBackgroundColor),
@@ -63,46 +100,56 @@ const styles = (theme) => ({
         position: theme.custom.thumbnail.contentPictureOverlap ? 'absolute' : 'relative',
         top: 0,
     },
-    suppressLinkStyles: {
+
+    [`& .${classes.suppressLinkStyles}`]: {
         textDecoration: 'none',
         color: theme.palette.text.disabled,
     },
-    row: {
+
+    [`& .${classes.row}`]: {
         display: 'inline-block',
     },
-    thumbBy: {
+
+    [`& .${classes.thumbBy}`]: {
         'padding-left': '5px',
     },
-    media: {
+
+    [`& .${classes.media}`]: {
         // ⚠️ object-fit is not supported by IE11.
         objectFit: 'cover',
     },
-    thumbContent: {
+
+    [`& .${classes.thumbContent}`]: {
         width: theme.custom.thumbnail.width - theme.spacing(2),
     },
-    thumbLeft: {
+
+    [`& .${classes.thumbLeft}`]: {
         alignSelf: 'flex-start',
         flex: 1,
         width: '25%',
         'padding-left': '5px',
         'padding-right': '65px',
     },
-    thumbLeftAction: {
+
+    [`& .${classes.thumbLeftAction}`]: {
         alignSelf: 'flex-start',
         flex: 1,
         width: '25%',
         'padding-left': '5px',
         'padding-right': '10px',
     },
-    thumbRight: {
+
+    [`& .${classes.thumbRight}`]: {
         display: 'flex',
         alignItems: 'flex-start',
         flexDirection: 'column',
     },
-    thumbInfo: {
+
+    [`& .${classes.thumbInfo}`]: {
         display: 'flex',
     },
-    thumbHeader: {
+
+    [`& .${classes.thumbHeader}`]: {
         width: theme.custom.thumbnail.width - theme.spacing(1),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -111,7 +158,8 @@ const styles = (theme) => ({
         margin: 0,
         'padding-left': '5px',
     },
-    contextBox: {
+
+    [`& .${classes.contextBox}`]: {
         width: parseInt((theme.custom.thumbnail.width - theme.spacing(1)) / 2, 10),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -125,45 +173,56 @@ const styles = (theme) => ({
         'padding-bottom': 1.5,
         textAlign: 'left',
     },
-    context: {
+
+    [`& .${classes.context}`]: {
         marginTop: 5,
     },
-    thumbWrapper: {
+
+    [`& .${classes.thumbWrapper}`]: {
         position: 'relative',
         paddingTop: 20,
         marginRight: theme.spacing(2),
     },
-    deleteIcon: {
+
+    [`& .${classes.deleteIcon}`]: {
         fill: 'red',
     },
-    textWrapper: {
+
+    [`& .${classes.textWrapper}`]: {
         color: theme.palette.text.secondary,
         textDecoration: 'none',
     },
-    imageWrapper: {
+
+    [`& .${classes.imageWrapper}`]: {
         color: theme.custom.thumbnail.iconColor,
         width: theme.custom.thumbnail.width,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    imageOverlap: {
+
+    [`& .${classes.imageOverlap}`]: {
         position: 'absolute',
         bottom: 1,
     },
-    chipWrapper: {
+
+    [`& .${classes.chipWrapper}`]: {
         marginTop: '15px',
     },
-    chipWrapper2: {
+
+    [`& .${classes.chipWrapper2}`]: {
         marginBottom: '10px',
     },
-    chipWrapper3: {
+
+    [`& .${classes.chipWrapper3}`]: {
         marginTop: '12px',
     },
-    ratingWrapper: {
+
+    [`& .${classes.ratingWrapper}`]: {
         marginTop: '20px',
     },
-    textblock: {
+
+    [`& .${classes.textblock}`]: {
         color: theme.palette.text.secondary,
         position: 'absolute',
         bottom: '35px',
@@ -172,13 +231,15 @@ const styles = (theme) => ({
         'padding-left': '10px',
         'padding-right': '10px',
     },
-    actionArea: {
+
+    [`& .${classes.actionArea}`]: {
         display: 'block !important',
         '&:focus': {
             border: '1px solid' + theme.palette.primary.main,
         },
     },
-    ribbon: {
+
+    [`& .${classes.ribbon}`]: {
         fontFamily: theme.typography.fontFamily,
         fontSize: '12px',
         fontWeight: 800,
@@ -191,26 +252,31 @@ const styles = (theme) => ({
         textAlign: 'center',
         textTransform: 'uppercase',
     },
-    truncate: {
+
+    [`& .${classes.truncate}`]: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         maxWidth: '175px',
     },
-    businessDetail: {
+
+    [`& .${classes.businessDetail}`]: {
         display: 'flex',
     },
-    popover: {
+
+    [`& .${classes.popover}`]: {
         pointerEvents: 'none',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(1),
         maxWidth: '300px',
     },
-    typo: {
+
+    [`& .${classes.typo}`]: {
         display: 'flex',
     },
-});
+}));
 
 const windowURL = window.URL || window.webkitURL;
 
@@ -220,7 +286,7 @@ const windowURL = window.URL || window.webkitURL;
  * @class APIThumb
  * @extends {Component}
  */
-class ApiThumbClassic extends React.Component {
+class ApiThumbClassicLegacy extends React.Component {
     /**
      *Creates an instance of APIThumb.
      * @param {*} props
@@ -337,7 +403,7 @@ class ApiThumbClassic extends React.Component {
 
         const detailsLink = path + this.props.api.id;
         const {
-            api, classes, theme, customWidth, customHeight, showInfo,
+            api, theme, customWidth, customHeight, showInfo,
         } = this.props;
         const { custom: { thumbnail, social: { showRating }, thumbnailTemplates: { variant, active } } } = theme;
         const { name, version, context } = api;
@@ -505,7 +571,7 @@ class ApiThumbClassic extends React.Component {
             );
         }
         return (
-            <Card
+            <StyledCard
                 onMouseOver={this.toggleMouseOver}
                 onFocus={this.toggleMouseOver}
                 onMouseOut={this.toggleMouseOver}
@@ -764,16 +830,16 @@ class ApiThumbClassic extends React.Component {
                         </div>
                     </CardContent>
                 </Link>
-            </Card>
+            </StyledCard>
         );
     }
 }
-ApiThumbClassic.defaultProps = {
+ApiThumbClassicLegacy.defaultProps = {
     customWidth: null,
     customHeight: null,
     showInfo: true,
 };
-ApiThumbClassic.propTypes = {
+ApiThumbClassicLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
     customWidth: PropTypes.number,
@@ -781,6 +847,16 @@ ApiThumbClassic.propTypes = {
     showInfo: PropTypes.bool,
 };
 
-ApiThumbClassic.contextType = ApiContext;
+ApiThumbClassicLegacy.contextType = ApiContext;
 
-export default withStyles(styles, { withTheme: true })(ApiThumbClassic);
+function ApiThumbClassic(props) {
+    const theme = useTheme();
+    return (
+        <ApiThumbClassicLegacy
+            {...props}
+            theme={theme}
+        />
+    );
+}
+
+export default (ApiThumbClassic);

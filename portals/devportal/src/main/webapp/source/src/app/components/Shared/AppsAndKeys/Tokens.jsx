@@ -16,58 +16,57 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import Checkbox from '@material-ui/core/Checkbox';
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
-import FormControl from '@material-ui/core/FormControl';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import FormControl from '@mui/material/FormControl';
+import Typography from '@mui/material/Typography';
+import Autocomplete from '@mui/material/Autocomplete';
+import Checkbox from '@mui/material/Checkbox';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import TextField from '@mui/material/TextField';
 
+const PREFIX = 'Tokens';
 
-// Styles for Grid and Paper elements
-const styles = theme => ({
-    FormControl: {
+const classes = {
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    quotaHelp: `${PREFIX}-quotaHelp`,
+    chips: `${PREFIX}-chips`,
+    chip: `${PREFIX}-chip`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.FormControl}`]: {
         padding: theme.spacing(2),
         width: '100%',
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: theme.spacing(2),
         backgroundColor: theme.palette.background.paper,
         width: '100%',
     },
-    quotaHelp: {
+
+    [`& .${classes.quotaHelp}`]: {
         position: 'relative',
     },
-    chips: {
+
+    [`& .${classes.chips}`]: {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    chip: {
-        margin: theme.spacing(0.25),
-    },
-});
 
-const MenuProps = {
-    PaperProps: {
-        style: {
-            maxHeight: 224,
-            width: 250,
-        },
-    },
-    anchorOrigin: {
-        vertical: "bottom",
-        horizontal: "left"
-    },
-    transformOrigin: {
-        vertical: "top",
-        horizontal: "left"
-    },
-    getContentAnchorEl: null,
-};
+    [`& .${classes.chip}`]: {
+        margin: theme.spacing(0.25),
+    }
+}));
 
 const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 const checkedIcon = <CheckBoxIcon fontSize='small' />;
@@ -101,12 +100,13 @@ const tokens = (props) => {
         updateAccessTokenRequest(newRequest);
     };
     const {
-        classes, accessTokenRequest, subscriptionScopes,
+        accessTokenRequest, subscriptionScopes,
     } = props;
 
     return (
-        <>
+        <Root>
             <FormControl
+                variant="standard"
                 margin='normal'
                 className={classes.FormControlOdd}
                 disabled={subscriptionScopes.length === 0}
@@ -121,22 +121,23 @@ const tokens = (props) => {
                     disableCloseOnSelect
                     value={accessTokenRequest.scopesSelected}
                     onChange={(e, newValue) => handleChange('scopesSelected', { target: { value: newValue } })}
-                    renderOption={(option, { selected }) => (
-                        <>
+                    renderOption={(props, option, { selected }) => (
+                        <li {...props}>
                             <Checkbox
                                 id={'access-token-scope-' + option}
                                 icon={icon}
                                 checkedIcon={checkedIcon}
-                                style={{ marginRight: 8 }}
+                                style={{marginRight: 8}}
                                 checked={selected}
                             />
                             {option}
-                        </>
+                        </li>
                     )}
                     renderInput={(params) => (
                         <TextField {...params}
                             margin='dense'
                             variant='outlined'
+                                   size='small'
                             label={<FormattedMessage
                                 htmlFor='quota-helper'
                                 className={classes.quotaHelp}
@@ -157,10 +158,10 @@ const tokens = (props) => {
                     />
                 </Typography>
             </FormControl>
-        </>
+        </Root>
     );
 };
 tokens.contextTypes = {
     intl: PropTypes.shape({}).isRequired,
 };
-export default withStyles(styles)(tokens);
+export default (tokens);

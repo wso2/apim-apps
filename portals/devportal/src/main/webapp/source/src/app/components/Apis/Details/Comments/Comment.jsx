@@ -1,4 +1,3 @@
-/* eslint-disable react/prop-types */
 /*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -17,14 +16,14 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { injectIntl, FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import { Typography, Tooltip } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
-import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
-import Box from '@material-ui/core/Box';
+import { Typography, Tooltip } from '@mui/material';
+import Icon from '@mui/material/Icon';
+import Grid from '@mui/material/Grid';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 dayjs.extend(relativeTime);
@@ -37,15 +36,36 @@ import CommentEdit from './CommentEdit';
 import CommentOptions from './CommentOptions';
 import CommentAdd from './CommentAdd';
 
-const styles = (theme) => ({
-    link: {
+const PREFIX = 'Comment';
+
+const classes = {
+    link: `${PREFIX}-link`,
+    commentIcon: `${PREFIX}-commentIcon`,
+    commentText: `${PREFIX}-commentText`,
+    root: `${PREFIX}-root`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    contentWrapperOverview: `${PREFIX}-contentWrapperOverview`,
+    divider: `${PREFIX}-divider`,
+    paper: `${PREFIX}-paper`,
+    cleanBack: `${PREFIX}-cleanBack`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.link}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         cursor: 'pointer',
     },
-    commentIcon: {
+
+    [`& .${classes.commentIcon}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    commentText: {
+
+    [`& .${classes.commentText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         marginTop: 0,
         width: '99%',
@@ -53,34 +73,40 @@ const styles = (theme) => ({
         overflowWrap: 'break-word',
         wordBreak: 'break-all',
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         marginTop: theme.spacing(1),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         paddingLeft: theme.spacing(2),
         paddingTop: theme.spacing(1),
     },
-    contentWrapperOverview: {
+
+    [`& .${classes.contentWrapperOverview}`]: {
         background: 'transparent',
         width: '100%',
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         marginTop: theme.spacing(2),
         marginBottom: theme.spacing(2),
         width: '60%',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         margin: 0,
         marginTop: theme.spacing(1),
         marginRight: theme.spacing(3),
         paddingBottom: theme.spacing(3),
     },
-    cleanBack: {
+
+    [`& .${classes.cleanBack}`]: {
         background: 'transparent',
         width: '100%',
         boxShadow: 'none',
-    },
-});
+    }
+}));
 
 /**
  * Display a particular comment and details
@@ -402,19 +428,18 @@ class Comment extends React.Component {
      */
     render() {
         const {
-            classes, comments, apiId, allComments, isOverview, isCrossTenantUser,
+            comments, apiId, allComments, isOverview, isCrossTenantUser,
         } = this.props;
 
         const { editIndex, openDialog, replyId } = this.state;
         return (
-            <>
+            <Root>
                 <div className={classNames({ [classes.paper]: !isOverview && comments.length > 0 }, { [classes.cleanBack]: isOverview })}>
                     {comments
                         && comments
                             .slice(0)
                             .map((comment, index) => (
                                 <div
-                                    // eslint-disable-next-line react/no-array-index-key
                                     key={comment.id + '-' + index}
                                     className={classNames(
                                         { [classes.contentWrapper]: !isOverview },
@@ -565,7 +590,7 @@ class Comment extends React.Component {
                     callback={this.handleConfirmDialog}
                     open={openDialog}
                 />
-            </>
+            </Root>
         );
     }
 }
@@ -582,4 +607,4 @@ Comment.propTypes = {
     updateComment: PropTypes.func.isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Comment));
+export default injectIntl((Comment));

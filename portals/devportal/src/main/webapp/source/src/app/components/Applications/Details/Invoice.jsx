@@ -17,21 +17,32 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
 import MUIDataTable from 'mui-datatables';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage } from 'react-intl';
 import Subscription from 'AppData/Subscription';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
-import { withStyles } from '@material-ui/core/styles';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
 
-const styles = (theme) => ({
-    dialogWrapper: {
+const PREFIX = 'Invoice';
+
+const classes = {
+    dialogWrapper: `${PREFIX}-dialogWrapper`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.dialogWrapper}`]: {
         '& span,& p , & h5, & label, & td, & li': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
@@ -39,7 +50,7 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-});
+}));
 
 const columns = ['Name', 'Value'];
 
@@ -62,7 +73,7 @@ const options = {
  */
 function Invoice(props) {
     const {
-        subscriptionId, classes, tiers,
+        subscriptionId, tiers,
     } = props;
     const [showPopup, setShowPopup] = useState(false);
     const [showErrorPopup, setShowErrorPopup] = useState(false);
@@ -106,9 +117,9 @@ function Invoice(props) {
     };
 
     return (
-        <>
+        <Root>
             <Button
-                color='default'
+                color='grey'
                 onClick={handlePopup}
                 startIcon={<Icon>receipt</Icon>}
                 disabled={tiers.length === 0}
@@ -167,7 +178,7 @@ function Invoice(props) {
                     </DialogActions>
                 </Dialog>
             )}
-        </>
+        </Root>
     );
 }
 Invoice.defaultProps = {
@@ -178,4 +189,4 @@ Invoice.propTypes = {
     tiers: PropTypes.arrayOf(PropTypes.string),
 };
 
-export default withStyles(styles)(Invoice);
+export default (Invoice);

@@ -17,17 +17,17 @@
  */
 
 import React, { useState, useContext, useEffect } from 'react';
-import Paper from '@material-ui/core/Paper';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
 import AuthManager from 'AppData/AuthManager';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import fileDownload from 'js-file-download';
 import converter from 'graphql-to-postman';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import GraphQLUI from './GraphQLUI';
 import TryOutController from '../ApiConsole/TryOutController';
 import { ApiContext } from '../ApiContext';
@@ -35,24 +35,43 @@ import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
 import AdditionalHeaders from './AdditionalHeaders';
 
-const useStyles = makeStyles((theme) => ({
-    buttonIcon: {
+const PREFIX = 'GraphQLConsole';
+
+const classes = {
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    paper: `${PREFIX}-paper`,
+    grid: `${PREFIX}-grid`,
+    userNotificationPaper: `${PREFIX}-userNotificationPaper`,
+    titleSub: `${PREFIX}-titleSub`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         margin: theme.spacing(1),
         padding: theme.spacing(1),
     },
-    grid: {
+
+    [`& .${classes.grid}`]: {
         marginTop: theme.spacing(4),
         marginBottom: theme.spacing(4),
         paddingRight: theme.spacing(2),
         justifyContent: 'center',
     },
-    userNotificationPaper: {
+
+    [`& .${classes.userNotificationPaper}`]: {
         padding: theme.spacing(2),
     },
-    titleSub: {
+
+    [`& .${classes.titleSub}`]: {
         marginLeft: theme.spacing(2),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
@@ -60,7 +79,6 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function GraphQLConsole() {
-    const classes = useStyles();
     const { api } = useContext(ApiContext);
     const environmentObject = api.endpointURLs;
     const [URLs, setURLs] = useState(environmentObject.length > 0 ? environmentObject[0].URLs : null);
@@ -240,7 +258,7 @@ export default function GraphQLConsole() {
     }
 
     return (
-        <>
+        <Root>
             <Typography variant='h4' className={classes.titleSub}>
                 <FormattedMessage id='Apis.Details.GraphQLConsole.GraphQLConsole.title' defaultMessage='Try Out' />
             </Typography>
@@ -266,40 +284,42 @@ export default function GraphQLConsole() {
                         </Grid>
                     )}
                 </Grid>
-                <TryOutController
-                    setSecurityScheme={setSecurityScheme}
-                    securitySchemeType={securitySchemeType}
-                    setSelectedEnvironment={setSelectedEnvironment}
-                    selectedEnvironment={selectedEnvironment}
-                    productionAccessToken={productionAccessToken}
-                    setProductionAccessToken={setProductionAccessToken}
-                    sandboxAccessToken={sandboxAccessToken}
-                    setSandboxAccessToken={setSandboxAccessToken}
-                    environments={environments}
-                    scopes={scopes}
-                    setUsername={setUsername}
-                    setPassword={setPassword}
-                    username={username}
-                    password={password}
-                    setSelectedKeyType={setSelectedKeyType}
-                    convertToPostman={grapgQLToPostman}
-                    selectedKeyType={selectedKeyType}
-                    setKeys={setKeys}
-                    setURLs={setURLs}
-                    setProductionApiKey={setProductionApiKey}
-                    setSandboxApiKey={setSandboxApiKey}
-                    productionApiKey={productionApiKey}
-                    sandboxApiKey={sandboxApiKey}
-                    environmentObject={environmentObject}
-                    setAdvAuthHeader={setAdvAuthHeader}
-                    setAdvAuthHeaderValue={setAdvAuthHeaderValue}
-                    advAuthHeader={advAuthHeader}
-                    advAuthHeaderValue={advAuthHeaderValue}
-                    setSelectedEndpoint={setSelectedEndpoint}
-                    selectedEndpoint={selectedEndpoint}
-                    api={api}
-                    URLs={URLs}
-                />
+                <Grid container className={classes.grid}>
+                    <TryOutController
+                        setSecurityScheme={setSecurityScheme}
+                        securitySchemeType={securitySchemeType}
+                        setSelectedEnvironment={setSelectedEnvironment}
+                        selectedEnvironment={selectedEnvironment}
+                        productionAccessToken={productionAccessToken}
+                        setProductionAccessToken={setProductionAccessToken}
+                        sandboxAccessToken={sandboxAccessToken}
+                        setSandboxAccessToken={setSandboxAccessToken}
+                        environments={environments}
+                        scopes={scopes}
+                        setUsername={setUsername}
+                        setPassword={setPassword}
+                        username={username}
+                        password={password}
+                        setSelectedKeyType={setSelectedKeyType}
+                        convertToPostman={grapgQLToPostman}
+                        selectedKeyType={selectedKeyType}
+                        setKeys={setKeys}
+                        setURLs={setURLs}
+                        setProductionApiKey={setProductionApiKey}
+                        setSandboxApiKey={setSandboxApiKey}
+                        productionApiKey={productionApiKey}
+                        sandboxApiKey={sandboxApiKey}
+                        environmentObject={environmentObject}
+                        setAdvAuthHeader={setAdvAuthHeader}
+                        setAdvAuthHeaderValue={setAdvAuthHeaderValue}
+                        advAuthHeader={advAuthHeader}
+                        advAuthHeaderValue={advAuthHeaderValue}
+                        setSelectedEndpoint={setSelectedEndpoint}
+                        selectedEndpoint={selectedEndpoint}
+                        api={api}
+                        URLs={URLs}
+                    />
+                </Grid>
                 <Box display='flex' justifyContent='center'>
                     <Box
                         width='50%'
@@ -334,7 +354,7 @@ export default function GraphQLConsole() {
                     additionalHeaders={additionalHeaders}
                 />
             </Paper>
-        </>
+        </Root>
     );
 }
 

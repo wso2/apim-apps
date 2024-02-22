@@ -16,15 +16,23 @@
  * under the License.
  */
 import React, { PureComponent } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import MaterialIcons from 'MaterialIcons';
+import { useTheme } from '@mui/material';
 import Background from '../Background';
 
-const styles = {
-    icon: {},
-    iconWrapper: {
+const PREFIX = 'ImageGeneratorLegacy';
+
+const classes = {
+    icon: `${PREFIX}-icon`,
+    iconWrapper: `${PREFIX}-iconWrapper`,
+};
+
+const Root = styled('div')({
+    [`& .${classes.icon}`]: {},
+    [`&.${classes.iconWrapper}`]: {
         position: 'relative',
         display: 'flex',
         justifyContent: 'center',
@@ -33,24 +41,24 @@ const styles = {
             right: 'auto',
         },
     },
-};
+});
 
 /**
  * Generate dynamic API thumbnail image (SVG), Use PureComponent to avoid unnessasary re-rendering when hover ect
  *
- * @class ImageGenerator
+ * @class ImageGeneratorLegacy
  * @extends {PureComponent}
  */
-class ImageGenerator extends PureComponent {
+class ImageGeneratorLegacy extends PureComponent {
     /**
      *
      * @inheritdoc
      * @returns {React.PureComponent} @inheritdoc
-     * @memberof ImageGenerator
+     * @memberof ImageGeneratorLegacy
      */
     render() {
         const {
-            classes, api, width, height, theme, fixedIcon,
+            api, width, height, theme, fixedIcon,
         } = this.props;
 
         const {
@@ -86,17 +94,17 @@ class ImageGenerator extends PureComponent {
             colorPair = colorPairs[randomBackgroundIndex];
         }
         return (
-            <div className={classes.iconWrapper} style={{ width }}>
+            <Root className={classes.iconWrapper} style={{ width }}>
                 <Icon className={classes.icon} style={{ fontSize: height + 'px', color }}>
                     {IconElement}
                 </Icon>
                 <Background width={width} height={height} colorPair={colorPair} />
-            </div>
+            </Root>
         );
     }
 }
 
-ImageGenerator.defaultProps = {
+ImageGeneratorLegacy.defaultProps = {
     height: 190,
     width: 250,
     fixedIcon: {
@@ -107,7 +115,7 @@ ImageGenerator.defaultProps = {
     },
 };
 
-ImageGenerator.propTypes = {
+ImageGeneratorLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     height: PropTypes.number,
     width: PropTypes.number,
@@ -116,4 +124,20 @@ ImageGenerator.propTypes = {
     theme: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(ImageGenerator);
+function ImageGenerator(props) {
+    const {
+        width, height, api, fixedIcon,
+    } = props;
+    const theme = useTheme();
+    return (
+        <ImageGeneratorLegacy
+            width={width}
+            height={height}
+            api={api}
+            fixedIcon={fixedIcon}
+            theme={theme}
+        />
+    );
+}
+
+export default (ImageGenerator);

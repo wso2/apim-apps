@@ -17,33 +17,41 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import classNames from 'classnames';
-import { withStyles } from '@material-ui/core/styles';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Icon from '@material-ui/core/Icon';
-import Tooltip from '@material-ui/core/Tooltip';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Icon from '@mui/material/Icon';
+import Tooltip from '@mui/material/Tooltip';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
-/**
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
-    textWrapper: {
+const PREFIX = 'APICategoryThumb';
+
+const classes = {
+    textWrapper: `${PREFIX}-textWrapper`,
+    listItemText: `${PREFIX}-listItemText`,
+};
+
+const StyledLink = styled(Link)((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.textWrapper}`]: {
         color: theme.custom.tagCloud.leftMenu.color,
         '& .material-icons': {
             color: theme.custom.tagCloud.leftMenu.color,
         },
     },
-    listItemText: {
+
+    [`& .${classes.listItemText}`]: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-});
+}));
 
 /**
  * Get APICategoryThumb
@@ -52,7 +60,7 @@ const styles = (theme) => ({
  */
 function APICategoryThumb(props) {
     const {
-        category, path, classes,
+        category, path,
     } = props;
     const categoryLink = path + ':' + category.name;
     let categoryDesc = category.description;
@@ -60,7 +68,7 @@ function APICategoryThumb(props) {
         categoryDesc = categoryDesc.substring(0, 50) + '...';
     }
     return (
-        <Link to={categoryLink} className={classes.textWrapper}>
+        <StyledLink to={categoryLink} className={classes.textWrapper}>
             <Tooltip placement='right' title={category.description.length <= 50 ? '' : category.description}>
                 <ListItem button alignItems='flex-start'>
                     <ListItemIcon className='category-listing-icon'>
@@ -76,7 +84,7 @@ function APICategoryThumb(props) {
                     />
                 </ListItem>
             </Tooltip>
-        </Link>
+        </StyledLink>
     );
 }
 
@@ -86,4 +94,4 @@ APICategoryThumb.propTypes = {
     path: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(APICategoryThumb);
+export default (APICategoryThumb);

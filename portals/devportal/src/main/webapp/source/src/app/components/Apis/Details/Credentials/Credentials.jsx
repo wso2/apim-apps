@@ -16,20 +16,20 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
-import { Typography } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+import { Typography } from '@mui/material';
+import Button from '@mui/material/Button';
 import Subscription from 'AppData/Subscription';
 import GenericDisplayDialog from 'AppComponents/Shared/GenericDisplayDialog';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import Api from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Icon from '@material-ui/core/Icon';
-import Link from '@material-ui/core/Link';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Icon from '@mui/material/Icon';
+import Link from '@mui/material/Link';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Application from 'AppData/Application';
@@ -40,23 +40,51 @@ import OriginalDevportalDetails from './OriginalDevportalDetails';
 import { ApiContext } from '../ApiContext';
 import SubscriptionTableRow from './SubscriptionTableRow';
 
-/**
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
-    contentWrapper: {
+const PREFIX = 'Credentials';
+
+const classes = {
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    titleSub: `${PREFIX}-titleSub`,
+    generateCredentialWrapper: `${PREFIX}-generateCredentialWrapper`,
+    tableMain: `${PREFIX}-tableMain`,
+    expansion: `${PREFIX}-expansion`,
+    summary: `${PREFIX}-summary`,
+    subscribeRoot: `${PREFIX}-subscribeRoot`,
+    activeLink: `${PREFIX}-activeLink`,
+    appBar: `${PREFIX}-appBar`,
+    toolbar: `${PREFIX}-toolbar`,
+    subscribeTitle: `${PREFIX}-subscribeTitle`,
+    paper: `${PREFIX}-paper`,
+    descWrapper: `${PREFIX}-descWrapper`,
+    credentialBoxWrapper: `${PREFIX}-credentialBoxWrapper`,
+    credentialBox: `${PREFIX}-credentialBox`,
+    addLinkWrapper: `${PREFIX}-addLinkWrapper`,
+    subsListTitle: `${PREFIX}-subsListTitle`,
+    subsListDesc: `${PREFIX}-subsListDesc`,
+    buttonElm: `${PREFIX}-buttonElm`,
+    launchIcon: `${PREFIX}-launchIcon`,
+    originalDevPortalLink: `${PREFIX}-originalDevPortalLink`,
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
         paddingLeft: theme.spacing(3),
         paddingTop: theme.spacing(3),
     },
-    titleSub: {
+
+    [`& .${classes.titleSub}`]: {
         marginLeft: theme.spacing(3),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    generateCredentialWrapper: {
+
+    [`& .${classes.generateCredentialWrapper}`]: {
         marginLeft: 0,
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
@@ -64,7 +92,8 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    tableMain: {
+
+    [`& .${classes.tableMain}`]: {
         '& > table': {
             width: '100%',
             borderCollapse: 'collapse',
@@ -91,8 +120,8 @@ const styles = (theme) => ({
             backgroundColor: theme.custom.listView.tableHeadBackground,
             color: theme.palette.getContrastText(theme.custom.listView.tableHeadBackground),
             paddingLeft: theme.spacing(1),
-            borderBottom: 'solid 1px ' + theme.palette.grey.A200,
-            borderTop: 'solid 1px ' + theme.palette.grey.A200,
+            borderBottom: 'solid 1px ' + theme.palette.grey.A400,
+            borderTop: 'solid 1px ' + theme.palette.grey.A400,
             textAlign: 'left',
             fontSize: '11px',
             paddingTop: theme.spacing(1),
@@ -103,68 +132,85 @@ const styles = (theme) => ({
         },
 
     },
-    expansion: {
+
+    [`& .${classes.expansion}`]: {
         background: 'transparent',
         boxShadow: 'none',
     },
-    summary: {
+
+    [`& .${classes.summary}`]: {
         alignItems: 'center',
     },
-    subscribeRoot: {
+
+    [`& .${classes.subscribeRoot}`]: {
         paddingLeft: theme.spacing(2),
     },
-    activeLink: {
-        background: theme.palette.grey.A100,
+
+    [`& .${classes.activeLink}`]: {
+        background: theme.palette.grey.A300,
     },
-    appBar: {
+
+    [`& .${classes.appBar}`]: {
         background: theme.palette.background.paper,
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
-    toolbar: {
+
+    [`& .${classes.toolbar}`]: {
         marginLeft: theme.spacing(2),
     },
-    subscribeTitle: {
+
+    [`& .${classes.subscribeTitle}`]: {
         flex: 1,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         marginLeft: theme.spacing(3),
         padding: theme.spacing(2),
     },
-    descWrapper: {
+
+    [`& .${classes.descWrapper}`]: {
         marginBottom: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
-    credentialBoxWrapper: {
+
+    [`& .${classes.credentialBoxWrapper}`]: {
         paddingLeft: theme.spacing(2),
     },
-    credentialBox: {
+
+    [`& .${classes.credentialBox}`]: {
         padding: theme.spacing(1),
         border: 'solid 1px #ccc',
         borderRadius: 5,
         marginBottom: theme.spacing(2),
         marginTop: theme.spacing(2),
     },
-    addLinkWrapper: {
+
+    [`& .${classes.addLinkWrapper}`]: {
         marginLeft: theme.spacing(2),
     },
-    subsListTitle: {
+
+    [`& .${classes.subsListTitle}`]: {
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
-    subsListDesc: {
+
+    [`& .${classes.subsListDesc}`]: {
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
-    buttonElm: {
+
+    [`& .${classes.buttonElm}`]: {
         '& span': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
     },
-    launchIcon: {
+
+    [`& .${classes.launchIcon}`]: {
         paddingLeft: theme.spacing(1),
     },
-    originalDevPortalLink: {
+
+    [`& .${classes.originalDevPortalLink}`]: {
         marginTop: theme.spacing(2),
     },
-});
+}));
 
 /**
  * @class Credentials
@@ -346,7 +392,7 @@ class Credentials extends React.Component {
      * @inheritdoc
      */
     render() {
-        const { classes, intl } = this.props;
+        const { intl } = this.props;
         const {
             api, updateSubscriptionData, applicationsAvailable, subscribedApplications,
         } = this.context;
@@ -568,7 +614,7 @@ class Credentials extends React.Component {
             }
         };
         return (
-            <Grid container>
+            <StyledGrid container>
                 <Grid item md={12} lg={11}>
                     <Grid container spacing={2}>
                         <Grid item md={12}>
@@ -596,6 +642,7 @@ class Credentials extends React.Component {
                                                     ? { pointerEvents: 'none' } : null}
                                                 className={classes.addLinkWrapper}
                                                 component={RouterLink}
+                                                underline='hover'
                                             >
                                                 <Button
                                                     color='secondary'
@@ -643,7 +690,7 @@ class Credentials extends React.Component {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
+            </StyledGrid>
         );
     }
 }
@@ -667,4 +714,4 @@ Credentials.propTypes = {
 };
 Credentials.contextType = ApiContext;
 
-export default injectIntl(withStyles(styles, { withTheme: true })(Credentials));
+export default injectIntl((Credentials));

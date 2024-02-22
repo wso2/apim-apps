@@ -17,17 +17,27 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import { useIntl, FormattedMessage } from 'react-intl';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogContentText from '@mui/material/DialogContentText';
 import FormDialogBase from 'AppComponents/Apis/Details/GraphQLConsole/FormDialogBase';
-import TextField from '@material-ui/core/TextField';
-import CreateIcon from '@material-ui/icons/Create';
-import Typography from '@material-ui/core/Typography';
+import TextField from '@mui/material/TextField';
+import CreateIcon from '@mui/icons-material/Create';
+import Typography from '@mui/material/Typography';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
+const PREFIX = 'AddEditAdditionalHeaders';
+
+const classes = {
+    error: `${PREFIX}-error`,
+};
+
+const StyledFormDialogBase = styled(FormDialogBase)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.error}`]: {
         color: theme.palette.error.dark,
     },
 }));
@@ -39,7 +49,6 @@ const useStyles = makeStyles((theme) => ({
  */
 function AddEditAdditionalHeaders(props) {
     const intl = useIntl();
-    const classes = useStyles();
     const { callBack, item } = props;
     let initName = '';
     let initValue = '';
@@ -102,7 +111,7 @@ function AddEditAdditionalHeaders(props) {
         return false;
     };
     return (
-        <FormDialogBase
+        <StyledFormDialogBase
             title={item === undefined
                 ? `${intl.formatMessage({
                     id: 'GraphQL.Devportal.Tryout.Additional.header.add.new',
@@ -183,7 +192,7 @@ function AddEditAdditionalHeaders(props) {
                 variant='outlined'
                 error={hasErrors('value', value, validating)}
             />
-        </FormDialogBase>
+        </StyledFormDialogBase>
     );
 }
 AddEditAdditionalHeaders.propTypes = {

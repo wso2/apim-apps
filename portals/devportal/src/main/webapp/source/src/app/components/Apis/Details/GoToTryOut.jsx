@@ -19,42 +19,24 @@
 import React, {
     useReducer, useContext, useState,
 } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useHistory } from 'react-router-dom';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Modal from '@material-ui/core/Modal';
-import Backdrop from '@material-ui/core/Backdrop';
-import Fade from '@material-ui/core/Fade';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Modal from '@mui/material/Modal';
+import Backdrop from '@mui/material/Backdrop';
+import Fade from '@mui/material/Fade';
 import API from 'AppData/api';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { useTheme } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { useTheme } from '@mui/material';
+import Typography from '@mui/material/Typography';
 import Application from 'AppData/Application';
 import Alert from 'AppComponents/Shared/Alert';
 import AuthManager from 'AppData/AuthManager';
 import CONSTANTS from 'AppData/Constants';
 import { ApiContext } from './ApiContext';
 import TaskState from './TaskState';
-
-const useStyles = makeStyles(() => ({
-    tryoutLabel: {
-        whiteSpace: 'nowrap',
-    },
-    modal: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    statusBox: {
-        outline: 'none',
-    },
-    asyncButton: {
-        minWidth: 115,
-    },
-}));
 
 const keyStates = {
     COMPLETED: 'COMPLETED',
@@ -91,11 +73,10 @@ export default function GoToTryOut() {
     const defaultApplication = defaultApplications.length > 0 ? defaultApplications[0] : null;
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, initialTaskStates);
     const [showStatus, setShowStatus] = useState(false);
-    const classes = useStyles();
     const intl = useIntl();
     const history = useHistory();
     const theme = useTheme();
-    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
+    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('sm'));
     const isAsyncAPI = (api
         && (api.type === CONSTANTS.API_TYPES.WS
             || api.type === CONSTANTS.API_TYPES.WEBSUB
@@ -238,7 +219,10 @@ export default function GoToTryOut() {
             variant='outlined'
             color='primary'
             size='small'
-            classes={{ root: classes.asyncButton, label: classes.tryoutLabel }}
+            classes={{
+                root: { minWidth: 120 },
+                label: { whiteSpace: 'nowrap' },
+            }}
             onClick={pushToTryout}
         >
             <FormattedMessage
@@ -251,7 +235,9 @@ export default function GoToTryOut() {
             variant='contained'
             color='primary'
             size='medium'
-            classes={{ label: classes.tryoutLabel }}
+            sx={{
+                whiteSpace: 'nowrap',
+            }}
             onClick={pushToTryout}
             aria-label='Go to Try Out page'
         >
@@ -280,7 +266,9 @@ export default function GoToTryOut() {
                 color='primary'
                 size='medium'
                 aria-label='Try Out the API'
-                classes={{ label: classes.tryoutLabel }}
+                sx={{
+                    whiteSpace: 'nowrap',
+                }}
             >
                 <FormattedMessage
                     id='Apis.Details.GoToTryOut.btn.tryout'
@@ -290,7 +278,11 @@ export default function GoToTryOut() {
 
             <Modal
                 aria-label='Preparing to Try Out the API'
-                className={classes.modal}
+                sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                }}
                 open={showStatus}
                 // onClose={handleClose}
                 closeAfterTransition
@@ -305,13 +297,21 @@ export default function GoToTryOut() {
                         bgcolor='background.paper'
                         borderRadius='borderRadius'
                         width={isXsOrBelow ? 4 / 5 : 1 / 4}
-                        className={classes.statusBox}
+                        sx={{
+                            outline: 'none',
+                            bgcolor: 'background.paper',
+                            transform: 'translate(-50%, -50%)',
+                            position: 'absolute',
+                            top: '50%',
+                            left: '50%',
+                            borderRadius: 4,
+                        }}
                         p={2}
                     >
                         <Grid
                             container
                             direction='row'
-                            justify='center'
+                            justifyContent='center'
                             alignItems='center'
                         >
                             <TaskState
@@ -419,7 +419,6 @@ export default function GoToTryOut() {
                     </Box>
                 </Fade>
             </Modal>
-
         </>
     );
 }

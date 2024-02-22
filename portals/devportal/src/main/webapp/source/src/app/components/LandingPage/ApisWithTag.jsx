@@ -17,8 +17,8 @@
  */
 
 import React, { useState, useEffect, useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import { useIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import Settings from 'AppComponents/Shared/SettingsContext';
@@ -26,8 +26,14 @@ import ResourceNotFound from '../Base/Errors/ResourceNotFound';
 import API from '../../data/api';
 import ApiThumb from '../Apis/Listing/ApiThumb';
 
-const useStyles = makeStyles(() => ({
-    tagedApisWrapper: {
+const PREFIX = 'ApisWithTag';
+
+const classes = {
+    tagedApisWrapper: `${PREFIX}-tagedApisWrapper`,
+};
+
+const Root = styled('div')(() => ({
+    [`&.${classes.tagedApisWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
@@ -40,7 +46,6 @@ const useStyles = makeStyles(() => ({
  * @returns {JSX} rendered Apis With Tag view.
  */
 function ApisWithTag(props) {
-    const classes = useStyles();
     const intl = useIntl();
 
     const [apis, setApis] = useState(null);
@@ -76,11 +81,11 @@ function ApisWithTag(props) {
     } else {
         return (
             apis && (
-                <div className={classes.tagedApisWrapper}>
+                <Root className={classes.tagedApisWrapper}>
                     {apis.list.map((api) => (
                         <ApiThumb api={api} key={api.id} />
                     ))}
-                </div>
+                </Root>
             )
         );
     }

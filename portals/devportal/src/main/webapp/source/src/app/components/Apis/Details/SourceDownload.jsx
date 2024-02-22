@@ -18,40 +18,18 @@
  */
 
 import React, { useContext, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import CloudDownloadRounded from '@material-ui/icons/CloudDownloadRounded';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
+import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
 import Utils from 'AppData/Utils';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, useIntl } from 'react-intl';
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 import Settings from 'Settings';
 import queryString from 'query-string';
 import { ApiContext } from './ApiContext';
-
-const useStyles = makeStyles((theme) => ({
-    iconStyle: {
-        cursor: 'pointer',
-        margin: '-10px 0',
-        padding: '0 0 0 5px',
-        '& .material-icons': {
-            fontSize: 18,
-            color: theme.palette.secondary.main,
-        },
-    },
-    buttonIcon: {
-        marginRight: 10,
-    },
-    downloadLink: {
-        fontSize: 14,
-        color: theme.palette.primary.main,
-        display: 'flex',
-    },
-}));
 
 /**
  * Renders the download links.
@@ -61,7 +39,6 @@ function SourceDownload(props) {
     const { selectedEndpoint } = props;
     const { api } = useContext(ApiContext);
     const apiClient = new API();
-    const classes = useStyles();
     const intl = useIntl();
     const accessTokenPart = Utils.getCookieWithoutEnvironment('WSO2_AM_TOKEN_1_Default');
     const [isTokenCopied, setIsTokenCopied] = useState(false);
@@ -180,14 +157,29 @@ function SourceDownload(props) {
                     />
                 )}
                 placement='right'
-                className={classes.iconStyle}
+                sx={{
+                    cursor: 'pointer',
+                    margin: '-10px 0',
+                    padding: '0 0 0 5px',
+                    '& .material-icons': (theme) => ({
+                        fontSize: 18,
+                        color: theme.palette.secondary.main,
+                    }),
+                }}
             >
                 <a
                     onKeyDown={downloadWSDL}
                     onClick={downloadWSDL}
-                    className={classes.downloadLink}
+                    className={(theme) => ({
+                        fontSize: 14,
+                        color: theme.palette.primary.main,
+                        display: 'flex',
+                    })}
                 >
-                    <CloudDownloadRounded className={classes.buttonIcon} />
+                    <CloudDownloadRounded sx={{
+                        marginRight: 1,
+                    }}
+                    />
                     <FormattedMessage
                         id='Apis.Details.Environments.download.wsdl.text'
                         defaultMessage='Download WSDL'
@@ -207,15 +199,30 @@ function SourceDownload(props) {
                         />
                     )}
                     placement='right'
-                    className={classes.iconStyle}
+                    sx={(theme) => ({
+                        cursor: 'pointer',
+                        margin: '-10px 0',
+                        padding: '0 0 0 5px',
+                        '& .material-icons': {
+                            fontSize: 18,
+                            color: theme.palette.secondary.main,
+                        },
+                    })}
                 >
                     <a
                         onClick={downloadSwagger}
                         onKeyDown={downloadSwagger}
-                        className={classes.downloadLink}
+                        className={(theme) => ({
+                            fontSize: 14,
+                            color: theme.palette.primary.main,
+                            display: 'flex',
+                        })}
                         id='swagger-download-btn'
                     >
-                        <CloudDownloadRounded className={classes.buttonIcon} />
+                        <CloudDownloadRounded sx={{
+                            marginRight: 1,
+                        }}
+                        />
                         <FormattedMessage
                             id='Apis.Details.Environments.download.swagger.text'
                             defaultMessage='Download Swagger'
@@ -238,17 +245,22 @@ function SourceDownload(props) {
                         )}
                     placement='top'
                 >
-                    <CopyToClipboard
-                        text={location.origin + '/api/am/devportal/v3/apis/' + api.id
-                        + '/swagger?accessToken=' + accessTokenPart + '&X-WSO2-Tenant-Q='
-                        + tenant + '&environmentName='
-                        + selectedEndpoint.environmentName}
-                        onCopy={() => setIsTokenCopied('urlCopied')}
+                    <Button
+                        aria-label='Copy to clipboard'
+                        size='small'
+                        color='grey'
+                        onClick={() => {
+                            navigator.clipboard.writeText(location.origin + '/api/am/devportal/v3/apis/' + api.id
+                            + '/swagger?accessToken=' + accessTokenPart + '&X-WSO2-Tenant-Q='
+                            + tenant + '&environmentName='
+                            + selectedEndpoint.environmentName).then(() => setIsTokenCopied('urlCopied'));
+                        }}
                     >
-                        <Button aria-label='Copy to clipboard' size='small'>
-                            <FileCopyIcon className={classes.buttonIcon} />
-                        </Button>
-                    </CopyToClipboard>
+                        <FileCopyIcon sx={{
+                            marginRight: 1,
+                        }}
+                        />
+                    </Button>
                 </Tooltip>
             </Box>
         );
@@ -263,15 +275,30 @@ function SourceDownload(props) {
                     />
                 )}
                 placement='right'
-                className={classes.iconStyle}
+                sx={(theme) => ({
+                    cursor: 'pointer',
+                    margin: '-10px 0',
+                    padding: '0 0 0 5px',
+                    '& .material-icons': {
+                        fontSize: 18,
+                        color: theme.palette.secondary.main,
+                    },
+                })}
             >
                 <a
                     onKeyDown={downloadAsync}
                     onClick={downloadAsync}
-                    className={classes.downloadLink}
+                    className={(theme) => ({
+                        fontSize: 14,
+                        color: theme.palette.primary.main,
+                        display: 'flex',
+                    })}
                     id='swagger-download-btn'
                 >
-                    <CloudDownloadRounded className={classes.buttonIcon} />
+                    <CloudDownloadRounded sx={{
+                        marginRight: 1,
+                    }}
+                    />
                     <FormattedMessage
                         id='Apis.Details.Environments.download.asyncapi.text'
                         defaultMessage='Download AsyncAPI Specification'
@@ -290,14 +317,29 @@ function SourceDownload(props) {
                     />
                 )}
                 placement='right'
-                className={classes.iconStyle}
+                sx={(theme) => ({
+                    cursor: 'pointer',
+                    margin: '-10px 0',
+                    padding: '0 0 0 5px',
+                    '& .material-icons': {
+                        fontSize: 18,
+                        color: theme.palette.secondary.main,
+                    },
+                })}
             >
                 <a
                     onKeyDown={downloadGraphQLSchema}
                     onClick={downloadGraphQLSchema}
-                    className={classes.downloadLink}
+                    className={(theme) => ({
+                        fontSize: 14,
+                        color: theme.palette.primary.main,
+                        display: 'flex',
+                    })}
                 >
-                    <CloudDownloadRounded className={classes.buttonIcon} />
+                    <CloudDownloadRounded sx={{
+                        marginRight: 1,
+                    }}
+                    />
                     <FormattedMessage
                         id='Apis.Details.Environments.download.graphql.text'
                         defaultMessage='Download GraphQL'

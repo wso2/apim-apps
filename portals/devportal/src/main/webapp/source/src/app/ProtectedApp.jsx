@@ -18,7 +18,6 @@
 
 import React, { Component } from 'react';
 import qs from 'qs';
-import { withTheme } from '@material-ui/core/styles';
 import Settings from 'Settings';
 import Tenants from 'AppData/Tenants';
 import queryString from 'query-string';
@@ -301,4 +300,4 @@ ProtectedApp.propTypes = {
         search: PropTypes.string.isRequired,
     }).isRequired,
 };
-export default withTheme(ProtectedApp);
+export default ProtectedApp;

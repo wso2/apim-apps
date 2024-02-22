@@ -1,17 +1,9 @@
-/* eslint-disable react/prop-types */
+
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import { FormattedMessage, injectIntl } from 'react-intl';
-import { app } from 'Settings';
+import Typography from '@mui/material/Typography';
+import { FormattedMessage } from 'react-intl';
 import WaitingForApproval from './WaitingForApproval';
 import ViewKeys from './ViewKeys';
-
-const useStyles = makeStyles(theme => ({
-    root: {
-        padding: theme.spacing(3, 2),
-    },
-}));
 
 /**
  * Render a compressed view of the key gneration view.
@@ -19,11 +11,16 @@ const useStyles = makeStyles(theme => ({
  * @returns {JSX} Rendered output.
  */
 export default function TokenManagerSummary(props) {
-    const classes = useStyles();
     const { keys, keyStates, key, selectedApp, keyType, isKeyJWT, isUserOwner, selectedTab } = props;
     if (keys.size > 0 && key && key.keyState === 'APPROVED' && !key.consumerKey) {
         return (
-            <div className={classes.emptyBox}>
+            <div className={{
+                background: '#ffffff55',
+                color: theme.palette.getContrastText(theme.palette.background.paper),
+                border: 'solid 1px #fff',
+                padding: theme.spacing(2),
+                width: '100%',
+            }}>
                 <Typography variant="h5" component="h3">
                     Error
                 </Typography>
@@ -38,7 +35,13 @@ export default function TokenManagerSummary(props) {
     }
     if (key && (key.keyState === keyStates.CREATED || key.keyState === keyStates.REJECTED)) {
         return (
-            <div className={classes.emptyBox}>
+            <div className={{
+                background: '#ffffff55',
+                color: theme.palette.getContrastText(theme.palette.background.paper),
+                border: 'solid 1px #fff',
+                padding: theme.spacing(2),
+                width: '100%',
+            }}>
                 <Typography variant='body2'>
                     <WaitingForApproval keyState={key.keyState} states={keyStates} />
                 </Typography>

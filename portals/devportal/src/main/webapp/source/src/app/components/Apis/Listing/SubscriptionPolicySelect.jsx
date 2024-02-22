@@ -16,37 +16,53 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Autocomplete from '@material-ui/lab/Autocomplete';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
-import TextField from '@material-ui/core/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import Autocomplete from '@mui/material/Autocomplete';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
+import { useTheme } from '@mui/material';
 import { ScopeValidation, resourceMethods, resourcePaths } from '../../Shared/ScopeValidation';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'SubscriptionPolicySelectLegacy';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    buttonGap: `${PREFIX}-buttonGap`,
+    select: `${PREFIX}-select`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.root}`]: {
         display: 'flex',
     },
-    buttonGap: {
+
+    [`& .${classes.buttonGap}`]: {
+        background: theme.palette.grey[300],
         marginLeft: 20,
         '& span span': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
     },
-    select: {
+
+    [`& .${classes.select}`]: {
         width: 100,
     },
-});
+}));
 
 /**
- * @class SubscriptionPolicySelect
+ * @class SubscriptionPolicySelectLegacy
  * @extends {React.Component}
  */
-class SubscriptionPolicySelect extends React.Component {
+class SubscriptionPolicySelectLegacy extends React.Component {
     /**
-     * Create instance of SubscriptionPolicySelect
+     * Create instance of SubscriptionPolicySelectLegacy
      * @param {JSON} props Props pass from the parent.
      * @returns {void}
      */
@@ -73,14 +89,14 @@ class SubscriptionPolicySelect extends React.Component {
      */
     render() {
         const {
-            classes, policies, apiId, handleSubscribe, applicationId,
+            policies, apiId, handleSubscribe, applicationId,
         } = this.props;
         const { selectedPolicy } = this.state;
 
         return (
             policies
             && (
-                <div className={classes.root}>
+                <Root className={classes.root}>
                     <Autocomplete
                         id='policy-select'
                         disableClearable
@@ -90,9 +106,10 @@ class SubscriptionPolicySelect extends React.Component {
                             this.setState({ selectedPolicy: value });
                         }}
                         style={{ width: 200 }}
-                        renderInput={(params) => (<TextField {...params} />)}
-                        renderOption={(policy) => (
+                        renderInput={(params) => (<TextField size='small' variant='standard' {...params} />)}
+                        renderOption={(props, policy) => (
                             <MenuItem
+                                {...props}
                                 value={policy}
                                 key={policy}
                                 id={'policy-select-' + policy}
@@ -108,6 +125,7 @@ class SubscriptionPolicySelect extends React.Component {
                         <Button
                             variant='contained'
                             size='small'
+                            color='grey'
                             className={classes.buttonGap}
                             onClick={() => {
                                 handleSubscribe(applicationId, apiId, selectedPolicy);
@@ -120,13 +138,13 @@ class SubscriptionPolicySelect extends React.Component {
                             />
                         </Button>
                     </ScopeValidation>
-                </div>
+                </Root>
             )
         );
     }
 }
 
-SubscriptionPolicySelect.propTypes = {
+SubscriptionPolicySelectLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     policies: PropTypes.shape({}).isRequired,
     apiId: PropTypes.string.isRequired,
@@ -134,4 +152,21 @@ SubscriptionPolicySelect.propTypes = {
     applicationId: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(SubscriptionPolicySelect);
+function SubscriptionPolicySelect(props) {
+    const {
+        key, policies, apiId, handleSubscribe, applicationId,
+    } = props;
+    const theme = useTheme();
+    return (
+        <SubscriptionPolicySelectLegacy
+            key={key}
+            policies={policies}
+            apiId={apiId}
+            handleSubscribe={handleSubscribe}
+            applicationId={applicationId}
+            theme={theme}
+        />
+    );
+}
+
+export default (SubscriptionPolicySelect);

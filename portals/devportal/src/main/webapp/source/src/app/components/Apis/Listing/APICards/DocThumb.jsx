@@ -17,36 +17,61 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { FormattedMessage } from 'react-intl';
 import MaterialIcons from 'MaterialIcons';
+import { useTheme } from '@mui/material';
 import ImageGenerator from './ImageGenerator';
 import { ApiContext } from '../../Details/ApiContext';
 
-const styles = (theme) => ({
-    thumbContent: {
+const PREFIX = 'DocThumbLegacy';
+
+const classes = {
+    thumbContent: `${PREFIX}-thumbContent`,
+    thumbLeft: `${PREFIX}-thumbLeft`,
+    thumbRight: `${PREFIX}-thumbRight`,
+    thumbInfo: `${PREFIX}-thumbInfo`,
+    thumbHeader: `${PREFIX}-thumbHeader`,
+    contextBox: `${PREFIX}-contextBox`,
+    thumbWrapper: `${PREFIX}-thumbWrapper`,
+    deleteIcon: `${PREFIX}-deleteIcon`,
+    textWrapper: `${PREFIX}-textWrapper`,
+    imageWrapper: `${PREFIX}-imageWrapper`,
+    imageOverlap: `${PREFIX}-imageOverlap`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.thumbContent}`]: {
         width: theme.custom.thumbnail.width - theme.spacing(1),
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(1),
         minHeight: 130,
     },
-    thumbLeft: {
+
+    [`& .${classes.thumbLeft}`]: {
         alignSelf: 'flex-start',
         flex: 1,
     },
-    thumbRight: {
+
+    [`& .${classes.thumbRight}`]: {
         alignSelf: 'flex-end',
         display: 'flex',
         flexDirection: 'column',
     },
-    thumbInfo: {
+
+    [`& .${classes.thumbInfo}`]: {
         display: 'flex',
     },
-    thumbHeader: {
+
+    [`& .${classes.thumbHeader}`]: {
         width: theme.custom.thumbnail.width - theme.spacing(1),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -54,7 +79,8 @@ const styles = (theme) => ({
         cursor: 'pointer',
         margin: 0,
     },
-    contextBox: {
+
+    [`& .${classes.contextBox}`]: {
         width: parseInt((theme.custom.thumbnail.width - theme.spacing(1)) / 2, 10),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -64,19 +90,23 @@ const styles = (theme) => ({
         display: 'inline-block',
         lineHeight: '1em',
     },
-    thumbWrapper: {
+
+    [`&.${classes.thumbWrapper}`]: {
         position: 'relative',
         paddingTop: 15,
         marginLeft: theme.spacing(2),
     },
-    deleteIcon: {
+
+    [`& .${classes.deleteIcon}`]: {
         fill: 'red',
     },
-    textWrapper: {
+
+    [`& .${classes.textWrapper}`]: {
         color: theme.palette.text.secondary,
         textDecoration: 'none',
     },
-    imageWrapper: {
+
+    [`& .${classes.imageWrapper}`]: {
         color: theme.palette.text.secondary,
         backgroundColor: theme.palette.background.paper,
         width: theme.custom.thumbnail.width + theme.spacing(1),
@@ -84,25 +114,26 @@ const styles = (theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    imageOverlap: {
+
+    [`& .${classes.imageOverlap}`]: {
         position: 'absolute',
         bottom: 1,
         backgroundColor: theme.custom.thumbnail.contentBackgroundColor,
     },
-});
+}));
 
 const windowURL = window.URL || window.webkitURL;
 /**
  *
  *
- * @class DocThumb
+ * @class DocThumbLegacy
  * @extends {React.Component}
  */
-class DocThumb extends React.Component {
+class DocThumbLegacy extends React.Component {
     /**
-     * Creates an instance of DocThumb.
+     * Creates an instance of DocThumbLegacy.
      * @param {JSON} props properties
-     * @memberof DocThumb
+     * @memberof DocThumbLegacy
      */
     constructor(props) {
         super(props);
@@ -127,13 +158,13 @@ class DocThumb extends React.Component {
 
     /**
      * @returns {JSX} doc thumbnail
-     * @memberof DocThumb
+     * @memberof DocThumbLegacy
      */
     render() {
         const {
             selectedIcon, color, backgroundIndex, category,
         } = this.state;
-        const { doc, classes, theme } = this.props;
+        const { doc, theme } = this.props;
         const {
             doc: {
                 name, sourceType, apiName, apiVersion, id, apiUUID,
@@ -160,7 +191,7 @@ class DocThumb extends React.Component {
         );
 
         return (
-            <div className={classes.thumbWrapper}>
+            <Root className={classes.thumbWrapper}>
                 <Link to={detailsLink} className={classes.imageWrapper}>
                     {!defaultImage && ImageView}
                     {defaultImage && <img src={defaultImage} alt='document' />}
@@ -203,16 +234,27 @@ class DocThumb extends React.Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </Root>
         );
     }
 }
 
-DocThumb.propTypes = {
+DocThumbLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
 };
 
-DocThumb.contextType = ApiContext;
+DocThumbLegacy.contextType = ApiContext;
 
-export default withStyles(styles, { withTheme: true })(DocThumb);
+function DocThumb(props) {
+    const { doc } = props;
+    const theme = useTheme();
+    return (
+        <DocThumbLegacy
+            doc={doc}
+            theme={theme}
+        />
+    );
+}
+
+export default (DocThumb);

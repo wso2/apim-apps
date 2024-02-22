@@ -16,36 +16,55 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { TextField, Button, Typography, InputLabel } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import {TextField, Button, Typography, InputLabel, useTheme} from '@mui/material';
+import Grid from '@mui/material/Grid';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from '../../../Shared/Alert';
 import API from '../../../../data/api';
 
-const styles = theme => ({
-    commentIcon: {
+const PREFIX = 'CommentAddLegacy';
+
+const classes = {
+    commentIcon: `${PREFIX}-commentIcon`,
+    content: `${PREFIX}-content`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    textField: `${PREFIX}-textField`,
+    commentAddWrapper: `${PREFIX}-commentAddWrapper`,
+    commentAddButton: `${PREFIX}-commentAddButton`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.commentIcon}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    content: {
+
+    [`& .${classes.content}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    contentWrapper: {
+
+    [`&.${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
         paddingLeft: theme.spacing(2),
         paddingTop: theme.spacing(1),
         marginTop: theme.spacing(2),
     },
-    textField: {
+
+    [`& .${classes.textField}`]: {
         marginTop: 0,
         marginRight: 5,
         width: '100%',
     },
-    commentAddWrapper: {
+
+    [`& .${classes.commentAddWrapper}`]: {
         display: 'flex',
         alignItems: 'top',
         flexFlow: 'column',
@@ -53,23 +72,24 @@ const styles = theme => ({
             marginBottom: theme.spacing(1),
         },
     },
-    commentAddButton: {
+
+    [`& .${classes.commentAddButton}`]: {
         '& span.MuiButton-label': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
-    },
-});
+    }
+}));
 
 /**
  * Display a component to add a new comment
  * @class CommmentAdd
  * @extends {React.Component}
  */
-class CommentAdd extends React.Component {
+class CommentAddLegacy extends React.Component {
     /**
-     * Creates an instance of CommentAdd
+     * Creates an instance of CommentAddLegacy
      * @param {*} props properies passed by the parent element
-     * @memberof CommentAdd
+     * @memberof CommentAddLegacy
      */
     constructor(props) {
         super(props);
@@ -87,7 +107,7 @@ class CommentAdd extends React.Component {
     /**
      * Handles the comment text when input changes
      * @param {Object} {target} target element
-     * @memberof CommentAdd
+     * @memberof CommentAddLegacy
      */
     inputChange({ target }) {
         this.setState({ content: target.value, currentLength: target.value.length });
@@ -95,7 +115,7 @@ class CommentAdd extends React.Component {
 
     /**
      * Hides the component to add a new comment when cancelled
-     * @memberof CommentAdd
+     * @memberof CommentAddLegacy
      */
     handleClickCancel() {
         this.setState({ content: '' });
@@ -105,7 +125,7 @@ class CommentAdd extends React.Component {
 
     /**
      * Filters the comment to add the reply
-     * @memberof CommentAdd
+     * @memberof CommentAddLegacy
      */
     filterCommentToAddReply(commentToFilter) {
         const { replyTo } = this.props;
@@ -114,7 +134,7 @@ class CommentAdd extends React.Component {
 
     /**
      * Handles adding a new comment
-     * @memberof CommentAdd
+     * @memberof CommentAddLegacy
      */
     handleClickAddComment() {
         const {
@@ -173,15 +193,15 @@ class CommentAdd extends React.Component {
     /**
      * Render method of the component
      * @returns {React.Component} Comment html component
-     * @memberof CommentAdd
+     * @memberof CommentAddLegacy
      */
     render() {
         const {
-            classes, cancelButton, theme, intl,
+            cancelButton, theme, intl,
         } = this.props;
         const { content, currentLength } = this.state;
         return (
-            <Grid container spacing={1} className={classes.contentWrapper}>
+            <StyledGrid container spacing={1} className={classes.contentWrapper}>
                 <Grid item xs zeroMinWidth>
                     <div className={classes.commentAddWrapper}>
                         <InputLabel htmlFor="standard-multiline-flexible">
@@ -227,7 +247,7 @@ class CommentAdd extends React.Component {
                         </Grid>
                         {cancelButton && (
                             <Grid item>
-                                <Button onClick={this.handleCancel} className={classes.button}>
+                                <Button onClick={this.handleCancel} color='grey' className={classes.button}>
                                     <FormattedMessage
                                         id='Apis.Details.Comments.CommentAdd.btn.cancel'
                                         defaultMessage='Cancel'
@@ -237,19 +257,19 @@ class CommentAdd extends React.Component {
                         )}
                     </Grid>
                 </Grid>
-            </Grid>
+            </StyledGrid>
         );
     }
 }
 
-CommentAdd.defaultProps = {
+CommentAddLegacy.defaultProps = {
     replyTo: null,
     handleShowReply: null,
     commentsUpdate: null,
     cancelCallback: null,
 };
 
-CommentAdd.propTypes = {
+CommentAddLegacy.propTypes = {
     classes: PropTypes.instanceOf(Object).isRequired,
     cancelButton: PropTypes.bool.isRequired,
     apiId: PropTypes.string.isRequired,
@@ -263,4 +283,23 @@ CommentAdd.propTypes = {
     cancelCallback: PropTypes.func,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(CommentAdd));
+function CommentAdd(props) {
+    const { handleShowReply, replyTo, apiId, intl, addComment, addReply, cancelCallback, cancelButton,
+    } = props;
+    const theme = useTheme();
+    return (
+        <CommentAddLegacy
+            handleShowReply={handleShowReply}
+            replyTo={replyTo}
+            apiId={apiId}
+            intl={intl}
+            addComment={addComment}
+            addReply={addReply}
+            cancelCallback={cancelCallback}
+            cancelButton={cancelButton}
+            theme={theme}
+        />
+    );
+}
+
+export default injectIntl((CommentAdd));

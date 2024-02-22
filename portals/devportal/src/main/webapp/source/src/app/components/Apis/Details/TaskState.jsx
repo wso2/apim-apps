@@ -16,10 +16,10 @@
  * under the License.
  */
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import Alert from '@material-ui/lab/Alert';
+import Grid from '@mui/material/Grid';
+import Alert from '@mui/material/Alert';
 import { FormattedMessage } from 'react-intl';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
 /**
  * @export
@@ -43,7 +43,7 @@ export default function TaskState(props) {
             message = inProgressMessage;
         }
     } else {
-        severity = 'waiting';
+        severity = 'warning';
     }
     if (errors) {
         severity = 'error';
