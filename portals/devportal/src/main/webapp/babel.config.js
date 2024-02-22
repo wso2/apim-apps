@@ -62,7 +62,6 @@ module.exports = {
             plugins: [
                 '@babel/plugin-syntax-dynamic-import',
                 '@babel/plugin-proposal-class-properties',
-                'react-hot-loader/babel',
                 '@babel/plugin-proposal-nullish-coalescing-operator',
                 '@babel/plugin-proposal-logical-assignment-operators',
             ],

@@ -23,7 +23,6 @@ import React, { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import Publisher from './src/Publisher';
 
-// What about production? # https://github.com/gaearon/react-hot-loader#what-about-production
 const rootElement = document.getElementById('react-root');
 const root = createRoot(rootElement);
 root.render(
