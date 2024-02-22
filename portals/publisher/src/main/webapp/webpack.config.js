@@ -70,7 +70,6 @@ module.exports = (env, argv) => {
          * and use proxy configs and `devServerBefore` to handle authentication requests.
          * For more info:
          *      https://webpack.js.org/configuration/dev-server/
-         *      https://github.com/gaearon/react-hot-loader
         */
         devServer: {
             open: !isTestBuild,
