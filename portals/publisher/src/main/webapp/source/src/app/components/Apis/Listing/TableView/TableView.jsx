@@ -52,7 +52,7 @@ const Root = styled('div')((
     [`& .${classes.contentInside}`]: {
         padding: theme.spacing(3),
         paddingTop: theme.spacing(2),
-        ['& > .MuiPaper-root']: {
+        '& > .MuiPaper-root': {
             boxShadow: 'none',
             backgroundColor: 'transparent',
         },
