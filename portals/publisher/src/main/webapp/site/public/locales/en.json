@@ -1671,6 +1671,18 @@
       "value": "Authorization header name cannot contain spaces or special characters"
     }
   ],
+  "Apis.Details.Configuration.Components.APISecurity.Components.\n                                            ApplicationLevel.Client.Websocket": [
+    {
+      "type": 0,
+      "value": "Client Websocket"
+    }
+  ],
+  "Apis.Details.Configuration.Components.APISecurity.Components.\n                                            ApplicationLevel.Websocket": [
+    {
+      "type": 0,
+      "value": "Application Level Security"
+    }
+  ],
   "Apis.Details.Configuration.Components.APISecurity.Components.\n                                    ApplicationLevel.http": [
     {
       "type": 0,
@@ -1875,16 +1887,16 @@
       "value": "Backend Websocket"
     }
   ],
-  "Apis.Details.Configuration.RuntimeConfigurationWebSocket.section.client.websocket": [
-    {
-      "type": 0,
-      "value": "Client Websocket"
-    }
-  ],
   "Apis.Details.Configuration.RuntimeConfigurationWebSocket.topic.header": [
     {
       "type": 0,
       "value": "Runtime Configurations"
+    }
+  ],
+  "Apis.Details.Configuration.RuntimeConfigurationWebsocket.RuntimeConfiguration.emptySchemes": [
+    {
+      "type": 0,
+      "value": "Please select at least one API security method."
     }
   ],
   "Apis.Details.Configuration.UpdateWithoutDetails.cancel": [
@@ -5173,6 +5185,12 @@
       "value": "-"
     }
   ],
+  "Apis.Details.NewOverview.MetaData.gateway.type": [
+    {
+      "type": 0,
+      "value": "Gateway Type"
+    }
+  ],
   "Apis.Details.NewOverview.MetaData.last.updated.time": [
     {
       "type": 0,
@@ -6781,18 +6799,6 @@
       "value": "This will enable/disable Application Level securities defined in the Runtime Configurations page."
     }
   ],
-  "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.no.api.scope.available": [
-    {
-      "type": 0,
-      "value": "No API scopes available"
-    }
-  ],
-  "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.no.sharedpi.scope.available": [
-    {
-      "type": 0,
-      "value": "No shared scopes available"
-    }
-  ],
   "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.scope.create.new.scope": [
     {
       "type": 0,
@@ -6815,18 +6821,6 @@
     {
       "type": 0,
       "value": "No scope available"
-    }
-  ],
-  "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.scope.select.local": [
-    {
-      "type": 0,
-      "value": "API Scopes"
-    }
-  ],
-  "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.scope.select.shared": [
-    {
-      "type": 0,
-      "value": "Shared Scopes"
     }
   ],
   "Apis.Details.Resources.components.operationComponents.OperationGovernance.rate.limiting.API.level": [
@@ -7591,18 +7585,6 @@
       "value": "This will enable/disable Application Level securities defined in the Runtime Configurations page."
     }
   ],
-  "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.no.api.scope.available": [
-    {
-      "type": 0,
-      "value": "No API scopes available"
-    }
-  ],
-  "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.no.sharedpi.scope.available": [
-    {
-      "type": 0,
-      "value": "No shared scopes available"
-    }
-  ],
   "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.scope.create.new.scope": [
     {
       "type": 0,
@@ -7625,18 +7607,6 @@
     {
       "type": 0,
       "value": "No scope available"
-    }
-  ],
-  "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.scope.select.local": [
-    {
-      "type": 0,
-      "value": "API Scopes"
-    }
-  ],
-  "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.scope.select.shared": [
-    {
-      "type": 0,
-      "value": "Shared Scopes"
     }
   ],
   "Apis.Details.Topics.components.operationComponents.OperationGovernance.subTitle": [

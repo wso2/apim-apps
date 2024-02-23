@@ -142,7 +142,7 @@ function MetaData(props) {
                             <Grid item xs={12} md={6} lg={4}>
                                 <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                     <FormattedMessage
-                                        id='Apis.Details.NewOverview.MetaData.version'
+                                        id='Apis.Details.NewOverview.MetaData.gateway.type'
                                         defaultMessage='Gateway Type'
                                     />
                                 </Typography>

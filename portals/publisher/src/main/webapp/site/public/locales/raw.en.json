@@ -732,6 +732,12 @@
   "Apis.Details.Configuration.AuthHeader.helper.text": {
     "defaultMessage": "Authorization header name cannot contain spaces or special characters"
   },
+  "Apis.Details.Configuration.Components.APISecurity.Components.\n                                            ApplicationLevel.Client.Websocket": {
+    "defaultMessage": "Client Websocket"
+  },
+  "Apis.Details.Configuration.Components.APISecurity.Components.\n                                            ApplicationLevel.Websocket": {
+    "defaultMessage": "Application Level Security"
+  },
   "Apis.Details.Configuration.Components.APISecurity.Components.\n                                    ApplicationLevel.http": {
     "defaultMessage": "Application Level Security"
   },
@@ -834,11 +840,11 @@
   "Apis.Details.Configuration.RuntimeConfigurationWebSocket.section.backend.websocket": {
     "defaultMessage": "Backend Websocket"
   },
-  "Apis.Details.Configuration.RuntimeConfigurationWebSocket.section.client.websocket": {
-    "defaultMessage": "Client Websocket"
-  },
   "Apis.Details.Configuration.RuntimeConfigurationWebSocket.topic.header": {
     "defaultMessage": "Runtime Configurations"
+  },
+  "Apis.Details.Configuration.RuntimeConfigurationWebsocket.RuntimeConfiguration.emptySchemes": {
+    "defaultMessage": "Please select at least one API security method."
   },
   "Apis.Details.Configuration.UpdateWithoutDetails.cancel": {
     "defaultMessage": "Cancel"
@@ -2451,6 +2457,9 @@
   "Apis.Details.NewOverview.MetaData.description.not.set": {
     "defaultMessage": "-"
   },
+  "Apis.Details.NewOverview.MetaData.gateway.type": {
+    "defaultMessage": "Gateway Type"
+  },
   "Apis.Details.NewOverview.MetaData.last.updated.time": {
     "defaultMessage": "Last Updated Time"
   },
@@ -3237,12 +3246,6 @@
   "Apis.Details.Resources.components.operationComponents.OperationGovernance.Security.tooltip": {
     "defaultMessage": "This will enable/disable Application Level securities defined in the Runtime Configurations page."
   },
-  "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.no.api.scope.available": {
-    "defaultMessage": "No API scopes available"
-  },
-  "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.no.sharedpi.scope.available": {
-    "defaultMessage": "No shared scopes available"
-  },
   "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.scope.create.new.scope": {
     "defaultMessage": "Create New Scope"
   },
@@ -3254,12 +3257,6 @@
   },
   "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.scope.label.notAvailable": {
     "defaultMessage": "No scope available"
-  },
-  "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.scope.select.local": {
-    "defaultMessage": "API Scopes"
-  },
-  "Apis.Details.Resources.components.operationComponents.OperationGovernance.operation.scope.select.shared": {
-    "defaultMessage": "Shared Scopes"
   },
   "Apis.Details.Resources.components.operationComponents.OperationGovernance.rate.limiting.API.level": {
     "defaultMessage": "API Level"
@@ -3630,12 +3627,6 @@
   "Apis.Details.Topics.components.operationComponents.OperationGovernance.Security.tooltip": {
     "defaultMessage": "This will enable/disable Application Level securities defined in the Runtime Configurations page."
   },
-  "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.no.api.scope.available": {
-    "defaultMessage": "No API scopes available"
-  },
-  "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.no.sharedpi.scope.available": {
-    "defaultMessage": "No shared scopes available"
-  },
   "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.scope.create.new.scope": {
     "defaultMessage": "Create New Scope"
   },
@@ -3647,12 +3638,6 @@
   },
   "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.scope.label.notAvailable": {
     "defaultMessage": "No scope available"
-  },
-  "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.scope.select.local": {
-    "defaultMessage": "API Scopes"
-  },
-  "Apis.Details.Topics.components.operationComponents.OperationGovernance.operation.scope.select.shared": {
-    "defaultMessage": "Shared Scopes"
   },
   "Apis.Details.Topics.components.operationComponents.OperationGovernance.subTitle": {
     "defaultMessage": "(Security & Scopes)"
