@@ -989,34 +989,47 @@ const Listing: React.FC = () => {
      */
     if (policies && policies.length === 0 && !loading) {
         return (
-            <Onboarding
-                title={
-                    <FormattedMessage
-                        id='GlobalPolicies.Listing.onboarding.create.new'
-                        defaultMessage='Let’s get started!'
-                    />
-                }
-                subTitle={
-                    <FormattedMessage
-                        id='GlobalPolicies.Listing.onboarding.policies.tooltip'
-                        defaultMessage='Global policies provide you the ability to deploy policy mappings to 
-                        all the APIs deployed in a specific gateway and not just one single 
-                        API. Click below to create your first global policy'
-                    />
-                }
-            >
-                <OnboardingMenuCard
-                    id='itest-id-create-global-policy'
-                    to='global-policies/create'
-                    name={(
-                        <FormattedMessage
-                            id='Global.Policies'
-                            defaultMessage='Global Policies'
+            <>
+                {!isRestricted(['apim:gateway_policy_manage']) ? 
+                    <Onboarding
+                        title={
+                            <FormattedMessage
+                                id='GlobalPolicies.Listing.onboarding.create.new'
+                                defaultMessage='Let’s get started!'
+                            />
+                        }
+                        subTitle={
+                            <FormattedMessage
+                                id='GlobalPolicies.Listing.onboarding.policies.tooltip'
+                                defaultMessage='Global policies provide you the ability to deploy policy mappings to 
+                                all the APIs deployed in a specific gateway and not just one single 
+                                API. Click below to create your first global policy.'
+                            />
+                        }
+                    >
+                        <OnboardingMenuCard 
+                            id='itest-id-create-global-policy'
+                            to='global-policies/create'
+                            name={(
+                                <FormattedMessage
+                                    id='Global.Policies'
+                                    defaultMessage='Global Policies'
+                                />
+                            )} 
+                            iconName={globalPolicyAddIcon}
                         />
-                    )} 
-                    iconName={globalPolicyAddIcon}
-                />
-            </Onboarding>
+                    </Onboarding>
+                    : <Onboarding subTitle={
+                        <FormattedMessage
+                            id='GlobalPolicies.Listing.onboarding.policies.tooltip.not.allowed'
+                            defaultMessage='Global policies provide you the ability to deploy policy mappings to 
+                            all the APIs deployed in a specific gateway and not just one single 
+                            API. Please contact a privileged user to create a global policy.'
+                        />
+                    }
+                    />
+                }
+            </>    
         );
     }
 

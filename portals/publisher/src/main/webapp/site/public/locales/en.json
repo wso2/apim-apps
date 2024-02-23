@@ -9064,7 +9064,13 @@
   "GlobalPolicies.Listing.onboarding.policies.tooltip": [
     {
       "type": 0,
-      "value": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Click below to create your first global policy"
+      "value": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Click below to create your first global policy."
+    }
+  ],
+  "GlobalPolicies.Listing.onboarding.policies.tooltip.not.allowed": [
+    {
+      "type": 0,
+      "value": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Please contact a privileged user to create a global policy."
     }
   ],
   "GlobalPolicies.Listing.policies.title.add.new.policy": [

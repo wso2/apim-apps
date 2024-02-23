@@ -4333,7 +4333,10 @@
     "defaultMessage": "Let’s get started!"
   },
   "GlobalPolicies.Listing.onboarding.policies.tooltip": {
-    "defaultMessage": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Click below to create your first global policy"
+    "defaultMessage": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Click below to create your first global policy."
+  },
+  "GlobalPolicies.Listing.onboarding.policies.tooltip.not.allowed": {
+    "defaultMessage": "Global policies provide you the ability to deploy policy mappings to all the APIs deployed in a specific gateway and not just one single API. Please contact a privileged user to create a global policy."
   },
   "GlobalPolicies.Listing.policies.title.add.new.policy": {
     "defaultMessage": "Add new global policy"
