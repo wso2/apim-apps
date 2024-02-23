@@ -19,29 +19,34 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { Route, Switch, Redirect } from 'react-router-dom';
-import { ThemeProvider as MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
-import Hidden from '@material-ui/core/Hidden';
-import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import User from 'AppData/User';
-import Utils from 'AppData/Utils';
-import Base from 'AppComponents/Base';
-import AuthManager from 'AppData/AuthManager';
-import Header from 'AppComponents/Base/Header';
-import Avatar from 'AppComponents/Base/Header/Avatar';
-import Themes from 'Themes';
-import AppErrorBoundary from 'AppComponents/Shared/AppErrorBoundary';
-import RedirectToLogin from 'AppComponents/Shared/RedirectToLogin';
 import { IntlProvider, injectIntl } from 'react-intl';
-import { AppContextProvider } from 'AppComponents/Shared/AppContext';
+import {
+    createTheme,
+    adaptV4Theme,
+    ThemeProvider,
+    StyledEngineProvider,
+} from '@mui/material/styles';
+import Hidden from '@mui/material/Hidden';
 import Configurations from 'Config';
-import Navigator from 'AppComponents/Base/Navigator';
-import RouteMenuMapping from 'AppComponents/Base/RouteMenuMapping';
-import Api from 'AppData/api';
-import Progress from 'AppComponents/Shared/Progress';
-import Dashboard from 'AppComponents/AdminPages/Dashboard/Dashboard';
-import Alert from 'AppComponents/Shared/Alert';
+import Themes from 'Themes';
+import ResourceNotFound from './components/Base/Errors/ResourceNotFound';
+import User from './data/User';
+import Utils from './data/Utils';
+import Base from './components/Base';
+import AuthManager from './data/AuthManager';
+import Header from './components/Base/Header';
+import Avatar from './components/Base/Header/Avatar';
+import AppErrorBoundary from './components/Shared/AppErrorBoundary';
+import RedirectToLogin from './components/Shared/RedirectToLogin';
+import { AppContextProvider } from './components/Shared/AppContext';
+import Navigator from './components/Base/Navigator';
+import RouteMenuMapping from './components/Base/RouteMenuMapping';
+import Api from './data/api';
+import Progress from './components/Shared/Progress';
+import Dashboard from './components/AdminPages/Dashboard/Dashboard';
+import Alert from './components/Shared/Alert';
 
-const theme = createMuiTheme(Themes.light);
+const theme = createTheme(adaptV4Theme(Themes.light));
 const { drawerWidth } = Themes.light.custom;
 /**
  * Language.
@@ -184,7 +189,7 @@ class Protected extends Component {
                                 }}
                             />
                         </Hidden>
-                        <Hidden xsDown implementation='css'>
+                        <Hidden smDown implementation='css'>
                             <Navigator PaperProps={{ style: { width: drawerWidth } }} />
                         </Hidden>
                     </>
@@ -192,39 +197,41 @@ class Protected extends Component {
             )
         );
         return (
-            <MuiThemeProvider theme={theme}>
-                <AppErrorBoundary>
-                    {settings ? (
-                        <AppContextProvider value={{ settings, user, isSuperTenant }}>
-                            <Base header={header} leftMenu={leftMenu}>
-                                <Route>
-                                    <Switch>
-                                        <Redirect exact from='/' to='/dashboard' />
-                                        <Route
-                                            path='/dashboard'
-                                            component={Dashboard}
-                                        />
-                                        {allRoutes.map((r) => {
-                                            return <Route path={r.path} component={r.component} />;
-                                        })}
-                                        <Route component={ResourceNotFound} />
-                                    </Switch>
-                                </Route>
-                            </Base>
-                        </AppContextProvider>
-                    ) : (
-                        <Progress message='Loading Settings ...' />
-                    )}
-                    <iframe
-                        title='iframeOP'
-                        id='iframeOP'
-                        src={checkSessionURL}
-                        width='0%'
-                        height='0%'
-                        style={{ position: 'absolute', bottom: 0 }}
-                    />
-                </AppErrorBoundary>
-            </MuiThemeProvider>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={theme}>
+                    <AppErrorBoundary>
+                        {settings ? (
+                            <AppContextProvider value={{ settings, user, isSuperTenant }}>
+                                <Base header={header} leftMenu={leftMenu}>
+                                    <Route>
+                                        <Switch>
+                                            <Redirect exact from='/' to='/dashboard' />
+                                            <Route
+                                                path='/dashboard'
+                                                component={Dashboard}
+                                            />
+                                            {allRoutes.map((r) => {
+                                                return <Route path={r.path} component={r.component} key={r.path} />;
+                                            })}
+                                            <Route component={ResourceNotFound} />
+                                        </Switch>
+                                    </Route>
+                                </Base>
+                            </AppContextProvider>
+                        ) : (
+                            <Progress message='Loading Settings ...' />
+                        )}
+                        <iframe
+                            title='iframeOP'
+                            id='iframeOP'
+                            src={checkSessionURL}
+                            width='0%'
+                            height='0%'
+                            style={{ position: 'absolute', bottom: 0 }}
+                        />
+                    </AppErrorBoundary>
+                </ThemeProvider>
+            </StyledEngineProvider>
         );
     }
 }

@@ -16,80 +16,117 @@
  * under the License.
  */
 import React from 'react';
-import {
-    ListItemIcon, withStyles, ListItem, ListItemText, useTheme,
-} from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { ListItemIcon, ListItem, ListItemText, useTheme } from '@mui/material';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import { Link as RouterLink } from 'react-router-dom';
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import classNames from 'classnames';
-import Tooltip from '@material-ui/core/Tooltip';
+import Tooltip from '@mui/material/Tooltip';
 
-const styles = (theme) => ({
-    listRoot: {
+const PREFIX = 'GlobalNavLink';
+
+const classes = {
+    listRoot: `${PREFIX}-listRoot`,
+    listText: `${PREFIX}-listText`,
+    smallIcon: `${PREFIX}-smallIcon`,
+    selected: `${PREFIX}-selected`,
+    notSelected: `${PREFIX}-notSelected`,
+    listHover: `${PREFIX}-listHover`,
+    selectedText: `${PREFIX}-selectedText`,
+    scopeIconColor: `${PREFIX}-scopeIconColor`,
+    alertIconColor: `${PREFIX}-alertIconColor`,
+    divider: `${PREFIX}-divider`,
+    categoryHeader: `${PREFIX}-categoryHeader`,
+    categoryHeaderPrimary: `${PREFIX}-categoryHeaderPrimary`,
+    itemIcon: `${PREFIX}-itemIcon`,
+    arrow: `${PREFIX}-arrow`,
+    tooltip: `${PREFIX}-tooltip`
+};
+
+const StyledLink = styled(Link)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.listRoot}`]: {
         padding: 0,
         display: 'flex',
     },
-    listText: {
+
+    [`& .${classes.listText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.drawer),
     },
-    smallIcon: {
+
+    [`& .${classes.smallIcon}`]: {
         marginRight: 5,
         minWidth: 'auto',
     },
-    selected: {
+
+    [`& .${classes.selected}`]: {
         background: '#868686b5',
         borderLeft: '2px solid',
         color: '#f9f9f9',
     },
-    notSelected: {
+
+    [`& .${classes.notSelected}`]: {
         borderLeft: '2px solid',
         color: '#18202c',
     },
-    listHover: {
+
+    [`& .${classes.listHover}`]: {
         paddingBottom: theme.spacing(2),
         paddingTop: theme.spacing(2),
         '&:hover': {
             backgroundColor: '#b3b3b373',
         },
     },
-    selectedText: {
+
+    [`& .${classes.selectedText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.activeMenuItem),
     },
-    scopeIconColor: {
+
+    [`& .${classes.scopeIconColor}`]: {
         fill: theme.palette.getContrastText(theme.palette.background.leftMenu),
     },
-    alertIconColor: {
+
+    [`& .${classes.alertIconColor}`]: {
         fill: theme.palette.getContrastText(theme.palette.background.leftMenu),
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         marginTop: theme.spacing(1),
         backgroundColor: theme.palette.background.divider,
     },
-    categoryHeader: {
+
+    [`& .${classes.categoryHeader}`]: {
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(1),
         '& svg': {
             color: theme.palette.common.white,
         },
     },
-    categoryHeaderPrimary: {
+
+    [`& .${classes.categoryHeaderPrimary}`]: {
         color: theme.palette.common.white,
     },
-    itemIcon: {
+
+    [`& .${classes.itemIcon}`]: {
         minWidth: 'auto',
         marginRight: theme.spacing(2),
     },
-    arrow: {
+
+    [`& .${classes.arrow}`]: {
         color: theme.palette.common.black,
     },
-    tooltip: {
+
+    [`& .${classes.tooltip}`]: {
         backgroundColor: theme.palette.common.black,
         ...theme.typography.body2,
-    },
-});
+    }
+}));
 
 /**
  *
@@ -98,9 +135,7 @@ const styles = (theme) => ({
  * @returns
  */
 function GlobalNavLinks(props) {
-    const {
-        classes, active, title, children, id, to, type, icon, isExternalLink,
-    } = props;
+    const { active, title, children, id, to, type, icon, isExternalLink } = props;
     const theme = useTheme();
     let tooltipTitle = title;
     if (!title) {
@@ -109,7 +144,7 @@ function GlobalNavLinks(props) {
     const linkTo = !isExternalLink ? to : '#';
     const iconWidth = 25;
     return (
-        <Link
+        <StyledLink
             id={id}
             underline='none'
             component={!isExternalLink && RouterLink}
@@ -164,15 +199,10 @@ function GlobalNavLinks(props) {
                     />
                 </ListItem>
             </Tooltip>
-        </Link>
+        </StyledLink>
     );
 }
 GlobalNavLinks.propTypes = {
-    classes: PropTypes.shape({
-        drawerStyles: PropTypes.string,
-        list: PropTypes.string,
-        listText: PropTypes.string,
-    }).isRequired,
     theme: PropTypes.shape({
         palette: PropTypes.shape({
             getContrastText: PropTypes.func,
@@ -184,4 +214,4 @@ GlobalNavLinks.propTypes = {
     }).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(GlobalNavLinks);
+export default (GlobalNavLinks);

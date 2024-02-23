@@ -19,40 +19,23 @@
 import React from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
-import { Card } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import CardContent from '@material-ui/core/CardContent';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import PolicyIcon from '@material-ui/icons/Policy';
-import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import PhonelinkSetupIcon from '@material-ui/icons/PhonelinkSetup';
+import { Card } from '@mui/material';
+import Box from '@mui/material/Box';
+import CardContent from '@mui/material/CardContent';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import PolicyIcon from '@mui/icons-material/Policy';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import PhonelinkSetupIcon from '@mui/icons-material/PhonelinkSetup';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
-
-const useStyles = makeStyles(() => ({
-    root: {
-        minWidth: 275,
-        minHeight: 270,
-        textAlign: 'center',
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'fontWeightBold',
-    },
-    pos: {
-        marginBottom: 12,
-    },
-}));
 
 /**
  * Render progress inside a container centering in the container.
  * @returns {JSX} Loading animation.
  */
 export default function RateLimitingCard() {
-    const classes = useStyles();
     const { isSuperTenant } = useAppContext();
     const intl = useIntl();
     const selectedRateLimitingPolicies = [
@@ -113,9 +96,9 @@ export default function RateLimitingCard() {
     }
 
     return (
-        <Card className={classes.root} style={{ textAlign: 'left' }}>
+        <Card sx={{ minWidth: 275, minHeight: 270, textAlign: 'left' }}>
             <CardContent>
-                <Typography className={classes.title} gutterBottom>
+                <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                     <FormattedMessage
                         id='Dashboard.rateLimiting.card.title'
                         defaultMessage='Rate Limiting'
@@ -126,15 +109,15 @@ export default function RateLimitingCard() {
                 <Box mt={1} mb={-2}>
                     {selectedPolicies.map((policy) => {
                         return (
-                            <Box display='flex'>
+                            <Box display='flex' key={policy.name}>
                                 <Box mx={1} mt={0.5}>
                                     {policy.icon}
                                 </Box>
                                 <Box flexGrow={1}>
-                                    <Link component={RouterLink} to={policy.path} color='inherit'>
+                                    <Link component={RouterLink} to={policy.path} color='inherit' underline='hover'>
                                         <Typography
                                             variant='body1'
-                                            style={{ fontWeight: 'bold' }}
+                                            sx={{ fontWeight: 'bold' }}
                                         >
                                             {policy.name}
                                         </Typography>

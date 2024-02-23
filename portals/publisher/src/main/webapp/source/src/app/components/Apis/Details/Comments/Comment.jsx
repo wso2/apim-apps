@@ -17,13 +17,13 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { Typography, Tooltip } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
-import Icon from '@material-ui/core/Icon';
-import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
-import Box from '@material-ui/core/Box';
+import { Typography, Tooltip } from '@mui/material';
+import Icon from '@mui/material/Icon';
+import Grid from '@mui/material/Grid';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { injectIntl, FormattedMessage } from 'react-intl';
@@ -36,17 +36,36 @@ import CommentEdit from './CommentEdit';
 import CommentOptions from './CommentOptions';
 import CommentAdd from './CommentAdd';
 
-dayjs.extend(relativeTime);
+const PREFIX = 'Comment';
 
-const styles = (theme) => ({
-    link: {
+const classes = {
+    link: `${PREFIX}-link`,
+    commentIcon: `${PREFIX}-commentIcon`,
+    commentText: `${PREFIX}-commentText`,
+    root: `${PREFIX}-root`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    contentWrapperOverview: `${PREFIX}-contentWrapperOverview`,
+    divider: `${PREFIX}-divider`,
+    paper: `${PREFIX}-paper`,
+    cleanBack: `${PREFIX}-cleanBack`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.link}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         cursor: 'pointer',
     },
-    commentIcon: {
+
+    [`& .${classes.commentIcon}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    commentText: {
+
+    [`& .${classes.commentText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
         marginTop: 0,
         width: '99%',
@@ -54,34 +73,42 @@ const styles = (theme) => ({
         overflowWrap: 'break-word',
         wordBreak: 'break-all',
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         marginTop: theme.spacing(1),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         paddingLeft: theme.spacing(2),
         paddingTop: theme.spacing(1),
     },
-    contentWrapperOverview: {
+
+    [`& .${classes.contentWrapperOverview}`]: {
         background: 'transparent',
         width: '100%',
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         marginTop: theme.spacing(4),
         marginBottom: theme.spacing(2),
         width: '60%',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         margin: 0,
         marginTop: theme.spacing(1),
         marginRight: theme.spacing(3),
         paddingBottom: theme.spacing(3),
     },
-    cleanBack: {
+
+    [`& .${classes.cleanBack}`]: {
         background: 'transparent',
         width: '100%',
         boxShadow: 'none',
-    },
-});
+    }
+}));
+
+dayjs.extend(relativeTime);
 
 /**
  * Display a particular comment and details
@@ -404,13 +431,11 @@ class Comment extends React.Component {
      * @memberof Comment
      */
     render() {
-        const {
-            classes, comments, api, allComments, isOverview,
-        } = this.props;
+        const { comments, api, allComments, isOverview } = this.props;
 
         const { editIndex, openDialog, replyId } = this.state;
         return (
-            <>
+            (<Root>
                 <div className={classes.paper} id='comment-list'>
                     {comments
                         && comments
@@ -579,7 +604,7 @@ class Comment extends React.Component {
                     callback={this.handleConfirmDialog}
                     open={openDialog}
                 />
-            </>
+            </Root>)
         );
     }
 }
@@ -597,4 +622,4 @@ Comment.propTypes = {
     updateComment: PropTypes.func.isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Comment));
+export default injectIntl((Comment));

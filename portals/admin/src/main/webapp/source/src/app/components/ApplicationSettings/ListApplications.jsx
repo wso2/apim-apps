@@ -17,56 +17,33 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
 import EditApplication from 'AppComponents/ApplicationSettings/EditApplication';
 import AppsTableContent from 'AppComponents/ApplicationSettings/AppsTableContent';
 import ApplicationTableHead from 'AppComponents/ApplicationSettings/ApplicationTableHead';
-import EditIcon from '@material-ui/icons/Edit';
-import Table from '@material-ui/core/Table';
+import EditIcon from '@mui/icons-material/Edit';
+import Table from '@mui/material/Table';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import HighlightOffRoundedIcon from '@material-ui/icons/HighlightOffRounded';
-import Tooltip from '@material-ui/core/Tooltip';
-import TextField from '@material-ui/core/TextField';
-import SearchIcon from '@material-ui/icons/Search';
-import Alert from '@material-ui/lab/Alert';
-import Typography from '@material-ui/core/Typography';
-
-/**
- * Render a list
- * @returns {JSX} Header AppBar components.
- */
-
-const useStyles = makeStyles((theme) => ({
-    searchBar: {
-        borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
-    },
-    block: {
-        display: 'block',
-    },
-    clearSearch: {
-        position: 'absolute',
-        right: 111,
-        top: 13,
-    },
-    addUser: {
-        marginRight: theme.spacing(1),
-    },
-}));
+import TableFooter from '@mui/material/TableFooter';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import Tooltip from '@mui/material/Tooltip';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
 
 export default function ListApplications() {
     const intl = useIntl();
-    const classes = useStyles();
+
     const [loading, setLoading] = useState(false);
     const [applicationList, setApplicationList] = useState(null);
     const [totalApps, setTotalApps] = useState(0);
@@ -154,15 +131,21 @@ export default function ListApplications() {
 
     return (
         <ContentBase>
-            <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+            <AppBar
+                sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
+                position='static'
+                color='default'
+                elevation={0}
+            >
                 <Toolbar>
                     <form onSubmit={filterApps} style={{ width: '100%' }} disabled={loading}>
                         <Grid container spacing={2} alignItems='center'>
                             <Grid item>
-                                <SearchIcon className={classes.block} color='inherit' />
+                                <SearchIcon sx={{ display: 'block' }} color='inherit' />
                             </Grid>
                             <Grid item xs>
                                 <TextField
+                                    variant='standard'
                                     fullWidth
                                     id='search-label'
                                     label={intl.formatMessage({
@@ -175,11 +158,10 @@ export default function ListApplications() {
                                     })}
                                     InputProps={{
                                         disableUnderline: true,
-                                        className: classes.searchInput,
                                     }}
                                     value={owner}
+                                    // onKeyPress={this.handleSearchKeyPress}
                                     onChange={setQuery}
-                                // onKeyPress={this.handleSearchKeyPress}
                                 />
                                 { owner.length > 0
                                 && (
@@ -193,8 +175,13 @@ export default function ListApplications() {
                                     >
                                         <IconButton
                                             aria-label='delete'
-                                            className={classes.clearSearch}
+                                            sx={{
+                                                position: 'absolute',
+                                                right: 111,
+                                                top: 13,
+                                            }}
                                             onClick={clearSearch}
+                                            size='large'
                                         >
                                             <HighlightOffRoundedIcon />
                                         </IconButton>
@@ -204,7 +191,7 @@ export default function ListApplications() {
                             <Grid item>
                                 <Button
                                     variant='contained'
-                                    className={classes.addUser}
+                                    sx={{ mr: 1 }}
                                     type='submit'
                                     disabled={loading}
                                 >
@@ -257,8 +244,8 @@ export default function ListApplications() {
                                     nextIconButtonProps={{
                                         'aria-label': 'Next Page',
                                     }}
-                                    onChangePage={handleChangePage}
-                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
                                 />
                             </TableRow>
                         </TableFooter>

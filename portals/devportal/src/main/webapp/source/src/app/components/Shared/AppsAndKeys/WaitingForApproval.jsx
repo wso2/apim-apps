@@ -1,12 +1,22 @@
 import React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import { injectIntl } from 'react-intl';
 
-const styles = theme => ({
-    root: {
+const PREFIX = 'WaitingForApproval';
+
+const classes = {
+    root: `${PREFIX}-root`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.root}`]: {
         padding: theme.spacing(3),
-    },
-});
+    }
+}));
 
 const waitingForApproval = (props) => {
     const {
@@ -22,7 +32,7 @@ const waitingForApproval = (props) => {
             id: 'Shared.AppsAndKeys.WaitingForApproval.msg.reject',
         });
     }
-    return <div className={classes.root}>{message}</div>;
+    return <Root className={classes.root}>{message}</Root>;
 };
 
-export default injectIntl(withStyles(styles)(waitingForApproval));
+export default injectIntl((waitingForApproval));

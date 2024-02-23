@@ -17,33 +17,58 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Card from '@material-ui/core/Card';
-import CardMedia from '@material-ui/core/CardMedia';
-import CardContent from '@material-ui/core/CardContent';
-import { withStyles } from '@material-ui/core/styles';
-import Chip from '@material-ui/core/Chip';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Card from '@mui/material/Card';
+import CardMedia from '@mui/material/CardMedia';
+import CardContent from '@mui/material/CardContent';
+import Chip from '@mui/material/Chip';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import MaterialIcons from 'MaterialIcons';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import classNames from 'classnames';
+import { useTheme } from '@mui/material';
 import ImageGenerator from './APICards/ImageGenerator';
 import Api from '../../../data/api';
 import { ApiContext } from '../Details/ApiContext';
 
-/**
- *
- *
- * @param {*} theme
- */
-const styles = (theme) => ({
-    card: {
+const PREFIX = 'RecommendedApiThumbLegacy';
+
+const classes = {
+    card: `${PREFIX}-card`,
+    apiDetails: `${PREFIX}-apiDetails`,
+    suppressLinkStyles: `${PREFIX}-suppressLinkStyles`,
+    row: `${PREFIX}-row`,
+    thumbBy: `${PREFIX}-thumbBy`,
+    media: `${PREFIX}-media`,
+    thumbContent: `${PREFIX}-thumbContent`,
+    thumbLeft: `${PREFIX}-thumbLeft`,
+    thumbRight: `${PREFIX}-thumbRight`,
+    thumbInfo: `${PREFIX}-thumbInfo`,
+    thumbHeader: `${PREFIX}-thumbHeader`,
+    contextBox: `${PREFIX}-contextBox`,
+    thumbWrapper: `${PREFIX}-thumbWrapper`,
+    deleteIcon: `${PREFIX}-deleteIcon`,
+    textWrapper: `${PREFIX}-textWrapper`,
+    imageWrapper: `${PREFIX}-imageWrapper`,
+    imageOverlap: `${PREFIX}-imageOverlap`,
+    chipWrapper: `${PREFIX}-chipWrapper`,
+    ratingWrapper: `${PREFIX}-ratingWrapper`,
+};
+
+const StyledCard = styled(Card)((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.card}`]: {
         margin: theme.spacing.unit * (3 / 2),
         maxWidth: theme.custom.thumbnail.width,
         transition: 'box-shadow 0.3s ease-in-out',
     },
-    apiDetails: {
+
+    [`& .${classes.apiDetails}`]: {
         background: theme.custom.thumbnail.contentBackgroundColor,
         padding: theme.spacing(),
         color: theme.palette.getContrastText(theme.custom.thumbnail.contentBackgroundColor),
@@ -51,37 +76,46 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.custom.thumbnail.contentBackgroundColor),
         },
     },
-    suppressLinkStyles: {
+
+    [`& .${classes.suppressLinkStyles}`]: {
         textDecoration: 'none',
         color: theme.palette.text.disabled,
     },
-    row: {
+
+    [`& .${classes.row}`]: {
         display: 'inline-block',
     },
-    thumbBy: {
+
+    [`& .${classes.thumbBy}`]: {
         'padding-left': '5px',
     },
-    media: {
+
+    [`& .${classes.media}`]: {
         // ⚠️ object-fit is not supported by IE11.
         objectFit: 'cover',
     },
-    thumbContent: {
+
+    [`& .${classes.thumbContent}`]: {
         width: theme.custom.thumbnail.width - theme.spacing(2),
     },
-    thumbLeft: {
+
+    [`& .${classes.thumbLeft}`]: {
         alignSelf: 'flex-start',
         flex: 1,
         width: '25%',
         'padding-left': '5px',
         'padding-right': '65px',
     },
-    thumbRight: {
+
+    [`& .${classes.thumbRight}`]: {
         alignSelf: 'flex-end',
     },
-    thumbInfo: {
+
+    [`& .${classes.thumbInfo}`]: {
         display: 'flex',
     },
-    thumbHeader: {
+
+    [`& .${classes.thumbHeader}`]: {
         width: theme.custom.thumbnail.width - theme.spacing.unit,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -90,7 +124,8 @@ const styles = (theme) => ({
         margin: 0,
         'padding-left': '5px',
     },
-    contextBox: {
+
+    [`& .${classes.contextBox}`]: {
         width: parseInt((theme.custom.thumbnail.width - theme.spacing.unit) / 2, 10),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -104,50 +139,57 @@ const styles = (theme) => ({
         'padding-bottom': 1.5,
         textAlign: 'left',
     },
-    thumbWrapper: {
+
+    [`& .${classes.thumbWrapper}`]: {
         position: 'relative',
         paddingTop: 20,
         marginRight: theme.spacing.unit * 2,
     },
-    deleteIcon: {
+
+    [`& .${classes.deleteIcon}`]: {
         fill: 'red',
     },
-    textWrapper: {
+
+    [`& .${classes.textWrapper}`]: {
         color: theme.palette.text.secondary,
         textDecoration: 'none',
     },
-    imageWrapper: {
+
+    [`& .${classes.imageWrapper}`]: {
         color: theme.custom.thumbnail.iconColor,
         width: theme.custom.thumbnail.width,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    imageOverlap: {
+
+    [`& .${classes.imageOverlap}`]: {
         position: 'absolute',
         bottom: 1,
     },
-    chipWrapper: {
+
+    [`& .${classes.chipWrapper}`]: {
         marginTop: '15px',
     },
-    ratingWrapper: {
+
+    [`& .${classes.ratingWrapper}`]: {
         marginTop: '20px',
     },
-});
+}));
 
 const windowURL = window.URL || window.webkitURL;
 
 /**
  *
  * Render API Card component in API listing card view,containing essential API information like name , version ect
- * @class RecommendedApiThumb
+ * @class RecommendedApiThumbLegacy
  * @extends {Component}
  */
-class RecommendedApiThumb extends React.Component {
+class RecommendedApiThumbLegacy extends React.Component {
     /**
-     *Creates an instance of RecommendedApiThumb.
+     *Creates an instance of RecommendedApiThumbLegacy.
      * @param {*} props
-     * @memberof RecommendedApiThumb
+     * @memberof RecommendedApiThumbLegacy
      */
     constructor(props) {
         super(props);
@@ -165,7 +207,7 @@ class RecommendedApiThumb extends React.Component {
     /**
      *
      *
-     * @memberof RecommendedApiThumb
+     * @memberof RecommendedApiThumbLegacy
      */
     componentDidMount() {
         const { api } = this.props;
@@ -204,7 +246,7 @@ class RecommendedApiThumb extends React.Component {
      * Get Path Prefix depedning on the respective API Type being rendered
      *
      * @returns {String} path
-     * @memberof RecommendedApiThumb
+     * @memberof RecommendedApiThumbLegacy
      */
     getPathPrefix() {
         const path = '/apis/';
@@ -215,7 +257,7 @@ class RecommendedApiThumb extends React.Component {
      * Toggle mouse Hover state to set the card `raised` property
      *
      * @param {React.SyntheticEvent} event mouseover and mouseout
-     * @memberof RecommendedApiThumb
+     * @memberof RecommendedApiThumbLegacy
      */
     toggleMouseOver(event) {
         this.setState({ isHover: event.type === 'mouseover' });
@@ -224,7 +266,7 @@ class RecommendedApiThumb extends React.Component {
     /**
      * @inheritdoc
      * @returns {React.Component} @inheritdoc
-     * @memberof RecommendedApiThumb
+     * @memberof RecommendedApiThumbLegacy
      */
     render() {
         const {
@@ -235,7 +277,7 @@ class RecommendedApiThumb extends React.Component {
         // const detailsLink = path + this.props.api.id;
         const detailsLink = path + this.props.api.id;
         const {
-            api, classes, theme, customWidth, customHeight, showInfo,
+            api, theme, customWidth, customHeight, showInfo,
         } = this.props;
         const { thumbnail } = theme.custom;
         const { name } = api;
@@ -282,7 +324,7 @@ class RecommendedApiThumb extends React.Component {
             );
         }
         return (
-            <Card
+            <StyledCard
                 onMouseOver={this.toggleMouseOver}
                 onFocus={this.toggleMouseOver}
                 onMouseOut={this.toggleMouseOver}
@@ -343,16 +385,16 @@ class RecommendedApiThumb extends React.Component {
                         </div>
                     </CardContent>
                 )}
-            </Card>
+            </StyledCard>
         );
     }
 }
-RecommendedApiThumb.defaultProps = {
+RecommendedApiThumbLegacy.defaultProps = {
     customWidth: null,
     customHeight: null,
     showInfo: true,
 };
-RecommendedApiThumb.propTypes = {
+RecommendedApiThumbLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
     customWidth: PropTypes.number,
@@ -360,6 +402,17 @@ RecommendedApiThumb.propTypes = {
     showInfo: PropTypes.bool,
 };
 
-RecommendedApiThumb.contextType = ApiContext;
+RecommendedApiThumbLegacy.contextType = ApiContext;
 
-export default withStyles(styles, { withTheme: true })(RecommendedApiThumb);
+function RecommendedApiThumb(props) {
+    const { api } = props;
+    const theme = useTheme();
+    return (
+        <RecommendedApiThumbLegacy
+            api={api}
+            theme={theme}
+        />
+    );
+}
+
+export default (RecommendedApiThumb);

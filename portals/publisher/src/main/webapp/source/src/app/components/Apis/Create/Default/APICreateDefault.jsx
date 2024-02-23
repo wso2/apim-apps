@@ -17,19 +17,19 @@
  */
 import React, { useReducer, useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import Alert from 'AppComponents/Shared/Alert';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import API from 'AppData/api';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import Banner from 'AppComponents/Shared/Banner';
-import LinearProgress from '@material-ui/core/LinearProgress';
+import LinearProgress from '@mui/material/LinearProgress';
 
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
@@ -55,6 +55,7 @@ const getPolicies = async () => {
  * @returns {JSX} API creation form.
  */
 function APICreateDefault(props) {
+    // const theme = useTheme();
     const {
         isWebSocket, isAPIProduct, history, intl, multiGateway
     } = props;
@@ -474,7 +475,7 @@ function APICreateDefault(props) {
 
     return (
         <APICreateBase title={pageTitle}>
-            <Grid container direction='row' justify='center' alignItems='center' spacing={2}>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 {/* Page error banner */}
                 {(pageError) && (
                     <Grid item xs={11}>
@@ -497,9 +498,7 @@ function APICreateDefault(props) {
                         </Box>
                     )}
                 </Grid>
-                <Grid item md={1} xs={0} />
-                <Grid item md={11} xs={12} data-testid='default-api-form'>
-
+                <Grid item xs={12} data-testid='default-api-form'>
                     <DefaultAPIForm
                         onValidate={handleOnValidate}
                         onChange={handleOnChange}
@@ -509,9 +508,8 @@ function APICreateDefault(props) {
                         isWebSocket={isWebSocket}
                     />
                 </Grid>
-                <Grid item md={1} xs={0} />
-                <Grid item md={11} xs={12}>
-                    <Grid container direction='row' justify='flex-start' alignItems='center' spacing={2}>
+                <Grid item xs={12}>
+                    <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             <Button
                                 id='itest-create-default-api-button'

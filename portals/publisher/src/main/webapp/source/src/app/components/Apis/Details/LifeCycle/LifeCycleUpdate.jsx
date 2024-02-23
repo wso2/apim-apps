@@ -17,17 +17,17 @@
  */
 
 import React, { Component } from 'react';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import FormGroup from '@material-ui/core/FormGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import { styled, useTheme } from '@mui/material/styles';
+import Button from '@mui/material/Button';
+import Grid from '@mui/material/Grid';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { injectIntl } from 'react-intl';
 import API from 'AppData/api';
-import { CircularProgress } from '@material-ui/core';
+import { CircularProgress } from '@mui/material';
 import { ScopeValidation, resourceMethod, resourcePath } from 'AppData/ScopeValidation';
 import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
@@ -42,31 +42,49 @@ import LifecyclePending from './LifecyclePending';
 import { API_SECURITY_MUTUAL_SSL_MANDATORY, API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY }
 from '../Configuration/components/APISecurity/components/apiSecurityConstants';
 
-const styles = (theme) => ({
-    buttonsWrapper: {
+const PREFIX = 'LifeCycleUpdate';
+
+const classes = {
+    buttonsWrapper: `${PREFIX}-buttonsWrapper`,
+    stateButton: `${PREFIX}-stateButton`,
+    paperCenter: `${PREFIX}-paperCenter`,
+    subHeading: `${PREFIX}-subHeading`,
+    mandatoryStar: `${PREFIX}-mandatoryStar`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.buttonsWrapper}`]: {
         marginTop: 40,
     },
-    stateButton: {
+
+    [`& .${classes.stateButton}`]: {
         marginRight: theme.spacing(),
     },
-    paperCenter: {
+
+    [`& .${classes.paperCenter}`]: {
         padding: theme.spacing(2),
         display: 'flex',
         alignItems: 'left',
         justifyContent: 'left',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: '38px',
     },
-    mandatoryStar: {
+
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
-    },
-});
+    }
+}));
 
 /**
  *
@@ -264,7 +282,7 @@ class LifeCycleUpdate extends Component {
      */
     render() {
         const {
-            api, lcState, classes, theme, handleChangeCheckList, checkList, certList, isAPIProduct,
+            api, lcState, theme, handleChangeCheckList, checkList, certList, isAPIProduct,
         } = this.props;
         const lifecycleStates = [...lcState.availableTransitions];
         const { newState, pageError, isOpen, deploymentsAvailable, isMandatoryPropertiesAvailable,
@@ -323,7 +341,7 @@ class LifeCycleUpdate extends Component {
         }
 
         return (
-            <Grid container>
+            <StyledGrid container>
                 {isWorkflowPending ? (
                     <Grid item xs={12}>
                         <LifecyclePending currentState={lcState.state} />
@@ -433,13 +451,12 @@ class LifeCycleUpdate extends Component {
                     handleClose={() => this.setIsOpen(false)}
                     open={isOpen}
                 /> }
-            </Grid>
+            </StyledGrid>
         );
     }
 }
 
 LifeCycleUpdate.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({}).isRequired,
     checkList: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
     lcState: PropTypes.shape({}).isRequired,
@@ -452,4 +469,7 @@ LifeCycleUpdate.propTypes = {
 
 LifeCycleUpdate.contextType = ApiContext;
 
-export default withStyles(styles, { withTheme: true })(injectIntl(LifeCycleUpdate));
+export default (injectIntl((props) => {
+    const theme = useTheme();
+    return <LifeCycleUpdate {...props} theme={theme} />;
+}));

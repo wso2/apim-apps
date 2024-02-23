@@ -17,20 +17,19 @@
  */
 
 import React, { useState, useEffect, useContext, Suspense, lazy } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import Icon from '@material-ui/core/Icon';
-import Button from '@material-ui/core/Button';
-import ReactHtmlParser from 'react-html-parser';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Icon from '@mui/material/Icon';
+import Button from '@mui/material/Button';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import TableRow from '@material-ui/core/TableRow';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import CircularProgress from '@mui/material/CircularProgress';
+import TableRow from '@mui/material/TableRow';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
@@ -39,27 +38,50 @@ import Utils from 'AppData/Utils';
 import Configuration from 'Config';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 
-const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "ViewReactMD" */));
+const PREFIX = 'View';
 
-const styles = theme => ({
-    root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    titleLink: `${PREFIX}-titleLink`,
+    docTitle: `${PREFIX}-docTitle`,
+    docBadge: `${PREFIX}-docBadge`,
+    button: `${PREFIX}-button`,
+    displayURL: `${PREFIX}-displayURL`,
+    displayURLLink: `${PREFIX}-displayURLLink`,
+    paper: `${PREFIX}-paper`,
+    leftCell: `${PREFIX}-leftCell`,
+    summaryView: `${PREFIX}-summaryView`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    titleLink: {
+
+    [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
     },
-    docTitle: {
+
+    [`& .${classes.docTitle}`]: {
         fontWeight: 100,
         fontSize: 50,
         color: theme.palette.grey[500],
     },
-    docBadge: {
+
+    [`& .${classes.docBadge}`]: {
         padding: theme.spacing(1),
         background: theme.palette.primary.main,
         position: 'absolute',
@@ -67,32 +89,41 @@ const styles = theme => ({
         marginTop: -22,
         color: theme.palette.getContrastText(theme.palette.primary.main),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         padding: theme.spacing(2),
         marginTop: theme.spacing(2),
     },
-    displayURL: {
+
+    [`& .${classes.displayURL}`]: {
         padding: theme.spacing(2),
         marginTop: theme.spacing(2),
         background: theme.palette.grey[200],
         color: theme.palette.getContrastText(theme.palette.grey[200]),
         display: 'flex',
     },
-    displayURLLink: {
+
+    [`& .${classes.displayURLLink}`]: {
         paddingLeft: theme.spacing(2),
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         marginTop: 20,
         padding: theme.spacing(2),
         height: '100%',
     },
-    leftCell: {
+
+    [`& .${classes.leftCell}`]: {
         width: 150,
     },
-    summaryView: {
+
+    [`& .${classes.summaryView}`]: {
         'wordBreak': 'break-word',
-    },
-});
+    }
+}));
+
+const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "ViewReactMD" */));
+
 /**
  *
  *
@@ -175,113 +206,109 @@ function View(props) {
     };
     const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
     const listingPath = `/${urlPrefix}/${api.id}/documents`;
-    return (
-        doc && (
-            <React.Fragment>
-                <div className={classes.root}>
-                    <div className={classes.titleWrapper}>
-                        <Link to={listingPath} className={classes.titleLink}>
-                            <Typography variant="h5" component='h2' align="left" className={classes.mainTitle}>
-                                <FormattedMessage id="Apis.Details.Documents.View.heading" defaultMessage="Documents" />
-                            </Typography>
-                        </Link>
-                        <Icon>keyboard_arrow_right</Icon>
-                        <Typography variant="h5" component='h3'>{doc.name}</Typography>
-                    </div>
-                    <Paper className={classes.paper}>
-                        <Table className={classes.table}>
-                            <TableBody>
-                                <TableRow>
-                                    <TableCell className={classes.leftCell}>
-                                        <Typography variant="body1">
-                                            <FormattedMessage
-                                                id="Apis.Details.Documents.View.meta.name"
-                                                defaultMessage="Name"
-                                            />
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body1">{doc.name}</Typography>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body1">
-                                            <FormattedMessage
-                                                id="Apis.Details.Documents.View.meta.summary"
-                                                defaultMessage="Summary"
-                                            />
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell className={classes.summaryView}>
-                                        <Typography variant="body1">{doc.summary}</Typography>
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body1">
-                                            <FormattedMessage
-                                                id="Apis.Details.Documents.View.meta.catogery"
-                                                defaultMessage="Categorized as"
-                                            />
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body1">
-                                            {doc.type === 'OTHER' ? doc.otherTypeName : doc.type}
-                                        </Typography>{' '}
-                                    </TableCell>
-                                </TableRow>
-                                <TableRow>
-                                    <TableCell>
-                                        <Typography variant="body1">
-                                            <FormattedMessage
-                                                id="Apis.Details.Documents.View.meta.source"
-                                                defaultMessage="Source Type"
-                                            />
-                                        </Typography>
-                                    </TableCell>
-                                    <TableCell>
-                                        <Typography variant="body1">{doc.sourceType}</Typography>{' '}
-                                    </TableCell>
-                                </TableRow>
-                            </TableBody>
-                        </Table>
-                    </Paper>
-
-                    <Paper className={classes.paper}>
-                        {doc.sourceType === 'MARKDOWN' && (
-                            <Suspense fallback={<CircularProgress />}>
-                                <ReactMarkdown escapeHtml>{code}</ReactMarkdown>
-                            </Suspense>
-                        )}
-                        {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
-                        {doc.sourceType === 'URL' && (
-                            <a className={classes.displayURL} href={doc.sourceUrl} target="_blank">
-                                {doc.sourceUrl}
-                                <Icon className={classes.displayURLLink}>open_in_new</Icon>
-                            </a>
-                        )}
-                        {doc.sourceType === 'FILE' && (
-                            <Button
-                                variant="contained"
-                                color="default"
-                                className={classes.button}
-                                onClick={handleDownload}
-                                disabled={!isFileAvailable}
-                            >
-                                <FormattedMessage
-                                    id="Apis.Details.Documents.View.btn.download"
-                                    defaultMessage="Download"
-                                />
-
-                                <Icon>arrow_downward</Icon>
-                            </Button>
-                        )}
-                    </Paper>
+    return doc && (
+        <Root>
+            <div className={classes.root}>
+                <div className={classes.titleWrapper}>
+                    <Link to={listingPath} className={classes.titleLink}>
+                        <Typography variant="h5" component='h2' align="left" className={classes.mainTitle}>
+                            <FormattedMessage id="Apis.Details.Documents.View.heading" defaultMessage="Documents" />
+                        </Typography>
+                    </Link>
+                    <Icon>keyboard_arrow_right</Icon>
+                    <Typography variant="h5" component='h3'>{doc.name}</Typography>
                 </div>
-            </React.Fragment>
-        )
+                <Paper className={classes.paper}>
+                    <Table className={classes.table}>
+                        <TableBody>
+                            <TableRow>
+                                <TableCell className={classes.leftCell}>
+                                    <Typography variant="body1">
+                                        <FormattedMessage
+                                            id="Apis.Details.Documents.View.meta.name"
+                                            defaultMessage="Name"
+                                        />
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="body1">{doc.name}</Typography>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <Typography variant="body1">
+                                        <FormattedMessage
+                                            id="Apis.Details.Documents.View.meta.summary"
+                                            defaultMessage="Summary"
+                                        />
+                                    </Typography>
+                                </TableCell>
+                                <TableCell className={classes.summaryView}>
+                                    <Typography variant="body1">{doc.summary}</Typography>
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <Typography variant="body1">
+                                        <FormattedMessage
+                                            id="Apis.Details.Documents.View.meta.catogery"
+                                            defaultMessage="Categorized as"
+                                        />
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="body1">
+                                        {doc.type === 'OTHER' ? doc.otherTypeName : doc.type}
+                                    </Typography>{' '}
+                                </TableCell>
+                            </TableRow>
+                            <TableRow>
+                                <TableCell>
+                                    <Typography variant="body1">
+                                        <FormattedMessage
+                                            id="Apis.Details.Documents.View.meta.source"
+                                            defaultMessage="Source Type"
+                                        />
+                                    </Typography>
+                                </TableCell>
+                                <TableCell>
+                                    <Typography variant="body1">{doc.sourceType}</Typography>{' '}
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </Paper>
+
+                <Paper className={classes.paper}>
+                    {doc.sourceType === 'MARKDOWN' && (
+                        <Suspense fallback={<CircularProgress />}>
+                            <ReactMarkdown escapeHtml>{code}</ReactMarkdown>
+                        </Suspense>
+                    )}
+                    {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
+                    {doc.sourceType === 'URL' && (
+                        <a className={classes.displayURL} href={doc.sourceUrl} target="_blank">
+                            {doc.sourceUrl}
+                            <Icon className={classes.displayURLLink}>open_in_new</Icon>
+                        </a>
+                    )}
+                    {doc.sourceType === 'FILE' && (
+                        <Button
+                            variant="contained"
+                            className={classes.button}
+                            onClick={handleDownload}
+                            disabled={!isFileAvailable}>
+                            <FormattedMessage
+                                id="Apis.Details.Documents.View.btn.download"
+                                defaultMessage="Download"
+                            />
+
+                            <Icon>arrow_downward</Icon>
+                        </Button>
+                    )}
+                </Paper>
+            </div>
+        </Root>
     );
 }
 
@@ -295,4 +322,4 @@ View.propTypes = {
     fullScreen: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(View));
+export default injectIntl((View));

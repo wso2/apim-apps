@@ -17,17 +17,17 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import { makeStyles } from '@material-ui/core/styles';
-import EditIcon from '@material-ui/icons/Edit';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import { FormattedMessage } from 'react-intl';
 import { isRef } from 'AppComponents/Apis/Details/Resources/operationUtils';
@@ -35,12 +35,20 @@ import RequestBody from 'AppComponents/Apis/Details/Resources/components/operati
 import Banner from 'AppComponents/Shared/Banner';
 import EditParameter from './EditParameter';
 
-const useStyles = makeStyles({
-    root: {
+const PREFIX = 'ListParameters';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    table: `${PREFIX}-table`
+};
+
+
+const Root = styled('div')({
+    [`& .${classes.root}`]: {
         width: '100%',
         overflowX: 'auto',
     },
-    table: {
+    [`& .${classes.table}`]: {
         minWidth: 650,
     },
 });
@@ -56,7 +64,7 @@ export default function ListParameters(props) {
     const {
         operation, operationsDispatcher, target, verb, disableUpdate, hideParameterEdit, specVersion, resolvedSpec,
     } = props;
-    const classes = useStyles();
+
     const [editingParameter, setEditingParameter] = useState(null);
     if (!resolvedSpec) {
         return (
@@ -74,7 +82,7 @@ export default function ListParameters(props) {
         );
     }
     return (
-        <>
+        <Root>
             {editingParameter !== null && (
                 <EditParameter
                     operationsDispatcher={operationsDispatcher}
@@ -170,7 +178,7 @@ export default function ListParameters(props) {
                                                     <IconButton
                                                         onClick={() => setEditingParameter(parameter)}
                                                         fontSize='small'
-                                                    >
+                                                        size='large'>
                                                         <EditIcon fontSize='small' />
                                                     </IconButton>
                                                 </Tooltip>
@@ -190,7 +198,7 @@ export default function ListParameters(props) {
                                                         data: { target, verb, value: paramCopy },
                                                     })}
                                                     fontSize='small'
-                                                >
+                                                    size='large'>
                                                     <DeleteIcon fontSize='small' />
                                                 </IconButton>
                                             </Tooltip>
@@ -231,7 +239,7 @@ export default function ListParameters(props) {
                         }))}
                 </TableBody>
             </Table>
-        </>
+        </Root>
     );
 }
 

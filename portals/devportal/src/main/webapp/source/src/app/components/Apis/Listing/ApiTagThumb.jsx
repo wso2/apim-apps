@@ -17,38 +17,60 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Icon from '@material-ui/core/Icon';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Icon from '@mui/material/Icon';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { app } from 'Settings';
+import { useTheme } from '@mui/material';
 
-/**
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
-    thumbContent: {
+const PREFIX = 'ApiTagThumb';
+
+const classes = {
+    thumbContent: `${PREFIX}-thumbContent`,
+    thumbLeft: `${PREFIX}-thumbLeft`,
+    thumbRight: `${PREFIX}-thumbRight`,
+    thumbInfo: `${PREFIX}-thumbInfo`,
+    thumbHeader: `${PREFIX}-thumbHeader`,
+    contextBox: `${PREFIX}-contextBox`,
+    thumbWrapper: `${PREFIX}-thumbWrapper`,
+    deleteIcon: `${PREFIX}-deleteIcon`,
+    textWrapper: `${PREFIX}-textWrapper`,
+    image: `${PREFIX}-image`,
+    imageWrapper: `${PREFIX}-imageWrapper`,
+    imageOverlap: `${PREFIX}-imageOverlap`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.thumbContent}`]: {
         width: theme.custom.tagWise.thumbnail.width - theme.spacing(1),
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(1),
     },
-    thumbLeft: {
+
+    [`& .${classes.thumbLeft}`]: {
         alignSelf: 'flex-start',
         flex: 1,
     },
-    thumbRight: {
+
+    [`& .${classes.thumbRight}`]: {
         alignSelf: 'flex-end',
     },
-    thumbInfo: {
+
+    [`& .${classes.thumbInfo}`]: {
         display: 'flex',
     },
-    thumbHeader: {
+
+    [`& .${classes.thumbHeader}`]: {
         width: theme.custom.tagWise.thumbnail.width - theme.spacing(1),
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -57,7 +79,8 @@ const styles = (theme) => ({
         justifyContent: 'center',
         margin: 0,
     },
-    contextBox: {
+
+    [`& .${classes.contextBox}`]: {
         // eslint-disable-next-line radix
         width: parseInt(150 - theme.spacing(0.5)),
         whiteSpace: 'nowrap',
@@ -68,24 +91,29 @@ const styles = (theme) => ({
         display: 'inline-block',
         lineHeight: '1em',
     },
-    thumbWrapper: {
+
+    [`&.${classes.thumbWrapper}`]: {
         position: 'relative',
         paddingTop: 20,
         marginRight: theme.spacing(2),
     },
-    deleteIcon: {
+
+    [`& .${classes.deleteIcon}`]: {
         fill: 'red',
     },
-    textWrapper: {
+
+    [`& .${classes.textWrapper}`]: {
         color: theme.custom.tagCloud.leftMenu.color,
         '& .material-icons': {
             color: theme.custom.tagCloud.leftMenu.color,
         },
     },
-    image: {
+
+    [`& .${classes.image}`]: {
         width: theme.custom.tagWise.thumbnail.width,
     },
-    imageWrapper: {
+
+    [`& .${classes.imageWrapper}`]: {
         color: theme.palette.text.secondary,
         backgroundColor: theme.palette.background.paper,
         width: theme.custom.tagWise.thumbnail.width + theme.spacing(1),
@@ -93,12 +121,13 @@ const styles = (theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    imageOverlap: {
+
+    [`& .${classes.imageOverlap}`]: {
         position: 'absolute',
         bottom: 1,
         backgroundColor: theme.custom.thumbnail.contentBackgroundColor,
     },
-});
+}));
 
 /**
  * Get ApiTagThumb
@@ -107,8 +136,9 @@ const styles = (theme) => ({
  */
 function ApiTagThumb(props) {
     const {
-        tag, path, classes, theme, style, mainPage,
+        tag, path, style, mainPage,
     } = props;
+    const theme = useTheme();
     const tagLink = path + ':' + tag.value;
     const {
         tagWise: {
@@ -130,7 +160,7 @@ function ApiTagThumb(props) {
     }
 
     return (
-        <div className={classes.thumbWrapper}>
+        <Root className={classes.thumbWrapper}>
             <Link to={tagLink} className={classes.imageWrapper}>
                 <img src={app.context + image} className={classes.image} alt='' />
             </Link>
@@ -143,7 +173,7 @@ function ApiTagThumb(props) {
                     </Link>
                 </div>
             </center>
-        </div>
+        </Root>
     );
 }
 
@@ -171,4 +201,4 @@ ApiTagThumb.propTypes = {
     style: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(ApiTagThumb);
+export default (ApiTagThumb);

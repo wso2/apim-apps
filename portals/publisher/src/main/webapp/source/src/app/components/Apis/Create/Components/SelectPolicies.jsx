@@ -1,19 +1,29 @@
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemText from '@mui/material/ListItemText';
+import Checkbox from '@mui/material/Checkbox';
+import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
-import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
-        color: theme.palette.error.main,
+const PREFIX = 'SelectPolicies';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`
+};
+
+const StyledTextField = styled(TextField)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.mandatoryStar}`]: {
+        color: 'red', // theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
-    },
+    }
 }));
 
 /**
@@ -27,7 +37,7 @@ export default function SelectPolicies(props) {
         onChange, policies: selectedPolicies, multiple, helperText, isAPIProduct, validate,
     } = props;
     const [policies, setPolicies] = useState({});
-    const classes = useStyles();
+
     useEffect(() => {
         API.policies('subscription').then((response) => setPolicies(response.body));
     }, []);
@@ -39,7 +49,7 @@ export default function SelectPolicies(props) {
         return <CircularProgress />;
     } else {
         return (
-            <TextField
+            <StyledTextField
                 fullWidth
                 select
                 label={(
@@ -80,7 +90,7 @@ export default function SelectPolicies(props) {
                         <ListItemText primary={policy.displayName} secondary={policy.description} />
                     </MenuItem>
                 ))}
-            </TextField>
+            </StyledTextField>
         );
     }
 }

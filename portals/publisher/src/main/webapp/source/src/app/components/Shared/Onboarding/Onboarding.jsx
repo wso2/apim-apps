@@ -1,14 +1,20 @@
 import React from 'react';
-import { useTheme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import { styled } from '@mui/material/styles';
+import { useTheme } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-const useStyles = makeStyles({
-    root: {
+const PREFIX = 'Onboarding';
+
+const classes = {
+    root: `${PREFIX}-root`
+};
+
+const Root = styled('div')({
+    [`&.${classes.root}`]: {
         flexGrow: 1,
     },
 });
@@ -16,15 +22,15 @@ const useStyles = makeStyles({
 const Onboarding = (props) => {
     const { title, subTitle, children } = props;
     const theme = useTheme();
-    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
-    const { root } = useStyles();
+    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('sm'));
+
 
     return (
-        <div className={root}>
+        <Root className={classes.root}>
             <Grid
                 container
                 direction='column'
-                justify='center'
+                justifyContent='center'
             >
                 <Grid item xs={12}>
                     <Box pt={isXsOrBelow ? 2 : 7} />
@@ -45,7 +51,7 @@ const Onboarding = (props) => {
                         <Grid
                             container
                             direction='row'
-                            justify='center'
+                            justifyContent='center'
                             alignItems='flex-start'
                         >
                             {children}
@@ -53,8 +59,7 @@ const Onboarding = (props) => {
                     </Box>
                 </Grid>
             </Grid>
-        </div>
-
+        </Root>
     );
 };
 

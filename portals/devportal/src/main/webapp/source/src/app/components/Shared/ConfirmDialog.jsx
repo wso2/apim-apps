@@ -16,26 +16,37 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import {
     Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+} from '@mui/material';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
+const PREFIX = 'ConfirmDialog';
 
-const styles = (theme) => ({
-    dialogWrapper: {
+const classes = {
+    dialogWrapper: `${PREFIX}-dialogWrapper`,
+    deleteConformButton: `${PREFIX}-deleteConformButton`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.dialogWrapper}`]: {
         '& span, & h5, & label, & td, & li, & div, & p': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    deleteConformButton: {
+
+    [`& .${classes.deleteConformButton}`]: {
         '& span.MuiButton-label': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
-    },
-});
+    }
+}));
 
 /**
  * React component for handling confirmation dialog box
@@ -64,17 +75,17 @@ class ConfirmDialog extends React.Component {
      */
     render() {
         const {
-            title, message, labelCancel, labelOk, open, classes,
+            title, message, labelCancel, labelOk, open,
         } = this.props;
 
         return (
-            <Dialog role='alertdialog' open={open} onClose={this.handleRequestClose} className={classes.dialogWrapper}>
+            <StyledDialog role='alertdialog' open={open} onClose={this.handleRequestClose} className={classes.dialogWrapper}>
                 <DialogTitle>{title || <FormattedMessage id='Shared.ConfirmDialog.please.confirm' defaultMessage='Please Confirm' />}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>{message || <FormattedMessage id='Shared.ConfirmDialog.please.confirm.sure' defaultMessage='Are you sure?' />}</DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => this.handleRequestClose(ConfirmDialog.Action.CANCEL)} color='primary'>
+                    <Button onClick={() => this.handleRequestClose(ConfirmDialog.Action.CANCEL)} color='grey'>
                         {labelCancel || <FormattedMessage id='Shared.ConfirmDialog.cancel' defaultMessage='Cancel' />}
                     </Button>
                     <Button
@@ -86,7 +97,7 @@ class ConfirmDialog extends React.Component {
                         {labelOk || <FormattedMessage id='Shared.ConfirmDialog.ok' defaultMessage='OK' />}
                     </Button>
                 </DialogActions>
-            </Dialog>
+            </StyledDialog>
         );
     }
 }
@@ -104,4 +115,4 @@ ConfirmDialog.Action = {
     CANCEL: 'cancel',
 };
 
-export default withStyles(styles)(ConfirmDialog);
+export default (ConfirmDialog);

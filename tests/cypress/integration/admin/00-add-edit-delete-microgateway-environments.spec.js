@@ -25,7 +25,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
     })
     it.only("Add Edit Delete Microgateway Environments", () => {
         cy.get('[data-testid="Gateways"]').click();
-        cy.get('.MuiButton-label').contains('Add Gateway Environment').click();
+        cy.get('[data-testid="form-dialog-base-trigger-btn"]').contains('Add Gateway Environment').click();
         cy.get('input[name="name"]').type('MARKETING_STORE');
         cy.get('input[name="displayName"]').type('MARKETING_STORE');
         cy
@@ -33,24 +33,28 @@ describe("Add Edit Delete Microgateway Environments", () => {
             .find('input[name="0"]').type('localhost');
         // Wait until the label is saved
         cy.intercept('GET', '**/environments').as('environmentsGet');
-        cy.get('button > span').contains('Save').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Save').click();
         cy.wait('@environmentsGet',{ timeout: 3000 }).then(() => {
             cy.get('table tr td').contains('MARKETING_STORE').should('exist');
         });
 
         // editing
-        cy.get('[data-testid="MuiDataTableBodyCell-5-1"] div > div > button:first-child').click();
+        cy.get('[data-testid="MUIDataTableBodyRow-1"]').within(() => {
+            cy.get('[data-testid="EditIcon"]').click();
+        });
         cy.get('textarea[name="description"]').type('marketing store');
         // Wait until the label is saved
         cy.intercept('GET', '**/environments').as('environmentsGet');
-        cy.get('button > span').contains('Save').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Save').click();
         cy.wait('@environmentsGet', { timeout: 3000 }).then(() => {
             cy.get('table tr td').contains('marketing store').should('exist');
         });
 
         // deleting
-        cy.get('[data-testid="MuiDataTableBodyCell-5-1"] div > div > button:nth-child(2)').click();
-        cy.get('button > span').contains('Delete').click();
+        cy.get('[data-testid="MUIDataTableBodyRow-1"]').within(() => {
+            cy.get('[data-testid="DeleteForeverIcon"]').click();
+        });
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
         cy.get('div[role="status"]').should('have.text','Gateway Environment deleted successfully');
     });
 

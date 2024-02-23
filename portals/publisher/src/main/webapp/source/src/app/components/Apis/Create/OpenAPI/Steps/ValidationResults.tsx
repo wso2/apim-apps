@@ -16,18 +16,25 @@
  * under the License.
  */
 import React, { useState } from "react";
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Grid, List, ListItem, 
-    ListItemIcon, ListItemText, Typography } from "@material-ui/core";
-import { ExpandMore } from "@material-ui/icons";
+    ListItemIcon, ListItemText, Typography } from '@mui/material';
+import { ExpandMore } from '@mui/icons-material';
 import { FormattedMessage } from "react-intl";
 import LinterUI from "AppComponents/Apis/Details/APIDefinition/LinterUI/LinterUI";
 import APILintingSummary from "AppComponents/Apis/Details/APIDefinition/Linting/APILintingSummary";
 import {  
     spectralSeverityMap as severityMap } from "../../../Details/APIDefinition/Linting/Linting"
 
-const useStyles = makeStyles(() => ({
-    importDefinitionDialogHeader: {
+const PREFIX = 'ValidationResults';
+
+const classes = {
+    importDefinitionDialogHeader: `${PREFIX}-importDefinitionDialogHeader`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.importDefinitionDialogHeader}`]: {
         fontWeight: 600,
     }
 }));
@@ -46,10 +53,10 @@ export default function ValidationResults(props: APILintingProps) {
     const [expandValidationErrors, setExpandValidationErrors] = useState(true);
     const [expandLinterResults, setExpandLinterResults] = useState(false);
     const [linterSelectedSeverity, setLinterSelectedSeverity] = useState(-1);
-    const classes = useStyles();
+
 
     return (
-        <>
+        (<Root>
             <Grid item xs={10} md={11}>
                 <List>
                     {inputValue && isValidating && (
@@ -148,21 +155,21 @@ export default function ValidationResults(props: APILintingProps) {
                         </AccordionSummary>
                         <AccordionDetails
                             style={{padding:0}}>
-                                <LinterUI
-                                    linterResults={ linterResults.filter(
-                                        (item: any)=> linterSelectedSeverity===-1||
+                            <LinterUI
+                                linterResults={ linterResults.filter(
+                                    (item: any)=> linterSelectedSeverity===-1||
                                             item.severity===Number(linterSelectedSeverity))
-                                    }
-                                    severityMap={ severityMap }
-                                    handleRowClick={ (line: any) => { 
-                                        if(onLinterLineSelect) onLinterLineSelect(line);
-                                    } }
-                                />
+                                }
+                                severityMap={ severityMap }
+                                handleRowClick={ (line: any) => { 
+                                    if(onLinterLineSelect) onLinterLineSelect(line);
+                                } }
+                            />
                         </AccordionDetails>
                         
                     </Accordion>
                 </Grid>
             )}
-        </>
+        </Root>)
     );
 }

@@ -17,12 +17,10 @@
  */
 
 import React from 'react';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
 import PropTypes from 'prop-types';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 /**
  * Return a group container , User should provide the operations list as the child component
@@ -33,14 +31,14 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 export default function GroupOfOperations(props) {
     const { children, tag } = props;
     return (
-        <ExpansionPanel defaultExpanded>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
+        <Accordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls='panel1a-content' id='panel1a-header'>
                 <Typography variant='h4'>
                     {tag}
                 </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>{children}</ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionSummary>
+            <AccordionDetails>{children}</AccordionDetails>
+        </Accordion>
     );
 }
 

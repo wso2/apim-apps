@@ -1,7 +1,7 @@
 {
   "Apis.Details.APIConsole.APIConsole.download.postman": "Postman collection",
   "Apis.Details.APIConsole.APIConsole.download.swagger": "Swagger ( /swagger.json )",
-  "Apis.Details.ApiCOnsole.generate.test.key": "GET TEST KEY ",
+  "Apis.Details.ApiCOnsole.generate.test.key": "GET TEST KEY",
   "Apis.Details.ApiConsole.AdvertiseDetailsPanel.adv.auth.header": "Authorization Header",
   "Apis.Details.ApiConsole.AdvertiseDetailsPanel.adv.auth.header.value": "Authorization Header Value",
   "Apis.Details.ApiConsole.AdvertiseDetailsPanel.authentication.heading": "Authentication",

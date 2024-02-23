@@ -17,28 +17,37 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Table from '@material-ui/core/Table';
-import TextField from '@material-ui/core/TextField';
-import TableCell from '@material-ui/core/TableCell';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import TableRow from '@material-ui/core/TableRow';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TextField from '@mui/material/TextField';
+import TableCell from '@mui/material/TableCell';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
-import TableBody from '@material-ui/core/TableBody';
-import TableHead from '@material-ui/core/TableHead';
-import Box from '@material-ui/core/Box';
+import TableBody from '@mui/material/TableBody';
+import TableHead from '@mui/material/TableHead';
+import Box from '@mui/material/Box';
 
-const useStyles = makeStyles((theme) => ({
-    searchWrapper: {
+const PREFIX = 'UpdateComplexity';
+
+const classes = {
+    searchWrapper: `${PREFIX}-searchWrapper`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.searchWrapper}`]: {
         width: '100%',
         marginBottom: theme.spacing(2),
-    },
+    }
 }));
 
 /**
@@ -47,7 +56,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {any} HTML representation.
  */
 export default function UpdateComplexity(props) {
-    const classes = useStyles();
+
     const [filterKeyWord, setFilter] = useState('');
     const {
         setList, typelist, list,
@@ -62,7 +71,7 @@ export default function UpdateComplexity(props) {
     };
 
     return (
-        <>
+        (<Root>
             <Grid item md={2}>
                 <Box mt={4} pb={2}>
                     <div className={classes.searchWrapper}>
@@ -122,13 +131,13 @@ export default function UpdateComplexity(props) {
                                         </Typography>
                                     </TableCell>
                                     <TableCell>
-                                        <ExpansionPanel>
-                                            <ExpansionPanelSummary
+                                        <Accordion>
+                                            <AccordionSummary
                                                 expandIcon={<ExpandMoreIcon />}
                                                 aria-controls='panel1a-content'
                                                 id='panel1a-header'
                                             />
-                                            <ExpansionPanelDetails>
+                                            <AccordionDetails>
                                                 <Grid item md={12}>
                                                     <Table>
                                                         <TableRow>
@@ -167,8 +176,8 @@ export default function UpdateComplexity(props) {
                                                      )))}
                                                     </Table>
                                                 </Grid>
-                                            </ExpansionPanelDetails>
-                                        </ExpansionPanel>
+                                            </AccordionDetails>
+                                        </Accordion>
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant='body1'>
@@ -181,7 +190,7 @@ export default function UpdateComplexity(props) {
                     </TableBody>
                 </Table>
             </Grid>
-        </>
+        </Root>)
     );
 }
 

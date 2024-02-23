@@ -16,21 +16,30 @@
  * under the License.
  */
 import React, { lazy } from 'react';
-import Grid from '@material-ui/core/Grid';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import withStyles from '@material-ui/core/styles/withStyles';
 import AsyncApiUI from './asyncApiUI/AsyncApiUI';
 
-const styles = () => ({
-    editorPane: {
+const PREFIX = 'AsyncApiEditorDrawer';
+
+const classes = {
+    editorPane: `${PREFIX}-editorPane`,
+    editorRoot: `${PREFIX}-editorRoot`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.editorPane}`]: {
         width: '50%',
         height: '100%',
         overflow: 'scroll',
     },
-    editorRoot: {
+
+    [`& .${classes.editorRoot}`]: {
         height: '100%',
-    },
-});
+    }
+}));
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 
@@ -62,9 +71,9 @@ class AsyncApiEditorDrawer extends React.Component {
      * @inheritDoc
      */
     render() {
-        const { classes, language, asyncAPI } = this.props;
+        const {  language, asyncAPI } = this.props;
         return (
-            <>
+            (<Root>
                 <Grid container spacing={2} className={classes.editorRoot}>
                     <Grid item className={classes.editorPane}>
                         <MonacoEditor
@@ -83,7 +92,7 @@ class AsyncApiEditorDrawer extends React.Component {
                         </div>
                     </Grid>
                 </Grid>
-            </>
+            </Root>)
         );
     }
 }
@@ -95,4 +104,4 @@ AsyncApiEditorDrawer.propTypes = {
     onEditContent: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(AsyncApiEditorDrawer);
+export default (AsyncApiEditorDrawer);

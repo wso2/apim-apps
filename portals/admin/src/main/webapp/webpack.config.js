@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Copyright (c) 2017, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -32,10 +33,6 @@ module.exports = function (env,args) {
             filename: isDevelopmentBuild? '[name].bundle.js'  : '[name].[contenthash].bundle.js',
             chunkFilename: isDevelopmentBuild ? '[name].chunk.bundle.js' : '[name].[contenthash].bundle.js',
             publicPath: 'site/public/dist/',
-        },
-        node: {
-            fs: 'empty',
-            net: 'empty', // To fix joi issue: https://github.com/hapijs/joi/issues/665#issuecomment-113713020
         },
         watch: false,
         watchOptions: {
@@ -80,6 +77,21 @@ module.exports = function (env,args) {
                 AppTests: path.resolve(__dirname, 'source/Tests/'),
             },
             extensions: ['.js', '.jsx'],
+            fallback: {
+                "fs": false,
+                "tls": false,
+                "net": false,
+                "path": false,
+                "zlib": false,
+                "http": false,
+                "https": false,
+                "stream": false,
+                "process": false,
+                "crypto": false,
+                "util": require.resolve("util/"),
+                "crypto-browserify": require.resolve('crypto-browserify'),
+                "buffer": require.resolve('buffer/'),
+            },
         },
         module: {
             rules: [
@@ -115,14 +127,20 @@ module.exports = function (env,args) {
                 },
                 {
                     test: /\.(woff|woff2|eot|ttf|svg)$/,
-                    loader: 'url-loader?limit=100000',
-                },
+                    use: [
+                        {
+                            loader: 'url-loader',
+                            options: {
+                                limit: 100000,
+                            },
+                        }
+                    ]                },
                 // Until https://github.com/jantimon/html-webpack-plugin/issues/1483 ~tmkb
                 // This was added to generate the index.jsp from a hbs template file including the hashed bundle file
                 {
                     test: /\.jsp\.hbs$/,
                     loader: 'underscore-template-loader',
-                    query: {
+                    options: {
                         engine: 'lodash',
                         interpolate: '\\{\\[(.+?)\\]\\}',
                         evaluate: '\\{%([\\s\\S]+?)%\\}',
@@ -157,6 +175,10 @@ module.exports = function (env,args) {
                 // e.g. Output each progress message directly to the console:
                 const pres = Math.round(percentage * 100);
                 if (pres % 20 === 0) console.info(`${pres}%`, message, ...args); // To reduce log lines
+            }),
+            new webpack.ProvidePlugin({
+                Buffer: ['buffer', 'Buffer'],
+                process: 'process/browser',
             }),
         ],
     };

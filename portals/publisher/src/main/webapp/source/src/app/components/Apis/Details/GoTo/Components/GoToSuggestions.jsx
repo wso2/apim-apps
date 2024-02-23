@@ -17,27 +17,13 @@
  */
 
 import React from 'react';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
+import { useTheme } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
 import deburr from 'lodash/deburr';
-import { makeStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
-
 import suggestions from 'AppComponents/Apis/Details/GoTo/RouteMappings';
 import GoToSuggestion from 'AppComponents/Apis/Details/GoTo/Components/GoToSuggestion';
-
-const useStyles = makeStyles((theme) => ({
-    paper: {
-        position: 'absolute',
-        zIndex: theme.zIndex.goToSearch,
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(1),
-        left: 0,
-        right: 0,
-        maxHeight: '60vh',
-        overflowY: 'scroll',
-    },
-}));
 
 /**
  * Method to retrieve suggestions
@@ -78,10 +64,19 @@ const GoToSuggestions = (props) => {
     const {
         inputValue, isAPIProduct, isGraphQL, getItemProps, highlightedIndex, selectedItem, handleClickAway, apiId,
     } = props;
-    const classes = useStyles();
     const currentSuggestions = getSuggestions(inputValue, isAPIProduct, isGraphQL);
+    const theme = useTheme();
     return (
-        <Paper className={classes.paper} square>
+        <Paper square sx={{
+            position: 'absolute',
+            zIndex: theme.zIndex.goToSearch,
+            marginTop: theme.spacing(2),
+            padding: theme.spacing(1),
+            left: 0,
+            right: 0,
+            maxHeight: '60vh',
+            overflowY: 'scroll',
+        }}>
             {currentSuggestions.length > 0
                 ? currentSuggestions.map((suggestion, index) => (
                     <GoToSuggestion
@@ -111,6 +106,5 @@ const GoToSuggestions = (props) => {
         </Paper>
     );
 };
-
 
 export default GoToSuggestions;

@@ -17,27 +17,40 @@
  * under the License.
  */
 import React, { useContext, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
-import IconButton from '@material-ui/core/IconButton';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import IconButton from '@mui/material/IconButton';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
-import Avatar from '@material-ui/core/Avatar';
+import Avatar from '@mui/material/Avatar';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
-import Box from '@material-ui/core/Box';
-import Icon from '@material-ui/core/Icon';
-import Divider from '@material-ui/core/Divider';
+import Typography from '@mui/material/Typography';
+import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
+import Icon from '@mui/material/Icon';
+import Divider from '@mui/material/Divider';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { ApiContext } from './ApiContext';
 import GoToTryOut from './GoToTryOut';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'Environments';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    input: `${PREFIX}-input`,
+    avatar: `${PREFIX}-avatar`,
+    iconStyle: `${PREFIX}-iconStyle`,
+    sectionTitle: `${PREFIX}-sectionTitle`,
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.root}`]: {
         padding: '2px 4px',
         display: 'flex',
         alignItems: 'center',
@@ -61,17 +74,20 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 10,
         marginRight: theme.spacing(),
     },
-    input: {
+
+    [`& .${classes.input}`]: {
         marginLeft: theme.spacing(1),
         flex: 1,
     },
-    avatar: {
+
+    [`& .${classes.avatar}`]: {
         width: 30,
         height: 30,
         background: 'transparent',
         border: `solid 1px ${theme.palette.grey[300]}`,
     },
-    iconStyle: {
+
+    [`& .${classes.iconStyle}`]: {
         cursor: 'pointer',
         margin: '-10px 0',
         padding: '0 0 0 5px',
@@ -81,7 +97,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 
-    sectionTitle: {
+    [`& .${classes.sectionTitle}`]: {
         color: '#424242',
         fontSize: '0.85rem',
         marginRight: 20,
@@ -101,7 +117,6 @@ function Environments(props) {
     const [urlCopied, setUrlCopied] = useState(false);
 
     const intl = useIntl();
-    const classes = useStyles();
 
     const onCopy = () => {
         setUrlCopied(true);
@@ -142,18 +157,18 @@ function Environments(props) {
                         placement='right'
                         className={classes.iconStyle}
                     >
-                        <CopyToClipboard
-                            text={defaultVersionURLs.https
+                        <IconButton
+                            aria-label='Copy the Default Version URL to clipboard'
+                            size='large'
+                            onClick={() => {
+                                navigator.clipboard.writeText(defaultVersionURLs.https
                                 || defaultVersionURLs.http
                                 || defaultVersionURLs.ws
-                                || defaultVersionURLs.wss}
-                            // text={endpoint.URLs.http}
-                            onCopy={() => onCopy('urlCopied')}
+                                || defaultVersionURLs.wss).then(onCopy('urlCopied'));
+                            }}
                         >
-                            <IconButton aria-label='Copy the Default Version URL to clipboard'>
-                                <Icon color='secondary'>file_copy</Icon>
-                            </IconButton>
-                        </CopyToClipboard>
+                            <Icon color='secondary'>file_copy</Icon>
+                        </IconButton>
                     </Tooltip>
                 </>
             );
@@ -169,7 +184,7 @@ function Environments(props) {
     //     return <Progress />;
     // }
     return (
-        <Box display='flex' flexDirection='column' width='100%'>
+        <StyledBox display='flex' flexDirection='column' width='100%'>
             <Box mr={5} display='flex' area-label='API URL details' alignItems='center' width='100%' flexDirection='row'>
                 {selectedEndpoint && (!advertiseInfo || !advertiseInfo.advertised) && (
                     <>
@@ -190,6 +205,7 @@ function Environments(props) {
                             {api.endpointURLs.length > 1 && (
                                 <>
                                     <Select
+                                        variant='standard'
                                         value={selectedEndpoint.environmentName}
                                         onChange={updateSelectedEndpoint}
                                         aria-label='Select the Gateway Environment'
@@ -251,18 +267,18 @@ function Environments(props) {
                                             placement='right'
                                             className={classes.iconStyle}
                                         >
-                                            <CopyToClipboard
-                                                text={selectedEndpoint.URLs.https
-                                            || selectedEndpoint.URLs.http
-                                            || selectedEndpoint.URLs.wss
-                                            || selectedEndpoint.URLs.ws}
-                                                // text={endpoint.URLs.http}
-                                                onCopy={() => onCopy('urlCopied')}
+                                            <IconButton
+                                                aria-label='Copy the API URL to clipboard'
+                                                size='large'
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(selectedEndpoint.URLs.https
+                                                    || selectedEndpoint.URLs.http
+                                                    || selectedEndpoint.URLs.wss
+                                                    || selectedEndpoint.URLs.ws).then(onCopy('urlCopied'));
+                                                }}
                                             >
-                                                <IconButton aria-label='Copy the API URL to clipboard'>
-                                                    <Icon color='secondary'>file_copy</Icon>
-                                                </IconButton>
-                                            </CopyToClipboard>
+                                                <Icon color='secondary'>file_copy</Icon>
+                                            </IconButton>
                                         </Tooltip>
                                     </Avatar>
                                 </Box>
@@ -307,15 +323,16 @@ function Environments(props) {
                                                     placement='right'
                                                     className={classes.iconStyle}
                                                 >
-                                                    <CopyToClipboard
-                                                        text={selectedEndpoint.URLs.wss
-                                                            || selectedEndpoint.URLs.ws}
-                                                        onCopy={() => onCopy('urlCopied')}
+                                                    <IconButton
+                                                        aria-label='Copy the API URL to clipboard'
+                                                        size='large'
+                                                        onClick={() => {
+                                                            navigator.clipboard.writeText(selectedEndpoint.URLs.wss
+                                                            || selectedEndpoint.URLs.ws).then(onCopy('urlCopied'));
+                                                        }}
                                                     >
-                                                        <IconButton aria-label='Copy the API URL to clipboard'>
-                                                            <Icon color='secondary'>file_copy</Icon>
-                                                        </IconButton>
-                                                    </CopyToClipboard>
+                                                        <Icon color='secondary'>file_copy</Icon>
+                                                    </IconButton>
                                                 </Tooltip>
                                             </Avatar>
                                         </>
@@ -381,15 +398,18 @@ function Environments(props) {
                                             placement='right'
                                             className={classes.iconStyle}
                                         >
-                                            <CopyToClipboard
-                                                text={advertiseInfo.apiExternalProductionEndpoint}
-                                                // text={endpoint.URLs.http}
-                                                onCopy={() => onCopy('urlCopied')}
+                                            <IconButton
+                                                aria-label='Copy the API URL to clipboard'
+                                                size='large'
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(
+                                                        advertiseInfo.apiExternalProductionEndpoint,
+                                                    )
+                                                        .then(onCopy('urlCopied'));
+                                                }}
                                             >
-                                                <IconButton aria-label='Copy the API URL to clipboard'>
-                                                    <Icon color='secondary'>file_copy</Icon>
-                                                </IconButton>
-                                            </CopyToClipboard>
+                                                <Icon color='secondary'>file_copy</Icon>
+                                            </IconButton>
                                         </Tooltip>
                                     </Avatar>
                                 </Box>
@@ -431,14 +451,18 @@ function Environments(props) {
                                                         placement='right'
                                                         className={classes.iconStyle}
                                                     >
-                                                        <CopyToClipboard
-                                                            text={advertiseInfo.apiExternalSandboxEndpoint}
-                                                            onCopy={() => onCopy('urlCopied')}
+                                                        <IconButton
+                                                            aria-label='Copy the API URL to clipboard'
+                                                            size='large'
+                                                            onClick={() => {
+                                                                navigator.clipboard.writeText(
+                                                                    advertiseInfo.apiExternalSandboxEndpoint,
+                                                                )
+                                                                    .then(onCopy('urlCopied'));
+                                                            }}
                                                         >
-                                                            <IconButton aria-label='Copy the API URL to clipboard'>
-                                                                <Icon color='secondary'>file_copy</Icon>
-                                                            </IconButton>
-                                                        </CopyToClipboard>
+                                                            <Icon color='secondary'>file_copy</Icon>
+                                                        </IconButton>
                                                     </Tooltip>
                                                 </Avatar>
                                             </>
@@ -470,8 +494,7 @@ function Environments(props) {
                     )}
                 </Box>
             )}
-        </Box>
-
+        </StyledBox>
     );
 }
 Environments.propTypes = {

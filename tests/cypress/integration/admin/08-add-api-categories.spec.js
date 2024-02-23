@@ -36,10 +36,10 @@ describe("Add API Categories and assign via publisher portal", () => {
         const categoryDescription = 'Weather related apis';
 
         cy.get('[data-testid="API Categories"]', {timeout: Cypress.config().largeTimeout}).click();
-        cy.get('.MuiButton-label').contains('Add API Category').click();
+        cy.get('[data-testid="form-dialog-base-trigger-btn"]').contains('Add API Category').click();
         cy.get('input[name="name"]').type(category);
         cy.get('textarea[name="description"]').type(categoryDescription);
-        cy.get('button.MuiButton-containedPrimary span').contains('Save').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Save').click();
 
         // Go to publisher
         cy.wait(500);
@@ -47,9 +47,8 @@ describe("Add API Categories and assign via publisher portal", () => {
         Utils.addAPI({}).then((apiId) => {
             testApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/configuration`);
-            cy.get('#APICategories', {timeout: Cypress.config().largeTimeout}).click();
-            cy.get('span').contains(category).click();
-            cy.get('#menu-categories').click('topLeft');
+            cy.get('#APICategories-autocomplete', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('li').contains(category).click();
             cy.get('#design-config-save-btn').click();
         })
     });
@@ -60,7 +59,7 @@ describe("Add API Categories and assign via publisher portal", () => {
                 // Delete
                 cy.visit(`/admin/settings/api-categories`);
                 cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)', {timeout: Cypress.config().largeTimeout}).click();
-                cy.get('[data-testid="Delete-btn"]').click();
+                cy.get('[data-testid="form-dialog-base-save-btn"]').contains("Delete").click();
                 //cy.get('div[role="status"]', {timeout: Cypress.config().largeTimeout}).should('have.text', 'API Category deleted successfully');
             });
         }

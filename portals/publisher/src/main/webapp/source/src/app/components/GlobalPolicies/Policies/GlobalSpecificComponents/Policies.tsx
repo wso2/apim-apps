@@ -16,15 +16,17 @@
 * under the License.
 */
 
-import { Card, CardContent, makeStyles, Typography } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import { Card, CardContent, Typography } from '@mui/material';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import Alert from 'AppComponents/Shared/Alert';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
+import { Theme } from '@mui/material';
 import React, { useState, useEffect, useMemo, FC } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Icon from '@material-ui/core/Icon';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Icon from '@mui/material/Icon';
 import { HTML5Backend } from 'react-dnd-html5-backend';
 import { DndProvider } from 'react-dnd';
 import { useIntl, FormattedMessage } from 'react-intl';
@@ -39,30 +41,46 @@ import { GlobalPolicyContextProvider } from '../GlobalPolicyContext';
 import PolicyPanel from './PolicyPanel';
 import { uuidv4 } from '../Utils';
 
-const useStyles = makeStyles((theme) => ({
-    textField: {
+const PREFIX = 'Policies';
+
+const classes = {
+    textField: `${PREFIX}-textField`,
+    titleLink: `${PREFIX}-titleLink`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    operationListingBox: `${PREFIX}-operationListingBox`,
+    paper: `${PREFIX}-paper`,
+    button: `${PREFIX}-button`
+};
+
+const StyledGlobalPolicyContextProvider = styled(GlobalPolicyContextProvider)(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.textField}`]: {
         backgroundColor: 'white', 
     },
-    titleLink: {
+
+    [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.dark,
         marginRight: theme.spacing(1),
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
     },
-    operationListingBox: {
+
+    [`& .${classes.operationListingBox}`]: {
         display: 'flex',
         overflowY: 'scroll',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         display: 'flex',
         flexDirection: 'column',
         flex: 1
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         width: '200px'
     }
 }));
@@ -85,7 +103,7 @@ const Policies: FC<PolicyProps> =  ({
     policyID,
     disabled,
 }) => {
-    const classes = useStyles();
+
     const history = useHistory();
     const [loading, setLoading] = useState(false);
     const [policies, setPolicies] = useState<Policy[] | null>(null);
@@ -480,7 +498,7 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     return (
-        <GlobalPolicyContextProvider value={providerValue}>
+        <StyledGlobalPolicyContextProvider value={providerValue}>
             <Box mt={3} mb={3} ml={5} mr={5}>   
                 <DndProvider backend={HTML5Backend}>
                     {/**
@@ -605,7 +623,7 @@ const Policies: FC<PolicyProps> =  ({
                     </Button> 
                 </Box>
             </Box>
-        </GlobalPolicyContextProvider>
+        </StyledGlobalPolicyContextProvider>
     );
 };
 

@@ -16,15 +16,15 @@
  * under the License.
  */
 import React, { useContext } from 'react';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
-import Tooltip from '@material-ui/core/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import Box from '@material-ui/core/Box';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Chip from '@mui/material/Chip';
+import Tooltip from '@mui/material/Tooltip';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import Box from '@mui/material/Box';
 import API from 'AppData/api';
 import { capitalizeFirstLetter, upperCaseString, lowerCaseString } from 'AppData/stringFormatter';
 import APIContext from '../components/ApiContext';

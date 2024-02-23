@@ -17,16 +17,35 @@
  */
 
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import { Link, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/styles';
+import Typography from '@mui/material/Typography';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 
-const useStyles = makeStyles((theme) => ({
-    leftLInkText: {
+const PREFIX = 'LeftMenuItem';
+
+const classes = {
+    leftLInkText: `${PREFIX}-leftLInkText`,
+    leftLInkTextHead: `${PREFIX}-leftLInkTextHead`,
+    leftLInkText_IconLeft: `${PREFIX}-leftLInkText_IconLeft`,
+    LeftMenu: `${PREFIX}-LeftMenu`,
+    leftLInk: `${PREFIX}-leftLInk`,
+    leftLInkOverview: `${PREFIX}-leftLInkOverview`,
+    leftLink_Icon: `${PREFIX}-leftLink_Icon`,
+    leftLink_IconLeft: `${PREFIX}-leftLink_IconLeft`,
+    noIcon: `${PREFIX}-noIcon`,
+    leftLInkText_NoText: `${PREFIX}-leftLInkText_NoText`,
+    selectedMenu: `${PREFIX}-selectedMenu`
+};
+
+const StyledLink = styled(Link)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.leftLInkText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.leftMenu),
         textTransform: theme.custom.leftMenuTextStyle,
         width: '100%',
@@ -37,7 +56,8 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 250,
         whiteSpace: 'nowrap',
     },
-    leftLInkTextHead: {
+
+    [`& .${classes.leftLInkTextHead}`]: {
         color: theme.palette.getContrastText(theme.palette.background.leftMenu),
         textTransform: theme.custom.leftMenuTextStyle,
         width: '100%',
@@ -47,10 +67,12 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 800,
         whiteSpace: 'nowrap',
     },
-    leftLInkText_IconLeft: {
+
+    [`& .${classes.leftLInkText_IconLeft}`]: {
         paddingLeft: 10,
     },
-    LeftMenu: {
+
+    [`& .${classes.LeftMenu}`]: {
         backgroundColor: theme.palette.background.leftMenu,
         width: theme.custom.leftMenuWidth,
         textAlign: 'center',
@@ -60,7 +82,8 @@ const useStyles = makeStyles((theme) => ({
         left: 0,
         top: 0,
     },
-    leftLInk: {
+
+    [`&.${classes.leftLInk}`]: {
         paddingTop: theme.spacing(1),
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(1),
@@ -70,7 +93,8 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         textDecoration: 'none',
     },
-    leftLInkOverview: {
+
+    [`& .${classes.leftLInkOverview}`]: {
         paddingTop: theme.spacing(1),
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
@@ -80,24 +104,28 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         textDecoration: 'none',
     },
-    leftLink_Icon: {
+
+    [`& .${classes.leftLink_Icon}`]: {
         color: theme.palette.getContrastText(theme.palette.background.leftMenu),
         fontSize: theme.custom.leftMenuIconSize + 'px',
     },
-    leftLink_IconLeft: {
+
+    [`&.${classes.leftLink_IconLeft}`]: {
         display: 'flex',
         alignItems: 'center',
     },
-    noIcon: {
+
+    [`& .${classes.noIcon}`]: {
         display: 'none',
     },
-    leftLInkText_NoText: {
+
+    [`& .${classes.leftLInkText_NoText}`]: {
         diplay: 'none',
     },
-    selectedMenu: {
-        backgroundColor: theme.palette.background.appBarSelected,
-    },
 
+    [`& .${classes.selectedMenu}`]: {
+        backgroundColor: theme.palette.background.appBarSelected,
+    }
 }));
 
 /**
@@ -110,7 +138,7 @@ function LeftMenuItem(props) {
     const {
         Icon, to, text, route, head, id,
     } = props;
-    const classes = useStyles();
+
     const theme = useTheme();
     const { leftMenu } = theme.custom;
     const strokeColor = theme.palette.getContrastText(theme.palette.background.leftMenu);
@@ -121,7 +149,7 @@ function LeftMenuItem(props) {
     const menuPathPattern = new RegExp('/' + routeToCheck + '($|/)', 'g');
     const isSelected = pathname.match(menuPathPattern);
     return (
-        <Link
+        <StyledLink
             className={classNames(
                 head !== 'valueOnly' ? (
                     classes.leftLInk) : (classes.leftLInkOverview),
@@ -189,7 +217,7 @@ function LeftMenuItem(props) {
                         {text}
                     </Typography>
                 )}
-        </Link>
+        </StyledLink>
     );
 }
 LeftMenuItem.defaultProps = {
@@ -197,40 +225,9 @@ LeftMenuItem.defaultProps = {
     iconText: null,
 };
 LeftMenuItem.propTypes = {
-    classes: PropTypes.shape({
-        divider: PropTypes.string,
-        leftLInk: PropTypes.string,
-        leftLink_IconLeft: PropTypes.string,
-        noIcon: PropTypes.string,
-        leftLink_Icon: PropTypes.string,
-        leftLInkText: PropTypes.string,
-        leftLInkTextHead: PropTypes.string,
-        leftLInkText_IconLeft: PropTypes.string,
-        leftLInkText_NoText: PropTypes.string,
-    }).isRequired,
-    theme: PropTypes.shape({
-        custom: PropTypes.shape({
-            leftMenu: PropTypes.string,
-            leftMenuIconSize: PropTypes.number,
-        }),
-        palette: PropTypes.shape({
-            getContrastText: PropTypes.func,
-            background: PropTypes.shape({
-                leftMenu: PropTypes.string,
-                appBar: PropTypes.string,
-            }),
-            leftMenu: PropTypes.string,
-        }),
-    }).isRequired,
-    Icon: PropTypes.element.isRequired,
     text: PropTypes.string.isRequired,
     to: PropTypes.string.isRequired,
-    head: PropTypes.string.isRequired,
     route: PropTypes.string,
-    history: PropTypes.shape({
-        listen: PropTypes.func.isRequired,
-        location: PropTypes.string.isRequired,
-    }).isRequired,
     iconText: PropTypes.string,
 };
 export default LeftMenuItem;

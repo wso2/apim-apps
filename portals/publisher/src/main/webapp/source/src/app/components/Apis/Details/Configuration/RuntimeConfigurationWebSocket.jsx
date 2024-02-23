@@ -17,23 +17,23 @@
  */
 
 import React, { useReducer, useContext, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
 import { Link, useHistory } from 'react-router-dom';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormGroup from '@material-ui/core/FormGroup';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
+import FormGroup from '@mui/material/FormGroup';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AccordionSummary from '@mui/material/AccordionSummary';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
-import ArrowForwardIcon from '@material-ui/icons/SettingsEthernet';
+import ArrowForwardIcon from '@mui/icons-material/SettingsEthernet';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import { isRestricted } from 'AppData/AuthManager';
@@ -46,69 +46,105 @@ import {
     API_SECURITY_API_KEY
 } from './components/APISecurity/components/apiSecurityConstants';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'RuntimeConfigurationWebSocket';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    boxFlex: `${PREFIX}-boxFlex`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    paper: `${PREFIX}-paper`,
+    paperCenter: `${PREFIX}-paperCenter`,
+    heading: `${PREFIX}-heading`,
+    itemPadding: `${PREFIX}-itemPadding`,
+    arrowForwardIcon: `${PREFIX}-arrowForwardIcon`,
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    subHeading: `${PREFIX}-subHeading`,
+    info: `${PREFIX}-info`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         padding: theme.spacing(3, 2),
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
     },
-    boxFlex: {
+
+    [`& .${classes.boxFlex}`]: {
         display: 'flex',
         flexDirection: 'row',
         flexWrap: 'wrap',
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(3),
         minHeight: '250px',
     },
-    paperCenter: {
+
+    [`& .${classes.paperCenter}`]: {
         padding: theme.spacing(3),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: '1.1rem',
         fontWeight: 400,
         marginBottom: theme.spacing(1),
     },
-    itemPadding: {
+
+    [`& .${classes.itemPadding}`]: {
         marginBottom: theme.spacing(3),
     },
-    arrowForwardIcon: {
+
+    [`& .${classes.arrowForwardIcon}`]: {
         fontSize: 50,
         color: '#ccc',
         position: 'absolute',
         top: 175,
         right: -55,
     },
-    expansionPanel: {
+
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(1),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: '38px',
     },
-    info: {
+
+    [`& .${classes.info}`]: {
         display: 'flex',
         height: '100%',
     },
-    error: {
+
+    [`& .${classes.error}`]: {
         color: theme.palette.error.main,
-    }
+    },
 }));
 
 /**
@@ -206,7 +242,7 @@ export default function RuntimeConfiguration() {
     const [isUpdating, setIsUpdating] = useState(false);
     const history = useHistory();
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
-    const classes = useStyles();
+
 
     const Validate = () => {
 
@@ -258,7 +294,7 @@ export default function RuntimeConfiguration() {
     }
 
     return (
-        <>
+        <Root>
             <Box pb={3}>
                 <Typography variant='h5'>
                     <FormattedMessage
@@ -268,10 +304,10 @@ export default function RuntimeConfiguration() {
                 </Typography>
             </Box>
             <div className={classes.contentWrapper}>
-                <Grid container direction='row' justify='space-around' alignItems='stretch' spacing={8}>
-                    <Grid item xs={12} md={7} style={{ marginBottom: 30, position: 'relative' }}>
+                <Grid container direction='row' justifyContent='space-around' alignItems='stretch' spacing={8}>
+                    <Grid item xs={12} md={7} sx={{ marginBottom: 30, position: 'relative' }}>
                         <WrappedExpansionPanel className={classes.expansionPanel} id='applicationLevel'>
-                            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                                     <FormattedMessage
                                         id='Apis.Details.Configuration.Components.APISecurity.Components.
@@ -279,8 +315,8 @@ export default function RuntimeConfiguration() {
                                         defaultMessage='Client Websocket'
                                     />
                                 </Typography>
-                            </ExpansionPanelSummary>
-                            <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                            </AccordionSummary>
+                            <AccordionDetails className={classes.expansionPanelDetails}>
                                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                                     <FormattedMessage
                                         id='Apis.Details.Configuration.Components.APISecurity.Components.
@@ -288,7 +324,7 @@ export default function RuntimeConfiguration() {
                                         defaultMessage='Application Level Security'
                                     />
                                 </Typography>
-                                <FormGroup style={{ display: 'flow-root' }}>
+                                <FormGroup sx={{ display: 'flow-root' }}>
                                     <FormControlLabel
                                         control={(
                                             <Checkbox
@@ -325,7 +361,7 @@ export default function RuntimeConfiguration() {
                                 <span className={classes.error}>
                                     <Validate />
                                 </span>
-                            </ExpansionPanelDetails>
+                            </AccordionDetails>
                         </WrappedExpansionPanel>
                         <APILevelRateLimitingPolicies api={apiConfig} configDispatcher={configDispatcher} />
                         <ArrowForwardIcon className={classes.arrowForwardIcon} />
@@ -337,7 +373,7 @@ export default function RuntimeConfiguration() {
                                 defaultMessage='Backend Websocket'
                             />
                         </Typography>
-                        <Paper className={classes.paper} style={{ height: 'calc(100% - 75px)' }} elevation={0}>
+                        <Paper className={classes.paper} sx={{ height: 'calc(100% - 75px)' }} elevation={0}>
                             {!api.isAPIProduct() && (
                                 <>
                                     <Endpoints api={api} />
@@ -347,7 +383,7 @@ export default function RuntimeConfiguration() {
                     </Grid>
                 </Grid>
                 <Grid container>
-                    <Grid container direction='row' alignItems='center' spacing={1} style={{ marginTop: 20 }}>
+                    <Grid container direction='row' alignItems='center' spacing={1} sx={{ marginTop: 20 }}>
                         <Grid item>
                             {api.isRevision
                                 || ((apiConfig.visibility === 'RESTRICTED' && apiConfig.visibleRoles.length === 0)
@@ -386,6 +422,6 @@ export default function RuntimeConfiguration() {
                     </Grid>
                 </Grid>
             </div>
-        </>
+        </Root>
     );
 }

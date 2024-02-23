@@ -19,12 +19,12 @@
 import React from 'react';
 import API from 'AppData/api';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import Delete from 'AppComponents/GatewayEnvironments/DeleteGWEnvironment';
 import AddEdit from 'AppComponents/GatewayEnvironments/AddEditGWEnvironment';
-import EditIcon from '@material-ui/icons/Edit';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
+import EditIcon from '@mui/icons-material/Edit';
 
 /**
  * API call to get Gateway labels

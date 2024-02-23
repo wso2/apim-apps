@@ -17,23 +17,25 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
-import Chip from '@material-ui/core/Chip';
+import Chip from '@mui/material/Chip';
 import { injectIntl } from 'react-intl';
 import CONSTS from 'AppData/Constants';
 import Api from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import Progress from 'AppComponents/Shared/Progress';
+import { useTheme } from '@mui/material';
+import Box from '@mui/material/Box';
 import { ApiContext } from './ApiContext';
 
 /**
  * @param {JSON} props render the base
  * @returns {JSX} rendered output
  */
-function RenderMethodBase(props) {
-    const { theme, method } = props;
+function RenderMethod(props) {
+    const { method } = props;
+    const theme = useTheme();
     let chipColor = theme.custom.resourceChipColors ? theme.custom.resourceChipColors[method] : null;
     let chipTextColor = '#000000';
     if (!chipColor) {
@@ -54,25 +56,11 @@ function RenderMethodBase(props) {
     );
 }
 
-RenderMethodBase.propTypes = {
+RenderMethod.propTypes = {
     theme: PropTypes.shape({}).isRequired,
     method: PropTypes.string.isRequired,
 };
 
-const RenderMethod = withTheme(RenderMethodBase);
-
-const styles = (theme) => ({
-    root: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    heading: {
-        marginRight: 20,
-        color: theme.palette.getContrastText(theme.custom.infoBar.sliderBackground),
-    },
-});
 /**
  *
  *
@@ -133,8 +121,22 @@ class Resources extends React.Component {
                 {Object.keys(paths).map((key) => {
                     const path = paths[key];
                     return (
-                        <div className={classes.root} key={key}>
-                            <Typography className={classes.heading} variant='body2'>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'row',
+                                alignItems: 'center',
+                                marginBottom: 10,
+                            }}
+                            key={key}
+                        >
+                            <Typography
+                                sx={(theme) => ({
+                                    marginRight: 20,
+                                    color: theme.palette.getContrastText(theme.custom.infoBar.sliderBackground),
+                                })}
+                                variant='body2'
+                            >
                                 {key}
                             </Typography>
                             {Object.keys(path).map((innerKey) => {
@@ -142,7 +144,7 @@ class Resources extends React.Component {
                                     <RenderMethod method={innerKey} key={innerKey} />
                                 ) : null;
                             })}
-                        </div>
+                        </Box>
                     );
                 })}
             </div>
@@ -158,4 +160,4 @@ Resources.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Resources));
+export default injectIntl((Resources));

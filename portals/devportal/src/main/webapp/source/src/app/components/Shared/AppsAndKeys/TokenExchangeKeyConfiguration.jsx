@@ -16,183 +16,251 @@
  * under the License.
  */
 import React, {useReducer, useState} from 'react';
-import Box from '@material-ui/core/Box';
-import {withStyles} from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
 import {FormattedMessage, useIntl} from 'react-intl';
 import PropTypes from 'prop-types';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import Typography from "@material-ui/core/Typography";
-import Grid from "@material-ui/core/Grid";
-import Link from "@material-ui/core/Link";
-import Dialog from "@material-ui/core/Dialog";
-import DialogTitle from "@material-ui/core/DialogTitle";
-import DialogContent from "@material-ui/core/DialogContent";
-import DialogContentText from "@material-ui/core/DialogContentText";
+import Typography from "@mui/material/Typography";
+import Grid from "@mui/material/Grid";
+import Dialog from "@mui/material/Dialog";
+import DialogTitle from "@mui/material/DialogTitle";
+import DialogContent from "@mui/material/DialogContent";
+import DialogContentText from "@mui/material/DialogContentText";
 import ViewCurl from "AppComponents/Shared/AppsAndKeys/ViewCurl";
 import ViewToken from "AppComponents/Shared/AppsAndKeys/ViewToken";
-import DialogActions from "@material-ui/core/DialogActions";
-import CircularProgress from "@material-ui/core/CircularProgress";
-import Button from "@material-ui/core/Button";
+import DialogActions from "@mui/material/DialogActions";
+import CircularProgress from "@mui/material/CircularProgress";
+import Button from "@mui/material/Button";
 import Application from "AppData/Application";
 import Loading from "AppComponents/Base/Loading/Loading";
 import Alert from "AppComponents/Shared/Alert";
 import Tokens from "AppComponents/Shared/AppsAndKeys/Tokens";
-import {TableBody, TableCell, TableRow} from "@material-ui/core";
-import Table from "@material-ui/core/Table";
+import {TableBody, TableCell, TableRow} from "@mui/material";
+import Table from "@mui/material/Table";
 
-const styles = (theme) => ({
-        FormControl: {
-            paddingTop: 0,
-            paddingBottom: theme.spacing(2),
-            paddingLeft: 0,
-            width: '100%',
-        },
-        FormControlOdd: {
-            padding: theme.spacing(2),
-            width: '100%',
-        },
-        button: {
-            marginLeft: theme.spacing(1),
-        },
-        quotaHelp: {
-            position: 'relative',
-        },
-        checkboxWrapper: {
-            display: 'flex',
-        },
-        generateWrapper: {
-            padding: '10px 0px',
-            marginLeft: theme.spacing(1.25),
-        },
-        checkboxWrapperColumn: {
-            display: 'flex',
-            flexWrap: 'wrap',
-            flexDirection: 'row',
-            whiteSpace: 'nowrap',
-        },
-        group: {
-            flexDirection: 'row',
-        },
-        removeHelperPadding: {
-            '& p': {
-                margin: '8px 0px',
-            },
-        },
-        iconStyle: {
-            cursor: 'pointer',
-            padding: '0 0 0 10px',
-        },
-        iconButton: {
-            padding: '0 0 0 10px',
-            '& .material-icons': {
-                fontSize: 16,
-            },
-        },
-        titleColumn: {
-            width: 150,
-            fontWeight: 500,
-        },
-        keyInfoTable: {
-            marginBottom: 20,
-            borderCollapse: 'collapse',
-            '& td': {
-                paddingBottom: 5,
-                borderBottom: 'solid 1px #cccc',
-            },
-        },
-        leftCol: {
-            width: 180,
-        },
-        stepLabel: {
-            color: "#5567d5",
-            alignSelf: 'center',
-        },
-        stepContent: {
-            color: '#1D2028',
-            fontSize: '0.75rem',
-        },
-        keyLabel: {
-            color: '#222228',
-            fontSize: '0.75rem',
-            marginLeft: theme.spacing(1)
-        },
-        idpGrid: {
-            textAlign: 'left',
-            margin: theme.spacing(0),
-            alignSelf: 'center',
-        },
-        helperTextError: {
-            display: "flex",
-            alignItems: "center",
-            fontSize: 10.5
-        },
-        input: {
-            marginLeft: theme.spacing(1),
-            flex: 1,
-        },
-        avatar: {
-            width: 30,
-            height: 30,
-            background: 'transparent',
-            border: `solid 1px ${theme.palette.grey[300]}`
-        },
-        copyIconStyle: {
-            cursor: 'pointer',
-            margin: '-10px 0',
-            padding: '0 0 0 5px',
-            '& .material-icons': {
-                fontSize: 18,
-                color: '#9c9c9c',
-            },
-        },
-        hr: {
-            border: 'solid 1px #efefef',
-        },
-        divCenter: {
-            alignSelf: 'center',
-            width: 180
-        },
-        tableHeader: {
-            borderBottom: 'none',
+const PREFIX = 'TokenExchangeKeyConfiguration';
 
-        },
-        helperText: {
-            marginLeft: 0,
-            color: '#8D91A3',
-            lineHeight: 1.6,
-            maxWidth: 410
-        },
-        dialogWrapper: {
-            '& label,& h5, & label, & td, & li, & input, & h2, & p.MuiTypography-root,& p.MuiFormHelperText-root': {
-                color: theme.palette.getContrastText(theme.palette.background.paper),
-            },
-        },
-        margin: {
-            marginRight: theme.spacing(2),
-        },
-        tokenSection: {
-            marginTop: 0,
-            marginBottom: theme.spacing(0.5),
-        },
-        inputWrapper: {
-            display: 'flex',
-            flexDirection: 'row',
-            alignItems: 'center',
-            '& span, & h5, & label, & td, & li, & div, & input': {
-                color: theme.palette.getContrastText(theme.palette.background.paper),
-            },
-        },
-        bottomInfo: {
-            fontSize: 12,
-            marginBottom: '10px',
-        }
+const classes = {
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    button: `${PREFIX}-button`,
+    quotaHelp: `${PREFIX}-quotaHelp`,
+    checkboxWrapper: `${PREFIX}-checkboxWrapper`,
+    generateWrapper: `${PREFIX}-generateWrapper`,
+    checkboxWrapperColumn: `${PREFIX}-checkboxWrapperColumn`,
+    group: `${PREFIX}-group`,
+    removeHelperPadding: `${PREFIX}-removeHelperPadding`,
+    iconStyle: `${PREFIX}-iconStyle`,
+    iconButton: `${PREFIX}-iconButton`,
+    titleColumn: `${PREFIX}-titleColumn`,
+    keyInfoTable: `${PREFIX}-keyInfoTable`,
+    leftCol: `${PREFIX}-leftCol`,
+    stepLabel: `${PREFIX}-stepLabel`,
+    stepContent: `${PREFIX}-stepContent`,
+    keyLabel: `${PREFIX}-keyLabel`,
+    idpGrid: `${PREFIX}-idpGrid`,
+    helperTextError: `${PREFIX}-helperTextError`,
+    input: `${PREFIX}-input`,
+    avatar: `${PREFIX}-avatar`,
+    copyIconStyle: `${PREFIX}-copyIconStyle`,
+    hr: `${PREFIX}-hr`,
+    divCenter: `${PREFIX}-divCenter`,
+    tableHeader: `${PREFIX}-tableHeader`,
+    helperText: `${PREFIX}-helperText`,
+    dialogWrapper: `${PREFIX}-dialogWrapper`,
+    margin: `${PREFIX}-margin`,
+    tokenSection: `${PREFIX}-tokenSection`,
+    inputWrapper: `${PREFIX}-inputWrapper`,
+    bottomInfo: `${PREFIX}-bottomInfo`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
     }
-);
+) => ({
+    [`& .${classes.FormControl}`]: {
+        paddingTop: 0,
+        paddingBottom: theme.spacing(2),
+        paddingLeft: 0,
+        width: '100%',
+    },
+
+    [`& .${classes.FormControlOdd}`]: {
+        padding: theme.spacing(2),
+        width: '100%',
+    },
+
+    [`& .${classes.button}`]: {
+        marginLeft: theme.spacing(1),
+    },
+
+    [`& .${classes.quotaHelp}`]: {
+        position: 'relative',
+    },
+
+    [`& .${classes.checkboxWrapper}`]: {
+        display: 'flex',
+    },
+
+    [`& .${classes.generateWrapper}`]: {
+        padding: '10px 0px',
+        marginLeft: theme.spacing(1.25),
+    },
+
+    [`& .${classes.checkboxWrapperColumn}`]: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        flexDirection: 'row',
+        whiteSpace: 'nowrap',
+    },
+
+    [`& .${classes.group}`]: {
+        flexDirection: 'row',
+    },
+
+    [`& .${classes.removeHelperPadding}`]: {
+        '& p': {
+            margin: '8px 0px',
+        },
+    },
+
+    [`& .${classes.iconStyle}`]: {
+        cursor: 'pointer',
+        padding: '0 0 0 10px',
+    },
+
+    [`& .${classes.iconButton}`]: {
+        padding: '0 0 0 10px',
+        '& .material-icons': {
+            fontSize: 16,
+        },
+    },
+
+    [`& .${classes.titleColumn}`]: {
+        width: 150,
+        fontWeight: 500,
+    },
+
+    [`& .${classes.keyInfoTable}`]: {
+        marginBottom: 20,
+        borderCollapse: 'collapse',
+        '& td': {
+            paddingBottom: 5,
+            borderBottom: 'solid 1px #cccc',
+        },
+    },
+
+    [`& .${classes.leftCol}`]: {
+        width: 180,
+    },
+
+    [`& .${classes.stepLabel}`]: {
+        color: "#5567d5",
+        alignSelf: 'center',
+    },
+
+    [`& .${classes.stepContent}`]: {
+        color: '#1D2028',
+        fontSize: '0.75rem',
+    },
+
+    [`& .${classes.keyLabel}`]: {
+        color: '#222228',
+        fontSize: '0.75rem',
+        marginLeft: theme.spacing(1)
+    },
+
+    [`& .${classes.idpGrid}`]: {
+        textAlign: 'left',
+        margin: theme.spacing(0),
+        alignSelf: 'center',
+    },
+
+    [`& .${classes.helperTextError}`]: {
+        display: "flex",
+        alignItems: "center",
+        fontSize: 10.5
+    },
+
+    [`& .${classes.input}`]: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+
+    [`& .${classes.avatar}`]: {
+        width: 30,
+        height: 30,
+        background: 'transparent',
+        border: `solid 1px ${theme.palette.grey[300]}`
+    },
+
+    [`& .${classes.copyIconStyle}`]: {
+        cursor: 'pointer',
+        margin: '-10px 0',
+        padding: '0 0 0 5px',
+        '& .material-icons': {
+            fontSize: 18,
+            color: '#9c9c9c',
+        },
+    },
+
+    [`& .${classes.hr}`]: {
+        border: 'solid 1px #efefef',
+    },
+
+    [`& .${classes.divCenter}`]: {
+        alignSelf: 'center',
+        width: 180
+    },
+
+    [`& .${classes.tableHeader}`]: {
+        borderBottom: 'none',
+
+    },
+
+    [`& .${classes.helperText}`]: {
+        marginLeft: 0,
+        color: '#8D91A3',
+        lineHeight: 1.6,
+        maxWidth: 410
+    },
+
+    [`& .${classes.dialogWrapper}`]: {
+        '& label,& h5, & label, & td, & li, & input, & h2, & p.MuiTypography-root,& p.MuiFormHelperText-root': {
+            color: theme.palette.getContrastText(theme.palette.background.paper),
+        },
+    },
+
+    [`& .${classes.margin}`]: {
+        marginRight: theme.spacing(2),
+    },
+
+    [`& .${classes.tokenSection}`]: {
+        marginTop: 0,
+        marginBottom: theme.spacing(0.5),
+    },
+
+    [`& .${classes.inputWrapper}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        '& span, & h5, & label, & td, & li, & div, & input': {
+            color: theme.palette.getContrastText(theme.palette.background.paper),
+        },
+    },
+
+    [`& .${classes.bottomInfo}`]: {
+        fontSize: 12,
+        marginBottom: '10px',
+    }
+}));
 
 function reducer(state, newValue) {
     const {field, value} = newValue;
@@ -261,8 +329,7 @@ const TokenExchangeKeyConfiguration = (props) => {
     const intl = useIntl();
 
     const {
-        classes,  keyManagerConfig,
-        defaultTokenEndpoint, selectedApp, selectedTab, selectedApp: {hashEnabled}, keys, fullScreen, keyType
+        keyManagerConfig, defaultTokenEndpoint, selectedApp, selectedTab, selectedApp: {hashEnabled}, keys, fullScreen, keyType
     } = props;
 
     let appId;
@@ -427,7 +494,7 @@ const TokenExchangeKeyConfiguration = (props) => {
     const consumerKey = csCkKeys && csCkKeys.consumerKey;
     const consumerSecret = csCkKeys && csCkKeys.consumerSecret;
     return (
-        <>
+        <Root>
                     <Box display='flex' alignItems='center'>
                         <Table className={classes.table}>
                             <TableBody>
@@ -483,17 +550,14 @@ const TokenExchangeKeyConfiguration = (props) => {
                                             placement='right'
                                             className={classes.iconStyle}
                                         >
-                                            <CopyToClipboard
-                                                text={keyManagerConfig.tokenEndpoint}
-                                                onCopy={onCopy}
+                                            <IconButton
+                                                aria-label='Copy to clipboard'
+                                                classes={{root: classes.iconButton}}
+                                                size="large"
+                                                onClick={() => {navigator.clipboard.writeText(keyManagerConfig.tokenEndpoint).then(onCopy())}}
                                             >
-                                                <IconButton
-                                                    aria-label='Copy to clipboard'
-                                                    classes={{root: classes.iconButton}}
-                                                >
-                                                    <Icon color='secondary'>file_copy</Icon>
-                                                </IconButton>
-                                            </CopyToClipboard>
+                                                <Icon color='secondary'>file_copy</Icon>
+                                            </IconButton>
                                         </Tooltip>
                                     </TableCell>
                                 </TableRow>
@@ -662,7 +726,7 @@ const TokenExchangeKeyConfiguration = (props) => {
                             </Grid>
                         </div>
                     </Box>
-            </>
+        </Root>
     );
 }
 TokenExchangeKeyConfiguration.defaultProps = {
@@ -695,4 +759,4 @@ TokenExchangeKeyConfiguration.propTypes = {
 };
 
 
-export default withStyles(styles)(TokenExchangeKeyConfiguration);
+export default (TokenExchangeKeyConfiguration);

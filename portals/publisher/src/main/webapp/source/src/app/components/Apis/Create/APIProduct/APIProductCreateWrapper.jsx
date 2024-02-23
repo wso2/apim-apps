@@ -16,20 +16,20 @@
  * under the License.
  */
 import React, { useReducer, useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { Link } from 'react-router-dom';
 import APIProduct from 'AppData/APIProduct';
 import Alert from 'AppComponents/Shared/Alert';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import APICreateProductBase from 'AppComponents/Apis/Create/Components/APICreateProductBase';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import ProductResourcesEditWorkspace from 'AppComponents/Apis/Details/ProductResources/ProductResourcesEditWorkspace';
@@ -37,25 +37,40 @@ import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 
-const useStyles = makeStyles((theme) => ({
-    Paper: {
+const PREFIX = 'APIProductCreateWrapper';
+
+const classes = {
+    Paper: `${PREFIX}-Paper`,
+    saveButton: `${PREFIX}-saveButton`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`,
+    alternativeLabel: `${PREFIX}-alternativeLabel`
+};
+
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.Paper}`]: {
         height: '40px',
     },
-    saveButton: {
+
+    [`& .${classes.saveButton}`]: {
         padding: '0px 0px 0px 10px',
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         paddingBottom: theme.spacing(2),
     },
-    buttonWrapper: {
+
+    [`& .${classes.buttonWrapper}`]: {
         marginTop: theme.spacing(4),
     },
-    alternativeLabel: {
+
+    [`& .${classes.alternativeLabel}`]: {
         marginTop: theme.spacing(1),
-    },
+    }
 }));
 
 /**
@@ -94,7 +109,7 @@ export default function ApiProductCreateWrapper(props) {
         });
     }, []);
     const pageTitle = (
-        <>
+        (<Root>
             <Typography variant='h5'>
                 <FormattedMessage
                     id='Apis.Create.APIProduct.APIProductCreateWrapper.heading'
@@ -110,7 +125,7 @@ export default function ApiProductCreateWrapper(props) {
                     }
                 />
             </Typography>
-        </>
+        </Root>)
     );
     /**
      *
@@ -183,7 +198,7 @@ export default function ApiProductCreateWrapper(props) {
     }
 
     const [isCreating, setCreating] = useState();
-    const classes = useStyles();
+
     const steps = getSteps();
     let newAPIProduct;
 
@@ -322,149 +337,144 @@ export default function ApiProductCreateWrapper(props) {
             .finally(() => setCreating(false));
     };
 
-    return (
-        <>
-            <APICreateProductBase
-                title={pageTitle}
-            >
-                <Box>
-                    {wizardStep === 0 && (
-                        <Stepper alternativeLabel activeStep={0}>
-                            {steps.map((label) => (
-                                <Step key={label}>
-                                    <StepLabel className={classes.alternativeLabel}>{label}</StepLabel>
-                                </Step>
-                            ))}
+    return <>
+        <APICreateProductBase
+            title={pageTitle}
+        >
+            <Box>
+                {wizardStep === 0 && (
+                    <Stepper alternativeLabel activeStep={0}>
+                        {steps.map((label) => (
+                            <Step key={label}>
+                                <StepLabel className={classes.alternativeLabel}>{label}</StepLabel>
+                            </Step>
+                        ))}
 
-                        </Stepper>
+                    </Stepper>
+                )}
+                {wizardStep === 1 && (
+                    <Stepper alternativeLabel activeStep={1}>
+                        {steps.map((label) => (
+                            <Step key={label}>
+                                <StepLabel>{label}</StepLabel>
+                            </Step>
+                        ))}
+                    </Stepper>
+                )}
+            </Box>
+            <Grid container>
+                <Grid item md={12}>
+                    {wizardStep === 0 && (
+                        <DefaultAPIForm
+                            onValidate={handleOnValidate}
+                            onChange={handleOnChange}
+                            api={apiInputs}
+                            isAPIProduct
+                        />
                     )}
                     {wizardStep === 1 && (
-                        <Stepper alternativeLabel activeStep={1}>
-                            {steps.map((label) => (
-                                <Step key={label}>
-                                    <StepLabel>{label}</StepLabel>
-                                </Step>
-                            ))}
-                        </Stepper>
+                        <ProductResourcesEditWorkspace
+                            apiResources={apiResources}
+                            setApiResources={setApiResources}
+                            isStateCreate
+                            api={apiInputs}
+                        />
                     )}
-                </Box>
-                <Grid container spacing={2}>
-                    {wizardStep === 0 && <Grid item md={12} />}
-                    {wizardStep === 0 && <Grid item md={1} />}
-                    <Grid item md={wizardStep === 0 ? 11 : 12}>
-                        {wizardStep === 0 && (
-                            <DefaultAPIForm
-                                onValidate={handleOnValidate}
-                                onChange={handleOnChange}
-                                api={apiInputs}
-                                isAPIProduct
-                            />
-                        )}
-                        {wizardStep === 1 && (
-                            <ProductResourcesEditWorkspace
-                                apiResources={apiResources}
-                                setApiResources={setApiResources}
-                                isStateCreate
-                                api={apiInputs}
-                            />
-                        )}
-                    </Grid>
-                    {wizardStep === 0 && <Grid item md={1} />}
-                    <Grid item md={9}>
-                        <Grid
-                            className={wizardStep === 1 && classes.saveButton}
-                            container
-                            direction='row'
-                            justify='flex-start'
-                            alignItems='center'
-                            spacing={2}
-                        >
-                            <Grid item>
-                                {wizardStep === 1
-                                    && (
-                                        <Button
-                                            onClick={() => setWizardStep((step) => step - 1)}
-                                        >
-                                            <FormattedMessage
-                                                id='Apis.Create.APIProduct.APIProductCreateWrapper.back'
-                                                defaultMessage='Back'
-                                            />
-                                        </Button>
-                                    )}
-                                {wizardStep === 0 && (
-                                    <Link to='/api-products/'>
-                                        <Button>
-                                            <FormattedMessage
-                                                id='Apis.Create.APIProduct.APIProductCreateWrapper.cancel'
-                                                defaultMessage='Cancel'
-                                            />
-                                        </Button>
-                                    </Link>
-                                )}
-                            </Grid>
-                            <Grid item>
-                                {wizardStep === 1 && (
+                </Grid>
+                {/* {wizardStep === 0 && <Grid item md={1} />} */}
+                <Grid item md={12}>
+                    <Grid
+                        className={wizardStep === 1 && classes.saveButton}
+                        container
+                        direction='row'
+                        justifyContent='flex-start'
+                        alignItems='center'
+                        spacing={2}
+                    >
+                        <Grid item>
+                            {wizardStep === 1
+                                && (
                                     <Button
-                                        variant='contained'
-                                        color='primary'
-                                        disabled={!apiInputs.isFormValid || isCreating || (apiResources.length === 0)
-                                                    || isPublishButtonClicked}
-                                        onClick={createAPIProductOnly}
-                                        id='create-api-product-btn'
+                                        onClick={() => setWizardStep((step) => step - 1)}
                                     >
                                         <FormattedMessage
-                                            id='Apis.Create.APIProduct.APIProductCreateWrapper.create'
-                                            defaultMessage='Create'
-                                        />
-                                        {isCreating && !isPublishButtonClicked && <CircularProgress size={24} />}
-                                    </Button>
-                                )}
-                                {wizardStep === 0 && (
-                                    <Button
-                                        onClick={() => setWizardStep((step) => step + 1)}
-                                        variant='contained'
-                                        color='primary'
-                                        disabled={!apiInputs.isFormValid}
-                                        id='api-product-next-btn'
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Create.APIProduct.APIProductCreateWrapper.next'
-                                            defaultMessage='Next'
+                                            id='Apis.Create.APIProduct.APIProductCreateWrapper.back'
+                                            defaultMessage='Back'
                                         />
                                     </Button>
                                 )}
-                            </Grid>
-                            <Grid item>
-                                {wizardStep === 1 && !AuthManager.isNotPublisher() && (
-                                    <Button
-                                        variant='contained'
-                                        color='primary'
-                                        id='create-and-publish-api-product-btn'
-                                        disabled={
-                                            !apiInputs.isFormValid || isCreating || (apiResources.length === 0)
-                                            || isDeploying || isRevisioning || !apiInputs.isFormValid
-                                        }
-                                        onClick={createAndPublishAPIProduct}
-                                    >
-                                        {(!isPublishing && !isRevisioning && !isDeploying) && 'Create & Publish'}
-                                        {(isPublishing || isRevisioning || isDeploying)
-                                        && <CircularProgress size={24} />}
-                                        {isCreating && isPublishing && 'Creating API Product. . .'}
-                                        {!isCreating && isRevisioning && !isDeploying && 'Creating Revision . . .'}
-                                        {!isCreating && isPublishing
-                                        && !isRevisioning && !isDeploying && 'Publishing API Product. . .'}
-                                        {!isCreating && isPublishing
-                                        && !isRevisioning && isDeploying && 'Deploying Revision . . .'}
+                            {wizardStep === 0 && (
+                                <Link to='/api-products/'>
+                                    <Button>
+                                        <FormattedMessage
+                                            id='Apis.Create.APIProduct.APIProductCreateWrapper.cancel'
+                                            defaultMessage='Cancel'
+                                        />
                                     </Button>
-                                )}
-                            </Grid>
+                                </Link>
+                            )}
+                        </Grid>
+                        <Grid item>
+                            {wizardStep === 1 && (
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    disabled={!apiInputs.isFormValid || isCreating || (apiResources.length === 0)
+                                                || isPublishButtonClicked}
+                                    onClick={createAPIProductOnly}
+                                    id='create-api-product-btn'
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Create.APIProduct.APIProductCreateWrapper.create'
+                                        defaultMessage='Create'
+                                    />
+                                    {isCreating && !isPublishButtonClicked && <CircularProgress size={24} />}
+                                </Button>
+                            )}
+                            {wizardStep === 0 && (
+                                <Button
+                                    onClick={() => setWizardStep((step) => step + 1)}
+                                    variant='contained'
+                                    color='primary'
+                                    disabled={!apiInputs.isFormValid}
+                                    id='api-product-next-btn'
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Create.APIProduct.APIProductCreateWrapper.next'
+                                        defaultMessage='Next'
+                                    />
+                                </Button>
+                            )}
+                        </Grid>
+                        <Grid item>
+                            {wizardStep === 1 && !AuthManager.isNotPublisher() && (
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    id='create-and-publish-api-product-btn'
+                                    disabled={
+                                        !apiInputs.isFormValid || isCreating || (apiResources.length === 0)
+                                        || isDeploying || isRevisioning || !apiInputs.isFormValid
+                                    }
+                                    onClick={createAndPublishAPIProduct}
+                                >
+                                    {(!isPublishing && !isRevisioning && !isDeploying) && 'Create & Publish'}
+                                    {(isPublishing || isRevisioning || isDeploying)
+                                    && <CircularProgress size={24} />}
+                                    {isCreating && isPublishing && 'Creating API Product. . .'}
+                                    {!isCreating && isRevisioning && !isDeploying && 'Creating Revision . . .'}
+                                    {!isCreating && isPublishing
+                                    && !isRevisioning && !isDeploying && 'Publishing API Product. . .'}
+                                    {!isCreating && isPublishing
+                                    && !isRevisioning && isDeploying && 'Deploying Revision . . .'}
+                                </Button>
+                            )}
                         </Grid>
                     </Grid>
                 </Grid>
-            </APICreateProductBase>
-        </>
-
-    );
+            </Grid>
+        </APICreateProductBase>
+    </>;
 }
 
 ApiProductCreateWrapper.propTypes = {

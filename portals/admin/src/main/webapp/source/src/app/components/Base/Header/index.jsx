@@ -17,53 +17,25 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Avatar as AvatarComponent } from '@material-ui/core';
-import Grid from '@material-ui/core/Grid';
-import Hidden from '@material-ui/core/Hidden';
-import IconButton from '@material-ui/core/IconButton';
-import MenuIcon from '@material-ui/icons/Menu';
-import Toolbar from '@material-ui/core/Toolbar';
-import { withStyles } from '@material-ui/core/styles';
+import { Avatar as AvatarComponent } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Hidden from '@mui/material/Hidden';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Toolbar from '@mui/material/Toolbar';
 import Breadcrumbs from 'AppComponents/Base/Header/Breadcrumbs';
 
-const lightColor = 'rgba(255, 255, 255, 0.7)';
-
-const styles = (theme) => ({
-    secondaryBar: {
-        zIndex: 0,
-    },
-    menuButton: {
-        marginLeft: -theme.spacing(1),
-    },
-    iconButtonAvatar: {
-        padding: 4,
-    },
-    link: {
-        textDecoration: 'none',
-        color: lightColor,
-        '&:hover': {
-            color: theme.palette.common.white,
-        },
-    },
-    button: {
-        borderColor: lightColor,
-    },
-    headerToolbar: {
-        boxShadow: '0 -1px 0 #dddddd inset',
-        height: 50,
-    },
-});
 /**
  * Render header component
  * @param {JSON} props .
  * @returns {JSX} Header AppBar components.
  */
 function Header(props) {
-    const { classes, handleDrawerToggle, avatar } = props;
+    const { handleDrawerToggle, avatar } = props;
 
     return (
         <>
-            <Toolbar className={classes.headerToolbar}>
+            <Toolbar sx={{ boxShadow: '0 -1px 0 #dddddd inset', height: 50 }}>
                 <Grid container spacing={1} alignItems='center'>
                     <Hidden smUp>
                         <Grid item>
@@ -71,7 +43,8 @@ function Header(props) {
                                 color='inherit'
                                 aria-label='open drawer'
                                 onClick={() => handleDrawerToggle()}
-                                className={classes.menuButton}
+                                sx={{ ml: -1 }}
+                                size='large'
                             >
                                 <MenuIcon />
                             </IconButton>
@@ -96,9 +69,9 @@ Header.defaultProps = {
 };
 
 Header.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
+    user: PropTypes.shape({}).isRequired,
     handleDrawerToggle: PropTypes.func.isRequired,
     avatar: PropTypes.element,
 };
 
-export default withStyles(styles)(Header);
+export default (Header);

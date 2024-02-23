@@ -17,19 +17,19 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Typography from '@material-ui/core/Typography';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import PlayForWorkIcon from '@material-ui/icons/PlayForWork';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import Typography from '@mui/material/Typography';
+import DialogTitle from '@mui/material/DialogTitle';
+import PlayForWorkIcon from '@mui/icons-material/PlayForWork';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import { FormattedMessage, useIntl } from 'react-intl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
 
 function ImportExternalApp(props) {
     const {
@@ -93,7 +93,7 @@ function ImportExternalApp(props) {
                                 disabled={!isUserOwner}
                                 variant='outlined'
                             />
-                            <FormControl>
+                            <FormControl variant="standard">
                                 <FormHelperText id='consumer-key-helper-text'>
                                     <FormattedMessage
                                         id='Shared.AppsAndKeys.ImportExternalApp.consumer.key.title'
@@ -117,7 +117,7 @@ function ImportExternalApp(props) {
                                 disabled={!isUserOwner}
                                 variant='outlined'
                             />
-                            <FormControl>
+                            <FormControl variant="standard">
                                 <FormHelperText id='consumer-secret-helper-text'>
                                     <FormattedMessage
                                         id='Shared.AppsAndKeys.ImportExternalApp.consumer.secret.of.application'

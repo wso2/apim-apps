@@ -20,16 +20,16 @@
 import React, { Suspense, lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
-import { StylesProvider as StylesProviderCore, jssPreset as jssPresetCore } from '@material-ui/core/styles';
-import { StylesProvider as StylesProviderPlain, jssPreset as jssPresetPlain } from '@material-ui/styles';
+import { adaptV4Theme } from '@mui/material/styles';
 import { IntlProvider } from 'react-intl';
 import Configurations from 'Config';
 import merge from 'lodash.merge';
 import cloneDeep from 'lodash.clonedeep';
-import { create } from 'jss';
-import rtl from 'jss-rtl';
-import { MuiThemeProvider as ThemeProviderWithMui, createMuiTheme } from '@material-ui/core/styles';
-import { ThemeProvider as ThemeProviderPlain } from '@material-ui/core/styles';
+import {
+    ThemeProvider,
+    StyledEngineProvider,
+    createTheme,
+} from '@mui/material/styles';
 import Utils from 'AppData/Utils';
 import Settings from 'Settings';
 import DefaultConfigurations from 'AppData/defaultTheme';
@@ -41,14 +41,8 @@ import BrowserRouter from './app/components/Base/CustomRouter/BrowserRouter';
 import AuthManager from './app/data/AuthManager';
 import CONSTS from './app/data/Constants';
 
-const MuiThemeProvider = ThemeProviderPlain || ThemeProviderWithMui;
-const StylesProvider = StylesProviderCore || StylesProviderPlain;
-const jssPreset = jssPresetPlain || jssPresetCore;
-
 const protectedApp = lazy(() => import('./app/ProtectedApp' /* webpackChunkName: "ProtectedApp" */));
 
-// Configure JSS
-const jss = create({ plugins: [...jssPreset().plugins, rtl()] });
 /**
  * Root DevPortal component
  *
@@ -339,8 +333,8 @@ class DevPortal extends React.Component {
                     <Helmet>
                         <title>{this.getTitle(theme)}</title>
                     </Helmet>
-                    <MuiThemeProvider theme={createMuiTheme(theme)}>
-                        <StylesProvider jss={jss}>
+                    <StyledEngineProvider injectFirst>
+                        <ThemeProvider theme={createTheme(adaptV4Theme(theme))}>
                             {this.loadCustomCSS(theme)}
                             <BrowserRouter basename={context}>
                                 <Suspense fallback={<Progress />}>
@@ -352,8 +346,8 @@ class DevPortal extends React.Component {
                                     </IntlProvider>
                                 </Suspense>
                             </BrowserRouter>
-                        </StylesProvider>
-                    </MuiThemeProvider>
+                        </ThemeProvider>
+                    </StyledEngineProvider>
                 </SettingsProvider>
             );
         } else {

@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { createMuiTheme } from '@material-ui/core/styles';
-import FormGroup from '@material-ui/core/FormGroup';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
+import { createMuiTheme } from 'mui/styles';
+import FormGroup from '@mui/material/FormGroup';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
 
 const theme = createMuiTheme();
 theme.spacing(2);

@@ -18,14 +18,15 @@
  */
 
 import React, { Component } from 'react';
+import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import {
     Route, Switch, Redirect, Link,
 } from 'react-router-dom';
-import VpnKeyIcon from '@material-ui/icons/VpnKey';
-import ScreenLockLandscapeIcon from '@material-ui/icons/ScreenLockLandscape';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import ScreenLockLandscapeIcon from '@mui/icons-material/ScreenLockLandscape';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import API from 'AppData/api';
 import { app } from 'Settings';
@@ -36,115 +37,134 @@ import LeftMenuItem from 'AppComponents/Shared/LeftMenuItem';
 import TokenManager from 'AppComponents/Shared/AppsAndKeys/TokenManager';
 import ApiKeyManager from 'AppComponents/Shared/AppsAndKeys/ApiKeyManager';
 import classNames from 'classnames';
-import Paper from '@material-ui/core/Paper';
-import { Helmet } from 'react-helmet';
+import Paper from '@mui/material/Paper';
 import Subscriptions from './Subscriptions';
 import InfoBar from './InfoBar';
 import Overview from './Overview';
 import WebHookDetails from './WebHookDetails';
 
-/**
- *
- *
- * @param {*} theme theme details
- * @returns {Object}
- */
-const styles = (theme) => {
-    const {
-        custom: {
-            leftMenu: { width, position },
-        },
-    } = theme;
-    const shiftToLeft = position === 'vertical-left' ? (width - 4) : 0;
-    const shiftToRight = position === 'vertical-right' ? width : 0;
-    const leftMenuPaddingLeft = position === 'horizontal' ? theme.spacing(3) : 0;
+const PREFIX = 'index';
 
-    return {
-        LeftMenu: {
-            backgroundColor: theme.custom.leftMenu.background,
-            backgroundImage: `url(${app.context}${theme.custom.leftMenu.backgroundImage})`,
-            textAlign: 'left',
-            fontFamily: theme.typography.fontFamily,
-            position: 'absolute',
-            bottom: 0,
-            paddingLeft: leftMenuPaddingLeft,
-        },
-        leftMenuHorizontal: {
-            top: theme.custom.infoBar.height,
-            width: '100%',
-            overflowX: 'auto',
-            height: 60,
-            display: 'flex',
-            left: 0,
-        },
-        leftMenuVerticalLeft: {
-            width: theme.custom.leftMenu.width,
-            top: 0,
-            left: 0,
-            overflowY: 'auto',
-            [theme.breakpoints.down('sm')]: {
-                width: 50,
-            },
-        },
-        leftMenuVerticalRight: {
-            width: theme.custom.leftMenu.width,
-            top: 0,
-            right: 0,
-            overflowY: 'auto',
-        },
-        leftLInkMain: {
-            borderRight: 'solid 1px ' + theme.custom.leftMenu.background,
-            cursor: 'pointer',
-            background: theme.custom.leftMenu.rootBackground,
-            color: theme.palette.getContrastText(theme.custom.leftMenu.rootBackground),
-            textDecoration: 'none',
-            alignItems: 'center',
-            justifyContent: 'center',
-            display: 'flex',
-            height: theme.custom.infoBar.height,
-        },
-        leftLInkMainText: {
-            fontSize: 18,
-            color: theme.palette.grey[500],
-            textDecoration: 'none',
-            paddingLeft: theme.spacing(2),
-        },
-        detailsContent: {
-            display: 'flex',
-            flex: 1,
-        },
-        content: {
-            display: 'flex',
-            flex: 1,
-            flexDirection: 'column',
-            marginLeft: shiftToLeft,
-            marginRight: shiftToRight,
-            paddingBottom: theme.spacing(3),
-            overflowX: 'hidden',
-            [theme.breakpoints.down('sm')]: {
-                marginLeft: shiftToLeft !== 0 && 50,
-                marginRight: shiftToRight !== 0 && 50,
-            },
-        },
-        contentLoader: {
-            paddingTop: theme.spacing(3),
-        },
-        contentLoaderRightMenu: {
-            paddingRight: theme.custom.leftMenu.width,
-        },
-        titleWrapper: {
-            paddingLeft: 25,
-            paddingTop: 28,
-            textTransform: 'capitalize',
-        },
-        contentWrapper: {
-            paddingLeft: 25,
-        },
-        keyTitle: {
-            textTransform: 'capitalize',
-        },
-    };
+const classes = {
+    LeftMenu: `${PREFIX}-LeftMenu`,
+    leftMenuHorizontal: `${PREFIX}-leftMenuHorizontal`,
+    leftMenuVerticalLeft: `${PREFIX}-leftMenuVerticalLeft`,
+    leftMenuVerticalRight: `${PREFIX}-leftMenuVerticalRight`,
+    leftLInkMain: `${PREFIX}-leftLInkMain`,
+    leftLInkMainText: `${PREFIX}-leftLInkMainText`,
+    detailsContent: `${PREFIX}-detailsContent`,
+    content: `${PREFIX}-content`,
+    contentLoader: `${PREFIX}-contentLoader`,
+    contentLoaderRightMenu: `${PREFIX}-contentLoaderRightMenu`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    keyTitle: `${PREFIX}-keyTitle`,
 };
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    width: '100%',
+    [`& .${classes.LeftMenu}`]: {
+        backgroundColor: theme.custom.leftMenu.background,
+        backgroundImage: `url(${app.context}${theme.custom.leftMenu.backgroundImage})`,
+        textAlign: 'left',
+        fontFamily: theme.typography.fontFamily,
+        position: 'absolute',
+        bottom: 0,
+        paddingLeft: (theme.custom.leftMenu.position === 'horizontal' ? theme.spacing(3) : 0),
+    },
+
+    [`& .${classes.leftMenuHorizontal}`]: {
+        top: theme.custom.infoBar.height,
+        width: '100%',
+        overflowX: 'auto',
+        height: 60,
+        display: 'flex',
+        left: 0,
+    },
+
+    [`& .${classes.leftMenuVerticalLeft}`]: {
+        width: theme.custom.leftMenu.width,
+        top: 0,
+        left: 0,
+        overflowY: 'auto',
+        [theme.breakpoints.down('md')]: {
+            width: 50,
+        },
+    },
+
+    [`& .${classes.leftMenuVerticalRight}`]: {
+        width: theme.custom.leftMenu.width,
+        top: 0,
+        right: 0,
+        overflowY: 'auto',
+    },
+
+    [`& .${classes.leftLInkMain}`]: {
+        borderRight: 'solid 1px ' + theme.custom.leftMenu.background,
+        cursor: 'pointer',
+        background: theme.custom.leftMenu.rootBackground,
+        color: theme.palette.getContrastText(theme.custom.leftMenu.rootBackground),
+        textDecoration: 'none',
+        alignItems: 'center',
+        justifyContent: 'center',
+        display: 'flex',
+        height: theme.custom.infoBar.height,
+    },
+
+    [`& .${classes.leftLInkMainText}`]: {
+        fontSize: 18,
+        color: theme.palette.grey[500],
+        textDecoration: 'none',
+        paddingLeft: theme.spacing(2),
+    },
+
+    [`& .${classes.detailsContent}`]: {
+        display: 'flex',
+        flex: 1,
+    },
+
+    [`& .${classes.content}`]: {
+        display: 'flex',
+        flex: 1,
+        flexDirection: 'column',
+        marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 4) : 0),
+        marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? theme.custom.leftMenu.width : 0),
+        paddingBottom: theme.spacing(3),
+        overflowX: 'hidden',
+        [theme.breakpoints.down('md')]: {
+            marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 4) : 0) !== 0 && 50,
+            marginRight: (theme.custom.leftMenu.position === 'vertical-right' ? theme.custom.leftMenu.width : 0) !== 0 && 50,
+        },
+    },
+
+    [`& .${classes.contentLoader}`]: {
+        paddingTop: theme.spacing(3),
+    },
+
+    [`& .${classes.contentLoaderRightMenu}`]: {
+        paddingRight: theme.custom.leftMenu.width,
+    },
+
+    [`& .${classes.titleWrapper}`]: {
+        paddingLeft: 25,
+        paddingTop: 28,
+        textTransform: 'capitalize',
+    },
+
+    [`& .${classes.contentWrapper}`]: {
+        paddingLeft: 25,
+    },
+
+    [`& .${classes.keyTitle}`]: {
+        textTransform: 'capitalize',
+    },
+}));
+
 /**
  *
  *
@@ -213,7 +233,6 @@ class Details extends Component {
     };
 
     renderManager = (application, keyType, secScheme) => {
-        const { classes } = this.props;
         return (
             <Paper>
                 {secScheme === 'oauth' && (
@@ -265,31 +284,23 @@ class Details extends Component {
      */
     render() {
         const {
-            classes, match, theme, intl,
+            match, intl,
         } = this.props;
         const { notFound, application } = this.state;
         const pathPrefix = '/applications/' + match.params.application_uuid;
         const redirectUrl = pathPrefix + '/overview';
-        const {
-            custom: {
-                leftMenu: {
-                    rootIconSize, rootIconTextVisible, rootIconVisible, position,
-                },
-                title: {
-                    prefix, sufix,
-                },
-            },
-        } = theme;
+        const rootIconSize = 42;
+        const rootIconTextVisible = false;
+        const rootIconVisible = false;
+        const position = 'vertical-left';
+
         if (notFound) {
             return <ResourceNotFound />;
         } else if (!application) {
             return <Loading />;
         }
         return (
-            <>
-                <Helmet>
-                    <title>{`${prefix} ${application.name}${sufix}`}</title>
-                </Helmet>
+            <Root>
                 <nav
                     role='navigation'
                     aria-label={intl.formatMessage({
@@ -431,7 +442,19 @@ class Details extends Component {
                         id='left-menu-subscriptions'
                     />
                 </nav>
-                <div className={classes.content}>
+                <Box sx={(theme) => ({
+                    display: 'flex',
+                    flex: 1,
+                    flexDirection: 'column',
+                    marginLeft: (theme.custom.leftMenu.position === 'vertical-left' ? (theme.custom.leftMenu.width - 158) : 0),
+                    paddingBottom: theme.spacing(3),
+                    overflowX: 'hidden',
+                    [theme.breakpoints.down('md')]: {
+                        marginLeft: (theme.custom.leftMenu.position === 'vertical-left'
+                            ? (theme.custom.leftMenu.width - 4) : 0) !== 0 && 50,
+                    },
+                })}
+                >
                     <InfoBar
                         application={application}
                         applicationId={match.params.application_uuid}
@@ -478,8 +501,8 @@ class Details extends Component {
                             <Route component={ResourceNotFound} />
                         </Switch>
                     </div>
-                </div>
-            </>
+                </Box>
+            </Root>
         );
     }
 }
@@ -500,4 +523,4 @@ Details.propTypes = {
     }).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(injectIntl(Details));
+export default (injectIntl(Details));

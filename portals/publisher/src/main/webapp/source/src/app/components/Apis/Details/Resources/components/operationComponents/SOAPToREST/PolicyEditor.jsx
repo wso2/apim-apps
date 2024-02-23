@@ -16,33 +16,45 @@
  * under the License.
  */
 import React, { Suspense, lazy, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Fade from '@material-ui/core/Fade';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import AppBar from '@mui/material/AppBar';
+import { Toolbar } from '@mui/material';
+import Fade from '@mui/material/Fade';
+import CircularProgress from '@mui/material/CircularProgress';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import Banner from 'AppComponents/Shared/Banner';
 import CloseConfirmation from './CloseConfirmation';
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "PolicyEditorMonaco" */));
+const PREFIX = 'PolicyEditor';
 
-const useStyles = makeStyles((theme) => ({
-    appBar: {
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    title: `${PREFIX}-title`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.appBar}`]: {
         // position: 'relative',
         top: 'auto',
         bottom: 0,
     },
-    title: {
+
+    [`& .${classes.title}`]: {
         marginLeft: theme.spacing(2),
         flex: 1,
-    },
+    }
 }));
+
+const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "PolicyEditorMonaco" */));
 
 const Transition = React.forwardRef((props, ref) => {
     return <Fade in ref={ref} {...props} />;
@@ -55,7 +67,7 @@ const Transition = React.forwardRef((props, ref) => {
  * @returns
  */
 export default function PolicyEditor(props) {
-    const classes = useStyles();
+
     const [api] = useAPI();
     const {
         open,
@@ -126,10 +138,10 @@ export default function PolicyEditor(props) {
     }
 
     return (
-        <Dialog fullScreen open={open} onClose={onClose} TransitionComponent={Transition}>
+        <StyledDialog fullScreen open={open} onClose={onClose} TransitionComponent={Transition}>
             <AppBar position='fixed' color='default' className={classes.appBar}>
                 <Toolbar variant='dense'>
-                    <Grid container direction='row' justify='flex-start' alignItems='flex-start'>
+                    <Grid container direction='row' justifyContent='flex-start' alignItems='flex-start'>
                         <Grid item>
                             <Button
                                 disabled={saving}
@@ -150,7 +162,7 @@ export default function PolicyEditor(props) {
                     </Grid>
                 </Toolbar>
             </AppBar>
-            <Grid container direction='row' justify='center' alignItems='center'>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 {pageError && (
                     <Grid item xs={12}>
                         <Banner
@@ -177,7 +189,7 @@ export default function PolicyEditor(props) {
                 }}
                 closeEditor={onClose}
             />
-        </Dialog>
+        </StyledDialog>
     );
 }
 PolicyEditor.defaultProps = {

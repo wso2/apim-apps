@@ -17,40 +17,55 @@
  */
 
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import { Typography, Paper, Box } from '@material-ui/core';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
+import Grid from '@mui/material/Grid';
+import { Typography, Paper, Box } from '@mui/material';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
 import CreateAppStep from './CreateAppStep';
 import SubscribeToAppStep from './SubscribeToAppStep';
 import GenerateKeysStep from './GenerateKeysStep';
 import GenerateAccessTokenStep from './GenerateAccessTokenStep';
 import CopyAccessTokenStep from './CopyAccessTokenStep';
 
-const styles = (theme) => ({
-    paper: {
+const PREFIX = 'Wizard';
+
+const classes = {
+    paper: `${PREFIX}-paper`,
+    titleSub: `${PREFIX}-titleSub`,
+    boxWrapper: `${PREFIX}-boxWrapper`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.paper}`]: {
         marginLeft: theme.spacing(3),
     },
-    titleSub: {
+
+    [`& .${classes.titleSub}`]: {
         marginLeft: theme.spacing(3),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    boxWrapper: {
+
+    [`& .${classes.boxWrapper}`]: {
         '& h5, & label, & td, & li, & div, & input, & p.MuiFormHelperText-root': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
         '& .MuiButton-containedPrimary span.MuiButton-label': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
+        paddingRight: theme.spacing(80),
     },
-
-});
+}));
 
 const stepComponents = [CreateAppStep, SubscribeToAppStep, GenerateKeysStep,
     GenerateAccessTokenStep, CopyAccessTokenStep];
@@ -166,11 +181,10 @@ class Wizard extends Component {
      * @inheritdoc
      */
     render() {
-        const { classes } = this.props;
         const { currentStep, stepStatus } = this.state;
         const CurrentStepComponent = stepComponents[currentStep];
         return (
-            <>
+            <Root>
                 <Typography variant='h4' component='h2' className={classes.titleSub}>
                     <FormattedMessage
                         id={'Apis.Details.Credentials.Credentials'
@@ -179,7 +193,7 @@ class Wizard extends Component {
                     />
                 </Typography>
                 <Paper elevation={0} className={classes.paper}>
-                    <Box py={1} mx='auto' display='flex'>
+                    <Box py={4} mx='auto' display='block' width='96%'>
                         <Grid item xs={12} md={12}>
                             <Stepper activeStep={currentStep}>
                                 {this.steps.map((label) => {
@@ -224,7 +238,7 @@ class Wizard extends Component {
                         )}
                     </Box>
                 </Paper>
-            </>
+            </Root>
         );
     }
 }
@@ -244,4 +258,4 @@ Wizard.propTypes = {
     throttlingPolicyList: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Wizard));
+export default injectIntl((Wizard));

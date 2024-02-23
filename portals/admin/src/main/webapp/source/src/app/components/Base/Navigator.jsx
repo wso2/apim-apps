@@ -1,33 +1,49 @@
 import React from 'react';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
-import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import { withStyles, useTheme } from '@material-ui/core/styles';
+import { useTheme } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import { useIntl } from 'react-intl';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+import Drawer from '@mui/material/Drawer';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
 import RouteMenuMapping from 'AppComponents/Base/RouteMenuMapping';
 import { Link as RouterLink, withRouter } from 'react-router-dom';
-import Link from '@material-ui/core/Link';
+import Link from '@mui/material/Link';
 import Configurations from 'Config';
 import CONSTS from 'AppData/Constants';
 import NavigatorChildren from './NavigatorChildren';
 
-const styles = (theme) => ({
-    categoryHeader: {
+const PREFIX = 'Navigator';
+
+const classes = {
+    categoryHeader: `${PREFIX}-categoryHeader`,
+    categoryHeaderPrimary: `${PREFIX}-categoryHeaderPrimary`,
+    item: `${PREFIX}-item`,
+    firebase: `${PREFIX}-firebase`,
+    itemActiveItem: `${PREFIX}-itemActiveItem`,
+    itemPrimary: `${PREFIX}-itemPrimary`,
+    itemIcon: `${PREFIX}-itemIcon`,
+    divider: `${PREFIX}-divider`,
+    logoWrapper: `${PREFIX}-logoWrapper`,
+};
+
+const StyledDrawer = styled(Drawer)(({ theme }) => ({
+    [`& .${classes.categoryHeader}`]: {
         paddingTop: theme.spacing(1),
         paddingBottom: theme.spacing(1),
         '& svg': {
             color: theme.palette.common.white,
         },
     },
-    categoryHeaderPrimary: {
+
+    [`& .${classes.categoryHeaderPrimary}`]: {
         color: theme.palette.common.white,
     },
-    item: {
+
+    [`& .${classes.item}`]: {
         paddingTop: 1,
         paddingBottom: 1,
         color: 'rgba(255, 255, 255, 0.7)',
@@ -35,29 +51,35 @@ const styles = (theme) => ({
             backgroundColor: 'rgba(255, 255, 255, 0.08)',
         },
     },
-    firebase: {
+
+    [`& .${classes.firebase}`]: {
         fontSize: 24,
         color: theme.palette.common.white,
     },
-    itemActiveItem: {
+
+    [`& .${classes.itemActiveItem}`]: {
         color: '#4fc3f7',
     },
-    itemPrimary: {
+
+    [`& .${classes.itemPrimary}`]: {
         fontSize: 'inherit',
     },
-    itemIcon: {
+
+    [`& .${classes.itemIcon}`]: {
         minWidth: 'auto',
         marginRight: theme.spacing(2),
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         marginTop: theme.spacing(2),
     },
-    logoWrapper: {
+
+    [`& .${classes.logoWrapper}`]: {
         padding: 0,
         paddingLeft: theme.spacing(1),
         height: 50,
     },
-});
+}));
 
 /**
  * Render a list
@@ -66,7 +88,7 @@ const styles = (theme) => ({
  */
 function Navigator(props) {
     const {
-        classes, history, ...other
+        history, ...other
     } = props;
     const theme = useTheme();
     const intl = useIntl();
@@ -195,10 +217,10 @@ function Navigator(props) {
 
     return (
         // eslint-disable-next-line react/jsx-props-no-spreading
-        <Drawer variant='permanent' {...other}>
+        <StyledDrawer variant='permanent' {...other}>
             <List disablePadding role='list'>
                 <ListItem className={clsx(classes.firebase, classes.item, 'itemCategory', classes.logoWrapper)}>
-                    <Link component={RouterLink} to='/'>
+                    <Link component={RouterLink} to='/' underline='hover'>
                         <img
                             alt='logo APIM admin portal'
                             src={Configurations.app.context
@@ -219,6 +241,8 @@ function Navigator(props) {
                                 to={parentPath}
                                 style={{ textDecoration: 'none' }}
                                 data-testid={id}
+                                underline='hover'
+                                key={id}
                             >
                                 <List disablePadding role='list'>
                                     <ListItem
@@ -243,7 +267,7 @@ function Navigator(props) {
                             </Link>
                         )}
                         {children && (
-                            <React.Fragment key={id} role='listitem'>
+                            <React.Fragment key={id}>
                                 <NavigatorChildren
                                     navChildren={children}
                                     navId={id}
@@ -256,12 +280,8 @@ function Navigator(props) {
                     </>
                 ))}
             </List>
-        </Drawer>
+        </StyledDrawer>
     );
 }
 
-Navigator.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
-};
-
-export default withRouter(withStyles(styles)(Navigator));
+export default withRouter((Navigator));

@@ -16,43 +16,68 @@
  * under the License.
  */
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { useTheme, makeStyles } from '@material-ui/core/styles';
 import { Link } from 'react-router-dom';
-import Typography from '@material-ui/core/Typography';
-import List from '@material-ui/core/List';
-import Divider from '@material-ui/core/Divider';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Icon from '@material-ui/core/Icon';
+import Typography from '@mui/material/Typography';
+import List from '@mui/material/List';
+import Divider from '@mui/material/Divider';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage } from 'react-intl';
 import classNames from 'classnames';
 import ApiTagThumb from './ApiTagThumb';
 
-const useStyles = makeStyles((theme) => ({
-    mainTitle: {
+const PREFIX = 'TagCloudListingTags';
+
+const classes = {
+    mainTitle: `${PREFIX}-mainTitle`,
+    mainTitleWrapper: `${PREFIX}-mainTitleWrapper`,
+    listContentWrapper: `${PREFIX}-listContentWrapper`,
+    textWrapper: `${PREFIX}-textWrapper`,
+    linkTextWrapper: `${PREFIX}-linkTextWrapper`,
+    tagWiseThumbWrapper: `${PREFIX}-tagWiseThumbWrapper`,
+    filterTitle: `${PREFIX}-filterTitle`,
+    mainPageList: `${PREFIX}-mainPageList`,
+    mainPageAllApis: `${PREFIX}-mainPageAllApis`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.mainTitle}`]: {
         paddingTop: 10,
     },
-    mainTitleWrapper: {
+
+    [`& .${classes.mainTitleWrapper}`]: {
         flexGrow: 1,
     },
-    listContentWrapper: {
-        padding: `0 ${theme.spacing(3)}px`,
+
+    [`& .${classes.listContentWrapper}`]: {
+        padding: `0 ${theme.spacing(3)}`,
     },
-    textWrapper: {
+
+    [`& .${classes.textWrapper}`]: {
         color: theme.custom.tagCloud.leftMenu.color,
         '& .material-icons': {
             color: theme.custom.tagCloud.leftMenu.color,
         },
     },
-    linkTextWrapper: {
+
+    [`& .${classes.linkTextWrapper}`]: {
         color: theme.palette.primary.main,
     },
-    tagWiseThumbWrapper: {
+
+    [`& .${classes.tagWiseThumbWrapper}`]: {
         display: 'flex',
     },
-    filterTitle: {
+
+    [`& .${classes.filterTitle}`]: {
         fontWeight: 200,
         paddingLeft: theme.spacing(2),
         background: theme.custom.tagCloud.leftMenu.titleBackground,
@@ -61,11 +86,13 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         display: 'flex',
     },
-    mainPageList: {
+
+    [`& .${classes.mainPageList}`]: {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    mainPageAllApis: {
+
+    [`& .${classes.mainPageAllApis}`]: {
         width: '100%',
     },
 }));
@@ -76,7 +103,6 @@ const useStyles = makeStyles((theme) => ({
  * @returns {void}
  */
 function TagCloudListingTags(props) {
-    const classes = useStyles();
     const theme = useTheme();
     const {
         custom: {
@@ -107,7 +133,7 @@ function TagCloudListingTags(props) {
      * @memberof TagCloudListing
      */
     return apisTagCloudGroup && apisTagCloudGroup.length > 0 ? (
-        <>
+        <Root>
             {!mainPage && (
                 <Typography variant='h6' gutterBottom className={classNames(classes.filterTitle, 'api-listing-tags-title')}>
                     <FormattedMessage defaultMessage='API Groups' id='Apis.Listing.TagCloudListingTags.title' />
@@ -147,10 +173,10 @@ function TagCloudListingTags(props) {
                     </Link>
                 </div>
             )}
-        </>
+        </Root>
 
     ) : (
-        <>
+        <Root>
             {!mainPage && (
                 <Typography variant='h6' gutterBottom className={classNames(classes.filterTitle, 'apis-listing-tags-group')}>
                     <FormattedMessage defaultMessage='API Groups' id='Apis.Listing.TagCloudListingTags.title' />
@@ -172,7 +198,7 @@ function TagCloudListingTags(props) {
                     </Typography>
                 </Link>
             </div>
-        </>
+        </Root>
     );
 }
 

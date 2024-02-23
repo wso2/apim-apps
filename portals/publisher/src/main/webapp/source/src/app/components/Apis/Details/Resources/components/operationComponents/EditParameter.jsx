@@ -17,24 +17,24 @@
  */
 
 import React, { useReducer } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import TextField from '@material-ui/core/TextField';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Checkbox from '@material-ui/core/Checkbox';
-import Select from '@material-ui/core/Select';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import TextField from '@mui/material/TextField';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import Checkbox from '@mui/material/Checkbox';
+import Select from '@mui/material/Select';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import {
     getSupportedDataTypes,
@@ -43,23 +43,39 @@ import {
 } from 'AppComponents/Apis/Details/Resources/components/operationComponents/parameterUtils';
 import { FormattedMessage } from 'react-intl';
 
-const useStyles = makeStyles((theme) => ({
-    form: {
+const PREFIX = 'EditParameter';
+
+const classes = {
+    form: `${PREFIX}-form`,
+    formControl: `${PREFIX}-formControl`,
+    formControlLabel: `${PREFIX}-formControlLabel`,
+    subtleText: `${PREFIX}-subtleText`
+};
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.form}`]: {
         display: 'flex',
         flexDirection: 'column',
         margin: 'auto',
         width: 'fit-content',
     },
-    formControl: {
+
+    [`& .${classes.formControl}`]: {
         marginTop: theme.spacing(2),
         minWidth: 120,
     },
-    formControlLabel: {
+
+    [`& .${classes.formControlLabel}`]: {
         marginTop: theme.spacing(1),
     },
-    subtleText: {
+
+    [`& .${classes.subtleText}`]: {
         color: theme.palette.grey[400],
-    },
+    }
 }));
 
 /**
@@ -113,7 +129,7 @@ export default function EditParameter(props) {
         return nextParameter;
     }
     const [parameter, parameterActionDispatcher] = useReducer(parameterActionReducer, editingParameter);
-    const classes = useStyles();
+
 
     const handleClose = () => {
         setEditingParameter(null);
@@ -132,8 +148,8 @@ export default function EditParameter(props) {
         return null;
     }
     return (
-        <Dialog fullWidth maxWidth='md' open={isEditing} onClose={handleClose} aria-labelledby='edit-parameter'>
-            <DialogTitle disableTypography id='edit-parameter'>
+        <StyledDialog fullWidth maxWidth='md' open={isEditing} onClose={handleClose} aria-labelledby='edit-parameter'>
+            <DialogTitle id='edit-parameter'>
                 <Typography variant='h6'>
                     <FormattedMessage
                         id='Apis.Details.Resources.components.operationComponents.EditParameter.title'
@@ -149,7 +165,7 @@ export default function EditParameter(props) {
                 </Typography>
             </DialogTitle>
             <DialogContent>
-                <Grid container direction='row' spacing={2} justify='flex-start' alignItems='center'>
+                <Grid container direction='row' spacing={2} justifyContent='flex-start' alignItems='center'>
                     <Grid item md={6}>
                         <TextField
                             value={capitalizeFirstLetter(parameter.in)}
@@ -338,7 +354,7 @@ export default function EditParameter(props) {
                             />
                         </FormControl>
                     </Grid>
-                    <Grid container direction='row' justify='flex-end' alignItems='center'>
+                    <Grid container direction='row' justifyContent='flex-end' alignItems='center'>
                         <DialogContentText>
                             <FormattedMessage
                                 id={'Apis.Details.Resources.components.operationComponents.EditParameter.'
@@ -363,7 +379,7 @@ export default function EditParameter(props) {
                     />
                 </Button>
             </DialogActions>
-        </Dialog>
+        </StyledDialog>
     );
 }
 

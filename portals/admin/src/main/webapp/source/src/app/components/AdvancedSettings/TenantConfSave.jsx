@@ -22,53 +22,15 @@ import React, {
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
 import {
     Box, Grid, Button,
-} from '@material-ui/core';
-import { green } from '@material-ui/core/colors';
+} from '@mui/material';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "TeantConfAddMonacoEditor" */));
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        marginBottom: theme.spacing(15),
-    },
-    error: {
-        color: theme.palette.error.dark,
-    },
-    dialog: {
-        minWidth: theme.spacing(150),
-
-    },
-    tenantConfHeading: {
-        marginBottom: theme.spacing(1),
-    },
-    showSampleButton: {
-        marginTop: theme.spacing(2),
-    },
-    helperText: {
-        color: green[600],
-        fontSize: theme.spacing(1.6),
-        marginLeft: theme.spacing(1),
-    },
-    infoBox: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(2),
-    },
-    buttonBox: {
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-        marginLeft: theme.spacing(1),
-    },
-    saveButton: {
-        marginRight: theme.spacing(2),
-    },
-}));
 
 /**
  * Reducer
@@ -95,7 +57,6 @@ function reducer(state, { field, value }) {
  * @returns {JSX} Header AppBar components.
  */
 function TenantConfSave() {
-    const classes = useStyles();
     const history = useHistory();
     const [initialState] = useState({
         tenantConf: '',
@@ -181,9 +142,9 @@ function TenantConfSave() {
                 />
             )}
         >
-            <Box component='div' m={2} className={classes.root} name={tenantConfSchema}>
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={12} lg={12}>
+            <Box component='div' sx={{ mb: 15, m: 2 }} name={tenantConfSchema}>
+                <Grid container>
+                    <Grid item xs={12} md={12} lg={12} sx={{ p: 2 }}>
                         <Suspense fallback={<Progress />}>
                             <MonacoEditor
                                 language='json'
@@ -195,11 +156,11 @@ function TenantConfSave() {
                             />
                         </Suspense>
                     </Grid>
-                    <Box component='span' className={classes.buttonBox}>
+                    <Box component='span' sx={{ mt: 2, mb: 2, ml: 1 }}>
                         <Button
                             variant='contained'
                             color='primary'
-                            className={classes.saveButton}
+                            sx={{ mr: 2 }}
                             onClick={formSaveCallback}
                             data-testid='monaco-editor-save'
                         >
@@ -209,7 +170,7 @@ function TenantConfSave() {
                             />
                         </Button>
                         <Button
-                            variant='contained'
+                            variant='outlined'
                             onClick={cancelUpdate}
                         >
                             <FormattedMessage

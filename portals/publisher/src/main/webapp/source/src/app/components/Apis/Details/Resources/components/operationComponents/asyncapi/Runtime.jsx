@@ -19,17 +19,17 @@
 import React, { useState } from 'react';
 import CopyToClipboard from 'react-copy-to-clipboard';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Divider from '@material-ui/core/Divider';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import Grid from '@mui/material/Grid';
+import Divider from '@mui/material/Divider';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Utils from 'AppData/Utils';
-import { FileCopy } from '@material-ui/icons';
+import { FileCopy } from '@mui/icons-material';
 import { isRestricted } from 'AppData/AuthManager';
 
 /**
@@ -72,102 +72,100 @@ export default function Runtime(props) {
         getUriMappingHelperText(operation[verb]['x-uri-mapping']),
     );
 
-    return (
-        <>
-            <Grid item xs={12} md={12}>
-                <Typography variant='subtitle1'>
-                    Runtime
-                    <Divider variant='middle' />
-                </Typography>
-            </Grid>
-            {api.type === 'WS' && (
-                <>
-                    <Grid item md={1} />
-                    <Grid item md={5}>
-                        <TextField
-                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                            margin='dense'
-                            fullWidth
-                            label='URL Mapping'
-                            value={operation[verb]['x-uri-mapping']}
-                            variant='outlined'
-                            helperText={uriMappingHelperText}
-                            onChange={(e) => {
-                                let { value } = e.target;
-                                if (value.length > 0 && value.substr(0, 1) !== '/') {
-                                    value = '/' + value;
-                                }
-                                setUriMappingHelperText(getUriMappingHelperText(value));
-                                operationsDispatcher({ action: 'uriMapping', data: { target, verb, value } });
-                            }}
-                        />
-                    </Grid>
-                    <Grid item md={6} />
-                </>
-            )}
-            {api.type === 'WEBSUB' && settings.environment.map((env) => (
-                <>
-                    <Grid item md={1} />
-                    <Grid item md={10}>
-                        <Typography variant='subtitle1'>{env.displayName}</Typography>
-                        <TextField
-                            margin='dense'
-                            fullWidth
-                            label='HTTP Callback URL'
-                            disabled
-                            value={buildCallbackURL('http', allEnvDeployments[env.name].vhost.host,
-                                allEnvDeployments[env.name].vhost.websubHttpPort)}
-                            variant='outlined'
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position='end'>
-                                        <CopyToClipboard
-                                            text={buildCallbackURL('http',
-                                                allEnvDeployments[env.name].vhost.host,
-                                                allEnvDeployments[env.name].vhost.websubHttpPort)}
-                                        >
-                                            <IconButton>
-                                                <Icon>
-                                                    <FileCopy />
-                                                </Icon>
-                                            </IconButton>
-                                        </CopyToClipboard>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                        <TextField
-                            margin='dense'
-                            fullWidth
-                            label='HTTPS Callback URL'
-                            disabled
-                            value={buildCallbackURL('https', allEnvDeployments[env.name].vhost.host,
-                                allEnvDeployments[env.name].vhost.websubHttpsPort)}
-                            variant='outlined'
-                            InputProps={{
-                                endAdornment: (
-                                    <InputAdornment position='end'>
-                                        <CopyToClipboard
-                                            text={buildCallbackURL('https',
-                                                allEnvDeployments[env.name].vhost.host,
-                                                allEnvDeployments[env.name].vhost.websubHttpsPort)}
-                                        >
-                                            <IconButton>
-                                                <Icon>
-                                                    <FileCopy />
-                                                </Icon>
-                                            </IconButton>
-                                        </CopyToClipboard>
-                                    </InputAdornment>
-                                ),
-                            }}
-                        />
-                    </Grid>
-                    <Grid item md={1} />
-                </>
-            ))}
-        </>
-    );
+    return <>
+        <Grid item xs={12} md={12}>
+            <Typography variant='subtitle1'>
+                Runtime
+                <Divider variant='middle' />
+            </Typography>
+        </Grid>
+        {api.type === 'WS' && (
+            <>
+                <Grid item md={1} />
+                <Grid item md={5}>
+                    <TextField
+                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                        margin='dense'
+                        fullWidth
+                        label='URL Mapping'
+                        value={operation[verb]['x-uri-mapping']}
+                        variant='outlined'
+                        helperText={uriMappingHelperText}
+                        onChange={(e) => {
+                            let { value } = e.target;
+                            if (value.length > 0 && value.substr(0, 1) !== '/') {
+                                value = '/' + value;
+                            }
+                            setUriMappingHelperText(getUriMappingHelperText(value));
+                            operationsDispatcher({ action: 'uriMapping', data: { target, verb, value } });
+                        }}
+                    />
+                </Grid>
+                <Grid item md={6} />
+            </>
+        )}
+        {api.type === 'WEBSUB' && settings.environment.map((env) => (
+            <>
+                <Grid item md={1} />
+                <Grid item md={10}>
+                    <Typography variant='subtitle1'>{env.displayName}</Typography>
+                    <TextField
+                        margin='dense'
+                        fullWidth
+                        label='HTTP Callback URL'
+                        disabled
+                        value={buildCallbackURL('http', allEnvDeployments[env.name].vhost.host,
+                            allEnvDeployments[env.name].vhost.websubHttpPort)}
+                        variant='outlined'
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position='end'>
+                                    <CopyToClipboard
+                                        text={buildCallbackURL('http',
+                                            allEnvDeployments[env.name].vhost.host,
+                                            allEnvDeployments[env.name].vhost.websubHttpPort)}
+                                    >
+                                        <IconButton size='large'>
+                                            <Icon>
+                                                <FileCopy />
+                                            </Icon>
+                                        </IconButton>
+                                    </CopyToClipboard>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                    <TextField
+                        margin='dense'
+                        fullWidth
+                        label='HTTPS Callback URL'
+                        disabled
+                        value={buildCallbackURL('https', allEnvDeployments[env.name].vhost.host,
+                            allEnvDeployments[env.name].vhost.websubHttpsPort)}
+                        variant='outlined'
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position='end'>
+                                    <CopyToClipboard
+                                        text={buildCallbackURL('https',
+                                            allEnvDeployments[env.name].vhost.host,
+                                            allEnvDeployments[env.name].vhost.websubHttpsPort)}
+                                    >
+                                        <IconButton size='large'>
+                                            <Icon>
+                                                <FileCopy />
+                                            </Icon>
+                                        </IconButton>
+                                    </CopyToClipboard>
+                                </InputAdornment>
+                            ),
+                        }}
+                    />
+                </Grid>
+                <Grid item md={1} />
+            </>
+        ))}
+    </>;
 }
 
 Runtime.propTypes = {

@@ -18,8 +18,7 @@
 
 import React from 'react';
 import { MemoryRouter, Route } from 'react-router-dom';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme, adaptV4Theme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 import Themes from 'AppData/defaultTheme';
 import { mountWithIntl } from 'AppTests/Utils/DEPRECATED_IntlHelper';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
@@ -87,9 +86,11 @@ describe.skip('Test APIs main routing component', () => {
         const url = '/apis/chuck/norris';
         const noneExistingPath = (
             <MemoryRouter initialEntries={[url]}>
-                <MuiThemeProvider theme={createTheme(light)}>
-                    <APIs />
-                </MuiThemeProvider>
+                <StyledEngineProvider injectFirst>
+                    <ThemeProvider theme={createTheme(adaptV4Theme(light))}>
+                        <APIs />
+                    </ThemeProvider>
+                </StyledEngineProvider>
             </MemoryRouter>
         );
         const wrapper = mountWithIntl(noneExistingPath);

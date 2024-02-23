@@ -48,9 +48,13 @@ module.exports = (env, argv) => {
             publicPath: 'site/public/dist/',
             globalObject: 'this',
         },
-        node: {
-            fs: 'empty',
-            net: 'empty', // To fix joi issue: https://github.com/hapijs/joi/issues/665#issuecomment-113713020
+        resolve: {
+            extensions: [ '.ts', '.js' ],
+            fallback: {
+                fs: false,
+                "stream": require.resolve("stream-browserify"),
+                "buffer": require.resolve("buffer")
+            }
         },
         watch: false,
         watchOptions: {
@@ -66,7 +70,6 @@ module.exports = (env, argv) => {
          * and use proxy configs and `devServerBefore` to handle authentication requests.
          * For more info:
          *      https://webpack.js.org/configuration/dev-server/
-         *      https://github.com/gaearon/react-hot-loader
         */
         devServer: {
             open: !isTestBuild,
@@ -121,13 +124,22 @@ module.exports = (env, argv) => {
                 nimma: require.resolve('./node_modules/nimma/dist/legacy/cjs/index.js'),
             },
             extensions: ['.js', '.jsx', '.ts', '.tsx'],
+            fallback: {
+                "fs": false,
+                "tls": false,
+                "net": false,
+                "path": false,
+                "zlib": false,
+                "http": false,
+                "https": false,
+                "stream": false,
+                "process": false,
+                "crypto": false,
+                "crypto-browserify": require.resolve('crypto-browserify'),
+            },
         },
         module: {
             rules: [
-                {
-                    test: /\.worker\.js$/,
-                    use: { loader: 'worker-loader' },
-                },
                 {
                     test: /\.(js|jsx)$/,
                     exclude: /node_modules/,
@@ -181,7 +193,7 @@ module.exports = (env, argv) => {
                 {
                     test: /\.jsp\.hbs$/,
                     loader: 'underscore-template-loader',
-                    query: {
+                    options: {
                         engine: 'lodash',
                         interpolate: '\\{\\[(.+?)\\]\\}',
                         evaluate: '\\{%([\\s\\S]+?)%\\}',
@@ -197,8 +209,20 @@ module.exports = (env, argv) => {
             Settings: 'Settings',
         },
         plugins: [
-            new MonacoWebpackPlugin({ languages: ['xml', 'json', 'yaml', 'markdown', 'javascript'], 
-                features: ['!gotoSymbol'] }),
+            new MonacoWebpackPlugin({ 
+                languages: ['xml', 'json', 'yaml', 'markdown', 'javascript'], 
+                features: [
+                    '!accessibilityHelp',
+                    '!bracketMatching',
+                    '!caretOperations',
+                    'clipboard',
+                    '!codeAction',
+                    '!codelens',
+                    '!colorDetector',
+                    '!comment',
+                    '!contextmenu',
+                    '!coreCommands',
+                ]}),
             new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
                 inject: false,
@@ -217,7 +241,18 @@ module.exports = (env, argv) => {
                 const pres = Math.round(percentage * 100);
                 if (pres % 20 === 0) console.info(`${pres}%`, message, ...args); // To reduce log lines
             }),
+            // Work around for Buffer is undefined:
+            // https://github.com/webpack/changelog-v5/issues/10
+            new webpack.ProvidePlugin({
+                Buffer: ['buffer', 'Buffer'],
+            }),
+            new webpack.ProvidePlugin({
+                process: 'process/browser',
+            }),
         ],
+        stats: {
+            children: true, // Disable children information. Enable this to view detail info on webpack errors.
+        },
     };
     const isAnalysis = process.env && process.env.NODE_ENVS === 'analysis';
     if (isAnalysis) {

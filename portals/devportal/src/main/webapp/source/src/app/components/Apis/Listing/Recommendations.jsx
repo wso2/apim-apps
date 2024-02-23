@@ -17,31 +17,49 @@
  */
 
 import React from 'react';
+import {
+    styled,
+    createTheme,
+    ThemeProvider,
+    StyledEngineProvider,
+    adaptV4Theme,
+} from '@mui/material/styles';
 import { Link } from 'react-router-dom';
-import { createMuiTheme, MuiThemeProvider, withStyles } from '@material-ui/core/styles';
 import MUIDataTable from 'mui-datatables';
 import { injectIntl } from 'react-intl';
 import API from 'AppData/api';
-import { withTheme } from '@material-ui/styles';
 import Configurations from 'Config';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import Alert from 'AppComponents/Shared/Alert';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
+import { useTheme } from '@mui/material';
 import ImageGenerator from './APICards/ImageGenerator';
 import RecommendedApiThumb from './RecommendedApiThumb';
 import { ApiContext } from '../Details/ApiContext';
 
-const styles = (theme) => ({
-    rowImageOverride: {
+const PREFIX = 'RecommendationsLegacy';
+
+const classes = {
+    rowImageOverride: `${PREFIX}-rowImageOverride`,
+    apiNameLink: `${PREFIX}-apiNameLink`,
+};
+
+const StyledStyledEngineProvider = styled(StyledEngineProvider)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.rowImageOverride}`]: {
         '& .material-icons': {
             marginTop: 5,
             color: `${theme.custom.thumbnail.iconColor} !important`,
             fontSize: `${theme.custom.thumbnail.listViewIconSize}px !important`,
         },
     },
-    apiNameLink: {
+
+    [`& .${classes.apiNameLink}`]: {
         display: 'flex',
         alignItems: 'center',
         '& span': {
@@ -49,18 +67,19 @@ const styles = (theme) => ({
         },
         color: theme.palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund),
     },
-});
+}));
+
 /**
  * Table view for api listing
  *
- * @class Recommendations
+ * @class RecommendationsLegacy
  * @extends {React.Component}
  */
-class Recommendations extends React.Component {
+class RecommendationsLegacy extends React.Component {
     /**
      * @inheritdoc
      * @param {*} props properties
-     * @memberof Recommendations
+     * @memberof RecommendationsLegacy
      */
     constructor(props) {
         super(props);
@@ -71,14 +90,14 @@ class Recommendations extends React.Component {
     }
 
     /**
-     * @memberof Recommendations
+     * @memberof RecommendationsLegacy
     */
     componentDidMount() {
         this.getData();
     }
 
     /**
-     * @memberof Recommendations
+     * @memberof RecommendationsLegacy
      * @param {JSON} prevProps previous props
     */
     componentDidUpdate(prevProps) {
@@ -170,7 +189,7 @@ class Recommendations extends React.Component {
             };
         }
         muiTheme = Object.assign(muiTheme, themeAdditions, Configurations);
-        return createMuiTheme(muiTheme);
+        return createTheme(adaptV4Theme(muiTheme));
     };
 
     // get data
@@ -211,7 +230,7 @@ class Recommendations extends React.Component {
     /**
      * @inheritdoc
      * @returns {Component}x
-     * @memberof Recommendations
+     * @memberof RecommendationsLegacy
      */
     render() {
         const { intl, gridView } = this.props;
@@ -251,7 +270,6 @@ class Recommendations extends React.Component {
                             const artifact = tableViewObj.state.data[tableMeta.rowIndex];
                             const apiName = tableMeta.rowData[2];
                             const apiId = tableMeta.rowData[0];
-                            const { classes } = this.props;
 
                             if (artifact) {
                                 return (
@@ -349,13 +367,32 @@ class Recommendations extends React.Component {
             return null;
         }
         return (
-            <MuiThemeProvider theme={this.getMuiTheme()}>
-                <MUIDataTable title='Recommended APIs for you' data={data} columns={columns} options={options} />
-            </MuiThemeProvider>
+            <StyledStyledEngineProvider injectFirst>
+                <ThemeProvider theme={this.getMuiTheme()}>
+                    <MUIDataTable title='Recommended APIs for you' data={data} columns={columns} options={options} />
+                </ThemeProvider>
+            </StyledStyledEngineProvider>
         );
     }
 }
 
-Recommendations.contextType = ApiContext;
+RecommendationsLegacy.contextType = ApiContext;
 
-export default withSettings(injectIntl(withTheme(withStyles(styles)(Recommendations))));
+function Recommendations(props) {
+    const {
+        query, selectedTag, gridView, intl, setTenantDomain,
+    } = props;
+    const theme = useTheme();
+    return (
+        <RecommendationsLegacy
+            query={query}
+            selectedTag={selectedTag}
+            gridView={gridView}
+            intl={intl}
+            setTenantDomain={setTenantDomain}
+            theme={theme}
+        />
+    );
+}
+
+export default withSettings(injectIntl(Recommendations));

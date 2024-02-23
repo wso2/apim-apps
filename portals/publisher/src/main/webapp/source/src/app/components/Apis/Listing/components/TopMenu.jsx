@@ -17,44 +17,60 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/icons/List';
-import GridOn from '@material-ui/icons/GridOn';
-import { withStyles } from '@material-ui/core/styles';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import List from '@mui/icons-material/List';
+import GridOn from '@mui/icons-material/GridOn';
 import { FormattedMessage } from 'react-intl';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
+import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { isRestricted } from 'AppData/AuthManager';
 import APICreateMenu from './APICreateMenu';
 
-const styles = (theme) => ({
-    button: {
+const PREFIX = 'TopMenu';
+
+const classes = {
+    button: `${PREFIX}-button`,
+    root: `${PREFIX}-root`,
+    mainTitleWrapper: `${PREFIX}-mainTitleWrapper`,
+    APICreateMenu: `${PREFIX}-APICreateMenu`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.button}`]: {
         margin: theme.spacing(1),
         marginBottom: 0,
     },
-    root: {
+
+    [`&.${classes.root}`]: {
         height: 70,
         background: theme.palette.background.paper,
         borderBottom: 'solid 1px ' + theme.palette.grey.A200,
         display: 'flex',
     },
-    mainTitleWrapper: {
+
+    [`& .${classes.mainTitleWrapper}`]: {
         paddingLeft: 35,
         display: 'flex',
         justifyContent: 'center',
         flexDirection: 'column',
     },
-    APICreateMenu: {
+
+    [`& .${classes.APICreateMenu}`]: {
         flexGrow: 1,
         display: 'flex',
         alignItems: 'center',
-    },
-});
+    }
+}));
 
 /**
  *
@@ -104,11 +120,11 @@ function getTitleForArtifactType(props, count) {
  */
 function TopMenu(props) {
     const {
-        classes, data, setListType, count, isAPIProduct, listType, showToggle, query,
+        data, setListType, count, isAPIProduct, listType, showToggle, query,
     } = props;
     if (count > 0) {
         return (
-            <div className={classes.root}>
+            <Root className={classes.root}>
                 <div className={classes.mainTitleWrapper}>
                     {data && (
                         <>
@@ -179,16 +195,22 @@ function TopMenu(props) {
                 {showToggle && (
                     <Box height={32} m='auto' mr={8}>
                         <ButtonGroup color='primary' aria-label='outlined primary button group'>
-                            <IconButton onClick={() => setListType('grid')} aria-label='Switch to Grid View'>
+                            <IconButton
+                                onClick={() => setListType('grid')}
+                                aria-label='Switch to Grid View'
+                                size='large'>
                                 <GridOn color={listType === 'grid' ? 'primary' : 'disabled'} />
                             </IconButton>
-                            <IconButton onClick={() => setListType('list')} aria-label='Switch to List View'>
+                            <IconButton
+                                onClick={() => setListType('list')}
+                                aria-label='Switch to List View'
+                                size='large'>
                                 <List color={listType === 'list' ? 'primary' : 'disabled'} />
                             </IconButton>
                         </ButtonGroup>
                     </Box>
                 )}
-            </div>
+            </Root>
         );
     } else {
         return null;
@@ -208,4 +230,4 @@ TopMenu.propTypes = {
     showToggle: PropTypes.bool.isRequired,
 };
 
-export default withStyles(styles)(TopMenu);
+export default (TopMenu);

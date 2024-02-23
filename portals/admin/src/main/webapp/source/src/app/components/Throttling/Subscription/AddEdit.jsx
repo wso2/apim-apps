@@ -17,87 +17,45 @@
  */
 
 import React, { useReducer, useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { useIntl, FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import Alert from 'AppComponents/Shared/Alert';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 import { Link as RouterLink } from 'react-router-dom';
-import Grid from '@material-ui/core/Grid';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Switch from '@material-ui/core/Switch';
-import HelpOutlinedIcon from '@material-ui/icons/HelpOutlined';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import AddCircle from '@material-ui/icons/AddCircle';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import Grid from '@mui/material/Grid';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Switch from '@mui/material/Switch';
+import HelpOutlinedIcon from '@mui/icons-material/HelpOutlined';
+import CircularProgress from '@mui/material/CircularProgress';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import AddCircle from '@mui/icons-material/AddCircle';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
 import Joi from '@hapi/joi';
-import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
+import { MuiChipsInput } from 'mui-chips-input';
 import base64url from 'base64url';
-import Error from '@material-ui/icons/Error';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Chip from '@material-ui/core/Chip';
-import { red } from '@material-ui/core/colors/';
+import Error from '@mui/icons-material/Error';
+import InputAdornment from '@mui/material/InputAdornment';
+import { red } from '@mui/material/colors/';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
-        marginBottom: theme.spacing(10),
-    },
-    error: {
-        color: theme.palette.error.dark,
-    },
-    formTitle: {
-        paddingBottom: theme.spacing(4),
-    },
-    radioGroup: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
-    radioGroupBilling: {
-        display: 'flex',
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-    selectRoot: {
-        padding: '11.5px 14px',
-        width: 100,
-    },
-    formControlSelect: {
-        paddingTop: 7,
-        paddingLeft: 5,
-    },
-    formControlSelectBottom: {
-        display: 'flex',
-        paddingTop: 7,
-        paddingBottom: 7,
-    },
-    toggleSwitchPadding: {
-        paddingTop: 10,
-        paddingBottom: 7,
-    },
-    buttonIcon: {
-        marginRight: theme.spacing(1),
-    },
-    paddingTooltip: {
-        paddingLeft: 5,
-    },
-}));
+const StyledFormControl = styled(FormControl)({ pt: 1, pl: 0.5 });
+
+const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
 
 /**
  * Reducer
@@ -159,7 +117,6 @@ function reducer(state, newValue) {
  * @returns {JSX} Header AppBar components.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const intl = useIntl();
     const [saving, setSaving] = useState(false);
     const { history, match: { params } } = props;
@@ -686,7 +643,7 @@ function AddEdit(props) {
                     defaultMessage: 'Subscription Rate Limiting Policy - Create new',
                 })}
         >
-            <Box component='div' m={2} className={classes.root}>
+            <Box component='div' m={2} sx={{ mb: 10 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={12} lg={3}>
                         <Box display='flex' flexDirection='row' alignItems='center'>
@@ -760,7 +717,7 @@ function AddEdit(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
                     {/* Quota limits */}
@@ -791,7 +748,7 @@ function AddEdit(props) {
                                 name='type'
                                 value={type}
                                 onChange={onChange}
-                                className={classes.radioGroup}
+                                sx={{ display: 'flex', flexDirection: 'row' }}
                             >
                                 <FormControlLabel
                                     value='REQUESTCOUNTLIMIT'
@@ -860,23 +817,24 @@ function AddEdit(props) {
                                                 defaultMessage='Data Bandwidth'
                                             />
                                         )}
-                                        fullWidth
+                                        sx={{ width: 350 }}
                                         error={validationError.dataAmount}
                                         helperText={validationError.dataAmount || 'Bandwidth allowed'}
                                         variant='outlined'
                                     />
-                                    <FormControl variant='outlined' className={classes.formControlSelect}>
+                                    <StyledFormControl variant='outlined'>
                                         <Select
+                                            variant='outlined'
+                                            sx={{ minWidth: 120, ml: 1, mt: 1 }}
                                             name='dataUnit'
                                             fullWidth
                                             value={dataUnit}
                                             onChange={onChange}
-                                            classes={{ root: classes.selectRoot }}
                                         >
                                             <MenuItem value='KB'>KB</MenuItem>
                                             <MenuItem value='MB'>MB</MenuItem>
                                         </Select>
-                                    </FormControl>
+                                    </StyledFormControl>
                                 </Box>
                             )}
                             {type === 'EVENTCOUNTLIMIT' && (
@@ -927,16 +885,17 @@ function AddEdit(props) {
                                         id: 'Throttling.Subscription.AddEdit.unitTime',
                                         defaultMessage: 'Unit Time',
                                     })}
-                                    fullWidth
+                                    sx={{ width: 350 }}
                                     variant='outlined'
                                 />
-                                <FormControl variant='outlined' className={classes.formControlSelect}>
+                                <StyledFormControl variant='outlined'>
                                     <Select
+                                        variant='outlined'
+                                        sx={{ minWidth: 120, ml: 1, mt: 1 }}
                                         name='timeUnit'
                                         value={timeUnit}
                                         fullWidth
                                         onChange={onChange}
-                                        classes={{ root: classes.selectRoot }}
                                     >
                                         <MenuItem value='min'>Minute(s)</MenuItem>
                                         <MenuItem value='hours'>Hour(s)</MenuItem>
@@ -944,13 +903,13 @@ function AddEdit(props) {
                                         <MenuItem value='months'>Month(s)</MenuItem>
                                         <MenuItem value='years'>Year(s)</MenuItem>
                                     </Select>
-                                </FormControl>
+                                </StyledFormControl>
                             </Box>
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
                     {/* Burst Control (Rate Limiting) */}
@@ -989,7 +948,7 @@ function AddEdit(props) {
                                                 defaultMessage='Request Rate'
                                             />
                                         )}
-                                        fullWidth
+                                        sx={{ width: 380 }}
                                         helperText={intl.formatMessage({
                                             id: 'Throttling.Subscription.AddEdit.burst.control.limit',
                                             defaultMessage: 'Number of requests for burst control',
@@ -997,24 +956,25 @@ function AddEdit(props) {
                                         variant='outlined'
                                     />
                                 </Grid>
-                                <FormControl variant='outlined' className={classes.formControlSelect}>
+                                <StyledFormControl variant='outlined'>
                                     <Select
+                                        variant='outlined'
+                                        sx={{ minWidth: 120, ml: 1, mt: 1 }}
                                         name='rateLimitTimeUnit'
                                         fullWidth
                                         value={rateLimitTimeUnit}
                                         onChange={onChange}
-                                        classes={{ root: classes.selectRoot }}
                                     >
                                         <MenuItem value='sec'>Requests/s</MenuItem>
                                         <MenuItem value='min'>Requests/min</MenuItem>
                                     </Select>
-                                </FormControl>
+                                </StyledFormControl>
                             </Box>
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
 
@@ -1086,7 +1046,7 @@ function AddEdit(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
                     {/* Web Hooks */}
@@ -1136,7 +1096,7 @@ function AddEdit(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
                     {/* Policy flags */}
@@ -1175,7 +1135,12 @@ function AddEdit(props) {
                                         name='billingPlan'
                                         value={billingPlan}
                                         onChange={onChange}
-                                        className={classes.radioGroupBilling}
+                                        sx={{
+                                            display: 'flex',
+                                            flexDirection: 'row',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}
                                     >
                                         <FormControlLabel
                                             value='FREE'
@@ -1209,7 +1174,7 @@ function AddEdit(props) {
                                                         />
                                                     )}
                                                     placement='right-end'
-                                                    className={classes.paddingTooltip}
+                                                    sx={{ pl: 5 }}
                                                     interactive
                                                 >
                                                     <HelpOutlinedIcon fontSize='medium' />
@@ -1217,7 +1182,7 @@ function AddEdit(props) {
                                             </Box>
                                         </Box>
                                         <Box flex='1'>
-                                            <FormControl variant='outlined' className={classes.formControlSelectBottom}>
+                                            <FormControl variant='outlined' sx={{ display: 'flex', pt: 1, pb: 1 }}>
                                                 <Select
                                                     name='monetizationPlan'
                                                     margin='dense'
@@ -1251,7 +1216,7 @@ function AddEdit(props) {
                                                             />
                                                         )}
                                                         placement='right-end'
-                                                        className={classes.paddingTooltip}
+                                                        sx={{ pl: 5 }}
                                                         interactive
                                                     >
                                                         <HelpOutlinedIcon fontSize='medium' />
@@ -1290,7 +1255,7 @@ function AddEdit(props) {
                                                             />
                                                         )}
                                                         placement='right-end'
-                                                        className={classes.paddingTooltip}
+                                                        sx={{ pl: 5 }}
                                                         interactive
                                                     >
                                                         <HelpOutlinedIcon fontSize='medium' />
@@ -1341,7 +1306,7 @@ function AddEdit(props) {
                                             </Typography>
                                         </Box>
                                         <Box flex='1'>
-                                            <FormControl variant='outlined' className={classes.formControlSelectBottom}>
+                                            <FormControl variant='outlined' sx={{ display: 'flex', pt: 1, pb: 1 }}>
                                                 <Select
                                                     name='billingCycle'
                                                     fullWidth
@@ -1364,7 +1329,7 @@ function AddEdit(props) {
                                 display='flex'
                                 flexDirection='row'
                                 alignItems='center'
-                                className={classes.toggleSwitchPadding}
+                                sx={{ pt: 1, pb: 1 }}
                             >
                                 <Box flex='0.65'>
                                     <Typography color='inherit' variant='body1' component='div'>
@@ -1390,7 +1355,7 @@ function AddEdit(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
                     {/* Custom Attributes */}
@@ -1420,14 +1385,14 @@ function AddEdit(props) {
                                         variant='outlined'
                                         onClick={handleAddNewAttributeClick}
                                     >
-                                        <AddCircle className={classes.buttonIcon} />
+                                        <AddCircle sx={{ mr: 1 }} />
                                         <FormattedMessage
                                             id='Throttling.Subscription.custom.attributes.add'
                                             defaultMessage='Add Custom Attribute'
                                         />
                                     </Button>
                                 </Box>
-                                <Table className={classes.table}>
+                                <Table>
                                     <TableBody>
                                         {customAttributes.map((attribute, index) => (
                                             <TableRow>
@@ -1478,6 +1443,7 @@ function AddEdit(props) {
                                                         <IconButton
                                                             id={index}
                                                             onClick={handleAttributeDelete}
+                                                            size='large'
                                                         >
                                                             <DeleteForeverIcon />
                                                         </IconButton>
@@ -1492,7 +1458,7 @@ function AddEdit(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
                     {/* Permissions */}
@@ -1520,24 +1486,27 @@ function AddEdit(props) {
                                 (permissionStatus === 'ALLOW' || permissionStatus === 'DENY')
                                 && (
                                     <Box display='flex' flexDirection='row' alignItems='center'>
-                                        <ChipInput
+                                        <MuiChipsInput
+                                            fullWidth
                                             label='Roles'
                                             InputLabelProps={{
                                                 shrink: true,
                                             }}
                                             variant='outlined'
                                             value={validRoles.concat(invalidRoles)}
-                                            alwaysShowPlaceholder={false}
-                                            placeholder='Enter roles and press Enter'
-                                            blurBehavior='clear'
+                                            placeholder='Type roles and press Enter'
+                                            clearInputOnBlur
                                             InputProps={{
                                                 endAdornment: !roleValidity && (
-                                                    <InputAdornment position='end'>
+                                                    <InputAdornment
+                                                        position='end'
+                                                        sx={{ position: 'absolute', right: '25px', top: '50%' }}
+                                                    >
                                                         <Error color='error' />
                                                     </InputAdornment>
                                                 ),
                                             }}
-                                            onAdd={handleRoleAddition}
+                                            onAddChip={handleRoleAddition}
                                             error={!roleValidity}
                                             helperText={
                                                 !roleValidity ? (
@@ -1569,15 +1538,15 @@ function AddEdit(props) {
                                                     />,
                                                 ]
                                             }
-                                            chipRenderer={({ value }, key) => (
-                                                <Chip
-                                                    key={key}
-                                                    label={value}
-                                                    onDelete={() => {
-                                                        handleRoleDeletion(value);
-                                                    }}
+                                            renderChip={(ChipComponent, key, ChipProps) => (
+                                                <ChipComponent
+                                                    key={ChipProps.label}
+                                                    label={ChipProps.label}
+                                                    onDelete={() => handleRoleDeletion(ChipProps.label)}
                                                     style={{
-                                                        backgroundColor: invalidRoles.includes(value) ? red[300] : null,
+                                                        backgroundColor: invalidRoles.includes(ChipProps.label)
+                                                            ? red[300]
+                                                            : null,
                                                         margin: '8px 8px 8px 0',
                                                         float: 'left',
                                                     }}
@@ -1592,7 +1561,7 @@ function AddEdit(props) {
                                     name='permissionStatus'
                                     value={permissionStatus}
                                     onChange={onChange}
-                                    className={classes.radioGroup}
+                                    sx={{ display: 'flex', flexDirection: 'row' }}
                                     defaultValue='NONE'
                                 >
                                     <FormControlLabel value='NONE' control={<Radio />} label='None' />
@@ -1605,13 +1574,14 @@ function AddEdit(props) {
                 </Grid>
                 {/* Submit buttons */}
                 <Grid container spacing={2}>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sx={{ mb: 1 }}>
                         <Box component='span' m={1}>
                             <Button
                                 variant='contained'
                                 color='primary'
                                 onClick={formSaveCallback}
                                 disabled={invalidRoles.length !== 0}
+                                data-testid='throttling-subscription-save-button'
                             >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <FormattedMessage
@@ -1622,7 +1592,7 @@ function AddEdit(props) {
                             </Button>
                         </Box>
                         <RouterLink to='/throttling/subscription'>
-                            <Button variant='contained'>
+                            <Button variant='outlined'>
                                 <FormattedMessage
                                     id='Throttling.Subscription.AddEdit.form.cancel'
                                     defaultMessage='Cancel'
@@ -1645,7 +1615,6 @@ AddEdit.defaultProps = {
 };
 
 AddEdit.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     history: PropTypes.shape({ push: PropTypes.func }).isRequired,
     match: PropTypes.shape({
         params: PropTypes.shape({

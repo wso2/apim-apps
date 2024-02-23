@@ -17,25 +17,42 @@
  */
 
 import React, { useContext } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import { injectIntl } from 'react-intl';
 import { app } from 'Settings';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import EmbedCode from 'AppComponents/Apis/Details/Social/EmbedCode';
-import MailOutlineIcon from '@material-ui/icons/MailOutline';
+import MailOutlineIcon from '@mui/icons-material/MailOutline';
 
-const useStyles = makeStyles((theme) => ({
-    socialLink: {
+const PREFIX = 'Social';
+
+const classes = {
+    socialLink: `${PREFIX}-socialLink`,
+    oneFlex: `${PREFIX}-oneFlex`,
+    socialLinkWrapper: `${PREFIX}-socialLinkWrapper`,
+    divider: `${PREFIX}-divider`,
+    codeIcon: `${PREFIX}-codeIcon`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.socialLink}`]: {
         display: 'inline-block',
         '& img': {
             width: 32,
             marginRight: theme.spacing(1),
         },
     },
-    oneFlex: {
+
+    [`& .${classes.oneFlex}`]: {
         flex: 1,
     },
-    socialLinkWrapper: {
+
+    [`& .${classes.socialLinkWrapper}`]: {
         marginTop: 16,
         display: 'flex',
         alignItems: 'center',
@@ -44,14 +61,16 @@ const useStyles = makeStyles((theme) => ({
             display: 'inline-block',
         },
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         display: 'inline-block',
         borderRight: 'solid 1px #ccc',
         marginLeft: theme.spacing(1),
         marginRight: theme.spacing(1),
         height: 30,
     },
-    codeIcon: {
+
+    [`& .${classes.codeIcon}`]: {
         cursor: 'pointer',
         color: theme.palette.getContrastText(theme.custom.infoBar.background),
     },
@@ -64,7 +83,6 @@ const useStyles = makeStyles((theme) => ({
  * @returns {int} The sum of the two numbers.
  */
 function Social() {
-    const classes = useStyles();
     const { api } = useContext(ApiContext);
     const { name: apiName } = api;
     const apiUrl = encodeURI(window.location);
@@ -83,7 +101,7 @@ function Social() {
         },
     } = theme;
     return (
-        <>
+        <Root>
             <div className={classes.oneFlex} />
             <div className={classes.socialLinkWrapper}>
                 {slack && (
@@ -186,7 +204,7 @@ function Social() {
                     </>
                 )}
             </div>
-        </>
+        </Root>
     );
 }
 

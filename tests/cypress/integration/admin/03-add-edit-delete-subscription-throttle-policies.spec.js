@@ -26,12 +26,12 @@ describe("Add Edit Delete subscription throttle policies", () => {
     it.only("Add Edit Delete subscription throttle policies", () => {
         const policyName = 'Platinum';
         cy.get('[data-testid="Subscription Policies-child-link"]').click();
-        cy.get('.MuiButton-label').contains('Add Policy').click();
+        cy.get('[data-testid="throttling-subscription-add-button"]').contains('Add Policy').click();
         cy.get('input[name="policyName"]').type(policyName);
         cy.get('textarea[name="description"]').type('Allows 10k requests per minute');
         cy.get('input[name="requestCount"]').type('10000');
         cy.get('input[name="unitTime"]').type('1');
-        cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
+        cy.get('[data-testid="throttling-subscription-save-button"]').contains('Save').click();
         cy.get('[data-testid="pagination-next"]').click();
         cy.get(`[data-testid="${policyName}-actions"]`).should('exist');
 
@@ -42,13 +42,13 @@ describe("Add Edit Delete subscription throttle policies", () => {
             cy.get('input[name="requestCount"]').clear().type('10001');
         });
         cy.intercept('GET', '**/throttling/policies/subscription').as('getPolicies');
-        cy.get('button.MuiButton-containedPrimary > span').contains('Save').click();
+        cy.get('[data-testid="throttling-subscription-save-button"]').contains('Save').click();
         cy.wait('@getPolicies', { timeout: 3000 });
 
         // delete
         cy.get('[data-testid="pagination-next"]').click();
         cy.get(`[data-testid="${policyName}-actions"] > span:nth-child(2)`).click();
-        cy.get('button > span').contains('Delete').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Delete').click();
         cy.get('div[role="status"]').should('have.text','Subscription Rate Limiting Policy successfully deleted.');
     });
 

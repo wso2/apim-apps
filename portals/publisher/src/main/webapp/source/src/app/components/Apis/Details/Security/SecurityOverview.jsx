@@ -18,45 +18,70 @@
 
 import React, { Component } from 'react';
 
+import { styled } from '@mui/material/styles';
+
 import Api from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import PropTypes from 'prop-types';
 
-import Typography from '@material-ui/core/Typography';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableHead from '@material-ui/core/TableHead';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Button from '@material-ui/core/Button';
-import { withStyles } from '@material-ui/core/styles';
-import AddCircle from '@material-ui/icons/AddCircle';
-import Divider from '@material-ui/core/Divider';
+import Typography from '@mui/material/Typography';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableHead from '@mui/material/TableHead';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Button from '@mui/material/Button';
+import AddCircle from '@mui/icons-material/AddCircle';
+import Divider from '@mui/material/Divider';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
 import AddPolicy from './AddPolicy';
 
-const styles = theme => ({
-    root: {
+const PREFIX = 'SecurityOverview';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    button: `${PREFIX}-button`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    table: `${PREFIX}-table`,
+    addNewHeader: `${PREFIX}-addNewHeader`,
+    addNewWrapper: `${PREFIX}-addNewWrapper`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    addJsonContent: `${PREFIX}-addJsonContent`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.primary.main),
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         '& td': {
             fontSize: theme.typography.fontSize,
         },
@@ -65,27 +90,31 @@ const styles = theme => ({
         },
         tableLayout: 'fixed',
     },
-    addNewHeader: {
+
+    [`& .${classes.addNewHeader}`]: {
         padding: theme.spacing(2),
         backgroundColor: theme.palette.grey['300'],
         fontSize: theme.typography.h6.fontSize,
         color: theme.typography.h6.color,
         fontWeight: theme.typography.h6.fontWeight,
     },
-    addNewWrapper: {
+
+    [`& .${classes.addNewWrapper}`]: {
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.getContrastText(theme.palette.background.paper),
         border: 'solid 1px ' + theme.palette.grey['300'],
         borderRadius: theme.shape.borderRadius,
         marginTop: theme.spacing(2),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
     },
-    addJsonContent: {
+
+    [`& .${classes.addJsonContent}`]: {
         whiteSpace: 'pre',
-    },
-});
+    }
+}));
 
 class SecurityOverview extends Component {
     constructor(props) {
@@ -170,11 +199,11 @@ class SecurityOverview extends Component {
         if (this.state.policies) {
             data = this.state.policies;
         }
-        const { classes } = this.props;
+        const { } = this.props;
         const { showAddPolicy } = this.state;
 
         return (
-            <div className={classes.root}>
+            <Root className={classes.root}>
                 <div className={classes.contentWrapper}>
                     <div className={classes.titleWrapper}>
                         <Typography variant='h4' align='left' className={classes.mainTitle}>
@@ -263,7 +292,7 @@ class SecurityOverview extends Component {
                         </Table>
                     </div>
                 </div>
-            </div>
+            </Root>
         );
     }
 }
@@ -279,4 +308,4 @@ SecurityOverview.propTypes = {
 };
 
 
-export default injectIntl(withStyles(styles)(SecurityOverview));
+export default injectIntl(SecurityOverview);

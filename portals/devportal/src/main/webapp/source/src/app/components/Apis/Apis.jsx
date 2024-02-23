@@ -17,8 +17,7 @@
  */
 
 import React from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
-import { withStyles } from '@material-ui/core';
+import { Route, Switch } from 'react-router-dom';
 import CommonListing from './Listing/CommonListing';
 import TagCloudListing from './Listing/TagCloudListing';
 import Details from './Details/index';
@@ -59,4 +58,4 @@ function Apis() {
     );
 }
 
-export default withStyles({}, { withTheme: true })(Apis);
+export default Apis;

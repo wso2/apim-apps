@@ -16,28 +16,38 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import Box from '@material-ui/core/Box';
-import List from '@material-ui/core/List';
-import LaunchIcon from '@material-ui/icons/Launch';
-import { useTheme } from '@material-ui/styles';
+import { styled, useTheme } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import List from '@mui/material/List';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { FormattedMessage } from 'react-intl';
 import AuthManager, { isRestricted } from 'AppData/AuthManager';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
-import { makeStyles } from '@material-ui/core/styles';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 
 import GlobalNavLink from './GlobalNavLink';
 
-const useStyles = makeStyles((theme) => ({
-    scopeIcon: {
+const PREFIX = 'GlobalNavLinks';
+
+const classes = {
+    scopeIcon: `${PREFIX}-scopeIcon`,
+    externalLinkIcon: `${PREFIX}-externalLinkIcon`
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.scopeIcon}`]: {
         color: theme.palette.background.paper,
     },
-    externalLinkIcon: {
+
+    [`& .${classes.externalLinkIcon}`]: {
         marginLeft: theme.spacing(1),
         marginTop: theme.spacing(0.5),
         marginBottom: theme.spacing(-1),
-    },
+    }
 }));
 
 
@@ -51,7 +61,7 @@ function GlobalNavLinks(props) {
     const publisherUser = !AuthManager.isNotPublisher();
     const readOnlyUser = AuthManager.isReadOnlyUser();
     const adminUser = AuthManager.isAdminUser();
-    const classes = useStyles();
+
     const { selected } = props;
     const theme = useTheme();
 
@@ -77,7 +87,7 @@ function GlobalNavLinks(props) {
     const analyticsMenuLink = theme.custom.leftMenuAnalytics.link;
 
     return (
-        <Box mt={10}>
+        <StyledBox mt={10}>
             <List className={classes.listRoot} component='nav' name='primaryNavigation' aria-label='primary navigation'>
                 <GlobalNavLink
                     to='/apis'
@@ -182,24 +192,8 @@ function GlobalNavLinks(props) {
                     </>
                 )}
             </List>
-        </Box>
+        </StyledBox>
     );
 }
-GlobalNavLinks.propTypes = {
-    classes: PropTypes.shape({
-        drawerStyles: PropTypes.string,
-        list: PropTypes.string,
-        listText: PropTypes.string,
-    }).isRequired,
-    theme: PropTypes.shape({
-        palette: PropTypes.shape({
-            getContrastText: PropTypes.func,
-            background: PropTypes.shape({
-                drawer: PropTypes.string,
-                leftMenu: PropTypes.string,
-            }),
-        }),
-    }).isRequired,
-};
 
 export default GlobalNavLinks;

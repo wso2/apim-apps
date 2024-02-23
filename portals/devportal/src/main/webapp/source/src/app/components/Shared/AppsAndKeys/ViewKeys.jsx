@@ -16,25 +16,24 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Icon from '@material-ui/core/Icon';
-import Grid from '@material-ui/core/Grid';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Tooltip from '@material-ui/core/Tooltip';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Typography from '@material-ui/core/Typography';
-import TextField from '@material-ui/core/TextField';
+import IconButton from '@mui/material/IconButton';
+import Button from '@mui/material/Button';
+import InputAdornment from '@mui/material/InputAdornment';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormControl from '@mui/material/FormControl';
+import Icon from '@mui/material/Icon';
+import Grid from '@mui/material/Grid';
+import CircularProgress from '@mui/material/CircularProgress';
+import Tooltip from '@mui/material/Tooltip';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import Typography from '@mui/material/Typography';
+import TextField from '@mui/material/TextField';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import ResourceNotFound from '../../Base/Errors/ResourceNotFound';
@@ -45,8 +44,24 @@ import ViewToken from './ViewToken';
 import ViewSecret from './ViewSecret';
 import ViewCurl from './ViewCurl';
 
-const styles = (theme) => ({
-    button: {
+const PREFIX = 'ViewKeys';
+
+const classes = {
+    button: `${PREFIX}-button`,
+    inputWrapper: `${PREFIX}-inputWrapper`,
+    copyWrapper: `${PREFIX}-copyWrapper`,
+    tokenSection: `${PREFIX}-tokenSection`,
+    margin: `${PREFIX}-margin`,
+    dialogWrapper: `${PREFIX}-dialogWrapper`,
+    iconButton: `${PREFIX}-iconButton`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.button}`]: {
         margin: theme.spacing(3),
         color: theme.palette.getContrastText(theme.palette.background.default),
         display: 'flex',
@@ -58,7 +73,8 @@ const styles = (theme) => ({
             display: 'inline-block',
         },
     },
-    inputWrapper: {
+
+    [`& .${classes.inputWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
@@ -66,30 +82,35 @@ const styles = (theme) => ({
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    copyWrapper: {
+
+    [`&.${classes.copyWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    tokenSection: {
+
+    [`& .${classes.tokenSection}`]: {
         marginTop: 0,
         marginBottom: theme.spacing(0.5),
     },
-    margin: {
+
+    [`& .${classes.margin}`]: {
         marginRight: theme.spacing(2),
     },
-    dialogWrapper: {
+
+    [`& .${classes.dialogWrapper}`]: {
         '& label,& h5, & label, & td, & li, & input, & h2, & p.MuiTypography-root,& p.MuiFormHelperText-root': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    iconButton: {
+
+    [`& .${classes.iconButton}`]: {
         padding: '0 0 0 10px',
         '& .material-icons': {
             fontSize: 16,
         },
-    },
-});
+    }
+}));
 
 /**
  * Class used to displays in key generation UI
@@ -161,7 +182,6 @@ class ViewKeys extends React.Component {
     componentDidUpdate(prevProps) {
         const { isKeyJWT } = this.props;
         if (isKeyJWT && !prevProps.isKeyJWT) {
-            // eslint-disable-next-line react/no-did-update-set-state
             this.setState({ isKeyJWT: true });
         }
     }
@@ -306,17 +326,18 @@ class ViewKeys extends React.Component {
 
     viewKeyAndSecret = (consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner) => {
         const {
-            classes, intl, selectedApp: { hashEnabled }, keyType,
+            intl, selectedApp: { hashEnabled }, keyType,
         } = this.props;
         const { keyCopied, secretCopied, showCS } = this.state;
         return (
             <>
                 <Grid item xs={6}>
-                    <div className={classes.copyWrapper}>
+                    <Root className={classes.copyWrapper}>
                         <TextField
                             id='consumer-key'
                             value={consumerKey}
                             margin='dense'
+                            size='small'
                             label={(
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.ViewKeys.consumer.key'
@@ -343,25 +364,24 @@ class ViewKeys extends React.Component {
                                             }
                                             placement='right'
                                         >
-                                            <CopyToClipboard
-                                                text={consumerKey}
-                                                onCopy={() => this.onCopy('keyCopied')}
-                                                classes={{ root: classes.iconButton }}
-                                            >
-                                                <IconButton aria-label='Copy to clipboard'
-                                                    classes={{ root: classes.iconButton }}>
+                                                <IconButton
+                                                    aria-label='Copy to clipboard'
+                                                    classes={{ root: classes.iconButton }}
+                                                    size="large"
+                                                    onClick={() => {navigator.clipboard.writeText(consumerKey).
+                                                    then(() => this.onCopy('keyCopied'))}}
+                                                >
                                                     <Icon color='secondary'>
                                                         file_copy
                                                     </Icon>
                                                 </IconButton>
-                                            </CopyToClipboard>
                                         </Tooltip>
                                     </InputAdornment>
                                 ),
                             }}
                         />
-                    </div>
-                    <FormControl>
+                    </Root>
+                    <FormControl variant="standard">
                         <FormHelperText id='consumer-key-helper-text'>
                             <FormattedMessage
                                 id='Shared.AppsAndKeys.ViewKeys.consumer.key.title'
@@ -371,7 +391,7 @@ class ViewKeys extends React.Component {
                     </FormControl>
                 </Grid>
                 <Grid item xs={6}>
-                    <div className={classes.copyWrapper}>
+                    <Root className={classes.copyWrapper}>
                         {!hashEnabled ? (
                             <TextField
                                 id='consumer-secret'
@@ -386,6 +406,7 @@ class ViewKeys extends React.Component {
                                 margin='dense'
                                 fullWidth
                                 variant='outlined'
+                                size='small'
                                 InputProps={{
                                     readOnly: true,
                                     endAdornment: (
@@ -395,7 +416,7 @@ class ViewKeys extends React.Component {
                                                 onClick={() => this.handleShowHidden('showCS')}
                                                 onMouseDown={this.handleMouseDownGeneric}
                                                 id='visibility-toggle-btn'
-                                            >
+                                                size="large">
                                                 {showCS ? <Icon>visibility_off</Icon> : <Icon>visibility</Icon>}
                                             </IconButton>
                                             <Tooltip
@@ -412,15 +433,15 @@ class ViewKeys extends React.Component {
                                                 }
                                                 placement='right'
                                             >
-                                                <CopyToClipboard
-                                                    text={consumerSecret}
-                                                    onCopy={() => this.onCopy('secretCopied')}
+                                                <IconButton
+                                                    aria-label='Copy to clipboard'
                                                     classes={{ root: classes.iconButton }}
+                                                    size="large"
+                                                    onClick={() => {navigator.clipboard.
+                                                    writeText(consumerSecret).then(() => this.onCopy('secretCopied'))}}
                                                 >
-                                                    <IconButton aria-label='Copy to clipboard' classes={{ root: classes.iconButton }}>
-                                                        <Icon color='secondary'>file_copy</Icon>
-                                                    </IconButton>
-                                                </CopyToClipboard>
+                                                    <Icon color='secondary'>file_copy</Icon>
+                                                </IconButton>
                                             </Tooltip>
                                         </InputAdornment>
                                     ),
@@ -440,9 +461,9 @@ class ViewKeys extends React.Component {
                                 />
                             </Button>
                         )}
-                    </div>
+                    </Root>
                     {!hashEnabled && (
-                        <FormControl>
+                        <FormControl variant="standard">
                             <FormHelperText id='consumer-secret-helper-text'>
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.ViewKeys.consumer.secret.of.application'
@@ -466,7 +487,7 @@ class ViewKeys extends React.Component {
             isKeyJWT, tokenResponse, secretGenResponse, isUpdating,
         } = this.state;
         const {
-            intl, keyType, classes, fullScreen, keys, selectedApp: { tokenType }, selectedGrantTypes, isUserOwner, summary,
+            intl, keyType, fullScreen, keys, selectedApp: { tokenType }, selectedGrantTypes, isUserOwner, summary,
             selectedTab, hashEnabled, keyManagerConfig, initialToken, initialValidityTime, initialScopes, mode,
         } = this.props;
 
@@ -533,7 +554,7 @@ class ViewKeys extends React.Component {
         // Get the grant types for the generated keys
         const { supportedGrantTypes: supportedGrantTypesUnchanged } = keys.get(selectedTab);
         return consumerKey && (
-            <div className={classes.inputWrapper}>
+            <Root className={classes.inputWrapper}>
                 <Grid container spacing={3}>
                     {this.viewKeyAndSecret(consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner)}
                     <Grid item xs={12}>
@@ -622,7 +643,7 @@ class ViewKeys extends React.Component {
                                             id='generate-access-token-oauth2'
                                             variant='outlined'
                                             size='small'
-                                            color='primary'
+                                            color='grey'
                                             className={classes.margin}
                                             onClick={this.handleClickOpen}
                                             disabled={!supportedGrantTypesUnchanged.includes('client_credentials')}
@@ -637,7 +658,7 @@ class ViewKeys extends React.Component {
                                     id='curl-to-generate-access-token-btn'
                                     variant='outlined'
                                     size='small'
-                                    color='primary'
+                                    color='grey'
                                     className={classes.margin}
                                     onClick={this.handleClickOpenCurl}
                                 >
@@ -659,7 +680,7 @@ class ViewKeys extends React.Component {
                         )}
                     </Grid>
                 </Grid>
-            </div>
+            </Root>
         );
     }
 }
@@ -677,4 +698,4 @@ ViewKeys.propTypes = {
     mode: PropTypes.string,
 };
 
-export default injectIntl(withStyles(styles)(ViewKeys));
+export default injectIntl((ViewKeys));

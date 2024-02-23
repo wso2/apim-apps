@@ -17,22 +17,20 @@
  */
 
 import React, { useState } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { makeStyles } from '@material-ui/core/styles';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Utils from 'AppData/Utils';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
 
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
@@ -41,6 +39,39 @@ import OperationGovernance from './operationComponents/asyncapi/OperationGoverna
 import Parameters from './operationComponents/asyncapi/Parameters';
 import PayloadProperties from './operationComponents/asyncapi/PayloadProperties';
 import Runtime from './operationComponents/asyncapi/Runtime';
+
+const PREFIX = 'AsyncOperation';
+
+const classes = {
+    customButton: `${PREFIX}-customButton`,
+    paperStyles: `${PREFIX}-paperStyles`,
+    linearProgress: `${PREFIX}-linearProgress`,
+    contentNoMargin: `${PREFIX}-contentNoMargin`,
+    overlayUnmarkDelete: `${PREFIX}-overlayUnmarkDelete`
+};
+
+const Root = styled('div')(({ theme }) => {
+    return {
+        [`& .${classes.customButton}`]: {
+            backgroundColor: '#ffffff',
+            width: theme.spacing(2),
+        },
+        [`& .${classes.paperStyles}`]: {
+            borderBottom: '',
+        },
+        [`& .${classes.linearProgress}`]: {
+            height: '2px',
+        },
+        [`& .${classes.contentNoMargin}`]: {
+            margin: theme.spacing(0),
+        },
+        [`& .${classes.overlayUnmarkDelete}`]: {
+            position: 'absolute',
+            zIndex: theme.zIndex.operationDeleteUndo,
+            right: '10%',
+        },
+    };
+});
 
 /**
  *
@@ -66,40 +97,10 @@ function AsyncOperation(props) {
     } = props;
 
     const trimmedVerb = verb === 'publish' || verb === 'subscribe' ? verb.substr(0, 3) : verb;
+    const theme = useTheme();
+    const backgroundColor = theme.custom.resourceChipColors[trimmedVerb];
 
     const [isExpanded, setIsExpanded] = useState(false);
-    const useStyles = makeStyles((theme) => {
-        const backgroundColor = theme.custom.resourceChipColors[trimmedVerb];
-        return {
-            customButton: {
-                backgroundColor: '#ffffff',
-                borderColor: backgroundColor,
-                color: backgroundColor,
-                width: theme.spacing(2),
-            },
-            paperStyles: {
-                border: `1px solid ${backgroundColor}`,
-                borderBottom: '',
-            },
-            customDivider: {
-                backgroundColor,
-            },
-            linearProgress: {
-                height: '2px',
-            },
-            highlightSelected: {
-                backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
-            },
-            contentNoMargin: {
-                margin: theme.spacing(0),
-            },
-            overlayUnmarkDelete: {
-                position: 'absolute',
-                zIndex: theme.zIndex.operationDeleteUndo,
-                right: '10%',
-            },
-        };
-    });
     const isUsedInAPIProduct = false;
 
     /**
@@ -123,9 +124,9 @@ function AsyncOperation(props) {
     function handleExpansion(event, expanded) {
         setIsExpanded(expanded);
     }
-    const classes = useStyles();
+
     return (
-        <>
+        <Root>
             {markAsDelete && (
                 <Box className={classes.overlayUnmarkDelete}>
                     <Tooltip title='Marked for delete' aria-label='Marked for delete'>
@@ -138,22 +139,23 @@ function AsyncOperation(props) {
                     </Tooltip>
                 </Box>
             )}
-            <ExpansionPanel
+            <Accordion
                 expanded={isExpanded}
                 onChange={handleExpansion}
                 disabled={markAsDelete}
                 className={classes.paperStyles}
+                sx={{ borderColor: backgroundColor }}
             >
-                <ExpansionPanelSummary
-                    className={highlight ? classes.highlightSelected : ''}
+                <AccordionSummary
                     disableRipple
                     disableTouchRipple
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls='panel2a-content'
                     id='panel2a-header'
                     classes={{ content: classes.contentNoMargin }}
+                    sx={highlight ? { backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1) } : { }}
                 >
-                    <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
+                    <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
                         <Grid item md={11}>
                             <Badge invisible='false' color='error' variant='dot'>
                                 <Button
@@ -161,6 +163,7 @@ function AsyncOperation(props) {
                                     variant='outlined'
                                     size='small'
                                     className={classes.customButton}
+                                    sx={{ borderColor: backgroundColor, color: backgroundColor }}
                                 >
                                     {trimmedVerb.toUpperCase()}
                                 </Button>
@@ -170,7 +173,7 @@ function AsyncOperation(props) {
                             </Typography>
                         </Grid>
                         {!(disableDelete || markAsDelete) && (
-                            <Grid item md={1} justify='flex-end' container>
+                            <Grid item md={1} justifyContent='flex-end' container>
                                 <Tooltip
                                     title={
                                         isUsedInAPIProduct
@@ -202,7 +205,7 @@ function AsyncOperation(props) {
                                                 || isRestricted(['apim:api_publish', 'apim:api_create'])}
                                             onClick={toggleDelete}
                                             aria-label='delete'
-                                        >
+                                            size='large'>
                                             <DeleteIcon fontSize='small' />
                                         </IconButton>
                                     </div>
@@ -210,10 +213,10 @@ function AsyncOperation(props) {
                             </Grid>
                         )}
                     </Grid>
-                </ExpansionPanelSummary>
-                <Divider light className={classes.customDivider} />
-                <ExpansionPanelDetails>
-                    <Grid spacing={2} container direction='row' justify='flex-start' alignItems='flex-start'>
+                </AccordionSummary>
+                <Divider light sx={{ backgroundColor }} />
+                <AccordionDetails>
+                    <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
                         <DescriptionAndSummary
                             operation={operation}
                             operationsDispatcher={operationsDispatcher}
@@ -264,9 +267,9 @@ function AsyncOperation(props) {
                             </>
                         )}
                     </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-        </>
+                </AccordionDetails>
+            </Accordion>
+        </Root>
     );
 }
 AsyncOperation.defaultProps = {

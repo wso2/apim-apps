@@ -22,14 +22,20 @@
   */
 /* eslint-disable max-len */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 
-const styles = () => ({
-    root: {
+const PREFIX = 'LifeCycleImage';
+
+const classes = {
+    root: `${PREFIX}-root`
+};
+
+const Root = styled('svg')(() => ({
+    [`&.${classes.root}`]: {
         marginTop: 30,
-    },
-});
+    }
+}));
 
 /**
  *
@@ -60,10 +66,8 @@ class LifeCycleImage extends React.Component {
      * @memberof LifeCycleImage
      */
     render() {
-        const { classes } = this.props;
-
         return (
-            <svg
+            <Root
                 xmlns='http://www.w3.org/2000/svg'
                 width='633'
                 height='244'
@@ -546,7 +550,7 @@ class LifeCycleImage extends React.Component {
                         />
                     </g>
                 </g>
-            </svg>
+            </Root>
         );
     }
 }
@@ -555,4 +559,4 @@ LifeCycleImage.propTypes = {
     lifeCycleStatus: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles)(LifeCycleImage);
+export default (LifeCycleImage);

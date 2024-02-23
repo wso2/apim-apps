@@ -16,56 +16,84 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormControl from '@material-ui/core/FormControl';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import InputLabel from '@mui/material/InputLabel';
+import MenuItem from '@mui/material/MenuItem';
+import FormControl from '@mui/material/FormControl';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import Select from '@material-ui/core/Select';
+import Select from '@mui/material/Select';
 import TenantAutocomplete from 'AppComponents/Apis/Details/Subscriptions/TenantAutocomplete';
 import { isRestricted } from 'AppData/AuthManager';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'SubscriptionAvailability';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    formControl: `${PREFIX}-formControl`,
+    textControl: `${PREFIX}-textControl`,
+    selectEmpty: `${PREFIX}-selectEmpty`,
+    subscriptionAvailabilityPaper: `${PREFIX}-subscriptionAvailabilityPaper`,
+    grid: `${PREFIX}-grid`,
+    gridLabel: `${PREFIX}-gridLabel`,
+    saveButton: `${PREFIX}-saveButton`,
+    heading: `${PREFIX}-heading`,
+    tenantsList: `${PREFIX}-tenantsList`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         display: 'flex',
         flexWrap: 'wrap',
     },
-    formControl: {
+
+    [`& .${classes.formControl}`]: {
         margin: theme.spacing(1),
         minWidth: 400,
     },
-    textControl: {
+
+    [`& .${classes.textControl}`]: {
         margin: theme.spacing(1),
         minWidth: 300,
     },
-    selectEmpty: {
+
+    [`& .${classes.selectEmpty}`]: {
         marginTop: theme.spacing(2),
     },
-    subscriptionAvailabilityPaper: {
+
+    [`& .${classes.subscriptionAvailabilityPaper}`]: {
         marginTop: theme.spacing(2),
         paddingLeft: theme.spacing(2),
         paddingBottom: theme.spacing(2),
     },
-    grid: {
+
+    [`& .${classes.grid}`]: {
         display: 'flex',
         margin: theme.spacing(1.25),
     },
-    gridLabel: {
+
+    [`& .${classes.gridLabel}`]: {
         marginTop: theme.spacing(3.5),
     },
-    saveButton: {
+
+    [`& .${classes.saveButton}`]: {
         marginTop: theme.spacing(2),
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         marginTop: theme.spacing(3),
     },
-    tenantsList: {
+
+    [`& .${classes.tenantsList}`]: {
         height: theme.spacing(12),
-    },
+    }
 }));
 
 /**
@@ -74,7 +102,7 @@ const useStyles = makeStyles((theme) => ({
  * @returns {React.Component} @inheritdoc
  */
 export default function SimpleSelect(props) {
-    const classes = useStyles();
+
     const {
         api, setAvailability, tenantList, setTenantList,
     } = props;
@@ -125,7 +153,7 @@ export default function SimpleSelect(props) {
     }
 
     return (
-        <Grid item xs={12} md={12} lg={12}>
+        <StyledGrid item xs={12} md={12} lg={12}>
             <Typography variant='h4' component='h2' className={classes.heading}>
                 <FormattedMessage
                     id='Apis.Details.Subscriptions.SubscriptionAvailability.subscription.availability'
@@ -190,7 +218,7 @@ export default function SimpleSelect(props) {
                     </Grid>
                 </form>
             </Paper>
-        </Grid>
+        </StyledGrid>
     );
 }
 SimpleSelect.propTypes = {

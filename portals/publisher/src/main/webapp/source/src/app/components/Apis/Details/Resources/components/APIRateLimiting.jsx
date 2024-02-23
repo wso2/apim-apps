@@ -16,40 +16,50 @@
  * under the License.
  */
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Radio from '@material-ui/core/Radio';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import Grid from '@material-ui/core/Grid';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
-import FormLabel from '@material-ui/core/FormLabel';
-import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
-import Divider from '@material-ui/core/Divider';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import MenuItem from '@material-ui/core/MenuItem';
-import Tooltip from '@material-ui/core/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Radio from '@mui/material/Radio';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import Grid from '@mui/material/Grid';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
+import FormLabel from '@mui/material/FormLabel';
+import Paper from '@mui/material/Paper';
+import TextField from '@mui/material/TextField';
+import Divider from '@mui/material/Divider';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import MenuItem from '@mui/material/MenuItem';
+import Tooltip from '@mui/material/Tooltip';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import CircularProgress from '@mui/material/CircularProgress';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { FormattedMessage } from 'react-intl';
+
+const PREFIX = 'APIRateLimiting';
+
+const classes = {
+    focusLabel: `${PREFIX}-focusLabel`
+};
+
+const StyledPaper = styled(Paper)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.focusLabel}`]: {
+        boxShadow: '1px 1px 1px 1px #efefef',
+        paddingRight: theme.spacing(1),
+    }
+}));
 
 const RateLimitingLevels = {
     API: 'api',
     RESOURCE: 'resource',
 };
-
-const useStyles = makeStyles((theme) => ({
-    focusLabel: {
-        boxShadow: '1px 1px 1px 1px #efefef',
-        paddingRight: theme.spacing(1),
-    },
-}));
 
 /**
  *
@@ -63,7 +73,7 @@ function APIRateLimiting(props) {
         updateAPI, operationRateLimits, onChange, value: currentApiThrottlingPolicy, isAPIProduct,
         setFocusOperationLevel, focusOperationLevel,
     } = props;
-    const classes = useStyles();
+
     const [apiThrottlingPolicy, setApiThrottlingPolicy] = useState(currentApiThrottlingPolicy);
     const [isSaving, setIsSaving] = useState(false);
 
@@ -139,10 +149,10 @@ function APIRateLimiting(props) {
         );
     }
     return (
-        <Paper>
-            <Grid container direction='row' spacing={3} justify='flex-start' alignItems='flex-start'>
-                <Grid item md={12} xs={12}>
-                    <Box ml={1}>
+        <StyledPaper>
+            <Grid container direction='row' justifyContent='flex-start' alignItems='flex-start'>
+                <Grid item md={12} xs={12} sx={{ p: 1 }}>
+                    <Box>
                         <Typography variant='subtitle1' component='h3' gutterBottom>
                             Operations Configuration
                             <Tooltip
@@ -151,7 +161,7 @@ function APIRateLimiting(props) {
                                 placement='right-end'
                                 interactive
                             >
-                                <IconButton aria-label='Operations Configuration help text'>
+                                <IconButton aria-label='Operations Configuration help text' size='large'>
                                     <HelpOutline />
                                 </IconButton>
                             </Tooltip>
@@ -159,8 +169,7 @@ function APIRateLimiting(props) {
                     </Box>
                     <Divider light variant='middle' />
                 </Grid>
-                <Grid item md={1} xs={1} />
-                <Grid item md={5} xs={11}>
+                <Grid item md={6} xs={12} sx={{ p: 1 }}>
                     <FormControl component='fieldset'>
                         <FormLabel component='legend'>
                             <FormattedMessage
@@ -202,7 +211,7 @@ function APIRateLimiting(props) {
                         </RadioGroup>
                     </FormControl>
                 </Grid>
-                <Grid item md={6} xs={12}>
+                <Grid item md={6} xs={12} sx={{ p: 1 }}>
                     <Box minHeight={70} borderLeft={1} pl={10}>
                         {isResourceLevel ? (
                             operationRateLimitMessage
@@ -261,7 +270,7 @@ function APIRateLimiting(props) {
                     </>
                 )}
             </Grid>
-        </Paper>
+        </StyledPaper>
     );
 }
 APIRateLimiting.defaultProps = {

@@ -16,15 +16,31 @@
  * under the License.
  */
 import React, { useEffect, useState } from 'react';
-import { makeStyles, useTheme } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { styled, useTheme } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
 import TagCloudListingTags from './TagCloudListingTags';
 import CustomIcon from '../../Shared/CustomIcon';
 
-const useStyles = makeStyles((theme) => ({
-    appBar: {
+const PREFIX = 'TagCloudListing';
+
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    mainIconWrapper: `${PREFIX}-mainIconWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    mainTitleWrapper: `${PREFIX}-mainTitleWrapper`,
+    content: `${PREFIX}-content`,
+    listContentWrapper: `${PREFIX}-listContentWrapper`,
+    iconDefault: `${PREFIX}-iconDefault`,
+};
+
+const Root = styled('main')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.appBar}`]: {
         height: 70,
         background: theme.custom.infoBar.background,
         color: theme.palette.getContrastText(theme.custom.infoBar.background),
@@ -33,33 +49,39 @@ const useStyles = makeStyles((theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    mainIconWrapper: {
+
+    [`& .${classes.mainIconWrapper}`]: {
         paddingTop: 13,
         paddingLeft: 20,
         paddingRight: 20,
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingTop: 10,
     },
-    mainTitleWrapper: {
+
+    [`& .${classes.mainTitleWrapper}`]: {
         flexGrow: 1,
     },
-    content: {
+
+    [`&.${classes.content}`]: {
         flexGrow: 1,
     },
-    listContentWrapper: {
-        padding: `0 ${theme.spacing(3)}px`,
+
+    [`& .${classes.listContentWrapper}`]: {
+        padding: `0 ${theme.spacing(3)}`,
     },
-    iconDefault: {
+
+    [`& .${classes.iconDefault}`]: {
         color: theme.palette.getContrastText(theme.custom.infoBar.background),
     },
 }));
+
 /**
  * Renders tag cloud.
  * @returns {JSX} Tag cloud listing.
  */
 export default function TagCloudListing() {
-    const classes = useStyles();
     const theme = useTheme();
     const [allTags, setAllTags] = useState(null);
     useEffect(() => {
@@ -76,7 +98,7 @@ export default function TagCloudListing() {
     const strokeColorMain = theme.palette.getContrastText(theme.palette.background.paper);
 
     return (
-        <main className={classes.content}>
+        <Root className={classes.content}>
             <div className={classes.appBar}>
                 <div className={classes.mainIconWrapper}>
                     <CustomIcon strokeColor={strokeColorMain} width={42} height={42} icon='api' />
@@ -93,6 +115,6 @@ export default function TagCloudListing() {
             <div className={classes.listContentWrapper}>
                 {allTags && <TagCloudListingTags allTags={allTags} mainPage />}
             </div>
-        </main>
+        </Root>
     );
 }

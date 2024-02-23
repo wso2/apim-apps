@@ -16,26 +16,35 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import { withStyles } from '@material-ui/core/styles';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 
-/**
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
-    createTitle: {
+const PREFIX = 'ApplicationCreateBase';
+
+const classes = {
+    createTitle: `${PREFIX}-createTitle`,
+    applicationContent: `${PREFIX}-applicationContent`,
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.createTitle}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
     },
-    applicationContent: {
+
+    [`& .${classes.applicationContent}`]: {
         '& span, & div, & p, & input': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-});
+}));
+
 /**
  * Base component for all API create forms
  *
@@ -43,9 +52,9 @@ const styles = (theme) => ({
  * @returns {React.Component} Base element
  */
 function ApplicationCreateBase(props) {
-    const { title, children, classes } = props;
+    const { title, children } = props;
     return (
-        <Box mt={5}>
+        <StyledBox mt={5}>
             <Grid container spacing={3}>
                 {/*
             Following two grids control the placement of whole create page
@@ -64,12 +73,11 @@ function ApplicationCreateBase(props) {
                     </Grid>
                 </Grid>
             </Grid>
-        </Box>
-
+        </StyledBox>
     );
 }
 ApplicationCreateBase.propTypes = {
     title: PropTypes.element.isRequired,
     children: PropTypes.element.isRequired,
 };
-export default withStyles(styles)(ApplicationCreateBase);
+export default (ApplicationCreateBase);

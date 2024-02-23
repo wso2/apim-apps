@@ -17,11 +17,11 @@
  */
 
 import React, { FC } from 'react';
-import { makeStyles } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 import type { PolicySpec, PolicySpecAttribute } from '../Types';
 import PolicyAttributes from './PolicyAttributes';
@@ -29,14 +29,20 @@ import GeneralDetails from './GeneralDetails';
 import SourceDetails from './SourceDetails';
 import uuidv4 from '../Utils';
 
-const useStyles = makeStyles(() => ({
-    root: {
+const PREFIX = 'PolicyViewForm';
+
+const classes = {
+    root: `${PREFIX}-root`
+};
+
+const StyledPaper = styled(Paper)(() => ({
+    [`&.${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
         display: 'flex',
         flexDirection: 'column',
         padding: 20,
-    },
+    }
 }));
 
 interface PolicyViewFormProps {
@@ -50,7 +56,7 @@ interface PolicyViewFormProps {
  * @returns {TSX} Right drawer for policy configuration.
  */
 const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
-    const classes = useStyles();
+
 
     const getPolicyAttributes = () => {
         const policyAttributeList = policySpec.policyAttributes.map(
@@ -62,7 +68,7 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
     };
 
     return (
-        <Paper elevation={0} className={classes.root}>
+        <StyledPaper elevation={0} className={classes.root}>
             {/* General details of policy */}
             <GeneralDetails
                 displayName={policySpec.displayName}
@@ -94,7 +100,7 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
                     />
                 </Button>
             </Box>
-        </Paper>
+        </StyledPaper>
     );
 };
 

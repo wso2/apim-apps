@@ -16,33 +16,42 @@
  * under the License.
  */
 import React, { useReducer, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Typography } from '@material-ui/core';
-import CloudUploadRounded from '@material-ui/icons/CloudUploadRounded';
+import { Typography } from '@mui/material';
+import CloudUploadRounded from '@mui/icons-material/CloudUploadRounded';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import ProvideWSDL from 'AppComponents/Apis/Create/WSDL/Steps/ProvideWSDL';
 import ProvideAsyncAPI from 'AppComponents/Apis/Create/AsyncAPI/Steps/ProvideAsyncAPI';
 import ProvideOpenAPI from '../../Create/OpenAPI/Steps/ProvideOpenAPI';
 import ProvideGraphQL from '../../Create/GraphQL/Steps/ProvideGraphQL';
 
-const useStyles = makeStyles(() => ({
-    importDefinitionDialogHeader: {
+const PREFIX = 'ImportDefinition';
+
+const classes = {
+    importDefinitionDialogHeader: `${PREFIX}-importDefinitionDialogHeader`,
+    buttonIcon: `${PREFIX}-buttonIcon`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.importDefinitionDialogHeader}`]: {
         fontWeight: '600',
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
-    },
+    }
 }));
 
 /**
@@ -54,7 +63,7 @@ const useStyles = makeStyles(() => ({
  */
 export default function ImportDefinition(props) {
     const { setSchemaDefinition, editAndImport } = props;
-    const classes = useStyles();
+
     const [openAPIDefinitionImport, setOpenAPIDefinitionImport] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
     const [api, updateAPI] = useAPI();
@@ -403,7 +412,7 @@ export default function ImportDefinition(props) {
     }
 
     return (
-        <>
+        (<Root>
             {!isAsyncAPI && (
                 <Button
                     size='small'
@@ -462,7 +471,7 @@ export default function ImportDefinition(props) {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </Root>)
     );
 }
 

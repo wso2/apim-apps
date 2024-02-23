@@ -18,13 +18,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import CircularProgress from '@mui/material/CircularProgress';
 
 /**
  * Render a pop-up dialog to add/edit an Microgateway label
@@ -42,9 +42,12 @@ function AddItem(props) {
                 fullWidth
                 maxWidth={maxWidth || 'sm'}
                 open
-                onClose={onClose}
+                onClose={(event, reason) => {
+                    if (reason !== 'backdropClick' || !disableBackdropClick) {
+                        onClose(event, reason);
+                    }
+                }}
                 aria-labelledby='form-dialog-title'
-                disableBackdropClick={disableBackdropClick}
             >
                 <DialogTitle id='form-dialog-title'>{title}</DialogTitle>
                 <DialogContent dividers>
@@ -55,7 +58,7 @@ function AddItem(props) {
                 <DialogActions>
                     {dialogActions || (
                         <>
-                            <Button onClick={onClose}>
+                            <Button onClick={onClose} variant='outlined'>
                                 Cancel
                             </Button>
                             <Button onClick={onSave} color='primary' variant='contained' disabled={disabled}>

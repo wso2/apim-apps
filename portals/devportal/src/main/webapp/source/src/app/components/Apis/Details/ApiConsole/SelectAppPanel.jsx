@@ -1,24 +1,39 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import {
     Grid, FormControl, FormControlLabel, RadioGroup, Radio, Typography,
-} from '@material-ui/core';
-import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
+} from '@mui/material';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 
-const styles = (theme) => ({
-    centerItems: {
+const PREFIX = 'SelectAppPanel';
+
+const classes = {
+    centerItems: `${PREFIX}-centerItems`,
+    tryoutHeading: `${PREFIX}-tryoutHeading`,
+    menuItem: `${PREFIX}-menuItem`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.centerItems}`]: {
         margin: 'auto',
     },
-    tryoutHeading: {
+
+    [`& .${classes.tryoutHeading}`]: {
         display: 'block',
         fontWeight: 400,
     },
-    menuItem: {
+
+    [`& .${classes.menuItem}`]: {
         color: theme.palette.getContrastText(theme.palette.background.paper),
     },
-});
+}));
 
 const SelectAppPanel = (props) => {
     let {
@@ -26,7 +41,7 @@ const SelectAppPanel = (props) => {
     } = props;
 
     const {
-        subscriptions, handleChanges, classes,
+        subscriptions, handleChanges,
     } = props;
 
     /**
@@ -50,7 +65,7 @@ const SelectAppPanel = (props) => {
         handleChanges(event);
     };
     return (
-        <>
+        <Root>
             <Grid x={12} md={6} className={classes.centerItems}>
                 <TextField
                     fullWidth
@@ -93,7 +108,7 @@ const SelectAppPanel = (props) => {
                         defaultMessage='Key Type'
                     />
                 </Typography>
-                <FormControl component='fieldset'>
+                <FormControl variant='standard' component='fieldset'>
                     <RadioGroup
                         name='selectedKeyType'
                         value={selectedKeyType}
@@ -130,8 +145,8 @@ const SelectAppPanel = (props) => {
                     </RadioGroup>
                 </FormControl>
             </Grid>
-        </>
+        </Root>
     );
 };
 
-export default withStyles(styles)(SelectAppPanel);
+export default (SelectAppPanel);

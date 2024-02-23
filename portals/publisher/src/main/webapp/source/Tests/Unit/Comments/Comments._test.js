@@ -15,10 +15,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-// import { unwrap } from '@material-ui/core/test-utils';
-import { Typography } from '@material-ui/core';
-import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
-import ArrowDropDownCircleOutlined from '@material-ui/icons/ArrowDropDownCircleOutlined';
+// import { unwrap } from '@mui/material/test-utils';
+import { Typography } from '@mui/material';
+import ArrowDropDown from '@mui/icons-material/ArrowDropDown';
+import ArrowDropDownCircleOutlined from '@mui/icons-material/ArrowDropDownCircleOutlined';
 import Comments from '../../../src/app/components/Apis/Details/Comments/Comments';
 import Comment from '../../../src/app/components/Apis/Details/Comments/Comment';
 import CommentAdd from '../../../src/app/components/Apis/Details/Comments/CommentAdd';

@@ -16,64 +16,80 @@
  * under the License.
  */
 import React, { useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import clsx from 'clsx';
-import Drawer from '@material-ui/core/Drawer';
+import Drawer from '@mui/material/Drawer';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@mui/material';
 import { useLocation } from 'react-router-dom';
-
 import GlobalNavLinks from './GlobalNavLinks';
 
-const useStyles = makeStyles((theme) => ({
-    list: {
+const PREFIX = 'GlobalNavBar';
+
+const classes = {
+    list: `${PREFIX}-list`,
+    drawer: `${PREFIX}-drawer`,
+    drawerOpen: `${PREFIX}-drawerOpen`,
+    drawerClose: `${PREFIX}-drawerClose`,
+    listText: `${PREFIX}-listText`,
+    listInline: `${PREFIX}-listInline`,
+    paperStyles: `${PREFIX}-paperStyles`
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.list}`]: {
         width: theme.custom.globalNavBar.opened.drawerWidth,
     },
-    drawer: {
+
+    [`& .${classes.drawer}`]: {
         width: theme.custom.globalNavBar.opened.drawerWidth,
         flexShrink: 0,
         whiteSpace: 'nowrap',
+        backgroundColor: theme.palette.background.drawer,
     },
-    drawerOpen: {
+
+    [`& .${classes.drawerOpen}`]: {
         width: theme.custom.globalNavBar.opened.drawerWidth,
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.enteringScreen,
         }),
+        backgroundColor: 'green',
     },
-    drawerClose: {
+
+    [`& .${classes.drawerClose}`]: {
         transition: theme.transitions.create('width', {
             easing: theme.transitions.easing.sharp,
             duration: theme.transitions.duration.leavingScreen,
         }),
         overflowX: 'hidden',
-        width: theme.spacing(7) + 1,
+        width: theme.spacing(7),
         [theme.breakpoints.up('sm')]: {
-            width: theme.spacing(7) + 1,
+            width: theme.spacing(7),
         },
     },
-    listText: {
+
+    [`& .${classes.listText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.drawer),
     },
-    listInline: {
+
+    [`& .${classes.listInline}`]: {
         '& ul': {
             display: 'flex',
             flexDirection: 'row',
         },
     },
-    paperStyles: {
-        backgroundColor: theme.palette.background.drawer,
+
+    [`& .${classes.drawerCommon}`]: {
         top: theme.spacing(8),
     },
 }));
 
 const GlobalNavBar = (props) => {
-    const {
-        open, setOpen,
-    } = props;
-    const classes = useStyles();
+    const { open, setOpen } = props;
+
     const theme = useTheme();
-    const drawerCommon = { style: { top: theme.spacing(8) } };
+    const drawerCommon = { class: classes.drawerCommon };
     const location = useLocation();
 
     let isRootPage = false;
@@ -89,26 +105,28 @@ const GlobalNavBar = (props) => {
     const pathSegments = pathname && pathname.split('/');
     const [, currentPage] = pathSegments.length > 1 ? pathname.split('/') : ['', ''];
     return (
-        <Drawer
-            variant={isRootPage ? 'permanent' : 'temporary'}
-            className={clsx(classes.drawer, {
-                [classes.drawerOpen]: open,
-                [classes.drawerClose]: !open,
-            })}
-            classes={{
-                paper: clsx({
+        <Root>
+            <Drawer
+                variant={isRootPage ? 'permanent' : 'temporary'}
+                className={clsx(classes.drawer, {
                     [classes.drawerOpen]: open,
                     [classes.drawerClose]: !open,
-                }),
-            }}
-            PaperProps={drawerCommon}
-            SlideProps={drawerCommon}
-            ModalProps={drawerCommon}
-            BackdropProps={drawerCommon}
-            open={open}
-        >
-            <GlobalNavLinks selected={currentPage} />
-        </Drawer>
+                })}
+                classes={{
+                    paper: clsx({
+                        [classes.drawerOpen]: open,
+                        [classes.drawerClose]: !open,
+                    }),
+                }}
+                PaperProps={{ style: { backgroundColor: theme.palette.background.drawer, }}}
+                SlideProps={drawerCommon}
+                ModalProps={drawerCommon}
+                BackdropProps={drawerCommon}
+                open={open}
+            >
+                <GlobalNavLinks selected={currentPage} />
+            </Drawer>
+        </Root>
     );
 };
 

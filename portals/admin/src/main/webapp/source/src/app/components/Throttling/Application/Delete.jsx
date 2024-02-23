@@ -18,8 +18,8 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+import DialogContentText from '@mui/material/DialogContentText';
+import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';

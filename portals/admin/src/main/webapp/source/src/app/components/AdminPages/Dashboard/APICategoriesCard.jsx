@@ -19,43 +19,23 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
-import { Card } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import CardContent from '@material-ui/core/CardContent';
-import Divider from '@material-ui/core/Divider';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import CategoryIcon from '@material-ui/icons/Category';
-import LaunchIcon from '@material-ui/icons/Launch';
+import { Card } from '@mui/material';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import CardContent from '@mui/material/CardContent';
+import Divider from '@mui/material/Divider';
+import Typography from '@mui/material/Typography';
+import CategoryIcon from '@mui/icons-material/Category';
+import LaunchIcon from '@mui/icons-material/Launch';
 import Progress from 'AppComponents/Shared/Progress';
 import API from 'AppData/api';
 import Configurations from 'Config';
-
-const useStyles = makeStyles(() => ({
-    root: {
-        minWidth: 275,
-        minHeight: 270,
-        textAlign: 'center',
-
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'fontWeightBold',
-    },
-    cardText: {
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-    },
-}));
 
 /**
  * Render progress inside a container centering in the container.
  * @returns {JSX} Loading animation.
  */
 export default function APICategoriesCard() {
-    const classes = useStyles();
     const [apiCategoriesList, setApiCategoriesList] = useState();
     const [numberOfCategories, setNumberOfCategories] = useState(0);
     const restApi = new API();
@@ -75,14 +55,14 @@ export default function APICategoriesCard() {
     }, []);
 
     const noApiCategoriesCard = (
-        <Card className={classes.root}>
+        <Card sx={{ minWidth: 275, minHeight: 270, textAlign: 'center' }}>
             <CardContent>
 
                 <Box>
                     <CategoryIcon color='secondary' style={{ fontSize: 60 }} />
                 </Box>
 
-                <Typography className={classes.title} gutterBottom>
+                <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                     <FormattedMessage
                         id='Dashboard.apiCategories.noApiCategories.card.title'
                         defaultMessage='API Category based grouping'
@@ -138,11 +118,11 @@ export default function APICategoriesCard() {
 
     const apiCategoriesListingCard = () => {
         return (
-            <Card className={classes.root} style={{ textAlign: 'left' }}>
+            <Card sx={{ minWidth: 275, minHeight: 270, textAlign: 'center' }} style={{ textAlign: 'left' }}>
                 <CardContent>
                     <Box display='flex'>
                         <Box flexGrow={1}>
-                            <Typography className={classes.title} gutterBottom>
+                            <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                                 <FormattedMessage
                                     id='Dashboard.apiCategories.apiCategoriesListing.card.title'
                                     defaultMessage='API Categories'
@@ -150,7 +130,7 @@ export default function APICategoriesCard() {
                             </Typography>
                         </Box>
                         <Box>
-                            <Typography className={classes.title} gutterBottom>
+                            <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                                 {numberOfCategories}
                             </Typography>
                         </Box>
@@ -161,12 +141,18 @@ export default function APICategoriesCard() {
                     <Box height={170} mt={1} mb={-2}>
                         {apiCategoriesList.map((category) => {
                             return (
-                                <Box display='flex' alignItems='center'>
+                                <Box display='flex' alignItems='center' key={category.name}>
                                     <Box width={50} flexGrow={1} mt={0.5}>
-                                        <Typography className={classes.cardText} variant='subtitle2'>
+                                        <Typography
+                                            sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                                            variant='subtitle2'
+                                        >
                                             {category.name}
                                         </Typography>
-                                        <Typography className={classes.cardText} variant='body2'>
+                                        <Typography
+                                            sx={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}
+                                            variant='body2'
+                                        >
                                             {category.description || (
                                                 <FormattedMessage
                                                     id='Dashboard.apiCategories.apiCategoriesListing.no.description'

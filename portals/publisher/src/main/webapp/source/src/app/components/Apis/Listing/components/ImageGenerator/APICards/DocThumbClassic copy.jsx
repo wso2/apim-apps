@@ -16,35 +16,66 @@
  * under the License.
  */
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import CardMedia from '@material-ui/core/CardMedia';
-import Typography from '@material-ui/core/Typography';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import green from '@material-ui/core/colors/green';
-
 import BaseThumbnail from '../BaseThumbnail';
 
-const styles = (theme) => ({
-    card: {
+import { green } from '@mui/material/colors';
+import { useTheme } from '@emotion/react';
+
+const PREFIX = 'DocThumbClassic copy';
+
+const classes = {
+    card: `${PREFIX}-card`,
+    providerText: `${PREFIX}-providerText`,
+    docDetails: `${PREFIX}-docDetails`,
+    docActions: `${PREFIX}-docActions`,
+    deleteProgress: `${PREFIX}-deleteProgress`,
+    thumbHeader: `${PREFIX}-thumbHeader`,
+    imageWrapper: `${PREFIX}-imageWrapper`,
+    thumbContent: `${PREFIX}-thumbContent`,
+    thumbLeft: `${PREFIX}-thumbLeft`,
+    thumbRight: `${PREFIX}-thumbRight`,
+    thumbInfo: `${PREFIX}-thumbInfo`,
+    contextBox: `${PREFIX}-contextBox`,
+    imageOverlap: `${PREFIX}-imageOverlap`,
+    row: `${PREFIX}-row`,
+    textWrapper: `${PREFIX}-textWrapper`,
+    thumbBy: `${PREFIX}-thumbBy`,
+    thumbRightBy: `${PREFIX}-thumbRightBy`
+};
+
+const StyledCard = styled(Card)((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.card}`]: {
         margin: theme.spacing(3 / 2),
         maxWidth: theme.custom.thumbnail.width,
         transition: 'box-shadow 0.3s ease-in-out',
     },
-    providerText: {
+
+    [`& .${classes.providerText}`]: {
         textTransform: 'capitalize',
     },
-    docDetails: { padding: theme.spacing(1) },
-    docActions: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)}px 0px` },
-    deleteProgress: {
+
+    [`& .${classes.docDetails}`]: { padding: theme.spacing(1) },
+    [`& .${classes.docActions}`]: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)} 0px` },
+
+    [`& .${classes.deleteProgress}`]: {
         color: green[200],
         position: 'absolute',
         marginLeft: '200px',
     },
-    thumbHeader: {
+
+    [`& .${classes.thumbHeader}`]: {
         width: '90%',
         whiteSpace: 'nowrap',
         color: theme.palette.text.secondary,
@@ -54,7 +85,8 @@ const styles = (theme) => ({
         margin: 0,
         'padding-left': '5px',
     },
-    imageWrapper: {
+
+    [`& .${classes.imageWrapper}`]: {
         color: theme.palette.text.secondary,
         backgroundColor: theme.palette.background.paper,
         width: theme.custom.thumbnail.width + theme.spacing(1),
@@ -62,24 +94,29 @@ const styles = (theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    thumbContent: {
+
+    [`& .${classes.thumbContent}`]: {
         width: theme.custom.thumbnail.width - theme.spacing(1),
         backgroundColor: theme.palette.background.paper,
         padding: theme.spacing(1),
     },
-    thumbLeft: {
+
+    [`& .${classes.thumbLeft}`]: {
         alignSelf: 'flex-start',
         flex: 1,
         'padding-left': '5px',
         'padding-right': '65px',
     },
-    thumbRight: {
+
+    [`& .${classes.thumbRight}`]: {
         alignSelf: 'flex-end',
     },
-    thumbInfo: {
+
+    [`& .${classes.thumbInfo}`]: {
         display: 'flex',
     },
-    contextBox: {
+
+    [`& .${classes.contextBox}`]: {
         width: '110px',
         whiteSpace: 'nowrap',
         overflow: 'hidden',
@@ -93,25 +130,30 @@ const styles = (theme) => ({
         'padding-bottom': 1.5,
         textAlign: 'left',
     },
-    imageOverlap: {
+
+    [`& .${classes.imageOverlap}`]: {
         position: 'absolute',
         bottom: 1,
         backgroundColor: theme.custom.thumbnail.contentBackgroundColor,
     },
-    row: {
+
+    [`& .${classes.row}`]: {
         display: 'inline-block',
     },
-    textWrapper: {
+
+    [`& .${classes.textWrapper}`]: {
         color: theme.palette.text.secondary,
         textDecoration: 'none',
     },
-    thumbBy: {
+
+    [`& .${classes.thumbBy}`]: {
         'padding-left': '5px',
     },
-    thumbRightBy: {
+
+    [`& .${classes.thumbRightBy}`]: {
         'margin-right': '5px',
-    },
-});
+    }
+}));
 
 /**
  *
@@ -148,10 +190,10 @@ class DocThumb extends Component {
      * @memberof DocThumb
      */
     render() {
-        const { classes, doc } = this.props;
+        const {  doc } = this.props;
         const { isHover } = this.state;
         return (
-            <Card
+            <StyledCard
                 onMouseOver={this.toggleMouseOver}
                 onFocus={this.toggleMouseOver}
                 onMouseOut={this.toggleMouseOver}
@@ -210,13 +252,12 @@ class DocThumb extends Component {
                         </div>
                     </div>
                 </CardContent>
-            </Card>
+            </StyledCard>
         );
     }
 }
 
 DocThumb.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     doc: PropTypes.shape({
         id: PropTypes.string,
         name: PropTypes.string,
@@ -226,4 +267,7 @@ DocThumb.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(DocThumb));
+export default injectIntl((props) => {
+    const theme = useTheme();
+    return <DocThumb {...props} theme={theme} />;
+});

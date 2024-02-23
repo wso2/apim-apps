@@ -1,16 +1,23 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-/**
- * Main style object to pass to the react component
- *
- * @param {*} theme
- */
-const styles = theme => ({
-    divider: {
+const PREFIX = 'VerticalDivider';
+
+const classes = {
+    divider: `${PREFIX}-divider`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.divider}`]: {
         borderRight: 'solid 1px #ccc',
-    },
-});
+    }
+}));
+
 /**
  * Gives a vertical line as a component
  *
@@ -18,15 +25,14 @@ const styles = theme => ({
  * @returns
  */
 function VerticalDivider(props) {
-    const { classes } = props;
     const height = props.height ? props.height : 30;
     const marginLeft = props.marginLeft ? props.marginLeft : 10;
     const marginRight = props.marginRight ? props.marginRight : 10;
 
     return (
-        <React.Fragment>
+        <Root>
             <div className={classes.divider} style={{ height, marginLeft, marginRight }} />
-        </React.Fragment>
+        </Root>
     );
 }
 
@@ -34,4 +40,4 @@ VerticalDivider.propTypes = {
     classes: PropTypes.object.isRequired,
 };
 
-export default withStyles(styles)(VerticalDivider);
+export default (VerticalDivider);

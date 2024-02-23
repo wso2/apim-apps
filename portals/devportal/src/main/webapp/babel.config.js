@@ -26,6 +26,7 @@ module.exports = {
                 '@babel/plugin-syntax-dynamic-import',
                 '@babel/plugin-proposal-class-properties',
                 'dynamic-import-node',
+                '@babel/plugin-transform-private-methods',
             ],
         },
         production: {
@@ -41,7 +42,12 @@ module.exports = {
                 ],
                 '@babel/preset-react',
             ],
-            plugins: ['@babel/plugin-syntax-dynamic-import', '@babel/plugin-proposal-class-properties'],
+            plugins: [
+                '@babel/plugin-syntax-dynamic-import',
+                '@babel/plugin-proposal-class-properties',
+                '@babel/plugin-proposal-nullish-coalescing-operator',
+                '@babel/plugin-proposal-logical-assignment-operators',
+            ],
         },
         development: {
             presets: [
@@ -53,7 +59,12 @@ module.exports = {
                 ],
                 '@babel/preset-react',
             ],
-            plugins: ['@babel/plugin-syntax-dynamic-import', '@babel/plugin-proposal-class-properties','react-hot-loader/babel'],
+            plugins: [
+                '@babel/plugin-syntax-dynamic-import',
+                '@babel/plugin-proposal-class-properties',
+                '@babel/plugin-proposal-nullish-coalescing-operator',
+                '@babel/plugin-proposal-logical-assignment-operators',
+            ],
         },
     },
 };

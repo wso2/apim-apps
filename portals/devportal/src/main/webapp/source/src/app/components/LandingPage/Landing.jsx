@@ -1,32 +1,44 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import { useTheme } from '@mui/material';
 import Carousel from './Carousel';
 import ApisWithTag from './ApisWithTag';
 import ParallaxScroll from './ParallaxScroll';
 import Contact from './Contact';
 
-const styles = () => ({
-    root: {
+const PREFIX = 'Landing';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    fullWidthBack: `${PREFIX}-fullWidthBack`,
+    superRoot: `${PREFIX}-superRoot`,
+};
+
+const Root = styled('div')(() => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         margin: '0 100px',
         alignItem: 'center',
     },
-    fullWidthBack: {},
-    superRoot: {
+
+    [`& .${classes.fullWidthBack}`]: {},
+
+    [`&.${classes.superRoot}`]: {
         display: 'flex',
         flexDirection: 'column',
     },
-});
+}));
+
 /**
  * Renders landing view..
  * @param {JSON} props Parent pros.
  * @returns {JSX} renders landing view.
  */
-function Landing(props) {
-    const { classes, theme } = props;
+function Landing() {
+    const theme = useTheme();
     const {
         custom: {
             landingPage:
@@ -39,7 +51,7 @@ function Landing(props) {
         },
     } = theme;
     return (
-        <div className={classes.superRoot}>
+        <Root className={classes.superRoot}>
             <div className={classes.root}>
                 <Grid container spacing={3}>
                     {carouselActive && (
@@ -96,7 +108,7 @@ function Landing(props) {
                 </div>
             )}
 
-        </div>
+        </Root>
     );
 }
 
@@ -105,4 +117,4 @@ Landing.propTypes = {
     theme: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(Landing);
+export default (Landing);

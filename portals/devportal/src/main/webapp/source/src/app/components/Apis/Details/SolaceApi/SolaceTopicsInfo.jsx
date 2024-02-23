@@ -12,56 +12,249 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { useParams } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import {
     Divider, Grid, TextField,
-} from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import InputBase from '@material-ui/core/InputBase';
-import Avatar from '@material-ui/core/Avatar';
-import Tooltip from '@material-ui/core/Tooltip';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import IconButton from '@material-ui/core/IconButton';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
-import Chip from '@material-ui/core/Chip';
+    useTheme,
+} from '@mui/material';
+import Box from '@mui/material/Box';
+import InputBase from '@mui/material/InputBase';
+import Avatar from '@mui/material/Avatar';
+import Tooltip from '@mui/material/Tooltip';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
+import Chip from '@mui/material/Chip';
 import { upperCaseString } from 'AppData/stringFormatter';
 import API from 'AppData/api';
 import Loading from 'AppComponents/Base/Loading/Loading';
+import Button from '@mui/material/Button';
 import SubscriptionNotFound from '../../../Base/Errors/SubscriptionNotFound';
 import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
-import solaceTopicStyles from './SolaceTopicStyles';
 
 function VerbElement(props) {
     const {
         verb,
     } = props;
+    const theme = useTheme();
+    const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
 
-    const useMenuStyles = makeStyles((theme) => {
-        const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
-        return {
-            customButton: {
+    return (
+        <Button
+            disableFocusRipple
+            variant='outlined'
+            className={{
                 backgroundColor: '#ffffff',
                 borderColor: backgroundColor,
                 color: backgroundColor,
                 width: theme.spacing(2),
-            },
-        };
-    });
-    const classes = useMenuStyles();
-    return (
-        <Button disableFocusRipple variant='outlined' className={classes.customButton} size='small'>
+            }}
+            size='small'
+        >
             {verb.toUpperCase()}
         </Button>
     );
 }
 
+const PREFIX = 'SolaceTopicsInfo';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    table: `${PREFIX}-table`,
+    centerItems: `${PREFIX}-centerItems`,
+    leftCol: `${PREFIX}-leftCol`,
+    iconAligner: `${PREFIX}-iconAligner`,
+    iconTextWrapper: `${PREFIX}-iconTextWrapper`,
+    iconEven: `${PREFIX}-iconEven`,
+    iconOdd: `${PREFIX}-iconOdd`,
+    heading: `${PREFIX}-heading`,
+    heading1: `${PREFIX}-heading1`,
+    emptyBox: `${PREFIX}-emptyBox`,
+    summaryRoot: `${PREFIX}-summaryRoot`,
+    actionPanel: `${PREFIX}-actionPanel`,
+    Paper: `${PREFIX}-Paper`,
+    Box2: `${PREFIX}-Box2`,
+    Box3: `${PREFIX}-Box3`,
+    list: `${PREFIX}-list`,
+    urlPaper: `${PREFIX}-urlPaper`,
+    input: `${PREFIX}-input`,
+    avatar: `${PREFIX}-avatar`,
+    iconStyle: `${PREFIX}-iconStyle`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.root}`]: {
+        padding: theme.spacing(3, 2),
+        '& td, & th': {
+            color: theme.palette.getContrastText(theme.custom.infoBar.background),
+        },
+        '& option': {
+            padding: '5px 0px 5px 0px',
+        },
+        background: theme.custom.infoBar.background,
+    },
+
+    [`& .${classes.table}`]: {
+        minWidth: '100%',
+    },
+
+    [`& .${classes.centerItems}`]: {
+        margin: 'auto',
+    },
+
+    [`& .${classes.leftCol}`]: {
+        width: 200,
+    },
+
+    [`& .${classes.iconAligner}`]: {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+
+    [`& .${classes.iconTextWrapper}`]: {
+        display: 'inline-block',
+        paddingLeft: 20,
+    },
+
+    [`& .${classes.iconEven}`]: {
+        color: theme.custom.infoBar.iconOddColor,
+        width: theme.spacing(3),
+    },
+
+    [`& .${classes.iconOdd}`]: {
+        color: theme.custom.infoBar.iconOddColor,
+        width: theme.spacing(3),
+    },
+
+    [`& .${classes.heading}`]: {
+        color: theme.palette.getContrastText(theme.palette.background.paper),
+        paddingLeft: theme.spacing(1),
+    },
+
+    [`& .${classes.heading1}`]: {
+        marginRight: 20,
+    },
+
+    [`& .${classes.emptyBox}`]: {
+        background: '#ffffff55',
+        color: theme.palette.getContrastText(theme.palette.background.paper),
+        border: 'solid 1px #fff',
+        padding: theme.spacing(2),
+        width: '100%',
+    },
+
+    [`& .${classes.summaryRoot}`]: {
+        display: 'flex',
+        alignItems: 'center',
+    },
+
+    [`& .${classes.actionPanel}`]: {
+        justifyContent: 'flex-start',
+    },
+
+    [`& .${classes.Paper}`]: {
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),
+    },
+
+    [`& .${classes.Box2}`]: {
+        marginTop: theme.spacing(2),
+        padding: theme.spacing(2),
+        height: '100%',
+    },
+
+    [`& .${classes.Box3}`]: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        border: `solid 1px ${theme.palette.grey[300]}`,
+        '& .MuiInputBase-root:before,  .MuiInputBase-root:hover': {
+            borderBottom: 'none !important',
+            color: theme.palette.primary.main,
+        },
+        '& .MuiSelect-select': {
+            color: theme.palette.primary.main,
+            paddingLeft: theme.spacing(),
+        },
+        '& .MuiInputBase-input': {
+            color: theme.palette.primary.main,
+        },
+        '& .material-icons': {
+            fontSize: 16,
+            color: `${theme.palette.grey[700]} !important`,
+        },
+        borderRadius: 10,
+        marginRight: theme.spacing(),
+    },
+
+    [`& .${classes.list}`]: {
+        width: '100%',
+        maxWidth: 800,
+        backgroundColor: theme.palette.background.paper,
+        position: 'relative',
+        overflow: 'auto',
+        maxHeight: 175,
+    },
+
+    [`& .${classes.urlPaper}`]: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
+        width: '100%',
+        border: `solid 1px ${theme.palette.grey[300]}`,
+        '& .MuiInputBase-root:before,  .MuiInputBase-root:hover': {
+            borderBottom: 'none !important',
+            color: theme.palette.primary.main,
+        },
+        '& .MuiSelect-select': {
+            color: theme.palette.primary.main,
+            paddingLeft: theme.spacing(),
+        },
+        '& .MuiInputBase-input': {
+            color: theme.palette.primary.main,
+        },
+        '& .material-icons': {
+            fontSize: 16,
+            color: `${theme.palette.grey[700]} !important`,
+        },
+        borderRadius: 10,
+        marginRight: theme.spacing(),
+    },
+
+    [`& .${classes.input}`]: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+
+    [`& .${classes.avatar}`]: {
+        width: 30,
+        height: 30,
+        background: 'transparent',
+        border: `solid 1px ${theme.palette.grey[300]}`,
+    },
+
+    [`& .${classes.iconStyle}`]: {
+        cursor: 'pointer',
+        margin: '-10px 0',
+        padding: '0 0 0 5px',
+        '& .material-icons': {
+            fontSize: 18,
+            color: '#9c9c9c',
+        },
+    },
+}));
+
 function SolaceTopicsInfo() {
-    const classes = solaceTopicStyles();
     const { apiUuid } = useParams();
     const [application, setApplication] = useState(null);
     const [environment, setEnvironment] = useState(null);
@@ -260,7 +453,7 @@ function SolaceTopicsInfo() {
     }
 
     return (
-        <>
+        <Root>
             { !application && <SubscriptionNotFound /> }
             { environment && topics && apiTopics && applicationList && (
                 <div className={classes.root}>
@@ -409,16 +602,16 @@ function SolaceTopicsInfo() {
                                             placement='right'
                                             className={classes.iconStyle}
                                         >
-                                            <CopyToClipboard
-                                                text={selectedEndpoint}
-                                                onCopy={() => onCopy('urlCopied')}
+                                            <IconButton
+                                                aria-label='Copy the API URL to clipboard'
+                                                size='large'
+                                                onClick={() => {
+                                                    navigator.clipboard
+                                                        .writeText(selectedEndpoint).then(onCopy('urlCopied'));
+                                                }}
                                             >
-                                                <IconButton
-                                                    aria-label='Copy the API URL to clipboard'
-                                                >
-                                                    <Icon color='secondary'>file_copy</Icon>
-                                                </IconButton>
-                                            </CopyToClipboard>
+                                                <Icon color='secondary'>file_copy</Icon>
+                                            </IconButton>
                                         </Tooltip>
                                     </Avatar>
                                 </Box>
@@ -468,16 +661,16 @@ function SolaceTopicsInfo() {
                                                             placement='right'
                                                             className={classes.iconStyle}
                                                         >
-                                                            <CopyToClipboard
-                                                                text={t}
-                                                                onCopy={() => onTopicCopy('topicCopied')}
+                                                            <IconButton
+                                                                aria-label='Copy the API URL to clipboard'
+                                                                size='large'
+                                                                onClick={() => {
+                                                                    navigator.clipboard
+                                                                        .writeText(t).then(onTopicCopy('topicCopied'));
+                                                                }}
                                                             >
-                                                                <IconButton
-                                                                    aria-label='Copy the API URL to clipboard'
-                                                                >
-                                                                    <Icon color='secondary'>file_copy</Icon>
-                                                                </IconButton>
-                                                            </CopyToClipboard>
+                                                                <Icon color='secondary'>file_copy</Icon>
+                                                            </IconButton>
                                                         </Tooltip>
                                                     </Avatar>
                                                 </Box>
@@ -539,16 +732,16 @@ function SolaceTopicsInfo() {
                                                             placement='right'
                                                             className={classes.iconStyle}
                                                         >
-                                                            <CopyToClipboard
-                                                                text={t}
-                                                                onCopy={() => onTopicCopy('topicCopied')}
+                                                            <IconButton
+                                                                aria-label='Copy the API URL to clipboard'
+                                                                size='large'
+                                                                onClick={() => {
+                                                                    navigator.clipboard
+                                                                        .writeText(t).then(onTopicCopy('topicCopied'));
+                                                                }}
                                                             >
-                                                                <IconButton
-                                                                    aria-label='Copy the API URL to clipboard'
-                                                                >
-                                                                    <Icon color='secondary'>file_copy</Icon>
-                                                                </IconButton>
-                                                            </CopyToClipboard>
+                                                                <Icon color='secondary'>file_copy</Icon>
+                                                            </IconButton>
                                                         </Tooltip>
                                                     </Avatar>
                                                 </Box>
@@ -571,7 +764,7 @@ function SolaceTopicsInfo() {
                     </Grid>
                 </div>
             )}
-        </>
+        </Root>
     );
 }
 

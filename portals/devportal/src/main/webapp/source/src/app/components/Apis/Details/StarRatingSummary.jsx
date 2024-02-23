@@ -17,29 +17,40 @@
  */
 
 import React from 'react';
-import StarRate from '@material-ui/icons/StarRate';
-import Icon from '@material-ui/core/Icon';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
+import { styled } from '@mui/material/styles';
+import StarRate from '@mui/icons-material/StarRate';
+import Icon from '@mui/material/Icon';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
+import { useTheme } from '@mui/material';
 
-const styles = (theme) => {
-    const starColor = theme.custom.infoBar.starColor || theme.palette.getContrastText(theme.custom.infoBar.background);
-    return {
-        starRate: {
-            marginRight: theme.spacing(),
-            color: starColor,
-            '&.material-icons': {
-                fontSize: 30,
-            },
-        },
-        userRating: {
-            display: 'flex',
-            justifyContent: 'flex-start',
-            alignItems: 'center',
-        },
-    };
+const PREFIX = 'StarRatingSummary';
+
+const classes = {
+    starRate: `${PREFIX}-starRate`,
+    userRating: `${PREFIX}-userRating`,
 };
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.starRate}`]: {
+        marginRight: theme.spacing(),
+        color: theme.custom.infoBar.starColor || theme.palette.getContrastText(theme.custom.infoBar.background),
+        '&.material-icons': {
+            fontSize: 30,
+        },
+    },
+
+    [`& .${classes.userRating}`]: {
+        display: 'flex',
+        justifyContent: 'flex-start',
+        alignItems: 'center',
+    },
+}));
 
 /**
  *
@@ -48,10 +59,11 @@ const styles = (theme) => {
  */
 function StarRatingSummary(props) {
     const {
-        classes, theme, avgRating, reviewCount, returnCount,
+        avgRating, reviewCount, returnCount,
     } = props;
+    const theme = useTheme();
     return (
-        <>
+        <Root>
             {returnCount > 0 ? (
                 <>
                     <Icon className={classes.starRate}>star</Icon>
@@ -81,8 +93,8 @@ function StarRatingSummary(props) {
                     </div>
                 </>
             )}
-        </>
+        </Root>
     );
 }
 
-export default withStyles(styles, { withTheme: true })(StarRatingSummary);
+export default (StarRatingSummary);

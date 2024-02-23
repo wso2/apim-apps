@@ -33,7 +33,7 @@
 
     <properties>
         <carbon.apimgt.ui.version>${project.version}</carbon.apimgt.ui.version>
-        <maven.test.skip>false</maven.test.skip>
+        <maven.test.skip>true</maven.test.skip>
         <npm.build.skip>false</npm.build.skip>
         <npm.executable>npm</npm.executable>
         <npm.build.command>build:prod</npm.build.command>

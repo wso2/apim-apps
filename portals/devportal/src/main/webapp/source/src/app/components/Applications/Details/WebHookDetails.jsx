@@ -17,89 +17,118 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { makeStyles } from '@material-ui/core/styles/index';
+import { styled } from '@mui/material/styles';
 import { matchPath } from 'react-router';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import Divider from '@material-ui/core/Divider';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import Grid from '@material-ui/core/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import Divider from '@mui/material/Divider';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import Grid from '@mui/material/Grid';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import _ from 'lodash';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-import CancelIcon from '@material-ui/icons/Cancel';
-import RemoveCircleIcon from '@material-ui/icons/RemoveCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
+
+const PREFIX = 'WebHookDetails';
+
+const classes = {
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    paper: `${PREFIX}-paper`,
+    grid: `${PREFIX}-grid`,
+    userNotificationPaper: `${PREFIX}-userNotificationPaper`,
+    titleSub: `${PREFIX}-titleSub`,
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    listWrapper: `${PREFIX}-listWrapper`,
+    subscriptionRow: `${PREFIX}-subscriptionRow`,
+    callbackurl: `${PREFIX}-callbackurl`,
+    subscriptionTimestamp: `${PREFIX}-subscriptionTimestamp`,
+    SubscriptionHeader: `${PREFIX}-SubscriptionHeader`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.buttonIcon}`]: {
+        marginRight: 10,
+    },
+
+    [`& .${classes.paper}`]: {
+        margin: theme.spacing(1),
+        padding: theme.spacing(1),
+    },
+
+    [`& .${classes.grid}`]: {
+        marginTop: theme.spacing(4),
+        marginBottom: theme.spacing(4),
+        paddingRight: theme.spacing(2),
+        justifyContent: 'center',
+    },
+
+    [`& .${classes.userNotificationPaper}`]: {
+        padding: theme.spacing(2),
+    },
+
+    [`& .${classes.titleSub}`]: {
+        marginLeft: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
+    },
+
+    [`&.${classes.root}`]: {
+        padding: theme.spacing(3),
+        '& h5': {
+            color: theme.palette.getContrastText(theme.palette.background.default),
+        },
+    },
+
+    [`& .${classes.titleWrapper}`]: {
+        display: 'flex',
+        alignItems: 'center',
+        paddingBottom: theme.spacing(2),
+        '& h5': {
+            marginRight: theme.spacing(1),
+        },
+    },
+
+    [`& .${classes.listWrapper}`]: {
+        width: '50%',
+    },
+
+    [`& .${classes.subscriptionRow}`]: {
+        paddingLeft: '16px',
+    },
+
+    [`& .${classes.callbackurl}`]: {
+        fontSize: '12px',
+    },
+
+    [`& .${classes.subscriptionTimestamp}`]: {
+        float: 'right',
+    },
+
+    [`& .${classes.SubscriptionHeader}`]: {
+        paddingBottom: '0px',
+        paddingLeft: '0px',
+        paddingTop: '0px',
+    },
+}));
 
 dayjs.extend(relativeTime);
-
-const useStyles = makeStyles((theme) => (
-    {
-        buttonIcon: {
-            marginRight: 10,
-        },
-        paper: {
-            margin: theme.spacing(1),
-            padding: theme.spacing(1),
-        },
-        grid: {
-            marginTop: theme.spacing(4),
-            marginBottom: theme.spacing(4),
-            paddingRight: theme.spacing(2),
-            justifyContent: 'center',
-        },
-        userNotificationPaper: {
-            padding: theme.spacing(2),
-        },
-        titleSub: {
-            marginLeft: theme.spacing(2),
-            paddingTop: theme.spacing(2),
-            paddingBottom: theme.spacing(2),
-        },
-        root: {
-            padding: theme.spacing(3),
-            '& h5': {
-                color: theme.palette.getContrastText(theme.palette.background.default),
-            },
-        },
-        titleWrapper: {
-            display: 'flex',
-            alignItems: 'center',
-            paddingBottom: theme.spacing(2),
-            '& h5': {
-                marginRight: theme.spacing(1),
-            },
-        },
-        listWrapper: {
-            width: '50%',
-        },
-        subscriptionRow: {
-            paddingLeft: '16px',
-        },
-        callbackurl: {
-            fontSize: '12px',
-        },
-        subscriptionTimestamp: {
-            float: 'right',
-        },
-        SubscriptionHeader: {
-            paddingBottom: '0px',
-            paddingLeft: '0px',
-            paddingTop: '0px',
-        },
-    }
-));
 
 /**
  * @param {JSON} props props passed from parent
  * @returns {JSX} jsx output
  */
 export default function WebHookDetails(props) {
-    const classes = useStyles();
     const { location: { pathname } } = props;
     const intl = useIntl();
     const match = matchPath(pathname, {
@@ -139,7 +168,7 @@ export default function WebHookDetails(props) {
     }, []);
 
     return (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <div className={classes.titleWrapper}>
                 <Typography variant='h5' className={classes.keyTitle}>
                     <FormattedMessage
@@ -208,6 +237,6 @@ export default function WebHookDetails(props) {
                     </>
                 ))}
             </List>
-        </div>
+        </Root>
     );
 }

@@ -18,16 +18,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import ErrorIcon from '@material-ui/icons/Error';
-import InfoIcon from '@material-ui/icons/Info';
-import CloseIcon from '@material-ui/icons/Close';
-import { amber, green } from '@material-ui/core/colors';
-import IconButton from '@material-ui/core/IconButton';
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import WarningIcon from '@material-ui/icons/Warning';
-import { makeStyles } from '@material-ui/core/styles';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorIcon from '@mui/icons-material/Error';
+import InfoIcon from '@mui/icons-material/Info';
+import CloseIcon from '@mui/icons-material/Close';
+import { amber, green } from '@mui/material/colors';
+import IconButton from '@mui/material/IconButton';
+import Snackbar from '@mui/material/Snackbar';
+import SnackbarContent from '@mui/material/SnackbarContent';
+import WarningIcon from '@mui/icons-material/Warning';
+import {styled} from "@mui/material/styles";
 
 const variantIcon = {
     success: CheckCircleIcon,
@@ -36,38 +36,60 @@ const variantIcon = {
     info: InfoIcon,
 };
 
-const useStyles1 = makeStyles(theme => ({
-    root: {
-        position: 'relative' /* Overriding the default Snackbar root properties to stack messages */,
-        padding: '5px' /* To add some space between messages when stacking messages */,
+const classes = {
+    root: `${PREFIX}-root`,
+    success: `${PREFIX}-success`,
+    error: `${PREFIX}-error`,
+    info: `${PREFIX}-info`,
+    warning: `${PREFIX}-warning`,
+    icon: `${PREFIX}-icon`,
+    iconVariant: `${PREFIX}-iconVariant`,
+    message: `${PREFIX}-message`
+};
+
+const StyledIconButton = styled(IconButton)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
+        position: 'relative',
+        padding: '5px',
     },
-    success: {
+
+    [`& .${classes.success}`]: {
         backgroundColor: green[600],
     },
-    error: {
+
+    [`& .${classes.error}`]: {
         backgroundColor: theme.palette.error.dark,
     },
-    info: {
+
+    [`& .${classes.info}`]: {
         backgroundColor: theme.palette.primary.main,
     },
-    warning: {
+
+    [`& .${classes.warning}`]: {
         backgroundColor: amber[700],
     },
-    icon: {
+
+    [`& .${classes.icon}`]: {
         fontSize: 20,
     },
-    iconVariant: {
+
+    [`& .${classes.iconVariant}`]: {
         opacity: 0.9,
         marginRight: theme.spacing(1),
     },
-    message: {
+
+    [`& .${classes.message}`]: {
         display: 'flex',
         alignItems: 'center',
-    },
+    }
 }));
 
 function MySnackbarContentWrapper(props) {
-    const classes = useStyles1();
+
     const {
         className, message, onClose, variant, ...other
     } = props;
@@ -84,9 +106,14 @@ function MySnackbarContentWrapper(props) {
                 </span>
             }
             action={[
-                <IconButton key='close' aria-label='close' color='inherit' onClick={onClose}>
+                <StyledIconButton
+                    key='close'
+                    aria-label='close'
+                    color='inherit'
+                    onClick={onClose}
+                    size="large">
                     <CloseIcon className={classes.icon} />
-                </IconButton>,
+                </StyledIconButton>,
             ]}
             {...other}
         />

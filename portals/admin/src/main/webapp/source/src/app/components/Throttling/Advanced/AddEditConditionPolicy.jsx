@@ -17,20 +17,16 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import { useIntl, FormattedMessage } from 'react-intl';
-import DialogContentText from '@material-ui/core/DialogContentText';
+import DialogContentText from '@mui/material/DialogContentText';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
-import TextField from '@material-ui/core/TextField';
-import CreateIcon from '@material-ui/icons/Create';
+import TextField from '@mui/material/TextField';
+import CreateIcon from '@mui/icons-material/Create';
 import CON_CONSTS from 'AppComponents/Throttling/Advanced/CON_CONSTS';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        color: theme.palette.error.dark,
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * Render delete dialog box.
@@ -39,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function AddEditConditionPolicy(props) {
     const intl = useIntl();
-    const classes = useStyles();
+
     const { row } = props;
     const { row: { labelPrefix, description, name: conditionName }, callBack, item } = props;
     let initName = '';
@@ -130,7 +126,7 @@ function AddEditConditionPolicy(props) {
             })}
             icon={item ? <CreateIcon /> : null}
             triggerButtonProps={{
-                color: 'default',
+                color: 'primary',
                 variant: 'contained',
                 size: 'small',
             }}
@@ -152,7 +148,7 @@ function AddEditConditionPolicy(props) {
                             id='Throttling.Advanced.AddEditConditionPolicy.form.name'
                             defaultMessage='Name'
                         />
-                        <span className={classes.error}>*</span>
+                        <StyledSpan>*</StyledSpan>
                     </span>
                 )}
                 fullWidth
@@ -178,7 +174,7 @@ function AddEditConditionPolicy(props) {
                             defaultMessage='Value'
                         />
 
-                        <span className={classes.error}>*</span>
+                        <StyledSpan>*</StyledSpan>
                     </span>
                 )}
                 fullWidth

@@ -16,28 +16,18 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import clsx from 'clsx';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 
-const useStyles = makeStyles(() => {
-    const minHeight = 43;
-    return ({
-        pageTitle: {
-            minHeight,
-            backgroundColor: '#f6f6f6',
-        },
-        root: {
-            flexGrow: 1,
-            minHeight: `calc(100vh - (${minHeight + 57}px))`,
-            backgroundColor: '#eaeff1',
-        },
-    });
+const Root = styled('div')({
+    flexGrow: 1,
+    minHeight: `calc(100vh - (${43 + 57}px))`,
+    backgroundColor: '#eaeff1',
 });
 
 /**
@@ -52,9 +42,8 @@ const useStyles = makeStyles(() => {
  * @returns {JSX} Header AppBar components.
  */
 function ContentBase(props) {
-    const classes = useStyles();
     const {
-        title, pageDescription, children, help, width, pageStyle, PaperProps, classes: classesProp, paperLess,
+        title, pageDescription, children, help, width, pageStyle, PaperProps, paperLess,
     } = props;
     let size = 8;// default half/medium
     if ([width, pageStyle].includes('small')) {
@@ -63,15 +52,15 @@ function ContentBase(props) {
         size = 11;
     }
     return (
-        <div className={clsx(classesProp.root, classes.root)}>
+        <Root>
             <Grid
                 container
                 direction='row'
-                justify='center'
+                justifyContent='center'
                 alignItems='flex-start'
             >
                 <Grid item xs={12}>
-                    <Toolbar className={clsx(classesProp.pageTitle, classes.pageTitle)}>
+                    <Toolbar sx={{ minHeight: 43, backgroundColor: '#f6f6f6' }}>
                         <Grid container alignItems='center' spacing={1}>
                             <Grid item xs>
                                 <Typography color='inherit' variant='h5' component='h1'>
@@ -104,13 +93,12 @@ function ContentBase(props) {
                 </Grid>
 
             </Grid>
-        </div>
+        </Root>
     );
 }
 ContentBase.defaultProps = {
     width: 'medium',
     PaperProps: {},
-    classes: {},
     pageStyle: 'half',
     paperLess: false,
     pageDescription: null,
@@ -127,7 +115,6 @@ ContentBase.propTypes = {
    * Override or extend the styles applied to the component.
    * See [CSS API](#css) below for more details.
    */
-    classes: PropTypes.shape({ root: PropTypes.string }),
     paperLess: PropTypes.bool,
 };
 

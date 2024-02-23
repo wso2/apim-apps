@@ -17,42 +17,56 @@
  */
 
 import React from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
-import { withStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import ChipInput from 'material-ui-chip-input'; // DEPRECATED: DON'T USE THIS COMPONENT or even COPY
+import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: DON'T USE THIS COMPONENT or even COPY
 
 
-/**
- * @inheritdoc
- * @param {*} theme theme object
- */
-const styles = (theme) => ({
-    FormControl: {
+const PREFIX = 'ApplicationCreateForm';
+
+const classes = {
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    quotaHelp: `${PREFIX}-quotaHelp`,
+    mandatoryStarText: `${PREFIX}-mandatoryStarText`,
+    applicationForm: `${PREFIX}-applicationForm`
+};
+
+const Root = styled('form')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.FormControl}`]: {
         padding: theme.spacing(2),
         width: '100%',
     },
-    FormControlOdd: {
+
+    [`& .${classes.FormControlOdd}`]: {
         padding: theme.spacing(2),
         backgroundColor: theme.palette.background.paper,
         width: '100%',
     },
-    quotaHelp: {
+
+    [`& .${classes.quotaHelp}`]: {
         position: 'relative',
     },
-    mandatoryStarText: {
+
+    [`& .${classes.mandatoryStarText}`]: {
         '& label>span:nth-child(1)': {
             color: 'red',
         },
     },
-    applicationForm: {
+
+    [`&.${classes.applicationForm}`]: {
         '& span, & div, & p, & input': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         }
     }
-});
+}));
 
 const ApplicationCreate = (props) => {
     /**
@@ -94,7 +108,6 @@ const ApplicationCreate = (props) => {
      * @memberof ApplicationCreate
      */
     const {
-        classes,
         throttlingPolicyList,
         applicationRequest,
         isNameValid,
@@ -120,7 +133,7 @@ const ApplicationCreate = (props) => {
         })}`)
     }
     return (
-        <form noValidate autoComplete='off' className={classes.applicationForm}>
+        <Root noValidate autoComplete='off' className={classes.applicationForm}>
             <TextField
                 id='application-name'
                 classes={{
@@ -274,7 +287,7 @@ const ApplicationCreate = (props) => {
                     )}
                 />
             )}
-        </form>
+        </Root>
     );
 };
 ApplicationCreate.defaultProps = {
@@ -298,4 +311,4 @@ ApplicationCreate.propTypes = {
     throttlingPolicyList: PropTypes.arrayOf(PropTypes.string).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(ApplicationCreate));
+export default injectIntl((ApplicationCreate));

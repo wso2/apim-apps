@@ -17,44 +17,61 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Tooltip from '@material-ui/core/Tooltip';
-import HelpOutline from '@material-ui/icons/HelpOutline';
+import Grid from '@mui/material/Grid';
+import Tooltip from '@mui/material/Tooltip';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { makeStyles } from '@material-ui/core/styles';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import { AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import Checkbox from '@material-ui/core/Checkbox';
+import Checkbox from '@mui/material/Checkbox';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'WebSubConfiguration';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    actionSpace: `${PREFIX}-actionSpace`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+const StyledWrappedExpansionPanel = styled(WrappedExpansionPanel)((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(3),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    actionSpace: {
+
+    [`& .${classes.actionSpace}`]: {
         marginLeft: '0px',
         marginTop: '-7px',
         marginBottom: '-7px',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
-    },
+    }
 }));
 
 /**
@@ -67,18 +84,18 @@ const useStyles = makeStyles((theme) => ({
 export default function WebSubConfiguration(props) {
     const { api, configDispatcher } = props;
     const { api: apiFromContext } = useAPI();
-    const classes = useStyles();
+
     return (
-        <WrappedExpansionPanel className={classes.expansionPanel} id='webSubConfiguration'>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+        <StyledWrappedExpansionPanel className={classes.expansionPanel} id='webSubConfiguration'>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.WebSubConfiguration.configuration'
                         defaultMessage='WebSub Configuration'
                     />
                 </Typography>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+            </AccordionSummary>
+            <AccordionDetails className={classes.expansionPanelDetails}>
                 <Grid container>
                     <Grid item>
                         <FormControlLabel
@@ -134,8 +151,8 @@ export default function WebSubConfiguration(props) {
                         />
                     </Grid>
                 </Grid>
-            </ExpansionPanelDetails>
-        </WrappedExpansionPanel>
+            </AccordionDetails>
+        </StyledWrappedExpansionPanel>
     );
 }
 

@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 import React, { useReducer, useState, useEffect } from 'react';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { withRouter } from 'react-router';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
 import { Link, useParams } from 'react-router-dom';
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import { makeStyles } from '@material-ui/core/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import ListItemText from '@mui/material/ListItemText';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
@@ -35,14 +35,25 @@ import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm'
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import AuthManager from 'AppData/AuthManager';
 
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
+const PREFIX = 'APICreateStreamingAPI';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`
+};
+
+const StyledAPICreateBase = styled(APICreateBase)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
-    },
+    }
 }));
 
 const APICreateStreamingAPI = (props) => {
+    // const theme = useTheme();
     const { history } = props;
     const intl = useIntl();
     const { data: settings, isLoading, error: settingsError } = usePublisherSettings();
@@ -57,7 +68,7 @@ const APICreateStreamingAPI = (props) => {
     const [isRevisioning, setIsRevisioning] = useState(false);
     const [isDeploying, setIsDeploying] = useState(false);
     const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
-    const classes = useStyles();
+
     const [policies, setPolicies] = useState([]);
     let { apiType } = useParams();
     if (apiType) {
@@ -365,8 +376,8 @@ const APICreateStreamingAPI = (props) => {
     );
 
     return (
-        <APICreateBase title={pageTitle}>
-            <Grid container direction='row' justify='center' alignItems='center' spacing={3}>
+        <StyledAPICreateBase title={pageTitle}>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 {/* Page error banner */}
                 {pageError && (
                     <Grid item xs={11}>
@@ -389,9 +400,7 @@ const APICreateStreamingAPI = (props) => {
                         </Box>
                     )}
                 </Grid>
-                <Grid item xs={12} />
-                <Grid item md={1} xs={0} />
-                <Grid item md={11} xs={12}>
+                <Grid item xs={12}>
                     <DefaultAPIForm
                         onValidate={handleOnValidate}
                         onChange={handleOnChange}
@@ -440,9 +449,8 @@ const APICreateStreamingAPI = (props) => {
                         </TextField>
                     </DefaultAPIForm>
                 </Grid>
-                <Grid item md={1} xs={0} />
-                <Grid item md={11} xs={12}>
-                    <Grid container direction='row' justify='flex-start' alignItems='center' spacing={2}>
+                <Grid item xs={12}>
+                    <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             <Button
                                 variant='contained'
@@ -490,7 +498,7 @@ const APICreateStreamingAPI = (props) => {
                     </Grid>
                 </Grid>
             </Grid>
-        </APICreateBase>
+        </StyledAPICreateBase>
     );
 };
 APICreateStreamingAPI.WORKFLOW_STATUS = {

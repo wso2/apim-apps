@@ -18,13 +18,13 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import IconButton from '@material-ui/core/IconButton';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import IconButton from '@mui/material/IconButton';
+import CircularProgress from '@mui/material/CircularProgress';
 import Alert from 'AppComponents/Shared/Alert';
 
 /**
@@ -74,13 +74,13 @@ function FormDialogBase({
     return (
         <>
             {icon && (
-                <IconButton {...triggerIconProps} onClick={handleClickOpen}>
+                <IconButton {...triggerIconProps} onClick={handleClickOpen} size='large'>
                     {icon}
                 </IconButton>
             )}
             {triggerButtonText && (
                 // eslint-disable-next-line react/jsx-props-no-spreading
-                <Button {...triggerButtonProps} onClick={handleClickOpen}>
+                <Button {...triggerButtonProps} onClick={handleClickOpen} data-testid='form-dialog-base-trigger-btn'>
                     {triggerButtonText}
                 </Button>
             )}
@@ -99,7 +99,7 @@ function FormDialogBase({
                         color='primary'
                         variant='contained'
                         disabled={saving}
-                        data-testid={saveButtonText + '-btn'}
+                        data-testid='form-dialog-base-save-btn'
                     >
                         {saving ? (<CircularProgress size={16} />) : (<>{saveButtonText}</>)}
                     </Button>
@@ -124,8 +124,14 @@ FormDialogBase.propTypes = {
     title: PropTypes.string.isRequired,
     children: PropTypes.element.isRequired,
     icon: PropTypes.element.isRequired,
-    triggerButtonText: PropTypes.string.isRequired,
-    saveButtonText: PropTypes.string.isRequired,
+    triggerButtonText: PropTypes.oneOfType([
+        PropTypes.element.isRequired,
+        PropTypes.string.isRequired,
+    ]).isRequired,
+    saveButtonText: PropTypes.oneOfType([
+        PropTypes.string.isRequired,
+        PropTypes.element.isRequired,
+    ]).isRequired,
     triggerButtonProps: PropTypes.shape({}),
     triggerIconProps: PropTypes.shape({}),
     formSaveCallback: PropTypes.func.isRequired,

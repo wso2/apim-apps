@@ -18,16 +18,16 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
 import { FormattedMessage } from 'react-intl';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogActions from '@mui/material/DialogActions';
 
 const columns = ['Name', 'Value'];
 

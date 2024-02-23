@@ -16,35 +16,52 @@
 
 import React, { useState, useContext } from 'react';
 
+import { styled } from '@mui/material/styles';
+
 import {
     Icon,
     IconButton,
     InputAdornment,
     TextField,
-    withStyles,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 
-const styles = (theme) => ({
-    endpointInputWrapper: {
+const PREFIX = 'GenericEndpointAdd';
+
+const classes = {
+    endpointInputWrapper: `${PREFIX}-endpointInputWrapper`,
+    textField: `${PREFIX}-textField`,
+    input: `${PREFIX}-input`,
+    iconButton: `${PREFIX}-iconButton`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`&.${classes.endpointInputWrapper}`]: {
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
     },
-    textField: {
+
+    [`& .${classes.textField}`]: {
         width: '100%',
     },
-    input: {
+
+    [`& .${classes.input}`]: {
         marginLeft: theme.spacing(1),
         flex: 1,
     },
-    iconButton: {
+
+    [`& .${classes.iconButton}`]: {
         padding: theme.spacing(1),
-    },
-});
+    }
+}));
 
 /**
  * This component represents the view and functions of endpoint add.
@@ -54,7 +71,6 @@ const styles = (theme) => ({
  * */
 function GenericEndpointAdd(props) {
     const {
-        classes,
         addEndpoint,
         endpointType,
         category
@@ -71,7 +87,7 @@ function GenericEndpointAdd(props) {
     };
 
     return (
-        <div className={classes.endpointInputWrapper}>
+        <Root className={classes.endpointInputWrapper}>
             <TextField
                 label={(
                     <FormattedMessage
@@ -98,7 +114,7 @@ function GenericEndpointAdd(props) {
                                 aria-label='Search'
                                 disabled={serviceUrl === ''}
                                 id={category + '-' + endpointType + '-add-btn'}
-                            >
+                                size='large'>
                                 <Icon>
                                     add
                                 </Icon>
@@ -107,7 +123,7 @@ function GenericEndpointAdd(props) {
                     ),
                 }}
             />
-        </div>
+        </Root>
     );
 }
 
@@ -118,4 +134,4 @@ GenericEndpointAdd.propTypes = {
     category: PropTypes.string.isRequired,
 };
 
-export default withStyles(styles)(GenericEndpointAdd);
+export default (GenericEndpointAdd);

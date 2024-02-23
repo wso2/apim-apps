@@ -17,25 +17,23 @@
  */
 
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
-import Tooltip from '@material-ui/core/Tooltip';
-import Divider from '@material-ui/core/Divider';
-import Button from '@material-ui/core/Button';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
+import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
+import Button from '@mui/material/Button';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Utils from 'AppData/Utils';
-import DeleteIcon from '@material-ui/icons/Delete';
-import IconButton from '@material-ui/core/IconButton';
-import Badge from '@material-ui/core/Badge';
-import ReportProblemOutlinedIcon from '@material-ui/icons/ReportProblemOutlined';
-import LockIcon from '@material-ui/icons//Lock';
-import LockOpenIcon from '@material-ui/icons/LockOpen';
+import DeleteIcon from '@mui/icons-material/Delete';
+import IconButton from '@mui/material/IconButton';
+import Badge from '@mui/material/Badge';
+import ReportProblemOutlinedIcon from '@mui/icons-material/ReportProblemOutlined';
+import LockIcon from '@mui/icons-material//Lock';
+import LockOpenIcon from '@mui/icons-material/LockOpen';
 
 import { FormattedMessage } from 'react-intl';
 import DescriptionAndSummary from './operationComponents/DescriptionAndSummary';
@@ -44,6 +42,65 @@ import AWSLambdaSettings from './operationComponents/AWSLambdaSettings';
 import Parameters from './operationComponents/Parameters';
 import SOAPToRESTListing from './operationComponents/SOAPToREST/SOAPToRESTListing';
 import { getOperationScopes } from '../operationUtils';
+
+const PREFIX = 'Operation';
+
+const classes = {
+    customButton: `${PREFIX}-customButton`,
+    paperStyles: `${PREFIX}-paperStyles`,
+    customDivider: `${PREFIX}-customDivider`,
+    linearProgress: `${PREFIX}-linearProgress`,
+    highlightSelected: `${PREFIX}-highlightSelected`,
+    contentNoMargin: `${PREFIX}-contentNoMargin`,
+    overlayUnmarkDelete: `${PREFIX}-overlayUnmarkDelete`,
+    targetText: `${PREFIX}-targetText`,
+    title: `${PREFIX}-title`
+};
+
+
+const Root = styled('div')(({ theme }) => {
+    return {
+        [`& .${classes.customButton}`]: {
+            // '&:hover': { backgroundColor },
+            // backgroundColor,
+            width: theme.spacing(12),
+            // color: theme.palette.getContrastText(backgroundColor),
+        },
+        [`& .${classes.paperStyles}`]: {
+            // border: `1px solid ${backgroundColor}`,
+            borderBottom: '',
+        },
+        [`& .${classes.customDivider}`]: {
+            // backgroundColor,
+        },
+        [`& .${classes.linearProgress}`]: {
+            height: '2px',
+        },
+        [`& .${classes.highlightSelected}`]: {
+            // backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
+        },
+        [`& .${classes.contentNoMargin}`]: {
+            margin: theme.spacing(0),
+        },
+        [`& .${classes.overlayUnmarkDelete}`]: {
+            position: 'absolute',
+            zIndex: theme.zIndex.operationDeleteUndo,
+            right: '10%',
+        },
+        [`& .${classes.targetText}`]: {
+            maxWidth: 180,
+            margin: '0px 20px',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
+            textOverflow: 'ellipsis',
+            display: 'inline-block',
+        },
+        [`& .${classes.title}`]: {
+            display: 'inline',
+            margin: `0 ${theme.spacing(5)}`,
+        },
+    };
+});
 
 /**
  *
@@ -76,50 +133,6 @@ function Operation(props) {
         expandedResource,
         setExpandedResource,
     } = props;
-    const useStyles = makeStyles((theme) => {
-        const backgroundColor = theme.custom.resourceChipColors[verb];
-        return {
-            customButton: {
-                '&:hover': { backgroundColor },
-                backgroundColor,
-                width: theme.spacing(12),
-                color: theme.palette.getContrastText(backgroundColor),
-            },
-            paperStyles: {
-                border: `1px solid ${backgroundColor}`,
-                borderBottom: '',
-            },
-            customDivider: {
-                backgroundColor,
-            },
-            linearProgress: {
-                height: '2px',
-            },
-            highlightSelected: {
-                backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1),
-            },
-            contentNoMargin: {
-                margin: theme.spacing(0),
-            },
-            overlayUnmarkDelete: {
-                position: 'absolute',
-                zIndex: theme.zIndex.operationDeleteUndo,
-                right: '10%',
-            },
-            targetText: {
-                maxWidth: 180,
-                margin: '0px 20px',
-                overflow: 'hidden',
-                whiteSpace: 'nowrap',
-                textOverflow: 'ellipsis',
-                display: 'inline-block',
-            },
-            title: {
-                display: 'inline',
-                margin: `0 ${theme.spacing(5)}px`,
-            },
-        };
-    });
     const apiOperation = api.operations[target] && api.operations[target][verb.toUpperCase()];
     const isUsedInAPIProduct = apiOperation && Array.isArray(
         apiOperation.usedProductIds,
@@ -141,9 +154,11 @@ function Operation(props) {
         setExpandedResource(isExpanded ? panel : false);
     };
 
-    const classes = useStyles();
+    const theme = useTheme();
+    const backgroundColor = theme.custom.resourceChipColors[verb];
+
     return (
-        <>
+        <Root>
             {markAsDelete && (
                 <Box className={classes.overlayUnmarkDelete}>
                     <Tooltip title='Marked for delete'>
@@ -156,21 +171,23 @@ function Operation(props) {
                     </Tooltip>
                 </Box>
             )}
-            <ExpansionPanel
+            <Accordion
                 expanded={expandedResource === verb + target}
                 onChange={handleExpansion(verb + target)}
                 disabled={markAsDelete}
                 className={classes.paperStyles}
+                sx={{ border: `1px solid ${backgroundColor}`}}
             >
-                <ExpansionPanelSummary
+                <AccordionSummary
                     className={highlight ? classes.highlightSelected : ''}
                     disableRipple
                     disableTouchRipple
                     expandIcon={<ExpandMoreIcon />}
                     id={verb + target}
                     classes={{ content: classes.contentNoMargin }}
+                    sx={{ backgroundColor: Utils.hexToRGBA(backgroundColor, 0.1)}}
                 >
-                    <Grid container direction='row' justify='space-between' alignItems='center' spacing={0}>
+                    <Grid container direction='row' justifyContent='space-between' alignItems='center'>
                         <Grid item md={4} style={{ display: 'flex', alignItems: 'center' }}>
                             <Badge
                                 invisible={!operation['x-wso2-new']}
@@ -184,6 +201,7 @@ function Operation(props) {
                                     aria-label={'HTTP verb ' + verb}
                                     size='small'
                                     className={classes.customButton}
+                                    sx={{ backgroundColor, color: theme.palette.getContrastText(backgroundColor) }}
                                 >
                                     {verb}
                                 </Button>
@@ -238,7 +256,7 @@ function Operation(props) {
                                 { getOperationScopes(operation, spec).join(', ') }
                             </Typography>
                         </Grid>
-                        <Grid item md={1} justify='flex-end' alignItems='center' container>
+                        <Grid item md={1} justifyContent='flex-end' alignItems='center' container>
                             {!(disableDelete || markAsDelete) && (
                                 <Tooltip
                                     title={
@@ -263,7 +281,7 @@ function Operation(props) {
                                             disabled={Boolean(isUsedInAPIProduct) || disableUpdate}
                                             onClick={toggleDelete}
                                             aria-label='delete operation'
-                                        >
+                                            size='large'>
                                             <DeleteIcon fontSize='small' />
                                         </IconButton>
                                     </div>
@@ -293,9 +311,7 @@ function Operation(props) {
                                     />
                                 )}
                             >
-                                <IconButton
-                                    aria-label='Security'
-                                >
+                                <IconButton aria-label='Security' size='large'>
                                     {(operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none')
                                         ? <LockIcon fontSize='small' />
                                         : <LockOpenIcon fontSize='small' />}
@@ -304,10 +320,10 @@ function Operation(props) {
 
                         </Grid>
                     </Grid>
-                </ExpansionPanelSummary>
-                <Divider light className={classes.customDivider} />
-                <ExpansionPanelDetails>
-                    <Grid spacing={2} container direction='row' justify='flex-start' alignItems='flex-start'>
+                </AccordionSummary>
+                <Divider light sx={{ backgroundColor }} />
+                <AccordionDetails>
+                    <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
                         <DescriptionAndSummary
                             operation={operation}
                             operationsDispatcher={operationsDispatcher}
@@ -368,9 +384,9 @@ function Operation(props) {
                             )
                         }
                     </Grid>
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-        </>
+                </AccordionDetails>
+            </Accordion>
+        </Root>
     );
 }
 Operation.defaultProps = {

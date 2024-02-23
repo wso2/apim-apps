@@ -1,59 +1,87 @@
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import { Grid, Typography } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import CheckIcon from '@material-ui/icons/Check';
-import CloseIcon from '@material-ui/icons/Close';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import { withStyles } from '@material-ui/core/styles';
+import { Grid, Typography } from '@mui/material';
+import Box from '@mui/material/Box';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 
 import API from 'AppData/api';
 import Banner from 'AppComponents/Shared/Banner';
 import { Progress } from 'AppComponents/Shared';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'BusinessPlans';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    margin: `${PREFIX}-margin`,
+    rightDataColumn: `${PREFIX}-rightDataColumn`,
+    grid: `${PREFIX}-grid`,
+    box: `${PREFIX}-box`,
+    tableCel: `${PREFIX}-tableCel`,
+    table: `${PREFIX}-table`,
+    tableHeadCell: `${PREFIX}-tableHeadCell`,
+    stateWrapper: `${PREFIX}-stateWrapper`,
+    tableHeadTitle: `${PREFIX}-tableHeadTitle`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         paddingBottom: '10px',
     },
-    margin: {
+
+    [`& .${classes.margin}`]: {
         margin: theme.spacing(),
     },
-    rightDataColumn: {
+
+    [`& .${classes.rightDataColumn}`]: {
         display: 'flex',
         flex: 1,
     },
-    grid: {
+
+    [`& .${classes.grid}`]: {
         marginTop: '10px',
         paddingRight: '10px',
         paddingBottom: '10px',
     },
-    box: {
+
+    [`& .${classes.box}`]: {
         display: 'block',
     },
-    tableCel: {
+
+    [`& .${classes.tableCel}`]: {
         width: 50,
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         width: '100%',
         border: 'solid 1px #ccc',
     },
-    tableHeadCell: {
+
+    [`& .${classes.tableHeadCell}`]: {
         color: 'black',
         background: theme.palette.grey[200],
     },
-    stateWrapper: {
+
+    [`& .${classes.stateWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
     },
-    tableHeadTitle: {
+
+    [`& .${classes.tableHeadTitle}`]: {
         flex: 1,
         fontWeight: 'bold',
-    },
-});
+    }
+}));
 
 /**
  *
@@ -105,12 +133,11 @@ class BusinessPlans extends Component {
      */
     render() {
         const { policies, monetizedPolices } = this.state;
-        const { classes } = this.props;
         if (monetizedPolices === null) {
             return <Progress />;
         }
         const policiesList = policies.map((policy) => (
-            <Grid item xs={12}>
+            <StyledGrid item xs={12}>
                 <Table className={classes.table}>
                     <TableRow>
                         <TableCell variant='head' colSpan={2} className={classes.tableHeadCell}>
@@ -164,7 +191,7 @@ class BusinessPlans extends Component {
                     })}
 
                 </Table>
-            </Grid>
+            </StyledGrid>
         ));
         return (
             <Grid container spacing={1}>
@@ -212,4 +239,4 @@ BusinessPlans.propTypes = {
     classes: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles)(BusinessPlans);
+export default (BusinessPlans);

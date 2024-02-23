@@ -17,87 +17,74 @@
  */
 
 import React, { useState } from 'react';
-import { makeStyles, withStyles } from '@material-ui/core/styles';
-import Accordion from '@material-ui/core/Accordion';
-import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
-import MuiAccordionDetails from '@material-ui/core/AccordionDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { styled } from '@mui/material/styles';
+import Accordion from '@mui/material/Accordion';
+import MuiAccordionSummary from '@mui/material/AccordionSummary';
+import MuiAccordionDetails from '@mui/material/AccordionDetails';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import LeftMenuItem from 'AppComponents/Shared/LeftMenuItem';
-import Typography from '@material-ui/core/Typography';
-import EndpointIcon from '@material-ui/icons/GamesOutlined';
-import ScopesIcon from '@material-ui/icons/VpnKey';
-import PoliciesIcon from '@material-ui/icons/SyncAlt';
-import DocumentsIcon from '@material-ui/icons/LibraryBooks';
-import BusinessIcon from '@material-ui/icons/Business';
-import ConfigurationIcon from '@material-ui/icons/Build';
-import PropertiesIcon from '@material-ui/icons/List';
-import SubscriptionsIcon from '@material-ui/icons/RssFeed';
-import Tooltip from '@material-ui/core/Tooltip';
-import CommentIcon from '@material-ui/icons/Comment';
-import IconButton from '@material-ui/core/IconButton';
-import InfoOutlinedIcon from '@material-ui/icons/InfoOutlined';
-import RuntimeConfigurationIcon from '@material-ui/icons/Settings';
-import MonetizationIcon from '@material-ui/icons/LocalAtm';
+import Typography from '@mui/material/Typography';
+import EndpointIcon from '@mui/icons-material/GamesOutlined';
+import ScopesIcon from '@mui/icons-material/VpnKey';
+import PoliciesIcon from '@mui/icons-material/SyncAlt';
+import DocumentsIcon from '@mui/icons-material/LibraryBooks';
+import BusinessIcon from '@mui/icons-material/Business';
+import ConfigurationIcon from '@mui/icons-material/Build';
+import PropertiesIcon from '@mui/icons-material/List';
+import SubscriptionsIcon from '@mui/icons-material/RssFeed';
+import Tooltip from '@mui/material/Tooltip';
+import CommentIcon from '@mui/icons-material/Comment';
+import IconButton from '@mui/material/IconButton';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
+import RuntimeConfigurationIcon from '@mui/icons-material/Settings';
+import MonetizationIcon from '@mui/icons-material/LocalAtm';
 import { isRestricted } from 'AppData/AuthManager';
 import { PROPERTIES as UserProperties } from 'AppData/User';
 import { useUser } from 'AppComponents/Shared/AppContext';
 import { useIntl } from 'react-intl';
 
 
-const AccordianSummary = withStyles({
-    root: {
-        backgroundColor: '#1a1f2f',
-        paddingLeft: '8px',
-        borderBottom: '1px solid rgba(0, 0, 0, .125)',
-        minHeight: 40,
-        '&$expanded': {
-            minHeight: 40,
-        },
-    },
-    content: {
-        '&$expanded': {
-            margin: 0,
-        },
-    },
-    expanded: {
-        backgroundColor: '#1a1f2f',
-    },
-})(MuiAccordionSummary);
+const PREFIX = 'DevelopSectionMenu';
 
-const AccordionDetails = withStyles((theme) => ({
-    root: {
-        backgroundColor: '#1a1f2f',
-        paddingLeft: theme.spacing(0),
-        paddingRight: theme.spacing(2),
-        paddingTop: '0',
-        paddingBottom: '0',
-    },
-}))(MuiAccordionDetails);
+const classes = {
+    root: `${PREFIX}-root`,
+    content: `${PREFIX}-content`,
+    expanded: `${PREFIX}-expanded`,
+    footeremaillink: `${PREFIX}-footeremaillink`,
+    leftLInkText: `${PREFIX}-leftLInkText`,
+    expandIconColor: `${PREFIX}-expandIconColor`
+};
 
-
-const useStyles = makeStyles((theme) => ({
-    footeremaillink: {
-        marginLeft: theme.custom.leftMenuWidth, /* 4px */
-    },
-    root: {
+const Root = styled('div')(({ theme }) => ({
+    [`&.${classes.root}`]: {
         backgroundColor: theme.palette.background.leftMenu,
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
         paddingTop: '0',
         paddingBottom: '0',
-    },
-    expanded: {
-        '&$expanded': {
-            margin: 0,
-            backgroundColor: theme.palette.background.leftMenu,
+        [`& .MuiAccordionSummary-root`]: {
+            backgroundColor: '#1a1f2f',
+            paddingLeft: '8px',
+            borderBottom: '1px solid rgba(0, 0, 0, .125)',
             minHeight: 40,
-            paddingBottom: 0,
-            paddingLeft: 0,
-            paddingRight: 0,
-            paddingTop: 0,
+            [`&.Mui-expanded`]: {
+                minHeight: 40,
+            },
+        },
+        [`& .MuiAccordionDetails-root`]: {
+            backgroundColor: '#1a1f2f',
+            paddingLeft: theme.spacing(0),
+            paddingRight: theme.spacing(2),
+            paddingTop: '0',
+            paddingBottom: '0',
         },
     },
-    leftLInkText: {
+
+    [`& .${classes.footeremaillink}`]: {
+        marginLeft: theme.custom.leftMenuWidth, /* 4px */
+    },
+
+    [`& .${classes.leftLInkText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.leftMenu),
         textTransform: theme.custom.leftMenuTextStyle,
         width: '100%',
@@ -108,10 +95,17 @@ const useStyles = makeStyles((theme) => ({
         fontWeight: 250,
         whiteSpace: 'nowrap',
     },
-    expandIconColor: {
+
+    [`& .${classes.expandIconColor}`]: {
         color: '#ffffff',
     },
 }));
+
+
+const AccordianSummary = MuiAccordionSummary;
+
+const AccordionDetails = MuiAccordionDetails;
+
 
 /**
  *
@@ -135,11 +129,11 @@ export default function DevelopSectionMenu(props) {
             user.setProperty(UserProperties.API_CONFIG_OPEN, isExpanded);
         }
     };
-    const classes = useStyles();
+
     const intl = useIntl();
 
     return (
-        <div className={classes.root}>
+        <Root className={classes.root}>
             <Accordion
                 id='itest-api-details-portal-config-acc'
                 defaultExpanded={portalConfigsExpanded}
@@ -249,7 +243,10 @@ export default function DevelopSectionMenu(props) {
                         </IconButton>
                     </Tooltip>
                 </AccordianSummary>
-                <AccordionDetails>
+                <AccordionDetails
+                    classes={{
+                        root: classes.root2
+                    }}>
                     <div>
                         {!isAPIProduct && !api.isWebSocket() && (api.gatewayVendor === 'wso2') && (
                             <LeftMenuItem
@@ -368,6 +365,6 @@ export default function DevelopSectionMenu(props) {
                     </div>
                 </AccordionDetails>
             </Accordion>
-        </div>
+        </Root>
     );
 }

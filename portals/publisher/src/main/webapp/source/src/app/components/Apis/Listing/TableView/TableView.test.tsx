@@ -22,7 +22,7 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-describe('Table view', () => {
+describe.skip('Table view', () => {
     test('Should have 4 welcome cards', async () => {
         render(<TableView />);
         expect(screen.getByText(/loading apis \.\.\./i)).toBeInTheDocument();

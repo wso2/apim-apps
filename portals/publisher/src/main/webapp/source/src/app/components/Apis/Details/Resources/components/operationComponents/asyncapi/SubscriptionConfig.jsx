@@ -16,34 +16,44 @@
  * under the License.
  */
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
-import Grid from '@material-ui/core/Grid';
-import Box from '@material-ui/core/Box';
+import Grid from '@mui/material/Grid';
+import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
 
-import TextField from '@material-ui/core/TextField';
-import MenuItem from '@material-ui/core/MenuItem';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Switch from '@material-ui/core/Switch';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
+import TextField from '@mui/material/TextField';
+import MenuItem from '@mui/material/MenuItem';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
 
-const useStyles = makeStyles((theme) => ({
-    formControl: {
+const PREFIX = 'SubscriptionConfig';
+
+const classes = {
+    formControl: `${PREFIX}-formControl`,
+    paper: `${PREFIX}-paper`
+};
+
+const StyledAccordion = styled(Accordion)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.formControl}`]: {
         minWidth: 120,
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         paddingLeft: theme.spacing(4),
         paddingTop: theme.spacing(1.5),
         paddingBottom: theme.spacing(0.5),
         marginTop: '12px',
-    },
+    }
 }));
 
 /**
@@ -59,7 +69,7 @@ function SubscriptionConfig(props) {
     } = props;
 
     const [isExpanded, setIsExpanded] = useState(false);
-    const classes = useStyles();
+
     const [enabled, setEnabled] = useState(!!websubSubscriptionConfiguration.enable);
 
     /**
@@ -83,14 +93,14 @@ function SubscriptionConfig(props) {
     }
 
     return (
-        <ExpansionPanel
+        <StyledAccordion
             expanded={isExpanded}
             onChange={(e, expanded) => {
                 setIsExpanded(expanded);
             }}
             className={classes.paperStyles}
         >
-            <ExpansionPanelSummary
+            <AccordionSummary
                 disableRipple
                 disableTouchRipple
                 expandIcon={<ExpandMoreIcon />}
@@ -105,9 +115,9 @@ function SubscriptionConfig(props) {
                         </Typography>
                     </Box>
                 </Grid>
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>
-                <Grid container direction='row' spacing={0} justify='center' alignItems='center'>
+            </AccordionSummary>
+            <AccordionDetails>
+                <Grid container direction='row' spacing={0} justifyContent='center' alignItems='center'>
                     <Grid item xs={6}>
                         <FormControl component='fieldset'>
                             <FormControlLabel
@@ -230,8 +240,8 @@ function SubscriptionConfig(props) {
                     </Grid>
                     <Grid item xs={6} />
                 </Grid>
-            </ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionDetails>
+        </StyledAccordion>
     );
 }
 

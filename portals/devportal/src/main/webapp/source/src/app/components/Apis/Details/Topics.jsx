@@ -17,31 +17,43 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { withStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { injectIntl } from 'react-intl';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Box from '@material-ui/core/Box';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Box from '@mui/material/Box';
 import Alert from 'AppComponents/Shared/Alert';
 import Progress from 'AppComponents/Shared/Progress';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
 import { ApiContext } from './ApiContext';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'Topics';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.root}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: 10,
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         marginRight: 20,
         color: theme.palette.getContrastText(theme.custom.infoBar.sliderBackground),
     },
-});
+}));
 
 /**
  * Render topics component
@@ -99,7 +111,7 @@ class Topics extends React.Component {
             return <Progress />;
         }
         return (
-            <Box display='flex' flexDirection='row'>
+            <StyledBox display='flex' flexDirection='row'>
                 <Table>
                     {topics && topics.length !== 0 && topics.map((topic) => (
                         <TableRow style={{ borderStyle: 'hidden', padding: '0px' }} key={topic.name}>
@@ -113,7 +125,7 @@ class Topics extends React.Component {
                         </TableRow>
                     ))}
                 </Table>
-            </Box>
+            </StyledBox>
         );
     }
 }
@@ -126,4 +138,4 @@ Topics.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Topics));
+export default injectIntl((Topics));

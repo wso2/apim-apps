@@ -17,16 +17,16 @@
  */
 
 import React, { Component } from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
 import { isRestricted } from 'AppData/AuthManager';
-import LifeCycleIcon from '@material-ui/icons/Autorenew';
-import StoreIcon from '@material-ui/icons/Store';
-import DashboardIcon from '@material-ui/icons/Dashboard';
-import CodeIcon from '@material-ui/icons/Code';
-import PersonPinCircleOutlinedIcon from '@material-ui/icons/PersonPinCircleOutlined';
-import ResourcesIcon from '@material-ui/icons/VerticalSplit';
-import { withStyles } from '@material-ui/core/styles';
+import LifeCycleIcon from '@mui/icons-material/Autorenew';
+import StoreIcon from '@mui/icons-material/Store';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import CodeIcon from '@mui/icons-material/Code';
+import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
+import ResourcesIcon from '@mui/icons-material/VerticalSplit';
 import { injectIntl, defineMessages } from 'react-intl';
 import {
     Redirect, Route, Switch, Link, matchPath,
@@ -39,14 +39,14 @@ import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import LeftMenuItem from 'AppComponents/Shared/LeftMenuItem';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import { Progress } from 'AppComponents/Shared';
 import Alert from 'AppComponents/Shared/Alert';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import AppContext, { withSettings } from 'AppComponents/Shared/AppContext';
 import LastUpdatedTime from 'AppComponents/Apis/Details/components/LastUpdatedTime';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 import { RevisionContextProvider } from 'AppComponents/Shared/RevisionContext';
 import DevelopSectionMenu from 'AppComponents/Apis/Details/components/leftMenu/DevelopSectionMenu';
 import { PROPERTIES as UserProperties } from 'AppData/User';
@@ -79,46 +79,74 @@ import { APIProvider } from './components/ApiContext';
 import CreateNewVersion from './NewVersion/NewVersion';
 import TryOutConsole from './TryOut/TryOutConsole';
 
-const styles = (theme) => ({
-    LeftMenu: {
+const PREFIX = 'index';
+
+const classes = {
+    LeftMenu: `${PREFIX}-LeftMenu`,
+    leftLInkMain: `${PREFIX}-leftLInkMain`,
+    content: `${PREFIX}-content`,
+    contentInside: `${PREFIX}-contentInside`,
+    footeremaillink: `${PREFIX}-footeremaillink`,
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    expanded: `${PREFIX}-expanded`,
+    leftLInkText: `${PREFIX}-leftLInkText`,
+    expandIconColor: `${PREFIX}-expandIconColor`,
+    headingText: `${PREFIX}-headingText`,
+    customIcon: `${PREFIX}-customIcon`
+};
+
+const StyledBox = styled(Box)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.LeftMenu}`]: {
         backgroundColor: theme.palette.background.leftMenu,
         width: theme.custom.leftMenuWidth,
         minHeight: `calc(100vh - ${64 + theme.custom.footer.height}px)`,
     },
-    leftLInkMain: {
+
+    [`& .${classes.leftLInkMain}`]: {
         cursor: 'pointer',
         backgroundColor: theme.palette.background.leftMenuActive,
         textAlign: 'center',
         height: theme.custom.apis.topMenu.height,
     },
-    content: {
+
+    [`& .${classes.content}`]: {
         display: 'flex',
         flexGrow: 1,
         flexDirection: 'column',
         paddingBottom: theme.spacing(3),
         overflow: 'auto',
     },
-    contentInside: {
+
+    [`& .${classes.contentInside}`]: {
         width: 'calc(100% - 56px)',
         paddingLeft: theme.spacing(3),
         paddingRight: theme.spacing(3),
         paddingTop: theme.spacing(2),
     },
-    footeremaillink: {
+
+    [`& .${classes.footeremaillink}`]: {
         marginLeft: theme.custom.leftMenuWidth, /* 4px */
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         backgroundColor: theme.palette.background.leftMenu,
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
         paddingTop: '0',
         paddingBottom: '0',
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
     },
-    expanded: {
+
+    [`& .${classes.expanded}`]: {
         '&$expanded': {
             margin: 0,
             backgroundColor: theme.palette.background.leftMenu,
@@ -129,7 +157,8 @@ const styles = (theme) => ({
             paddingTop: 0,
         },
     },
-    leftLInkText: {
+
+    [`& .${classes.leftLInkText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.leftMenu),
         textTransform: theme.custom.leftMenuTextStyle,
         width: '100%',
@@ -140,20 +169,23 @@ const styles = (theme) => ({
         fontWeight: 250,
         whiteSpace: 'nowrap',
     },
-    expandIconColor: {
+
+    [`& .${classes.expandIconColor}`]: {
         color: '#ffffff',
     },
-    headingText: {
+
+    [`& .${classes.headingText}`]: {
         marginTop: '10px',
         fontWeight: 800,
         color: '#ffffff',
         textAlign: 'left',
         marginLeft: '8px',
     },
-    customIcon: {
+
+    [`& .${classes.customIcon}`]: {
         marginTop: (theme.custom.apis.topMenu.height - theme.custom.leftMenuIconMainSize) / 2,
-    },
-});
+    }
+}));
 
 /**
  * Base component for API specific Details page,
@@ -634,7 +666,6 @@ class Details extends Component {
             authorizedAPI,
         } = this.state;
         const {
-            classes,
             theme,
             match,
             intl,
@@ -688,7 +719,7 @@ class Details extends Component {
         }
         const { leftMenuIconMainSize } = theme.custom;
         return (
-            <Box display='flex' alignItems='stretch' flexDirection='row'>
+            <StyledBox display='flex' alignItems='stretch' flexDirection='row'>
                 <APIProvider
                     value={{
                         api,
@@ -1007,7 +1038,7 @@ class Details extends Component {
                         </RevisionContextProvider>
                     </Box>
                 </APIProvider>
-            </Box>
+            </StyledBox>
         );
     }
 }
@@ -1092,4 +1123,7 @@ Details.propTypes = {
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
 };
 
-export default withSettings(injectIntl(withStyles(styles, { withTheme: true })(Details)));
+export default withSettings(injectIntl((props) => {
+    const theme = useTheme();
+    return <Details {...props} theme={theme} />;
+}));

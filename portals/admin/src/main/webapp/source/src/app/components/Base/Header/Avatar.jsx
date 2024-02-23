@@ -5,28 +5,12 @@ import {
     Menu,
     MenuItem,
     Icon,
-} from '@material-ui/core';
-import AccountCircle from '@material-ui/icons/AccountCircle';
-import { withStyles } from '@material-ui/core/styles';
+} from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Configurations from 'Config';
-
-const styles = (theme) => ({
-    profileMenu: {
-        zIndex: theme.zIndex.modal + 1,
-        paddingTop: '5px',
-    },
-    userLink: {
-        fontSize: theme.typography.fontSize,
-        textTransform: 'uppercase',
-        fontWeight: 'bold',
-    },
-    accountIcon: {
-        marginRight: 10,
-    },
-});
 
 /**
  * Render the User Avatar with their name inside the Top AppBar component
@@ -82,7 +66,7 @@ class Avatar extends Component {
      * @memberof Avatar
      */
      render() {
-         const { classes, user } = this.props;
+         const { user } = this.props;
          let username = user.name;
          const count = (username.match(/@/g) || []).length;
          if (user.name.endsWith('@carbon.super') && count <= 1) {
@@ -97,9 +81,14 @@ class Avatar extends Component {
                      aria-haspopup='true'
                      color='inherit'
                      onClick={this.handleClick}
-                     className={classes.userLink}
+                     sx={(theme) => ({
+                         fontSize: theme.typography.fontSize,
+                         textTransform: 'uppercase',
+                         fontWeight: 'bold',
+                     })}
+                     size='large'
                  >
-                     <AccountCircle className={classes.accountIcon} />
+                     <AccountCircle sx={{ mr: 1 }} />
                      {' '}
                      {username}
                      <Icon style={{ fontSize: '22px', marginLeft: '1px' }}>
@@ -112,7 +101,6 @@ class Avatar extends Component {
                      keepMounted
                      open={Boolean(anchorEl)}
                      onClose={this.handleClose}
-                     getContentAnchorEl={null}
                      anchorOrigin={{
                          vertical: 'bottom',
                          horizontal: 'center',
@@ -121,7 +109,10 @@ class Avatar extends Component {
                          vertical: 'top',
                          horizontal: 'center',
                      }}
-                     className={classes.profileMenu}
+                     sx={(theme) => ({
+                         zIndex: theme.zIndex.modal + 1,
+                         pt: '5px',
+                     })}
                  >
                      <Link to={{ pathname: '/services/logout' }}>
                          <MenuItem onClick={this.doOIDCLogout} id='logout'>
@@ -137,12 +128,7 @@ class Avatar extends Component {
      }
 }
 Avatar.propTypes = {
-    classes: PropTypes.shape({
-        userLink: PropTypes.string,
-        profileMenu: PropTypes.string,
-        accountIcon: PropTypes.string,
-    }).isRequired,
     user: PropTypes.shape({ name: PropTypes.string.isRequired }).isRequired,
 };
 
-export default withStyles(styles)(Avatar);
+export default (Avatar);

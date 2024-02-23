@@ -17,15 +17,15 @@
  */
 
 import React, { useReducer } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';
 import Settings from 'Settings';
 import Joi from '@hapi/joi';
-import { Box, Grid } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import { Box, Grid } from '@mui/material';
+import Button from '@mui/material/Button';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import ChangePasswordBase from './ChangePasswordBase';
 import PageNotFound from 'AppComponents/Base/Errors/PageNotFound'
 import API from 'AppData/api';
@@ -33,17 +33,29 @@ import Alert from 'AppComponents/Shared/Alert';
 import Progress from 'AppComponents/Shared/Progress';
 import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 
-const useStyles = makeStyles((theme) => ({
-    mandatoryStarText: {
+const PREFIX = 'ChangePassword';
+
+const classes = {
+    mandatoryStarText: `${PREFIX}-mandatoryStarText`,
+    passwordChangeForm: `${PREFIX}-passwordChangeForm`
+};
+
+const StyledChangePasswordBase = styled(ChangePasswordBase)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.mandatoryStarText}`]: {
         '& label>span:nth-child(1)': {
             color: 'red',
         },
     },
-    passwordChangeForm: {
+
+    [`& .${classes.passwordChangeForm}`]: {
         '& > span, & div, & p, & input': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
-    },
+    }
 }));
 
 /**
@@ -68,7 +80,7 @@ const ChangePassword = () => {
             passwordPolicyMaxLength,
         }
     } = useSettingsContext();
-    const classes = useStyles();
+
     const username = AuthManager.getUser().name;
     const initialState = {
         currentPassword: undefined,
@@ -280,7 +292,7 @@ const ChangePassword = () => {
     // otherwise, display page not found.
     if (IsPasswordChangeEnabled) {
         return (
-            <ChangePasswordBase title={title}>
+            <StyledChangePasswordBase title={title}>
                 <Box py={2} display='flex' justifyContent='center'>
                     <Grid item xs={10} md={9}>
                         <Box component='div' m={2}>
@@ -289,7 +301,7 @@ const ChangePassword = () => {
                                 mt={2}
                                 spacing={2}
                                 direction='column'
-                                justify='center'
+                                justifyContent='center'
                                 alignItems='flex-start'
                             >
                                 <TextField
@@ -380,7 +392,7 @@ const ChangePassword = () => {
                         </Box>
                     </Grid>
                 </Box>
-            </ChangePasswordBase>
+            </StyledChangePasswordBase>
         );
     } else {
         return <PageNotFound />;

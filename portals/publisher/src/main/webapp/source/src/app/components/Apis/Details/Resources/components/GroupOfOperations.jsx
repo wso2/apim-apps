@@ -17,26 +17,33 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
+import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
-const useStyles = makeStyles((theme) => ({
-    tagClass: {
+const PREFIX = 'GroupOfOperations';
+
+const classes = {
+    tagClass: `${PREFIX}-tagClass`
+};
+
+const StyledAccordion = styled(Accordion)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.tagClass}`]: {
         maxWidth: 1000,
         overflow: 'hidden',
         whiteSpace: 'nowrap',
         textOverflow: 'ellipsis',
-        [theme.breakpoints.down('md')]: {
+        [theme.breakpoints.down('lg')]: {
             maxWidth: 800,
         },
-    },
-}
-));
+    }
+}));
 
 /**
  *
@@ -46,12 +53,12 @@ const useStyles = makeStyles((theme) => ({
  * @returns {React.Component} @inheritdoc
  */
 export default function GroupOfOperations(props) {
-    const classes = useStyles();
+
     const { openAPI, children, tag } = props;
     const currentTagInfo = openAPI.tags && openAPI.tags.find((tagInfo) => tagInfo.name === tag);
     return (
-        <ExpansionPanel defaultExpanded>
-            <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />} id={tag}>
+        <StyledAccordion defaultExpanded>
+            <AccordionSummary expandIcon={<ExpandMoreIcon />} id={tag}>
                 <Typography
                     variant='h4'
                     className={classes.tagClass}
@@ -64,9 +71,9 @@ export default function GroupOfOperations(props) {
                         {currentTagInfo.description}
                     </Typography>
                 )}
-            </ExpansionPanelSummary>
-            <ExpansionPanelDetails>{children}</ExpansionPanelDetails>
-        </ExpansionPanel>
+            </AccordionSummary>
+            <AccordionDetails>{children}</AccordionDetails>
+        </StyledAccordion>
     );
 }
 

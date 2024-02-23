@@ -17,98 +17,138 @@
  */
 
 import React from 'react';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import { styled } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
-import FormControl from '@material-ui/core/FormControl';
-import Grid from '@material-ui/core/Grid';
-import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
+import FormControl from '@mui/material/FormControl';
+import Grid from '@mui/material/Grid';
+import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
 import APIValidation from 'AppData/APIValidation';
 import base64url from 'base64url';
-import Error from '@material-ui/icons/Error';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import Chip from '@material-ui/core/Chip';
-import Icon from '@material-ui/core/Icon';
-import Paper from '@material-ui/core/Paper';
-import { red } from '@material-ui/core/colors/';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Error from '@mui/icons-material/Error';
+import InputAdornment from '@mui/material/InputAdornment';
+import Chip from '@mui/material/Chip';
+import Icon from '@mui/material/Icon';
+import Paper from '@mui/material/Paper';
+import { red } from '@mui/material/colors/';
+import CircularProgress from '@mui/material/CircularProgress';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'CreateScope';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    titleLink: `${PREFIX}-titleLink`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    FormControlLabel: `${PREFIX}-FormControlLabel`,
+    buttonSection: `${PREFIX}-buttonSection`,
+    saveButton: `${PREFIX}-saveButton`,
+    helpText: `${PREFIX}-helpText`,
+    extraPadding: `${PREFIX}-extraPadding`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    titleGrid: `${PREFIX}-titleGrid`,
+    descriptionForm: `${PREFIX}-descriptionForm`,
+    progress: `${PREFIX}-progress`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
         display: 'flex',
         flexDirection: 'column',
         padding: 20,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
     },
-    titleLink: {
+
+    [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
         marginRight: theme.spacing(1),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    FormControl: {
-        padding: `0 0 0 ${theme.spacing(1)}px`,
+
+    [`& .${classes.FormControl}`]: {
+        padding: `0 0 0 ${theme.spacing(1)}`,
         width: '100%',
         marginTop: 0,
     },
-    FormControlOdd: {
-        padding: `0 0 0 ${theme.spacing(1)}px`,
+
+    [`& .${classes.FormControlOdd}`]: {
+        padding: `0 0 0 ${theme.spacing(1)}`,
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         marginTop: 0,
     },
-    FormControlLabel: {
+
+    [`& .${classes.FormControlLabel}`]: {
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
         fontSize: theme.typography.caption.fontSize,
     },
-    buttonSection: {
+
+    [`& .${classes.buttonSection}`]: {
         paddingTop: theme.spacing(3),
     },
-    saveButton: {
+
+    [`& .${classes.saveButton}`]: {
         marginRight: theme.spacing(1),
     },
-    helpText: {
+
+    [`& .${classes.helpText}`]: {
         color: theme.palette.text.hint,
         marginTop: theme.spacing(1),
     },
-    extraPadding: {
+
+    [`& .${classes.extraPadding}`]: {
         paddingLeft: theme.spacing(2),
     },
-    addNewOther: {
+
+    [`& .${classes.addNewOther}`]: {
         paddingTop: 40,
     },
-    titleGrid: {
+
+    [`& .${classes.titleGrid}`]: {
         ' & .MuiGrid-item': {
             padding: 0,
             margin: 0,
         },
     },
-    descriptionForm: {
+
+    [`& .${classes.descriptionForm}`]: {
         marginTop: theme.spacing(1),
     },
-    progress: {
+
+    [`& .${classes.progress}`]: {
         marginLeft: theme.spacing(1),
-    },
-});
+    }
+}));
 
 // eslint-disable-next-line valid-jsdoc
 /**
@@ -384,7 +424,7 @@ class CreateScope extends React.Component {
      * @returns {JSX} rendered component.
      */
     render() {
-        const { classes, api } = this.props;
+        const {  api } = this.props;
         const urlPrefix = api.apiType === Api.CONSTS.APIProduct ? 'api-products' : 'apis';
         const url = `/${urlPrefix}/${api.id}/scopes`;
         const {
@@ -392,7 +432,7 @@ class CreateScope extends React.Component {
         } = this.state;
 
         return (
-            <Grid container spacing={3}>
+            <StyledGrid container spacing={3}>
                 <Grid item sm={12} md={12} />
                 {/*
             Following two grids control the placement of whole create page
@@ -595,7 +635,7 @@ class CreateScope extends React.Component {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
+            </StyledGrid>
         );
     }
 }
@@ -617,4 +657,4 @@ CreateScope.defaultProps = {
     match: { params: {} },
 };
 
-export default injectIntl(withStyles(styles)(CreateScope));
+export default injectIntl((CreateScope));

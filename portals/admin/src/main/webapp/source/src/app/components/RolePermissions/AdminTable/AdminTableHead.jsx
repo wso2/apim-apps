@@ -17,31 +17,26 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import TableSortLabel from '@material-ui/core/TableSortLabel';
-import Checkbox from '@material-ui/core/Checkbox';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import TableSortLabel from '@mui/material/TableSortLabel';
+import Checkbox from '@mui/material/Checkbox';
 import { useTableContext } from './AdminTableContext';
 
-const useStyles = makeStyles(() => ({
-    visuallyHidden: {
-        border: 0,
-        clip: 'rect(0 0 0 0)',
-        height: 1,
-        margin: -1,
-        overflow: 'hidden',
-        padding: 0,
-        position: 'absolute',
-        top: 20,
-        width: 1,
-    },
-    tableHead: {
-        fontWeight: 800,
-    },
-}));
+const StyledSpan = styled('span')({
+    border: 0,
+    clip: 'rect(0 0 0 0)',
+    height: 1,
+    margin: -1,
+    overflow: 'hidden',
+    padding: 0,
+    position: 'absolute',
+    top: 20,
+    width: 1,
+});
 
 /**
  *
@@ -56,7 +51,7 @@ function AdminTableHead(props) {
     const {
         onRequestSort, numSelected, rowCount, onSelectAllClick, orderBy, order, multiSelect,
     } = useTableContext();
-    const classes = useStyles();
+
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
     };
@@ -78,10 +73,10 @@ function AdminTableHead(props) {
                     <TableCell
                         key={headCell.id}
                         align={index === 0 ? 'left' : 'right'}
-                        padding={headCell.disablePadding ? 'none' : 'default'}
+                        padding={headCell.disablePadding ? 'none' : 'normal'}
                         sortDirection={orderBy === headCell.id ? order : false}
                         variant='head'
-                        classes={{ head: classes.tableHead }}
+                        sx={{ fontWeight: 800 }}
                     >
                         {headCell.enableSort ? (
                             <TableSortLabel
@@ -91,9 +86,9 @@ function AdminTableHead(props) {
                             >
                                 {headCell.label}
                                 {orderBy === headCell.id ? (
-                                    <span className={classes.visuallyHidden}>
+                                    <StyledSpan>
                                         {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
-                                    </span>
+                                    </StyledSpan>
                                 ) : null}
                             </TableSortLabel>
                         ) : headCell.label}

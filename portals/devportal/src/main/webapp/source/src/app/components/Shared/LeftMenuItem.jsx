@@ -18,30 +18,48 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link, withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import classNames from 'classnames';
-import Typography from '@material-ui/core/Typography';
-import { withStyles, makeStyles } from '@material-ui/core/styles';
-import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@mui/material/Typography';
 import CustomIcon from './CustomIcon';
-
-const useStylesBootstrap = makeStyles((theme) => ({
-    arrow: {
-        color: theme.palette.common.black,
-    },
-    tooltip: {
-        backgroundColor: theme.palette.common.black,
-    },
-}));
+import {useTheme} from "@mui/material";
+import Tooltip from "@mui/material/Tooltip";
 
 function BootstrapTooltip(props) {
-    const classes = useStylesBootstrap();
 
-    return <Tooltip arrow classes={classes} {...props} />;
+    return <Tooltip arrow classes={(theme) => ({
+        arrow: {
+            color: theme.palette.common.black,
+        },
+        tooltip: {
+            backgroundColor: theme.palette.common.black,
+        },
+    })} {...props} />;
 }
-const styles = (theme) => ({
-    leftLInkText: {
+
+const PREFIX = 'LeftMenuItem';
+
+const classes = {
+    leftLInkText: `${PREFIX}-leftLInkText`,
+    leftLInkText_IconLeft: `${PREFIX}-leftLInkText_IconLeft`,
+    LeftMenu: `${PREFIX}-LeftMenu`,
+    leftLInk: `${PREFIX}-leftLInk`,
+    leftLink_Icon: `${PREFIX}-leftLink_Icon`,
+    leftLink_IconLeft: `${PREFIX}-leftLink_IconLeft`,
+    noIcon: `${PREFIX}-noIcon`,
+    leftLInkText_NoText: `${PREFIX}-leftLInkText_NoText`,
+    leftLInkText_NoTextWhenSmall: `${PREFIX}-leftLInkText_NoTextWhenSmall`,
+    submenu: `${PREFIX}-submenu`
+};
+
+const StyledBootstrapTooltip = styled(BootstrapTooltip)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.leftLInkText}`]: {
         color: theme.palette.getContrastText(theme.custom.leftMenu.background),
         textTransform: 'capitalize',
         width: '100%',
@@ -50,10 +68,12 @@ const styles = (theme) => ({
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
     },
-    leftLInkText_IconLeft: {
+
+    [`& .${classes.leftLInkText_IconLeft}`]: {
         paddingLeft: 10,
     },
-    LeftMenu: {
+
+    [`& .${classes.LeftMenu}`]: {
         backgroundColor: theme.custom.leftMenu.background,
         width: theme.custom.leftMenu.width,
         textAlign: 'center',
@@ -63,11 +83,12 @@ const styles = (theme) => ({
         left: 0,
         top: 0,
     },
-    leftLInk: {
+
+    [`& .${classes.leftLInk}`]: {
         paddingTop: theme.spacing(0.6),
         paddingBottom: theme.spacing(0.6),
         paddingLeft: theme.spacing(1),
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('md')]: {
             paddingLeft: 0,
         },
         paddingRight: 0,
@@ -78,33 +99,40 @@ const styles = (theme) => ({
         alignItems: 'center',
         justifyContent: 'center',
     },
-    leftLink_Icon: {
+
+    [`& .${classes.leftLink_Icon}`]: {
         color: theme.palette.getContrastText(theme.custom.leftMenu.background),
         fontSize: theme.custom.leftMenu.iconSize + 'px',
     },
-    leftLink_IconLeft: {
+
+    [`& .${classes.leftLink_IconLeft}`]: {
         display: 'flex',
         alignItems: 'center',
     },
-    noIcon: {
+
+    [`& .${classes.noIcon}`]: {
         display: 'none',
     },
-    leftLInkText_NoText: {
+
+    [`& .${classes.leftLInkText_NoText}`]: {
         display: 'none',
     },
-    leftLInkText_NoTextWhenSmall: {
-        [theme.breakpoints.down('sm')]: {
+
+    [`& .${classes.leftLInkText_NoTextWhenSmall}`]: {
+        [theme.breakpoints.down('md')]: {
             display: 'none !important',
         }
     },
-    submenu: {
+
+    [`& .${classes.submenu}`]: {
         paddingLeft: 12,
-        [theme.breakpoints.down('sm')]: {
+        [theme.breakpoints.down('md')]: {
             paddingLeft: 0,
             color: theme.palette.grey[500],
         }
-    },
-});
+    }
+}));
+
 /**
  * Renders the left menu section.
  * @param {JSON} props props passed from parent
@@ -114,8 +142,9 @@ function LeftMenuItem(props) {
     const [selected, setSelected] = useState(false);
 
     const {
-        classes, theme, Icon, to, history, text, route, submenu, open, id,
+        Icon, to, history, text, route, submenu, open, id,
     } = props;
+    const theme = useTheme();
     const routeToCheck = route || text;
     const { leftMenu } = theme.custom;
     const strokeColor = theme.palette.getContrastText(leftMenu.background);
@@ -149,7 +178,7 @@ function LeftMenuItem(props) {
         activeBackground = leftMenu.leftMenuActiveSubmenu;
     }
     return (
-        <BootstrapTooltip title={props.text} placement='right'>
+        <StyledBootstrapTooltip title={props.text} placement='right'>
             <div>
                 <Link
                     className={classNames(
@@ -231,7 +260,7 @@ function LeftMenuItem(props) {
 
                 </Link>
             </div>
-        </BootstrapTooltip>
+        </StyledBootstrapTooltip>
     );
 }
 LeftMenuItem.defaultProps = {
@@ -257,4 +286,4 @@ LeftMenuItem.propTypes = {
     submenu: PropTypes.bool,
     id: PropTypes.string.isRequired,
 };
-export default withRouter(withStyles(styles, { withTheme: true })(LeftMenuItem));
+export default withRouter((LeftMenuItem));

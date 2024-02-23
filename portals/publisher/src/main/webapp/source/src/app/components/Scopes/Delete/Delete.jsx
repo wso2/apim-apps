@@ -17,40 +17,51 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
+import Button from '@mui/material/Button';
+import Icon from '@mui/material/Icon';
 import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
 import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api';
 
-const styles = {
-    appBar: {
+const PREFIX = 'Delete';
+
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    flex: `${PREFIX}-flex`,
+    popupHeader: `${PREFIX}-popupHeader`,
+    splitWrapper: `${PREFIX}-splitWrapper`,
+    docName: `${PREFIX}-docName`,
+    button: `${PREFIX}-button`
+};
+
+const Root = styled('div')({
+    [`& .${classes.appBar}`]: {
         position: 'relative',
     },
-    flex: {
+    [`& .${classes.flex}`]: {
         flex: 1,
     },
-    popupHeader: {
+    [`& .${classes.popupHeader}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    splitWrapper: {
+    [`& .${classes.splitWrapper}`]: {
         padding: 0,
     },
-    docName: {
+    [`& .${classes.docName}`]: {
         alignItems: 'center',
         display: 'flex',
     },
-    button: {
+    [`& .${classes.button}`]: {
         height: 30,
         marginLeft: 30,
     },
-};
+});
 
 /**
 *
@@ -97,7 +108,7 @@ function Delete(props) {
     const { scopeName } = props;
 
     return (
-        <div>
+        <Root>
             <Button
                 onClick={toggleOpen}
                 disabled={isRestricted(['apim:shared_scope_manage']) || usageCount > 0}
@@ -139,7 +150,7 @@ function Delete(props) {
                 callback={runAction}
                 open={open}
             />
-        </div>
+        </Root>
     );
 }
 Delete.propTypes = {
@@ -150,4 +161,4 @@ Delete.propTypes = {
     fetchScopeData: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Delete));
+export default injectIntl((Delete));

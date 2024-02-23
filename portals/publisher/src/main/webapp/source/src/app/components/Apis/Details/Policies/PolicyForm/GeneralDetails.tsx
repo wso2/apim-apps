@@ -17,28 +17,37 @@
  */
 
 import React, { FC } from 'react';
-import { makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormGroup from '@material-ui/core/FormGroup';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import { styled } from '@mui/material/styles';
+import { Theme } from '@mui/material';
+import Box from '@mui/material/Box';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormGroup from '@mui/material/FormGroup';
+import Checkbox from '@mui/material/Checkbox';
+import FormHelperText from '@mui/material/FormHelperText';
+import InputAdornment from '@mui/material/InputAdornment';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import FormControl from '@material-ui/core/FormControl';
+import FormControl from '@mui/material/FormControl';
 import { ACTIONS } from './PolicyCreateForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    mandatoryStar: {
+const PREFIX = 'GeneralDetails';
+
+const classes = {
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
+    formGroup: `${PREFIX}-formGroup`
+};
+
+const StyledBox = styled(Box)(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    formGroup: {
+
+    [`& .${classes.formGroup}`]: {
         display: 'flex',
         flexDirection: 'row',
-    },
+    }
 }));
 
 interface GeneralDetailsProps {
@@ -65,7 +74,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
     dispatch,
     isViewMode,
 }) => {
-    const classes = useStyles();
+
 
     // Validates whether atleast one flow (i.e. request, response or fault) is selected
     // True if none of the flows are selected.
@@ -109,22 +118,22 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
         }
     };
 
-        /**
+    /**
      * Function to handle supported Api Type related checkbox changes
      * @param {React.ChangeEvent<HTMLInputElement>} event event
      */
-         const handleApiTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-            if (dispatch) {
-                dispatch({
-                    type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
-                    name: event.target.name,
-                    checked: event.target.checked,
-                });
-            }
-        };
+    const handleApiTypeChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        if (dispatch) {
+            dispatch({
+                type: ACTIONS.UPDATE_SUPPORTED_API_TYPES,
+                name: event.target.name,
+                checked: event.target.checked,
+            });
+        }
+    };
 
     return (
-        <Box display='flex' flexDirection='row' mt={1}>
+        <StyledBox display='flex' flexDirection='row' mt={1}>
             <Box width='40%'>
                 <Typography color='inherit' variant='subtitle2' component='div'>
                     <FormattedMessage
@@ -216,7 +225,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                             style: isViewMode ? { cursor: 'auto' } : {},
                         }}
                         InputProps={{
-                            startAdornment: <InputAdornment position="start">v</InputAdornment>,
+                            startAdornment: <InputAdornment position='start'>v</InputAdornment>,
                         }}
                     />
                     <TextField
@@ -407,7 +416,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                     </Box>
                 </Box>
             </Box>
-        </Box>
+        </StyledBox>
     );
 };
 

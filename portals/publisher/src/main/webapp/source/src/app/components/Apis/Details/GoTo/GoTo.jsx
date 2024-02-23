@@ -21,29 +21,50 @@
 /* eslint no-unused-expressions: 0 */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Downshift from 'downshift';
-import { makeStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Icon from '@material-ui/core/Icon';
+import TextField from '@mui/material/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Backdrop from '@material-ui/core/Backdrop';
-import SearchIcon from '@material-ui/icons/Search';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import Backdrop from '@mui/material/Backdrop';
+import SearchIcon from '@mui/icons-material/Search';
+import InputAdornment from '@mui/material/InputAdornment';
 import GoToSuggestions from 'AppComponents/Apis/Details/GoTo/Components/GoToSuggestions';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'GoTo';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    container: `${PREFIX}-container`,
+    paper: `${PREFIX}-paper`,
+    chip: `${PREFIX}-chip`,
+    inputRoot: `${PREFIX}-inputRoot`,
+    inputInput: `${PREFIX}-inputInput`,
+    divider: `${PREFIX}-divider`,
+    linkButton: `${PREFIX}-linkButton`,
+    goToWrapper: `${PREFIX}-goToWrapper`,
+    downshiftWrapper: `${PREFIX}-downshiftWrapper`,
+    backdrop: `${PREFIX}-backdrop`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
-        height: 250,
     },
-    container: {
+
+    [`& .${classes.container}`]: {
         flexGrow: 1,
         position: 'relative',
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         position: 'absolute',
         zIndex: theme.zIndex.goToSearch,
         marginTop: theme.spacing(2),
@@ -51,21 +72,26 @@ const useStyles = makeStyles((theme) => ({
         left: 0,
         right: 0,
     },
-    chip: {
+
+    [`& .${classes.chip}`]: {
         margin: theme.spacing(0.5, 0.25),
     },
-    inputRoot: {
+
+    [`& .${classes.inputRoot}`]: {
         flexWrap: 'wrap',
     },
-    inputInput: {
+
+    [`& .${classes.inputInput}`]: {
         width: 'auto',
         flexGrow: 1,
         fontSize: '20px',
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         height: theme.spacing(2),
     },
-    linkButton: {
+
+    [`& .${classes.linkButton}`]: {
         display: 'grid',
         alignItems: 'center',
         flexDirection: 'column',
@@ -73,10 +99,12 @@ const useStyles = makeStyles((theme) => ({
         cursor: 'pointer',
         minWidth: 30,
     },
-    goToWrapper: {
+
+    [`&.${classes.goToWrapper}`]: {
         position: 'relative',
     },
-    downshiftWrapper: {
+
+    [`& .${classes.downshiftWrapper}`]: {
         padding: theme.spacing(1),
         background: theme.palette.background.paper,
         borderRadius: 10,
@@ -84,11 +112,12 @@ const useStyles = makeStyles((theme) => ({
         marginBottom: '20%',
         boxShadow: '0px 0px 20px 3px rgb(0 0 0 / 56%)',
     },
-    backdrop: {
+
+    [`& .${classes.backdrop}`]: {
         zIndex: theme.zIndex.drawer + 1,
         color: '#fff',
         backdropFilter: 'blur(1px)',
-    },
+    }
 }));
 
 /**
@@ -98,7 +127,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function renderInput(inputProps) {
     const {
-        InputProps, classes, ref, ...other
+        InputProps, ref, ...other
     } = inputProps;
 
     return (
@@ -141,7 +170,7 @@ function GoTo(props) {
     const {
         isAPIProduct, api, openPageSearch, setOpenPageSearch,
     } = props;
-    const classes = useStyles();
+
     const [showSearch, setShowSearch] = useState(openPageSearch);
     const intl = useIntl();
     useEffect(() => {
@@ -161,7 +190,7 @@ function GoTo(props) {
     };
 
     return (
-        <div className={classes.goToWrapper}>
+        <Root className={classes.goToWrapper}>
             <Button className={classes.linkButton} onClick={toggleSearch}>
                 <Icon>find_in_page</Icon>
                 <Typography variant='caption'>
@@ -220,13 +249,12 @@ function GoTo(props) {
                     )}
                 </div>
             </Backdrop>
-        </div>
+        </Root>
     );
 }
 
 GoTo.propTypes = {
     api: PropTypes.shape({}).isRequired,
-    isAPIProduct: PropTypes.bool.isRequired,
 };
 
 export default GoTo;

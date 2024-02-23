@@ -17,6 +17,7 @@
  */
 
 import React, { useMemo, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
@@ -24,49 +25,72 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import MuiAlert from 'AppComponents/Shared/MuiAlert';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Joi from '@hapi/joi';
-import TextField from '@material-ui/core/TextField';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import { makeStyles } from '@material-ui/core/styles';
-import FormLabel from '@material-ui/core/FormLabel';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Radio from '@material-ui/core/Radio';
-import FormControl from '@material-ui/core/FormControl';
-import HelpOutline from '@material-ui/icons/HelpOutline';
-import Tooltip from '@material-ui/core/Tooltip';
-import Typography from '@material-ui/core/Typography';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormLabel from '@mui/material/FormLabel';
+import RadioGroup from '@mui/material/RadioGroup';
+import Radio from '@mui/material/Radio';
+import FormControl from '@mui/material/FormControl';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'AdvertiseInfo';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    iconSpace: `${PREFIX}-iconSpace`,
+    actionSpace: `${PREFIX}-actionSpace`,
+    subHeading: `${PREFIX}-subHeading`,
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
+    alertGrid: `${PREFIX}-alertGrid`,
+    alertTitle: `${PREFIX}-alertTitle`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(3),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    iconSpace: {
+
+    [`& .${classes.iconSpace}`]: {
         marginLeft: theme.spacing(0.5),
     },
-    actionSpace: {
+
+    [`& .${classes.actionSpace}`]: {
         margin: '-7px auto',
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
         paddingBottom: '20px',
     },
-    mandatoryStar: {
+
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    alertGrid: {
+
+    [`& .${classes.alertGrid}`]: {
         width: '100%',
     },
-    alertTitle: {
+
+    [`& .${classes.alertTitle}`]: {
         fontWeight: theme.typography.fontWeightMedium,
         marginTop: -2,
-    },
+    }
 }));
 
 /**
@@ -93,7 +117,7 @@ const AdvertiseInfo = (props) => {
     const {
         allRevisions,
     } = useRevisionContext();
-    const classes = useStyles();
+
     const [apiFromContext] = useAPI();
     const isDeployed = useMemo(() => {
         if (allRevisions) {
@@ -167,7 +191,7 @@ const AdvertiseInfo = (props) => {
     };
 
     return (
-        <Grid container spacing={1} alignItems='flex-start'>
+        <StyledGrid container spacing={1} alignItems='flex-start'>
             <Grid item>
                 <Box>
                     <FormControl component='fieldset' style={{ display: 'flex' }}>
@@ -365,7 +389,7 @@ const AdvertiseInfo = (props) => {
                     </>
                 )}
             </Grid>
-        </Grid>
+        </StyledGrid>
     );
 };
 

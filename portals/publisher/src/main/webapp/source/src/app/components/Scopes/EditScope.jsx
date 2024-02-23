@@ -15,94 +15,130 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
+import Grid from '@mui/material/Grid';
+import { styled } from '@mui/material/styles';
+import TextField from '@mui/material/TextField';
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { Progress } from 'AppComponents/Shared';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import { withStyles } from '@material-ui/core/styles';
 import Alert from 'AppComponents/Shared/Alert';
-import Paper from '@material-ui/core/Paper';
-import FormControl from '@material-ui/core/FormControl';
-import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
+import Paper from '@mui/material/Paper';
+import FormControl from '@mui/material/FormControl';
+import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
 import APIValidation from 'AppData/APIValidation';
-import Chip from '@material-ui/core/Chip';
-import { red } from '@material-ui/core/colors/';
-import Icon from '@material-ui/core/Icon';
+import Chip from '@mui/material/Chip';
+import { red } from '@mui/material/colors/';
+import Icon from '@mui/material/Icon';
 import base64url from 'base64url';
-import InputAdornment from '@material-ui/core/InputAdornment';
+import InputAdornment from '@mui/material/InputAdornment';
 import { isRestricted } from 'AppData/AuthManager';
-import Error from '@material-ui/core/SvgIcon/SvgIcon';
+import Error from '@mui/material/SvgIcon';
 import API from 'AppData/api';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'EditScope';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    titleLink: `${PREFIX}-titleLink`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    FormControlLabel: `${PREFIX}-FormControlLabel`,
+    buttonSection: `${PREFIX}-buttonSection`,
+    saveButton: `${PREFIX}-saveButton`,
+    helpText: `${PREFIX}-helpText`,
+    extraPadding: `${PREFIX}-extraPadding`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    titleGrid: `${PREFIX}-titleGrid`
+};
+
+const StyledGrid = styled(Grid)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         flexGrow: 1,
         marginTop: 10,
         display: 'flex',
         flexDirection: 'column',
         padding: 20,
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
     },
-    titleLink: {
+
+    [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
         marginRight: theme.spacing(1),
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    FormControl: {
-        padding: `0 0 0 ${theme.spacing(1)}px`,
+
+    [`& .${classes.FormControl}`]: {
+        padding: `0 0 0 ${theme.spacing(1)}`,
         width: '100%',
         marginTop: 0,
     },
-    FormControlOdd: {
-        padding: `0 0 0 ${theme.spacing(1)}px`,
+
+    [`& .${classes.FormControlOdd}`]: {
+        padding: `0 0 0 ${theme.spacing(1)}`,
         backgroundColor: theme.palette.background.paper,
         width: '100%',
         marginTop: 0,
     },
-    FormControlLabel: {
+
+    [`& .${classes.FormControlLabel}`]: {
         marginBottom: theme.spacing(1),
         marginTop: theme.spacing(1),
         fontSize: theme.typography.caption.fontSize,
     },
-    buttonSection: {
+
+    [`& .${classes.buttonSection}`]: {
         paddingTop: theme.spacing(3),
     },
-    saveButton: {
+
+    [`& .${classes.saveButton}`]: {
         marginRight: theme.spacing(2),
     },
-    helpText: {
+
+    [`& .${classes.helpText}`]: {
         color: theme.palette.text.hint,
         marginTop: theme.spacing(1),
     },
-    extraPadding: {
+
+    [`& .${classes.extraPadding}`]: {
         paddingLeft: theme.spacing(2),
     },
-    addNewOther: {
+
+    [`& .${classes.addNewOther}`]: {
         paddingTop: 40,
     },
-    titleGrid: {
+
+    [`& .${classes.titleGrid}`]: {
         ' & .MuiGrid-item': {
             padding: 0,
             margin: 0,
         },
-    },
-});
+    }
+}));
 
 /**
  * Display a comment list
@@ -345,7 +381,6 @@ class EditScope extends React.Component {
      * @memberof EditScope
      */
     render() {
-        const { classes } = this.props;
         const {
             sharedScope, roleValidity, validRoles, invalidRoles, valid,
         } = this.state;
@@ -354,7 +389,7 @@ class EditScope extends React.Component {
             return <Progress />;
         }
         return (
-            <Grid container spacing={3}>
+            <StyledGrid container spacing={3}>
                 <Grid item sm={12} md={12} />
                 {/*
             Following two grids control the placement of whole create page
@@ -520,7 +555,7 @@ class EditScope extends React.Component {
                         </Grid>
                     </Grid>
                 </Grid>
-            </Grid>
+            </StyledGrid>
         );
     }
 }
@@ -544,4 +579,4 @@ EditScope.defaultProps = {
     match: { params: {} },
 };
 
-export default injectIntl(withRouter(withStyles(styles)(EditScope)));
+export default injectIntl(withRouter((EditScope)));

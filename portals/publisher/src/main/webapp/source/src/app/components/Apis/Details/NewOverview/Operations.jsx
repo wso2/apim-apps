@@ -17,33 +17,44 @@
  */
 
 import React from 'react';
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Chip from '@material-ui/core/Chip';
-import LaunchIcon from '@material-ui/icons/Launch';
-import Box from '@material-ui/core/Box';
+import Chip from '@mui/material/Chip';
+import LaunchIcon from '@mui/icons-material/Launch';
+import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import Typography from '@material-ui/core/Typography';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import Typography from '@mui/material/Typography';
 import ApiContext from '../components/ApiContext';
 
-const styles = (theme) => ({
-    contentWrapper: {
+const PREFIX = 'Operations';
+
+const classes = {
+    contentWrapper: `${PREFIX}-contentWrapper`
+};
+
+const StyledApiContextConsumer = styled(ApiContext.Consumer)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.contentWrapper}`]: {
         marginTop: theme.spacing(2),
         maxHeight: '250px',
         overflowY: 'auto',
-    },
-});
+    }
+}));
 
 /**
  *
  * @param {*} props
  */
 function RenderMethodBase(props) {
-    const { theme, method } = props;
+    const { method } = props;
+    const theme = useTheme();
     const methodLower = method.toLowerCase();
     let chipColor = theme.custom.operationChipColor
         ? theme.custom.operationChipColor[methodLower]
@@ -71,15 +82,15 @@ RenderMethodBase.propTypes = {
     classes: PropTypes.shape({}).isRequired,
 };
 
-const RenderMethod = withTheme(RenderMethodBase);
+const RenderMethod = RenderMethodBase;
 /**
  *
  * @param {*} props
  */
 function Operations(props) {
-    const { classes, parentClasses } = props;
+    const {  parentClasses } = props;
     return (
-        <ApiContext.Consumer>
+        <StyledApiContextConsumer>
             {({ api }) => (
                 <>
                     <div className={parentClasses.titleWrapper}>
@@ -128,13 +139,12 @@ function Operations(props) {
                     </div>
                 </>
             )}
-        </ApiContext.Consumer>
+        </StyledApiContextConsumer>
     );
 }
 
 Operations.propTypes = {
     parentClasses: PropTypes.shape({}).isRequired,
-    classes: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles)(Operations);
+export default (Operations);

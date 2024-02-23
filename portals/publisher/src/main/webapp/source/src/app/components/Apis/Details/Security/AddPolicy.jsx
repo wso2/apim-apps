@@ -18,50 +18,70 @@
 
 
 import React, { Component } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Divider from '@material-ui/core/Divider';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import { withStyles } from '@material-ui/core/styles';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Divider from '@mui/material/Divider';
+import Input from '@mui/material/Input';
+import InputLabel from '@mui/material/InputLabel';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 import { FormattedMessage, injectIntl } from 'react-intl';
 
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 
-const styles = (theme) => ({
-    addNewWrapper: {
+const PREFIX = 'AddPolicy';
+
+const classes = {
+    addNewWrapper: `${PREFIX}-addNewWrapper`,
+    addNewHeader: `${PREFIX}-addNewHeader`,
+    addNewOther: `${PREFIX}-addNewOther`,
+    button: `${PREFIX}-button`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    addJsonContent: `${PREFIX}-addJsonContent`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.addNewWrapper}`]: {
         backgroundColor: theme.palette.background.paper,
         color: theme.palette.getContrastText(theme.palette.background.paper),
         border: 'solid 1px ' + theme.palette.grey['300'],
         borderRadius: theme.shape.borderRadius,
         marginTop: theme.spacing(2),
     },
-    addNewHeader: {
+
+    [`& .${classes.addNewHeader}`]: {
         padding: theme.spacing(2),
         backgroundColor: theme.palette.grey['300'],
         fontSize: theme.typography.h6.fontSize,
         color: theme.typography.h6.color,
         fontWeight: theme.typography.h6.fontWeight,
     },
-    addNewOther: {
+
+    [`& .${classes.addNewOther}`]: {
         padding: theme.spacing(2),
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.primary.main),
     },
-    contentWrapper: {
+
+    [`&.${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
     },
-    addJsonContent: {
+
+    [`& .${classes.addJsonContent}`]: {
         whiteSpace: 'pre',
-    },
-});
+    }
+}));
 
 class AddPolicy extends Component {
     /**
@@ -148,9 +168,9 @@ class AddPolicy extends Component {
     }
 
     render() {
-        const { classes } = this.props;
+        const { } = this.props;
         return (
-            <div className={classes.contentWrapper}>
+            <Root className={classes.contentWrapper} style={{ border: '3px solid pink'}}>
                 <div className={classes.addNewWrapper}>
                     <Typography className={classes.addNewHeader}>
                         <FormattedMessage
@@ -216,7 +236,7 @@ class AddPolicy extends Component {
                         </Button>
                     </div>
                 </div>
-            </div>
+            </Root>
         );
     }
 }
@@ -230,4 +250,4 @@ AddPolicy.propTypes = {
 };
 
 
-export default injectIntl(withStyles(styles)(AddPolicy));
+export default injectIntl(AddPolicy);

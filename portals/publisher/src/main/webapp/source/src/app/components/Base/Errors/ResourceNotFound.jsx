@@ -17,79 +17,77 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import Paper from '@material-ui/core/Paper';
+import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { Link } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import Container from '@material-ui/core/Container';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import Container from '@mui/material/Container';
 import Image404 from './Custom404Image';
 
 const ResourceNotFound = (props) => {
     const { response } = props;
     const { message = {} } = props;
 
-    return (
-        <>
-            <Container maxWidth='md'>
-                <Box padding={4}>
-                    <Paper elevation={0}>
-                        <Box padding={4}>
-                            <Grid container alignItems='center' justify='center' style={{ height: '100%' }}>
-                                <Grid item xs={12} md={6}>
-                                    <Typography variant='h5' gutterBottom>
-                                        {message.title}
-                                    </Typography>
-                                    <Typography variant='subtitle1' gutterBottom>
-                                        {message.body}
-                                        <span style={{ color: 'green' }}>
-                                            {' '}
-                                            {response ? response.statusText : ''}
-                                            {' '}
-                                        </span>
-                                    </Typography>
-                                    {message.more}
-                                    <Box py={5}>
-                                        <Box pb={2}>
-                                            <Typography variant='subtitle1'>
-                                                <FormattedMessage
-                                                    id='Base.Errors.ResourceNotFound.more.links'
-                                                    defaultMessage='You may check the links below'
-                                                />
-                                            </Typography>
-                                        </Box>
-                                        <Link to='/apis/' style={{ marginRight: 8 }}>
-                                            <Button variant='contained' color='primary'>
-                                                <FormattedMessage
-                                                    id='Base.Errors.ResourceNotFound.api.list'
-                                                    defaultMessage='API List'
-                                                />
-                                            </Button>
-                                        </Link>
-                                        <Link to='/api-products/'>
-                                            <Button variant='contained' color='primary'>
-                                                <FormattedMessage
-                                                    id='Base.Errors.ResourceNotFound.api.product.list'
-                                                    defaultMessage='API Product List'
-                                                />
-                                            </Button>
-                                        </Link>
+    return <>
+        <Container maxWidth='md'>
+            <Box padding={4}>
+                <Paper elevation={0}>
+                    <Box padding={4}>
+                        <Grid container alignItems='center' justifyContent='center' style={{ height: '100%' }}>
+                            <Grid item xs={12} md={6}>
+                                <Typography variant='h5' gutterBottom>
+                                    {message.title}
+                                </Typography>
+                                <Typography variant='subtitle1' gutterBottom>
+                                    {message.body}
+                                    <span style={{ color: 'green' }}>
+                                        {' '}
+                                        {response ? response.statusText : ''}
+                                        {' '}
+                                    </span>
+                                </Typography>
+                                {message.more}
+                                <Box py={5}>
+                                    <Box pb={2}>
+                                        <Typography variant='subtitle1'>
+                                            <FormattedMessage
+                                                id='Base.Errors.ResourceNotFound.more.links'
+                                                defaultMessage='You may check the links below'
+                                            />
+                                        </Typography>
                                     </Box>
-                                </Grid>
-                                <Grid item xs={12} md={6}>
-                                    {/* Image */}
-                                    <Image404 style={{ fontSize: 400, fill: '#ccc' }} />
-                                </Grid>
+                                    <Link to='/apis/' style={{ marginRight: 8 }}>
+                                        <Button variant='contained' color='primary'>
+                                            <FormattedMessage
+                                                id='Base.Errors.ResourceNotFound.api.list'
+                                                defaultMessage='API List'
+                                            />
+                                        </Button>
+                                    </Link>
+                                    <Link to='/api-products/'>
+                                        <Button variant='contained' color='primary'>
+                                            <FormattedMessage
+                                                id='Base.Errors.ResourceNotFound.api.product.list'
+                                                defaultMessage='API Product List'
+                                            />
+                                        </Button>
+                                    </Link>
+                                </Box>
                             </Grid>
-                        </Box>
-                    </Paper>
-                </Box>
-            </Container>
-        </>
-    );
+                            <Grid item xs={12} md={6}>
+                                {/* Image */}
+                                <Image404 style={{ fontSize: 400, fill: '#ccc' }} />
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Paper>
+            </Box>
+        </Container>
+    </>;
 };
 
 ResourceNotFound.defaultProps = {

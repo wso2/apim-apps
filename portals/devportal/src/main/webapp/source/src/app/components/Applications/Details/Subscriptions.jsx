@@ -17,25 +17,25 @@
  */
 
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
-import MuiDialogTitle from '@material-ui/core/DialogTitle';
-import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
-import HighlightOffIcon from '@material-ui/icons/HighlightOff';
-import SearchIcon from '@material-ui/icons/Search';
+import Typography from '@mui/material/Typography';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
+import Dialog from '@mui/material/Dialog';
+import Button from '@mui/material/Button';
+import MuiDialogTitle from '@mui/material/DialogTitle';
+import Box from '@mui/material/Box';
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import SearchIcon from '@mui/icons-material/Search';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Progress from 'AppComponents/Shared/Progress';
 import Alert from 'AppComponents/Shared/Alert';
@@ -47,13 +47,33 @@ import { app } from 'Settings';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import SubscriptionTableData from './SubscriptionTableData';
 
-/**
- *
- * @inheritdoc
- * @param {*} theme theme
- */
-const styles = (theme) => ({
-    searchRoot: {
+const PREFIX = 'Subscriptions';
+
+const classes = {
+    searchRoot: `${PREFIX}-searchRoot`,
+    input: `${PREFIX}-input`,
+    iconButton: `${PREFIX}-iconButton`,
+    divider: `${PREFIX}-divider`,
+    root: `${PREFIX}-root`,
+    subscribePop: `${PREFIX}-subscribePop`,
+    firstCell: `${PREFIX}-firstCell`,
+    cardTitle: `${PREFIX}-cardTitle`,
+    cardContent: `${PREFIX}-cardContent`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    dialogTitle: `${PREFIX}-dialogTitle`,
+    genericMessageWrapper: `${PREFIX}-genericMessageWrapper`,
+    searchWrapper: `${PREFIX}-searchWrapper`,
+    searchResults: `${PREFIX}-searchResults`,
+    clearSearchIcon: `${PREFIX}-clearSearchIcon`,
+    subsTable: `${PREFIX}-subsTable`,
+};
+
+const StyledProgress = styled(Progress)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.searchRoot}`]: {
         padding: '2px 4px',
         display: 'flex',
         alignItems: 'center',
@@ -62,35 +82,43 @@ const styles = (theme) => ({
         marginLeft: theme.spacing(2),
         marginRight: theme.spacing(2),
     },
-    input: {
+
+    [`& .${classes.input}`]: {
         marginLeft: theme.spacing(1),
         flex: 1,
     },
-    iconButton: {
+
+    [`& .${classes.iconButton}`]: {
         padding: 10,
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         height: 28,
         margin: 4,
     },
-    root: {
+
+    [`& .${classes.root}`]: {
         padding: theme.spacing(3),
         '& h5': {
             color: theme.palette.getContrastText(theme.palette.background.default),
         },
     },
-    subscribePop: {
+
+    [`& .${classes.subscribePop}`]: {
         '& span, & h5, & label, & input, & td, & li': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
     },
-    firstCell: {
+
+    [`& .${classes.firstCell}`]: {
         paddingLeft: 0,
     },
-    cardTitle: {
+
+    [`& .${classes.cardTitle}`]: {
         paddingLeft: theme.spacing(2),
     },
-    cardContent: {
+
+    [`& .${classes.cardContent}`]: {
         '& table tr td': {
             paddingLeft: theme.spacing(1),
         },
@@ -113,7 +141,8 @@ const styles = (theme) => ({
         },
 
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         alignItems: 'center',
         paddingBottom: theme.spacing(2),
@@ -121,18 +150,22 @@ const styles = (theme) => ({
             marginRight: theme.spacing(1),
         },
     },
-    dialogTitle: {
+
+    [`& .${classes.dialogTitle}`]: {
         display: 'flex',
         alignItems: 'flex-start',
         padding: theme.spacing(1),
     },
-    genericMessageWrapper: {
+
+    [`& .${classes.genericMessageWrapper}`]: {
         margin: theme.spacing(2),
     },
-    searchWrapper: {
+
+    [`& .${classes.searchWrapper}`]: {
         flex: 1,
     },
-    searchResults: {
+
+    [`& .${classes.searchResults}`]: {
         height: 30,
         display: 'flex',
         paddingTop: theme.spacing(1),
@@ -140,15 +173,18 @@ const styles = (theme) => ({
         paddingBottom: 0,
         paddingLeft: theme.spacing(2),
     },
-    clearSearchIcon: {
+
+    [`& .${classes.clearSearchIcon}`]: {
         cursor: 'pointer',
     },
-    subsTable: {
+
+    [`& .${classes.subsTable}`]: {
         '& td': {
             padding: '4px 8px',
         },
     },
-});
+}));
+
 /**
  *
  *
@@ -434,13 +470,32 @@ class Subscriptions extends React.Component {
             subscriptions, apisNotFound, subscriptionsNotFound,
         } = this.state;
         const { applicationId } = this.props.application;
-        const { classes, intl } = this.props;
+        const { intl } = this.props;
 
         if (subscriptions) {
             return (
-                <div className={classes.root}>
-                    <div className={classes.titleWrapper}>
-                        <Typography variant='h5' className={classes.keyTitle}>
+                <Box sx={(theme) => ({
+                    padding: theme.spacing(3),
+                    '& h5': {
+                        color: theme.palette.getContrastText(theme.palette.background.default),
+                    },
+                })}
+                >
+                    <Box sx={(theme) => ({
+                        display: 'flex',
+                        alignItems: 'center',
+                        paddingBottom: theme.spacing(2),
+                        '& h5': {
+                            marginRight: theme.spacing(1),
+                        },
+                    })}
+                    >
+                        <Typography
+                            variant='h5'
+                            sx={{
+                                textTransform: 'capitalize',
+                            }}
+                        >
                             <FormattedMessage
                                 id='Applications.Details.Subscriptions.subscription.management'
                                 defaultMessage='Subscription Management'
@@ -458,13 +513,22 @@ class Subscriptions extends React.Component {
                                 defaultMessage='Subscribe APIs'
                             />
                         </Button>
-                    </div>
-                    <Grid container className='tab-grid' spacing={2}>
+                    </Box>
+                    <Grid container sx='tab-grid' spacing={2}>
                         <Grid item xs={12} xl={11}>
                             {(subscriptions && subscriptions.length === 0)
                                 ? (
-                                    <div className={classes.genericMessageWrapper}>
-                                        <InlineMessage type='info' className={classes.dialogContainer}>
+                                    <Box sx={(theme) => ({
+                                        margin: theme.spacing(2),
+                                    })}
+                                    >
+                                        <InlineMessage
+                                            type='info'
+                                            sx={(theme) => ({
+                                                width: 1000,
+                                                padding: theme.spacing(2),
+                                            })}
+                                        >
                                             <Typography variant='h5' component='h3'>
                                                 <FormattedMessage
                                                     id='Applications.Details.Subscriptions.no.subscriptions'
@@ -478,17 +542,48 @@ class Subscriptions extends React.Component {
                                                 />
                                             </Typography>
                                         </InlineMessage>
-                                    </div>
+                                    </Box>
                                 )
                                 : (
-                                    <div className={classes.cardContent}>
+                                    <Box sx={(theme) => ({
+                                        '& table tr td': {
+                                            paddingLeft: theme.spacing(1),
+                                        },
+                                        '& table tr:nth-child(even)': {
+                                            backgroundColor: theme.custom.listView.tableBodyEvenBackgrund,
+                                            '& td, & a': {
+                                                color: theme.palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund),
+                                            },
+                                        },
+                                        '& table tr:nth-child(odd)': {
+                                            backgroundColor: theme.custom.listView.tableBodyOddBackgrund,
+                                            '& td, & a': {
+                                                color: theme.palette.getContrastText(theme.custom.listView.tableBodyOddBackgrund),
+                                            },
+                                        },
+                                        '& table th': {
+                                            backgroundColor: theme.custom.listView.tableHeadBackground,
+                                            color: theme.palette.getContrastText(theme.custom.listView.tableHeadBackground),
+                                            paddingLeft: theme.spacing(1),
+                                        },
+
+                                    })}
+                                    >
                                         {subscriptionsNotFound ? (
                                             <ResourceNotFound />
                                         ) : (
-                                            <Table className={classes.subsTable}>
+                                            <Table sx={{
+                                                '& td': {
+                                                    padding: '4px 8px',
+                                                },
+                                            }}
+                                            >
                                                 <TableHead>
                                                     <TableRow>
-                                                        <TableCell className={classes.firstCell}>
+                                                        <TableCell sx={{
+                                                            paddingLeft: 0,
+                                                        }}
+                                                        >
                                                             <FormattedMessage
                                                                 id='Applications.Details.Subscriptions.api.name'
                                                                 defaultMessage='API'
@@ -541,7 +636,7 @@ class Subscriptions extends React.Component {
                                                 </TableBody>
                                             </Table>
                                         )}
-                                    </div>
+                                    </Box>
                                 )}
                         </Grid>
                     </Grid>
@@ -550,25 +645,56 @@ class Subscriptions extends React.Component {
                         aria-labelledby='simple-dialog-title'
                         open={openDialog}
                         maxWidth='lg'
-                        className={classes.subscribePop}
+                        sx={(theme) => ({
+                            '& span, & h5, & label, & input, & td, & li': {
+                                color: theme.palette.getContrastText(theme.palette.background.paper),
+                            },
+                        })}
                     >
-                        <MuiDialogTitle disableTypography className={classes.dialogTitle}>
+                        <MuiDialogTitle
+                            disableTypography
+                            sx={(theme) => ({
+                                display: 'flex',
+                                alignItems: 'flex-start',
+                                padding: theme.spacing(1),
+                            })}
+                        >
                             <Typography variant='h6'>
                                 <FormattedMessage
                                     id='Applications.Details.Subscriptions.subscription.management.add'
                                     defaultMessage='Subscribe APIs'
                                 />
                             </Typography>
-                            <Box className={classes.searchWrapper}>
-                                <Paper component='form' className={classes.searchRoot}>
+                            <Box sx={{
+                                flex: 1,
+                            }}
+                            >
+                                <Paper
+                                    component='form'
+                                    sx={(theme) => ({
+                                        padding: '2px 4px',
+                                        display: 'flex',
+                                        alignItems: 'center',
+                                        width: 400,
+                                        height: 50,
+                                        flex: 1,
+                                        marginLeft: theme.spacing(2),
+                                        marginRight: theme.spacing(2),
+                                    })}
+                                >
                                     {searchText && (
                                         <HighlightOffIcon
-                                            className={classes.clearSearchIcon}
+                                            sx={{
+                                                cursor: 'pointer',
+                                            }}
                                             onClick={this.handleClearSearch}
                                         />
                                     )}
                                     <InputBase
-                                        className={classes.input}
+                                        sx={(theme) => ({
+                                            marginLeft: theme.spacing(1),
+                                            flex: 1,
+                                        })}
                                         placeholder={intl.formatMessage({
                                             defaultMessage: 'Search APIs',
                                             id: 'Applications.Details.Subscriptions.search',
@@ -584,14 +710,25 @@ class Subscriptions extends React.Component {
                                         onKeyDown={this.handleEnterPress}
                                     />
                                     <IconButton
-                                        className={classes.iconButton}
+                                        sx={{
+                                            padding: 10,
+                                        }}
                                         aria-label='search'
                                         onClick={this.handleSearchTextChange}
+                                        size='large'
                                     >
                                         <SearchIcon />
                                     </IconButton>
                                 </Paper>
-                                <Box className={classes.searchResults}>
+                                <Box sx={(theme) => ({
+                                    height: 30,
+                                    display: 'flex',
+                                    paddingTop: theme.spacing(1),
+                                    paddingRight: 0,
+                                    paddingBottom: 0,
+                                    paddingLeft: theme.spacing(2),
+                                })}
+                                >
                                     {(searchText && searchText !== '') ? (
                                         <>
                                             <Typography variant='caption'>
@@ -614,7 +751,12 @@ class Subscriptions extends React.Component {
 
                             </Box>
 
-                            <IconButton aria-label='close' className={classes.closeButton} onClick={this.handleOpenDialog}>
+                            <IconButton
+                                aria-label='close'
+                                className={classes.closeButton}
+                                onClick={this.handleOpenDialog}
+                                size='large'
+                            >
                                 <Icon>cancel</Icon>
                             </IconButton>
                         </MuiDialogTitle>
@@ -628,12 +770,10 @@ class Subscriptions extends React.Component {
                             />
                         </Box>
                     </Dialog>
-                </div>
+                </Box>
             );
         } else {
-            return (
-                <Progress />
-            );
+            return <StyledProgress />;
         }
     }
 }
@@ -642,4 +782,4 @@ Subscriptions.propTypes = {
     intl: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(Subscriptions));
+export default injectIntl((Subscriptions));

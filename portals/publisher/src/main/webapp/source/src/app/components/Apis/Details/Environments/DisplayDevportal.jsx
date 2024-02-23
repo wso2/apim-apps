@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import Switch from '@material-ui/core/Switch';
+import Switch from '@mui/material/Switch';
 import React, { useState, useEffect } from 'react';
 import API from 'AppData/api';
 import base64url from 'base64url';

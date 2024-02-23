@@ -19,15 +19,15 @@
 import React, {
     useReducer, useEffect, useState, useCallback,
 } from 'react';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import cloneDeep from 'lodash.clonedeep';
 import isEmpty from 'lodash/isEmpty';
 import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
 import API from 'AppData/api';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
 import AsyncOperation from '../Resources/components/AsyncOperation';
@@ -467,7 +467,7 @@ export default function Topics(props) {
     // if ((!pageError && isEmpty(openAPISpec)) || (resolvedSpec.errors.length === 0 && isEmpty(resolvedSpec.spec))) {
     if ((!pageError && isEmpty(asyncAPISpec))) {
         return (
-            <Grid container direction='row' justify='center' alignItems='center'>
+            <Grid container direction='row' justifyContent='center' alignItems='center'>
                 <Grid item>
                     <CircularProgress disableShrink />
                 </Grid>
@@ -476,7 +476,7 @@ export default function Topics(props) {
     }
 
     return (
-        <Grid container direction='row' justify='flex-start' spacing={2} alignItems='stretch'>
+        <Grid container direction='row' justifyContent='flex-start' spacing={2} alignItems='stretch'>
             {pageError && (
                 <Grid item md={12}>
                     <Banner onClose={() => setPageError(null)} disableActions type='error' message={pageError} />
@@ -505,12 +505,12 @@ export default function Topics(props) {
                                 <Grid
                                     container
                                     direction='row'
-                                    justify='flex-start'
+                                    justifyContent='flex-start'
                                     spacing={1}
                                     alignItems='stretch'
                                 >
                                     {operation.subscribe && (
-                                        <Grid key={target + '_subscribe'} item md={12}>
+                                        <Grid key={target + '_subscribe'} item md={12} sx={{ border: '1px solid red'}}>
                                             <AsyncOperation
                                                 target={target}
                                                 verb='subscribe'
@@ -554,7 +554,7 @@ export default function Topics(props) {
                     style={{ marginTop: '25px' }}
                     container
                     direction='row'
-                    justify='space-between'
+                    justifyContent='space-between'
                     alignItems='center'
                 >
                     {!disableUpdate && (

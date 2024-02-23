@@ -19,8 +19,8 @@
 import React from 'react';
 import {
     Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-} from '@material-ui/core/';
-import Slide from '@material-ui/core/Slide';
+} from '@mui/material/';
+import Slide from '@mui/material/Slide';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 
@@ -43,7 +43,7 @@ const DeleteConfirmation = (props) => {
                 </DialogContentText>
             </DialogContent>
             <DialogActions>
-                <Button dense onClick={toggleDeleteConfirmation}>
+                <Button dense color='grey' onClick={toggleDeleteConfirmation}>
                     <FormattedMessage
                         id='Applications.Listing.DeleteConfirmation.dialog.cancel'
                         defaultMessage='Cancel'

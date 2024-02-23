@@ -1,37 +1,28 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Icon from '@material-ui/core/Icon';
-import { amber } from '@material-ui/core/colors';
+import Paper from '@mui/material/Paper';
+import Icon from '@mui/material/Icon';
+import { amber } from '@mui/material/colors';
 import VerticalDivider from './VerticalDivider';
 
-const styles = (theme) => ({
-    root: {
-        display: 'flex',
-        alignItems: 'center',
-        paddingLeft: theme.spacing(2),
-        borderRadius: theme.shape.borderRadius,
-        border: 'solid 1px ' + theme.palette.secondary.main,
-        '& span.material-icons.info': {
-            fontSize: 80,
-            color: theme.palette.primary.main,
-        },
-        '& span.material-icons.warning': {
-            fontSize: 80,
-            color: amber[700],
-        },
+const StyledPaper = styled(Paper)(({ theme }) => ({
+    display: 'flex',
+    alignItems: 'center',
+    paddingLeft: theme.spacing(2),
+    borderRadius: theme.shape.borderRadius,
+    border: 'solid 1px ' + theme.palette.secondary.main,
+    '& span.material-icons.info': {
+        fontSize: 80,
+        color: theme.palette.primary.main,
     },
-    button: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
+    '& span.material-icons.warning': {
+        fontSize: 80,
+        color: amber[700],
     },
-    content: {
-        paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
-        paddingRight: theme.spacing(1),
-    },
-});
+}));
+
+const StyledDiv = styled('div')({ pt: 1, pb: 1, pr: 1 });
 
 /**
  *
@@ -53,14 +44,14 @@ class InlineMessage extends React.Component {
      */
     render() {
         const {
-            classes, height, type, children,
+            height, type, children,
         } = this.props;
         return (
-            <Paper className={classes.root} {...this.props}>
+            <StyledPaper {...this.props}>
                 <Icon className={type}>{type}</Icon>
                 <VerticalDivider height={height} />
-                <div className={classes.content}>{children}</div>
-            </Paper>
+                <StyledDiv>{children}</StyledDiv>
+            </StyledPaper>
         );
     }
 }
@@ -79,4 +70,4 @@ InlineMessage.defaultProps = {
     height: 100,
     type: 'info',
 };
-export default withStyles(styles)(InlineMessage);
+export default (InlineMessage);

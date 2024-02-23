@@ -17,22 +17,44 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
-import { withStyles, withTheme } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
 import PropTypes from 'prop-types';
-import Chip from '@material-ui/core/Chip';
+import Chip from '@mui/material/Chip';
 import Api from 'AppData/api';
+import { useTheme } from '@mui/material';
+
+const PREFIX = 'Operations';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')({
+    [`& .${classes.root}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 10,
+    },
+    [`& .${classes.heading}`]: {
+        marginRight: 20,
+    },
+});
 
 /**
  * @param {JSON} props props from parent
  * @returns {JSX} chip item
  */
-function RenderMethodBase(props) {
-    const { theme, method } = props;
+function RenderMethod(props) {
+    const { method } = props;
+    const theme = useTheme();
     let chipColor = theme.custom.operationChipColor
         ? theme.custom.operationChipColor[method]
         : null;
@@ -46,28 +68,11 @@ function RenderMethodBase(props) {
     return <Chip label={method} style={{ backgroundColor: chipColor, color: chipTextColor, height: 20 }} />;
 }
 
-RenderMethodBase.propTypes = {
+RenderMethod.propTypes = {
     theme: PropTypes.shape({}).isRequired,
     method: PropTypes.shape({}).isRequired,
 };
 
-const RenderMethod = withTheme(RenderMethodBase);
-/**
- *
- *
- * @param {*} theme
- */
-const styles = {
-    root: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-        marginBottom: 10,
-    },
-    heading: {
-        marginRight: 20,
-    },
-};
 /**
  *
  *
@@ -114,23 +119,24 @@ class Operations extends React.Component {
                 </div>
             );
         }
-        const { classes } = this.props;
 
         return (
-            <Table>
-                {operations && operations.length !== 0 && operations.map((item) => (
-                    <TableRow style={{ borderStyle: 'hidden' }} key={item.target + '_' + item.verb}>
-                        <TableCell>
-                            <Typography className={classes.heading} component='p' variant='body2'>
-                                {item.target}
-                            </Typography>
-                        </TableCell>
-                        <TableCell>
-                            <RenderMethod method={item.verb.toLowerCase()} />
-                        </TableCell>
-                    </TableRow>
-                ))}
-            </Table>
+            <Root>
+                <Table>
+                    {operations && operations.length !== 0 && operations.map((item) => (
+                        <TableRow style={{ borderStyle: 'hidden' }} key={item.target + '_' + item.verb}>
+                            <TableCell>
+                                <Typography className={classes.heading} component='p' variant='body2'>
+                                    {item.target}
+                                </Typography>
+                            </TableCell>
+                            <TableCell>
+                                <RenderMethod method={item.verb.toLowerCase()} />
+                            </TableCell>
+                        </TableRow>
+                    ))}
+                </Table>
+            </Root>
         );
     }
 }
@@ -142,4 +148,4 @@ Operations.propTypes = {
 
 };
 
-export default injectIntl(withStyles(styles)(Operations));
+export default injectIntl((Operations));

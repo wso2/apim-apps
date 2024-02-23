@@ -17,35 +17,49 @@
  */
 
 import React from 'react';
-import Avatar from '@material-ui/core/Avatar';
-import Person from '@material-ui/icons/Person';
-import { withStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
+import Avatar from '@mui/material/Avatar';
+import Person from '@mui/icons-material/Person';
 import PropTypes from 'prop-types';
 import moment from 'moment';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Paper from '@material-ui/core/Paper';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 
-const styles = (theme) => ({
-    firstCol: {
+const PREFIX = 'LifeCycleHistory';
+
+const classes = {
+    firstCol: `${PREFIX}-firstCol`,
+    personIcon: `${PREFIX}-personIcon`,
+    avatar: `${PREFIX}-avatar`
+};
+
+const StyledPaper = styled(Paper)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.firstCol}`]: {
         width: 100,
     },
-    personIcon: {
+
+    [`& .${classes.personIcon}`]: {
         fontSize: theme.typography.fontSize,
     },
-    avatar: {
+
+    [`& .${classes.avatar}`]: {
         width: 25,
         height: 25,
-    },
-});
+    }
+}));
+
 const LifeCycleHistory = (props) => {
-    const { classes } = props;
     return (
-        <Paper>
+        <StyledPaper>
             <Table className={classes.table}>
                 <TableHead>
                     <TableRow>
@@ -84,11 +98,11 @@ const LifeCycleHistory = (props) => {
                     ))}
                 </TableBody>
             </Table>
-        </Paper>
+        </StyledPaper>
     );
 };
 LifeCycleHistory.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     lcHistory: PropTypes.arrayOf(PropTypes.shape({})).isRequired,
 };
-export default withStyles(styles)(LifeCycleHistory);
+export default (LifeCycleHistory);

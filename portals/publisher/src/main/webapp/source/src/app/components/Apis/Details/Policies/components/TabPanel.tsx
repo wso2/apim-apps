@@ -17,6 +17,7 @@
  */
 
 import React, { FC } from 'react';
+import { Box } from '@mui/material';
 import TabPanelShared from 'AppComponents/Shared/PoliciesUI/TabPanel';
 import DraggablePolicyCard from '../DraggablePolicyCard';
 import type { Policy } from '../Types';

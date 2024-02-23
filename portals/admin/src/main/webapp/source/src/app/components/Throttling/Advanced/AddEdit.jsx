@@ -17,35 +17,27 @@
  */
 
 import React, { useReducer, useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import { useIntl, FormattedMessage } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
-import { makeStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import Alert from 'AppComponents/Shared/Alert';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
 import ConditionalGroup from 'AppComponents/Throttling/Advanced/ConditionalGroup';
 import cloneDeep from 'lodash.clonedeep';
 import HelpLinks from 'AppComponents/Throttling/Advanced/HelpLinks';
 import API from 'AppData/api';
 import AddEditExecution from 'AppComponents/Throttling/Advanced/AddEditExecution';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        color: theme.palette.error.dark,
-    },
-    hr: {
-        border: 'solid 1px #efefef',
-    },
-    root: {
-        marginBottom: theme.spacing(15),
-    },
-}));
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
+
+const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
 
 /**
  * Reducer
@@ -101,7 +93,6 @@ function reducer(state, { field, value }) {
  * @param {JSON} props Props passed from other components.
  */
 function AddEdit(props) {
-    const classes = useStyles();
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
     const intl = useIntl();
@@ -287,7 +278,6 @@ function AddEdit(props) {
         dispatch({ field: 'conditionalGroups', value: clearedGroup });
     };
     return (
-
         <ContentBase
             pageStyle='half'
             title={
@@ -301,7 +291,7 @@ function AddEdit(props) {
             }
             help={<HelpLinks />}
         >
-            <Box component='div' m={2} className={classes.root}>
+            <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} md={12} lg={3}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
@@ -334,7 +324,7 @@ function AddEdit(props) {
                                             defaultMessage='Name'
                                         />
 
-                                        <span className={classes.error}>*</span>
+                                        <StyledSpan>*</StyledSpan>
                                     </span>
                                 )}
                                 fullWidth
@@ -366,7 +356,7 @@ function AddEdit(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
                     {/* Default limits */}
@@ -399,7 +389,7 @@ function AddEdit(props) {
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={12} lg={3}>
@@ -451,12 +441,17 @@ function AddEdit(props) {
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
-                            <hr className={classes.hr} />
+                            <StyledHr />
                         </Box>
                     </Grid>
-                    <Grid item xs={12}>
+                    <Grid item xs={12} sx={{ mb: 2 }}>
                         <Box component='span' m={1}>
-                            <Button variant='contained' color='primary' onClick={formSave}>
+                            <Button
+                                variant='contained'
+                                color='primary'
+                                onClick={formSave}
+                                data-testid='throttling-advanced-save-button'
+                            >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
                                         {id ? (
@@ -476,7 +471,7 @@ function AddEdit(props) {
                             </Button>
                         </Box>
                         <RouterLink to='/throttling/advanced'>
-                            <Button variant='contained'>
+                            <Button variant='outlined'>
                                 <FormattedMessage
                                     id='Throttling.Advanced.AddEdit.form.cancel'
                                     defaultMessage='Cancel'
@@ -491,7 +486,6 @@ function AddEdit(props) {
 }
 
 AddEdit.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     match: PropTypes.shape({}).isRequired,
     history: PropTypes.shape({}).isRequired,
 };

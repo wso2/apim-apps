@@ -16,10 +16,11 @@
  * under the License.
  */
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Avatar from '@material-ui/core/Avatar';
+import Avatar from '@mui/material/Avatar';
 import { capitalizeFirstLetter } from 'AppData/stringFormatter';
 import Utils from 'AppData/Utils';
+import { useTheme } from '@mui/material';
+import Box from '@mui/material/Box';
 
 const getColorFromLetter = (letter, colorMap, offset) => {
     let charLightColor = colorMap[letter.toLowerCase()];
@@ -38,61 +39,52 @@ const getColorFromLetter = (letter, colorMap, offset) => {
     return [charLightColor, dark];
 };
 
-const useStyles = makeStyles((theme) => {
-    return {
-        root: {
-            display: 'flex',
-        },
-        thumbIcon: ({ width }) => {
-            const { width: defaultWidth } = theme.custom.thumbnail;
-            const fontSize = Math.ceil((width * 90) / defaultWidth);
-            return {
-                fontSize,
-            };
-        },
-        square: ({
-            char, width, height, bgColor,
-        }) => {
-            const {
-                colorMap, offset, width: defaultWidth, textShadow,
-            } = theme.custom.thumbnail;
-            const [light, dark] = getColorFromLetter(bgColor === false ? '' : char, colorMap, offset);
-            const fontSize = Math.ceil((width * 70) / defaultWidth);
-            /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
-            const background = light && `linear-gradient(to right, ${light}, ${dark})`;
-            return {
-                color: light && theme.palette.getContrastText(dark),
-                background,
-                fallbacks: [
-                    { background: light }, /* fallback for old browsers */
-                    {
-                        background:
-                        `-webkit-linear-gradient(to right, ${light}, ${dark})`, /* Chrome 10-25, Safari 5.1-6 */
-                    },
-                ],
-                height,
-                width,
-                fontSize: `${fontSize}px`,
-                textShadow,
-            };
-        },
-    };
-});
-
 export default (props) => {
     const {
         artifact, width, height, charLength = 2, ThumbIcon, bgColor,
     } = props;
+    const theme = useTheme();
     const name = artifact.name.substring(0, charLength);
-    const classes = useStyles({
-        char: name.substring(0, 1), width, height, bgColor,
-    });
+    const {
+        colorMap, offset, width: defaultWidth, textShadow,
+    } = theme.custom.thumbnail;
 
     return (
-        <div className={classes.root}>
-            <Avatar variant='square' className={classes.square}>
-                {ThumbIcon ? <ThumbIcon className={classes.thumbIcon} /> : capitalizeFirstLetter(name)}
+        <Box sx={{ display: 'flex' }}>
+            <Avatar
+                variant='square'
+                sx={() => {
+                    const [light, dark] = getColorFromLetter(bgColor === false ? '' : name.substring(0, 1), colorMap, offset);
+                    const fontSize = Math.ceil((width * 70) / defaultWidth);
+                    /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+                    const background = light && `linear-gradient(to right, ${light}, ${dark})`;
+                    return {
+                        color: light && theme.palette.getContrastText(dark),
+                        background,
+                        fallbacks: [
+                            { background: light }, /* fallback for old browsers */
+                            {
+                                background:
+                                `-webkit-linear-gradient(to right, ${light}, ${dark})`, /* Chrome 10-25, Safari 5.1-6 */
+                            },
+                        ],
+                        height,
+                        width,
+                        fontSize: `${fontSize}px`,
+                        textShadow,
+                    };
+                }}
+            >
+                {ThumbIcon ? (
+                    <ThumbIcon sx={() => {
+                        const fontSize = Math.ceil((width * 90) / defaultWidth);
+                        return {
+                            fontSize,
+                        };
+                    }}
+                    />
+                ) : capitalizeFirstLetter(name)}
             </Avatar>
-        </div>
+        </Box>
     );
 };

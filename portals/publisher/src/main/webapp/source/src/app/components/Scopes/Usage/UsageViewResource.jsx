@@ -17,25 +17,40 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Typography from '@material-ui/core/Typography';
-import Table from '@material-ui/core/Table';
-import TableRow from '@material-ui/core/TableRow';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
+import CircularProgress from '@mui/material/CircularProgress';
+import Typography from '@mui/material/Typography';
+import Table from '@mui/material/Table';
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'UsageViewResource';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    normalText: `${PREFIX}-normalText`,
+    listHeaderResource: `${PREFIX}-listHeaderResource`
+};
+
+const StyledTable = styled(Table)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         width: '100%',
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
     },
-    normalText: {
+
+    [`& .${classes.normalText}`]: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
         marginRight: 30,
@@ -44,10 +59,11 @@ const useStyles = makeStyles((theme) => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
     },
-    listHeaderResource: {
+
+    [`& .${classes.listHeaderResource}`]: {
         fontWeight: '600',
         fontSize: theme.typography.pxToRem(17),
-    },
+    }
 }));
 
 /**
@@ -56,13 +72,13 @@ const useStyles = makeStyles((theme) => ({
 * @returns {any} Returns the rendered UI for view scope usages.
 */
 export default function UsageViewResource(props) {
-    const classes = useStyles();
+
     const { usedResourceList } = props;
     if (!usedResourceList) {
         return <CircularProgress />;
     } else {
         return (
-            <Table className={classes.table}>
+            <StyledTable className={classes.table}>
                 <TableRow>
                     <TableCell>
                         <Typography className={classes.listHeaderResource}>
@@ -117,7 +133,7 @@ export default function UsageViewResource(props) {
                         </Table>
                     </TableCell>
                 </TableRow>
-            </Table>
+            </StyledTable>
         );
     }
 }

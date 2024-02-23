@@ -19,55 +19,26 @@
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
-import { Card } from '@material-ui/core';
-import Avatar from '@material-ui/core/Avatar';
-import Box from '@material-ui/core/Box';
-import CardContent from '@material-ui/core/CardContent';
-import Divider from '@material-ui/core/Divider';
-import Link from '@material-ui/core/Link';
-import { makeStyles } from '@material-ui/core/styles';
-import Typography from '@material-ui/core/Typography';
-import DeviceHubIcon from '@material-ui/icons/DeviceHub';
-import DnsRoundedIcon from '@material-ui/icons/DnsRounded';
-import PeopleIcon from '@material-ui/icons/People';
-import PermMediaOutlinedIcon from '@material-ui/icons/PhotoSizeSelectActual';
-import PublicIcon from '@material-ui/icons/Public';
-import SettingsEthernetIcon from '@material-ui/icons/SettingsEthernet';
+import { Card } from '@mui/material';
+import Avatar from '@mui/material/Avatar';
+import Box from '@mui/material/Box';
+import CardContent from '@mui/material/CardContent';
+import Divider from '@mui/material/Divider';
+import Link from '@mui/material/Link';
+import Typography from '@mui/material/Typography';
+import DeviceHubIcon from '@mui/icons-material/DeviceHub';
+import DnsRoundedIcon from '@mui/icons-material/DnsRounded';
+import PeopleIcon from '@mui/icons-material/People';
+import PermMediaOutlinedIcon from '@mui/icons-material/PhotoSizeSelectActual';
+import PublicIcon from '@mui/icons-material/Public';
+import SettingsEthernetIcon from '@mui/icons-material/SettingsEthernet';
 import Api from 'AppData/api';
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        minWidth: 275,
-        minHeight: 270,
-        textAlign: 'center',
-
-    },
-    title: {
-        fontSize: 20,
-        fontWeight: 'fontWeightBold',
-    },
-    avatar: {
-        width: theme.spacing(4),
-        height: theme.spacing(4),
-    },
-    approveButton: {
-        textDecoration: 'none',
-        backgroundColor: theme.palette.success.light,
-        margin: theme.spacing(0.5),
-    },
-    rejectButton: {
-        textDecoration: 'none',
-        backgroundColor: theme.palette.error.light,
-        margin: theme.spacing(0.5),
-    },
-}));
 
 /**
  * Render progress inside a container centering in the container.
  * @returns {JSX} Loading animation.
  */
 export default function TasksWorkflowCard() {
-    const classes = useStyles();
     const intl = useIntl();
     const restApi = new Api();
     const [allTasksSet, setAllTasksSet] = useState({});
@@ -137,13 +108,13 @@ export default function TasksWorkflowCard() {
     // Component to be displayed when there's no task available
     // Note: When workflow is not enabled, this will be displayed
     const noTasksCard = (
-        <Card className={classes.root}>
+        <Card sx={{ minWidth: 275, minHeight: 270, textAlign: 'center' }}>
             <CardContent>
                 <Box mt={2}>
                     <DeviceHubIcon color='secondary' style={{ fontSize: 60 }} />
                 </Box>
 
-                <Typography className={classes.title} gutterBottom>
+                <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                     <FormattedMessage
                         id='Dashboard.tasksWorkflow.noTasks.card.title'
                         defaultMessage='All the pending tasks completed'
@@ -167,12 +138,12 @@ export default function TasksWorkflowCard() {
         return (
             <Box alignItems='center' display='flex' width='50%' my='1%'>
                 <Box mx={1}>
-                    <Avatar className={classes.avatar}>
+                    <Avatar>
                         <IconComponent fontSize='inherit' />
                     </Avatar>
                 </Box>
                 <Box flexGrow={1}>
-                    <Link component={RouterLink} to={path} color='inherit'>
+                    <Link component={RouterLink} to={path} color='inherit' underline='hover'>
                         <Typography>
                             {name}
                         </Typography>
@@ -293,11 +264,11 @@ export default function TasksWorkflowCard() {
             },
         ];
         return (
-            <Card className={classes.root} style={{ textAlign: 'left' }}>
+            <Card sx={{ minWidth: 275, minHeight: 270, textAlign: 'left' }}>
                 <CardContent>
                     <Box display='flex'>
                         <Box flexGrow={1}>
-                            <Typography className={classes.title} gutterBottom>
+                            <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                                 <FormattedMessage
                                     id='Dashboard.tasksWorkflow.compactTasks.card.title'
                                     defaultMessage='Pending tasks'
@@ -305,7 +276,7 @@ export default function TasksWorkflowCard() {
                             </Typography>
                         </Box>
                         <Box>
-                            <Typography className={classes.title} gutterBottom>
+                            <Typography sx={{ fontSize: 20, fontWeight: 'fontWeightBold' }} gutterBottom>
                                 {getAllTaskCount()}
                             </Typography>
                         </Box>

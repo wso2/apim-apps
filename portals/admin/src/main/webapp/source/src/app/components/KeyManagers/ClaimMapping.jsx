@@ -1,36 +1,18 @@
 import React, { useState } from 'react';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import ClearIcon from '@material-ui/icons/Clear';
+import TextField from '@mui/material/TextField';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import ClearIcon from '@mui/icons-material/Clear';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage } from 'react-intl';
-
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
-        color: theme.palette.error.main,
-        marginLeft: theme.spacing(0.1),
-    },
-    table: {
-        margin: 10,
-        '& tr td, & tr th': {
-            padding: 5,
-            margin: 0,
-        },
-    },
-    acitonColumn: {
-        width: 50,
-    },
-}));
 
 /**
  * Claim Mapping Creation Form
@@ -39,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
  * @returns {React.Component}
  */
 export default function ClaimMappings(props) {
-    const classes = useStyles();
     const [newRemoteClaim, setRemoteClaim] = useState('');
     const [newLocalClaim, setLocalClaim] = useState('');
     const { claimMappings, setClaimMapping } = props;
@@ -106,16 +87,25 @@ export default function ClaimMappings(props) {
     };
     return (
         <Box mt={2}>
-            <Table className={classes.table} aria-label='simple table'>
+            <Table
+                sx={{
+                    margin: 0.5,
+                    '& tr td, & tr th': {
+                        padding: 0.5,
+                        margin: 0,
+                    },
+                }}
+                aria-label='simple table'
+            >
                 <TableHead>
                     <TableRow>
                         <TableCell>
                             <FormattedMessage id='Keymanager.Remote.Claim' defaultMessage='Remote Claim' />
                         </TableCell>
-                        <TableCell align='right'>
+                        <TableCell align='left'>
                             <FormattedMessage id='Keymanager.Local.Claim' defaultMessage='Local Claim' />
                         </TableCell>
-                        <TableCell align='right' className={classes.acitonColumn}>
+                        <TableCell align='right' sx={{ width: 50 }}>
                             <FormattedMessage id='Keymanager.Claim.Action' defaultMessage='Action' />
                         </TableCell>
                     </TableRow>
@@ -169,6 +159,7 @@ export default function ClaimMappings(props) {
                                         />
                                     )}
                                     onClick={handleAddToList}
+                                    size='large'
                                 >
                                     <AddCircleIcon />
                                 </IconButton>
@@ -176,6 +167,7 @@ export default function ClaimMappings(props) {
                                     id='delete'
                                     aria-label='Clear'
                                     onClick={clearValues}
+                                    size='large'
                                 >
                                     <ClearIcon />
                                 </IconButton>
@@ -207,6 +199,7 @@ export default function ClaimMappings(props) {
                                     id='delete'
                                     aria-label='Remove'
                                     onClick={() => { onDelete(remoteClaim); }}
+                                    size='large'
                                 >
                                     <DeleteIcon />
                                 </IconButton>

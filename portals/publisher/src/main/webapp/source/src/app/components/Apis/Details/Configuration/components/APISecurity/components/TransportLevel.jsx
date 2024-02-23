@@ -17,19 +17,18 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControl from '@material-ui/core/FormControl';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import Grid from '@mui/material/Grid';
+import Checkbox from '@mui/material/Checkbox';
+import FormControl from '@mui/material/FormControl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import { AccordionSummary, AccordionDetails } from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Typography from '@mui/material/Typography';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormHelperText from '@mui/material/FormHelperText';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Certificates from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/Certificates';
 import { isRestricted } from 'AppData/AuthManager';
@@ -47,23 +46,40 @@ import {
     API_SECURITY_API_KEY,
 } from './apiSecurityConstants';
 
-const useStyles = makeStyles((theme) => ({
-    expansionPanel: {
+const PREFIX = 'TransportLevel';
+
+const classes = {
+    expansionPanel: `${PREFIX}-expansionPanel`,
+    expansionPanelDetails: `${PREFIX}-expansionPanelDetails`,
+    bottomSpace: `${PREFIX}-bottomSpace`,
+    subHeading: `${PREFIX}-subHeading`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.expansionPanel}`]: {
         marginBottom: theme.spacing(1),
     },
-    expansionPanelDetails: {
+
+    [`& .${classes.expansionPanelDetails}`]: {
         flexDirection: 'column',
     },
-    bottomSpace: {
+
+    [`& .${classes.bottomSpace}`]: {
         marginBottom: theme.spacing(4),
     },
-    subHeading: {
+
+    [`& .${classes.subHeading}`]: {
         fontSize: '1rem',
         fontWeight: 400,
         margin: 0,
         display: 'inline-flex',
         lineHeight: 1.5,
-    },
+    }
 }));
 
 /**
@@ -80,7 +96,7 @@ function TransportLevel(props) {
     const isMutualSSLEnabled = securityScheme.includes(API_SECURITY_MUTUAL_SSL);
     const [apiFromContext] = useAPI();
     const [clientCertificates, setClientCertificates] = useState([]);
-    const classes = useStyles();
+
 
     /**
      * Method to upload the certificate content by calling the rest api.
@@ -187,10 +203,10 @@ function TransportLevel(props) {
         mandatoryValue = API_SECURITY_MUTUAL_SSL_MANDATORY;
     }
     return (
-        <>
+        (<Root>
             <Grid item xs={12}>
                 <WrappedExpansionPanel className={classes.expansionPanel} id='transportLevel'>
-                    <ExpansionPanelSummary expandIcon={<ExpandMoreIcon />}>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography className={classes.subHeading} variant='h6' component='h4'>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.Components.APISecurity.Components.
@@ -198,8 +214,8 @@ function TransportLevel(props) {
                                 defaultMessage='Transport Level Security'
                             />
                         </Typography>
-                    </ExpansionPanelSummary>
-                    <ExpansionPanelDetails className={classes.expansionPanelDetails}>
+                    </AccordionSummary>
+                    <AccordionDetails className={classes.expansionPanelDetails}>
                         <Transports api={api} configDispatcher={configDispatcher} securityScheme={securityScheme} />
                         <FormControlLabel
                             control={(
@@ -273,10 +289,10 @@ function TransportLevel(props) {
                                 api={apiFromContext}
                             />
                         )}
-                    </ExpansionPanelDetails>
+                    </AccordionDetails>
                 </WrappedExpansionPanel>
             </Grid>
-        </>
+        </Root>)
     );
 }
 

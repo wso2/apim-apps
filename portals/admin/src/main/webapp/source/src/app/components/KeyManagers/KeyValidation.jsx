@@ -1,54 +1,22 @@
 import React, { useState } from 'react';
-import TextField from '@material-ui/core/TextField';
-import { makeStyles } from '@material-ui/core/styles';
-import Box from '@material-ui/core/Box';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Typography from '@material-ui/core/Typography';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Table from '@material-ui/core/Table';
-import TableCell from '@material-ui/core/TableCell';
-import TableBody from '@material-ui/core/TableBody';
-import IconButton from '@material-ui/core/IconButton';
-import DeleteIcon from '@material-ui/icons/Delete';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import ClearIcon from '@material-ui/icons/Clear';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import Typography from '@mui/material/Typography';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Table from '@mui/material/Table';
+import TableCell from '@mui/material/TableCell';
+import TableBody from '@mui/material/TableBody';
+import IconButton from '@mui/material/IconButton';
+import DeleteIcon from '@mui/icons-material/Delete';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import ClearIcon from '@mui/icons-material/Clear';
 import Alert from 'AppComponents/Shared/Alert';
 import { FormattedMessage } from 'react-intl';
-
-const useStyles = makeStyles((theme) => ({
-    mandatoryStar: {
-        color: theme.palette.error.main,
-        marginLeft: theme.spacing(0.1),
-    },
-    outlined: {
-        padding: '11px 14px',
-    },
-    textField: {
-        marginTop: '14px !important',
-    },
-    formControlSelect: {
-        width: 200,
-        marginRight: 20,
-        paddingLeft: 14,
-    },
-    labelRoot: {
-        position: 'relative',
-    },
-    table: {
-        margin: 10,
-        '& tr td, & tr th': {
-            padding: 5,
-            margin: 0,
-        },
-    },
-    acitonColumn: {
-        width: 50,
-    },
-}));
 
 /**
  * Add KeyValidation Types Form
@@ -57,8 +25,6 @@ const useStyles = makeStyles((theme) => ({
  * @returns {React.Component}
  */
 export default function KeyValidation(props) {
-    const classes = useStyles();
-
     const { tokenValidation, setTokenValidation } = props;
     const [jwtValue, setjwtValue] = useState({});
     const [preValues, setPreValues] = useState({
@@ -147,18 +113,26 @@ export default function KeyValidation(props) {
     return (
         <>
             <Box display='flex' flexDirection='row' mt={2}>
-                <FormControl variant='outlined' className={classes.formControlSelect}>
-                    <InputLabel classes={{ root: classes.labelRoot }}>
+                <FormControl
+                    variant='outlined'
+                    sx={{
+                        width: 180,
+                        mr: 2,
+                        mt: 1,
+                        paddingLeft: 1,
+                    }}
+                >
+                    <InputLabel sx={{ position: 'absolute', top: '-10px' }}>
                         <FormattedMessage
                             id='KeyManager.KeyValidation.token.validation.type'
                             defaultMessage='Type'
                         />
                     </InputLabel>
                     <Select
+                        variant='outlined'
                         name='type'
                         value={tokenValidation.type}
                         onChange={onChange}
-                        classes={{ outlined: classes.outlined }}
                         fullWidth
                     >
                         <MenuItem value='REFERENCE'>
@@ -181,14 +155,13 @@ export default function KeyValidation(props) {
                         required
                         variant='outlined'
                         value={tokenValidation.value}
-                        classes={{ root: classes.textField }}
                         onChange={onChange}
                     />
                 )}
             </Box>
             <Box display='flex' flexDirection='row'>
                 { (tokenValidation.type === 'JWT') && (
-                    <Table className={classes.table} aria-label='simple table'>
+                    <Table aria-label='simple table'>
                         <TableHead>
                             <TableRow>
                                 <TableCell>
@@ -245,7 +218,7 @@ export default function KeyValidation(props) {
                                         fullWidth
                                     />
                                 </TableCell>
-                                <TableCell className={classes.acitonColumn}>
+                                <TableCell sx={{ width: 50 }}>
                                     <Box display='flex'>
                                         <IconButton
                                             id='delete'
@@ -256,6 +229,7 @@ export default function KeyValidation(props) {
                                                 />
                                             )}
                                             onClick={handleAddToList}
+                                            size='large'
                                         >
                                             <AddCircleIcon />
                                         </IconButton>
@@ -263,6 +237,7 @@ export default function KeyValidation(props) {
                                             id='delete'
                                             aria-label='Clear'
                                             onClick={clearValues}
+                                            size='large'
                                         >
                                             <ClearIcon />
                                         </IconButton>
@@ -296,6 +271,7 @@ export default function KeyValidation(props) {
                                                 <IconButton
                                                     id='delete'
                                                     onClick={() => { onDelete(key); }}
+                                                    size='large'
                                                 >
                                                     <DeleteIcon />
                                                 </IconButton>

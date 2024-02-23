@@ -17,14 +17,14 @@
  */
 
 import React, { Suspense, lazy } from 'react';
+import { styled } from '@mui/material/styles';
 import AppContext from 'AppComponents/Shared/AppContext';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import CloudDownloadRounded from '@material-ui/icons/CloudDownloadRounded';
+import Button from '@mui/material/Button';
+import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import API from 'AppData/api.js';
 import { withRouter } from 'react-router';
@@ -35,43 +35,68 @@ import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import ImportDefinition from './ImportDefinition';
 import DefinitionOutdated from './DefinitionOutdated';
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
+const PREFIX = 'WSDL';
 
-const styles = (theme) => ({
-    titleWrapper: {
+const classes = {
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    swaggerEditorWrapper: `${PREFIX}-swaggerEditorWrapper`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    topBar: `${PREFIX}-topBar`,
+    converterWrapper: `${PREFIX}-converterWrapper`,
+    downloadLink: `${PREFIX}-downloadLink`,
+    button: `${PREFIX}-button`,
+    buttonWarningColor: `${PREFIX}-buttonWarningColor`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    swaggerEditorWrapper: {
+
+    [`& .${classes.swaggerEditorWrapper}`]: {
         height: '100vh',
         overflowY: 'auto',
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
     },
-    topBar: {
+
+    [`& .${classes.topBar}`]: {
         display: 'flex',
         flexDirection: 'row',
         marginBottom: theme.spacing(2),
     },
-    converterWrapper: {
+
+    [`& .${classes.converterWrapper}`]: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
         flex: '1',
         fontSize: '0.6964285714285714rem',
     },
-    downloadLink: {
+
+    [`& .${classes.downloadLink}`]: {
         color: 'black',
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(1),
     },
-    buttonWarningColor: {
+
+    [`& .${classes.buttonWarningColor}`]: {
         color: theme.palette.warning.light,
-    },
-});
+    }
+}));
+
+const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 
 /**
  * This component holds the functionality of viewing the WSDL content of an api. The view is a
@@ -203,7 +228,7 @@ class WSDL extends React.Component {
         const {
             wsdl, notFound, isArchive,
         } = this.state;
-        const { classes, resourceNotFountMessage, api } = this.props;
+        const {  resourceNotFountMessage, api } = this.props;
 
         const editorOptions = {
             selectOnLineNumbers: true,
@@ -223,13 +248,13 @@ class WSDL extends React.Component {
 
         let downloadWidget;
         const downloadButtonContent = (
-            <>
+            (<Root>
                 <CloudDownloadRounded className={classes.buttonIcon} />
                 <FormattedMessage
                     id='Apis.Details.APIDefinition.WSDL.download.definition'
                     defaultMessage='Download WSDL'
                 />
-            </>
+            </Root>)
         );
         if (!isArchive) {
             const downloadLink = 'data:text/xml;charset=utf-8,' + encodeURIComponent(wsdl);
@@ -250,7 +275,7 @@ class WSDL extends React.Component {
         }
 
         return (
-            <>
+            <Root>
                 <div className={classes.topBar}>
                     <div className={classes.titleWrapper}>
                         <Typography variant='h4'>
@@ -303,7 +328,7 @@ class WSDL extends React.Component {
 
                     </Suspense>
                 </div>
-            </>
+            </Root>
         );
     }
 }
@@ -340,4 +365,4 @@ WSDL.propTypes = {
         formatMessage: PropTypes.func,
     }).isRequired,
 };
-export default withRouter(injectIntl(withStyles(styles, { withTheme: true })(WSDL)));
+export default withRouter(injectIntl((WSDL)));

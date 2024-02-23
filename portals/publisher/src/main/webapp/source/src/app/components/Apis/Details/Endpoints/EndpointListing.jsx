@@ -15,41 +15,69 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Grid, withStyles } from '@material-ui/core';
+import { styled } from '@mui/material/styles';
+import { Grid } from '@mui/material';
 import { injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import GenericEndpoint from './GenericEndpoint';
 import GenericEndpointAdd from './GenericEndpointAdd';
 
-const styles = (theme) => ({
-    endpointInputWrapper: {
+const PREFIX = 'EndpointListing';
+
+const classes = {
+    endpointInputWrapper: `${PREFIX}-endpointInputWrapper`,
+    epInput: `${PREFIX}-epInput`,
+    epTypeWrapper: `${PREFIX}-epTypeWrapper`,
+    epTypeName: `${PREFIX}-epTypeName`,
+    epConfig: `${PREFIX}-epConfig`,
+    leftArrow: `${PREFIX}-leftArrow`,
+    leftArrowLight: `${PREFIX}-leftArrowLight`,
+    dialogHeader: `${PREFIX}-dialogHeader`,
+    listItemOdd: `${PREFIX}-listItemOdd`,
+    listItem: `${PREFIX}-listItem`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.endpointInputWrapper}`]: {
         display: 'flex',
     },
-    epInput: {
+
+    [`& .${classes.epInput}`]: {
         width: '100%',
     },
-    epTypeWrapper: {
+
+    [`& .${classes.epTypeWrapper}`]: {
         display: 'flex',
         padding: '5px',
     },
-    epTypeName: {
+
+    [`& .${classes.epTypeName}`]: {
         paddingTop: '10px',
         fontWeight: 600,
     },
-    epConfig: {
+
+    [`& .${classes.epConfig}`]: {
         justifyContent: 'flex-end',
     },
-    leftArrow: {
+
+    [`& .${classes.leftArrow}`]: {
         paddingTop: '6px',
     },
-    leftArrowLight: {
+
+    [`& .${classes.leftArrowLight}`]: {
         color: '#c5c5c5',
         paddingTop: '6px',
     },
-    dialogHeader: {
+
+    [`& .${classes.dialogHeader}`]: {
         fontWeight: 600,
     },
-    listItemOdd: {
+
+    [`& .${classes.listItemOdd}`]: {
         background: '#ececec',
         borderRadius: '5px',
         '&:hover': {
@@ -59,7 +87,8 @@ const styles = (theme) => ({
             backgroundColor: theme.palette.grey[400],
         },
     },
-    listItem: {
+
+    [`& .${classes.listItem}`]: {
         borderRadius: '5px',
         '&:hover': {
             backgroundColor: theme.palette.grey[300],
@@ -67,8 +96,8 @@ const styles = (theme) => ({
         '&:focus': {
             backgroundColor: theme.palette.grey[400],
         },
-    },
-});
+    }
+}));
 
 /**
  * The Component for endpoint listing.
@@ -77,7 +106,6 @@ const styles = (theme) => ({
  */
 function EndpointListing(props) {
     const {
-        classes,
         category,
         apiEndpoints,
         epType,
@@ -117,7 +145,7 @@ function EndpointListing(props) {
     }, [props]);
 
     return (
-        <div className={classes.listingWrapper} ref={selectedRef}>
+        <Root className={classes.listingWrapper} ref={selectedRef}>
             <Grid container xs={12}>
                 <Grid xs={12}>
                     {(endpointType === 'failover' || endpointType === 'load_balance') ?
@@ -152,7 +180,7 @@ function EndpointListing(props) {
                     }
                 </Grid>
             </Grid>
-        </div>
+        </Root>
     );
 }
 
@@ -175,4 +203,4 @@ EndpointListing.propTypes = {
     apiId: PropTypes.string.isRequired,
 };
 
-export default injectIntl(withStyles(styles)(EndpointListing));
+export default injectIntl((EndpointListing));

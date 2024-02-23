@@ -18,21 +18,21 @@
 
 import React from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
 import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
-import DescriptionIcon from '@material-ui/icons/Description';
-import Link from '@material-ui/core/Link';
+import DescriptionIcon from '@mui/icons-material/Description';
+import Link from '@mui/material/Link';
 import Configurations from 'Config';
 import Delete from 'AppComponents/Throttling/Subscription/Delete';
 import API from 'AppData/api';
-import EditIcon from '@material-ui/icons/Edit';
+import EditIcon from '@mui/icons-material/Edit';
 import { Link as RouterLink } from 'react-router-dom';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 
 /**
  * Render a list
@@ -61,6 +61,7 @@ export default function ListSubscriptionThrottlingPolicies() {
                             target='_blank'
                             href={Configurations.app.docUrl
             + 'learn/rate-limiting/adding-new-throttling-policies/#adding-a-new-subscription-level-throttling-tier'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage
@@ -80,6 +81,7 @@ export default function ListSubscriptionThrottlingPolicies() {
                             target='_blank'
                             href={Configurations.app.docUrl
                 + 'learn/rate-limiting/setting-throttling-limits/#subscription-level-throttling-api-publisher'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage
@@ -99,6 +101,7 @@ export default function ListSubscriptionThrottlingPolicies() {
                             target='_blank'
                             href={Configurations.app.docUrl
                 + 'learn/rate-limiting/setting-throttling-limits/#subscription-level-throttling-api-subscriber'}
+                            underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage
@@ -227,7 +230,12 @@ export default function ListSubscriptionThrottlingPolicies() {
 
     const addButtonOverride = (
         <RouterLink to='/throttling/subscription/add'>
-            <Button variant='contained' color='primary' role='button'>
+            <Button
+                variant='contained'
+                color='primary'
+                role='button'
+                data-testid='throttling-subscription-add-button'
+            >
                 <FormattedMessage
                     id='Throttling.Subscription.Policy.List.addButtonProps.title'
                     defaultMessage='Add Policy'

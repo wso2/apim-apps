@@ -16,8 +16,7 @@
  * under the License.
  */
 import React from 'react';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
-import { createTheme } from '@material-ui/core/styles';
+import { createTheme, adaptV4Theme, ThemeProvider, StyledEngineProvider } from '@mui/material/styles';
 
 import Themes from 'AppData/defaultTheme';
 import AppErrorBoundary from './AppErrorBoundary';
@@ -38,11 +37,13 @@ describe.skip('AppErrorBoundary test', () => {
             throw new Error(message);
         };
         const TestComponent = (
-            <MuiThemeProvider theme={createTheme(light)}>
-                <AppErrorBoundary>
-                    <TestError />
-                </AppErrorBoundary>
-            </MuiThemeProvider>
+            <StyledEngineProvider injectFirst>
+                <ThemeProvider theme={createTheme(adaptV4Theme(light))}>
+                    <AppErrorBoundary>
+                        <TestError />
+                    </AppErrorBoundary>
+                </ThemeProvider>
+            </StyledEngineProvider>
         );
 
         const wrapper = DEPRECATED_mount(TestComponent);

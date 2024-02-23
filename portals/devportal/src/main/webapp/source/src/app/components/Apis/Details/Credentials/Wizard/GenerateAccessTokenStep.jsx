@@ -17,20 +17,33 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import Tokens from 'AppComponents/Shared/AppsAndKeys/Tokens';
 import Application from 'AppData/Application';
-import { makeStyles } from '@material-ui/core/styles';
 import { defineMessages, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import Alert from 'AppComponents/Shared/Alert';
 import ButtonPanel from './ButtonPanel';
 
-const useStyles = makeStyles((theme) => ({
-    tokenWrapper: {
-        paddingLeft: theme.spacing(3),
-        paddingRight: theme.spacing(7),
+const PREFIX = 'generateAccessTokenStep';
+
+const classes = {
+    tokenWrapper: `${PREFIX}-tokenWrapper`,
+    title: `${PREFIX}-title`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
     },
-    title: {
+) => ({
+    [`& .${classes.tokenWrapper}`]: {
+        paddingLeft: theme.spacing(3),
+        width: '180%',
+    },
+
+    [`& .${classes.title}`]: {
         paddingLeft: theme.spacing(2),
     },
 }));
@@ -108,7 +121,7 @@ const generateAccessTokenStep = (props) => {
                 }
             });
     };
-    const classes = useStyles();
+
     const messages = defineMessages({
         dataInfo: {
             id: 'Apis.Details.Credentials.Wizard.GenerateAccessTokenStep',
@@ -117,7 +130,7 @@ const generateAccessTokenStep = (props) => {
     });
 
     return (
-        <>
+        <Root>
             <div className={classes.tokenWrapper}>
                 <Typography variant='subtitle1' component='div' className={classes.title}>
                     {intl.formatMessage(messages.dataInfo, { keyType })}
@@ -133,7 +146,7 @@ const generateAccessTokenStep = (props) => {
                     handleCurrentStep={generateAccessToken}
                 />
             </div>
-        </>
+        </Root>
     );
 };
 

@@ -17,58 +17,82 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormControl from '@material-ui/core/FormControl';
-import ListItemText from '@material-ui/core/ListItemText';
-import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
-import MenuItem from '@material-ui/core/MenuItem';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
-import { withStyles } from '@material-ui/core/styles';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
+import { styled } from '@mui/material/styles';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import ListItemText from '@mui/material/ListItemText';
+import Checkbox from '@mui/material/Checkbox';
+import Chip from '@mui/material/Chip';
+import MenuItem from '@mui/material/MenuItem';
+import TableCell from '@mui/material/TableCell';
+import TableRow from '@mui/material/TableRow';
+import TextField from '@mui/material/TextField';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
 import { injectIntl, defineMessages } from 'react-intl';
-import Select from '@material-ui/core/Select';
-import Input from '@material-ui/core/Input';
-import Box from '@material-ui/core/Box';
-import ChipInput from 'material-ui-chip-input';
+import Select from '@mui/material/Select';
+import Input from '@mui/material/Input';
+import Box from '@mui/material/Box';
+import ChipInput from 'AppComponents/Shared/ChipInput';
 
 
-const styles = theme => ({
-    FormControl: {
-        paddingTop: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
-        paddingLeft: 0,
-        width: '100%',
-    },
-    FormControlOdd: {
-        padding: theme.spacing(2),
-        width: '100%',
-    },
-    button: {
-        marginLeft: theme.spacing(1),
-    },
-    quotaHelp: {
-        position: 'relative',
-    },
-    checkboxWrapper: {
-        display: 'flex',
-    },
-    checkboxWrapperColumn: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
-    group: {
-        flexDirection: 'row',
-    },
-    removeHelperPadding: {
-        '& p': {
-            margin: '8px 0px',
+const PREFIX = 'AppConfiguration';
+
+const classes = {
+    FormControl: `${PREFIX}-FormControl`,
+    FormControlOdd: `${PREFIX}-FormControlOdd`,
+    button: `${PREFIX}-button`,
+    quotaHelp: `${PREFIX}-quotaHelp`,
+    checkboxWrapper: `${PREFIX}-checkboxWrapper`,
+    checkboxWrapperColumn: `${PREFIX}-checkboxWrapperColumn`,
+    group: `${PREFIX}-group`,
+    removeHelperPadding: `${PREFIX}-removeHelperPadding`
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(
+    ({ theme }) => ({
+        display: 'contents',
+        [`& .${classes.FormControl}`]: {
+            paddingTop: theme.spacing(2),
+            paddingBottom: theme.spacing(2),
+            paddingLeft: 0,
+            width: '100%',
         },
-    },
-});
+
+        [`& .${classes.FormControlOdd}`]: {
+            padding: theme.spacing(2),
+            width: '100%',
+        },
+
+        [`& .${classes.button}`]: {
+            marginLeft: theme.spacing(1),
+        },
+
+        [`& .${classes.quotaHelp}`]: {
+            position: 'relative',
+        },
+
+        [`& .${classes.checkboxWrapper}`]: {
+            display: 'flex',
+        },
+
+        [`& .${classes.checkboxWrapperColumn}`]: {
+            display: 'flex',
+            flexDirection: 'row',
+        },
+
+        [`& .${classes.group}`]: {
+            flexDirection: 'row',
+        },
+
+        [`& .${classes.removeHelperPadding}`]: {
+            '& p': {
+                margin: '8px 0px',
+            },
+        }
+    })
+);
 
 /**
  *
@@ -79,7 +103,7 @@ const styles = theme => ({
 const AppConfiguration = (props) => {
 
     const {
-        classes, config, isUserOwner, previousValue, handleChange,
+        config, isUserOwner, previousValue, handleChange,
     } = props;
 
     const [selectedValue, setSelectedValue] = useState(previousValue);
@@ -183,7 +207,7 @@ const AppConfiguration = (props) => {
     }
 
     return (
-        <>
+        <Root>
             <TableRow>
                 <TableCell component='th' scope='row' className={classes.leftCol}>
                     {getAppConfigLabel()}
@@ -210,6 +234,7 @@ const AppConfiguration = (props) => {
                                 }
                                 margin='dense'
                                 variant='outlined'
+                                size='small'
                                 disabled={!isUserOwner}
                             >
                                 {config.values.map(key => (
@@ -223,6 +248,7 @@ const AppConfiguration = (props) => {
                                 <FormControl variant="outlined" className={classes.formControl} fullWidth>
                                     <InputLabel id="multi-select-label">{config.label}</InputLabel>
                                     <Select
+                                        variant="standard"
                                         labelId="multi-select-label"
                                         id="multi-select-outlined"
                                         margin='dense'
@@ -312,6 +338,7 @@ const AppConfiguration = (props) => {
                                     </Typography>
                                 }
                                 margin='dense'
+                                size='small'
                                 variant='outlined'
                                 disabled={!isUserOwner}
                             />
@@ -359,7 +386,7 @@ const AppConfiguration = (props) => {
                     </Box>
                 </TableCell>
             </TableRow>
-        </>
+        </Root>
     );
 };
 
@@ -377,4 +404,4 @@ AppConfiguration.propTypes = {
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(AppConfiguration));
+export default injectIntl((AppConfiguration));

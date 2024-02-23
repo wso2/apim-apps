@@ -16,28 +16,37 @@
  * under the License.
  */
 
-import { Grid, makeStyles } from '@material-ui/core';
+import { Grid } from '@mui/material';
+import { styled } from '@mui/material/styles';
 import React, { FC } from 'react';
-import Box from '@material-ui/core/Box';
+import Box from '@mui/material/Box';
 import CONSTS from 'AppData/Constants';
 import { isRestricted } from 'AppData/AuthManager';
-import Alert from '@material-ui/lab/Alert';
+import Alert from '@mui/lab/Alert';
 import { FormattedMessage } from 'react-intl';
 import OperationPolicy from './OperationPolicy';
 import OperationsGroup from './OperationsGroup';
 import type { Policy, PolicySpec } from './Types';
 import PoliciesExpansion from './PoliciesExpansion';
 
-const useStyles = makeStyles(() => ({
-    gridItem: {
+const PREFIX = 'PoliciesSection';
+
+const classes = {
+    gridItem: `${PREFIX}-gridItem`,
+    alert: `${PREFIX}-alert`
+};
+
+const StyledBox = styled(Box)(() => ({
+    [`& .${classes.gridItem}`]: {
         display: 'flex',
         width: '100%',
     },
-    alert: {
+
+    [`& .${classes.alert}`]: {
         backgroundColor: 'transparent',
         marginTop: '-25px',
         marginBottom: '-15px',
-    },
+    }
 }));
 
 interface PolicySectionProps {
@@ -65,16 +74,16 @@ const PoliciesSection: FC<PolicySectionProps> = ({
     expandedResource,
     setExpandedResource,
 }) => {
-    const classes = useStyles();
+
     const borderColor = '';
 
     return (
-        <Box>
+        <StyledBox>
             {isAPILevelTabSelected ? (
                 <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1}}>
                     <Grid item xs={12}>
                         <Grid
-                            container direction='column' justify='flex-start'
+                            container direction='column' justifyContent='flex-start'
                             spacing={1} alignItems='stretch'
                         >
                             <PoliciesExpansion
@@ -105,13 +114,13 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                                 <Grid
                                     container
                                     direction='column'
-                                    justify='flex-start'
+                                    justifyContent='flex-start'
                                     spacing={1}
                                     alignItems='stretch'
                                 >
                                     {Object.entries(verbObject).map(([verb, operation]) => {
                                         return CONSTS.HTTP_METHODS.includes(verb) ? (
-                                            <Grid key={`${target}/${verb}`} item className={ classes.gridItem}>
+                                            <Grid key={`${target}/${verb}`} item className={classes.gridItem}>
                                                 <OperationPolicy
                                                     target={target}
                                                     verb={verb}
@@ -134,7 +143,7 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                     ))}
                 </Box>
             )}
-        </Box>
+        </StyledBox>
     );
 };
 

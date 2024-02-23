@@ -16,41 +16,56 @@
  * under the License.
  */
 import React, { lazy } from 'react';
-import Grid from '@material-ui/core/Grid';
+import { styled } from '@mui/material/styles';
+import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
-import withStyles from '@material-ui/core/styles/withStyles';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage } from 'react-intl';
-import CancelIcon from '@material-ui/icons/Cancel';
-import IconButton from '@material-ui/core/IconButton';
-import { orange } from '@material-ui/core/colors';
+import CancelIcon from '@mui/icons-material/Cancel';
+import IconButton from '@mui/material/IconButton';
+import { orange } from '@mui/material/colors';
 import differenceBy from 'lodash/differenceBy'
 import SwaggerUI from './swaggerUI/SwaggerUI';
 import LinterUI from './LinterUI/LinterUI';
 import { spectralSeverityNames } from "./Linting/Linting"
 
-const styles = () => ({
-    editorPane: {
+const PREFIX = 'SwaggerEditorDrawer';
+
+const classes = {
+    editorPane: `${PREFIX}-editorPane`,
+    editorRoot: `${PREFIX}-editorRoot`,
+    glyphMargin: `${PREFIX}-glyphMargin`,
+    noGlyphMargin: `${PREFIX}-noGlyphMargin`,
+    topMargin: `${PREFIX}-topMargin`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.editorPane}`]: {
         width: '50%',
         height: '100%',
         overflow: 'auto',
     },
-    editorRoot: {
+
+    [`& .${classes.editorRoot}`]: {
         height: '100%',
     },
-    glyphMargin: {
+
+    [`& .${classes.glyphMargin}`]: {
         background: orange[900],
         width: '5px !important'
     },
-    noGlyphMargin: {
+
+    [`& .${classes.noGlyphMargin}`]: {
         background: 'none',
     },
-    topMargin:{
+
+    [`& .${classes.topMargin}`]: {
         paddingTop: '10px',   
     }
-});
+}));
 
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 
@@ -77,7 +92,7 @@ class SwaggerEditorDrawer extends React.Component {
      * @param {string} content : The edited content.
      * */
     componentDidUpdate(prevProps) {
-        const { classes, linterResults } = this.props;
+        const {  linterResults } = this.props;
         const linterDifferences = differenceBy(prevProps.linterResults, linterResults, 'range.start.line');
 
         for (let i=0; i < linterDifferences.length; i++) {
@@ -106,7 +121,6 @@ class SwaggerEditorDrawer extends React.Component {
     }
 
     handleRowClick(line) {
-        const { classes } = this.props;
         const columnIndex = this.editor.getModel().getLineLastNonWhitespaceColumn(line);
         this.editor.revealLinesInCenter(line, line, 0);
         this.editor.setPosition({column: columnIndex, lineNumber: line});
@@ -144,11 +158,11 @@ class SwaggerEditorDrawer extends React.Component {
      * @inheritDoc
      */
     render() {
-        const { classes, language, swagger, errors, setErrors, isSwaggerUI, linterResults, severityMap, 
+        const { language, swagger, errors, setErrors, isSwaggerUI, linterResults, severityMap, 
             linterSelectedSeverity } = this.props;
         const swaggerUrl = 'data:text/' + language + ',' + encodeURIComponent(swagger);
         return (
-            <>
+            <Root>
                 <Grid container spacing={2} className={classes.editorRoot}>
                     <Grid item className={classes.editorPane}>
                         <MonacoEditor
@@ -168,7 +182,7 @@ class SwaggerEditorDrawer extends React.Component {
                                 <InlineMessage type='warning' height='100%'>
                                     <Box>
                                         <Box onClick={setErrors} position='absolute' right='0' top='0'>
-                                            <IconButton area-label='close'>
+                                            <IconButton area-label='close' size='large'>
                                                 <CancelIcon />
                                             </IconButton>
                                         </Box>
@@ -227,7 +241,7 @@ class SwaggerEditorDrawer extends React.Component {
                         )}
                     </Grid>
                 </Grid>
-            </>
+            </Root>
         );
     }
 }
@@ -241,4 +255,4 @@ SwaggerEditorDrawer.propTypes = {
     setErrors: PropTypes.func.isRequired,
 };
 
-export default withStyles(styles)(SwaggerEditorDrawer);
+export default (SwaggerEditorDrawer);

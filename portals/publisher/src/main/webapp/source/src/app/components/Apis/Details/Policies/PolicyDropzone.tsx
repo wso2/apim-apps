@@ -17,11 +17,65 @@
  */
 
 import React, { FC, useState } from 'react';
+import { styled } from '@mui/material/styles';
+import { Grid, Typography , Theme } from '@mui/material';
 import { useDrop } from 'react-dnd';
 import PolicyDropzoneShared from 'AppComponents/Shared/PoliciesUI/PolicyDropzone';
+import clsx from 'clsx';
+import { green, red } from '@mui/material/colors';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
 import AttachedPolicyList from './AttachedPolicyList';
 import PolicyConfiguringDrawer from './PolicyConfiguringDrawer';
+
+const PREFIX = 'PolicyDropzone';
+
+const classes = {
+    dropzoneDiv: `${PREFIX}-dropzoneDiv`,
+    acceptDrop: `${PREFIX}-acceptDrop`,
+    rejectDrop: `${PREFIX}-rejectDrop`,
+    alignLeft: `${PREFIX}-alignLeft`,
+    alignRight: `${PREFIX}-alignRight`,
+    alignCenter: `${PREFIX}-alignCenter`
+};
+
+const Root = styled('div')(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.dropzoneDiv}`]: {
+        border: '1px dashed',
+        borderColor: theme.palette.primary.main,
+        height: '8rem',
+        padding: '0.8rem',
+        width: '100%',
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
+        textAlign: 'center',
+        borderRadius: '0.3em',
+        display: 'flex',
+        alignItems: 'center',
+        overflowX: 'scroll',
+    },
+
+    [`& .${classes.acceptDrop}`]: {
+        backgroundColor: green[50],
+        borderColor: 'green',
+    },
+
+    [`& .${classes.rejectDrop}`]: {
+        backgroundColor: red[50],
+        borderColor: 'red',
+    },
+
+    [`& .${classes.alignLeft}`]: {
+        justifyContent: 'left',
+    },
+
+    [`& .${classes.alignRight}`]: {
+        justifyContent: 'right',
+    },
+
+    [`& .${classes.alignCenter}`]: {
+        justifyContent: 'center',
+    }
+}));
 
 interface PolicyDropzoneProps {
     policyDisplayStartDirection: string;
@@ -53,6 +107,7 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     allPolicies,
     isAPILevelPolicy,
 }) => {
+
     const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
 
     const [{ canDrop }, drop] = useDrop({

@@ -1,38 +1,42 @@
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Icon from '@material-ui/core/Icon';
-import { amber } from '@material-ui/core/colors';
+import Paper from '@mui/material/Paper';
+import Icon from '@mui/material/Icon';
+import { amber } from '@mui/material/colors';
 import VerticalDivider from './VerticalDivider';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'InlineMessage';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    button: `${PREFIX}-button`,
+    content: `${PREFIX}-content`,
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.root}`]: {
         display: 'flex',
         alignItems: 'center',
         paddingLeft: theme.spacing(2),
         borderRadius: theme.shape.borderRadius,
         border: 'solid 1px ' + theme.palette.primary.main,
-        '& span.material-icons.info': {
-            fontSize: 80,
+        position: 'relative',
+        padding: theme.spacing(2),
+        [`& span.material-icons.info`]: {
+            fontSize: '80px',
             color: theme.palette.primary.dark,
         },
-        '& span.material-icons.warning': {
-            fontSize: 80,
+        [`& span.material-icons.warning`]: {
+            fontSize: '80px',
             color: amber[700],
         },
-        position: 'relative',
     },
-    button: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    content: {
-        paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
-        paddingRight: theme.spacing(1),
-    },
-});
+}));
 
 /**
  *
@@ -53,15 +57,15 @@ class InlineMessage extends React.Component {
      * @inheritdoc
      */
     render() {
-        const {
-            classes, height, type, children,
-        } = this.props;
+        const { height, type, children } = this.props;
         return (
-            <Paper className={classes.root} {...this.props}>
-                <Icon className={type}>{type}</Icon>
-                <VerticalDivider height={height} />
-                <div className={classes.content}>{children}</div>
-            </Paper>
+            <Root>
+                <Paper className={classes.root}>
+                    <Icon className={type}>{type}</Icon>
+                    <VerticalDivider height={height} />
+                    <div>{children}</div>
+                </Paper>
+            </Root>
         );
     }
 }
@@ -80,4 +84,7 @@ InlineMessage.defaultProps = {
     height: 100,
     type: 'info',
 };
-export default withStyles(styles)(InlineMessage);
+export default ((props) => {
+    const theme = useTheme();
+    return (<InlineMessage theme={theme} {...props} />);
+});

@@ -16,64 +16,90 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import { FormattedMessage } from 'react-intl';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import Box from '@material-ui/core/Box';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Box from '@mui/material/Box';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
 import cloneDeep from 'lodash.clonedeep';
 import AddEditAdditionalHeaders from 'AppComponents/Apis/Details/GraphQLConsole/AddEditAdditionalHeaders';
 import DeleteHeader from 'AppComponents/Apis/Details/GraphQLConsole/DeleteHeader';
-import Divider from '@material-ui/core/Divider';
+import Divider from '@mui/material/Divider';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'AdditionalHeaders';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    secondaryHeading: `${PREFIX}-secondaryHeading`,
+    table: `${PREFIX}-table`,
+    expandContentRoot: `${PREFIX}-expandContentRoot`,
+    subsubTitle: `${PREFIX}-subsubTitle`,
+    alert: `${PREFIX}-alert`,
+    hr: `${PREFIX}-hr`,
+    descriptionBox: `${PREFIX}-descriptionBox`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.root}`]: {
         width: '100%',
         marginBottom: 20,
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         flexBasis: '33.33%',
         flexShrink: 0,
         flex: 1,
         alignItems: 'center',
     },
-    secondaryHeading: {
+
+    [`& .${classes.secondaryHeading}`]: {
         fontSize: theme.typography.pxToRem(15),
         color: theme.palette.text.secondary,
         display: 'flex',
         alignItems: 'center',
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         marginBottom: 40,
         background: '#efefef',
         '& th': {
             background: '#ccc',
         },
     },
-    expandContentRoot: {
+
+    [`& .${classes.expandContentRoot}`]: {
         flexDirection: 'column',
     },
-    subsubTitle: {
+
+    [`& .${classes.subsubTitle}`]: {
         fontSize: '0.81rem',
     },
-    alert: {
+
+    [`& .${classes.alert}`]: {
         flex: 1,
     },
-    hr: {
+
+    [`& .${classes.hr}`]: {
         border: 'solid 1px #efefef',
         width: '100%',
     },
-    descriptionBox: {
+
+    [`& .${classes.descriptionBox}`]: {
         marginLeft: theme.spacing(1),
     },
 }));
@@ -91,7 +117,6 @@ function getUUID() {
  * @param {JSON} props Provides props from parent
  */
 function AdditionalHeaders(props) {
-    const classes = useStyles();
     const { additionalHeaders, setAdditionalHeaders } = props;
     const [expanded, setExpanded] = React.useState(false);
 
@@ -140,9 +165,9 @@ function AdditionalHeaders(props) {
     };
 
     return (
-        <div className={classes.root}>
-            <ExpansionPanel expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-                <ExpansionPanelSummary
+        <Root className={classes.root}>
+            <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+                <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls='panel1bh-content'
                     id='panel1bh-header'
@@ -164,8 +189,8 @@ function AdditionalHeaders(props) {
                             Hide group
                         </Typography>
                     )}
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails classes={{ root: classes.expandContentRoot }}>
+                </AccordionSummary>
+                <AccordionDetails classes={{ root: classes.expandContentRoot }}>
                     <>
                         <Divider light className={classes.customDivider} />
                         <Box component='div' marginLeft={1} display='flex' alignItems='center'>
@@ -238,10 +263,9 @@ function AdditionalHeaders(props) {
                         )}
                     </>
                     <Divider />
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
-
-        </div>
+                </AccordionDetails>
+            </Accordion>
+        </Root>
     );
 }
 AdditionalHeaders.propTypes = {

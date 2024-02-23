@@ -17,94 +17,131 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import API from 'AppData/api';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import FormGroup from '@material-ui/core/FormGroup';
-import Grid from '@material-ui/core/Grid';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import FormGroup from '@mui/material/FormGroup';
+import Grid from '@mui/material/Grid';
 import ViewToken from './ViewToken';
 import ApiKey from '../ApiKey';
 import ApiKeyRestriction from '../ApiKeyRestriction';
-import Card from "@material-ui/core/Card";
-import CardContent from "@material-ui/core/CardContent";
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CircularProgress from '@mui/material/CircularProgress';
 
-const styles = (theme) => ({
-  root: {
+const PREFIX = 'ApiKeyManager';
+
+const classes = {
+  root: `${PREFIX}-root`,
+  dialog: `${PREFIX}-dialog`,
+  button: `${PREFIX}-button`,
+  tokenSection: `${PREFIX}-tokenSection`,
+  margin: `${PREFIX}-margin`,
+  keyConfigWrapper: `${PREFIX}-keyConfigWrapper`,
+  generateWrapper: `${PREFIX}-generateWrapper`,
+  paper: `${PREFIX}-paper`,
+  dialogTitle: `${PREFIX}-dialogTitle`,
+  dialogContent: `${PREFIX}-dialogContent`,
+  formGroup: `${PREFIX}-formGroup`,
+  gridWrapper: `${PREFIX}-gridWrapper`,
+  keyTitle: `${PREFIX}-keyTitle`,
+  cardBody: `${PREFIX}-cardBody`,
+  generateKey: `${PREFIX}-generateKey`
+};
+
+const StyledGrid = styled(Grid)((
+  {
+    theme
+  }
+) => ({
+  [`& .${classes.root}`]: {
     padding: theme.spacing(3),
     '& span, & h5, & label, & input': {
       color: theme.palette.getContrastText(theme.palette.background.paper),
     },
   },
-  dialog: {
+
+  [`& .${classes.dialog}`]: {
     '& span, & h2, & label': {
       color: theme.palette.getContrastText(theme.palette.background.paper),
     },
   },
-  button: {
+
+  [`& .${classes.button}`]: {
     '& span': {
       color: theme.palette.getContrastText(theme.palette.primary.main),
     }
   },
-  tokenSection: {
+
+  [`& .${classes.tokenSection}`]: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
   },
-  margin: {
+
+  [`& .${classes.margin}`]: {
     marginRight: theme.spacing(2),
   },
-  keyConfigWrapper: {
+
+  [`& .${classes.keyConfigWrapper}`]: {
     flexDirection: 'column',
     marginBottom: 0,
   },
-  generateWrapper: {
+
+  [`& .${classes.generateWrapper}`]: {
     padding: '10px',
     'margin-inline-end': 'auto',
   },
-  paper: {
+
+  [`& .${classes.paper}`]: {
     display: 'flex',
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
     marginLeft: theme.spacing(10),
   },
-  dialogTitle: {
+
+  [`& .${classes.dialogTitle}`]: {
     padding: '24px 24px 0px',
   },
-  dialogContent: {
+
+  [`& .${classes.dialogContent}`]: {
     padding: '0 24px 0px',
   },
-  formGroup: {
+
+  [`& .${classes.formGroup}`]: {
     padding: '20px',
   },
-  gridWrapper: {
+
+  [`& .${classes.gridWrapper}`]: {
     'align-self': 'center',
   },
-  keyTitle: {
+
+  [`& .${classes.keyTitle}`]: {
     textTransform: 'capitalize',
   },
-  cardBody: {
+
+  [`& .${classes.cardBody}`]: {
     padding: theme.spacing(1),
     lineHeight: 2,
   },
-  generateKey: {
+
+  [`& .${classes.generateKey}`]: {
     '& span': {
       color: theme.palette.getContrastText(theme.palette.primary.main),
     }
-  },
-});
+  }
+}));
 
 class ApiKeyManager extends React.Component {
   constructor(props) {
     super(props);
-    const { classes, selectedApp, keyType } = this.props;
     this.state = {
       apikey: null,
       open: false,
@@ -190,13 +227,12 @@ class ApiKeyManager extends React.Component {
   }
 
   render() {
-    const { classes, keyType } = this.props;
     const {
       showToken, accessTokenRequest, open, apikey, newIP, ipList,
       newReferer, refererList, restrictSchema, isGenerating,
     } = this.state;
     return (
-      <Grid container direction="row" spacing={0} justify="left" alignItems="left">
+      <StyledGrid container direction="row" spacing={0} justifyContent="left" alignItems="left">
         <Grid item md={5} xs={12}>
           <ApiKeyRestriction
             updateNewIp={this.updateNewIp}
@@ -273,7 +309,7 @@ class ApiKeyManager extends React.Component {
                    {isGenerating && <CircularProgress size={24} />}
                 </Button>
               )}
-              <Button onClick={this.handleClose} color="primary" autoFocus id='generate-api-keys-close-btn'>
+              <Button onClick={this.handleClose} color="grey" autoFocus id='generate-api-keys-close-btn'>
                 <FormattedMessage
                   id="Shared.AppsAndKeys.ViewKeys.consumer.close.btn"
                   defaultMessage="Close"
@@ -340,7 +376,7 @@ class ApiKeyManager extends React.Component {
             </Card>
           </Grid>
         )}
-      </Grid>
+      </StyledGrid>
     );
   }
 }
@@ -354,4 +390,4 @@ ApiKeyManager.propTypes = {
   intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(ApiKeyManager));
+export default injectIntl((ApiKeyManager));

@@ -17,25 +17,41 @@
  */
 
 import React, { useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import Settings from 'AppComponents/Shared/SettingsContext';
 import { FormattedMessage } from 'react-intl';
-import { withStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
+import Paper from '@mui/material/Paper';
+import Grid from '@mui/material/Grid';
+import Typography from '@mui/material/Typography';
 import PropTypes from 'prop-types';
+import { useTheme } from '@mui/material';
 import API from './data/api';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'TenantListing';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    paper: `${PREFIX}-paper`,
+    list: `${PREFIX}-list`,
+    wrapper: `${PREFIX}-wrapper`,
+    listItem: `${PREFIX}-listItem`,
+};
+
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`&.${classes.root}`]: {
         flexGrow: 1,
         display: 'flex',
         background: theme.palette.background.default,
         height: '100vh',
 
     },
-    paper: {
+
+    [`& .${classes.paper}`]: {
         padding: theme.spacing(2),
         textAlign: 'left',
         color: theme.palette.text.secondary,
@@ -48,26 +64,30 @@ const styles = (theme) => ({
             cursor: 'grab',
         },
     },
-    list: {
+
+    [`& .${classes.list}`]: {
         background: theme.palette.background.paper,
         display: 'block',
         margin: '10px auto',
-        padding: `${theme.spacing(3)}px ${theme.spacing(2)}px`,
+        padding: `${theme.spacing(3)} ${theme.spacing(2)}`,
         overflow: 'auto',
     },
-    wrapper: {
+
+    [`& .${classes.wrapper}`]: {
         margin: '100px auto',
         padding: theme.spacing(2),
         display: 'block',
     },
-    listItem: {
+
+    [`& .${classes.listItem}`]: {
         margin: 'auto',
     },
-});
+}));
 
 const tenantListing = (props) => {
     const settingContext = useContext(Settings);
-    const { tenantList, classes, theme } = props;
+    const { tenantList } = props;
+    const theme = useTheme();
     const orderedList = tenantList.sort((a, b) => ((a.domain > b.domain) ? 1 : -1));
     /**
      * call the setting API.
@@ -91,8 +111,8 @@ const tenantListing = (props) => {
     const { custom: { landingPage } } = theme;
 
     return (
-        <div className={classes.root}>
-            <Grid container md={4} justify='left' spacing={0} className={classes.wrapper}>
+        <Root className={classes.root}>
+            <Grid container md={4} justifyContent='left' spacing={0} className={classes.wrapper}>
                 <Typography variant='h4'>
                     <FormattedMessage id='TenantListing.title' defaultMessage='Tenant Developer Portals' />
                 </Typography>
@@ -131,7 +151,7 @@ const tenantListing = (props) => {
                     })}
                 </div>
             </Grid>
-        </div>
+        </Root>
     );
 };
 
@@ -154,4 +174,4 @@ tenantListing.propTypes = {
         }).isRequired,
     }).isRequired,
 };
-export default withStyles(styles, { withTheme: true })(tenantListing);
+export default (tenantListing);

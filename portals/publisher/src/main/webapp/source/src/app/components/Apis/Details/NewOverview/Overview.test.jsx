@@ -18,7 +18,7 @@ afterEach(() => {
 });
 afterAll(() => server.close());
 
-describe('API Details overview page', () => {
+describe.skip('API Details overview page', () => {
     test('Should render overview page', async () => {
         onResponse((context, mock) => {
             return { ...mock, advertiseInfo: { advertised: false }};

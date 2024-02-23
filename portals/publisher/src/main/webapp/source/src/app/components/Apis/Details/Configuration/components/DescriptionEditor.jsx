@@ -18,25 +18,25 @@
  */
 
 import React, { useState, Suspense, lazy } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import CloseIcon from '@material-ui/icons/Close';
-import Slide from '@material-ui/core/Slide';
-import Grid from '@material-ui/core/Grid';
-import TextField from '@material-ui/core/TextField';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormControl from '@material-ui/core/FormControl';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import AppBar from '@mui/material/AppBar';
+import { Toolbar } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
+import Slide from '@mui/material/Slide';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import CircularProgress from '@mui/material/CircularProgress';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormControl from '@mui/material/FormControl';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -45,37 +45,58 @@ import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus , vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Configurations from 'Config';
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "MDMonacoEditor" */));
-const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "MDReactMarkdown" */));
+const PREFIX = 'DescriptionEditor';
 
-const useStyles = makeStyles(() => ({
-    flex: {
+const classes = {
+    flex: `${PREFIX}-flex`,
+    popupHeader: `${PREFIX}-popupHeader`,
+    splitWrapper: `${PREFIX}-splitWrapper`,
+    editorHeader: `${PREFIX}-editorHeader`,
+    markdownViewWrapper: `${PREFIX}-markdownViewWrapper`,
+    appBar: `${PREFIX}-appBar`,
+    button: `${PREFIX}-button`
+};
+
+
+const Root = styled('div')(() => ({
+    [`& .${classes.flex}`]: {
         flex: 1,
     },
-    popupHeader: {
+
+    [`& .${classes.popupHeader}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    splitWrapper: {
+
+    [`& .${classes.splitWrapper}`]: {
         padding: 0,
+        paddingTop: 2,
+        border: '1px solid #red',
     },
-    editorHeader: {
+
+    [`& .${classes.editorHeader}`]: {
         alignItems: 'center',
         display: 'flex',
     },
-    markdownViewWrapper: {
+
+    [`& .${classes.markdownViewWrapper}`]: {
         height: '100vh',
         overflowY: 'auto',
     },
-    appBar: {
+
+    [`& .${classes.appBar}`]: {
         position: 'relative',
     },
-    button: {
+
+    [`& .${classes.button}`]: {
         height: 30,
         marginLeft: 30,
-    },
+    }
 }));
+
+const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "MDMonacoEditor" */));
+const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "MDReactMarkdown" */));
 
 function Transition(props) {
     return <Slide direction='up' {...props} />;
@@ -92,7 +113,7 @@ export default function DescriptionEditor(props) {
         Configurations.app.markdown.syntaxHighlighterProps: {};
     const syntaxHighlighterDarkTheme = Configurations.app.markdown ? 
         Configurations.app.markdown.syntaxHighlighterDarkTheme: false;
-    const classes = useStyles();
+
     const {
         api,
         updateContent,
@@ -148,7 +169,7 @@ export default function DescriptionEditor(props) {
     const markdownWithApiData = addApiContent(content);
 
     return (
-        <>
+        <Root>
             <Button
                 variant='outlined'
                 color='primary'
@@ -166,12 +187,17 @@ export default function DescriptionEditor(props) {
                         <Grid
                             container
                             direction='row'
-                            justify='space-between'
+                            justifyContent='space-between'
                             alignItems='center'
                         >
                             <Grid item xs={8}>
                                 <Box display='flex'>
-                                    <IconButton edge='start' color='inherit' onClick={toggleOpen} aria-label='close'>
+                                    <IconButton
+                                        edge='start'
+                                        color='inherit'
+                                        onClick={toggleOpen}
+                                        aria-label='close'
+                                        size='large'>
                                         <CloseIcon />
                                     </IconButton>
                                     <Box
@@ -184,13 +210,22 @@ export default function DescriptionEditor(props) {
                                     >
                                         {api.name}
                                     </Box>
-                                    <Typography variant='h5' className={classes.editorHeader}>
-                                        <FormattedMessage
-                                            id={'Apis.Details.Configuration.components.DescriptionEditor'
-                                                + '.edit.description.of'}
-                                            defaultMessage='Description :'
-                                        />
-                                    </Typography>
+                                    <Box
+                                        display='flex'
+                                        alignItems='center'
+                                        mx={1}
+                                        fontFamily='fontFamily'
+                                        fontSize='h4.fontSize'
+                                        color='primary.main'
+                                    >
+                                        <Typography variant='h5' className={classes.editorHeader}>
+                                            <FormattedMessage
+                                                id={'Apis.Details.Configuration.components.DescriptionEditor'
+                                                    + '.edit.description.of'}
+                                                defaultMessage='Description :'
+                                            />
+                                        </Typography>
+                                    </Box>
                                     <Box ml={2}>
                                         <FormControl component='fieldset'>
                                             <RadioGroup
@@ -244,7 +279,7 @@ export default function DescriptionEditor(props) {
                     </Toolbar>
                 </AppBar>
                 <div className={classes.splitWrapper}>
-                    <Grid container spacing={7}>
+                    <Grid container sx={{ pt: 5 }}>
                         { descriptionType === CONSTS.DESCRIPTION_TYPES.DESCRIPTION
                             ? (
                                 <Grid item xs={12}>
@@ -301,7 +336,7 @@ export default function DescriptionEditor(props) {
                                                                 <code className={className} {...propsInner}>
                                                                     {children}
                                                                 </code>
-                                                            )
+                                                            );
                                                         }
                                                     }}
                                                 />                                                
@@ -313,7 +348,7 @@ export default function DescriptionEditor(props) {
                     </Grid>
                 </div>
             </Dialog>
-        </>
+        </Root>
     );
 }
 

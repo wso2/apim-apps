@@ -17,44 +17,61 @@
  */
 
 import React, { FC, useState, } from 'react';
-import { Button, makeStyles, Theme } from '@material-ui/core';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
-import Grid from '@material-ui/core/Grid';
-import Popover from '@material-ui/core/Popover';
-import Select from '@material-ui/core/Select';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import PriorityHighOutlined from '@material-ui/icons/PriorityHighOutlined';
+import { styled } from '@mui/material/styles';
+import { Button , Theme } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Grid from '@mui/material/Grid';
+import Popover from '@mui/material/Popover';
+import Select from '@mui/material/Select';
+import FormControl from '@mui/material/FormControl';
+import InputLabel from '@mui/material/InputLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import PriorityHighOutlined from '@mui/icons-material/PriorityHighOutlined';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Tooltip from '@material-ui/core/Tooltip';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
-import SubjectOutlinedIcon from '@material-ui/icons/SubjectOutlined';
-import FormatListBulletedOutlinedIcon from '@material-ui/icons/FormatListBulletedOutlined';
-import DeleteIcon from '@material-ui/icons/Delete';
-import { AddCircle } from '@material-ui/icons';
+import Tooltip from '@mui/material/Tooltip';
+import ToggleButton from '@mui/lab/ToggleButton';
+import ToggleButtonGroup from '@mui/lab/ToggleButtonGroup';
+import SubjectOutlinedIcon from '@mui/icons-material/SubjectOutlined';
+import FormatListBulletedOutlinedIcon from '@mui/icons-material/FormatListBulletedOutlined';
+import DeleteIcon from '@mui/icons-material/Delete';
+import { AddCircle } from '@mui/icons-material';
 import { PolicyAttribute } from './Types';
 import { ACTIONS } from './PolicyCreateForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    attributeProperty: {
+const PREFIX = 'PolicyAttributes';
+
+const classes = {
+    attributeProperty: `${PREFIX}-attributeProperty`,
+    formControlSelect: `${PREFIX}-formControlSelect`,
+    selectRoot: `${PREFIX}-selectRoot`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    requiredToggleButton: `${PREFIX}-requiredToggleButton`,
+    toggleButton: `${PREFIX}-toggleButton`
+};
+
+
+const Root = styled('div')(({theme}: { theme: Theme }) => ({
+    [`& .${classes.attributeProperty}`]: {
         marginLeft: theme.spacing(0.5),
         marginRight: theme.spacing(0.5),
     },
-    formControlSelect: {
+
+    [`& .${classes.formControlSelect}`]: {
         marginTop: theme.spacing(2),
     },
-    selectRoot: {
+
+    [`& .${classes.selectRoot}`]: {
         padding: '11.5px 14px',
         width: 100,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    requiredToggleButton: {
+
+    [`& .${classes.requiredToggleButton}`]: {
         height: '37.28px',
         width: '37.28px',
         '&.Mui-selected, &.Mui-selected:hover': {
@@ -62,10 +79,11 @@ const useStyles = makeStyles((theme: Theme) => ({
             backgroundColor: theme.palette.primary.main,
         }
     },
-    toggleButton: {
+
+    [`& .${classes.toggleButton}`]: {
         height: '37.28px',
         width: '37.28px',
-    },
+    }
 }));
 
 interface PolicyAttributesProps {
@@ -82,10 +100,10 @@ interface PolicyAttributesProps {
 const PolicyAttributes: FC<PolicyAttributesProps> = ({
     policyAttributes, dispatch, isViewMode
 }) => {
-    const classes = useStyles();
+
     const intl = useIntl();
-    const [descriptionAnchorEl, setDescriptionAnchorEl] = useState<HTMLButtonElement | null>(null);
-    const [valuePropertiesAnchorEl, setValuePropertiesAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [descriptionAnchorEl, setDescriptionAnchorEl] = useState<HTMLElement | null>(null);
+    const [valuePropertiesAnchorEl, setValuePropertiesAnchorEl] = useState<HTMLElement | null>(null);
     const [openedDescriptionPopoverId, setOpenedDescriptionPopoverId] = useState<string | null>(null);
     const [openedValuesPopoverId, setOpenedValuesPopoverId] = useState<string | null>(null);
 
@@ -202,7 +220,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     }
 
     // Description toggle button related actions
-    const handleDescriptionToggle = (event: React.FormEvent<HTMLButtonElement>, id: string) => {
+    const handleDescriptionToggle = (event: React.MouseEvent<HTMLElement>, id: string) => {
         setOpenedDescriptionPopoverId(id);
         setDescriptionAnchorEl(event.currentTarget);
     }
@@ -212,7 +230,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     };
 
     // Value properties toggle button related actions
-    const handleValuePropertiesToggle = (event: React.FormEvent<HTMLButtonElement>, id: string) => {
+    const handleValuePropertiesToggle = (event: React.MouseEvent<HTMLElement>, id: string) => {
         setOpenedValuesPopoverId(id);
         setValuePropertiesAnchorEl(event.currentTarget);
     }
@@ -222,7 +240,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
     };
 
     return (
-        <>
+        (<Root>
             <Box display='flex' flexDirection='row' mt={1} pt={3}>
                 <Box width='40%'>
                     <Typography color='inherit' variant='subtitle2' component='div'>
@@ -733,7 +751,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                     ))}
                 </Grid>
             </Box>
-        </>
+        </Root>)
     );
 }
 

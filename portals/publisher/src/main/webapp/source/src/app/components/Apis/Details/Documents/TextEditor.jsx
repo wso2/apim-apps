@@ -17,17 +17,17 @@
  */
 
 import React, { useState, useContext } from 'react';
+import { styled } from '@mui/material/styles';
 import { withRouter } from 'react-router-dom';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
-import IconButton from '@material-ui/core/IconButton';
-import Typography from '@material-ui/core/Typography';
-import Slide from '@material-ui/core/Slide';
-import Icon from '@material-ui/core/Icon';
-import Paper from '@material-ui/core/Paper';
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Slide from '@mui/material/Slide';
+import Icon from '@mui/material/Icon';
+import Paper from '@mui/material/Paper';
 import { EditorState, convertToRaw, ContentState, convertFromHTML } from 'draft-js';
 import { Editor } from 'react-draft-wysiwyg';
 import draftToHtml from 'draftjs-to-html';
@@ -37,32 +37,43 @@ import APIProduct from 'AppData/APIProduct';
 import Alert from 'AppComponents/Shared/Alert';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
-const styles = {
-    appBar: {
+const PREFIX = 'TextEditor';
+
+const classes = {
+    appBar: `${PREFIX}-appBar`,
+    flex: `${PREFIX}-flex`,
+    popupHeader: `${PREFIX}-popupHeader`,
+    splitWrapper: `${PREFIX}-splitWrapper`,
+    docName: `${PREFIX}-docName`,
+    button: `${PREFIX}-button`
+};
+
+const Root = styled('div')({
+    [`& .${classes.appBar}`]: {
         position: 'relative',
     },
-    flex: {
+    [`& .${classes.flex}`]: {
         flex: 1,
     },
-    popupHeader: {
+    [`& .${classes.popupHeader}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    splitWrapper: {
+    [`& .${classes.splitWrapper}`]: {
         padding: 0,
     },
-    docName: {
+    [`& .${classes.docName}`]: {
         alignItems: 'center',
         display: 'flex',
     },
-    button: {
+    [`& .${classes.button}`]: {
         height: 30,
         marginLeft: 30,
     },
-};
+});
 
 function Transition(props) {
     return <Slide direction='up' {...props} />;
@@ -141,9 +152,9 @@ function TextEditor(props) {
             });
     };
 
-    const { classes, docName } = props;
+    const {  docName } = props;
     return (
-        <div>
+        <Root>
             <Button
                 onClick={toggleOpen} disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
                 aria-label={'Edit Content of ' + docName}
@@ -153,7 +164,7 @@ function TextEditor(props) {
             </Button>
             <Dialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
                 <Paper square className={classes.popupHeader}>
-                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close'>
+                    <IconButton color='inherit' onClick={toggleOpen} aria-label='Close' size='large'>
                         <Icon>close</Icon>
                     </IconButton>
                     <Typography variant='h4' className={classes.docName}>
@@ -186,7 +197,7 @@ function TextEditor(props) {
                     />
                 </div>
             </Dialog>
-        </div>
+        </Root>
     );
 }
 
@@ -202,4 +213,4 @@ TextEditor.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withRouter(withStyles(styles)(TextEditor)));
+export default injectIntl(withRouter((TextEditor)));

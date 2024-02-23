@@ -17,49 +17,74 @@
  */
 
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/core/styles';
-import Cancel from '@material-ui/icons/Cancel';
-import Clear from '@material-ui/icons/Clear';
-import StarRate from '@material-ui/icons/StarRate';
-import StarIcon from '@material-ui/icons/Star';
-import StarBorderIcon from '@material-ui/icons/StarBorder';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import Cancel from '@mui/icons-material/Cancel';
+import Clear from '@mui/icons-material/Clear';
+import StarRate from '@mui/icons-material/StarRate';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
 import StarRatingSummary from 'AppComponents/Apis/Details/StarRatingSummary';
-import Rating from '@material-ui/lab/Rating';
+import Rating from '@mui/material/Rating';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import { useTheme } from '@mui/material';
 
-const styles = (theme) => ({
-    starRate: {
+const PREFIX = 'StarRatingBarLegacy';
+
+const classes = {
+    starRate: `${PREFIX}-starRate`,
+    noStarRate: `${PREFIX}-noStarRate`,
+    iconFilled: `${PREFIX}-iconFilled`,
+    iconEmpty: `${PREFIX}-iconEmpty`,
+    removeRating: `${PREFIX}-removeRating`,
+    closeRating: `${PREFIX}-closeRating`,
+    userRating: `${PREFIX}-userRating`,
+    rateThis: `${PREFIX}-rateThis`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.starRate}`]: {
         fontSize: 30,
         color: theme.custom.infoBar.starColor,
     },
-    noStarRate: {
+
+    [`& .${classes.noStarRate}`]: {
         fontSize: 30,
-        color: theme.palette.grey.A200,
+        color: theme.palette.grey.A400,
     },
-    iconFilled: {
+
+    [`& .${classes.iconFilled}`]: {
         color: theme.custom.infoBar.starColor,
     },
-    iconEmpty: {
+
+    [`& .${classes.iconEmpty}`]: {
         color: theme.custom.infoBar.starColorEmpty || '#cfcfcf',
     },
-    removeRating: {
+
+    [`& .${classes.removeRating}`]: {
         fontSize: 20,
         color: theme.palette.getContrastText(theme.custom.infoBar.background),
     },
-    closeRating: {
+
+    [`& .${classes.closeRating}`]: {
         position: 'absolute',
         right: theme.spacing(-2),
         top: theme.spacing(-2),
     },
-    userRating: {
+
+    [`& .${classes.userRating}`]: {
         display: 'flex',
         justifyContent: 'flex-start',
         alignItems: 'center',
@@ -72,23 +97,24 @@ const styles = (theme) => ({
         top: '-50px',
         marginLeft: '125px',
     },
-    rateThis: {
+
+    [`& .${classes.rateThis}`]: {
         lineHeight: '15px',
         width: 40,
     },
-});
+}));
 
 /**
  *
  *
- * @class StarRatingBar
+ * @class StarRatingBarLegacy
  * @extends {React.Component}
  */
-class StarRatingBar extends React.Component {
+class StarRatingBarLegacy extends React.Component {
     /**
      *Creates an instance of RecommendedApiThumb.
      * @param {JSON} props properties
-     * @memberof StarRatingBar
+     * @memberof StarRatingBarLegacy
      */
     constructor(props) {
         super(props);
@@ -107,7 +133,7 @@ class StarRatingBar extends React.Component {
 
     /**
      * Component did mount callback.
-     * @memberof StarRatingBar
+     * @memberof StarRatingBarLegacy
      */
     componentDidMount() {
         this.getApiRating();
@@ -116,7 +142,7 @@ class StarRatingBar extends React.Component {
     /**
      * Component did mount callback.
      * @param {JSON} prevProps previous instance properties
-     * @memberof StarRatingBar
+     * @memberof StarRatingBarLegacy
      */
     componentDidUpdate(prevProps) {
         const { ratingUpdate } = this.props;
@@ -128,7 +154,7 @@ class StarRatingBar extends React.Component {
     /**
      *
      *
-     * @memberof StarRatingBar
+     * @memberof StarRatingBarLegacy
      */
     getApiRating() {
         const { apiId, setRatingUpdate } = this.props;
@@ -159,7 +185,7 @@ class StarRatingBar extends React.Component {
      *
      *
      * @param {*} rateIndex
-     * @memberof StarRatingBar
+     * @memberof StarRatingBarLegacy
      */
     doRate(rateIndex) {
         const { apiId, intl } = this.props;
@@ -185,7 +211,7 @@ class StarRatingBar extends React.Component {
     }
 
     /**
-     * @memberof StarRatingBar
+     * @memberof StarRatingBarLegacy
      */
     removeUserRating() {
         const { apiId, setRatingUpdate, intl } = this.props;
@@ -211,7 +237,7 @@ class StarRatingBar extends React.Component {
     }
 
     /**
-     * @memberof StarRatingBar
+     * @memberof StarRatingBarLegacy
      */
     toggleEditRating() {
         this.setState((prevState) => ({ showEditing: !prevState.showEditing }));
@@ -219,25 +245,31 @@ class StarRatingBar extends React.Component {
 
     /**
      * @returns {JSX} star rating bar
-     * @memberof StarRatingBar
+     * @memberof StarRatingBarLegacy
      */
     render() {
         const {
             avgRating, userRating, count, total, showEditing,
         } = this.state;
         const {
-            classes, isEditable, showSummary, apiRating,
+            isEditable, showSummary, apiRating,
         } = this.props;
         const apiRatingNumber = parseFloat(apiRating);
         return (
-            <>
+            <Root>
                 {showSummary ? (
                     <StarRatingSummary avgRating={avgRating} reviewCount={total} returnCount={count} />
                 ) : (
                     <>
                         {isEditable ? (
                             <Box position='relative'>
-                                <IconButton component='div' onClick={this.toggleEditRating} display='flex' style={{ cursor: 'pointer' }}>
+                                <IconButton
+                                    component='div'
+                                    onClick={this.toggleEditRating}
+                                    display='flex'
+                                    style={{ cursor: 'pointer' }}
+                                    size='large'
+                                >
                                     {(userRating === 0)
                                         ? (<StarBorderIcon style={{ fontSize: 30 }} />)
                                         : (<StarIcon style={{ fontSize: 30, color: '#75d5fa' }} />)}
@@ -257,14 +289,18 @@ class StarRatingBar extends React.Component {
                                         <ClickAwayListener onClickAway={this.toggleEditRating}>
                                             <div className={classes.userRating}>
                                                 {[1, 2, 3, 4, 5].map((i) => (
-                                                    <IconButton area-label={'Rate ' + i} onClick={() => this.doRate(i)}>
+                                                    <IconButton area-label={'Rate ' + i} onClick={() => this.doRate(i)} size='large'>
                                                         <StarRate
                                                             key={i}
                                                             className={userRating >= i ? classes.starRate : classes.noStarRate}
                                                         />
                                                     </IconButton>
                                                 ))}
-                                                <IconButton area-label='Clear rating' onClick={() => this.removeUserRating()}>
+                                                <IconButton
+                                                    area-label='Clear rating'
+                                                    onClick={() => this.removeUserRating()}
+                                                    size='large'
+                                                >
                                                     <Clear
                                                         className={classes.removeRating}
                                                     />
@@ -273,6 +309,7 @@ class StarRatingBar extends React.Component {
                                                     className={classes.closeRating}
                                                     area-label='Close rating popup'
                                                     onClick={this.toggleEditRating}
+                                                    size='large'
                                                 >
                                                     <Cancel
                                                         className={classes.removeRating}
@@ -305,18 +342,18 @@ class StarRatingBar extends React.Component {
                         )}
                     </>
                 )}
-            </>
+            </Root>
         );
     }
 }
 
-StarRatingBar.defaultProps = {
+StarRatingBarLegacy.defaultProps = {
     apiRating: 0,
     ratingUpdate: 0,
     setRatingUpdate: () => { },
 };
 
-StarRatingBar.propTypes = {
+StarRatingBarLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
     apiId: PropTypes.string.isRequired,
@@ -330,4 +367,20 @@ StarRatingBar.propTypes = {
     setRatingUpdate: PropTypes.func,
 };
 
-export default injectIntl(withStyles(styles, { withTheme: true })(StarRatingBar));
+function StarRatingBar(props) {
+    const {
+        apiRating, apiId, isEditable, showSummary,
+    } = props;
+    const theme = useTheme();
+    return (
+        <StarRatingBarLegacy
+            apiRating={apiRating}
+            apiId={apiId}
+            isEditable={isEditable}
+            showSummary={showSummary}
+            theme={theme}
+        />
+    );
+}
+
+export default injectIntl((StarRatingBar));

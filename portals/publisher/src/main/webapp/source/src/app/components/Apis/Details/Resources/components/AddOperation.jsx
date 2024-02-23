@@ -1,4 +1,3 @@
-import { FormattedMessage, useIntl } from 'react-intl';
 /*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -21,41 +20,66 @@ import React, {
     useRef,
     useState,
 } from 'react';
-
+import { FormattedMessage, useIntl } from 'react-intl';
+import { styled, useTheme } from '@mui/material/styles';
 import APIValidation from 'AppData/APIValidation';
-import AddIcon from '@material-ui/icons/Add';
+import AddIcon from '@mui/icons-material/Add';
 import Alert from 'AppComponents/Shared/Alert';
-import Badge from '@material-ui/core/Badge';
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
-import Chip from '@material-ui/core/Chip';
-import ClearIcon from '@material-ui/icons/Clear';
-import Fab from '@material-ui/core/Fab';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
-import Paper from '@material-ui/core/Paper';
+import Badge from '@mui/material/Badge';
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Checkbox from '@mui/material/Checkbox';
+import Chip from '@mui/material/Chip';
+import ClearIcon from '@mui/icons-material/Clear';
+import Fab from '@mui/material/Fab';
+import FormControl from '@mui/material/FormControl';
+import FormHelperText from '@mui/material/FormHelperText';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import InputLabel from '@mui/material/InputLabel';
+import ListItem from '@mui/material/ListItem';
+import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
-import Select from '@material-ui/core/Select';
-import TextField from '@material-ui/core/TextField';
-import Tooltip from '@material-ui/core/Tooltip';
-import { makeStyles } from '@material-ui/core/styles';
+import Select from '@mui/material/Select';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
 
-const useStyles = makeStyles((theme) => ({
-    formControl: {
+const PREFIX = 'AddOperation';
+
+const classes = {
+    formControl: `${PREFIX}-formControl`,
+    paper: `${PREFIX}-paper`,
+    customMenu: `${PREFIX}-customMenu`,
+    customButton: `${PREFIX}-customButton`,
+};
+
+const StyledPaper = styled(Paper)(({ theme }) => ({
+    [`& .${classes.formControl}`]: {
         minWidth: 120,
     },
-    paper: {
+
+    [`&.${classes.paper}`]: {
         paddingLeft: theme.spacing(4),
         paddingTop: theme.spacing(1.5),
         paddingBottom: theme.spacing(0.5),
         marginTop: '12px',
     },
+
+    [`& .${classes.customMenu}`]: {
+        // '&:hover': { backgroundColor },
+        // backgroundColor,
+        // color: theme.palette.getContrastText(backgroundColor),
+        minWidth: theme.spacing(9),
+    },
+
+    [`& .${classes.customButton}`]: {
+        // '&:hover': { backgroundColor },
+        // backgroundColor,
+        width: theme.spacing(12),
+        marginLeft: theme.spacing(1),
+        // color: theme.palette.getContrastText(backgroundColor),
+    }
 }));
 
 /**
@@ -69,35 +93,22 @@ function VerbElement(props) {
         verb, onClick, isButton, checked,
     } = props;
 
-    const useMenuStyles = makeStyles((theme) => {
-        const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
-        return {
-            customMenu: {
-                '&:hover': { backgroundColor },
-                backgroundColor,
-                color: theme.palette.getContrastText(backgroundColor),
-                minWidth: theme.spacing(9),
-            },
-            customButton: {
-                '&:hover': { backgroundColor },
-                backgroundColor,
-                width: theme.spacing(12),
-                marginLeft: theme.spacing(1),
-                color: theme.palette.getContrastText(backgroundColor),
-            },
-        };
-    });
-    const classes = useMenuStyles();
+    const theme = useTheme();
+    const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
+    const textColor = theme.palette.getContrastText(backgroundColor);
+    
     if (isButton) {
         return (
-            <Button disableFocusRipple variant='contained' className={classes.customButton} size='small'>
+            <Button disableFocusRipple variant='contained' className={classes.customButton} size='small' 
+                sx={{ backgroundColor, color: textColor }}>
                 {verb}
             </Button>
         );
     } else {
         return (
             <ListItem onClick={onClick} key={verb} button>
-                <Chip className={classes.customMenu} size='small' label={verb} />
+                <Chip className={classes.customMenu} size='small' label={verb} 
+                    sx={{ backgroundColor, color: textColor }} />
                 <ListItemSecondaryAction>
                     <Checkbox
                         onClick={onClick}
@@ -164,7 +175,7 @@ function AddOperation(props) {
     React.useEffect(() => {
         setLabelWidth(inputLabel.current.offsetWidth);
     }, []);
-    const classes = useStyles();
+
 
     /**
      *
@@ -214,8 +225,8 @@ function AddOperation(props) {
         clearInputs();
     }
     return (
-        <Paper className={classes.paper}>
-            <Grid container direction='row' spacing={0} justify='center' alignItems='center'>
+        <StyledPaper className={classes.paper}>
+            <Grid container direction='row' spacing={0} justifyContent='center' alignItems='center'>
                 <Grid item md={5} xs={12}>
                     <FormControl margin='dense' variant='outlined' className={classes.formControl}>
                         <InputLabel ref={inputLabel} htmlFor='operation-verb'>
@@ -378,7 +389,7 @@ function AddOperation(props) {
                     </sup>
                 </Grid>
             </Grid>
-        </Paper>
+        </StyledPaper>
     );
 }
 

@@ -17,10 +17,63 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import ErrorStackParser from 'error-stack-parser';
 import { mapStackTrace } from 'sourcemapped-stacktrace';
 import StackTraceFrame from './StackTraceFrame';
-import useStyles from './styles';
+
+const PREFIX = 'HumanizedStackTrace';
+
+const classes = {
+    mainStack: `${PREFIX}-mainStack`,
+    message: `${PREFIX}-message`,
+    stack: `${PREFIX}-stack`,
+    frame: `${PREFIX}-frame`,
+    file: `${PREFIX}-file`,
+    linkToFile: `${PREFIX}-linkToFile`
+};
+
+const Root = styled('div')(() => ({
+    [`& .${classes.mainStack}`]: {
+        boxSizing: 'border-box',
+        fontFamily: 'sans-serif',
+        padding: 10,
+        top: '0px',
+        left: '0px',
+        bottom: '0px',
+        right: '0px',
+        width: '100%',
+        background: '#0b1332',
+        color: 'white',
+        textAlign: 'left',
+        fontSize: '16px',
+        lineHeight: 1.2,
+        overflow: 'auto',
+    },
+
+    [`& .${classes.message}`]: {
+        fontWeight: 'bold',
+    },
+
+    [`& .${classes.stack}`]: {
+        fontFamily: 'monospace',
+        marginTop: '2em',
+    },
+
+    [`&.${classes.frame}`]: {
+        marginTop: '1em',
+    },
+
+    [`& .${classes.file}`]: {
+        fontSize: '0.8em',
+        color: 'rgba(255, 255, 255, 0.7)',
+    },
+
+    [`& .${classes.linkToFile}`]: {
+        textDecoration: 'none',
+        color: 'rgba(255, 255, 255, 0.7)',
+    }
+}));
 
 type HumanizedStackTraceProps = {
     error: Error;
@@ -33,7 +86,7 @@ type HumanizedStackTraceProps = {
  */
 export default function HumanizedStackTrace(props: HumanizedStackTraceProps) {
     const { error } = props;
-    const classes = useStyles();
+
     const [mappedError, setMappedError] = useState<Error | null>(null);
     useEffect(() => {
         const stackLines = error.stack?.split('\n');
@@ -97,9 +150,9 @@ export default function HumanizedStackTrace(props: HumanizedStackTraceProps) {
 
     if (parseError) {
         frames = (
-            <div className={classes.frame} key={0}>
+            <Root className={classes.frame} key={0}>
                 <div>{parseError.message}</div>
-            </div>
+            </Root>
         );
     } else {
         frames = <StackTraceFrame useColumns useLines frames={frames} />;

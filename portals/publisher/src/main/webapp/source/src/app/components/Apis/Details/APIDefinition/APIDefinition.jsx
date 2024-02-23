@@ -17,38 +17,38 @@
  */
 
 import React, { Suspense, lazy } from 'react';
+import { styled } from '@mui/material/styles';
 import AppContext from 'AppComponents/Shared/AppContext';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import Button from '@material-ui/core/Button';
-import EditRounded from '@material-ui/icons/EditRounded';
-import CloudDownloadRounded from '@material-ui/icons/CloudDownloadRounded';
-import LockRounded from '@material-ui/icons/LockRounded';
-import SwapHorizontalCircle from '@material-ui/icons/SwapHorizontalCircle';
+import Button from '@mui/material/Button';
+import EditRounded from '@mui/icons-material/EditRounded';
+import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
+import LockRounded from '@mui/icons-material/LockRounded';
+import SwapHorizontalCircle from '@mui/icons-material/SwapHorizontalCircle';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
-import Dialog from '@material-ui/core/Dialog';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import Icon from '@material-ui/core/Icon';
-import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
+import Dialog from '@mui/material/Dialog';
+import Grid from '@mui/material/Grid';
+import IconButton from '@mui/material/IconButton';
+import Icon from '@mui/material/Icon';
+import Link from '@mui/material/Link';
+import Paper from '@mui/material/Paper';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
-import Typography from '@material-ui/core/Typography';
-import Slide from '@material-ui/core/Slide';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import Typography from '@mui/material/Typography';
+import Slide from '@mui/material/Slide';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
+import CircularProgress from '@mui/material/CircularProgress';
 import YAML from 'js-yaml';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import { withRouter } from 'react-router';
 import { isRestricted } from 'AppData/AuthManager';
-import Box from '@material-ui/core/Box';
-import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import Box from '@mui/material/Box';
+import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
 import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-datatable as a transitive dependency
 import ResourceNotFound from '../../../Base/Errors/ResourceNotFound';
 import APISecurityAudit from './APISecurityAudit';
@@ -61,60 +61,78 @@ const EditorDialog = lazy(() => import('./SwaggerEditorDrawer' /* webpackChunkNa
 const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 const AsyncAPIEditor = lazy(() => import('./AsyncApiEditorDrawer'));
 
-const styles = (theme) => ({
-    titleWrapper: {
+const PREFIX = 'APIDefinition';
+
+// generate classes const with all the class names used in this component
+const classes = {
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    swaggerEditorWrapper: `${PREFIX}-swaggerEditorWrapper`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    buttonWarningColor: `${PREFIX}-buttonWarningColor`,
+    topBar: `${PREFIX}-topBar`,
+    converterWrapper: `${PREFIX}-converterWrapper`,
+    downloadLink: `${PREFIX}-downloadLink`,
+    button: `${PREFIX}-button`,
+    progressLoader: `${PREFIX}-progressLoader`,
+    updateApiWarning: `${PREFIX}-updateApiWarning`,
+    warningIconStyle: `${PREFIX}-warningIconStyle`,
+    activeButton: `${PREFIX}-activeButton`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
     },
-    swaggerEditorWrapper: {
+    [`& .${classes.swaggerEditorWrapper}`]: {
         height: '100vh',
         overflowY: 'auto',
     },
-    buttonIcon: {
+    [`& .${classes.buttonIcon}`]: {
         marginRight: 10,
     },
-    buttonWarningColor: {
+    [`& .${classes.buttonWarningColor}`]: {
         color: theme.palette.warning.light,
     },
-    topBar: {
+    [`& .${classes.topBar}`]: {
         display: 'flex',
         flexDirection: 'row',
         marginBottom: theme.spacing(2),
     },
-    converterWrapper: {
+    [`& .${classes.converterWrapper}`]: {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'flex-end',
         flex: '1',
         fontSize: '0.6964285714285714rem',
     },
-    downloadLink: {
+    [`& .${classes.downloadLink}`]: {
         color: 'black',
     },
-    button: {
+    [`& .${classes.button}`]: {
         marginLeft: theme.spacing(1),
         '&:hover': {
             'text-decoration': 'none',
         },
     },
-    progressLoader: {
+    [`& .${classes.progressLoader}`]: {
         marginLeft: theme.spacing(1),
     },
-    updateApiWarning: {
+    [`& .${classes.updateApiWarning}`]: {
         marginLeft: theme.spacing(5),
         color: theme.custom.serviceCatalog.onboarding.buttonText,
         borderColor: theme.custom.serviceCatalog.onboarding.buttonText,
     },
-    warningIconStyle: {
+    [`& .${classes.warningIconStyle}`]: {
         color: theme.custom.serviceCatalog.onboarding.buttonText,
     },
-    activeButton: {
+    [`& .${classes.activeButton}`]: {
         "&:selected": {
             backgroundColor: theme.palette.background.default,
         }
     }
-});
+}));
 /**
  * This component holds the functionality of viewing the api definition content of an api. The initial view is a
  * read-only representation of the api definition file.
@@ -712,7 +730,7 @@ class APIDefinition extends React.Component {
         } = this.state;
 
         const {
-            classes, resourceNotFountMessage, api, match,
+            resourceNotFountMessage, api, match,
         } = this.props;
 
         const isApiProduct = match.path.search('/api-products/') !== -1 ;
@@ -748,36 +766,50 @@ class APIDefinition extends React.Component {
 
         // @ts-ignore
         // @ts-ignore
-        return (
-            <>
-                {/* TODO tmkasun: use <Box> component for alignment  */}
-                <div className={classes.topBar}>
-                    <div className={classes.titleWrapper}>
-                        <Typography id='itest-api-details-api-definition-head' variant='h4' component='h2'>
-                            {/* eslint-disable-next-line no-nested-ternary */}
-                            {graphQL ? (
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.schema.definition'
-                                    defaultMessage='Schema Definition'
-                                />
-                            ) : asyncAPI ? (
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.asyncAPI.definition'
-                                    defaultMessage='AsyncAPI Definition'
-                                />
-                            ) : (
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.api.definition'
-                                    defaultMessage='API Definition'
-                                />
-                            )}
-                        </Typography>
-                        {asyncAPI ? (
+        return <Root>
+            {/* TODO tmkasun: use <Box> component for alignment  */}
+            <div className={classes.topBar}>
+                <div className={classes.titleWrapper}>
+                    <Typography id='itest-api-details-api-definition-head' variant='h4' component='h2'>
+                        {/* eslint-disable-next-line no-nested-ternary */}
+                        {graphQL ? (
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.schema.definition'
+                                defaultMessage='Schema Definition'
+                            />
+                        ) : asyncAPI ? (
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.asyncAPI.definition'
+                                defaultMessage='AsyncAPI Definition'
+                            />
+                        ) : (
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.api.definition'
+                                defaultMessage='API Definition'
+                            />
+                        )}
+                    </Typography>
+                    {asyncAPI ? (
+                        <Button
+                            size='small'
+                            className={classes.button}
+                            onClick={this.openEditor}
+                            disabled={isRestricted(['apim:api_create'], api)}
+                        >
+                            <EditRounded className={classes.buttonIcon} />
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.edit'
+                                defaultMessage='Edit'
+                            />
+                        </Button>
+                    ) : (
+                        !(graphQL || isApiProduct) && (
                             <Button
                                 size='small'
                                 className={classes.button}
                                 onClick={this.openEditor}
-                                disabled={isRestricted(['apim:api_create'], api)}
+                                disabled={isRestricted(['apim:api_create'], api) || api.isRevision}
+                                id='edit-definition-btn'
                             >
                                 <EditRounded className={classes.buttonIcon} />
                                 <FormattedMessage
@@ -785,257 +817,241 @@ class APIDefinition extends React.Component {
                                     defaultMessage='Edit'
                                 />
                             </Button>
-                        ) : (
-                            !(graphQL || isApiProduct) && (
-                                <Button
-                                    size='small'
-                                    className={classes.button}
-                                    onClick={this.openEditor}
-                                    disabled={isRestricted(['apim:api_create'], api) || api.isRevision}
-                                    id='edit-definition-btn'
-                                >
-                                    <EditRounded className={classes.buttonIcon} />
-                                    <FormattedMessage
-                                        id='Apis.Details.APIDefinition.APIDefinition.edit'
-                                        defaultMessage='Edit'
-                                    />
-                                </Button>
-                            )
-                        )}
-                        {!isApiProduct && (
-                            <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} 
-                                editAndImport={this.openEditorToImport}/>
-                        )}
-                        {(api.serviceInfo && api.serviceInfo.outdated && api.type !== 'SOAP') && (
-                            <DefinitionOutdated
-                                api={api}
-                                classes={classes}
-                            />
-                        )}
-                        <Button
-                            size='small'
-                            className={classes.button}
-                            component={Link}
-                            download={fileName}
-                            href={downloadLink}
-                            id='download-definition-btn'
-                        >
-                            <CloudDownloadRounded className={classes.buttonIcon} />
-                            <FormattedMessage
-                                id='Apis.Details.APIDefinition.APIDefinition.download.definition'
-                                defaultMessage='Download Definition'
-                            />
-                        </Button>
-                        {(securityAuditProperties.apiToken && securityAuditProperties.collectionId
-                        && api.type !== 'GRAPHQL' && !asyncAPI)
-                            && (
-                                <Button size='small' className={classes.button} onClick={this.onAuditApiClick}>
-                                    <LockRounded className={classes.buttonIcon} />
-                                    <FormattedMessage
-                                        id='Apis.Details.APIDefinition.APIDefinition.audit.api'
-                                        defaultMessage='Audit API'
-                                    />
-                                </Button>
-                            )}
-                    </div>
-                    {isGraphQL === 0 && (
-                        <div className={classes.titleWrapper}>
-                            <Button size='small' className={classes.button} onClick={this.onChangeFormatClick}>
-                                <SwapHorizontalCircle className={classes.buttonIcon} />
-                                <FormattedMessage
-                                    id='Apis.Details.APIDefinition.APIDefinition.convert.to'
-                                    defaultMessage='Convert to'
-                                />
-                                {' '}
-                                {convertTo}
-                            </Button>
-                        </div>
+                        )
                     )}
-                </div>
-                <div>
-                    <Suspense fallback={<Progress />}>
-                        {isAuditApiClicked ? (
-                            <APISecurityAudit apiId={api.id} />
-                        ) : (
-                            <MonacoEditor
-                                language={format}
-                                width='100%'
-                                height='calc(100vh - 51px)'
-                                theme='vs-dark'
-                                /* eslint-disable-next-line no-nested-ternary */
-                                value={swagger !== null ? swagger : asyncAPI !== null ? asyncAPI : graphQL}
-                                options={editorOptions}
-                            />
-                        )}
-                    </Suspense>
-                </div>
-                <Dialog fullScreen open={openEditor} onClose={this.closeEditor} TransitionComponent={this.transition}>
-                    <Paper square className={classes.popupHeader}>
-                        <Box display='flex' flexDirection='row' justifyContent='space-between'>
-                            <Box>
-                                <IconButton
-                                    className={classes.button}
-                                    color='inherit'
-                                    onClick={this.closeEditor}
-                                    aria-label={(
-                                        <FormattedMessage
-                                            id='Apis.Details.APIDefinition.APIDefinition.btn.close'
-                                            defaultMessage='Close'
-                                        />
-                                    )}
-                                >
-                                    <Icon>close</Icon>
-                                </IconButton>
-
-                                <Button
-                                    className={classes.button}
-                                    variant='contained'
-                                    color='primary'
-                                    onClick={this.openUpdateConfirmation}
-                                    disabled={(!isSwaggerValid || isUpdating) || (!isAsyncAPIValid || isUpdating)}
-                                >
-                                    {isImporting? (
-                                        <FormattedMessage
-                                            id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
-                                                + 'import.content'}
-                                            defaultMessage='Import Content'
-                                        />
-                                    ):(
-                                        <FormattedMessage
-                                            id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
-                                                + 'update.content'}
-                                            defaultMessage='Update Content'
-                                        />
-                                    )}
-                                    {isUpdating && <CircularProgress className={classes.progressLoader} size={24}/>}
-                                </Button>
-                            </Box>
-                            <Box margin='3px'>
-                                <ToggleButtonGroup
-                                    data-testid='editor-drawe-toggle'
-                                    exclusive
-                                    aria-label='toggle'
-                                    size='small'
-                                    onChange={(event, value) => {
-                                        this.setState({ isSwaggerUI: value === "swagger" })
-                                    }}
-                                >
-                                    <ToggleButton
-                                        className={classes.activeButton}
-                                        value='swagger'
-                                        aria-label='swagger'
-                                        selected={this.state.isSwaggerUI}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.swagger'
-                                            defaultMessage='Swagger'
-                                        />
-                                    </ToggleButton>
-                                    <ToggleButton
-                                        className={classes.activeButton}
-                                        value='linter'
-                                        aria-label='linter'
-                                        selected={!this.state.isSwaggerUI}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.linter'
-                                            defaultMessage='Linter'
-                                        />
-                                    </ToggleButton>
-                                    <APILintingSummary 
-                                        linterResults={linterResults}
-                                        handleChange = { (event, value)=> {
-                                            this.setState({linterSelectedSeverity: value});
-                                            this.setState({ isSwaggerUI: false }) }}
-                                    />
-                                </ToggleButtonGroup>
-                                
-                            </Box>
-                        </Box>
-                    </Paper>
-                    <Suspense
-                        fallback={(
-                            <Progress />
-                        )}
+                    {!isApiProduct && (
+                        <ImportDefinition setSchemaDefinition={this.setSchemaDefinition} 
+                            editAndImport={this.openEditorToImport}/>
+                    )}
+                    {(api.serviceInfo && api.serviceInfo.outdated && api.type !== 'SOAP') && (
+                        <DefinitionOutdated
+                            api={api}
+                            classes={classes}
+                        />
+                    )}
+                    <Button
+                        size='small'
+                        className={classes.button}
+                        component={Link}
+                        download={fileName}
+                        href={downloadLink}
+                        id='download-definition-btn'
                     >
-                        {swagger ? (
-                            <EditorDialog
-                                swagger={isImporting? swaggerImporting : swaggerModified}
-                                language={format}
-                                onEditContent={this.onChangeSwaggerContent}
-                                errors={errors}
-                                setErrors={this.setErrors}
-                                isSwaggerUI={ isSwaggerUI }
-                                linterResults={ linterResults.filter((item)=> 
-                                    linterSelectedSeverity===null||
-                                    item.severity===Number(linterSelectedSeverity))
-                                }
-                                linterSelectedSeverity={linterSelectedSeverity}
-                                linterSelectedLine={linterSelectedLine}
-                            />
-                        ) : (
-                            <AsyncAPIEditor
-                                asyncAPI={asyncAPIModified}
-                                language={format}
-                                onEditContent={this.onChangeAsyncAPIContent}
-                            />
-                        )}
-                    </Suspense>
-                </Dialog>
-                <Dialog
-                    open={openDialog}
-                    onClose={this.handleNo}
-                    aria-labelledby='alert-dialog-title'
-                    aria-describedby='alert-dialog-description'
-                >
-                    <DialogTitle id='alert-dialog-title'>
-                        <Typography align='left'>
-                            <FormattedMessage
-                                id='Apis.Details.APIDefinition.APIDefinition.save.api.definition'
-                                defaultMessage='Save API Definition'
-                            />
-                        </Typography>
-                    </DialogTitle>
-                    <DialogContent>
-                        <DialogContentText id='alert-dialog-description'>
-                            <FormattedMessage
-                                id='Apis.Details.APIDefinition.APIDefinition.api.definition.save.confirmation'
-                                defaultMessage={
-                                    'Are you sure you want to save the API Definition? This might affect the'
-                                    + ' existing resources.'
-                                }
-                            />
-                        </DialogContentText>
-                    </DialogContent>
-                    <DialogActions>
-                        <Grid
-                            container
-                            direction='row'
-                            alignItems='flex-start'
-                            spacing={1}
-                        >
-                            <Grid item>
-                                <Button onClick={this.handleNo} color='primary'>
-                                    <FormattedMessage
-                                        id='Apis.Details.APIDefinition.APIDefinition.btn.no'
-                                        defaultMessage='CANCEL'
-                                    />
-                                </Button>
-                            </Grid>
-                            <Grid item>
-                                <CustomSplitButton
-                                    advertiseInfo={api.advertiseInfo}
-                                    api={api}
-                                    handleSave={this.handleSave}
-                                    handleSaveAndDeploy={this.handleSaveAndDeploy}
-                                    isUpdating={isUpdating}
+                        <CloudDownloadRounded className={classes.buttonIcon} />
+                        <FormattedMessage
+                            id='Apis.Details.APIDefinition.APIDefinition.download.definition'
+                            defaultMessage='Download Definition'
+                        />
+                    </Button>
+                    {(securityAuditProperties.apiToken && securityAuditProperties.collectionId
+                    && api.type !== 'GRAPHQL' && !asyncAPI)
+                        && (
+                            <Button size='small' className={classes.button} onClick={this.onAuditApiClick}>
+                                <LockRounded className={classes.buttonIcon} />
+                                <FormattedMessage
+                                    id='Apis.Details.APIDefinition.APIDefinition.audit.api'
+                                    defaultMessage='Audit API'
                                 />
-                            </Grid>
+                            </Button>
+                        )}
+                </div>
+                {isGraphQL === 0 && (
+                    <div className={classes.titleWrapper}>
+                        <Button size='small' className={classes.button} onClick={this.onChangeFormatClick}>
+                            <SwapHorizontalCircle className={classes.buttonIcon} />
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.convert.to'
+                                defaultMessage='Convert to'
+                            />
+                            {' '}
+                            {convertTo}
+                        </Button>
+                    </div>
+                )}
+            </div>
+            <div>
+                <Suspense fallback={<Progress />}>
+                    {isAuditApiClicked ? (
+                        <APISecurityAudit apiId={api.id} />
+                    ) : (
+                        <MonacoEditor
+                            language={format}
+                            width='100%'
+                            height='calc(100vh - 51px)'
+                            theme='vs-dark'
+                            /* eslint-disable-next-line no-nested-ternary */
+                            value={swagger !== null ? swagger : asyncAPI !== null ? asyncAPI : graphQL}
+                            options={editorOptions}
+                        />
+                    )}
+                </Suspense>
+            </div>
+            <Dialog fullScreen open={openEditor} onClose={this.closeEditor} TransitionComponent={this.transition}>
+                <Paper square className={classes.popupHeader}>
+                    <Box display='flex' flexDirection='row' justifyContent='space-between'>
+                        <Box>
+                            <IconButton
+                                className={classes.button}
+                                color='inherit'
+                                onClick={this.closeEditor}
+                                aria-label={(
+                                    <FormattedMessage
+                                        id='Apis.Details.APIDefinition.APIDefinition.btn.close'
+                                        defaultMessage='Close'
+                                    />
+                                )}
+                                size='large'>
+                                <Icon>close</Icon>
+                            </IconButton>
+
+                            <Button
+                                className={classes.button}
+                                variant='contained'
+                                color='primary'
+                                onClick={this.openUpdateConfirmation}
+                                disabled={(!isSwaggerValid || isUpdating) || (!isAsyncAPIValid || isUpdating)}
+                            >
+                                {isImporting? (
+                                    <FormattedMessage
+                                        id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
+                                            + 'import.content'}
+                                        defaultMessage='Import Content'
+                                    />
+                                ):(
+                                    <FormattedMessage
+                                        id={'Apis.Details.APIDefinition.APIDefinition.documents.swagger.editor.'
+                                            + 'update.content'}
+                                        defaultMessage='Update Content'
+                                    />
+                                )}
+                                {isUpdating && <CircularProgress className={classes.progressLoader} size={24}/>}
+                            </Button>
+                        </Box>
+                        <Box margin='3px'>
+                            <ToggleButtonGroup
+                                data-testid='editor-drawe-toggle'
+                                exclusive
+                                aria-label='toggle'
+                                size='small'
+                                onChange={(event, value) => {
+                                    this.setState({ isSwaggerUI: value === "swagger" })
+                                }}
+                            >
+                                <ToggleButton
+                                    className={classes.activeButton}
+                                    value='swagger'
+                                    aria-label='swagger'
+                                    selected={this.state.isSwaggerUI}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.swagger'
+                                        defaultMessage='Swagger'
+                                    />
+                                </ToggleButton>
+                                <ToggleButton
+                                    className={classes.activeButton}
+                                    value='linter'
+                                    aria-label='linter'
+                                    selected={!this.state.isSwaggerUI}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.APIDefinition.APIDefinition.editor.drawer.toggle.linter'
+                                        defaultMessage='Linter'
+                                    />
+                                </ToggleButton>
+                                <APILintingSummary 
+                                    linterResults={linterResults}
+                                    handleChange = { (event, value)=> {
+                                        this.setState({linterSelectedSeverity: value});
+                                        this.setState({ isSwaggerUI: false }) }}
+                                />
+                            </ToggleButtonGroup>
+                            
+                        </Box>
+                    </Box>
+                </Paper>
+                <Suspense
+                    fallback={(
+                        <Progress />
+                    )}
+                >
+                    {swagger ? (
+                        <EditorDialog
+                            swagger={isImporting? swaggerImporting : swaggerModified}
+                            language={format}
+                            onEditContent={this.onChangeSwaggerContent}
+                            errors={errors}
+                            setErrors={this.setErrors}
+                            isSwaggerUI={ isSwaggerUI }
+                            linterResults={ linterResults.filter((item)=> 
+                                linterSelectedSeverity===null||
+                                item.severity===Number(linterSelectedSeverity))
+                            }
+                            linterSelectedSeverity={linterSelectedSeverity}
+                            linterSelectedLine={linterSelectedLine}
+                        />
+                    ) : (
+                        <AsyncAPIEditor
+                            asyncAPI={asyncAPIModified}
+                            language={format}
+                            onEditContent={this.onChangeAsyncAPIContent}
+                        />
+                    )}
+                </Suspense>
+            </Dialog>
+            <Dialog
+                open={openDialog}
+                onClose={this.handleNo}
+                aria-labelledby='alert-dialog-title'
+                aria-describedby='alert-dialog-description'
+            >
+                <DialogTitle id='alert-dialog-title'>
+                    <Typography align='left'>
+                        <FormattedMessage
+                            id='Apis.Details.APIDefinition.APIDefinition.save.api.definition'
+                            defaultMessage='Save API Definition'
+                        />
+                    </Typography>
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id='alert-dialog-description'>
+                        <FormattedMessage
+                            id='Apis.Details.APIDefinition.APIDefinition.api.definition.save.confirmation'
+                            defaultMessage={
+                                'Are you sure you want to save the API Definition? This might affect the'
+                                + ' existing resources.'
+                            }
+                        />
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Grid
+                        container
+                        direction='row'
+                        alignItems='flex-start'
+                        spacing={1}
+                    >
+                        <Grid item>
+                            <Button onClick={this.handleNo} color='primary'>
+                                <FormattedMessage
+                                    id='Apis.Details.APIDefinition.APIDefinition.btn.no'
+                                    defaultMessage='CANCEL'
+                                />
+                            </Button>
                         </Grid>
-                    </DialogActions>
-                </Dialog>
-            </>
-        );
+                        <Grid item>
+                            <CustomSplitButton
+                                advertiseInfo={api.advertiseInfo}
+                                api={api}
+                                handleSave={this.handleSave}
+                                handleSaveAndDeploy={this.handleSaveAndDeploy}
+                                isUpdating={isUpdating}
+                            />
+                        </Grid>
+                    </Grid>
+                </DialogActions>
+            </Dialog>
+        </Root>;
     }
 }
 
@@ -1072,4 +1088,4 @@ APIDefinition.propTypes = {
     }).isRequired,
     updateAPI: PropTypes.func.isRequired,
 };
-export default withRouter(injectIntl(withStyles(styles, { withTheme: true })(APIDefinition)));
+export default withRouter(injectIntl((APIDefinition)));

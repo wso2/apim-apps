@@ -17,14 +17,14 @@
  */
 
 import React from 'react';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/icons/List';
-import GridOn from '@material-ui/icons/GridOn';
-import IconButton from '@material-ui/core/IconButton';
-import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import List from '@mui/icons-material/List';
+import GridOn from '@mui/icons-material/GridOn';
+import IconButton from '@mui/material/IconButton';
+import ButtonGroup from '@mui/material/ButtonGroup';
 
 /**
  * Service catalog page top menu
@@ -49,7 +49,7 @@ function ServiceCatalogTopMenu(props) {
             <Grid
                 container
                 direction='row'
-                justify='space-between'
+                justifyContent='space-between'
                 alignItems='center'
             >
                 <Grid item>
@@ -96,10 +96,10 @@ function ServiceCatalogTopMenu(props) {
                 <Grid item>
                     {showServiceToggle && (
                         <ButtonGroup color='primary' aria-label='outlined primary button group'>
-                            <IconButton onClick={() => setIsGridView(true)} aria-label='delete'>
+                            <IconButton onClick={() => setIsGridView(true)} aria-label='delete' size='large'>
                                 <GridOn color={isGridView ? 'primary' : 'disabled'} />
                             </IconButton>
-                            <IconButton onClick={() => setIsGridView(false)} aria-label='delete'>
+                            <IconButton onClick={() => setIsGridView(false)} aria-label='delete' size='large'>
                                 <List color={!isGridView ? 'primary' : 'disabled'} />
                             </IconButton>
                         </ButtonGroup>

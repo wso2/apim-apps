@@ -16,32 +16,46 @@
  * under the License.
  */
 import React from 'react';
+import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { TextField, Button, Typography } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Grid from '@material-ui/core/Grid';
+import { TextField, Button, Typography } from '@mui/material';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
+import Select from '@mui/material/Select';
+import Grid from '@mui/material/Grid';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 
-const styles = (theme) => ({
-    textField: {
+const PREFIX = 'CommentEdit';
+
+const classes = {
+    textField: `${PREFIX}-textField`,
+    contentWrapper: `${PREFIX}-contentWrapper`,
+    category: `${PREFIX}-category`
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.textField}`]: {
         marginTop: 0,
         width: '87.5%',
     },
-    contentWrapper: {
+
+    [`& .${classes.contentWrapper}`]: {
         maxWidth: theme.custom.contentAreaWidth,
         paddingLeft: theme.spacing(2),
         paddingTop: theme.spacing(1),
         marginTop: theme.spacing(2),
     },
-    category: {
+
+    [`& .${classes.category}`]: {
         width: '12%',
         marginRight: '0.5%',
-    },
-});
+    }
+}));
 
 /**
  * Display a component to edit a comment
@@ -178,10 +192,10 @@ class CommentEdit extends React.Component {
      * @memberof CommentEdit
      */
     render() {
-        const { classes, theme } = this.props;
+        const {  theme } = this.props;
         const { category, commentText, currentLength } = this.state;
         return (
-            <div>
+            <Root>
                 <FormControl className={classes.category}>
                     <Select value={category} onChange={this.handleCategoryChange}>
                         <MenuItem value='General'>General</MenuItem>
@@ -215,7 +229,7 @@ class CommentEdit extends React.Component {
                         </Button>
                     </Grid>
                 </Grid>
-            </div>
+            </Root>
         );
     }
 }
@@ -225,7 +239,6 @@ CommentEdit.defaultProps = {
 };
 
 CommentEdit.propTypes = {
-    classes: PropTypes.instanceOf(Object).isRequired,
     api: PropTypes.instanceOf(Object).isRequired,
     allComments: PropTypes.instanceOf(Array).isRequired,
     // todo make commentsUpdate required once comment edit feature is supported
@@ -235,4 +248,7 @@ CommentEdit.propTypes = {
     theme: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles, { withTheme: true })(CommentEdit);
+export default ((props) => {
+    const theme = useTheme();
+    return <CommentEdit {...props} theme={theme} />;
+});

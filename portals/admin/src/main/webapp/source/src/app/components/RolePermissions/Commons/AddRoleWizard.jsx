@@ -16,17 +16,16 @@
  * under the License.
  */
 import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import StepContent from '@material-ui/core/StepContent';
-import Button from '@material-ui/core/Button';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import StepContent from '@mui/material/StepContent';
+import Button from '@mui/material/Button';
 import Alert from 'AppComponents/Shared/Alert';
-import TextField from '@material-ui/core/TextField';
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
 import cloneDeep from 'lodash.clonedeep';
 
 import PermissionAPI from 'AppData/PermissionScopes';
@@ -34,22 +33,6 @@ import AddItem from './AddItem';
 import SelectPermissionsStep from './SelectPermissionsStep';
 
 const { ROLE_ALIAS, SELECT_PERMISSIONS } = SelectPermissionsStep.CONST;
-
-const useStyles = makeStyles((theme) => ({
-    root: {
-        width: '100%',
-    },
-    button: {
-        marginTop: theme.spacing(1),
-        marginRight: theme.spacing(1),
-    },
-    actionsContainer: {
-        marginBottom: theme.spacing(2),
-    },
-    resetContainer: {
-        padding: theme.spacing(3),
-    },
-}));
 
 /**
  *
@@ -62,7 +45,6 @@ export default function AddRoleWizard(props) {
         appMappings, onClose, onRoleAdd, permissionMappings, roleAliases, setRoleAliases,
     } = props;
 
-    const classes = useStyles();
     const intl = useIntl();
     const [newRole, setNewRole] = useState('');
     const [isSaving, setIsSaving] = useState(false);
@@ -183,7 +165,6 @@ export default function AddRoleWizard(props) {
     };
 
     return (
-
         <AddItem
             onSave={onAddRole}
             onClose={onClose}
@@ -201,11 +182,12 @@ export default function AddRoleWizard(props) {
             )}
             dialogProps={{ disableBackdropClick: isSaving, maxWidth: 'md' }}
             dialogActions={(
-                <div className={classes.actionsContainer}>
+                <div style={{ marginBottom: '1rem' }}>
                     <div>
                         <Button
+                            variant='outlined'
                             onClick={activeStep === 0 ? onClose : handleBack}
-                            className={classes.button}
+                            sx={{ mt: 1, mr: 1 }}
                             disabled={isSaving}
                         >
                             {activeStep === 0 ? 'Cancel' : 'Back'}
@@ -215,7 +197,8 @@ export default function AddRoleWizard(props) {
                             disabled={isSaving}
                             color='primary'
                             onClick={activeStep === 1 ? onAddRole : handleNext}
-                            className={classes.button}
+                            sx={{ mt: 1, mr: 1 }}
+                            data-testid='add-role-wizard-save-button'
                         >
                             {activeStep === 1 ? (
                                 <>
@@ -228,7 +211,7 @@ export default function AddRoleWizard(props) {
                 </div>
             )}
         >
-            <div className={classes.root}>
+            <div style={{ width: '100%' }}>
                 <Stepper activeStep={activeStep} orientation='vertical'>
                     {['Provide role name', 'Select permissions'].map((label, index) => (
                         <Step key={label}>
@@ -293,6 +276,5 @@ export default function AddRoleWizard(props) {
                 </Stepper>
             </div>
         </AddItem>
-
     );
 }

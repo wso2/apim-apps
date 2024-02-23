@@ -15,63 +15,85 @@
  */
 
 import React, { useEffect, useState, useContext } from 'react';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
 import {
     Divider,
     Icon,
     IconButton,
     InputAdornment,
     TextField,
-    withStyles,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormattedMessage } from 'react-intl';
-import PropTypes from 'prop-types';
-import green from '@material-ui/core/colors/green';
-import Tooltip from '@material-ui/core/Tooltip';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Chip from '@material-ui/core/Chip';
+import Tooltip from '@mui/material/Tooltip';
+import CircularProgress from '@mui/material/CircularProgress';
+import Chip from '@mui/material/Chip';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
+import { green } from '@mui/material/colors';
 
+const PREFIX = 'GenericEndpoint';
 
-const styles = (theme) => ({
-    endpointInputWrapper: {
+const classes = {
+    endpointInputWrapper: `${PREFIX}-endpointInputWrapper`,
+    textField: `${PREFIX}-textField`,
+    input: `${PREFIX}-input`,
+    iconButton: `${PREFIX}-iconButton`,
+    iconButtonValid: `${PREFIX}-iconButtonValid`,
+    divider: `${PREFIX}-divider`,
+    endpointValidChip: `${PREFIX}-endpointValidChip`,
+    endpointInvalidChip: `${PREFIX}-endpointInvalidChip`,
+    endpointErrorChip: `${PREFIX}-endpointErrorChip`
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`&.${classes.endpointInputWrapper}`]: {
         width: '100%',
         display: 'flex',
         justifyContent: 'space-between',
     },
-    textField: {
+
+    [`& .${classes.textField}`]: {
         width: '100%',
     },
-    input: {
+
+    [`& .${classes.input}`]: {
         marginLeft: theme.spacing(1),
         flex: 1,
     },
-    iconButton: {
+
+    [`& .${classes.iconButton}`]: {
         padding: theme.spacing(1),
     },
-    iconButtonValid: {
+
+    [`& .${classes.iconButtonValid}`]: {
         padding: theme.spacing(1),
         color: green[500],
     },
-    divider: {
+
+    [`& .${classes.divider}`]: {
         width: 1,
         height: 28,
         margin: 4,
     },
-    endpointValidChip: {
+
+    [`& .${classes.endpointValidChip}`]: {
         color: 'green',
         border: '1px solid green',
     },
-    endpointInvalidChip: {
+
+    [`& .${classes.endpointInvalidChip}`]: {
         color: '#ffd53a',
         border: '1px solid #ffd53a',
     },
-    endpointErrorChip: {
+
+    [`& .${classes.endpointErrorChip}`]: {
         color: 'red',
         border: '1px solid red',
-    },
-});
+    }
+}));
+
 /**
  * This component represents a single endpoint view of the endpoints listing. This component holds the actions that
  * affect the endpont. Eg: Delete, advance configuration.
@@ -84,7 +106,6 @@ function GenericEndpoint(props) {
         category,
         endpointURL,
         editEndpoint,
-        classes,
         type,
         setAdvancedConfigOpen,
         esCategory,
@@ -133,7 +154,7 @@ function GenericEndpoint(props) {
     }
 
     return (
-        <div className={classes.endpointInputWrapper}>
+        <Root className={classes.endpointInputWrapper}>
             <TextField
                 disabled={isRestricted(['apim:api_create'], api)}
                 label={name}
@@ -180,7 +201,7 @@ function GenericEndpoint(props) {
                                     onClick={() => testEndpoint(serviceUrl, apiId)}
                                     disabled={(isRestricted(['apim:api_create'], api)) || isUpdating}
                                     id={category + '-endpoint-test-icon-btn'}
-                                >
+                                    size='large'>
                                     {isUpdating
                                         ? <CircularProgress size={20} />
                                         : (
@@ -212,7 +233,7 @@ function GenericEndpoint(props) {
                                             onClick={() => setAdvancedConfigOpen(index, type, category)}
                                             disabled={(isRestricted(['apim:api_create'], api))}
                                             id={category + '-endpoint-configuration-icon-btn'}
-                                        >
+                                            size='large'>
                                             <Tooltip
                                                 placement='top-start'
                                                 interactive
@@ -234,7 +255,7 @@ function GenericEndpoint(props) {
                                             onClick={() => setESConfigOpen(type, esCategory)}
                                             disabled={(isRestricted(['apim:api_create'], api))}
                                             id={category + '-endpoint-security-icon-btn'}
-                                        >
+                                            size='large'>
                                             <Tooltip
                                                 placement='top-start'
                                                 interactive
@@ -260,7 +281,7 @@ function GenericEndpoint(props) {
                                     color='secondary'
                                     onClick={() => deleteEndpoint(index, type, category)}
                                     disabled={(isRestricted(['apim:api_create'], api))}
-                                >
+                                    size='large'>
                                     <Icon>
                                         delete
                                     </Icon>
@@ -270,7 +291,7 @@ function GenericEndpoint(props) {
                     ),
                 }}
             />
-        </div>
+        </Root>
     );
 }
 
@@ -298,4 +319,4 @@ GenericEndpoint.propTypes = {
     id: PropTypes.string,
 };
 
-export default withStyles(styles)(GenericEndpoint);
+export default (GenericEndpoint);

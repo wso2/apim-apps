@@ -14,25 +14,39 @@
  *  limitations under the License.
  */
 import React, { useContext, useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import Paper from '@material-ui/core/Paper';
-import InputBase from '@material-ui/core/InputBase';
-import IconButton from '@material-ui/core/IconButton';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import InputBase from '@mui/material/InputBase';
+import IconButton from '@mui/material/IconButton';
 import PropTypes from 'prop-types';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Avatar from '@material-ui/core/Avatar';
-import Grid from '@material-ui/core/Grid';
-import Chip from '@material-ui/core/Chip';
-import CopyToClipboard from 'react-copy-to-clipboard';
-import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@mui/material/Typography';
+import Avatar from '@mui/material/Avatar';
+import Grid from '@mui/material/Grid';
+import Chip from '@mui/material/Chip';
+import Tooltip from '@mui/material/Tooltip';
 import { upperCaseString } from 'AppData/stringFormatter';
 import { ApiContext } from './ApiContext';
 import GoToTryOut from './GoToTryOut';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const PREFIX = 'SolaceEndpoints';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    input: `${PREFIX}-input`,
+    avatar: `${PREFIX}-avatar`,
+    iconStyle: `${PREFIX}-iconStyle`,
+    sectionTitle: `${PREFIX}-sectionTitle`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.root}`]: {
         padding: '2px 4px',
         display: 'flex',
         alignItems: 'center',
@@ -56,17 +70,20 @@ const useStyles = makeStyles((theme) => ({
         borderRadius: 10,
         marginRight: theme.spacing(),
     },
-    input: {
+
+    [`& .${classes.input}`]: {
         marginLeft: theme.spacing(1),
         flex: 1,
     },
-    avatar: {
+
+    [`& .${classes.avatar}`]: {
         width: 30,
         height: 30,
         background: 'transparent',
         border: `solid 1px ${theme.palette.grey[300]}`,
     },
-    iconStyle: {
+
+    [`& .${classes.iconStyle}`]: {
         cursor: 'pointer',
         margin: '-10px 0',
         padding: '0 0 0 5px',
@@ -76,7 +93,7 @@ const useStyles = makeStyles((theme) => ({
         },
     },
 
-    sectionTitle: {
+    [`& .${classes.sectionTitle}`]: {
         color: '#424242',
         fontSize: '0.85rem',
         marginRight: 20,
@@ -90,7 +107,6 @@ function SolaceEndpoints() {
     const [protocols, setProtocols] = useState(null);
 
     const intl = useIntl();
-    const classes = useStyles();
 
     const onCopy = () => {
         setUrlCopied(true);
@@ -112,8 +128,7 @@ function SolaceEndpoints() {
     }, [api]);
 
     return (
-
-        <>
+        <Root>
             {(api.gatewayVendor === 'solace') && (
                 <Grid container spacing={2} xs={12}>
                     <Grid item spacing={2} xs={2}>
@@ -210,17 +225,16 @@ function SolaceEndpoints() {
                                                         placement='right'
                                                         className={classes.iconStyle}
                                                     >
-                                                        <CopyToClipboard
-                                                            text={p.endPointUrl}
-                                                            // text={endpoint.URLs.http}
-                                                            onCopy={() => onCopy('urlCopied')}
+                                                        <IconButton
+                                                            aria-label='Copy the API URL to clipboard'
+                                                            size='large'
+                                                            onClick={() => {
+                                                                navigator.clipboard
+                                                                    .writeText(p.endPointUrl).then(() => onCopy('urlCopied'));
+                                                            }}
                                                         >
-                                                            <IconButton
-                                                                aria-label='Copy the API URL to clipboard'
-                                                            >
-                                                                <Icon color='secondary'>file_copy</Icon>
-                                                            </IconButton>
-                                                        </CopyToClipboard>
+                                                            <Icon color='secondary'>file_copy</Icon>
+                                                        </IconButton>
                                                     </Tooltip>
                                                 </Avatar>
                                             </Paper>
@@ -232,7 +246,7 @@ function SolaceEndpoints() {
                     </Grid>
                 </Grid>
             )}
-        </>
+        </Root>
     );
 }
 

@@ -17,35 +17,34 @@
 */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles } from '@material-ui/core/styles';
-import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
 import ApisTableContent from 'AppComponents/APISettings/ApisTableContent';
 import ApisTableHead from 'AppComponents/APISettings/ApisTableHead';
-import Table from '@material-ui/core/Table';
+import Table from '@mui/material/Table';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import TableFooter from '@material-ui/core/TableFooter';
-import TablePagination from '@material-ui/core/TablePagination';
-import TableRow from '@material-ui/core/TableRow';
-import AppBar from '@material-ui/core/AppBar';
-import Toolbar from '@material-ui/core/Toolbar';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Button from '@material-ui/core/Button';
-import IconButton from '@material-ui/core/IconButton';
-import HighlightOffRoundedIcon from '@material-ui/icons/HighlightOffRounded';
-import Tooltip from '@material-ui/core/Tooltip';
-import TextField from '@material-ui/core/TextField';
-import SearchIcon from '@material-ui/icons/Search';
-import Alert from '@material-ui/lab/Alert';
-import Typography from '@material-ui/core/Typography';
+import TableFooter from '@mui/material/TableFooter';
+import TablePagination from '@mui/material/TablePagination';
+import TableRow from '@mui/material/TableRow';
+import AppBar from '@mui/material/AppBar';
+import Toolbar from '@mui/material/Toolbar';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import Button from '@mui/material/Button';
+import IconButton from '@mui/material/IconButton';
+import HighlightOffRoundedIcon from '@mui/icons-material/HighlightOffRounded';
+import Tooltip from '@mui/material/Tooltip';
+import TextField from '@mui/material/TextField';
+import SearchIcon from '@mui/icons-material/Search';
+import Alert from '@mui/material/Alert';
+import Typography from '@mui/material/Typography';
+import API from '../../data/api';
 
 /**
  * Render a list
  * @returns {JSX} Header AppBar components.
  */
 
-const useStyles = makeStyles((theme) => ({
+const styles = {
     searchBar: {
         borderBottom: '1px solid rgba(0, 0, 0, 0.12)',
     },
@@ -58,13 +57,12 @@ const useStyles = makeStyles((theme) => ({
         top: 13,
     },
     addUser: {
-        marginRight: theme.spacing(1),
+        marginRight: 1,
     },
-}));
+};
 
 export default function ListApis() {
     const intl = useIntl();
-    const classes = useStyles();
     const [loading, setLoading] = useState(false);
     const [apiList, setApiList] = useState(null);
     const [totalApps, setTotalApps] = useState(0);
@@ -152,16 +150,17 @@ export default function ListApis() {
 
     return (
         <ContentBase>
-            <AppBar className={classes.searchBar} position='static' color='default' elevation={0}>
+            <AppBar sx={styles.searchBar} position='static' color='default' elevation={0}>
                 <Toolbar>
                     <form onSubmit={filterApps} style={{ width: '100%' }} disabled={loading}>
                         <Grid container spacing={2} alignItems='center'>
                             <Grid item>
-                                <SearchIcon className={classes.block} color='inherit' />
+                                <SearchIcon sx={styles.block} color='inherit' />
                             </Grid>
                             <Grid item xs>
                                 <TextField
                                     fullWidth
+                                    variant='standard'
                                     id='search-label'
                                     label={intl.formatMessage({
                                         defaultMessage: 'Search by API',
@@ -171,9 +170,14 @@ export default function ListApis() {
                                         defaultMessage: 'Api Name',
                                         id: 'Apis.Listing.Listing.search.placeholder',
                                     })}
+                                    sx={(theme) => ({
+                                        '& .search-input': {
+                                            fontSize: theme.typography.fontSize,
+                                        },
+                                    })}
                                     InputProps={{
                                         disableUnderline: true,
-                                        className: classes.searchInput,
+                                        className: 'search-input',
                                     }}
                                     value={provider}
                                     onChange={setQuery}
@@ -190,7 +194,7 @@ export default function ListApis() {
                                     >
                                         <IconButton
                                             aria-label='delete'
-                                            className={classes.clearSearch}
+                                            sx={styles.clearSearch}
                                             onClick={clearSearch}
                                         >
                                             <HighlightOffRoundedIcon />
@@ -201,7 +205,7 @@ export default function ListApis() {
                             <Grid item>
                                 <Button
                                     variant='contained'
-                                    className={classes.addUser}
+                                    sx={styles.addUser}
                                     type='submit'
                                     disabled={loading}
                                 >

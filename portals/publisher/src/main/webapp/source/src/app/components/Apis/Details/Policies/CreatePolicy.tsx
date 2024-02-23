@@ -17,15 +17,16 @@
  */
 
 import React, { useContext, useState } from 'react';
-import { Typography, makeStyles, Theme } from '@material-ui/core';
-import Box from '@material-ui/core/Box';
+import { styled } from '@mui/material/styles';
+import { Typography , Theme } from '@mui/material';
+import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
-import Dialog from '@material-ui/core/Dialog';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import Icon from '@material-ui/core/Icon';
-import IconButton from '@material-ui/core/IconButton';
-import LaunchIcon from '@material-ui/icons/Launch';
+import Dialog from '@mui/material/Dialog';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import Icon from '@mui/material/Icon';
+import IconButton from '@mui/material/IconButton';
+import LaunchIcon from '@mui/icons-material/Launch';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api.js';
 import Alert from 'AppComponents/Shared/Alert';
@@ -34,12 +35,19 @@ import CONSTS from 'AppData/Constants';
 import type { CreatePolicySpec } from './Types';
 import PolicyCreateForm from './PolicyForm/PolicyCreateForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    link: {
+const PREFIX = 'CreatePolicy';
+
+const classes = {
+    link: `${PREFIX}-link`
+};
+
+
+const Root = styled('div')(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.link}`]: {
         color: theme.palette.primary.dark,
         marginLeft: theme.spacing(2),
         display: 'inline',
-    },
+    }
 }));
 
 interface CreatePolicyProps {
@@ -58,7 +66,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
     dialogOpen,
     fetchPolicies,
 }) => {
-    const classes = useStyles();
+
     const { api } = useContext<any>(ApiContext);
     const [saving, setSaving] = useState(false);
     const [synapsePolicyDefinitionFile, setSynapsePolicyDefinitionFile] = useState<any[]>([]);
@@ -112,7 +120,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
     };
 
     return (
-        <>
+        <Root>
             <Dialog
                 maxWidth='md'
                 open={dialogOpen}
@@ -142,7 +150,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                             color='inherit'
                             onClick={handleDialogClose}
                             aria-label='Close'
-                        >
+                            size='large'>
                             <Icon>close</Icon>
                         </IconButton>
                     </Box>
@@ -180,7 +188,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                     </Link>
                 </Box>
             </Dialog>
-        </>
+        </Root>
     );
 };
 

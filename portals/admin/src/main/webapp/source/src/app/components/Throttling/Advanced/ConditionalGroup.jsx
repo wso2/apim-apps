@@ -16,59 +16,68 @@
  * under the License.
  */
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { makeStyles } from '@material-ui/core/styles';
 import { useIntl, FormattedMessage } from 'react-intl';
-import ExpansionPanel from '@material-ui/core/ExpansionPanel';
-import ExpansionPanelDetails from '@material-ui/core/ExpansionPanelDetails';
-import ExpansionPanelSummary from '@material-ui/core/ExpansionPanelSummary';
-import Typography from '@material-ui/core/Typography';
-import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Box from '@material-ui/core/Box';
-import TextField from '@material-ui/core/TextField';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
-import Checkbox from '@material-ui/core/Checkbox';
+import Accordion from '@mui/material/Accordion';
+import AccordionDetails from '@mui/material/AccordionDetails';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import Typography from '@mui/material/Typography';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Box from '@mui/material/Box';
+import TextField from '@mui/material/TextField';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell from '@mui/material/TableCell';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Checkbox from '@mui/material/Checkbox';
 import AddEditExecution from 'AppComponents/Throttling/Advanced/AddEditExecution';
 import AddEditConditionPolicy from 'AppComponents/Throttling/Advanced/AddEditConditionPolicy';
 import AddEditConditionPolicyIp from 'AppComponents/Throttling/Advanced/AddEditConditionPolicyIP';
 import CON_CONSTS from 'AppComponents/Throttling/Advanced/CON_CONSTS';
 import DeleteCondition from 'AppComponents/Throttling/Advanced/DeleteCondition';
 import DeleteConditionGroup from 'AppComponents/Throttling/Advanced/DeleteConditionGroup';
-import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
+import Alert from '@mui/material/Alert';
+import AlertTitle from '@mui/material/AlertTitle';
 
-/**
- * Create UUID
- * @returns {string} random uuid string.
- */
-function getUUID() {
-    return Math.random().toString(36).substring(2) + Date.now().toString(36);
-}
+const PREFIX = 'ConditionalGroup';
 
-const useStyles = makeStyles((theme) => ({
-    root: {
+const classes = {
+    root: `${PREFIX}-root`,
+    heading: `${PREFIX}-heading`,
+    secondaryHeading: `${PREFIX}-secondaryHeading`,
+    table: `${PREFIX}-table`,
+    expandContentRoot: `${PREFIX}-expandContentRoot`,
+    subsubTitle: `${PREFIX}-subsubTitle`,
+    alert: `${PREFIX}-alert`,
+    hr: `${PREFIX}-hr`,
+    descriptionBox: `${PREFIX}-descriptionBox`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`&.${classes.root}`]: {
         width: '100%',
         marginBottom: 20,
     },
-    heading: {
+
+    [`& .${classes.heading}`]: {
         fontSize: theme.typography.pxToRem(15),
         flexBasis: '33.33%',
         flexShrink: 0,
         flex: 1,
         alignItems: 'center',
     },
-    secondaryHeading: {
+
+    [`& .${classes.secondaryHeading}`]: {
         fontSize: theme.typography.pxToRem(15),
         color: theme.palette.text.secondary,
         display: 'flex',
         alignItems: 'center',
     },
-    table: {
+
+    [`& .${classes.table}`]: {
         marginBottom: 40,
         background: '#efefef',
         '& th': {
@@ -79,23 +88,36 @@ const useStyles = makeStyles((theme) => ({
             'white-space': 'normal',
         },
     },
-    expandContentRoot: {
+
+    [`& .${classes.expandContentRoot}`]: {
         flexDirection: 'column',
     },
-    subsubTitle: {
+
+    [`& .${classes.subsubTitle}`]: {
         fontSize: '0.81rem',
     },
-    alert: {
+
+    [`& .${classes.alert}`]: {
         flex: 1,
     },
-    hr: {
+
+    [`& .${classes.hr}`]: {
         border: 'solid 1px #efefef',
         width: '100%',
     },
-    descriptionBox: {
+
+    [`& .${classes.descriptionBox}`]: {
         marginLeft: theme.spacing(1),
     },
 }));
+
+/**
+ * Create UUID
+ * @returns {string} random uuid string.
+ */
+function getUUID() {
+    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+}
 
 /**
  * Render a list
@@ -104,7 +126,7 @@ const useStyles = makeStyles((theme) => ({
  */
 function ConditionalGroup(props) {
     const intl = useIntl();
-    const classes = useStyles();
+
     const [expanded, setExpanded] = React.useState(false);
     const {
         group, updateGroup, hasErrors, index, deleteGroup,
@@ -345,9 +367,9 @@ function ConditionalGroup(props) {
         return checked;
     };
     return (
-        <div className={classes.root}>
-            <ExpansionPanel expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
-                <ExpansionPanelSummary
+        <Root className={classes.root}>
+            <Accordion expanded={expanded === 'panel1'} onChange={handleChange('panel1')}>
+                <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls='panel1bh-content'
                     id='panel1bh-header'
@@ -369,8 +391,8 @@ function ConditionalGroup(props) {
                             Hide group
                         </Typography>
                     )}
-                </ExpansionPanelSummary>
-                <ExpansionPanelDetails classes={{ root: classes.expandContentRoot }}>
+                </AccordionSummary>
+                <AccordionDetails classes={{ root: classes.expandContentRoot }}>
 
                     <Box marginBottom={2}>
                         <Alert severity='warning'>
@@ -608,10 +630,10 @@ function ConditionalGroup(props) {
                         variant='outlined'
                     />
                     <DeleteConditionGroup deleteThisGroup={deleteThisGroup} />
-                </ExpansionPanelDetails>
-            </ExpansionPanel>
+                </AccordionDetails>
+            </Accordion>
 
-        </div>
+        </Root>
     );
 }
 ConditionalGroup.propTypes = {

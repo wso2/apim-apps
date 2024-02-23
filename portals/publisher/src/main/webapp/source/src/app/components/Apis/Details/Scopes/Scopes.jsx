@@ -17,40 +17,57 @@
  */
 
 import 'react-tagsinput/react-tagsinput.css';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import React from 'react';
 import Api from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
-import Typography from '@material-ui/core/Typography';
+import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
-import Button from '@material-ui/core/Button';
-import withStyles from '@material-ui/core/styles/withStyles';
+import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
-import { List, ListItem, ListItemText } from '@material-ui/core';
-import AddCircle from '@material-ui/icons/AddCircle';
+import { List, ListItem, ListItemText } from '@mui/material';
+import AddCircle from '@mui/icons-material/AddCircle';
 import MUIDataTable from 'mui-datatables';
-import Icon from '@material-ui/core/Icon';
+import Icon from '@mui/material/Icon';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
-import Grid from '@material-ui/core/Grid';
+import Grid from '@mui/material/Grid';
 import { isRestricted } from 'AppData/AuthManager';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 import Delete from './Delete';
 
-const styles = (theme) => ({
-    root: {
+const PREFIX = 'Scopes';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    buttonProgress: `${PREFIX}-buttonProgress`,
+    headline: `${PREFIX}-headline`,
+    heading: `${PREFIX}-heading`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    content: `${PREFIX}-content`,
+    head: `${PREFIX}-head`
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`&.${classes.root}`]: {
         paddingTop: 0,
         paddingLeft: 0,
     },
-    buttonProgress: {
+
+    [`& .${classes.buttonProgress}`]: {
         position: 'relative',
         margin: theme.spacing(1),
     },
-    headline: { paddingTop: theme.spacing(1.25), paddingLeft: theme.spacing(2.5) },
-    heading: {
+
+    [`& .${classes.headline}`]: { paddingTop: theme.spacing(1.25), paddingLeft: theme.spacing(2.5) },
+
+    [`& .${classes.heading}`]: {
         flexGrow: 1,
         marginTop: 10,
         '& table td:nth-child(2)': {
@@ -60,25 +77,31 @@ const styles = (theme) => ({
             'white-space': 'nowrap',
         },
     },
-    titleWrapper: {
+
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(2),
     },
-    mainTitle: {
+
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 0,
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    content: {
-        margin: `${theme.spacing(2)}px 0 ${theme.spacing(2)}px 0`,
+
+    [`& .${classes.content}`]: {
+        margin: `${theme.spacing(2)} 0 ${theme.spacing(2)} 0`,
     },
-    head: {
-        fontWeight: 200,
-    },
-});
+
+    [`& .${classes.head}`]: {
+        // fontWeight: 200,
+    }
+}));
+
 /**
  * Generate the scopes UI in API details page.
  * @class Scopes
@@ -103,9 +126,7 @@ class Scopes extends React.Component {
      * @memberof Scopes
      */
     render() {
-        const {
-            intl, classes, api,
-        } = this.props;
+        const { intl, api } = this.props;
         const urlPrefix = (api.apiType === Api.CONSTS.APIProduct) ? 'api-products' : 'apis';
         const { scopes } = api;
         const url = `/${urlPrefix}/${api.id}/scopes/create`;
@@ -253,7 +274,7 @@ class Scopes extends React.Component {
 
         if (scopes.length === 0) {
             return (
-                <div className={classes.root}>
+                <Root className={classes.root}>
                     <div className={classes.titleWrapper}>
                         <Typography
                             id='itest-api-details-scopes-onboarding-head'
@@ -316,7 +337,7 @@ class Scopes extends React.Component {
                             </div>
                         </div>
                     </InlineMessage>
-                </div>
+                </Root>
             );
         }
 
@@ -390,4 +411,4 @@ Scopes.defaultProps = {
     match: { params: {} },
 };
 
-export default injectIntl(withAPI(withStyles(styles)(Scopes)));
+export default injectIntl(withAPI((Scopes)));

@@ -1,12 +1,8 @@
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
 
-const styles = {
-    divider: {
-        borderRight: 'solid 1px #ccc',
-    },
-};
+const StyledDiv = styled('div')({ borderRight: 'solid 1px #ccc' });
 
 /**
  *
@@ -16,23 +12,20 @@ const styles = {
  */
 function VerticalDivider(props) {
     const {
-        classes, height = 30, marginLeft = 10, marginRight = 10,
+        height = 30, marginLeft = 1, marginRight = 1,
     } = props;
 
     return (
         <>
-            <div className={classes.divider} style={{ height, marginLeft, marginRight }} />
+            <StyledDiv sx={{ height, ml: marginLeft, mr: marginRight }} />
         </>
     );
 }
 
 VerticalDivider.propTypes = {
-    classes: PropTypes.shape({
-        divider: PropTypes.string,
-    }).isRequired,
     height: PropTypes.shape({}).isRequired,
     marginLeft: PropTypes.shape({}).isRequired,
     marginRight: PropTypes.shape({}).isRequired,
 };
 
-export default withStyles(styles)(VerticalDivider);
+export default (VerticalDivider);

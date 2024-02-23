@@ -17,40 +17,28 @@
  */
 
 import React, { useEffect, useReducer, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
-import TextField from '@material-ui/core/TextField';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
+import TextField from '@mui/material/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
-import FormControl from '@material-ui/core/FormControl';
-import { makeStyles } from '@material-ui/core/styles';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import InputLabel from '@material-ui/core/InputLabel';
+import Select from '@mui/material//Select';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import MenuItem from '@mui/material/MenuItem';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import Alert from 'AppComponents/Shared/Alert';
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import Typography from '@material-ui/core/Typography';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormLabel from '@material-ui/core/FormLabel';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import Typography from '@mui/material/Typography';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
+import FormLabel from '@mui/material/FormLabel';
 import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 
-const useStyles = makeStyles((theme) => ({
-    error: {
-        color: theme.palette.error.dark,
-    },
-    addEditFormControl: {
-        minHeight: theme.spacing(40),
-        maxHeight: theme.spacing(100),
-        minWidth: theme.spacing(55),
-    },
-    vhostPaper: {
-        padding: theme.spacing(1),
-        marginBottom: theme.spacing(1),
-    },
-    radioOutline: {
+const styles = {
+    radioOutline: (theme) => ({
         display: 'flex',
         alignItems: 'center',
         width: '200px', // Set your desired width
@@ -69,7 +57,7 @@ const useStyles = makeStyles((theme) => ({
         '&.Mui-checked': {
             border: `2px solid ${theme.palette.primary.main}`, // Change to blue when selected
         },
-    },
+    }),
     label: {
         marginLeft: '10px', // Adjust as needed for spacing between the radio button and label
     },
@@ -83,7 +71,11 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: '10px', // Adjust margin as needed
         display: 'inline-block', // Ensure inline display
     },
-}));
+};
+
+const StyledLabel = styled('span')({ ...styles.label, ...styles.newLabel });
+
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * Reducer
@@ -118,7 +110,7 @@ function AddEditGWEnvironment(props) {
     const {
         updateList, dataRow, icon, triggerButtonText, title,
     } = props;
-    const classes = useStyles();
+
     const defaultVhost = {
         host: '', httpContext: '', httpsPort: 8243, httpPort: 8280, wssPort: 8099, wsPort: 9099, isNew: true,
     };
@@ -223,7 +215,7 @@ function AddEditGWEnvironment(props) {
                             defaultMessage: 'Name is Empty',
                         })
                     );
-                } else if (!(/^[A-Za-z0-9_-]+$/).test(value)) {
+                } else if (!((/^[A-Za-z0-9_-]+$/)).test(value)) {
                     error = (
                         intl.formatMessage({
                             id: 'GatewayEnvironments.AddEditGWEnvironment.form.environment.name.invalid',
@@ -411,7 +403,15 @@ function AddEditGWEnvironment(props) {
             formSaveCallback={formSaveCallback}
             dialogOpenCallback={dialogOpenCallback}
         >
-            <FormControl component='fieldset' className={classes.addEditFormControl}>
+            <FormControl
+                variant='standard'
+                component='fieldset'
+                sx={(theme) => ({
+                    minHeight: theme.spacing(40),
+                    maxHeight: theme.spacing(100),
+                    minWidth: theme.spacing(55),
+                })}
+            >
                 <TextField
                     autoFocus
                     margin='dense'
@@ -424,7 +424,7 @@ function AddEditGWEnvironment(props) {
                                 id='GatewayEnvironments.AddEditGWEnvironment.form.name'
                                 defaultMessage='Name'
                             />
-                            <span className={classes.error}>*</span>
+                            <StyledSpan>*</StyledSpan>
                         </span>
                     )}
                     fullWidth
@@ -444,7 +444,7 @@ function AddEditGWEnvironment(props) {
                                 id='GatewayEnvironments.AddEditGWEnvironment.form.displayName'
                                 defaultMessage='Display Name'
                             />
-                            <span className={classes.error}>*</span>
+                            <StyledSpan>*</StyledSpan>
                         </span>
                     )}
                     fullWidth
@@ -484,8 +484,8 @@ function AddEditGWEnvironment(props) {
                         >
                             <FormControlLabel
                                 value='Regular'
-                                name='gatewayType'
-                                className={classes.radioOutline}
+                                name='Regular'
+                                sx={styles.radioOutline}
                                 control={<Radio />}
                                 disabled={editMode}
                                 label={(
@@ -501,14 +501,14 @@ function AddEditGWEnvironment(props) {
                             />
                             <FormControlLabel
                                 value='APK'
-                                name='gatewayType'
-                                className={classes.radioOutline}
+                                name='APK'
+                                sx={styles.radioOutline}
                                 control={<Radio />}
                                 disabled={editMode}
                                 label={(
                                     <div>
                                         <span>APK Gateway</span>
-                                        <span className={`${classes.label} ${classes.newLabel}`}>New</span>
+                                        <StyledLabel>New</StyledLabel>
                                         <Typography variant='body2' color='textSecondary'>
                                             Fast API gateway running on kubernetes designed to manage
                                             and secure APIs.

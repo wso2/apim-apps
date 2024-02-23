@@ -1,8 +1,8 @@
 import React from 'react';
 import {
     Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle,
-} from '@material-ui/core';
-import Button from '@material-ui/core/Button';
+} from '@mui/material';
+import Button from '@mui/material/Button';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 
@@ -55,15 +55,12 @@ ConfirmDialog.defaultProps = {
     callback: () => {},
 };
 ConfirmDialog.propTypes = {
-    title: PropTypes.string,
-    message: PropTypes.string,
-    labelCancel: PropTypes.string,
-    labelOk: PropTypes.string,
+    title: PropTypes.element,
+    message: PropTypes.element,
+    labelOk: PropTypes.element,
+    labelCancel: PropTypes.element,
     open: PropTypes.bool.isRequired,
     callback: PropTypes.func,
-    intl: PropTypes.shape({
-        formatMessage: PropTypes.func,
-    }).isRequired,
 };
 ConfirmDialog.Action = {
     OK: 'ok',

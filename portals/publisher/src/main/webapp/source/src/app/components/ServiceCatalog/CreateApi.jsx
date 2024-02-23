@@ -16,53 +16,74 @@
  * under the License.
  */
 import React, { useState, useReducer } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogActions from '@material-ui/core/DialogActions';
-import MenuItem from '@material-ui/core/MenuItem';
-import Grid from '@material-ui/core/Grid';
-import Dialog from '@material-ui/core/Dialog';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
-import IconButton from '@material-ui/core/IconButton';
-import Tooltip from '@material-ui/core/Tooltip';
-import TextField from '@material-ui/core/TextField';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import DialogTitle from '@mui/material/DialogTitle';
+import DialogContent from '@mui/material/DialogContent';
+import DialogActions from '@mui/material/DialogActions';
+import MenuItem from '@mui/material/MenuItem';
+import Grid from '@mui/material/Grid';
+import Dialog from '@mui/material/Dialog';
+import AddCircleIcon from '@mui/icons-material/AddCircle';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import TextField from '@mui/material/TextField';
 import { useHistory } from 'react-router-dom';
 import APIValidation from 'AppData/APIValidation';
 import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
 import { FormattedMessage, useIntl } from 'react-intl';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@mui/material/CircularProgress';
 
 import API from 'AppData/api';
 
-const useStyles = makeStyles((theme) => ({
-    buttonStyle: {
+const PREFIX = 'CreateApi';
+
+const classes = {
+    buttonStyle: `${PREFIX}-buttonStyle`,
+    mandatoryStar: `${PREFIX}-mandatoryStar`,
+    actionButtonStyle: `${PREFIX}-actionButtonStyle`,
+    mandatoryLabelStyle: `${PREFIX}-mandatoryLabelStyle`,
+    textStyle: `${PREFIX}-textStyle`,
+    topMarginSpacing: `${PREFIX}-topMarginSpacing`
+};
+
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.buttonStyle}`]: {
         marginTop: theme.spacing(1),
         marginBottom: theme.spacing(1),
         marginRight: theme.spacing(2),
     },
-    mandatoryStar: {
+
+    [`& .${classes.mandatoryStar}`]: {
         color: theme.palette.error.main,
         marginLeft: theme.spacing(0.1),
     },
-    actionButtonStyle: {
+
+    [`& .${classes.actionButtonStyle}`]: {
         marginBottom: theme.spacing(2),
         marginRight: theme.spacing(2),
     },
-    mandatoryLabelStyle: {
+
+    [`& .${classes.mandatoryLabelStyle}`]: {
         marginLeft: theme.spacing(2),
         marginBottom: theme.spacing(2),
     },
-    textStyle: {
+
+    [`& .${classes.textStyle}`]: {
         fontSize: 11,
     },
-    topMarginSpacing: {
+
+    [`& .${classes.topMarginSpacing}`]: {
         marginTop: theme.spacing(2),
-    },
+    }
 }));
 
 /**
@@ -153,7 +174,7 @@ function CreateApi(props) {
         servieDefinitionType,
         usage,
     } = props;
-    const classes = useStyles();
+
     const intl = useIntl();
     const history = useHistory();
     const [open, setOpen] = useState(false);
@@ -419,7 +440,7 @@ function CreateApi(props) {
     };
 
     return (
-        <>
+        <Root>
             {isIconButton && (
                 <Tooltip
                     interactive
@@ -436,7 +457,7 @@ function CreateApi(props) {
                         color='primary'
                         onClick={toggleOpen}
                         aria-label={`Create api from ${serviceDisplayName} service`}
-                    >
+                        size='large'>
                         <AddCircleIcon />
                     </IconButton>
                 </Tooltip>
@@ -650,7 +671,7 @@ function CreateApi(props) {
                     <Grid
                         container
                         direction='row'
-                        justify='flex-start'
+                        justifyContent='flex-start'
                         alignItems='center'
                         className={classes.mandatoryLabelStyle}
                     >
@@ -668,7 +689,7 @@ function CreateApi(props) {
                     <Grid
                         container
                         direction='row'
-                        justify='flex-end'
+                        justifyContent='flex-end'
                         alignItems='center'
                         className={classes.actionButtonStyle}
                     >
@@ -702,7 +723,7 @@ function CreateApi(props) {
                     </Grid>
                 </DialogActions>
             </Dialog>
-        </>
+        </Root>
     );
 }
 

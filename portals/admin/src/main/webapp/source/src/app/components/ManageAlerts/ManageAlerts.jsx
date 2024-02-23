@@ -17,62 +17,72 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Link } from 'react-router-dom';
 import Joi from '@hapi/joi';
-import { withStyles } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Checkbox from '@material-ui/core/Checkbox';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogTitle from '@material-ui/core/DialogTitle';
-import Grid from '@material-ui/core/Grid';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import DescriptionIcon from '@material-ui/icons/Description';
+import Button from '@mui/material/Button';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import Checkbox from '@mui/material/Checkbox';
+import CircularProgress from '@mui/material/CircularProgress';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogTitle from '@mui/material/DialogTitle';
+import Grid from '@mui/material/Grid';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemIcon from '@mui/material/ListItemIcon';
+import ListItemText from '@mui/material/ListItemText';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import DescriptionIcon from '@mui/icons-material/Description';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import Configurations from 'Config';
-import ChipInput from 'material-ui-chip-input'; // DEPRECATED: Do not COPY and use this component.
+import { MuiChipsInput } from 'mui-chips-input';
 import PropTypes from 'prop-types';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 
-const styles = (theme) => ({
-    alertsWrapper: {
+const PREFIX = 'ManageAlerts';
+
+const classes = {
+    alertsWrapper: `${PREFIX}-alertsWrapper`,
+    manageAlertHeading: `${PREFIX}-manageAlertHeading`,
+    alertConfigDialog: `${PREFIX}-alertConfigDialog`,
+    configDialogHeading: `${PREFIX}-configDialogHeading`,
+    listItem: `${PREFIX}-listItem`,
+};
+
+// TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.alertsWrapper}`]: {
         padding: theme.spacing(2),
         '& span, & h5, & label, & input, & td, & li': {
             color: theme.palette.getContrastText(theme.palette.background.paper),
         },
         marginBottom: theme.spacing(15),
     },
-    manageAlertHeading: {
+
+    [`& .${classes.manageAlertHeading}`]: {
         marginBottom: theme.spacing(),
     },
-    chipInput: {
-        width: '100%',
-        marginTop: theme.spacing(2),
-        marginBottom: theme.spacing(2),
-    },
-    alertConfigDialog: {
+
+    [`& .${classes.alertConfigDialog}`]: {
         width: '60%',
     },
-    configDialogHeading: {
+
+    [`& .${classes.configDialogHeading}`]: {
         fontWeight: '600',
     },
-    listItem: {
+
+    [`& .${classes.listItem}`]: {
         marginLeft: theme.spacing(1),
     },
-});
+}));
 
 /**
  * Alerts management component.
@@ -407,7 +417,7 @@ const ManageAlerts = (props) => {
     }
 
     return (
-        <>
+        <Root>
             {!isAnalyticsEnabled
                 ? (
                     <ContentBase
@@ -463,11 +473,11 @@ const ManageAlerts = (props) => {
                                                 );
                                             })}
                                         </List>
-                                        <ChipInput
+                                        <MuiChipsInput
+                                            fullWidth
                                             label='Emails'
                                             id='email-input'
                                             variant='outlined'
-                                            className={classes.chipInput}
                                             placeholder={emails.length === 0
                                                 ? 'Enter email address and press Enter' : ''}
                                             defaultValue={emails}
@@ -476,12 +486,8 @@ const ManageAlerts = (props) => {
                                                 + 'alerts of selected Alert types.'
                                                 + ' Type email address and press Enter to add'}
                                             error={validateEmailList(emails)}
-                                            onChange={(chip) => {
-                                                handleAddEmail(chip);
-                                            }}
-                                            onDelete={(chip) => {
-                                                handleEmailDeletion(chip);
-                                            }}
+                                            onAddChip={handleAddEmail}
+                                            onDeleteChip={handleEmailDeletion}
                                         />
                                         <Box mt={2}>
                                             <Grid
@@ -515,8 +521,7 @@ const ManageAlerts = (props) => {
                                                     <Link to='/'>
                                                         <Button
                                                             disabled={isInProgress.subscribing}
-                                                            variant='contained'
-                                                            color='default'
+                                                            variant='outlined'
                                                             role='button'
                                                         >
                                                             {isInProgress.unSubscribing
@@ -577,7 +582,7 @@ const ManageAlerts = (props) => {
                     </Button>
                 </DialogActions>
             </Dialog>
-        </>
+        </Root>
     );
 };
 
@@ -594,4 +599,4 @@ ManageAlerts.propTypes = {
     }).isRequired,
 };
 
-export default injectIntl(withStyles(styles)(ManageAlerts));
+export default injectIntl((ManageAlerts));

@@ -17,37 +17,53 @@
  */
 
 import React, { useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
-import WarningIcon from '@material-ui/icons/Warning';
-import ErrorIcon from '@material-ui/icons/Error';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
-import InfoIcon from '@material-ui/icons/Info';
-import { makeStyles } from '@material-ui/core/styles';
+import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
+import Button from '@mui/material/Button';
+import Box from '@mui/material/Box';
+import WarningIcon from '@mui/icons-material/Warning';
+import ErrorIcon from '@mui/icons-material/Error';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import InfoIcon from '@mui/icons-material/Info';
 import { FormattedMessage } from 'react-intl';
-import { orange, green } from '@material-ui/core/colors';
+import { orange, green } from '@mui/material/colors';
 import { withRouter } from 'react-router';
-import Fade from '@material-ui/core/Fade';
+import Fade from '@mui/material/Fade';
 
-// Icon size reference https://github.com/mui-org/material-ui/blob/master/packages/material-ui/src/Icon/Icon.js#L48
-const useStyles = makeStyles((theme) => ({
-    xLarge: {
+const PREFIX = 'Banner';
+
+const classes = {
+    xLarge: `${PREFIX}-xLarge`,
+    warningIcon: `${PREFIX}-warningIcon`,
+    checkCircleIcon: `${PREFIX}-checkCircleIcon`,
+    infoIcon: `${PREFIX}-infoIcon`
+};
+
+const StyledFade = styled(Fade)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.xLarge}`]: {
         fontSize: theme.typography.pxToRem(64),
     },
-    warningIcon : {
+
+    [`& .${classes.warningIcon}`]: {
         color: orange[500],
     },
-    checkCircleIcon: {
+
+    [`& .${classes.checkCircleIcon}`]: {
         color: green[800],
     },
-    infoIcon: {
+
+    [`& .${classes.infoIcon}`]: {
         color: theme.palette.primary.dark,
-    },
+    }
 }));
+
 /**
  *
  *
@@ -58,7 +74,7 @@ function Banner(props) {
     const {
         type, message, dense, history, paperProps, disableActions, open, onClose, disableClose,
     } = props;
-    const classes = useStyles();
+
     const [isOpen, setIsOpen] = useState(open);
     const iconProps = {};
     if (dense) {
@@ -100,7 +116,7 @@ function Banner(props) {
             break;
     }
     return (
-        <Fade in={isOpen} unmountOnExit>
+        <StyledFade in={isOpen} unmountOnExit>
             <Box clone pt={dense ? 1 : 2} pr={dense ? 0 : 1} pb={dense ? 0 : 1} pl={dense ? 1 : 2}>
                 <Paper {...paperProps}>
                     <Grid container spacing={2} alignItems='center' wrap='nowrap'>
@@ -113,7 +129,7 @@ function Banner(props) {
                         </Grid>
                     </Grid>
 
-                    <Grid container justify='flex-end' spacing={1}>
+                    <Grid container justifyContent='flex-end' spacing={1}>
                         <Grid item>
                             {!disableActions && (
                                 <>
@@ -137,7 +153,7 @@ function Banner(props) {
                     </Grid>
                 </Paper>
             </Box>
-        </Fade>
+        </StyledFade>
     );
 }
 Banner.defaultProps = {

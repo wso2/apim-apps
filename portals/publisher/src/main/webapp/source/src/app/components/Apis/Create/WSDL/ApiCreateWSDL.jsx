@@ -18,20 +18,20 @@
 import React, { useReducer, useState, useEffect } from 'react';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
-import Typography from '@material-ui/core/Typography';
-import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Button from '@material-ui/core/Button';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Button from '@mui/material/Button';
 import { Link } from 'react-router-dom';
 import Wsdl from 'AppData/Wsdl';
 import Alert from 'AppComponents/Shared/Alert';
-import { Link as MUILink } from '@material-ui/core';
-import { Alert as MUIAlert, AlertTitle } from '@material-ui/lab';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { Link as MUILink } from '@mui/material';
+import { Alert as MUIAlert, AlertTitle } from '@mui/lab';
+import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 
@@ -212,7 +212,7 @@ export default function ApiCreateWSDL(props) {
                 </>
             )}
         >
-            <Box>
+            <Box sx={{ mb: 2 }}>
                 <Stepper alternativeLabel activeStep={wizardStep}>
                     <Step>
                         <StepLabel>Provide WSDL</StepLabel>
@@ -224,10 +224,8 @@ export default function ApiCreateWSDL(props) {
                 </Stepper>
             </Box>
 
-            <Grid container spacing={3}>
-                <Grid item md={12} />
-                <Grid item md={1} />
-                <Grid item md={11}>
+            <Grid container spacing={2}>
+                <Grid item md={12}>
                     {wizardStep === 0 && (
                         <ProvideWSDL
                             onValidate={handleOnValidate}
@@ -244,9 +242,8 @@ export default function ApiCreateWSDL(props) {
                         />
                     )}
                 </Grid>
-                <Grid item md={1} />
-                <Grid item md={9}>
-                    <Grid container direction='row' justify='flex-start' alignItems='center' spacing={2}>
+                <Grid item md={12}>
+                    <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
                         <Grid item>
                             {wizardStep === 0 && (
                                 <Link to='/apis/'>

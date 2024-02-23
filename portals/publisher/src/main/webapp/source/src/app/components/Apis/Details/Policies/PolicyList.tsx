@@ -17,39 +17,54 @@
  */
 
 import React, { useState, FC } from 'react';
-import Paper from '@material-ui/core/Paper';
-import Box from '@material-ui/core/Box';
-import Card from '@material-ui/core/Card';
-import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
-import CardContent from '@material-ui/core/CardContent';
+import { styled } from '@mui/material/styles';
+import Paper from '@mui/material/Paper';
+import Box from '@mui/material/Box';
+import Card from '@mui/material/Card';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
+import CardContent from '@mui/material/CardContent';
 import { FormattedMessage } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import { AddCircle } from '@material-ui/icons';
-import { Button, makeStyles, Theme } from '@material-ui/core';
+import Typography from '@mui/material/Typography';
+import { AddCircle } from '@mui/icons-material';
+import { Button , Theme } from '@mui/material';
 import CONSTS from 'AppData/Constants';
 import type { Policy } from './Types';
 import TabPanel from './components/TabPanel';
 import CreatePolicy from './CreatePolicy';
 
-const useStyles = makeStyles((theme: Theme) => ({
-    flowTabs: {
+const PREFIX = 'PolicyList';
+
+const classes = {
+    flowTabs: `${PREFIX}-flowTabs`,
+    flowTab: `${PREFIX}-flowTab`,
+    addPolicyBtn: `${PREFIX}-addPolicyBtn`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    paperPosition: `${PREFIX}-paperPosition`
+};
+
+const StyledPaper = styled(Paper)(({ theme }: { theme: Theme }) => ({
+    [`& .${classes.flowTabs}`]: {
         '& button': {
             minWidth: 50,
         },
     },
-    flowTab: {
+
+    [`& .${classes.flowTab}`]: {
         fontSize: 'smaller',
     },
-    addPolicyBtn: {
+
+    [`& .${classes.addPolicyBtn}`]: {
         marginLeft: 'auto',
     },
-    buttonIcon: {
+
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    paperPosition: {
+
+    [`&.${classes.paperPosition}`]: {
         // position: 'fixed',
-    },
+    }
 }));
 
 interface PolicyListPorps {
@@ -64,7 +79,7 @@ interface PolicyListPorps {
  * @returns {TSX} List of policies local to the API segment.
  */
 const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoConnectEnabled}) => {
-    const classes = useStyles();
+
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [dialogOpen, setDialogOpen] = React.useState(false);
     let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
@@ -82,7 +97,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
     }
 
     return (
-        <Paper className={classes.paperPosition}>
+        <StyledPaper className={classes.paperPosition}>
             <Card variant='outlined'>
                 <CardContent>
                     <Box display='flex'>
@@ -136,7 +151,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                 />)
                             }
                         </Tabs>
-                        <Box height='60vh' pt={1} overflow='scroll'>
+                        <Box height='55vh' pt={1} overflow='scroll'>
                             <TabPanel
                                 policyList={policyList.filter(
                                     (policy) =>
@@ -184,7 +199,7 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                 handleDialogClose={handleAddPolicyClose}
                 fetchPolicies={fetchPolicies}
             />
-        </Paper>
+        </StyledPaper>
     );
 };
 
