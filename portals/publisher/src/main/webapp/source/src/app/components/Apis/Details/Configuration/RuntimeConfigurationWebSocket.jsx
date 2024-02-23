@@ -252,7 +252,7 @@ export default function RuntimeConfiguration() {
             return (
                 <Typography className={classes.bottomSpace}>
                     <FormattedMessage
-                        id='Apis.Details.Configuration.components.APISecurity.emptySchemas'
+                        id='Apis.Details.Configuration.RuntimeConfigurationWebsocket.RuntimeConfiguration.emptySchemes'
                         defaultMessage='Please select at least one API security method.'
                     />
                 </Typography>
