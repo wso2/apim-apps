@@ -44,6 +44,30 @@ const classes = {
 const Root = styled('div')(({ theme }) => ({
     [`& .${classes.root}`]: {
         width: '100%',
+        [`& .MuiStepConnector-root`]: {
+            top: '34px',
+            left: 'calc(-50% + 34px)',
+            right: 'calc(50% + 34px)',
+            [`& .MuiStepConnector-line`]: {
+                height: 3,
+                border: 0,
+                backgroundColor: '#eaeaf0',
+                borderRadius: 1,
+            },
+        },
+        [`& .Mui-active .MuiStepConnector-line`]: {
+            backgroundImage: `linear-gradient(
+                to left, 
+                (${theme.custom.apis.overview.stepper.active || theme.palette.info.main}) 50%, 
+                (${theme.custom.apis.overview.stepper.completed || theme.palette.success.main}) 50%
+            )`,
+        },
+        [`& .Mui-completed .MuiStepConnector-line`]: {
+            backgroundImage: `linear-gradient(
+                ${theme.custom.apis.overview.stepper.completed || theme.palette.success.main}, 
+                ${theme.custom.apis.overview.stepper.completed || theme.palette.success.main}
+            )`,
+        },
     },
     [`& .${classes.button}`]: {
         marginRight: theme.spacing(1),
@@ -89,8 +113,8 @@ const Root = styled('div')(({ theme }) => ({
         display: 'flex',
         zIndex: 1,
         color: '#fff',
-        width: 15,
-        height: 15,
+        width: '56px',
+        height: '56px',
         borderRadius: '50%',
         justifyContent: 'center',
         alignItems: 'center',
@@ -106,97 +130,12 @@ const Root = styled('div')(({ theme }) => ({
     },
 }));
 
-const StyledStepConnector = styled(StepConnector)(({ theme }) => ({
-    [`& .MuiStepConnector-root`]: {
-        [`& .MuiStepConnector-alternativeLabel`]: {
-            top: 22,
-        },
-        [`& .Mui-active .MuiStepConnector-line`]: {
-            backgroundImage: `linear-gradient(
-                to left, 
-                (theme.custom.apis.overview.stepper.active || theme.palette.info.main) 50%, 
-                (theme.custom.apis.overview.stepper.completed || theme.palette.success.main) 50%
-            )`,
-        },
-        [`&.Mui-completed .MuiStepConnector-line`]: {
-            backgroundImage: `linear-gradient(
-                theme.custom.apis.overview.stepper.completed || theme.palette.success.main, 
-                theme.custom.apis.overview.stepper.completed || theme.palette.success.main
-            )`,
-        },
-        [`& .MuiStepConnector-line`]: {
-            height: 3,
-            border: 0,
-            backgroundColor: '#eaeaf0',
-            borderRadius: 1,
-        },
-        [`& .viewInStoreLauncher`]: {
-            color: theme.palette.primary.dark,
-        },
-    },
-}));
-
-// const ColorlibConnector = withStyles((theme) => {
-//     const completedColor = theme.custom.apis.overview.stepper.completed || theme.palette.success.main;
-//     const activeColor = theme.custom.apis.overview.stepper.active || theme.palette.info.main;
-//     return {
-//         alternativeLabel: {
-//             top: 22,
-//         },
-//         active: {
-//             '& $line': {
-//                 backgroundImage:
-//                     `linear-gradient(to left, ${activeColor} 50%, ${completedColor} 50%)`,
-//             },
-//         },
-//         completed: {
-//             '& $line': {
-//                 backgroundImage:
-//                     `linear-gradient( ${completedColor}, ${completedColor})`,
-//             },
-//         },
-//         line: {
-//             height: 3,
-//             border: 0,
-//             backgroundColor: '#eaeaf0',
-//             borderRadius: 1,
-//         },
-//         viewInStoreLauncher: {
-//             color: theme.palette.primary.dark,
-//         },
-//     };
-// })(StepConnector);
-
-// const useColorlibStepIconStyles = makeStyles((theme) => ({
-//     root: {
-//         backgroundColor: '#ccc',
-//         zIndex: 1,
-//         color: '#fff',
-//         width: 56,
-//         height: 56,
-//         display: 'flex',
-//         borderRadius: '50%',
-//         justifyContent: 'center',
-//         alignItems: 'center',
-//         border: '6px solid #E2E2E2',
-//     },
-//     active: {
-//         backgroundColor: theme.custom.apis.overview.stepper.active || theme.palette.info.main,
-//         border: '6px solid #E2E2E2',
-//     },
-//     completed: {
-//         backgroundColor: theme.custom.apis.overview.stepper.completed || theme.palette.success.main,
-//         border: '6px solid #E2E2E2',
-//     },
-// }));
-
 /**
  *
  * @param {*} props
  * @returns
  */
 function ColorlibStepIcon(props) {
-    // const classes = useColorlibStepIconStyles();
     const { active, completed, forceComplete, icon: step } = props;
     return (
         <Root>
@@ -209,8 +148,6 @@ function ColorlibStepIcon(props) {
         </Root>
     );
 }
-
-
 
 /**
  *
@@ -501,7 +438,7 @@ export default function CustomizedStepper() {
     return (
         <Root>
             <div id='itest-overview-api-flow' className={classes.root}>
-                <Stepper alternativeLabel activeStep={activeStep} connector={<StyledStepConnector />}>
+                <Stepper alternativeLabel activeStep={activeStep} connector={<StepConnector />}>
                     {steps.map((label) => (
                         <Step key={label}>
                             <StepLabel StepIconComponent={(props) => (

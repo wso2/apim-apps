@@ -52,7 +52,7 @@ const Root = styled('div')((
     [`& .${classes.contentInside}`]: {
         padding: theme.spacing(3),
         paddingTop: theme.spacing(2),
-        '& > div[class^="MuiPaper-root-"]': {
+        ['& > .MuiPaper-root']: {
             boxShadow: 'none',
             backgroundColor: 'transparent',
         },
@@ -488,30 +488,33 @@ class TableView extends React.Component {
         }
 
         return <>
-            <TopMenu
-                data={apisAndApiProducts}
-                count={totalCount}
-                setListType={this.setListType}
-                isAPIProduct={isAPIProduct}
-                listType={listType}
-                showToggle={this.showToggle}
-                query={query}
-            />
-            <div className={classes.contentInside}>
-                {loading ? (
-                    <Progress
-                        per={96}
-                        message='Updating page ...'
-                    />
-                )
-                    : (
-                        <StyledEngineProvider injectFirst>
-                            <ThemeProvider theme={this.getMuiTheme()}>
-                                <MUIDataTable title='' data={apisAndApiProducts} columns={columns} options={options} />
-                            </ThemeProvider>
-                        </StyledEngineProvider>
-                    )}
-            </div>
+            <Root>
+                <TopMenu
+                    data={apisAndApiProducts}
+                    count={totalCount}
+                    setListType={this.setListType}
+                    isAPIProduct={isAPIProduct}
+                    listType={listType}
+                    showToggle={this.showToggle}
+                    query={query}
+                />
+                <div className={classes.contentInside}>
+                    {loading ? (
+                        <Progress
+                            per={96}
+                            message='Updating page ...'
+                        />
+                    )
+                        : (
+                            <StyledEngineProvider injectFirst>
+                                <ThemeProvider theme={this.getMuiTheme()}>
+                                    <MUIDataTable title='' data={apisAndApiProducts} columns={columns} 
+                                        options={options} />
+                                </ThemeProvider>
+                            </StyledEngineProvider>
+                        )}
+                </div>
+            </Root>
         </>;
     }
 }
