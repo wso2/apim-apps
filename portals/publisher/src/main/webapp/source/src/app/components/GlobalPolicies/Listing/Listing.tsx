@@ -1019,14 +1019,21 @@ const Listing: React.FC = () => {
                             iconName={globalPolicyAddIcon}
                         />
                     </Onboarding>
-                    : <Onboarding subTitle={
-                        <FormattedMessage
-                            id='GlobalPolicies.Listing.onboarding.policies.tooltip.not.allowed'
-                            defaultMessage='Global policies provide you the ability to deploy policy mappings to 
-                            all the APIs deployed in a specific gateway and not just one single 
-                            API. Please contact a privileged user to create a global policy.'
-                        />
-                    }
+                    : <Onboarding 
+                        title={
+                            <FormattedMessage
+                                id='GlobalPolicies.Listing.onboarding.create.new'
+                                defaultMessage='Let’s get started!'
+                            />
+                        }
+                        subTitle={
+                            <FormattedMessage
+                                id='GlobalPolicies.Listing.onboarding.policies.tooltip.not.allowed'
+                                defaultMessage='Global policies provide you the ability to deploy policy mappings to 
+                                all the APIs deployed in a specific gateway and not just one single 
+                                API. Please contact a privileged user to create a global policy.'
+                            />
+                        }
                     />
                 }
             </>    
