@@ -2625,7 +2625,7 @@
   "Apis.Details.Operations.operation.operationName": {
     "defaultMessage": "Operation"
   },
-  "Apis.Details.Overview.\n                                                                    CustomizedStepper.Endpoint": {
+  "Apis.Details.Overview.\n                                                                        CustomizedStepper.Endpoint": {
     "defaultMessage": "Endpoint"
   },
   "Apis.Details.Overview.CustomizedStepper.Deploy": {
