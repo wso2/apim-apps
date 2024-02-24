@@ -543,6 +543,7 @@ class CreateScope extends React.Component {
                                 <FormControl margin='normal'>
                                     <ChipInput
                                         label='Roles'
+                                        fullWidth
                                         id='roles-input'
                                         InputLabelProps={{
                                             shrink: true,

@@ -40,11 +40,7 @@ const classes = {
     selectedMenu: `${PREFIX}-selectedMenu`
 };
 
-const StyledLink = styled(Link)((
-    {
-        theme
-    }
-) => ({
+const StyledLink = styled(Link)(({theme}) => ({
     [`& .${classes.leftLInkText}`]: {
         color: theme.palette.getContrastText(theme.palette.background.leftMenu),
         textTransform: theme.custom.leftMenuTextStyle,
@@ -83,7 +79,7 @@ const StyledLink = styled(Link)((
         top: 0,
     },
 
-    [`&.${classes.leftLInk}`]: {
+    [`&.${classes.leftLInk}, & .${classes.leftLInk}`]: {
         paddingTop: theme.spacing(1),
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(1),
@@ -94,7 +90,7 @@ const StyledLink = styled(Link)((
         textDecoration: 'none',
     },
 
-    [`& .${classes.leftLInkOverview}`]: {
+    [`&.${classes.leftLInkOverview}`]: {
         paddingTop: theme.spacing(1),
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
@@ -123,7 +119,7 @@ const StyledLink = styled(Link)((
         diplay: 'none',
     },
 
-    [`& .${classes.selectedMenu}`]: {
+    [`&.${classes.selectedMenu}`]: {
         backgroundColor: theme.palette.background.appBarSelected,
     }
 }));

@@ -17,12 +17,10 @@
  */
 
 import React, { useReducer, useState } from 'react';
-import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
 import Modal from '@mui/material/Modal';
-import Backdrop from '@mui/material/Backdrop';
 import Fade from '@mui/material/Fade';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
@@ -32,31 +30,10 @@ import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/Landi
 import TaskState from 'AppComponents/Apis/Listing/SampleAPI/components/TaskState';
 import useMediaQuery from '@mui/material/useMediaQuery';
 import { useTheme } from '@mui/material';
-
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
-
 import { getSampleAPIData, getSampleOpenAPI } from 'AppData/SamplePizzaShack';
 
-
-const PREFIX = 'SampleAPI';
-
-const classes = {
-    modal: `${PREFIX}-modal`,
-    statusBox: `${PREFIX}-statusBox`
-};
-
-
-const Root = styled('div')({
-    [`& .${classes.modal}`]: {
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-    [`& .${classes.statusBox}`]: {
-        outline: 'none',
-    },
-});
 
 const initialTaskStates = {
     create: { inProgress: true, completed: false, pending: false, errors: false },
@@ -187,7 +164,7 @@ const SampleAPI = (props) => {
         return <Redirect to={url} />;
     }
     return (
-        <Root>
+        <>
             <LandingMenuItem
                 dense={dense}
                 id='itest-id-deploy-sample'
@@ -211,22 +188,14 @@ const SampleAPI = (props) => {
             <Modal
                 aria-labelledby='transition-modal-title'
                 aria-describedby='transition-modal-description'
-                className={classes.modal}
                 open={showStatus}
-                // onClose={handleClose}
                 closeAfterTransition
-                BackdropComponent={Backdrop}
-                BackdropProps={{
-                    timeout: 500,
-                }}
+                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
                 <Fade in={showStatus}>
                     <Box
                         bgcolor='background.paper'
-                        borderRadius='borderRadius'
-                        width={isXsOrBelow ? 4 / 5 : 1 / 4}
-                        className={classes.statusBox}
-                        p={2}
+                        sx={{ width: `${isXsOrBelow ? 4 / 5 : 1 / 4}`, outline: 'none' }}
                     >
                         <Grid
                             container
@@ -377,7 +346,7 @@ const SampleAPI = (props) => {
                     </Box>
                 </Fade>
             </Modal>
-        </Root>
+        </>
     );
 };
 

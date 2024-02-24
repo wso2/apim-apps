@@ -28,13 +28,10 @@ const classes = {
     button: `${PREFIX}-button`
 };
 
-const Root = styled('form')((
-    {
-        theme
-    }
-) => ({
+const Root = styled('form')(({ theme }) => ({
     [`& .${classes.root}`]: {
         flexGrow: 1,
+        backgroundColor: theme.palette.background.paper,
     },
 
     [`& .${classes.container}`]: {
@@ -253,7 +250,7 @@ class Monetization extends Component {
                         />
                     </Grid>
                     <Grid item xs={12}>
-                        <Paper className={classes.root}>
+                        <Paper className={classes.root} sx={{ }}>
                             <Grid item xs={12} className={classes.grid}>
                                 <Typography className={classes.heading} variant='h6' component='h3'>
                                     <FormattedMessage

@@ -36,14 +36,11 @@ const PREFIX = 'APICreateMenu';
 
 const classes = {
     dividerCls: `${PREFIX}-dividerCls`,
-    popover: `${PREFIX}-popover`
+    popover: `${PREFIX}-popover`,
+    popoverAPK: `${PREFIX}-popoverAPK`,
 };
 
-const StyledMenuButton = styled(MenuButton)((
-    {
-        theme
-    }
-) => {
+const Root = styled('div')(({ theme }) => {
     return {
         [`& .${classes.dividerCls}`]: {
             height: '180px',
@@ -63,10 +60,9 @@ const StyledMenuButton = styled(MenuButton)((
             [theme.breakpoints.up('lg')]: {
                 width: '65vw',
             },
-            paddingTop: theme.spacing(2),
-            paddingBottom: theme.spacing(2),
+            padding: theme.spacing(2),
         },
-        popoverAPK: {
+        [`& .${classes.popoverAPK}`]: {
             [theme.breakpoints.down('sm')]: {
                 width: '55vw',
             },
@@ -76,9 +72,7 @@ const StyledMenuButton = styled(MenuButton)((
             [theme.breakpoints.up('lg')]: {
                 width: '65vw',
             },
-            paddingTop: theme.spacing(2),
-            paddingLeft: theme.spacing(2),
-            paddingBottom: theme.spacing(2),
+            padding: theme.spacing(2),
         },
     };
 });
@@ -111,50 +105,53 @@ const APICreateMenu = () => {
     } = theme.custom.landingPage.icons;
     return (
         !AuthManager.isNotCreator() && (
-            <StyledMenuButton
-                buttonProps={{
-                    id: 'itest-create-api-menu-button',
-                    color: 'primary',
-                    variant: 'contained',
-                    'aria-label': 'View create API options',
-                }}
-                menuList=
-                    {gateway ? (
-                        <Grid
-                            className={classes.popover}
-                            container
-                            direction='row'
-                            justify='space-around'
-                            alignItems='flex-start'
-                            spacing={2}
-                        >
-                            <RestAPIMenu isCreateMenu icon={restApiIcon} />
-                            <SoapAPIMenu isCreateMenu icon={soapApiIcon} />
-                            <GraphqlAPIMenu isCreateMenu icon={graphqlIcon} />
-                            <StreamingAPIMenu isCreateMenu icon={streamingApiIcon} />
-                            <Box display={{ xs: 'none', md: 'block' }} mx={2}>
-                                <Divider className={classes.dividerCls} light orientation='vertical' variant='inset' />
-                            </Box>
-                            <ServiceCatalogMenu isCreateMenu icon={streamingApiIcon} />
-                        </Grid>
-                    ) : (
-                        <Grid
-                            className={classes.popoverAPK}
-                            container
-                            direction='row'
-                            justifyContent='flex-start'
-                            alignItems='flex-start'
-                            spacing={2}
-                        >
-                            <RestAPIMenu isCreateMenu icon={restApiIcon} />
-                            <GraphqlAPIMenu isCreateMenu icon={graphqlIcon} />
-                        </Grid>
-                    )
-                    }
-                
-            >
-                Create API
-            </StyledMenuButton>
+            <Root>
+                <MenuButton
+                    buttonProps={{
+                        id: 'itest-create-api-menu-button',
+                        color: 'primary',
+                        variant: 'contained',
+                        'aria-label': 'View create API options',
+                    }}
+                    menuList=
+                        {gateway ? (
+                            <Grid
+                                className={classes.popover}
+                                container
+                                direction='row'
+                                justify='space-around'
+                                alignItems='flex-start'
+                                spacing={2}
+                            >
+                                <RestAPIMenu isCreateMenu icon={restApiIcon} />
+                                <SoapAPIMenu isCreateMenu icon={soapApiIcon} />
+                                <GraphqlAPIMenu isCreateMenu icon={graphqlIcon} />
+                                <StreamingAPIMenu isCreateMenu icon={streamingApiIcon} />
+                                <Box display={{ xs: 'none', md: 'block' }} mx={2}>
+                                    <Divider className={classes.dividerCls} light orientation='vertical' 
+                                        variant='inset' />
+                                </Box>
+                                <ServiceCatalogMenu isCreateMenu icon={streamingApiIcon} />
+                            </Grid>
+                        ) : (
+                            <Grid
+                                className={classes.popoverAPK}
+                                container
+                                direction='row'
+                                justifyContent='flex-start'
+                                alignItems='flex-start'
+                                spacing={2}
+                            >
+                                <RestAPIMenu isCreateMenu icon={restApiIcon} />
+                                <GraphqlAPIMenu isCreateMenu icon={graphqlIcon} />
+                            </Grid>
+                        )
+                        }
+                    
+                >
+                    Create API
+                </MenuButton>
+            </Root>
         )
     );
 };
