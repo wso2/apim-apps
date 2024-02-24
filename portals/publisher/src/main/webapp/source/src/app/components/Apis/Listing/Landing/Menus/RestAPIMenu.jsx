@@ -96,7 +96,7 @@ const RestAPIMenu = (props) => {
             </LandingMenuItem>
             {(!isCreateMenu || (isCreateMenu && alwaysShowDeploySampleButton)) && showSampleDeploy && (
                 <>
-                    <Box width={1}>
+                    <Box width={1} sx={{ pt: '16px' }}>
                         <Divider light variant='middle' />
                     </Box>
                     <SampleAPI dense={dense} />

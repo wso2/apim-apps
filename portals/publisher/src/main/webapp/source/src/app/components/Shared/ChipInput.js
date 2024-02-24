@@ -655,7 +655,7 @@ class ChipInput extends React.Component {
             onBlur={this.handleInputBlur}
             inputRef={this.setActualInputRef}
             disabled={disabled}
-            fullWidth={fullWidthInput}
+            fullWidth={fullWidth}
             placeholder={(!hasInput && (shrinkFloatingLabel || label == null)) || alwaysShowPlaceholder ? placeholder : null}
             readOnly={readOnly}
             {...InputProps}

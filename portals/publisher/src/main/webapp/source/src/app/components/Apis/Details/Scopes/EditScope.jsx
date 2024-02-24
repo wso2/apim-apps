@@ -416,6 +416,7 @@ class EditScope extends React.Component {
                                 <FormControl margin='normal'>
                                     <ChipInput
                                         label='Roles'
+                                        fullWidth
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
