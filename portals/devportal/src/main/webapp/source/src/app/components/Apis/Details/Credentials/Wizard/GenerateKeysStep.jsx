@@ -243,7 +243,7 @@ const generateKeysStep = (props) => {
 
     return (
         <Root>
-            <Box component='div' marginLeft={4} width='180%'>
+            <Box component='div' marginLeft={4}>
                 <Grid container spacing={2}>
                     {keyManager && (
                         <>

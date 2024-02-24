@@ -72,10 +72,9 @@ const Root = styled('div')((
         theme,
     },
 ) => ({
+    width: '100%',
     [`& .${classes.centerItems}`]: {
         margin: 'auto',
-        // width: theme.spacing(100),
-        width: 1200,
     },
 
     [`& .${classes.tokenType}`]: {

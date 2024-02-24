@@ -40,7 +40,7 @@ const Root = styled('div')((
 ) => ({
     [`& .${classes.tokenWrapper}`]: {
         paddingLeft: theme.spacing(3),
-        width: '180%',
+        width: '90%',
     },
 
     [`& .${classes.title}`]: {

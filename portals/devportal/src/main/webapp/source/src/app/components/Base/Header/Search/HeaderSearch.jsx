@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-/* eslint-disable no-unused-vars */
+
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import { withRouter } from 'react-router-dom';

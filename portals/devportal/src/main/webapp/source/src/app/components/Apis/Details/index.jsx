@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-/* eslint-disable no-unused-vars */
+
 import React, { lazy, Suspense } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
@@ -438,7 +438,7 @@ class DetailsLegacy extends React.Component {
         const {
             custom: {
                 leftMenu: {
-                    rootIconSize, rootIconTextVisible, rootIconVisible, position, width,
+                    rootIconSize, rootIconTextVisible, rootIconVisible, position,
                 },
                 apiDetailPages: {
                     showCredentials, showComments, showTryout, showDocuments, showSdks, showAsyncSpecification, showSolaceTopics,
