@@ -16,10 +16,9 @@
  * under the License.
  */
 
-import { alpha } from '@mui/material/styles';
-import makeStyles from '@mui/styles/makeStyles';
+import { makeStyles, createStyles } from '@mui/styles';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles((theme) => createStyles({
     tryWithAiMain: {
         height: '100%',
         display: 'flex',
@@ -29,7 +28,7 @@ const useStyles = makeStyles((theme) => ({
     tryAiBannerCont: {
         display: 'flex',
         gridGap: theme.spacing(1.5),
-        maxWidth: theme.spacing(78),
+        maxWidth: theme.spacing(85),
     },
     tryAiBannerImgWrap: {
         flex: `0 0 ${theme.spacing(15)}px`,
@@ -59,12 +58,11 @@ const useStyles = makeStyles((theme) => ({
             borderRadius: '50%',
             top: 0,
             right: 0,
-            boxShadow: `${theme.spacing(2.5)}px ${theme.spacing(-3.75)}px
-                      0 0 ${theme.palette.common.white}`,
+            boxShadow: `${theme.spacing(2.5)} ${theme.spacing(-3.75)} 0 0 ${theme.palette.grey[100]}`,
         },
     },
     tryAiBannerContent: {
-        background: theme.palette.common.white,
+        background: theme.palette.grey[100],
         padding: theme.spacing(2),
         borderRadius: theme.spacing(0, 2, 2, 2),
         position: 'relative',
@@ -80,9 +78,6 @@ const useStyles = makeStyles((theme) => ({
         right: 0,
         marginLeft: theme.spacing(-1),
         marginRight: theme.spacing(-1),
-        background: `linear-gradient(0deg,
-            ${alpha(theme.palette.secondary.light, 1)} 80%,
-           ${alpha(theme.palette.secondary.light, 0)} 100%)`,
     },
     tryAiBottomInner: {
         padding: theme.spacing(3, 1),
@@ -114,8 +109,8 @@ const useStyles = makeStyles((theme) => ({
     },
     sampleCardActionArea: {
         '&:hover $sampleExecuteButton': {
-            background: theme.palette.primary.main,
-            color: theme.palette.common.white,
+            background: theme.palette.grey[100],
+            color: theme.palette.grey[100],
         },
     },
     disclaimerText: {

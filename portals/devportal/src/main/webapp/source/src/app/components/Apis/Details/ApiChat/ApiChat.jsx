@@ -16,9 +16,7 @@
  * under the License.
  */
 
-import React, {
-    useContext, useEffect, useState,
-} from 'react';
+import React, { useState } from 'react';
 // useContext, useState, useRef, useMemo, useEffect,
 // import { Box } from '@material-ui/core';
 import Box from '@mui/material/Box';
@@ -26,13 +24,15 @@ import Box from '@mui/material/Box';
 // import API from 'AppData/api';
 // import { AxiosError } from 'axios';
 // import cloneDeep from 'lodash.clonedeep';
-import API from 'AppData/api';
-import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
-import { FormattedMessage } from 'react-intl';
-import Alert from 'AppComponents/Shared/Alert';
+// import API from 'AppData/api';
+// import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
+// import { FormattedMessage } from 'react-intl';
+// import Alert from 'AppComponents/Shared/Alert';
 import useStyles from './ApiChat.styles';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
+import ApiChatExecute from './components/ApiChatExecute';
+import ConfigureKeyDrawer from './components/ConfigureKeyDrawer';
 // import SamplePrepareResponse from './data/mockData.json';
 // import ApiChatApi from './data/ApiChatApi';
 // import ResultsHeading, {
@@ -107,7 +107,7 @@ import ApiChatBanner from './components/ApiChatBanner';
 const ApiChat = () => {
     const classes = useStyles();
     // const intl = useIntl();
-    // const sampleQueriesDrawer = useRightDrawer();
+    const [configureKeyDrawerOpen, setConfigureKeyDrawerOpen] = useState(true);
 
     // const [resultView, setResultView] = useState<string | null>('summary');
     // const [expandedPanel, setExpandedPanel] = useState<number[] | false>(false);
@@ -131,33 +131,33 @@ const ApiChat = () => {
     // const isTokenExpired = useRef(false);
     // const abortControllerRef = useRef(new AbortController());
 
-    const { api } = useContext(ApiContext);
+    // const { api } = useContext(ApiContext);
     // const [selectedEndpoint, setSelectedEndpoint] = useState((api.endpointURLs && api.endpointURLs.length > 0)
     //     ? api.endpointURLs[0]
     //     : null);
-    const selectedEndpoint = (api.endpointURLs && api.endpointURLs.length > 0)
-        ? api.endpointURLs[0]
-        : null;
-    const [swagger, setSwagger] = useState();
+    // const selectedEndpoint = (api.endpointURLs && api.endpointURLs.length > 0)
+    //     ? api.endpointURLs[0]
+    //     : null;
+    // const [swagger, setSwagger] = useState();
     // const apiEndpoint = selectedEndpoint ? selectedEndpoint.URLs.https
     //   || selectedEndpoint.URLs.http : '';
 
-    useEffect(() => {
-        const restApi = new API();
-        restApi.getSwaggerByAPIIdAndEnvironment(api.id, selectedEndpoint.environmentName)
-            .then((swaggerResponse) => {
-                setSwagger(swaggerResponse.obj);
-            })
-            .catch((error) => {
-                console.log(error);
-                Alert.error(
-                    <FormattedMessage
-                        id='Apis.Details.ApiChat.ApiChat.errorFetchingSwagger'
-                        defaultMessage='Error while fetching the API definition'
-                    />,
-                );
-            });
-    }, []);
+    // useEffect(() => {
+    //     const restApi = new API();
+    //     restApi.getSwaggerByAPIIdAndEnvironment(api.id, selectedEndpoint.environmentName)
+    //         .then((swaggerResponse) => {
+    //             setSwagger(swaggerResponse.obj);
+    //         })
+    //         .catch((error) => {
+    //             console.log(error);
+    //             Alert.error(
+    //                 <FormattedMessage
+    //                     id='Apis.Details.ApiChat.ApiChat.errorFetchingSwagger'
+    //                     defaultMessage='Error while fetching the API definition'
+    //                 />,
+    //             );
+    //         });
+    // }, []);
 
     // useEffect(() => {
     //     // const healthStatusPromise = pingApiChatApi();
@@ -750,9 +750,9 @@ const ApiChat = () => {
     //   }
     // };
 
-    // const handleOpenSampleQueries = () => {
-    //   sampleQueriesDrawer.openDrawer();
-    // };
+    const handleOpenConfigureKey = () => {
+        setConfigureKeyDrawerOpen(true);
+    };
 
     return (
     // <Box className={classes.tryAiViewer}>
@@ -1074,10 +1074,51 @@ const ApiChat = () => {
     //     />
     // </Box>
         <>
-            <Box className={classes.tryWithAiMain}>
-                <ApiChatPoweredBy />
+            <Box className={classes.tryWithAiMain} sx={{ mr: 5 }}>
+                <ConfigureKeyDrawer
+                    isDrawerOpen={configureKeyDrawerOpen}
+                    updateDrawerOpen={setConfigureKeyDrawerOpen}
+                />
+                {/* onClose={sampleQueriesDrawer.closeDrawer}
+                    open={sampleQueriesDrawer.isOpen}
+                    sampleQueries={sampleQueries}
+                    onExecuteClick={handleExecuteSampleQuery}
+                    onCopyClick={handleCopyClick}
+                    queriesDisabled={isAgentRunning}
+                /> */}
+                <ApiChatPoweredBy
+                    showSampleQueries
+                    openConfigureKey={handleOpenConfigureKey}
+                    goBack={() => {}}
+                    disableGoBack={false}
+                    // openSampleQueries={handleOpenSampleQueries}
+                    // showSampleQueries={
+                    //     lastQuery !== '' || isAgentRunning || finalOutcome !== ''
+                    // }
+                    // goBack={handleGoBack}
+                    // disableGoBack={isAgentRunning}
+                />
                 <ApiChatBanner />
-                <p>{swagger.info}</p>
+                <ApiChatExecute
+                    isAgentRunning
+                    isAgentTerminating={false}
+                    lastQuery='Hello World'
+                    handleStopAndReExecute={() => {}}
+                    // enrichedSpec
+                    inputQuery='New Query'
+                    handleQueryChange={() => {}}
+                    isEnrichingSpec={false}
+                    handleExecute={() => {}}
+                    // isAgentRunning={isAgentRunning}
+                    // isAgentTerminating={isAgentTerminating}
+                    // lastQuery={lastQuery}
+                    // handleStopAndReExecute={handleStopAndReExecute}
+                    // enrichedSpec={enrichedSpec}
+                    // inputQuery={inputQuery}
+                    // handleQueryChange={handleQueryChange}
+                    // isEnrichingSpec={isEnrichingSpec}
+                    // handleExecute={handleExecute}
+                />
             </Box>
         </>
     );

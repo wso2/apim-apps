@@ -22,20 +22,26 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 import useStyles from '../ApiChat.styles';
 
-// interface ApiChatPoweredByProps {
-//   openSampleQueries: () => void;
-//   showSampleQueries?: boolean;
-//   goBack: () => void;
-//   disableGoBack: boolean;
-// }
+interface ApiChatPoweredByProps {
+    openConfigureKey: any;
+    showSampleQueries?: boolean;
+    goBack: () => void;
+    disableGoBack: boolean;
+}
 
 /**
  * Renders the API Chat powered by section.
  * @returns {TSX} API Chat powered by section to render.
  */
-const ApiChatPoweredBy = () => {
+const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
+    openConfigureKey,
+    showSampleQueries = false,
+    goBack,
+    disableGoBack,
+}) => {
     const classes = useStyles();
 
     return (
@@ -55,38 +61,39 @@ const ApiChatPoweredBy = () => {
                 </Typography>
             </Box>
             <Box>
-                {/* {showSampleQueries && ( */}
                 <Box display='flex'>
-                    <Box mr={3}>
-                        <Button
-                            startIcon={<KeyboardBackspaceIcon />}
-                            id='go-back'
-                            // variant='link'
-                            // size='tiny'
-                            // onClick={goBack}
-                            // disabled={disableGoBack}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.ApiChat.components.ApiChatPoweredBy.goBack'
-                                defaultMessage='Go Back'
-                            />
-                        </Button>
-                    </Box>
+                    {showSampleQueries && (
+                        <Box mr={3}>
+                            <Button
+                                startIcon={<KeyboardBackspaceIcon />}
+                                id='go-back'
+                                variant='text'
+                                size='small'
+                                onClick={goBack}
+                                disabled={disableGoBack}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.ApiChat.components.ApiChatPoweredBy.goBack'
+                                    defaultMessage='Go Back'
+                                />
+                            </Button>
+                        </Box>
+                    )}
                     <Box>
                         <Button
+                            startIcon={<SettingsOutlinedIcon />}
                             id='view-sample-queries'
-                            // variant='link'
-                            // size='tiny'
-                            // onClick={openSampleQueries}
+                            variant='text'
+                            size='small'
+                            onClick={openConfigureKey}
                         >
                             <FormattedMessage
-                                id='Apis.Details.ApiChat.components.ApiChatPoweredBy.sampleQueries'
-                                defaultMessage='Sample Queries'
+                                id='Apis.Details.ApiChat.components.ApiChatPoweredBy.configureKey'
+                                defaultMessage='Configure Key'
                             />
                         </Button>
                     </Box>
                 </Box>
-                {/* )} */}
             </Box>
         </Box>
     );

@@ -43,7 +43,6 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
-import LeftMenuGroup from 'AppComponents/Shared/LeftMenuGroup';
 import CustomIcon from '../../Shared/CustomIcon';
 import LeftMenuItem from '../../Shared/LeftMenuItem';
 import { ResourceNotFound } from '../../Base/Errors/index';
@@ -557,7 +556,7 @@ class DetailsLegacy extends React.Component {
                                             expandIcon={<ExpandMoreIcon className={classes.expandIconColor} />}
                                             style={{ padding: '0 12px 0 5px', maxHeight: 43, minHeight: 43 }}
                                         >
-                                            <LeftMenuGroup
+                                            <LeftMenuItem
                                                 text={(
                                                     <FormattedMessage
                                                         id='Apis.Details.index.try.out.'
@@ -573,7 +572,7 @@ class DetailsLegacy extends React.Component {
                                             style={{ paddingTop: 0, paddingBottom: 0, margin: 0 }}
                                         >
                                             <div>
-                                                <LeftMenuGroup
+                                                <LeftMenuItem
                                                     text={(
                                                         <FormattedMessage
                                                             id='Apis.Details.index.try.out.api.console'
@@ -588,7 +587,7 @@ class DetailsLegacy extends React.Component {
                                                     id='left-menu-test'
                                                 />
                                                 {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi && (
-                                                    <LeftMenuGroup
+                                                    <LeftMenuItem
                                                         text={(
                                                             <FormattedMessage
                                                                 id='Apis.Details.index.try.out.api.chat'
