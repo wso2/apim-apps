@@ -63,7 +63,6 @@ const Root = styled('div')((
         '& .MuiButton-containedPrimary span.MuiButton-label': {
             color: theme.palette.getContrastText(theme.palette.primary.main),
         },
-        paddingRight: theme.spacing(80),
     },
 }));
 

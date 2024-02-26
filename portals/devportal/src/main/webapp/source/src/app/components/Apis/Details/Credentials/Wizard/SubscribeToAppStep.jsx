@@ -15,7 +15,6 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-/* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useContext } from 'react';
 import SubscribeToApi from 'AppComponents/Shared/AppsAndKeys/SubscribeToApi';
 import Alert from 'AppComponents/Shared/Alert';
@@ -23,7 +22,6 @@ import API from 'AppData/api';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import { injectIntl } from 'react-intl';
 import Box from '@mui/material/Box';
-import Tokens from 'AppComponents/Shared/AppsAndKeys/Tokens';
 import ButtonPanel from './ButtonPanel';
 
 const subscribeToAppStep = (props) => {
@@ -83,7 +81,7 @@ const subscribeToAppStep = (props) => {
     }, [createdApp]);
 
     return (
-        <Box component='div' width='190%'>
+        <Box component='div'>
             <SubscribeToApi
                 throttlingPolicyList={throttlingPolicyList}
                 applicationsAvailable={[newApp]}
