@@ -165,6 +165,7 @@ interface Environment {
     type: string;  
     serverUrl: string;
     provider: string;
+    gatewayType: string;
     showInApiConsole: boolean;
     vhosts: any;
     endpointURIs: any;
@@ -919,7 +920,10 @@ const Listing: React.FC = () => {
             /**
              * Expandable area where you can deploy and undeploy.
              */
-            const gatewayList = environments.map((env: any) => {
+            const regularGatewayEnvironments = environments && environments.filter((env) => {
+                return env.gatewayType === 'Regular';
+            });
+            const gatewayList = regularGatewayEnvironments.map((env: any) => {
                 return env.name;
             });
             const rowIndex = rowMeta.dataIndex;

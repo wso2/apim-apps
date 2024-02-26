@@ -291,24 +291,10 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                                     label={GATEWAY_TYPE_LABELS.SYNAPSE}
                                     data-testid='regular-gateway-label'
                                 />
-                                {/* <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            name='choreoConnect'
-                                            color='primary'
-                                            checked={supportedGateways.includes(
-                                                CONSTS.GATEWAY_TYPE.choreoConnect,
-                                            )}
-                                            onChange={handleChange}
-                                        />
-                                    }
-                                    label={GATEWAY_TYPE_LABELS.CC}
-                                    data-testid='choreo-connect-label'
-                                /> */}
                             </FormGroup>
                             <FormHelperText>
                                 {supportedGatewaysError
-                                    ? 'Please select one or more Gateways'
+                                    ? 'Please select Regular Gateways'
                                     : ''}
                             </FormHelperText>
                         </FormControl>
