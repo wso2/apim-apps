@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import { Toolbar } from '@mui/material';
@@ -8,6 +8,7 @@ import SearchIcon from '@mui/icons-material/SearchOutlined';
 import Hidden from '@mui/material/Hidden';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
+import API from 'AppData/api';
 import Avatar from 'AppComponents/Base/Header/avatar/Avatar';
 import CloseIcon from '@mui/icons-material/Close';
 import Configurations from 'Config';
@@ -63,6 +64,27 @@ export default function HeaderOriginal(props) {
         setOpen(!open);
     };
     const Icon = open ? CloseIcon : MenuIcon;
+
+    const [notificationCount, setNotificationCount] = React.useState(0);
+    const [notifications, setNotifications] = React.useState(null);
+
+    useEffect(() => {
+        const getUnreadNotificationCount = () => {
+            const promisedNotifications = API.getNotifications();
+            promisedNotifications
+                .then((res) => { 
+                    setNotifications(res.body.list);
+                    const unreadCount = notifications.filter(notification => !notification.isRead).length;
+                    setNotificationCount(unreadCount);
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        };
+
+        getUnreadNotificationCount();
+    }, [notifications]); 
+
     return (
         <Root>
             <GlobalDrawerProvider value={{ open, setOpen }}>
@@ -95,17 +117,21 @@ export default function HeaderOriginal(props) {
                             <Box display='flex'>
                                 <Box display='flex' alignItems='center' mr={2.5}>
                                     <Link to='/notifications' aria-label='Go to notification page'>
-                                        <Badge 
-                                            badgeContent={<span style={{ 
-                                                backgroundColor: 'orange', 
-                                                borderRadius: '50%', 
-                                                padding: '3px 6px', 
-                                                fontSize: '0.8rem',
-                                                color: '#000000' 
-                                            }}>6</span>} 
-                                        >
+                                        {notificationCount > 0 ? (
+                                            <Badge 
+                                                badgeContent={<span style={{ 
+                                                    backgroundColor: 'orange', 
+                                                    borderRadius: '50%', 
+                                                    padding: '3px 6px', 
+                                                    fontSize: '0.8rem',
+                                                    color: '#000000' 
+                                                }}>{notificationCount}</span>} 
+                                            >
+                                                <NotificationsNoneIcon style={{ color: 'white', fontSize: 25 }}/>
+                                            </Badge>
+                                        ) : (
                                             <NotificationsNoneIcon style={{ color: 'white', fontSize: 25 }}/>
-                                        </Badge>
+                                        )}
                                     </Link>
                                 </Box>
                                 <Hidden mdDown>

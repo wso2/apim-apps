@@ -21,7 +21,12 @@ import MarkunreadIcon from '@material-ui/icons/Markunread';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
-import NotificationData from './NotificationData';
+import API from 'AppData/api';
+import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
+import { Progress } from 'AppComponents/Shared';
+import Alert from 'AppComponents/Shared/Alert';
+import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
+import DeleteNotifications from './DeleteNotifications';
 
 
 const useStyles = makeStyles((theme) => ({
@@ -93,18 +98,32 @@ const Notifications = () => {
     const classes = useStyles();
     const [notifications, setNotifications] = useState(null);
     const [sortOption, setSortOption] = useState('all'); 
+    const [loading, setLoading] = useState(false);
+    const [notFound, setnotFound] = useState(false);
 
     const handleSortChange = (event) => {
         setSortOption(event.target.value); 
     };
     
     const fetchNotifications = () => {
-        setNotifications(NotificationData);
+        setLoading(true);
+        const promisedNotifications = API.getNotifications();
+        promisedNotifications
+            .then((response) => {
+                setNotifications(response.body.list);
+
+            })
+            .catch((error) => {
+                console.error(error);
+                setnotFound(true);
+            })
+            .finally(() => {
+                setLoading(false);
+            });
     };
 
     useEffect(() => {
         fetchNotifications();
-        // console.log(NotificationData);
     }, []);
 
     const getNotificationList = () => {
@@ -112,8 +131,8 @@ const Notifications = () => {
             return {
                 notificationId: notification.notificationId,
                 notificationType: notification.notificationType,
-                sentDate: notification.createdDate,
-                notification: notification.notification,
+                sentDate: notification.createdTime,
+                notification: notification.comments,
                 isRead: notification.isRead,
             };
         });
@@ -122,15 +141,56 @@ const Notifications = () => {
     }
 
     const markAsRead = (notificationId) => {
-        console.log(`Mark as read: ${notificationId}`);
+        const body = {
+            read: true
+        };
+
+        const promisedMarkAsRead = API.markNotificationAsReadById(notificationId, body);
+        promisedMarkAsRead
+            .then((response) => {
+                console.log(response);
+                Alert.info('Marked the notification as read successfully!');
+
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error('Error while marking the notification as read!');
+                setnotFound(true);
+            })
+            .finally(() => {
+                fetchNotifications();
+            });
+    };
+
+
+    const markAllAsRead = () => {
+        const body = {
+            read: true
+        };
+
+        const promisedMarkAsRead = API.markAllNotificationsAsRead(body);
+        promisedMarkAsRead
+            .then((response) => {
+                console.log(response);
+                Alert.info('Marked all notifications as read successfully!');
+
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error('Error while marking all notifications as read!');
+                setnotFound(true);
+            })
+            .finally(() => {
+                fetchNotifications();
+            });
     };
 
     const notificationList = getNotificationList();
 
     const notificationTypeColors = {
-        'API State Change': '#a2e8ff',
-        'API Product State Change': '#ffa966',
-        'API Revision Deployment': '#ff5d5d',
+        'API_STATE_CHANGE': '#a2e8ff',
+        'API_PRODUCT_STATE_CHANGE': '#ffa966',
+        'API_REVISION_DEPLOYMENT': '#ff5d5d',
     };
 
     const columns = [
@@ -254,6 +314,33 @@ const Notifications = () => {
                 },
             },
         },
+        {
+            name: 'Actions',
+            options: {
+                customBodyRender: (value, tableMeta) => {
+                    if (tableMeta.rowData) {
+                        const notificationId = tableMeta.rowData[0];
+                        return (
+                            <Box display='flex' flexDirection='row'>
+                                <DeleteNotifications 
+                                    notificationId={notificationId} 
+                                    fetchNotifications={fetchNotifications}
+                                />
+                            </Box>
+                        );
+                    }
+                    return false;
+                },
+                filter: false,
+                sort: false,
+                label: (
+                    <FormattedMessage
+                        id='Notification.table.header.actions.title'
+                        defaultMessage='Action'
+                    />
+                ),
+            },
+        },
     ];
 
     const options = {
@@ -269,6 +356,28 @@ const Notifications = () => {
         rowsPerPageOptions: [5, 10, 25, 50, 100],
     };
 
+    if (notifications && notifications.length === 0) {
+        return (
+            <Onboarding
+                title={
+                    <FormattedMessage
+                        id='Notification.onboarding.display.message'
+                        defaultMessage='You do not have any notification!'
+                    />
+                }  
+            />
+
+        );
+    }
+
+
+    if (loading) {
+        return <Progress per={90} message='Loading Notifications ...' />;
+    }
+
+    if (notFound || !notifications) {
+        return <ResourceNotFoundError />;
+    }
 
     return (
         <div className={classes.heading}>
@@ -300,9 +409,12 @@ const Notifications = () => {
                                 </Select>
                             </FormControl>
                             <Box className={classes.buttonContainer}>
-                                <Button style={{ backgroundColor: '#ffa911'}}>Clear</Button>
-                                <Button style={{ backgroundColor: '#143a7d', color: '#ffffff'}}>
-                                    All Mark As Read
+                                <DeleteNotifications 
+                                    isDeleteAll
+                                    fetchNotifications={fetchNotifications}
+                                />
+                                <Button style={{ backgroundColor: '#143a7d', color: '#ffffff'}} onClick={markAllAsRead}>
+                                    Mark All As Read
                                 </Button>
                             </Box>
                         </Box>
