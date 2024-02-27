@@ -546,7 +546,7 @@ export default class API extends Resource {
      * @param callback {function} Function which needs to be called upon success
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    getSubscriptions(apiId, applicationId, limit = 25, callback = null) {
+    getSubscriptions(apiId, applicationId = undefined, limit = 25, callback = null) {
         const payload = { apiId };
         if (applicationId) {
             payload[applicationId] = applicationId;
