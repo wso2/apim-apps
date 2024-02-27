@@ -60,8 +60,8 @@ describe("Change subscription tier of an application", () => {
 
                 // Edit the subscription
                 cy.get(`#edit-api-subscription-${apiId}`).click();
-                cy.get('#outlined-select-currency').click();
-                cy.get('li[data-value="Silver"]').click();
+                cy.get('#application-policy').click();
+                cy.contains('.MuiAutocomplete-option', 'Silver').click();
                 cy.get('button span').contains('Update').click();
 
                 // Checking the update is success.
