@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Icon from '@material-ui/core/Icon';
+import Button from '@mui/material/Button';
+import Icon from '@mui/material/Icon';
 import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
 import API from 'AppData/api';

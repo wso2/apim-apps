@@ -15,8 +15,8 @@ import Configurations from 'Config';
 import HeaderSearch from 'AppComponents/Base/Header/headersearch/HeaderSearch';
 import GlobalNavBar from 'AppComponents/Base/Header/navbar/GlobalNavBar';
 import { GlobalDrawerProvider } from 'AppComponents/Base/Header/navbar/useNavBar';
-import NotificationsNoneIcon from '@material-ui/icons/NotificationsNone';
-import Badge from '@material-ui/core/Badge';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import Badge from '@mui/material/Badge';
 
 const PREFIX = 'HeaderOriginal';
 

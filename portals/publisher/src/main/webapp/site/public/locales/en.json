@@ -9051,10 +9051,22 @@
       "value": "Error 403 : Forbidden"
     }
   ],
+  "Notification.onboarding.display.message": [
+    {
+      "type": 0,
+      "value": "You do not have any notification!"
+    }
+  ],
   "Notification.page.title": [
     {
       "type": 0,
       "value": "Notifications"
+    }
+  ],
+  "Notification.table.header.actions.title": [
+    {
+      "type": 0,
+      "value": "Action"
     }
   ],
   "Notification.table.header.markAsRead": [
@@ -9085,6 +9097,36 @@
     {
       "type": 0,
       "value": "Received Date"
+    }
+  ],
+  "Notifications.DeleteNotifications.confirm.dialog.cancel.delete": [
+    {
+      "type": 0,
+      "value": "Cancel"
+    }
+  ],
+  "Notifications.DeleteNotifications.confirm.dialog.confirm.delete": [
+    {
+      "type": 0,
+      "value": "Yes"
+    }
+  ],
+  "Notifications.DeleteNotifications.confirm.dialog.confirm.title": [
+    {
+      "type": 0,
+      "value": "Confirm Delete"
+    }
+  ],
+  "Notifications.DeleteNotifications.deleteAll.confirm.dialog.confirm.content": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete all Notifications?"
+    }
+  ],
+  "Notifications.DeleteNotifications.deleteNotificationById.confirm.dialog.confirm.content": [
+    {
+      "type": 0,
+      "value": "Are you sure you want to delete this Notification?"
     }
   ],
   "Polcies.TextField.Description": [

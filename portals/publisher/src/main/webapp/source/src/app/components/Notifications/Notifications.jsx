@@ -1,26 +1,26 @@
 import React, { useState, useEffect } from 'react';
+import { styled } from '@mui/material/styles';
 import {
     Button,
     Grid,
     Tooltip,
     Typography,
-    makeStyles,
     Card,
     CardContent,
     Box,
     FormControl,
     Select,
     MenuItem,
-} from '@material-ui/core';
+} from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import MUIDataTable from 'mui-datatables';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import MarkunreadIcon from '@material-ui/icons/Markunread';
-import DoneAllIcon from '@material-ui/icons/DoneAll';
-import IconButton from '@material-ui/core/IconButton';
-import Chip from '@material-ui/core/Chip';
+import MarkunreadIcon from '@mui/icons-material/Markunread';
+import DoneAllIcon from '@mui/icons-material/DoneAll';
+import IconButton from '@mui/material/IconButton';
+import Chip from '@mui/material/Chip';
 import API from 'AppData/api';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import { Progress } from 'AppComponents/Shared';
@@ -28,13 +28,24 @@ import Alert from 'AppComponents/Shared/Alert';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
 import DeleteNotifications from './DeleteNotifications';
 
+const PREFIX = 'Notifications';
 
-const useStyles = makeStyles((theme) => ({
-    tableContainer: {
-        margin: '0 auto', 
-        maxWidth: '90%', 
-    },
-    table: {
+const classes = {
+    table: `${PREFIX}-table`,
+    heading: `${PREFIX}-heading`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
+    icon: `${PREFIX}-icon`,
+    select: `${PREFIX}-select`, 
+    buttonContainer: `${PREFIX}-buttonContainer`, 
+    cardBox: `${PREFIX}-cardBox` 
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.table}`]: {
+        margin: '0 auto',
+        maxWidth: '90%',
         '& > td[class^=MUIDataTableBodyCell-cellHide-]': {
             display: 'none',
         },
@@ -48,11 +59,11 @@ const useStyles = makeStyles((theme) => ({
             minWidth: '150px',
         },
     },
-    heading: {
+    [`& .${classes.heading}`]: {
         flexGrow: 1,
         marginTop: 0,
     },
-    titleWrapper: {
+    [`& .${classes.titleWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
@@ -60,32 +71,32 @@ const useStyles = makeStyles((theme) => ({
         marginLeft: 'auto',
         marginRight: 'auto',
     },
-    mainTitle: {
+    [`& .${classes.mainTitle}`]: {
         paddingLeft: 10,
         marginLeft: '3.6%',
         [theme.breakpoints.down('sm')]: {
             marginLeft: '2.5%', 
         },
     },
-    buttonIcon: {
+    [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
-    icon: {
+    [`& .${classes.icon}`]: {
         marginRight: theme.spacing(0.5),
     },
-    select: {
-        padding: theme.spacing(0.5),
+    [`& .${classes.select}`]: { 
+        
         border: '1px solid #ccc',
         borderRadius: theme.spacing(1),
         marginRight: theme.spacing(1),
     },
-    buttonContainer: {
+    [`& .${classes.buttonContainer}`]: { 
         '& > *': {
             marginRight: theme.spacing(0.5),
             marginLeft: theme.spacing(0.5),
         },
     },
-    cardBox: {
+    [`& .${classes.cardBox}`]: { 
         [theme.breakpoints.down('xs')]: {
             flexDirection: 'column',
             marginTop: theme.spacing(1),
@@ -93,9 +104,9 @@ const useStyles = makeStyles((theme) => ({
     },
 }));
 
+
 const Notifications = () => {
     const intl = useIntl();
-    const classes = useStyles();
     const [notifications, setNotifications] = useState(null);
     const [sortOption, setSortOption] = useState('all'); 
     const [loading, setLoading] = useState(false);
@@ -321,7 +332,7 @@ const Notifications = () => {
                     if (tableMeta.rowData) {
                         const notificationId = tableMeta.rowData[0];
                         return (
-                            <Box display='flex' flexDirection='row'>
+                            <Box component='span' m={1}>
                                 <DeleteNotifications 
                                     notificationId={notificationId} 
                                     fetchNotifications={fetchNotifications}
@@ -380,63 +391,73 @@ const Notifications = () => {
     }
 
     return (
-        <div className={classes.heading}>
-            <Card style={{ marginBottom: '20px' }} 
-                display='flex' 
-                flexDirection='row'>
-                <CardContent>
-                    <Box display='flex' justifyContent='space-between' alignItems='center' className={classes.cardBox}>
-                        <Typography
-                            variant='h4'
-                            align='left'
-                            component='h1'
-                            className={classes.mainTitle}
+        <Root>
+            <div className={classes.heading}>
+                <Card style={{ marginBottom: '20px' }} 
+                    display='flex' 
+                    flexDirection='row'>
+                    <CardContent>
+                        <Box
+                            display='flex'
+                            justifyContent='space-between'
+                            alignItems='center'
+                            className={classes.cardBox}
                         >
-                            <FormattedMessage
-                                id='Notification.page.title'
-                                defaultMessage='Notifications'
-                            />
-                        </Typography>
-                        <Box display='flex' alignItems='center'>
-                            <FormControl className={classes.select}>
-                                <Select
-                                    value={sortOption}
-                                    onChange={handleSortChange}
-                                >
-                                    <MenuItem value='newest'>Newest</MenuItem>
-                                    <MenuItem value='oldest'>Oldest</MenuItem>
-                                    <MenuItem value='all'>All</MenuItem>
-                                </Select>
-                            </FormControl>
-                            <Box className={classes.buttonContainer}>
-                                <DeleteNotifications 
-                                    isDeleteAll
-                                    fetchNotifications={fetchNotifications}
+                            <Typography
+                                variant='h4'
+                                align='left'
+                                component='h1'
+                                className={classes.mainTitle}
+                            >
+                                <FormattedMessage
+                                    id='Notification.page.title'
+                                    defaultMessage='Notifications'
                                 />
-                                <Button style={{ backgroundColor: '#143a7d', color: '#ffffff'}} onClick={markAllAsRead}>
-                                    Mark All As Read
-                                </Button>
+                            </Typography>
+                            <Box display='flex' alignItems='center'>
+                                <FormControl className={classes.select}>
+                                    <Select
+                                        value={sortOption}
+                                        onChange={handleSortChange}
+                                    >
+                                        <MenuItem value='newest'>Newest</MenuItem>
+                                        <MenuItem value='oldest'>Oldest</MenuItem>
+                                        <MenuItem value='all'>All</MenuItem>
+                                    </Select>
+                                </FormControl>
+                                <Box className={classes.buttonContainer}>
+                                    <DeleteNotifications 
+                                        isDeleteAll
+                                        fetchNotifications={fetchNotifications}
+                                    />
+                                    <Button 
+                                        style={{ backgroundColor: '#072e6e', color: '#ffffff'}} 
+                                        onClick={markAllAsRead}
+                                    >
+                                        Mark All As Read
+                                    </Button>
+                                </Box>
                             </Box>
                         </Box>
-                    </Box>
-                </CardContent>
-            </Card> 
-            <Grid
-                container
-                justify='center'
-                spacing={2}
-            >
-                <Grid item xs={12} className={classes.tableContainer}>
-                    <MUIDataTable
-                        className={classes.table}
-                        title={false}
-                        data={notificationList}
-                        columns={columns}
-                        options={options}
-                    />
+                    </CardContent>
+                </Card> 
+                <Grid
+                    container
+                    justify='center'
+                    spacing={2}
+                >
+                    <Grid item xs={12} className={classes.tableContainer}>
+                        <MUIDataTable
+                            className={classes.table}
+                            title={false}
+                            data={notificationList}
+                            columns={columns}
+                            options={options}
+                        />
+                    </Grid>
                 </Grid>
-            </Grid>
-        </div>
+            </div>
+        </Root>    
     );
 };
 

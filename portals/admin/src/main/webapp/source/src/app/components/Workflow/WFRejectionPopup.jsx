@@ -1,24 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import TextField from '@material-ui/core/TextField';
+import TextField from '@mui/material/TextField';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import PropTypes from 'prop-types';
-import ClearIcon from '@material-ui/icons/Clear';
+import ClearIcon from '@mui/icons-material/Clear';
 import { FormattedMessage } from 'react-intl';
-import { makeStyles } from '@material-ui/core/styles';
 
-const useStyles = makeStyles((theme) => ({
-    rejectButton: {
-        textDecoration: 'none',
-        backgroundColor: theme.palette.error.light,
-    },
-}));
 /**
  * Render a pop-up dialog to get the reason for WF rejection
  * @param {JSON} props .
  * @returns {JSX}.
  */
 function WFRejectionPopup(props) {
-    const classes = useStyles();
     const { referenceId, updateStatus } = props;
     const [reason, setReason] = useState('');
     const onChange = (e) => {
@@ -38,7 +30,8 @@ function WFRejectionPopup(props) {
 
     const triggerButtonProps = {
         size: 'small',
-        className: classes.rejectButton,
+        color: 'error',
+        variant: 'contained',
     };
 
     return (

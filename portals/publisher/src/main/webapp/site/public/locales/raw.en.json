@@ -4329,8 +4329,14 @@
   "LoginDenied.title": {
     "defaultMessage": "Error 403 : Forbidden"
   },
+  "Notification.onboarding.display.message": {
+    "defaultMessage": "You do not have any notification!"
+  },
   "Notification.page.title": {
     "defaultMessage": "Notifications"
+  },
+  "Notification.table.header.actions.title": {
+    "defaultMessage": "Action"
   },
   "Notification.table.header.markAsRead": {
     "defaultMessage": "Mark As Read"
@@ -4346,6 +4352,21 @@
   },
   "Notification.table.header.receivedDate": {
     "defaultMessage": "Received Date"
+  },
+  "Notifications.DeleteNotifications.confirm.dialog.cancel.delete": {
+    "defaultMessage": "Cancel"
+  },
+  "Notifications.DeleteNotifications.confirm.dialog.confirm.delete": {
+    "defaultMessage": "Yes"
+  },
+  "Notifications.DeleteNotifications.confirm.dialog.confirm.title": {
+    "defaultMessage": "Confirm Delete"
+  },
+  "Notifications.DeleteNotifications.deleteAll.confirm.dialog.confirm.content": {
+    "defaultMessage": "Are you sure you want to delete all Notifications?"
+  },
+  "Notifications.DeleteNotifications.deleteNotificationById.confirm.dialog.confirm.content": {
+    "defaultMessage": "Are you sure you want to delete this Notification?"
   },
   "Polcies.TextField.Description": {
     "defaultMessage": "Description"

@@ -49,10 +49,10 @@ import Button from '@mui/material/Button';
 import * as dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import localizedFormat from 'dayjs/plugin/localizedFormat';
-import CheckIcon from '@material-ui/icons/Check';
-import Box from '@material-ui/core/Box';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import { Alert as MUIAlert } from '@material-ui/lab';
+import CheckIcon from '@mui/icons-material/Check';
+import Box from '@mui/material/Box';
+import CircularProgress from '@mui/material/CircularProgress';
+import { Alert as MUIAlert } from '@mui/material';
 import WFRejectionPopup from 'AppComponents/Workflow/WFRejectionPopup';
 
 /**
