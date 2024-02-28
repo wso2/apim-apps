@@ -18,7 +18,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import Autocomplete from '@mui/lab/Autocomplete';
+import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Grid from '@mui/material/Grid';
@@ -252,7 +252,7 @@ export default function OperationGovernance(props) {
                         disableCloseOnSelect
                         value={operationScopes.map((scope) => ({ scope: { name: scope } }))}
                         getOptionLabel={(option) => option.scope.name}
-                        getOptionSelected={(option, value) => option.scope.name === value.scope.name}
+                        isOptionEqualToValue={(option, value) => option.scope.name === value.scope.name}
                         onChange={(event, newValue) => {
                             const selectedScopes = newValue.map((val) => val.scope.name);
                             operationsDispatcher({
@@ -260,8 +260,8 @@ export default function OperationGovernance(props) {
                                 data: { target, verb, value: selectedScopes ? [selectedScopes] : [] },
                             });
                         }}
-                        renderOption={(option, { selected }) => (
-                            <>
+                        renderOption={(listOfOptions, option, { selected }) => (
+                            <li {...listOfOptions}>
                                 <Checkbox
                                     id={verb + target + '-operation-scope-' + option.scope.name}
                                     icon={icon}
@@ -270,7 +270,7 @@ export default function OperationGovernance(props) {
                                     checked={selected}
                                 />
                                 {option.scope.name}
-                            </>
+                            </li>
                         )}
                         style={{ width: 500 }}
                         renderInput={(params) => (
