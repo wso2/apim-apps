@@ -22,39 +22,95 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 // @ts-ignore
 import { app } from 'Settings';
-import useStyles from '../ApiChat.styles';
+import { styled } from '@mui/material/styles';
+
+const PREFIX = 'ApiChatBanner';
+
+const classes = {
+    tryAiBannerCont: `${PREFIX}-tryAiBannerCont`,
+    tryAiBannerImgWrap: `${PREFIX}-tryAiBannerImgWrap`,
+    tryAiBannerContentWrap: `${PREFIX}-tryAiBannerContentWrap`,
+    tryAiBannerContent: `${PREFIX}-tryAiBannerContent`,
+    tryAiBannerTriangle: `${PREFIX}-tryAiBannerTriangle`,
+};
+
+const Root = styled('div')(({ theme }: any) => ({
+    [`& .${classes.tryAiBannerCont}`]: {
+        display: 'flex',
+        gridGap: theme.spacing(1.5),
+        maxWidth: theme.spacing(85),
+    },
+    [`& .${classes.tryAiBannerImgWrap}`]: {
+        flex: `0 0 ${theme.spacing(15)}px`,
+        maxWidth: theme.spacing(15),
+        fontSize: theme.spacing(15),
+        display: 'flex',
+        alignItems: 'center',
+    },
+    [`& .${classes.tryAiBannerContentWrap}`]: {
+        flexGrow: 1,
+        display: 'flex',
+        alignItems: 'center',
+    },
+    [`& .${classes.tryAiBannerContent}`]: {
+        background: theme.palette.grey[100],
+        padding: theme.spacing(2),
+        borderRadius: theme.spacing(0, 2, 2, 2),
+        position: 'relative',
+    },
+    [`& .${classes.tryAiBannerTriangle}`]: {
+        position: 'absolute',
+        width: theme.spacing(3),
+        height: theme.spacing(3),
+        top: 0,
+        left: theme.spacing(-3),
+        overflow: 'hidden',
+        '&:before': {
+            content: '""',
+            display: 'block',
+            width: '200%',
+            height: '200%',
+            position: 'absolute',
+            borderRadius: '50%',
+            top: 0,
+            right: 0,
+            boxShadow: `${theme.spacing(2.5)} ${theme.spacing(-3.75)} 0 0 ${theme.palette.grey[100]}`,
+        },
+    },
+}));
 
 const ApiChatBanner: React.FC = () => {
-    const classes = useStyles();
     const intl = useIntl();
     return (
-        <Box className={classes.tryAiBannerCont}>
-            <Box className={classes.tryAiBannerImgWrap}>
-                <img
-                    alt='API Chat'
-                    src={`${app.context}/site/public/images/ai/ApiChat.svg`}
-                />
-            </Box>
-            <Box className={classes.tryAiBannerContentWrap}>
-                <Box className={classes.tryAiBannerContent}>
-                    <Box className={classes.tryAiBannerTriangle} />
-                    <Typography variant='h5'>
-                        {intl.formatMessage({
-                            id: 'Apis.Details.ApiChat.components.ApiChatBanner.apiChatMainTextHeader',
-                            defaultMessage: 'Your API is now equipped with an Intelligent Agent!',
-                        })}
-                    </Typography>
-                    <Typography variant='caption'>
-                        {intl.formatMessage({
-                            id: 'Apis.Details.ApiChat.components.ApiChatBanner.apiChatMainTextContent',
-                            defaultMessage:
-                'Effortlessly engage with your APIs in natural language with our API Chat Agent powered by Azure '
-                + "OpenAI's cutting-edge language models.",
-                        })}
-                    </Typography>
+        <Root>
+            <Box className={classes.tryAiBannerCont}>
+                <Box className={classes.tryAiBannerImgWrap}>
+                    <img
+                        alt='API Chat'
+                        src={`${app.context}/site/public/images/ai/ApiChat.svg`}
+                    />
+                </Box>
+                <Box className={classes.tryAiBannerContentWrap}>
+                    <Box className={classes.tryAiBannerContent}>
+                        <Box className={classes.tryAiBannerTriangle} />
+                        <Typography variant='h5'>
+                            {intl.formatMessage({
+                                id: 'Apis.Details.ApiChat.components.ApiChatBanner.apiChatMainTextHeader',
+                                defaultMessage: 'Your API is now equipped with an Intelligent Agent!',
+                            })}
+                        </Typography>
+                        <Typography variant='caption'>
+                            {intl.formatMessage({
+                                id: 'Apis.Details.ApiChat.components.ApiChatBanner.apiChatMainTextContent',
+                                defaultMessage:
+                    'Effortlessly engage with your APIs in natural language with our API Chat Agent powered by Azure '
+                    + "OpenAI's cutting-edge language models.",
+                            })}
+                        </Typography>
+                    </Box>
                 </Box>
             </Box>
-        </Box>
+        </Root>
     );
 };
 

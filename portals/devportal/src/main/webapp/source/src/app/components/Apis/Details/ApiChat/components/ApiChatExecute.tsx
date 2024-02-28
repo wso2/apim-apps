@@ -35,7 +35,47 @@ import { Box, Typography } from '@mui/material';
 import Send from '@mui/icons-material/SendOutlined';
 import { styled } from '@mui/system';
 import TextInput from './TextInput/TextInput';
-import useStyles from '../ApiChat.styles';
+
+const PREFIX = 'ApiChatExecute';
+
+const classes = {
+    tryAiBottom: `${PREFIX}-tryAiBottom`,
+    tryAiBottomInner: `${PREFIX}-tryAiBottomInner`,
+    reExecuteWrap: `${PREFIX}-reExecuteWrap`,
+    tryAiBottomTextInputWrap: `${PREFIX}-tryAiBottomTextInputWrap`,
+    disclaimerText: `${PREFIX}-disclaimerText`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.tryAiBottom}`]: {
+        position: 'sticky',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        marginLeft: theme.spacing(-1),
+        marginRight: theme.spacing(-1),
+    },
+    [`& .${classes.tryAiBottomInner}`]: {
+        padding: theme.spacing(3, 1),
+    },
+    [`& .${classes.reExecuteWrap}`]: {
+        marginTop: theme.spacing(1),
+        marginBottom: theme.spacing(1),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    [`& .${classes.tryAiBottomTextInputWrap}`]: {
+        maxWidth: '100%',
+        overflow: 'hidden',
+    },
+    [`& .${classes.disclaimerText}`]: {
+        marginTop: theme.spacing(1),
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+}));
 
 const ExecuteQuery = styled(Send)({
     transform: 'rotate(-40deg)',
@@ -71,92 +111,98 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
     isEnrichingSpec,
     handleExecute,
 }) => {
-    const classes = useStyles();
     const intl = useIntl();
 
     return (
-        <Box className={classes.tryAiBottom}>
-            <p>{isAgentTerminating}</p>
-            <Box className={classes.tryAiBottomInner}>
-                {(isAgentRunning || lastQuery) && (
-                    <Box className={classes.reExecuteWrap}>
-                        <Button
-                            color='secondary'
-                            variant='outlined'
-                            size='small'
-                            onClick={handleStopAndReExecute}
-                            id='stop-reexecute-button'
-                            disabled={!enrichedSpec || isAgentTerminating}
-                        >
-                            {isAgentRunning ? (
-                                <FormattedMessage
-                                    id='Apis.Details.ApiChat.components.ApiChatExecute.stopButton.label'
-                                    defaultMessage='Stop Execution'
-                                />
-                            ) : (
-                                <FormattedMessage
-                                    id='Apis.Details.ApiChat.components.ApiChatExecute.rexecuteButton.label'
-                                    defaultMessage='Re-execute'
-                                />
-                            )}
-                        </Button>
-                    </Box>
-                )}
-                <Box className={classes.tryAiBottomTextInputWrap}>
-                    <TextInput
-                        fullWidth
-                        size='small'
-                        name='query'
-                        value={inputQuery}
-                        placeholder={intl.formatMessage({
-                            id: 'Apis.Details.ApiChat.components.ApiChatExecute.queryInput.placeholder',
-                            defaultMessage: 'Send Query',
-                        })}
-                        onChange={handleQueryChange}
-                        testId='nl-query-input'
-                        disabled={isAgentRunning || isEnrichingSpec || !enrichedSpec}
-                        multiline
-                        resizeIndicator={false}
-                        onKeyPress={(event: { key: string; preventDefault: () => void; }) => {
-                            if (event.key === 'Enter') {
-                                event.preventDefault();
-                                handleExecute();
-                            }
-                        }}
-                        endAdornment={(
+        <Root>
+            <Box className={classes.tryAiBottom}>
+                <p>{isAgentTerminating}</p>
+                <Box className={classes.tryAiBottomInner}>
+                    {(isAgentRunning || lastQuery) && (
+                        <Box className={classes.reExecuteWrap}>
                             <Button
-                                variant='contained'
-                                color='primary'
-                                onClick={handleExecute}
-                                disabled={
-                                    isAgentRunning
-                                  || isEnrichingSpec
-                                  || !enrichedSpec
-                                  || inputQuery.length === 0
-                                }
-                                id='run-agent-button'
-                                startIcon={<ExecuteQuery />}
+                                color='secondary'
+                                variant='outlined'
+                                size='small'
+                                onClick={handleStopAndReExecute}
+                                id='stop-reexecute-button'
+                                disabled={!enrichedSpec || isAgentTerminating}
                             >
-                                <FormattedMessage
-                                    id='modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIExecute.executeButton.label'
-                                    defaultMessage='Execute'
-                                />
+                                {isAgentRunning ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiChat.components.ApiChatExecute.stopButton.label'
+                                        defaultMessage='Stop Execution'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiChat.components.ApiChatExecute.rexecuteButton.label'
+                                        defaultMessage='Re-execute'
+                                    />
+                                )}
                             </Button>
-                        )}
-                    />
-                    <Box className={classes.disclaimerText}>
-                        <Typography variant='body2' color='textSecondary' component='p'>
-                            {intl.formatMessage({
-                                id: 'Apis.Details.ApiChat.components.ApiChatExecute.disclaimer.label',
-                                defaultMessage:
-                  'It is prudent to exercise a degree of caution and thoughtfulness, as language models'
-                  + ' may exhibit some degree of unpredictability at times.',
+                        </Box>
+                    )}
+                    <Box className={classes.tryAiBottomTextInputWrap}>
+                        <TextInput
+                            fullWidth
+                            size='small'
+                            name='query'
+                            value={inputQuery}
+                            placeholder={intl.formatMessage({
+                                id: 'Apis.Details.ApiChat.components.ApiChatExecute.queryInput.placeholder',
+                                defaultMessage: 'Send Query',
                             })}
-                        </Typography>
+                            onChange={handleQueryChange}
+                            testId='nl-query-input'
+                            disabled={isAgentRunning || isEnrichingSpec || !enrichedSpec}
+                            multiline
+                            sx={{
+                                '& .TextInput-textarea': {
+                                    resize: 'none',
+                                },
+                            }}
+                            resizeIndicator={false}
+                            onKeyPress={(event: { key: string; preventDefault: () => void; }) => {
+                                if (event.key === 'Enter') {
+                                    event.preventDefault();
+                                    handleExecute();
+                                }
+                            }}
+                            endAdornment={(
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    onClick={handleExecute}
+                                    disabled={
+                                        isAgentRunning
+                                    || isEnrichingSpec
+                                    || !enrichedSpec
+                                    || inputQuery.length === 0
+                                    }
+                                    id='run-agent-button'
+                                    startIcon={<ExecuteQuery />}
+                                >
+                                    <FormattedMessage
+                                        id='modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIExecute.executeButton.label'
+                                        defaultMessage='Execute'
+                                    />
+                                </Button>
+                            )}
+                        />
+                        <Box className={classes.disclaimerText}>
+                            <Typography variant='body2' color='textSecondary' component='p'>
+                                {intl.formatMessage({
+                                    id: 'Apis.Details.ApiChat.components.ApiChatExecute.disclaimer.label',
+                                    defaultMessage:
+                    'It is prudent to exercise a degree of caution and thoughtfulness, as language models'
+                    + ' may exhibit some degree of unpredictability at times.',
+                                })}
+                            </Typography>
+                        </Box>
                     </Box>
                 </Box>
             </Box>
-        </Box>
+        </Root>
     );
 };
 

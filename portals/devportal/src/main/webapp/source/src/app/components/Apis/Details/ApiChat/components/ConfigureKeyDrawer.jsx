@@ -28,28 +28,25 @@ import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 import Progress from 'AppComponents/Shared/Progress';
 import TryOutController from 'AppComponents/Shared/ApiTryOut/TryOutController';
 import Application from 'AppData/Application';
+import IconButton from '@mui/material/IconButton';
+import { Close } from '@mui/icons-material';
 
-interface ConfigureKeyDrawerProps {
-    isDrawerOpen: boolean;
-    updateDrawerOpen: (isOpen: boolean) => void;
-}
-
-const ConfigureKeyDrawer: React.FC<ConfigureKeyDrawerProps> = ({
+const ConfigureKeyDrawer = ({
     isDrawerOpen,
     updateDrawerOpen,
 }) => {
-    const [api123, setApi123] = useState<any>(null);
+    const [api, setApi] = useState(null);
     const [securityScheme, setSecurityScheme] = useState('OAUTH');
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [scopes, setScopes] = useState([]);
     const [selectedKeyType, setSelectedKeyType] = useState('PRODUCTION');
-    const [keys, setKeys] = useState<any>([]);
+    const [keys, setKeys] = useState([]);
     const [selectedEnvironment, setSelectedEnvironment] = useState('production');
     const [productionAccessToken, setProductionAccessToken] = useState('');
     const [sandboxAccessToken, setSandboxAccessToken] = useState('');
-    const [environments, setEnvironments] = useState<any>([]);
-    const [selectedKeyManager, setSelectedKeyManager] = useState('');
+    const [environments, setEnvironments] = useState([]);
+    const [selectedKeyManager, setSelectedKeyManager] = useState('Resident Key Manager');
     const [productionApiKey, setProductionApiKey] = useState('');
     const [sandboxApiKey, setSandboxApiKey] = useState('');
     const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
@@ -57,57 +54,59 @@ const ConfigureKeyDrawer: React.FC<ConfigureKeyDrawerProps> = ({
     const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
 
     const user = AuthManager.getUser();
-    const { api } = useContext(ApiContext);
+    const { api: apiObj } = useContext(ApiContext);
 
     useEffect(() => {
-        setApi123(api);
-    }, [api]);
+        setApi(apiObj);
+    }, [apiObj]);
 
     useEffect(() => {
-        if (api123) {
-            if (api123.endpointURLs) {
+        if (api) {
+            if (api.endpointURLs) {
                 setEnvironments(
-                    api123.endpointURLs.map((endpoint: any) => ({
+                    api.endpointURLs.map((endpoint) => ({
                         name: endpoint.environmentName,
                         displayName: endpoint.environmentDisplayName,
                     })),
                 );
             }
 
-            if (api123.scopes) {
-                const scopeList = api123.scopes.map((scope: any) => scope.key);
+            if (api.scopes) {
+                const scopeList = api.scopes.map((scope) => scope.key);
                 setScopes(scopeList);
             }
 
-            // Update selected environment only when environments change
-            if (environments && environments.length > 0) {
-                setSelectedEnvironment(environments[0].name);
-            }
-
             let defaultSecurityScheme = 'OAUTH';
-            if (!api123.securityScheme.includes('oauth2')) {
-                defaultSecurityScheme = api123.securityScheme.includes('api_key')
+            if (!api.securityScheme.includes('oauth2')) {
+                defaultSecurityScheme = api.securityScheme.includes('api_key')
                     ? 'API-KEY'
                     : 'BASIC';
+            }
+
+            if (environments && environments.length > 0) {
+                setSelectedEnvironment(environments[0].name);
             }
 
             setProductionAccessToken(productionAccessToken);
             setSandboxAccessToken(sandboxAccessToken);
             setSecurityScheme(defaultSecurityScheme);
         }
-    }, [api123, productionAccessToken, sandboxAccessToken, environments]);
+    }, [api]);
+
+    useEffect(() => {
+        // Update selected environment only when environments change
+        if (environments && environments.length > 0) {
+            setSelectedEnvironment(environments[0].name);
+        }
+    }, [environments]);
 
     useEffect(() => {
         updateDrawerOpen(isDrawerOpen);
     }, [isDrawerOpen]);
 
-    const handleDrawerClose = () => {
-        updateDrawerOpen(false);
-    };
-
     // Load the access token for the given key type
-    const updateAccessToken = (selectedApplication: string) => {
-        let accessToken: string;
+    const updateAccessToken = (selectedApplication) => {
+        let accessToken;
         if (keys.get(selectedKeyManager) && keys.get(selectedKeyManager).keyType === selectedKeyType) {
             ({ accessToken } = keys.get(selectedKeyManager).token);
             if (selectedKeyType === 'PRODUCTION') {
@@ -117,10 +116,10 @@ const ConfigureKeyDrawer: React.FC<ConfigureKeyDrawerProps> = ({
             }
         } else {
             Application.get(selectedApplication)
-                .then((application: any) => {
+                .then((application) => {
                     return application.getKeys(selectedKeyType);
                 })
-                .then((appKeys: any) => {
+                .then((appKeys) => {
                     if (appKeys.get(selectedKeyManager)
                     && appKeys.get(selectedKeyManager).keyType === selectedKeyType) {
                         ({ accessToken } = appKeys.get(selectedKeyManager).token);
@@ -136,7 +135,7 @@ const ConfigureKeyDrawer: React.FC<ConfigureKeyDrawerProps> = ({
     };
 
     // Update the selected key manager
-    const updateSelectedKeyManager = (keyManager: string, isUpdateToken: boolean, selectedApplication: string) => {
+    const updateSelectedKeyManager = (keyManager, isUpdateToken, selectedApplication) => {
         if (isUpdateToken) {
             setSelectedKeyManager(keyManager);
             updateAccessToken(selectedApplication);
@@ -145,7 +144,7 @@ const ConfigureKeyDrawer: React.FC<ConfigureKeyDrawerProps> = ({
         }
     };
 
-    if (api123 == null) {
+    if (api == null) {
         return <Progress />;
     }
 
@@ -154,22 +153,31 @@ const ConfigureKeyDrawer: React.FC<ConfigureKeyDrawerProps> = ({
             title='Configure Key'
             anchor='right'
             open={isDrawerOpen}
-            onClose={handleDrawerClose}
+            onClose={() => updateDrawerOpen(false)}
             id='api-chat-configure-key-drawer'
             PaperProps={{
-                sx: { width: '40%', borderRadius: 1 },
+                sx: { width: '60%', borderRadius: 1 },
             }}
         >
             <Box p={2}>
-                <Typography variant='h6'>
-                    <FormattedMessage
-                        id='Apis.Details.ApiChat.components.ConfigureKeyDrawer.title'
-                        defaultMessage='Configure Key'
-                    />
-                </Typography>
+                <Grid container justifyContent='space-between' alignItems='center'>
+                    <Grid item xs={10}>
+                        <Typography variant='h6'>
+                            <FormattedMessage
+                                id='Apis.Details.ApiChat.components.ConfigureKeyDrawer.title'
+                                defaultMessage='Configure Key'
+                            />
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={2} display='flex' justifyContent='flex-end'>
+                        <IconButton onClick={() => updateDrawerOpen(false)} size='large'>
+                            <Close />
+                        </IconButton>
+                    </Grid>
+                </Grid>
                 <Box>
                     <Grid container padding={2}>
-                        {!user && (!api123.advertiseInfo || !api123.advertiseInfo.advertised) && (
+                        {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                             <Paper sx={{ padding: 1 }}>
                                 <Typography variant='h5' component='h3'>
                                     <InfoIcon sx={{ verticalAlign: 'middle', marginBottom: 0.5 }} />
@@ -218,7 +226,7 @@ const ConfigureKeyDrawer: React.FC<ConfigureKeyDrawerProps> = ({
                             advAuthHeaderValue={advAuthHeaderValue}
                             setSelectedEndpoint={setSelectedEndpoint}
                             selectedEndpoint={selectedEndpoint}
-                            api={api123}
+                            api={api}
                             URLs={null}
                         />
                     </Grid>

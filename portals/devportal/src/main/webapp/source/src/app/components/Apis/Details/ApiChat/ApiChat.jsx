@@ -20,6 +20,7 @@ import React, { useState } from 'react';
 // useContext, useState, useRef, useMemo, useEffect,
 // import { Box } from '@material-ui/core';
 import Box from '@mui/material/Box';
+import { styled } from '@mui/material/styles';
 // import { useIntl } from 'react-intl';
 // import API from 'AppData/api';
 // import { AxiosError } from 'axios';
@@ -28,7 +29,6 @@ import Box from '@mui/material/Box';
 // import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
 // import { FormattedMessage } from 'react-intl';
 // import Alert from 'AppComponents/Shared/Alert';
-import useStyles from './ApiChat.styles';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
@@ -39,6 +39,21 @@ import ConfigureKeyDrawer from './components/ConfigureKeyDrawer';
 //     ExecutionResult,
 // } from './components/ResultsHeading';
 // import { ApiContext } from '../ApiContext';
+
+const PREFIX = 'ApiChat';
+
+const classes = {
+    tryWithAiMain: `${PREFIX}-tryWithAiMain`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.tryWithAiMain}`]: {
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+        padding: theme.spacing(1),
+    },
+}));
 
 // enum TaskStatus {
 //   EXPIRED_TOKEN = 'EXPIRED_TOKEN',
@@ -105,9 +120,8 @@ import ConfigureKeyDrawer from './components/ConfigureKeyDrawer';
  * @returns {JSX} API Chat page to render.
  */
 const ApiChat = () => {
-    const classes = useStyles();
     // const intl = useIntl();
-    const [configureKeyDrawerOpen, setConfigureKeyDrawerOpen] = useState(true);
+    const [configureKeyDrawerOpen, setConfigureKeyDrawerOpen] = useState(false);
 
     // const [resultView, setResultView] = useState<string | null>('summary');
     // const [expandedPanel, setExpandedPanel] = useState<number[] | false>(false);
@@ -1073,7 +1087,7 @@ const ApiChat = () => {
     //         handleExecute={handleExecute}
     //     />
     // </Box>
-        <>
+        <Root>
             <Box className={classes.tryWithAiMain} sx={{ mr: 5 }}>
                 <ConfigureKeyDrawer
                     isDrawerOpen={configureKeyDrawerOpen}
@@ -1120,7 +1134,7 @@ const ApiChat = () => {
                     // handleExecute={handleExecute}
                 />
             </Box>
-        </>
+        </Root>
     );
 };
 
