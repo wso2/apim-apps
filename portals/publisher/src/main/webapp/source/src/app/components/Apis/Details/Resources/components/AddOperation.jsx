@@ -38,7 +38,6 @@ import Grid from '@mui/material/Grid';
 import IconButton from '@mui/material/IconButton';
 import InputLabel from '@mui/material/InputLabel';
 import ListItem from '@mui/material/ListItem';
-import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
 import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import Select from '@mui/material/Select';
@@ -106,10 +105,11 @@ function VerbElement(props) {
         );
     } else {
         return (
-            <ListItem onClick={onClick} key={verb} button>
-                <Chip className={classes.customMenu} size='small' label={verb} 
-                    sx={{ backgroundColor, color: textColor }} />
-                <ListItemSecondaryAction>
+            <ListItem
+                onClick={onClick}
+                key={verb}
+                button
+                secondaryAction={
                     <Checkbox
                         onClick={onClick}
                         edge='end'
@@ -119,7 +119,10 @@ function VerbElement(props) {
                             id : `add-operation-${verb.toLowerCase()}`,
                         }}
                     />
-                </ListItemSecondaryAction>
+                }
+            >
+                <Chip className={classes.customMenu} size='small' label={verb} 
+                    sx={{ backgroundColor, color: textColor }} />
             </ListItem>
         );
     }
