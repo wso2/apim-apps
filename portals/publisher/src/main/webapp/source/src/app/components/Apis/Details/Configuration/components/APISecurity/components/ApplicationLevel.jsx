@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
@@ -46,6 +46,7 @@ import {
     API_SECURITY_BASIC_AUTH,
     API_SECURITY_API_KEY,
     API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY,
+    API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL,
     API_SECURITY_MUTUAL_SSL,
 } from './apiSecurityConstants';
 
@@ -121,7 +122,7 @@ export default function ApplicationLevel(props) {
         hasResourceWithSecurity = apiFromContext.operations.findIndex((op) => op.authType !== 'None') > -1;
     }
 
-    mandatoryValue = 'optional';
+    mandatoryValue = API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL;
     // If not Oauth2, Basic auth or ApiKey security is selected, no mandatory values should be pre-selected
     if (!(securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2) || securityScheme.includes(API_SECURITY_BASIC_AUTH)
         || securityScheme.includes(API_SECURITY_API_KEY))) {
@@ -130,7 +131,20 @@ export default function ApplicationLevel(props) {
         mandatoryValue = API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY;
     } else if (securityScheme.includes(API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY)) {
         mandatoryValue = API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY;
+    } else {
+        mandatoryValue = API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL;
     }
+
+    useEffect(() => {
+        if (mandatoryValue !== null) {
+            const name = API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY.slice(0);
+            const value = mandatoryValue.slice(0);
+            configDispatcher({
+                action: 'securityScheme',
+                event: { name, value },
+            });
+        }
+    }, []);
 
     return (
         (<Root>
@@ -242,7 +256,7 @@ export default function ApplicationLevel(props) {
                                     labelPlacement='end'
                                 />
                                 <FormControlLabel
-                                    value='optional'
+                                    value={API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL}
                                     control={(
                                         <Radio
                                             disabled={!haveMultiLevelSecurity

@@ -41,6 +41,7 @@ import Transports from 'AppComponents/Apis/Details/Configuration/components/Tran
 import {
     API_SECURITY_MUTUAL_SSL,
     API_SECURITY_MUTUAL_SSL_MANDATORY,
+    API_SECURITY_MUTUAL_SSL_OPTIONAL,
     DEFAULT_API_SECURITY_OAUTH2,
     API_SECURITY_BASIC_AUTH,
     API_SECURITY_API_KEY,
@@ -190,7 +191,7 @@ function TransportLevel(props) {
         });
     }, []);
 
-    let mandatoryValue = 'optional';
+    let mandatoryValue = API_SECURITY_MUTUAL_SSL_OPTIONAL;
     // If not mutual ssl security is selected, no mandatory values should be pre-selected
     if (!isMutualSSLEnabled) {
         mandatoryValue = 'null';
@@ -201,7 +202,21 @@ function TransportLevel(props) {
         mandatoryValue = API_SECURITY_MUTUAL_SSL_MANDATORY;
     } else if (securityScheme.includes(API_SECURITY_MUTUAL_SSL_MANDATORY)) {
         mandatoryValue = API_SECURITY_MUTUAL_SSL_MANDATORY;
+    } else {
+        mandatoryValue = API_SECURITY_MUTUAL_SSL_OPTIONAL;
     }
+
+    useEffect(() => {
+        if (mandatoryValue !== null) {
+            const name = API_SECURITY_MUTUAL_SSL_MANDATORY.slice(0);
+            const value = mandatoryValue.slice(0);
+            configDispatcher({
+                action: 'securityScheme',
+                event: { name, value },
+            });
+        }
+    }, []);
+
     return (
         (<Root>
             <Grid item xs={12}>
@@ -254,7 +269,7 @@ function TransportLevel(props) {
                                         labelPlacement='end'
                                     />
                                     <FormControlLabel
-                                        value='optional'
+                                        value={API_SECURITY_MUTUAL_SSL_OPTIONAL}
                                         control={(
                                             <Radio
                                                 disabled={!haveMultiLevelSecurity
