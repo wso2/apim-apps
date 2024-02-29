@@ -56,11 +56,6 @@ export default function HeaderOriginal(props) {
     const { avatar, menuItems, user } = props;
 
     const theme = useTheme();
-
-    console.log('------------------------');
-    console.log(theme);
-    console.log('------------------------');
-
     const [open, setOpen] = React.useState(false);
     const [openMiniSearch, setOpenMiniSearch] = React.useState(false);
     const toggleMiniSearch = () => { setOpenMiniSearch(!openMiniSearch); };
