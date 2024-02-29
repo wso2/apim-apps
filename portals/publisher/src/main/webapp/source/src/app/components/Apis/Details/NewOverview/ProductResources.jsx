@@ -56,7 +56,7 @@ const Root = styled('div')({
  */
 function RenderMethodBase(props) {
     const { method } = props;
-    const { theme } = useTheme();
+    const theme = useTheme();
     const methodLower = method.toLowerCase();
     let chipColor = theme.custom.resourceChipColors ? theme.custom.resourceChipColors[methodLower] : null;
     let chipTextColor = '#000000';
