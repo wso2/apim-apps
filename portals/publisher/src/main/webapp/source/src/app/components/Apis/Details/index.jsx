@@ -375,10 +375,11 @@ class Details extends Component {
         const promisedApi = APIProduct.get(apiProdUUID);
         promisedApi
             .then((api) => {
-                this.setState({ isAPIProduct });
-                this.setState({ api });
-                this.getRevision();
-                this.getDeployedEnv();
+                this.setState({ isAPIProduct, api }, () => {
+                    // This code will run after the state has been updated
+                    this.getRevision();
+                    this.getDeployedEnv();
+                });
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
