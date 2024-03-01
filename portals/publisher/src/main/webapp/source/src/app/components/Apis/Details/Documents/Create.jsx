@@ -115,7 +115,7 @@ function Create(props) {
     let createEditForm = useRef(null);
 
     const addDocument = (apiId) => {
-        const promiseWrapper = createEditForm.addDocument(apiId);
+        const promiseWrapper = createEditForm.current.addDocument(apiId);
         promiseWrapper.docPromise
             .then((doc) => {
                 const { documentId, name } = doc.body;
@@ -189,9 +189,7 @@ function Create(props) {
                         <Grid item md={12}>
                             <Paper elevation={0}>
                                 <CreateEditForm
-                                    innerRef={(node) => {
-                                        createEditForm = node;
-                                    }}
+                                    ref={createEditForm}
                                     apiType={api.apiType}
                                     apiId={api.id}
                                     saveDisabled={saveDisabled}

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React,{forwardRef,useRef,useImperativeHandle} from 'react';
 import { styled } from '@mui/material/styles';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -863,4 +863,14 @@ CreateEditForm.propTypes = {
     apiType: PropTypes.oneOf([Api.CONSTS.API, Api.CONSTS.APIProduct]).isRequired,
 };
 
-export default injectIntl((CreateEditForm));
+const ForwardedCreateEditForm = forwardRef((props, ref) => {
+    const childRef = useRef(null);
+    useImperativeHandle(ref, () => ({
+        addDocument: (apiId) => {
+            return childRef.current.addDocument(apiId);
+        }
+    }));
+    return <CreateEditForm ref={childRef} {...props} />;
+});
+
+export default ForwardedCreateEditForm;

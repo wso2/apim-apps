@@ -132,7 +132,6 @@ const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "V
  */
 function View(props) {
     const {
-        classes,
         fullScreen,
         intl,
         match: {
@@ -313,7 +312,6 @@ function View(props) {
 }
 
 View.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     doc: PropTypes.shape({}).isRequired,
     apiId: PropTypes.shape({}).isRequired,
     intl: PropTypes.shape({
