@@ -25,11 +25,9 @@ import Typography from '@mui/material/Typography';
 import ApiContext, { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import {
-    API_SECURITY_MUTUAL_SSL_MANDATORY,
     DEFAULT_API_SECURITY_OAUTH2,
     API_SECURITY_BASIC_AUTH,
     API_SECURITY_API_KEY,
-    API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY,
     API_SECURITY_MUTUAL_SSL,
 } from './components/apiSecurityConstants';
 import ApplicationLevel from './components/ApplicationLevel';
@@ -122,22 +120,6 @@ export default function APISecurity(props) {
                     <FormattedMessage
                         id='Apis.Details.Configuration.components.APISecurity.emptySchemas'
                         defaultMessage='Please select at least one API security method!'
-                    />
-                </Typography>
-            );
-        } else if (
-            // User has enabled both security levels and set both levels as optional
-            haveMultiLevelSecurity
-            && !(
-                securityScheme.includes(API_SECURITY_MUTUAL_SSL_MANDATORY)
-                || securityScheme.includes(API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY)
-            )
-        ) {
-            return (
-                <Typography className={classes.bottomSpace}>
-                    <FormattedMessage
-                        id='Apis.Details.Configuration.components.APISecurity.allOptional'
-                        defaultMessage="Please select at least one API security level as 'Mandatory'!"
                     />
                 </Typography>
             );

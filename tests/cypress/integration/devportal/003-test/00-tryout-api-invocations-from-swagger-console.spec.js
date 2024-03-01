@@ -37,7 +37,11 @@ describe("Tryout API invocations", () => {
             testApiId = apiId;
             apiContext = apiName;
             Utils.publishAPI(apiId).then(() => {
-                cy.visit(`publisher/apis/${apiId}/deployments`);
+                
+                cy.visit(`publisher/apis/${apiId}/overview`).then(() => {
+                    // Wait for the left menu item to become visible
+                    cy.get('#left-menu-itemdeployments').should('be.visible').click();
+                });
                 cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click({force:true});
                 cy.wait(3000);
                 cy.contains('Deployments');

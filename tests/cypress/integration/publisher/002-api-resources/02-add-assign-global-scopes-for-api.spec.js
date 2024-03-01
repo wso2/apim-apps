@@ -91,17 +91,15 @@ describe("Add assign global scopes for api", () => {
 
       // Open the operation sub section
       cy.get(`#${verb}\\${target}`).click();
-      cy.get(`#${verb}\\${target}-operation-scope-select`, { timeout: 3000 });
-      cy.get(`#${verb}\\${target}-operation-scope-select`).click();
-      cy.get(`[data-value=${scopeName}]`).click();
-      cy.get(`[data-value=${scopeName}]`).type("{esc}");
+      cy.get(`#${verb}\\${target}-operation-scope-autocomplete`, { timeout: 3000 });
+      cy.get(`#${verb}\\${target}-operation-scope-autocomplete`).click();
+      cy.get(`#${verb}\\${target}-operation-scope-${scopeName}`).click();
       // // Save the resources
       cy.get("#resources-save-operations").click();
 
       cy.get("#resources-save-operations", { timeout: 30000 });
-      cy.get(`#${verb}\\${target}-operation-scope-select`)
-        .contains(scopeName)
-        .should("be.visible");
+      cy.get(`#${verb}\\${target}-operation-scope-autocomplete`);
+      cy.contains('span', scopeName).should('exist');
 
       Utils.deleteAPI(apiId);
     });
