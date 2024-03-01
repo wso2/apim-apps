@@ -20,7 +20,7 @@ const Root = styled('div')((
 
 const waitingForApproval = (props) => {
     const {
-        classes, keyState, states, intl,
+        keyState, states, intl,
     } = props;
     let message = intl.formatMessage({
         defaultMessage: 'A request to register this application has been sent and is pending approval.',
