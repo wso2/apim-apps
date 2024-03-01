@@ -557,6 +557,7 @@ class CreateScope extends React.Component {
                                             shrink: true,
                                         }}
                                         variant='outlined'
+                                        fullWidth
                                         value={validRoles.concat(invalidRoles)}
                                         alwaysShowPlaceholder={false}
                                         placeholder='Enter roles and press Enter'
