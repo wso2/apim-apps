@@ -472,7 +472,8 @@ export default function Environments() {
     const externalGateways = settings && settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
     const internalGatewaysFiltered = settings && settings.environment.filter((p) =>
         p.provider.toLowerCase().includes('wso2'));
-    const internalGateways = internalGatewaysFiltered && internalGatewaysFiltered.filter((p) => 
+    const internalGateways = api.isAPIProduct() ? settings && settings.environment.filter((p) =>
+        p.provider.toLowerCase().includes('wso2')) : internalGatewaysFiltered && internalGatewaysFiltered.filter((p) => 
         p.gatewayType.toLowerCase() === assignGateway.toLowerCase()
     );
     const [selectedVhosts, setVhosts] = useState(null);
