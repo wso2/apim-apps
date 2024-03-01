@@ -72,7 +72,7 @@ export default function UpdateComplexity(props) {
 
     return (
         (<Root>
-            <Grid item md={2}>
+            <Grid item md={5}>
                 <Box mt={4} pb={2}>
                     <div className={classes.searchWrapper}>
                         <TextField

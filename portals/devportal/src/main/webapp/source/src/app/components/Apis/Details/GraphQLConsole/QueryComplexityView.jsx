@@ -39,6 +39,7 @@ const classes = {
     title: `${PREFIX}-title`,
     heading: `${PREFIX}-heading`,
     column: `${PREFIX}-column`,
+    row: `${PREFIX}-row`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
@@ -71,11 +72,23 @@ const Root = styled('div')((
         marginBottom: theme.spacing(1),
     },
 
+}));
+
+const StyledAccordionDetails = styled(AccordionDetails)((
+    {
+        theme,
+    },
+) => ({
+
     [`& .${classes.column}`]: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
         flexBasis: '33.33%',
         marginLeft: theme.spacing(1),
+    },
+
+    [`& .${classes.row}`]: {
+        display: 'flex',
     },
 }));
 
@@ -172,15 +185,17 @@ export default function QueryComplexityView(props) {
                                 </AccordionSummary>
                                 <Divider />
                                 {state.map((respond) => ((respond.type === res) && (
-                                    <AccordionDetails>
-                                        <div className={classes.column}>
-                                            {respond.field}
-                                            {':'}
+                                    <StyledAccordionDetails>
+                                        <div className={classes.row}>
+                                            <div className={classes.column}>
+                                                {respond.field}
+                                                {':'}
+                                            </div>
+                                            <div className={classes.column}>
+                                                {respond.complexityValue}
+                                            </div>
                                         </div>
-                                        <div className={classes.column}>
-                                            {respond.complexityValue}
-                                        </div>
-                                    </AccordionDetails>
+                                    </StyledAccordionDetails>
                                 )))}
                             </Accordion>
                         ))}
