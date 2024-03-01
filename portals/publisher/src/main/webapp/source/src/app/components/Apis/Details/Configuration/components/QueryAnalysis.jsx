@@ -110,6 +110,17 @@ const Root = styled('div')(() => ({
     },
 }));
 
+const StyledDialog = styled(Dialog)(() => ({
+
+    [`& .${classes.subHeading}`]: {
+        fontSize: '1rem',
+        fontWeight: 400,
+        margin: 0,
+        display: 'inline-flex',
+        lineHeight: 1.5,
+    }
+}));
+
 /**
  * The base component of the GraphQL Query Analysis.
  * @param {any} props The props passed to the layout
@@ -246,17 +257,15 @@ export default function GraphQLQueryAnalysis(props) {
                     </Grid>
                 </Grid>
             </Paper>
-            <Dialog
+            <StyledDialog
                 open={open}
                 aria-labelledby='responsive-dialog-title'
                 sx={{
-                    '& .MuiDialog-container': {
-                        '& .MuiPaper-root': {
-                            width: '100%',
-                            maxWidth: '65vw',
-                            maxHeight: '95vh',
-                        },
-                    },
+                    '& .MuiDialog-container > .MuiPaper-root': {
+                        width: '100%',
+                        maxWidth: '65vw',
+                        maxHeight: '95vh',
+                    }
                 }}
             >
                 <DialogTitle id='responsive-dialog-title'>
@@ -301,7 +310,7 @@ export default function GraphQLQueryAnalysis(props) {
                         />
                     </Button>
                 </DialogActions>
-            </Dialog>
+            </StyledDialog>
         </Root>)
     );
 }
