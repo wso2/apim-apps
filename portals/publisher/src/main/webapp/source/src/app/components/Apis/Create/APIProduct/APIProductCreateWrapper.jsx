@@ -341,7 +341,7 @@ export default function ApiProductCreateWrapper(props) {
         <APICreateProductBase
             title={pageTitle}
         >
-            <Box>
+            <Box sx={{ mb: 3 }}>
                 {wizardStep === 0 && (
                     <Stepper alternativeLabel activeStep={0}>
                         {steps.map((label) => (
@@ -382,7 +382,7 @@ export default function ApiProductCreateWrapper(props) {
                     )}
                 </Grid>
                 {/* {wizardStep === 0 && <Grid item md={1} />} */}
-                <Grid item md={12}>
+                <Grid item md={12} sx={{ mt: 3 }}>
                     <Grid
                         className={wizardStep === 1 && classes.saveButton}
                         container
