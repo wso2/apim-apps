@@ -155,7 +155,7 @@ const Root = styled('div')((
     [`& .${classes.shapeRec}`]: {
         backgroundColor: 'black',
         alignSelf: 'center',
-        width: 120,
+        width: 121,
         height: 3,
     },
 
@@ -198,15 +198,15 @@ const Root = styled('div')((
         border: '2px solid #ffffff',
         width: 47,
         height: 47,
-        marginTop: 6,
-        marginLeft: 6,
+        marginTop: 8,
+        marginLeft: 8,
         placeSelf: 'middle',
     },
 
     [`& .${classes.plusIconStyle}`]: {
         marginTop: 8,
         marginLeft: 8,
-        fontSize: 30,
+        fontSize: 30,  
     },
 
     [`& .${classes.shapeDottedStart1}`]: {
@@ -226,7 +226,7 @@ const Root = styled('div')((
     [`& .${classes.textShape2}`]: {
         display: 'flex',
         alignItems: 'center',
-        marginTop: 8,
+        marginTop: 12,
         marginLeft: 115,
         height: '18px',
         fontFamily: 'sans-serif',
@@ -261,7 +261,7 @@ const Root = styled('div')((
         color: '#415A85',
     },
 
-    [`& .${classes.textShape4}`]: {
+    [`& .${classes.textShape4}`]: {             
         marginTop: 55,
     },
 
@@ -307,6 +307,7 @@ const Root = styled('div')((
         paddingLeft: '15px',
         width: 15,
         height: 15,
+        marginBottom: '2px'
     },
 
     [`& .${classes.changeCard}`]: {
@@ -435,6 +436,46 @@ const Root = styled('div')((
         marginBottom: theme.spacing(2),
     }
 }));
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+    [`& .${classes.changeCard}`]: {
+        boxShadow: 15,
+        borderRadius: '10px',
+        backgroundColor: theme.palette.secondary.highlight,
+    },
+
+    [`& .${classes.dialogPaper}`]: {
+        width: '800px',
+        maxHeight: '800px',
+    },
+
+    [`& .${classes.cardHeight}`]: {
+        boxShadow: 1,
+        height: '100%',
+    },
+
+    [`& .${classes.cardContentHeight}`]: {
+        boxShadow: 1,
+        height: '50%',
+    },
+
+    [`& .${classes.dialogContent}`]: {
+        overflow: 'auto',
+        height: '90%',
+    },
+
+    [`& .${classes.warningText}`]: {
+        color: '#ff0000',
+    },
+
+    [`& .${classes.textCount}`]: {
+        marginTop: theme.spacing(-2.5),
+    },
+
+    [`& .${classes.sectionTitle}`]: {
+        marginBottom: theme.spacing(2),
+    },
+}))
 
 /**
  * Renders an Environments list
@@ -1216,7 +1257,7 @@ export default function Environments() {
         <Grid
             className={classes.containerInline}
         >
-            <Grid item className={classes.shapeRec} />
+            <Grid item className={classes.shapeRec}/>
             <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
                 <Grid className={clsx(classes.shapeInnerInactive, classes.shapeCircle)} />
             </Grid>
@@ -1436,7 +1477,7 @@ export default function Environments() {
                                 </>
                                 }
                             </Grid>
-                            <Grid>
+                            <Grid style={{display:'flex',flexDirection:'row'}}>
                                 <Button
                                     className={classes.textShape3}
                                     onClick={() => toggleOpenConfirmRestore(
@@ -1486,7 +1527,7 @@ export default function Environments() {
                                 </>
                                 }
                             </Grid>
-                            <Grid className={classes.textPadding}>
+                            <Grid className={classes.textPadding} style={{display:'flex',flexDirection:'row'}}>
                                 <Button
                                     className={classes.textShape3}
                                     onClick={() => toggleOpenConfirmRestore(
@@ -2003,13 +2044,13 @@ export default function Environments() {
                 </Grid>
             )}
             <Grid container>
-                <Dialog
+                <StyledDialog
                     open={openDeployPopup}
                     onClose={handleCloseDeployPopup}
                     aria-labelledby='form-dialog-title'
                     classes={{ paper: classes.dialogPaper }}
                 >
-                    <DialogTitle id='form-dialog-title' variant='h2'>
+                    <DialogTitle id='form-dialog-title' variant='h5'>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.deploy.new.revision.heading'
                             defaultMessage='Deploy New Revision'
@@ -2437,7 +2478,7 @@ export default function Environments() {
                             />
                         </Button>
                     </DialogActions>
-                </Dialog>
+                </StyledDialog>
             </Grid>
             {allRevisions && allRevisions.length !== 0 && (
                 <>
