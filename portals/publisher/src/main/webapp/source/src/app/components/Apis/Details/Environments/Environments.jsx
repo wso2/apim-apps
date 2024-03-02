@@ -459,6 +459,10 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
         height: '50%',
     },
 
+    [`& .${classes.createRevisionDialogStyle}`]: {
+        width: '800px',
+    },
+
     [`& .${classes.dialogContent}`]: {
         overflow: 'auto',
         height: '90%',
@@ -474,6 +478,10 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 
     [`& .${classes.sectionTitle}`]: {
         marginBottom: theme.spacing(2),
+    },
+
+    [`& .${classes.textCount}`]: {
+        marginTop: theme.spacing(-2.5),
     },
 }))
 
@@ -1687,7 +1695,7 @@ export default function Environments() {
         if (!gatewayRevisions.length) {
             // Content to display when there is no revision
             return (
-                <div>
+                <div style={{display: 'flex', alignItems: 'center'}}>
                     <TextField
                         id='revision-selector'
                         select
@@ -1797,7 +1805,7 @@ export default function Environments() {
             );
         }
         return (
-            <div>
+            <div style={{display: 'flex', alignItems: 'center'}}>
                 <TextField
                     id='revision-selector'
                     select
@@ -2527,13 +2535,13 @@ export default function Environments() {
                 </>
             )}
             <Grid container>
-                <Dialog
+                <StyledDialog
                     open={open}
                     onClose={handleClose}
                     aria-labelledby='form-dialog-title'
                     classes={{ paper: classes.createRevisionDialogStyle }}
                 >
-                    <DialogTitle id='form-dialog-title' variant='h2'>
+                    <DialogTitle id='form-dialog-title' variant='h5'>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.revision.create.heading'
                             defaultMessage='Create New Revision (From Current API)'
@@ -2657,7 +2665,7 @@ export default function Environments() {
                             />
                         </Button>
                     </DialogActions>
-                </Dialog>
+                </StyledDialog>
             </Grid>
             {api.lifeCycleStatus !== 'RETIRED' 
             &&  allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
@@ -2994,7 +3002,7 @@ export default function Environments() {
                                                         </Button>
                                                     </div>
                                                 ) : (
-                                                    <div>
+                                                    <div style={{display:'flex',justifyContent: 'center'}}>
                                                         <TextField
                                                             id='revision-selector'
                                                             select
