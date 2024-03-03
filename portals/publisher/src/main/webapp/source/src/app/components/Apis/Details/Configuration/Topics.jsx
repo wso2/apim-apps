@@ -510,7 +510,7 @@ export default function Topics(props) {
                                     alignItems='stretch'
                                 >
                                     {operation.subscribe && (
-                                        <Grid key={target + '_subscribe'} item md={12} sx={{ border: '1px solid red'}}>
+                                        <Grid key={target + '_subscribe'} item md={12}>
                                             <AsyncOperation
                                                 target={target}
                                                 verb='subscribe'
