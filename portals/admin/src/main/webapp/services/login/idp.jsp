@@ -121,6 +121,15 @@
                 dcrRequestData.put("grantType", "authorization_code refresh_token");
                 dcrRequestData.put("saasApp", true);
 
+                Object isJWTEnabledObj = Util.readJsonObj(settingsResponse, "IsJWTEnabledForLoginTokens");
+                if (isJWTEnabledObj != null && isJWTEnabledObj instanceof Boolean) {
+                    boolean isJWTEnabledForLoginTokens = (boolean) isJWTEnabledObj;
+                    if (isJWTEnabledForLoginTokens) {
+                        dcrRequestData.put("tokenType", "JWT");
+                        dcrRequestData.put("userStoreDomainInSubject", true);
+                    }
+                }
+
                 HttpRequest postReq = HttpRequest.newBuilder()
                         .uri(URI.create(dcrUrl))
                         .POST(HttpRequest.BodyPublishers.ofString(gson.toJson(dcrRequestData)))
