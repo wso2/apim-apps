@@ -21,7 +21,7 @@ import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage } from 'react-intl';
-import { Autocomplete } from '@mui/lab';
+import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import Checkbox from '@mui/material/Checkbox';
@@ -39,11 +39,7 @@ const classes = {
     listItemText: `${PREFIX}-listItemText`
 };
 
-const StyledBox = styled(Box)((
-    {
-        theme
-    }
-) => ({
+const StyledBox = styled(Box)(({ theme }) => ({
     [`& .${classes.tooltip}`]: {
         position: 'absolute',
         right: theme.spacing(-4),
@@ -93,8 +89,8 @@ function APICategories(props) {
                     disableCloseOnSelect
                     value={api.categories}
                     onChange={(e, newValue) => configDispatcher({ action: 'categories', value: newValue })}
-                    renderOption={(category, { selected }) => (
-                        <>
+                    renderOption={(options, category, { selected }) => (
+                        <li {...options}>
                             <Checkbox
                                 id={category}
                                 key={category}
@@ -104,7 +100,7 @@ function APICategories(props) {
                                 checked={selected}
                             />
                             {category}
-                        </>
+                        </li>
                     )}
                     renderInput={(params) => (
                         <TextField {...params}
