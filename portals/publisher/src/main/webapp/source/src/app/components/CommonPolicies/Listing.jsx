@@ -258,6 +258,7 @@ const Listing = () => {
                         return (
                             <Box display='flex' flexDirection='row'>
                                 <Button
+                                    sx={{width:100}}
                                     disabled={isRestricted([
                                         'apim:api_view',
                                         'apim:api_manage',
