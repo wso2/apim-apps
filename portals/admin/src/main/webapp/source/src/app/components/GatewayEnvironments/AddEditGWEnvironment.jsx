@@ -484,7 +484,7 @@ function AddEditGWEnvironment(props) {
                         >
                             <FormControlLabel
                                 value='Regular'
-                                name='Regular'
+                                name='gatewayType'
                                 sx={styles.radioOutline}
                                 control={<Radio />}
                                 disabled={editMode}
@@ -501,7 +501,7 @@ function AddEditGWEnvironment(props) {
                             />
                             <FormControlLabel
                                 value='APK'
-                                name='APK'
+                                name='gatewayType'
                                 sx={styles.radioOutline}
                                 control={<Radio />}
                                 disabled={editMode}
