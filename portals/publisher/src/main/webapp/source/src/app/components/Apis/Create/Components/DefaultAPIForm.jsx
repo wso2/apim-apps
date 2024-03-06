@@ -45,7 +45,10 @@ const classes = {
     endpointInvalidChip: `${PREFIX}-endpointInvalidChip`,
     endpointErrorChip: `${PREFIX}-endpointErrorChip`,
     iconButton: `${PREFIX}-iconButton`,
-    iconButtonValid: `${PREFIX}-iconButtonValid`
+    iconButtonValid: `${PREFIX}-iconButtonValid`,
+    radioOutline: `${PREFIX}-radioOutline`,
+    label: `${PREFIX}-label`,
+    newLabel: `${PREFIX}-newLabel`,
 };
 
 const StyledGrid = styled(Grid)(({ theme }) => ({
@@ -93,14 +96,10 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
         alignItems: 'center',
         padding: '10px', // Adjust the padding for the desired outline size
         marginTop: '10px',
-        marginLeft: '6px',
+        marginLeft: '15px',
         marginRight: '8px',
-        border: '2px solid gray', // Initial border color
         borderRadius: '8px', // Adjust the border-radius for a square outline
         transition: 'border 0.3s', // Add transition for a smooth color change
-        '&:hover': {
-            border: '2px solid gray', // Keep the gray color on hover
-        },
         '&.Mui-checked': {
             border: `2px solid ${theme.palette.primary.main}`, // Change to blue when selected
         },
@@ -630,7 +629,7 @@ export default function DefaultAPIForm(props) {
                 {multiGateway  &&
                     <Grid container spacing={2}>
                         <FormControl component='fieldset'>
-                            <FormLabel style={{ marginLeft: '7px', marginTop: '20px' }}>
+                            <FormLabel sx={{ marginLeft: '15px', marginTop: '20px' }}>
                                 Select Gateway type
                             </FormLabel>
                             <RadioGroup
@@ -654,7 +653,7 @@ export default function DefaultAPIForm(props) {
                                                 </Typography>
                                             </div>
                                         )}
-                                        style={{ border: getBorderColor('Regular') }}
+                                        sx={{ border: getBorderColor('wso2/synapse') }}
                                     />
                                 </Grid>
                                 <Grid item xs={6}>
@@ -672,11 +671,11 @@ export default function DefaultAPIForm(props) {
                                                 </Typography>
                                             </div>
                                         )}
-                                        style={{ border: getBorderColor('APK') }}
+                                        sx={{ border: getBorderColor('wso2/apk') }}
                                     />
                                 </Grid>
                             </RadioGroup>
-                            <FormHelperText style={{ marginLeft: '7px'}}>
+                            <FormHelperText sx={{ marginLeft: '15px'}}>
                                 Select the gateway type where your API will run.
                             </FormHelperText>
                         </FormControl>
