@@ -296,6 +296,31 @@ class TokenManager extends React.Component {
             });
     };
 
+    /**
+     * Handle onClick of remove keys
+     * */
+    handleClickClean = (keyMappingId) => {
+        const {
+            selectedTab, keyType, intl,
+        } = this.props;
+        this.application
+            .then((application) => {
+                return application.cleanUpKeys(keyType, selectedTab, keyMappingId);
+            })
+            .then((result) => {
+                if (result) {
+                    this.loadApplication();
+                    Alert.info(intl.formatMessage({
+                        id: 'Shared.AppsAndKeys.TokenManager.key.cleanupall.success',
+                        defaultMessage: 'Application keys removed successfully',
+                    }));
+                }
+            })
+            .catch((error) => {
+                throw (error);
+            });
+    };
+
     getDefaultAdditionalProperties(selectedKM) {
         const { availableGrantTypes, applicationConfiguration } = selectedKM;
         // Fill the keyRequest.additionalProperties from the selectedKM.applicationConfiguration defaultValues.
@@ -887,43 +912,61 @@ class TokenManager extends React.Component {
                                                 id='Shared.AppsAndKeys.TokenManager.key.and.secret'
                                             />
                                         </Typography>
-                                        {
-                                            keymanager.enableMapOAuthConsumerApps && (
-                                                <Box ml={2}>
-                                                    <ImportExternalApp
-                                                        onChange={this.handleOnChangeProvidedOAuth}
-                                                        consumerKey={providedConsumerKey}
-                                                        consumerSecret={providedConsumerSecret}
-                                                        isUserOwner={isUserOwner}
-                                                        key={key}
-                                                        provideOAuthKeySecret={this.provideOAuthKeySecret}
-                                                        importDisabled={importDisabled}
-                                                    />
-                                                </Box>
-                                            )
-                                        }
-                                        <Box ml={2}>
-                                            {(keymanager.enableTokenGeneration && keys.get(selectedTab)
-                                    && keys.get(selectedTab).supportedGrantTypes.find((a) => a.includes('client_credentials')))
-                                    && mode !== 'MAPPED'
-                                    && (
-                                        <Button
-                                            id='remove-generated-keys'
-                                            variant='outlined'
-                                            color='secondary'
-                                            startIcon={<DeleteIcon />}
-                                            className={classes.margin}
-                                            onClick={() => this.handleClickRemove(keyMappingId)}
-                                            disabled={!keys.get(selectedTab).supportedGrantTypes.includes('client_credentials')}
-                                        >
-                                            <FormattedMessage
-                                                id='Shared.AppsAndKeys.ViewKeys.remove.keys'
-                                                defaultMessage='Remove Keys'
-                                            />
-                                        </Button>
-                                    )}
-                                        </Box>
-
+                                        {keymanager.enableMapOAuthConsumerApps && (
+                                            <Box ml={2}>
+                                                <ImportExternalApp
+                                                    onChange={this.handleOnChangeProvidedOAuth}
+                                                    consumerKey={providedConsumerKey}
+                                                    consumerSecret={providedConsumerSecret}
+                                                    isUserOwner={isUserOwner}
+                                                    key={key}
+                                                    provideOAuthKeySecret={this.provideOAuthKeySecret}
+                                                    importDisabled={importDisabled}
+                                                />
+                                            </Box>
+                                        )}
+                                        {console.log(mode)}
+                                        {(keymanager.enableTokenGeneration && keys.get(selectedTab)
+                                            && keys.get(selectedTab).supportedGrantTypes.find((a) => a.includes('client_credentials')))
+                                            && (
+                                                mode !== 'MAPPED'
+                                                    ? (
+                                                        <Box ml={2}>
+                                                            <Button
+                                                                id='remove-generated-keys'
+                                                                variant='outlined'
+                                                                color='secondary'
+                                                                startIcon={<DeleteIcon />}
+                                                                className={classes.margin}
+                                                                onClick={() => this.handleClickClean(keyMappingId)}
+                                                                disabled={!keys.get(selectedTab)
+                                                                    .supportedGrantTypes.includes('client_credentials')}
+                                                            >
+                                                                <FormattedMessage
+                                                                    id='Shared.AppsAndKeys.ViewKeys.remove.keys'
+                                                                    defaultMessage='Remove Keys'
+                                                                />
+                                                            </Button>
+                                                        </Box>
+                                                    ) : (
+                                                        <Box ml={2}>
+                                                            <Button
+                                                                id='remove-generated-keys'
+                                                                variant='outlined'
+                                                                color='secondary'
+                                                                startIcon={<DeleteIcon />}
+                                                                className={classes.margin}
+                                                                onClick={() => this.handleClickClean(keyMappingId)}
+                                                                disabled={!keys.get(selectedTab)
+                                                                    .supportedGrantTypes.includes('client_credentials')}
+                                                            >
+                                                                <FormattedMessage
+                                                                    id='Shared.AppsAndKeys.ViewKeys.remove.mapping'
+                                                                    defaultMessage='Remove MApping'
+                                                                />
+                                                            </Button>
+                                                        </Box>
+                                                    ))}
                                     </Box>
                                     <Box m={2}>
                                         <ViewKeys
