@@ -24,7 +24,6 @@ import {
     ListItemAvatar,
     ListItemText,
 } from '@mui/material';
-import { RemoveRedEye } from '@mui/icons-material';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
