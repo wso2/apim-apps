@@ -44,6 +44,9 @@ import Settings, { useSettingsContext } from 'AppComponents/Shared/SettingsConte
 import { app } from 'Settings';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import Box from '@mui/material/Box';
+import Badge from '@mui/material/Badge';
+import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import Notification from 'AppData/Notifications';
 import AuthManager from '../../data/AuthManager';
 import LanguageSelector from './Header/LanuageSelector';
 import GlobalNavBar from './Header/GlobalNavbar';
@@ -275,6 +278,8 @@ class LayoutLegacy extends React.Component {
             selected: 'home',
             anchorEl: null,
             bannerHeight: 0,
+            notifications: [],
+            notificationCount: 0,
         };
         this.toggleGlobalNavBar = this.toggleGlobalNavBar.bind(this);
         const { history } = props;
@@ -302,7 +307,29 @@ class LayoutLegacy extends React.Component {
                 this.setState({ bannerHeight: bannerElement.clientHeight });
             }
         }
+        this.getUnreadNotificationCount();
     }
+
+    // eslint-disable-next-line require-jsdoc
+    componentDidUpdate(_prevProps, prevState) {
+        // eslint-disable-next-line react/destructuring-assignment
+        if (prevState.notifications !== this.state.notifications) {
+            this.getUnreadNotificationCount();
+        }
+    }
+
+    getUnreadNotificationCount = () => {
+        const promisedNotifications = Notification.getNotifications();
+        promisedNotifications
+            .then((res) => {
+                this.setState({ notifications: res.body.list });
+                const unreadCount = res.body.list.filter((notification) => !notification.isRead).length;
+                this.setState({ notificationCount: unreadCount });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
 
     detectCurrentMenu = (location) => {
         const { pathname } = location;
@@ -410,6 +437,7 @@ class LayoutLegacy extends React.Component {
         const { openNavBar, selected } = this.state;
         const { tenantDomain, setTenantDomain } = this.context;
         const { customUrl: { tenantDomain: customUrlEnabledDomain } } = app;
+        const { notificationCount } = this.state;
 
         const user = AuthManager.getUser();
         // TODO: Refer to fix: https://github.com/mui-org/material-ui/issues/10076#issuecomment-361232810 ~tmkb
@@ -594,6 +622,32 @@ class LayoutLegacy extends React.Component {
                                         </Button>
                                     </Link>
                                 )}
+                                {user ? (
+                                    <Box display='flex' alignItems='center' mr={2.5}>
+                                        <Link to='/notifications' aria-label='Go to notification page'>
+                                            {notificationCount > 0 ? (
+                                                <Badge
+                                                    badgeContent={(
+                                                        <span style={{
+                                                            backgroundColor: 'orange',
+                                                            borderRadius: '50%',
+                                                            padding: '3px 6px',
+                                                            fontSize: '0.8rem',
+                                                            color: '#000000',
+                                                        }}
+                                                        >
+                                                            {notificationCount}
+                                                        </span>
+                                                    )}
+                                                >
+                                                    <NotificationsNoneIcon style={{ color: 'white', fontSize: 25 }} />
+                                                </Badge>
+                                            ) : (
+                                                <NotificationsNoneIcon style={{ color: 'white', fontSize: 25 }} />
+                                            )}
+                                        </Link>
+                                    </Box>
+                                ) : null}
                                 <VerticalDivider height={64} />
                                 {languageSwitchActive && <LanguageSelector />}
                                 {user ? (
