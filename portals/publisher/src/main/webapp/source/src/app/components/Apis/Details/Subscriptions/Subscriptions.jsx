@@ -91,8 +91,11 @@ function Subscriptions(props) {
                 Alert.info('Subscription configurations updated successfully');
             })
             .catch((error) => {
-                console.error(error);
-                Alert.error('Error occurred while updating subscription configurations');
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error('Error occurred while updating subscription configurations');
+                }
             }).finally(() => {
                 setUpdateInProgress(false);
             });
