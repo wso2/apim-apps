@@ -490,12 +490,12 @@ function AddEditKeyManager(props) {
         }
         promisedAddKeyManager.then(() => {
             if (id) {
-                Alert.success(`${displayName} ${intl.formatMessage({
+                Alert.success(`${name} ${intl.formatMessage({
                     id: 'KeyManager.edit.success',
                     defaultMessage: ' - Key Manager edited successfully.',
                 })}`);
             } else {
-                Alert.success(`${displayName} ${intl.formatMessage({
+                Alert.success(`${name} ${intl.formatMessage({
                     id: 'KeyManager.add.success.msg',
                     defaultMessage: ' - Key Manager added successfully.',
                 })}`);
