@@ -461,6 +461,13 @@ const Policies: React.FC = () => {
             gatewayType: getewayTypeForPolicies
         });
         updatePromise
+            .catch((error: any) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error('Error occurred while updating the policies');
+                }
+            })
             .finally(() => {
                 setUpdating(false);
             });

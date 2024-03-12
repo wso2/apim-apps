@@ -29,6 +29,7 @@ import NewEndpointCreate from 'AppComponents/Apis/Details/Endpoints/NewEndpointC
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import cloneDeep from 'lodash.clonedeep';
 import { isRestricted } from 'AppData/AuthManager';
+import { Alert } from 'AppComponents/Shared';
 import EndpointOverview from './EndpointOverview';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
 
@@ -210,7 +211,14 @@ function Endpoints(props) {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
             }).then(() => {
-                updateAPI({ endpointConfig, endpointImplementationType, serviceInfo });
+                updateAPI({ endpointConfig, endpointImplementationType, serviceInfo })
+                    .catch((error) => {
+                        if (error.response) {
+                            Alert.error(error.response.body.description);
+                        } else {
+                            Alert.error('Error occurred while updating endpoint configurations');
+                        }
+                    });
             }).finally(() => {
                 setUpdating(false);
                 if (isRedirect) {
@@ -222,12 +230,20 @@ function Endpoints(props) {
             if (apiObjectCopy.endpointConfig.endpoint_type === 'service') {
                 apiObjectCopy.endpointConfig.endpoint_type = 'http';
             }
-            updateAPI(apiObjectCopy).finally(() => {
-                setUpdating(false);
-                if (isRedirect) {
-                    history.push('/apis/' + api.id + '/policies');
-                }
-            });
+            updateAPI(apiObjectCopy)
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error('Error occurred while updating endpoint configurations');
+                    }
+                })
+                .finally(() => {
+                    setUpdating(false);
+                    if (isRedirect) {
+                        history.push('/apis/' + api.id + '/policies');
+                    }
+                });
         }
     };
 
@@ -241,7 +257,14 @@ function Endpoints(props) {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
             }).then(() => {
-                updateAPI({ endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo });
+                updateAPI({ endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo })
+                    .catch((error) => {
+                        if (error.response) {
+                            Alert.error(error.response.body.description);
+                        } else {
+                            Alert.error('Error occurred while updating endpoint configurations');
+                        }
+                    }); 
             }).finally(() => history.push({
                 pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
                     : `/apis/${api.id}/deployments`,
@@ -252,11 +275,19 @@ function Endpoints(props) {
             if (apiObjectCopy.endpointConfig.endpoint_type === 'service') {
                 apiObjectCopy.endpointConfig.endpoint_type = 'http';
             }
-            updateAPI(apiObjectCopy).finally(() => history.push({
-                pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
-                    : `/apis/${api.id}/deployments`,
-                state: 'deploy',
-            }));
+            updateAPI(apiObjectCopy)
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error('Error occurred while updating endpoint configurations');
+                    }
+                })
+                .finally(() => history.push({
+                    pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
+                        : `/apis/${api.id}/deployments`,
+                    state: 'deploy',
+                }));
         }
     };
 
