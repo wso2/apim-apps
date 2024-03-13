@@ -62,11 +62,10 @@ const classes = {
     buttonLeft: `${PREFIX}-buttonLeft`
 };
 
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
+const Root = styled('div')(({ theme }) => ({
+    '&': {
+        padding: `${theme.spacing(1)} ${theme.spacing(3)}`,
+    },
     [`& .${classes.contentInside}`]: {
         padding: theme.spacing(3),
         paddingTop: theme.spacing(2),
@@ -196,9 +195,7 @@ function ScopeTablePagination(props) {
     }
 
     return (
-        <Root
-            style={{ display: 'flex' }}
-        >
+        <div style={{ display: 'flex' }}>
             <IconButton onClick={handleFirstPageButtonClick} disabled={page === 0} size='large'>
                 <FirstPageIcon />
             </IconButton>
@@ -217,7 +214,7 @@ function ScopeTablePagination(props) {
                 size='large'>
                 <LastPageIcon />
             </IconButton>
-        </Root>
+        </div>
     );
 }
 
@@ -445,55 +442,57 @@ class Listing extends React.Component {
         }
 
         return (
-            <div className={classes.heading}>
-                <Grid
-                    className={classes.titleWrapper}
-                    xs={12}
-                    sm={12}
-                    md={11}
-                    lg={11}
-                    item
-                >
-                    <Typography variant='h4' align='left' component='h1' className={classes.mainTitle}>
-                        <FormattedMessage
-                            id='Scopes.Listing.Listing.heading.scope.heading'
-                            defaultMessage='Scopes'
-                        />
-                    </Typography>
-                    <Box pl={1}>
-                        <Button
-                            color='primary'
-                            variant='outlined'
-                            size='small'
-                            disabled={isRestricted(['apim:shared_scope_manage'])}
-                            component={Link}
-                            to={!isRestricted(['apim:shared_scope_manage']) && url}
-                        >
-                            <AddCircle className={classes.buttonIcon} />
+            <Root>
+                <div className={classes.heading}>
+                    <Grid
+                        className={classes.titleWrapper}
+                        xs={12}
+                        sm={12}
+                        md={11}
+                        lg={11}
+                        item
+                    >
+                        <Typography variant='h4' align='left' component='h1' className={classes.mainTitle}>
                             <FormattedMessage
-                                id='Scopes.Listing.Listing.heading.scope.add_new'
-                                defaultMessage='Add New Scope'
+                                id='Scopes.Listing.Listing.heading.scope.heading'
+                                defaultMessage='Scopes'
                             />
-                        </Button>
-                    </Box>
-                    {isRestricted(['apim:shared_scope_manage']) && (
-                        <Grid item>
-                            <Typography variant='body2' color='primary'>
+                        </Typography>
+                        <Box pl={1}>
+                            <Button
+                                color='primary'
+                                variant='outlined'
+                                size='small'
+                                disabled={isRestricted(['apim:shared_scope_manage'])}
+                                component={Link}
+                                to={!isRestricted(['apim:shared_scope_manage']) && url}
+                            >
+                                <AddCircle className={classes.buttonIcon} />
                                 <FormattedMessage
-                                    id='Scopes.Listing.Listing.update.not.allowed'
-                                    defaultMessage={
-                                        '*You are not authorized to update scopes of'
-                                        + ' the API due to insufficient permissions'
-                                    }
+                                    id='Scopes.Listing.Listing.heading.scope.add_new'
+                                    defaultMessage='Add New Scope'
                                 />
-                            </Typography>
-                        </Grid>
-                    )}
-                </Grid>
-                <Grid className={classes.table} xs={12} sm={12} md={11} lg={11} item>
-                    <MUIDataTable title={false} data={scopesList} columns={columns} options={options} />
-                </Grid>
-            </div>
+                            </Button>
+                        </Box>
+                        {isRestricted(['apim:shared_scope_manage']) && (
+                            <Grid item>
+                                <Typography variant='body2' color='primary'>
+                                    <FormattedMessage
+                                        id='Scopes.Listing.Listing.update.not.allowed'
+                                        defaultMessage={
+                                            '*You are not authorized to update scopes of'
+                                            + ' the API due to insufficient permissions'
+                                        }
+                                    />
+                                </Typography>
+                            </Grid>
+                        )}
+                    </Grid>
+                    <Grid className={classes.table} xs={12} sm={12} md={11} lg={11} item>
+                        <MUIDataTable title={false} data={scopesList} columns={columns} options={options} />
+                    </Grid>
+                </div>
+            </Root>
         );
     }
 }
