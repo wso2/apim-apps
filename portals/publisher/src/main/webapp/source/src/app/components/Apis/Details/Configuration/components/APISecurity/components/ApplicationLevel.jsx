@@ -195,7 +195,8 @@ export default function ApplicationLevel(props) {
                                 )}
                                 label='OAuth2'
                             />
-                            {apiFromContext.gatewayType === 'wso2/synapse' && (
+                            {(apiFromContext.gatewayType === 'wso2/synapse' ||
+                                apiFromContext.apiType === API.CONSTS.APIProduct) && (
                                 <FormControlLabel
                                     control={(
                                         <Checkbox
@@ -213,7 +214,8 @@ export default function ApplicationLevel(props) {
                                     label='Basic'
                                 />
                             )}
-                            {apiFromContext.gatewayType === 'wso2/synapse' && (
+                            {(apiFromContext.gatewayType === 'wso2/synapse' ||
+                                apiFromContext.apiType === API.CONSTS.APIProduct) && (
                                 <FormControlLabel
                                     control={(
                                         <Checkbox
