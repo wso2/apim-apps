@@ -24,7 +24,7 @@ const disableAuthorizeAndInfoPlugin = function (spec) {
  */
 const SwaggerUI = (props) => {
     const {
-        spec, accessTokenProvider, authorizationHeader, api, securitySchemeType,
+        spec, accessTokenProvider, authorizationHeader, api,
     } = props;
 
     const securitySchemeRef = useRef(props.securitySchemeType);
