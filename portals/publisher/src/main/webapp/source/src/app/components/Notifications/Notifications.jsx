@@ -108,7 +108,7 @@ const Root = styled('div')(({ theme }) => ({
 const Notifications = () => {
     const intl = useIntl();
     const [notifications, setNotifications] = useState(null);
-    const [sortOption, setSortOption] = useState('all'); 
+    const [sortOption, setSortOption] = useState('newest'); 
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
 
@@ -422,7 +422,6 @@ const Notifications = () => {
                                     >
                                         <MenuItem value='newest'>Newest</MenuItem>
                                         <MenuItem value='oldest'>Oldest</MenuItem>
-                                        <MenuItem value='all'>All</MenuItem>
                                     </Select>
                                 </FormControl>
                                 <Box className={classes.buttonContainer}>

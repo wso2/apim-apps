@@ -68,22 +68,23 @@ export default function HeaderOriginal(props) {
     const [notificationCount, setNotificationCount] = React.useState(0);
     const [notifications, setNotifications] = React.useState(null);
 
-    useEffect(() => {
-        const getUnreadNotificationCount = () => {
-            const promisedNotifications = API.getNotifications();
-            promisedNotifications
-                .then((res) => { 
-                    setNotifications(res.body.list);
-                    const unreadCount = notifications.filter(notification => !notification.isRead).length;
-                    setNotificationCount(unreadCount);
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        };
+    const getUnreadNotificationCount = () => {
+        const promisedNotifications = API.getNotifications();
+        promisedNotifications
+            .then((res) => { 
+                setNotifications(res.body.list);
+                const unreadCount = notifications.filter(notification => !notification.isRead).length;
+                setNotificationCount(unreadCount);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
 
+    useEffect(() => {
         getUnreadNotificationCount();
     }, [notifications]); 
+    console.log('Count', notificationCount);
 
     return (
         <Root>
