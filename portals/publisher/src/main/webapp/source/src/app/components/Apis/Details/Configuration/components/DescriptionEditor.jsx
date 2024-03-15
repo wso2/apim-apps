@@ -58,7 +58,7 @@ const classes = {
 };
 
 
-const Root = styled('div')(() => ({
+const StyledDialog = styled(Dialog)(({ theme }) => ({
     [`& .${classes.flex}`]: {
         flex: 1,
     },
@@ -72,7 +72,6 @@ const Root = styled('div')(() => ({
     [`& .${classes.splitWrapper}`]: {
         padding: 0,
         paddingTop: 2,
-        border: '1px solid #red',
     },
 
     [`& .${classes.editorHeader}`]: {
@@ -83,6 +82,7 @@ const Root = styled('div')(() => ({
     [`& .${classes.markdownViewWrapper}`]: {
         height: '100vh',
         overflowY: 'auto',
+        padding: theme.spacing(2),
     },
 
     [`& .${classes.appBar}`]: {
@@ -169,7 +169,7 @@ export default function DescriptionEditor(props) {
     const markdownWithApiData = addApiContent(content);
 
     return (
-        <Root>
+        <div>
             <Button
                 variant='outlined'
                 color='primary'
@@ -181,7 +181,7 @@ export default function DescriptionEditor(props) {
                     defaultMessage='Edit description'
                 />
             </Button>
-            <Dialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
+            <StyledDialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
                 <AppBar color='inherit' className={classes.appBar}>
                     <Toolbar variant='dense'>
                         <Grid
@@ -279,7 +279,7 @@ export default function DescriptionEditor(props) {
                     </Toolbar>
                 </AppBar>
                 <div className={classes.splitWrapper}>
-                    <Grid container sx={{ pt: 5 }}>
+                    <Grid container>
                         { descriptionType === CONSTS.DESCRIPTION_TYPES.DESCRIPTION
                             ? (
                                 <Grid item xs={12}>
@@ -347,8 +347,8 @@ export default function DescriptionEditor(props) {
                             )}
                     </Grid>
                 </div>
-            </Dialog>
-        </Root>
+            </StyledDialog>
+        </div>
     );
 }
 
