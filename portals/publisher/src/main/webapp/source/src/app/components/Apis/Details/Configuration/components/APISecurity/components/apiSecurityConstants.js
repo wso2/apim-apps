@@ -24,8 +24,8 @@ const API_SECURITY_API_KEY = 'api_key';
 const API_SECURITY_MUTUAL_SSL = 'mutualssl';
 const API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY = 'oauth_basic_auth_api_key_mandatory';
 const API_SECURITY_MUTUAL_SSL_MANDATORY = 'mutualssl_mandatory';
-const API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL = 'oauth_basic_auth_api_key_optional';
-const API_SECURITY_MUTUAL_SSL_OPTIONAL = 'mutualssl_optional';
+const API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL = 'optional';
+const API_SECURITY_MUTUAL_SSL_OPTIONAL = 'optional';
 
 export {
     DEFAULT_API_SECURITY_OAUTH2,
