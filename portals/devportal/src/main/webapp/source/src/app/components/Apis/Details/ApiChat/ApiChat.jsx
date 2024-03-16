@@ -121,7 +121,7 @@ const Root = styled('div')(({ theme }) => ({
  */
 const ApiChat = () => {
     // const intl = useIntl();
-    const [configureKeyDrawerOpen, setConfigureKeyDrawerOpen] = useState(false);
+    const [configureKeyDrawerOpen, setConfigureKeyDrawerOpen] = useState(true);
 
     // const [resultView, setResultView] = useState<string | null>('summary');
     // const [expandedPanel, setExpandedPanel] = useState<number[] | false>(false);
@@ -1114,12 +1114,12 @@ const ApiChat = () => {
                 />
                 <ApiChatBanner />
                 <ApiChatExecute
-                    isAgentRunning
+                    isAgentRunning={false}
                     isAgentTerminating={false}
-                    lastQuery='Hello World'
+                    lastQuery={null}
                     handleStopAndReExecute={() => {}}
                     // enrichedSpec
-                    inputQuery='New Query'
+                    inputQuery='Find pets by status where the status is available'
                     handleQueryChange={() => {}}
                     isEnrichingSpec={false}
                     handleExecute={() => {}}

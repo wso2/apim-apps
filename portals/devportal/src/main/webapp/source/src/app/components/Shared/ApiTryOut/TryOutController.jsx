@@ -167,7 +167,7 @@ function TryOutController(props) {
         setSelectedEnvironment, setProductionAccessToken, setSandboxAccessToken, scopes, setSecurityScheme, setUsername,
         setPassword, username, password, updateSwagger, setProductionApiKey, setSandboxApiKey, productionApiKey,
         sandboxApiKey, environmentObject, setURLs, setAdvAuthHeader, setAdvAuthHeaderValue, advAuthHeader,
-        advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs,
+        advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs, autoGenerateToken = false,
     } = props;
     let { selectedKeyManager } = props;
     selectedKeyManager = selectedKeyManager || 'Resident Key Manager';
@@ -182,8 +182,10 @@ function TryOutController(props) {
     const [selectedKMObject, setSelectedKMObject] = useState(null);
     const [ksGenerated, setKSGenerated] = useState(false);
     const [showMoreGWUrls, setShowMoreGWUrls] = useState(false);
+    const [tokenValue, setTokenValue] = useState('');
     const apiID = api.id;
     const restApi = new Api();
+    const user = AuthManager.getUser();
 
     useEffect(() => {
         let subscriptionsList;
@@ -346,6 +348,25 @@ function TryOutController(props) {
     }
 
     /**
+     * Generate test key by default
+     */
+    useEffect(() => {
+        if (
+            autoGenerateToken && securitySchemeType !== 'BASIC'
+            && securitySchemeType !== 'TEST' && selectedKMObject
+            && !selectedKMObject.enableTokenHashing && !(!user || (subscriptions && subscriptions.length === 0)
+            || (!ksGenerated && securitySchemeType === 'OAUTH'))
+        ) {
+            if (securitySchemeType === 'API-KEY') {
+                generateApiKey();
+            } else {
+                generateAccessToken();
+            }
+        }
+    }, [securitySchemeType, selectedKMObject, user, subscriptions, ksGenerated, selectedApplication]);
+    // }
+
+    /**
      *
      * Handle onClick of shown access token
      * @memberof TryOutController
@@ -468,7 +489,6 @@ function TryOutController(props) {
         }
     }
 
-    const user = AuthManager.getUser();
     if (api == null) {
         return <Progress />;
     }
@@ -499,14 +519,15 @@ function TryOutController(props) {
     const isPublished = api.lifeCycleStatus.toLowerCase() === 'published';
     const showSecurityType = isPublished || isPrototypedAPI;
 
-    let tokenValue = '';
-    if (securitySchemeType === 'API-KEY') {
-        tokenValue = selectedKeyType === 'PRODUCTION' ? productionApiKey : sandboxApiKey;
-    } else {
-        tokenValue = selectedKeyType === 'PRODUCTION' ? productionAccessToken : sandboxAccessToken;
-    }
-
     const authHeader = `${authorizationHeader}: ${prefix}`;
+
+    useEffect(() => {
+        if (securitySchemeType === 'API-KEY') {
+            setTokenValue(selectedKeyType === 'PRODUCTION' ? productionApiKey : sandboxApiKey);
+        } else {
+            setTokenValue(selectedKeyType === 'PRODUCTION' ? productionAccessToken : sandboxAccessToken);
+        }
+    }, [securitySchemeType, selectedKeyType, productionAccessToken, sandboxAccessToken, productionApiKey, sandboxApiKey]);
 
     return (
         <Root>

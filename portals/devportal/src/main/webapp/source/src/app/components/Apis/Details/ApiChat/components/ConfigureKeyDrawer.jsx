@@ -30,6 +30,8 @@ import TryOutController from 'AppComponents/Shared/ApiTryOut/TryOutController';
 import Application from 'AppData/Application';
 import IconButton from '@mui/material/IconButton';
 import { Close } from '@mui/icons-material';
+import Api from 'AppData/api';
+import AIGeneratedApiRequest from './AIGeneratedApiRequest';
 
 const ConfigureKeyDrawer = ({
     isDrawerOpen,
@@ -52,8 +54,12 @@ const ConfigureKeyDrawer = ({
     const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
     const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
     const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
+    const [authorizationHeader, setAuthorizationHeader] = useState('Authorization');
+    const [swagger, setSwagger] = useState(null);
+    // const [defaultKMObject, setDefaultKMObject] = useState(null);
 
     const user = AuthManager.getUser();
+    const apiClient = new Api();
     const { api: apiObj } = useContext(ApiContext);
 
     useEffect(() => {
@@ -95,10 +101,37 @@ const ConfigureKeyDrawer = ({
 
     useEffect(() => {
         // Update selected environment only when environments change
-        if (environments && environments.length > 0) {
-            setSelectedEnvironment(environments[0].name);
+        if (api) {
+            let promiseSwagger = null;
+            if (environments && environments.length > 0) {
+                setSelectedEnvironment(environments[0].name);
+                promiseSwagger = apiClient.getSwaggerByAPIIdAndEnvironment(api.id, selectedEnvironment);
+            } else {
+                promiseSwagger = apiClient.getSwaggerByAPIId(api.id);
+            }
+            promiseSwagger.then((swaggerResponse) => {
+                setSwagger(swaggerResponse.obj);
+            });
         }
-    }, [environments]);
+    }, [environments, api]);
+
+    // useEffect(() => {
+    //     const promisedKeyManagers = apiClient.getKeyManagers();
+    //     promisedKeyManagers
+    //         .then((response) => {
+    //             const responseKeyManagerList = [];
+    //             response.body.list.map((item) => responseKeyManagerList.push(item));
+    //             const filteredKMs = (responseKeyManagerList.filter((km) => km.name === selectedKeyManager));
+    //             if (filteredKMs && filteredKMs.length > 0) {
+    //                 setDefaultKMObject(filteredKMs[0]);
+    //             }
+    //         })
+    //         .catch((error) => {
+    //             if (process.env.NODE_ENV !== 'production') {
+    //                 console.log(error);
+    //             }
+    //         });
+    // });
 
     useEffect(() => {
         updateDrawerOpen(isDrawerOpen);
@@ -144,38 +177,174 @@ const ConfigureKeyDrawer = ({
         }
     };
 
+    // Set the servers spec for the swagger
+    const setServersSpec = (spec, serverUrl) => {
+        let schemes;
+        const [protocol, host] = serverUrl.split('://');
+        if (protocol === 'http') {
+            schemes = ['http'];
+        } else if (protocol === 'https') {
+            schemes = ['https'];
+        }
+        return {
+            ...spec,
+            schemes,
+            host,
+        };
+    };
+
+    // Provides the access token
+    const accessTokenProvider = () => {
+        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+            return advAuthHeaderValue;
+        }
+        if (securityScheme === 'BASIC') {
+            const credentials = username + ':' + password;
+            return btoa(credentials);
+        }
+        if (securityScheme === 'API-KEY') {
+            if (selectedKeyType === 'PRODUCTION') {
+                return productionApiKey;
+            } else {
+                return sandboxApiKey;
+            }
+        } else if (selectedKeyType === 'PRODUCTION') {
+            return productionAccessToken;
+        } else {
+            return sandboxAccessToken;
+        }
+    };
+
+    useEffect(() => {
+        if (api) {
+            let isApiKeyEnabled = false;
+            if (api && api.authorizationHeader) {
+                setAuthorizationHeader(api.authorizationHeader);
+            }
+            if (api && api.securityScheme) {
+                isApiKeyEnabled = api.securityScheme.includes('api_key');
+                if (isApiKeyEnabled && securityScheme === 'API-KEY') {
+                    setAuthorizationHeader(api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey');
+                }
+            }
+            if (swagger) {
+                if (api.advertiseInfo && api.advertiseInfo.advertised) {
+                    let swaggerSpec = swagger;
+                    setAuthorizationHeader(advAuthHeader);
+                    if (swaggerSpec.openapi) {
+                        if (selectedEndpoint === 'PRODUCTION') {
+                            swaggerSpec = {
+                                ...swagger,
+                                servers: [
+                                    { url: api.advertiseInfo.apiExternalProductionEndpoint },
+                                ],
+                            };
+                        } else {
+                            swaggerSpec = {
+                                ...swagger,
+                                servers: [
+                                    { url: api.advertiseInfo.apiExternalSandboxEndpoint },
+                                ],
+                            };
+                        }
+                    } else if (selectedEndpoint === 'PRODUCTION') {
+                        swaggerSpec = setServersSpec(swaggerSpec, api.advertiseInfo.apiExternalProductionEndpoint);
+                    } else {
+                        swaggerSpec = setServersSpec(swaggerSpec, api.advertiseInfo.apiExternalSandboxEndpoint);
+                    }
+                    setSwagger(swaggerSpec);
+                }
+            }
+        }
+    }, [api, swagger, selectedEndpoint, advAuthHeader, securityScheme]);
+
+    // /**
+    //  * Generate api key
+    //  * */
+    // function generateApiKey() {
+    //     if (api.lifeCycleStatus) {
+    //         setIsUpdating(true);
+    //         const promisedKey = restApi.generateApiKey(selectedApplication, selectedKeyType, -1);
+    //         promisedKey
+    //             .then((response) => {
+    //                 console.log('Non empty response received', response);
+    //                 setShowToken(false);
+    //                 if (selectedKeyType === 'PRODUCTION') {
+    //                     setProductionApiKey(response.body.apikey);
+    //                 } else {
+    //                     setSandboxApiKey(response.body.apikey);
+    //                 }
+    //                 setIsUpdating(false);
+    //             })
+    //             .catch((error) => {
+    //                 console.log(error);
+    //                 const { status } = error;
+    //                 if (status === 404) {
+    //                     setNotFound(true);
+    //                 }
+    //                 setIsUpdating(false);
+    //             });
+    //     }
+    // }
+
+    // /**
+    //  * Generate test key by default
+    //  */
+    // useEffect(() => {
+    //     if (
+    //         securityScheme !== 'BASIC'
+    //         && securityScheme !== 'TEST' && defaultKMObject
+    //         && !defaultKMObject.enableTokenHashing && !(!user || (subscriptions && subscriptions.length === 0)
+    //         || (!ksGenerated && securityScheme === 'OAUTH'))
+    //     ) {
+    //         if (securityScheme === 'API-KEY') {
+    //             generateApiKey();
+    //         } else {
+    //             generateAccessToken();
+    //         }
+    //     }
+    // }, [securityScheme, defaultKMObject, user, subscriptions, ksGenerated, selectedApplication]);
+
+    // useEffect(() => {
+    //     if (securityScheme === 'API-KEY') {
+    //         setTokenValue(selectedKeyType === 'PRODUCTION' ? productionApiKey : sandboxApiKey);
+    //     } else {
+    //         setTokenValue(selectedKeyType === 'PRODUCTION' ? productionAccessToken : sandboxAccessToken);
+    //     }
+    // }, [securityScheme, selectedKeyType, productionAccessToken, sandboxAccessToken, productionApiKey, sandboxApiKey]);
+
     if (api == null) {
         return <Progress />;
     }
 
     return (
-        <Drawer
-            title='Configure Key'
-            anchor='right'
-            open={isDrawerOpen}
-            onClose={() => updateDrawerOpen(false)}
-            id='api-chat-configure-key-drawer'
-            PaperProps={{
-                sx: { width: '60%', borderRadius: 1 },
-            }}
-        >
-            <Box p={2}>
-                <Grid container justifyContent='space-between' alignItems='center'>
-                    <Grid item xs={10}>
-                        <Typography variant='h6'>
-                            <FormattedMessage
-                                id='Apis.Details.ApiChat.components.ConfigureKeyDrawer.title'
-                                defaultMessage='Configure Key'
-                            />
-                        </Typography>
+        <>
+            <Drawer
+                title='Configure Key'
+                anchor='right'
+                open={isDrawerOpen}
+                onClose={() => updateDrawerOpen(false)}
+                id='api-chat-configure-key-drawer'
+                PaperProps={{
+                    sx: { width: '70%', borderRadius: 1 },
+                }}
+            >
+                <Box p={2}>
+                    <Grid container justifyContent='space-between' alignItems='center'>
+                        <Grid item xs={10}>
+                            <Typography variant='h6'>
+                                <FormattedMessage
+                                    id='Apis.Details.ApiChat.components.ConfigureKeyDrawer.title'
+                                    defaultMessage='Configure Key'
+                                />
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={2} display='flex' justifyContent='flex-end'>
+                            <IconButton onClick={() => updateDrawerOpen(false)} size='large'>
+                                <Close />
+                            </IconButton>
+                        </Grid>
                     </Grid>
-                    <Grid item xs={2} display='flex' justifyContent='flex-end'>
-                        <IconButton onClick={() => updateDrawerOpen(false)} size='large'>
-                            <Close />
-                        </IconButton>
-                    </Grid>
-                </Grid>
-                <Box>
                     <Grid container padding={2}>
                         {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                             <Paper sx={{ padding: 1 }}>
@@ -195,7 +364,7 @@ const ConfigureKeyDrawer = ({
                             </Paper>
                         )}
                     </Grid>
-                    <Grid container>
+                    <Grid container justifyContent='center' spacing={0}>
                         <TryOutController
                             setSecurityScheme={setSecurityScheme}
                             securitySchemeType={securityScheme}
@@ -228,11 +397,19 @@ const ConfigureKeyDrawer = ({
                             selectedEndpoint={selectedEndpoint}
                             api={api}
                             URLs={null}
+                            autoGenerateToken
                         />
                     </Grid>
                 </Box>
-            </Box>
-        </Drawer>
+            </Drawer>
+            <AIGeneratedApiRequest
+                spec={swagger}
+                accessTokenProvider={accessTokenProvider}
+                authorizationHeader={authorizationHeader}
+                api={api}
+                securitySchemeType={securityScheme}
+            />
+        </>
     );
 };
 
