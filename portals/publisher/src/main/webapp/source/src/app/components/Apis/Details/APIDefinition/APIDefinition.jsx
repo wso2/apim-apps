@@ -202,8 +202,10 @@ class APIDefinition extends React.Component {
             promisedApi = api.getSwagger(api.id);
         }
 
-        this.setState({ securityAuditProperties: settings.securityAuditProperties });
-
+        if (settings) {
+            this.setState({ securityAuditProperties: settings.securityAuditProperties });
+        }
+        
         promisedApi
             .then((response) => {
                 if (api.type === 'GRAPHQL') {

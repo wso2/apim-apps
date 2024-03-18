@@ -443,8 +443,8 @@ class Details extends Component {
                                 id: 'Apis.Details.index.asyncApi.definition',
                                 defaultMessage: 'AsyncAPI Definition',
                             })}
-                            route='asyncApi definition'
-                            to={pathPrefix + 'asyncApi definition'}
+                            route='asyncApi-definition'
+                            to={pathPrefix + 'asyncApi-definition'}
                             Icon={<CodeIcon />}
                         />
                     </>
@@ -1093,7 +1093,7 @@ Details.subPaths = {
     TRYOUT_PRODUCT: '/api-products/:apiprod_uuid/test-console',
     QUERYANALYSIS: '/apis/:api_uuid/queryanalysis',
     TOPICS: '/apis/:api_uuid/topics',
-    ASYNCAPI_DEFINITION: '/apis/:api_uuid/asyncApi definition',
+    ASYNCAPI_DEFINITION: '/apis/:api_uuid/asyncApi-definition',
     POLICIES: '/apis/:api_uuid/policies',
 };
 
