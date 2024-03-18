@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
@@ -146,6 +146,8 @@ export default function ApplicationLevel(props) {
         }
     }, []);
 
+    const [mandatoryValueRef, setMandatoryValueRef] = useState(mandatoryValue);
+
     return (
         (<Root>
             <Grid item xs={12}>
@@ -238,11 +240,14 @@ export default function ApplicationLevel(props) {
                             <RadioGroup
                                 aria-label='HTTP security HTTP mandatory selection'
                                 name={API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY}
-                                value={mandatoryValue}
-                                onChange={({ target: { name, value } }) => configDispatcher({
-                                    action: 'securityScheme',
-                                    event: { name, value },
-                                })}
+                                value={mandatoryValueRef}
+                                onChange={({ target: { name, value } }) => {
+                                    setMandatoryValueRef(value);
+                                    configDispatcher({
+                                        action: 'securityScheme',
+                                        event: { name, value },
+                                    });
+                                }}
                                 row
                             >
                                 <FormControlLabel

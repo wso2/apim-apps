@@ -217,6 +217,8 @@ function TransportLevel(props) {
         }
     }, []);
 
+    const [mandatoryValueRef, setMandatoryValueRef] = useState(mandatoryValue);
+
     return (
         (<Root>
             <Grid item xs={12}>
@@ -249,11 +251,14 @@ function TransportLevel(props) {
                                 <RadioGroup
                                     aria-label='HTTP security SSL mandatory selection'
                                     name={API_SECURITY_MUTUAL_SSL_MANDATORY}
-                                    value={mandatoryValue}
-                                    onChange={({ target: { name, value } }) => configDispatcher({
-                                        action: 'securityScheme',
-                                        event: { name, value },
-                                    })}
+                                    value={mandatoryValueRef}
+                                    onChange={({ target: { name, value } }) => {
+                                        setMandatoryValueRef(value);
+                                        configDispatcher({
+                                            action: 'securityScheme',
+                                            event: { name, value },
+                                        });
+                                    }}
                                     row
                                 >
                                     <FormControlLabel
