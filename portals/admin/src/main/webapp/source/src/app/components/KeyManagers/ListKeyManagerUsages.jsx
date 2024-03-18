@@ -1,4 +1,3 @@
-/* eslint-disable react/jsx-props-no-spreading */
 /*
  * Copyright (c) 2023, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -19,51 +18,41 @@
 
 import React, { useEffect, useState } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';
-import Card from '@material-ui/core/Card';
-import CardActions from '@material-ui/core/CardActions';
-import CardContent from '@material-ui/core/CardContent';
+import Typography from '@mui/material/Typography';
+import Grid from '@mui/material/Grid';
+import { styled, Alert as MUIAlert } from '@mui/material';
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
 import MUIDataTable from 'mui-datatables';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 import Alert from 'AppComponents/Shared/Alert';
-import List from '@material-ui/core/List';
-import Paper from '@material-ui/core/Paper';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
-import DescriptionIcon from '@material-ui/icons/Description';
-import Link from '@material-ui/core/Link';
-import Configurations from 'Config';
+import Paper from '@mui/material/Paper';
 import API from 'AppData/api';
 import WarningBase from 'AppComponents/AdminPages/Addons/WarningBase';
-import { Alert as MUIAlert } from '@material-ui/lab';
 import { useParams } from 'react-router-dom';
-import Box from '@material-ui/core/Box';
-import clsx from 'clsx';
-import Toolbar from '@material-ui/core/Toolbar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
 
-const useStyles = makeStyles((theme) => ({
-    searchInput: {
+const styles = {
+    searchInput: (theme) => ({
         fontSize: theme.typography.fontSize,
-    },
+    }),
     block: {
         display: 'block',
     },
-    contentWrapper: {
+    contentWrapper: (theme) => ({
         margin: theme.spacing(2),
-    },
-    approveButton: {
+    }),
+    approveButton: (theme) => ({
         textDecoration: 'none',
         backgroundColor: theme.palette.success.light,
-    },
-    rejectButton: {
+    }),
+    rejectButton: (theme) => ({
         textDecoration: 'none',
         backgroundColor: theme.palette.error.light,
-    },
+    }),
     pageTitle: {
         minHeight: 43,
         backgroundColor: '#f6f6f6',
@@ -73,7 +62,9 @@ const useStyles = makeStyles((theme) => ({
         minHeight: 'calc(100vh - (100px))',
         backgroundColor: '#eaeff1',
     },
-}));
+};
+
+const StyledDiv = styled('div')({});
 
 /**
  * Render a list
@@ -84,7 +75,6 @@ function ListKeyManagerUsages() {
     const intl = useIntl();
     const [data, setData] = useState(null);
     const restApi = new API();
-    const classes = useStyles();
     const [hasListPermission, setHasListPermission] = useState(true);
     const [kmName, setKmName] = useState('');
     const [errorMessage, setError] = useState(null);
@@ -183,8 +173,8 @@ function ListKeyManagerUsages() {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Aplication.Name',
-                defaultMessage: 'Aplication Name',
+                id: 'Application.Name',
+                defaultMessage: 'Application Name',
             }),
             options: {
                 sort: false,
@@ -194,8 +184,8 @@ function ListKeyManagerUsages() {
         {
             name: 'owner',
             label: intl.formatMessage({
-                id: 'Aplication.Owner',
-                defaultMessage: 'Aplication Owner',
+                id: 'Application.Owner',
+                defaultMessage: 'Application Owner',
             }),
             options: {
                 sort: false,
@@ -205,8 +195,8 @@ function ListKeyManagerUsages() {
         {
             name: 'organization',
             label: intl.formatMessage({
-                id: 'Aplication.organization',
-                defaultMessage: 'Aplication organization',
+                id: 'Application.organization',
+                defaultMessage: 'Application Organization',
             }),
             options: {
                 sort: false,
@@ -249,7 +239,7 @@ function ListKeyManagerUsages() {
                 {...pageProps}
                 pageStyle='small'
             >
-                <Card className={classes.root}>
+                <Card sx={styles.root}>
                     <CardContent>
                         <Typography gutterBottom variant='h5' component='h2'>
                             <FormattedMessage
@@ -312,7 +302,7 @@ function ListKeyManagerUsages() {
     }
     return (
         <>
-            <div className={clsx(classes.root)}>
+            <StyledDiv sx={styles.root}>
                 <Grid
                     container
                     direction='row'
@@ -320,41 +310,16 @@ function ListKeyManagerUsages() {
                     alignItems='flex-start'
                 >
                     <Grid item xs={12}>
-                        <Toolbar className={classes.pageTitle}>
+                        <Toolbar sx={styles.pageTitle}>
                             <Grid container alignItems='center' spacing={1}>
                                 <Grid item xs>
                                     <Typography color='inherit' variant='h5' component='h1'>
                                         <FormattedMessage
-                                            id='KeyManagers.AddEditKeyManager.usages'
+                                            id='KeyManagers.AddEditKeyManager.usages.text'
                                             defaultMessage='Key Manager Usages - '
                                         />
                                         {kmName}
                                     </Typography>
-                                </Grid>
-                                <Grid item>
-                                    <HelpBase>
-                                        <List component='nav' aria-label='main mailbox folders'>
-                                            <ListItem button>
-                                                <ListItemIcon>
-                                                    <DescriptionIcon />
-                                                </ListItemIcon>
-                                                <Link
-                                                    target='_blank'
-                                                    href={Configurations.app.docUrl
-                        + 'learn/consume-api/manage-subscription/advanced-topics/adding'
-                        + '-an-api-subscription-workflow/#adding-an-api-subscription-update-workflow'}
-                                                >
-                                                    <ListItemText primary={(
-                                                        <FormattedMessage
-                                                            id='Workflow.SubscriptionUpdate.help.link.one'
-                                                            defaultMessage='Create a subscription update request'
-                                                        />
-                                                    )}
-                                                    />
-                                                </Link>
-                                            </ListItem>
-                                        </List>
-                                    </HelpBase>
                                 </Grid>
                             </Grid>
                         </Toolbar>
@@ -377,8 +342,10 @@ function ListKeyManagerUsages() {
                                         <Grid item xs={12}>
                                             <Box pl={2}>
                                                 <Typography variant='h8' gutterBottom>
-                                                    {data.apiCount === 1 ? '1 API is using this keymanager specifically.'
-                                                        : data.apiCount + ' APIs are using this keymanager specifically.'}
+                                                    {data.apiCount === 1
+                                                        ? '1 API is using this key manager specifically.'
+                                                        : data.apiCount
+                                                        + ' APIs are using this key manager specifically.'}
                                                 </Typography>
                                             </Box>
                                         </Grid>
@@ -394,11 +361,11 @@ function ListKeyManagerUsages() {
                                                     />
                                                 )}
                                                 {data && data.apis.length === 0 && (
-                                                    <div className={classes.contentWrapper}>
+                                                    <StyledDiv sx={styles.contentWrapper}>
                                                         <Typography color='textSecondary' align='center'>
                                                             {noDataMessage}
                                                         </Typography>
-                                                    </div>
+                                                    </StyledDiv>
                                                 )}
                                             </Paper>
                                         </Box>
@@ -410,7 +377,7 @@ function ListKeyManagerUsages() {
                                             <Typography variant='h8' gutterBottom>
                                                 <FormattedMessage
                                                     id='KeyManagers.AddEditKeyManager.api.no.usages'
-                                                    defaultMessage='No API usages for this keymanager specifically.'
+                                                    defaultMessage='No API usages for this key manager specifically.'
                                                 />
                                             </Typography>
                                         </Box>
@@ -421,7 +388,7 @@ function ListKeyManagerUsages() {
                                 <Box pl={2}>
                                     <Typography variant='h6' gutterBottom>
                                         <FormattedMessage
-                                            id='KeyManagers.AddEditKeyManager.appplicarion.usages'
+                                            id='KeyManagers.AddEditKeyManager.application.usages'
                                             defaultMessage='Application Usages'
                                         />
                                     </Typography>
@@ -434,9 +401,9 @@ function ListKeyManagerUsages() {
                                             <Box pl={2}>
                                                 <Typography variant='h8' gutterBottom>
                                                     {data.applicationCount === 1 ? '1 Application is using this '
-                                            + 'keymanager specifically.'
+                                            + 'key manager specifically.'
                                                         : data.applicationCount + ' Applications are using this '
-                                            + 'keymanager specifically.'}
+                                            + 'key manager specifically.'}
                                                 </Typography>
                                             </Box>
                                         </Grid>
@@ -452,11 +419,11 @@ function ListKeyManagerUsages() {
                                                     />
                                                 )}
                                                 {data && data.applicationCount.length === 0 && (
-                                                    <div className={classes.contentWrapper}>
+                                                    <StyledDiv sx={styles.contentWrapper}>
                                                         <Typography color='textSecondary' align='center'>
                                                             {noDataMessage}
                                                         </Typography>
-                                                    </div>
+                                                    </StyledDiv>
                                                 )}
                                             </Paper>
                                         </Box>
@@ -467,8 +434,9 @@ function ListKeyManagerUsages() {
                                         <Box pl={2}>
                                             <Typography variant='h8' gutterBottom>
                                                 <FormattedMessage
-                                                    id='KeyManagers.AddEditKeyManager.appplicarion.no.usages'
-                                                    defaultMessage='No Application usages for this keymanager specifically.'
+                                                    id='KeyManagers.AddEditKeyManager.application.no.usages'
+                                                    defaultMessage='No Application usages
+                                                     for this key manager specifically.'
                                                 />
                                             </Typography>
                                         </Box>
@@ -477,7 +445,7 @@ function ListKeyManagerUsages() {
                         </Box>
                     </Grid>
                 </Grid>
-            </div>
+            </StyledDiv>
         </>
     );
 }

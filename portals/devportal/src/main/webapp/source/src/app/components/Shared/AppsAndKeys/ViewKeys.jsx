@@ -15,9 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import React from 'react';
 import { styled } from '@mui/material/styles';
-import API from 'AppData/api';
 import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import IconButton from '@mui/material/IconButton';
@@ -247,7 +247,9 @@ class ViewKeys extends React.Component {
      * Handle onCLick of remove keys
      * */
     handleClickRemove = (keyMappingId) => {
-        const { selectedTab, keyType, intl, loadApplication } = this.props;
+        const {
+            selectedTab, keyType, intl, loadApplication,
+        } = this.props;
         this.applicationPromise
             .then((application) => {
                 return application.removeKeys(keyType, selectedTab, keyMappingId);
@@ -394,24 +396,26 @@ class ViewKeys extends React.Component {
                                             }
                                             placement='right'
                                         >
-                                                <IconButton
-                                                    aria-label='Copy to clipboard'
-                                                    classes={{ root: classes.iconButton }}
-                                                    size="large"
-                                                    onClick={() => {navigator.clipboard.writeText(consumerKey).
-                                                    then(() => this.onCopy('keyCopied'))}}
-                                                >
-                                                    <Icon color='secondary'>
-                                                        file_copy
-                                                    </Icon>
-                                                </IconButton>
+                                            <IconButton
+                                                aria-label='Copy to clipboard'
+                                                classes={{ root: classes.iconButton }}
+                                                size='large'
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(consumerKey)
+                                                        .then(() => this.onCopy('keyCopied'));
+                                                }}
+                                            >
+                                                <Icon color='secondary'>
+                                                    file_copy
+                                                </Icon>
+                                            </IconButton>
                                         </Tooltip>
                                     </InputAdornment>
                                 ),
                             }}
                         />
                     </Root>
-                    <FormControl variant="standard">
+                    <FormControl variant='standard'>
                         <FormHelperText id='consumer-key-helper-text'>
                             <FormattedMessage
                                 id='Shared.AppsAndKeys.ViewKeys.consumer.key.title'
@@ -446,7 +450,8 @@ class ViewKeys extends React.Component {
                                                 onClick={() => this.handleShowHidden('showCS')}
                                                 onMouseDown={this.handleMouseDownGeneric}
                                                 id='visibility-toggle-btn'
-                                                size="large">
+                                                size='large'
+                                            >
                                                 {showCS ? <Icon>visibility_off</Icon> : <Icon>visibility</Icon>}
                                             </IconButton>
                                             <Tooltip
@@ -466,9 +471,11 @@ class ViewKeys extends React.Component {
                                                 <IconButton
                                                     aria-label='Copy to clipboard'
                                                     classes={{ root: classes.iconButton }}
-                                                    size="large"
-                                                    onClick={() => {navigator.clipboard.
-                                                    writeText(consumerSecret).then(() => this.onCopy('secretCopied'))}}
+                                                    size='large'
+                                                    onClick={() => {
+                                                        navigator.clipboard
+                                                            .writeText(consumerSecret).then(() => this.onCopy('secretCopied'));
+                                                    }}
                                                 >
                                                     <Icon color='secondary'>file_copy</Icon>
                                                 </IconButton>
@@ -493,7 +500,7 @@ class ViewKeys extends React.Component {
                         )}
                     </Root>
                     {!hashEnabled && (
-                        <FormControl variant="standard">
+                        <FormControl variant='standard'>
                             <FormHelperText id='consumer-secret-helper-text'>
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.ViewKeys.consumer.secret.of.application'
@@ -729,4 +736,4 @@ ViewKeys.propTypes = {
     mode: PropTypes.string,
 };
 
-export default injectIntl(withRouter(withStyles(styles)(ViewKeys)));
+export default injectIntl(withRouter(ViewKeys));

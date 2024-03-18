@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2023, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -194,8 +194,8 @@ export default function ListKeyManagers() {
             const updateSomething = () => {
                 const restApi = new API();
                 const kmName = rowData[0];
-                const kmId = rowData[5];
-                const isGlobal = rowData[6];
+                const kmId = rowData[6];
+                const isGlobal = rowData[7];
                 (isGlobal ? restApi.globalKeyManagerGet(kmId) : restApi.keyManagerGet(kmId)).then((result) => {
                     let editState;
                     if (result.body.name !== null) {
@@ -223,10 +223,10 @@ export default function ListKeyManagers() {
                         });
                 });
             };
-            const kmEnabled = rowData[4];
+            const kmEnabled = rowData[5];
             return (
                 <Switch
-                    disabled={rowData[5] ? !isSuperAdmin : false}
+                    disabled={rowData[7] ? !isSuperAdmin : false}
                     checked={kmEnabled}
                     onChange={updateSomething}
                     color='primary'
@@ -246,17 +246,17 @@ export default function ListKeyManagers() {
             options: {
                 customBodyRender: (value, tableMeta) => {
                     if (typeof tableMeta.rowData === 'object') {
-                        const artifactId = tableMeta.rowData[5];
+                        const artifactId = tableMeta.rowData[6];
                         return (
                             <RouterLink
                                 to={{
                                     pathname: `/settings/key-managers/${artifactId}`,
-                                    state: { isGlobal: tableMeta.rowData[6] },
+                                    state: { isGlobal: tableMeta.rowData[7] },
                                 }}
                             >
                                 {value}
                                 {' '}
-                                {tableMeta.rowData[6] && (
+                                {tableMeta.rowData[7] && (
                                     <Chip
                                         size='small'
                                         label='Global'
@@ -311,7 +311,7 @@ export default function ListKeyManagers() {
             options: {
                 customBodyRender: (value, tableMeta) => {
                     if (typeof tableMeta.rowData === 'object') {
-                        const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
+                        const artifactId = tableMeta.rowData[6];
                         return (
                             <RouterLink to={`/settings/key-managers/usages/${artifactId}`}>
                                 <FormatListBulletedIcon aria-label='key-manager-delete-icon' />
@@ -337,7 +337,7 @@ export default function ListKeyManagers() {
                     const itemName = (typeof tableMeta.rowData === 'object') ? tableMeta.rowData[0] : '';
                     if (editComponentProps && editComponentProps.routeTo) {
                         if (typeof tableMeta.rowData === 'object') {
-                            const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
+                            const artifactId = tableMeta.rowData[6];
                             return (
                                 <div data-testid={`${itemName}-actions`}>
                                     <RouterLink to={editComponentProps.routeTo + artifactId}>

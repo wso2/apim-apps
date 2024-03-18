@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
@@ -165,7 +166,7 @@ const Root = styled('div')((
 
     [`& .${classes.leftCol}`]: {
         width: 180,
-    }
+    },
 }));
 
 function TabPanel(props) {
@@ -235,7 +236,6 @@ class TokenManager extends React.Component {
             importDisabled: false,
             mode: null,
             tokenType: 'DIRECT',
-            isExchangeTokenError: false,
         };
         this.keyStates = {
             COMPLETED: 'COMPLETED',
@@ -1309,7 +1309,6 @@ class TokenManager extends React.Component {
                                                         callbackError={hasError}
                                                         setValidating={this.setValidating}
                                                         defaultTokenEndpoint={defaultTokenEndpoint}
-                                                        selectedApp={selectedApp}
                                                     />
                                                 </Box>
                                             </TabPanel>

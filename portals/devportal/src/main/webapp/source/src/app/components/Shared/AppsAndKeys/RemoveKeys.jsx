@@ -15,20 +15,21 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import React from 'react';
-import Button from '@material-ui/core/Button';
+import Button from '@mui/material/Button';
 import { FormattedMessage } from 'react-intl';
-import DeleteIcon from '@material-ui/icons/Delete';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import DialogContentText from '@material-ui/core/DialogContentText';
-import DialogTitle from '@material-ui/core/DialogTitle';
+import DeleteIcon from '@mui/icons-material/Delete';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 function RemoveKeys(props) {
     const [open, setOpen] = React.useState(false);
     const {
-        keyMappingId, keys, selectedTab, handleClickRemove,
+        keyMappingId, handleClickRemove,
     } = props;
 
     const handleClickOpen = () => {

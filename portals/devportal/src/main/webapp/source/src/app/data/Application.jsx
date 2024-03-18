@@ -257,7 +257,8 @@ export default class Application extends Resource {
      * @param {object} keyManager keyManager configuration object
      * @returns {promise} Update the callbackURL and/or supportedGrantTypes
      */
-    updateKeys(tokenType, keyType, supportedGrantTypes, callbackUrl, consumerKey, consumerSecret, additionalProperties, keyManager, keyMappingId) {
+    updateKeys(tokenType, keyType, supportedGrantTypes, callbackUrl, consumerKey,
+        consumerSecret, additionalProperties, keyManager, keyMappingId) {
         const promisedPut = this.client.then((client) => {
             const requestContent = {
                 keyManager,

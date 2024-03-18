@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars */
 /*
  * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -17,7 +16,7 @@
  * under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
@@ -45,7 +44,6 @@ function Delete({ updateList, dataRow }) {
                 }
             })
             .catch((error) => {
-                const { status } = error;
                 throw (error);
             });
     };
