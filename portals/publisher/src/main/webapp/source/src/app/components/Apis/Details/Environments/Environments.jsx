@@ -16,6 +16,7 @@
  * under the License.
  */
 
+/* eslint-disable */
 import React, { useContext, useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -1224,36 +1225,30 @@ export default function Environments() {
                     />
                     <Popover
                         id='mouse-over-popover'
-                        className={classes.popover}
-                        classes={{
-                            paper: classes.paper,
-
-                        }}
+                        sx={{ pointerEvents: 'none' }}
                         open={openPopover}
                         anchorEl={anchorEl}
                         anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
+                            vertical: 'bottom',
+                            horizontal: 'left',
                         }}
                         transformOrigin={{
-                            vertical: 'bottom',
+                            vertical: 'top',
                             horizontal: 'left',
                         }}
                         onClose={handlePopoverClose}
                         disableRestoreFocus
                     >
-                        <div>
-                            <Typography variant='body1'>
+                        <div style={{ padding: '8px' }}>
+                            <Typography variant='body1' sx={{ mb: 0.5 }}>
                                 <b>{revName}</b>
                             </Typography>
-                            <Typography variant='body2'>
+                            <Typography variant='body2' sx={{ mb: 1}}>
                                 {revDescription}
                             </Typography>
-                            <div className={classes.timePaddingStyle}>
-                                <Typography variant='caption'>
-                                    <span>{moment(revCreatedTime).fromNow()}</span>
-                                </Typography>
-                            </div>
+                            <Typography variant='caption'>
+                                <span>{moment(revCreatedTime).fromNow()}</span>
+                            </Typography>
                         </div>
                     </Popover>
                 </Grid>
@@ -1366,15 +1361,12 @@ export default function Environments() {
                     />
                     <Popover
                         id='mouse-over-popover'
-                        className={classes.popover}
-                        classes={{
-                            paper: classes.paper,
-                        }}
+                        sx={{ pointerEvents: 'none' }}
                         open={openPopover}
                         anchorEl={anchorEl1}
                         anchorOrigin={{
                             vertical: 'bottom',
-                            horizontal: 'right',
+                            horizontal: 'left',
                         }}
                         transformOrigin={{
                             vertical: 'top',
@@ -1383,18 +1375,16 @@ export default function Environments() {
                         onClose={handlePopoverClose}
                         disableRestoreFocus
                     >
-                        <div>
-                            <Typography variant='body1'>
+                        <div style={{ padding: '8px' }}>
+                            <Typography variant='body1' sx={{ mb: 0.5 }}>
                                 <b>{revName}</b>
                             </Typography>
-                            <Typography variant='body2'>
+                            <Typography variant='body2' sx={{ mb: 1}}>
                                 {revDescription}
                             </Typography>
-                            <div className={classes.timePaddingStyle}>
-                                <Typography variant='caption'>
-                                    <span>{moment(revCreatedTime).fromNow()}</span>
-                                </Typography>
-                            </div>
+                            <Typography variant='caption'>
+                                <span>{moment(revCreatedTime).fromNow()}</span>
+                            </Typography>
                         </div>
                     </Popover>
                 </Grid>
@@ -1429,29 +1419,21 @@ export default function Environments() {
                 />
                 <Popover
                     id='mouse-over-popover'
-                    className={classes.popover}
-                    classes={{
-                        paper: classes.paper,
-
-                    }}
+                    sx={{ pointerEvents: 'none' }}
                     open={openPopover}
                     anchorEl={anchorEl}
                     anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
+                        vertical: 'bottom',
+                        horizontal: 'left',
                     }}
                     transformOrigin={{
-                        vertical: 'bottom',
+                        vertical: 'top',
                         horizontal: 'left',
                     }}
                     onClose={handlePopoverClose}
                     disableRestoreFocus
                 >
-                    <div>
-                        <Typography variant='body2'>
-                            {revDescription}
-                        </Typography>
-                    </div>
+                    <Typography sx={{ p: 1 }}>{revDescription}</Typography>
                 </Popover>
             </>
 
@@ -1478,15 +1460,14 @@ export default function Environments() {
                             {item1}
                             <Grid className={classes.textShape2}>
                                 {allRevisions[revision].displayName}
-                                {allRevisions[revision].description && <>
-                                    <ReturnInfoIconItem
-                                        revDescription={allRevisions[revision].description}
-                                    />
-                                    {infoIconItem}
-                                </>
-                                }
+                                {allRevisions[revision].description && (
+                                    <>
+                                        <ReturnInfoIconItem revDescription={allRevisions[revision].description} />
+                                        {infoIconItem}
+                                    </>
+                                )}
                             </Grid>
-                            <Grid style={{display:'flex',flexDirection:'row'}}>
+                            <Grid style={{display:'flex', flexDirection:'row'}}>
                                 <Button
                                     className={classes.textShape3}
                                     onClick={() => toggleOpenConfirmRestore(
