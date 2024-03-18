@@ -133,11 +133,7 @@ const classes = {
 };
 
 
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.root}`]: {
         display: 'flex',
         flexWrap: 'wrap',
@@ -2048,7 +2044,7 @@ export default function Environments() {
                     </DialogTitle>
                     <DialogContent className={classes.dialogContent}>
                         { allRevisions && allRevisions.length === revisionCount && (
-                            <Typography variant='body' align='left' className={classes.warningText}>
+                            <Typography align='left' className={classes.warningText}>
                                 <FormattedMessage
                                     id='Apis.Details.Environments.Environments.select.rev.warning'
                                     defaultMessage={'Please delete a revision as '
@@ -2070,15 +2066,6 @@ export default function Environments() {
                                             defaultMessage='Revision to delete'
                                         />
                                     )}
-                                    SelectProps={{
-                                        MenuProps: {
-                                            anchorOrigin: {
-                                                vertical: 'bottom',
-                                                horizontal: 'left',
-                                            },
-                                            getContentAnchorEl: null,
-                                        },
-                                    }}
                                     name='extraRevisionToDelete'
                                     onChange={handleDeleteSelect}
                                     helperText={allRevisions && allRevisions.filter(
@@ -2531,7 +2518,7 @@ export default function Environments() {
                     </DialogTitle>
                     <DialogContent className={classes.dialogContent}>
                         { allRevisions && allRevisions.length === revisionCount && (
-                            <Typography variant='body' align='left' className={classes.warningText}>
+                            <Typography align='left' className={classes.warningText}>
                                 <FormattedMessage
                                     id='Apis.Details.Environments.Environments.select.rev.warning'
                                     defaultMessage={'Please delete a revision as '
@@ -2553,15 +2540,6 @@ export default function Environments() {
                                             defaultMessage='Revision to delete'
                                         />
                                     )}
-                                    SelectProps={{
-                                        MenuProps: {
-                                            anchorOrigin: {
-                                                vertical: 'bottom',
-                                                horizontal: 'left',
-                                            },
-                                            getContentAnchorEl: null,
-                                        },
-                                    }}
                                     name='extraRevisionToDelete'
                                     onChange={handleDeleteSelect}
                                     helperText={allRevisions && allRevisions.filter(
