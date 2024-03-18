@@ -36,6 +36,7 @@ import AIGeneratedApiRequest from './AIGeneratedApiRequest';
 const ConfigureKeyDrawer = ({
     isDrawerOpen,
     updateDrawerOpen,
+    setTestAccessToken,
 }) => {
     const [api, setApi] = useState(null);
     const [securityScheme, setSecurityScheme] = useState('OAUTH');
@@ -44,7 +45,7 @@ const ConfigureKeyDrawer = ({
     const [scopes, setScopes] = useState([]);
     const [selectedKeyType, setSelectedKeyType] = useState('PRODUCTION');
     const [keys, setKeys] = useState([]);
-    const [selectedEnvironment, setSelectedEnvironment] = useState('production');
+    const [selectedEnvironment, setSelectedEnvironment] = useState('');
     const [productionAccessToken, setProductionAccessToken] = useState('');
     const [sandboxAccessToken, setSandboxAccessToken] = useState('');
     const [environments, setEnvironments] = useState([]);
@@ -56,7 +57,6 @@ const ConfigureKeyDrawer = ({
     const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
     const [authorizationHeader, setAuthorizationHeader] = useState('Authorization');
     const [swagger, setSwagger] = useState(null);
-    // const [defaultKMObject, setDefaultKMObject] = useState(null);
 
     const user = AuthManager.getUser();
     const apiClient = new Api();
@@ -398,6 +398,7 @@ const ConfigureKeyDrawer = ({
                             api={api}
                             URLs={null}
                             autoGenerateToken
+                            setTestAccessToken={setTestAccessToken}
                         />
                     </Grid>
                 </Box>

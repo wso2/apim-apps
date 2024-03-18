@@ -37,7 +37,6 @@ const classes = {
 const Root = styled('div')(({ theme }) => ({
     [`& .${classes.tryAiBottom}`]: {
         position: 'sticky',
-        bottom: 0,
         left: 0,
         right: 0,
         marginLeft: theme.spacing(-1),
@@ -104,7 +103,6 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
     return (
         <Root>
             <Box className={classes.tryAiBottom}>
-                <p>{isAgentTerminating}</p>
                 <Box className={classes.tryAiBottomInner}>
                     {(isAgentRunning || lastQuery) && (
                         <Box className={classes.reExecuteWrap}>
@@ -130,7 +128,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                             </Button>
                         </Box>
                     )}
-                    <Box className={classes.tryAiBottomTextInputWrap}>
+                    <Box className={classes.tryAiBottomTextInputWrap} pl={2}>
                         <TextInput
                             fullWidth
                             size='small'

@@ -51,7 +51,6 @@ interface ApiChatPoweredByProps {
  */
 const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
     openConfigureKey,
-    showSampleQueries = false,
     goBack,
     disableGoBack,
 }) => {
@@ -73,24 +72,22 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                     </Typography>
                 </Box>
                 <Box>
-                    <Box display='flex'>
-                        {showSampleQueries && (
-                            <Box mr={3}>
-                                <Button
-                                    startIcon={<KeyboardBackspaceIcon />}
-                                    id='go-back'
-                                    variant='text'
-                                    size='small'
-                                    onClick={goBack}
-                                    disabled={disableGoBack}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.ApiChat.components.ApiChatPoweredBy.goBack'
-                                        defaultMessage='Go Back'
-                                    />
-                                </Button>
-                            </Box>
-                        )}
+                    <Box display='flex' pr={4}>
+                        <Box mr={3}>
+                            <Button
+                                startIcon={<KeyboardBackspaceIcon />}
+                                id='go-back'
+                                variant='text'
+                                size='small'
+                                onClick={goBack}
+                                disabled={disableGoBack}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.ApiChat.components.ApiChatPoweredBy.goBack'
+                                    defaultMessage='Go Back'
+                                />
+                            </Button>
+                        </Box>
                         <Box>
                             <Button
                                 startIcon={<SettingsOutlinedIcon />}

@@ -583,7 +583,6 @@ class DetailsLegacy extends React.Component {
                                                     iconText='api-console'
                                                     to={pathPrefix + 'api-console'}
                                                     open={open}
-                                                    // submenu
                                                     id='left-menu-test'
                                                 />
                                                 {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi && (
@@ -598,7 +597,6 @@ class DetailsLegacy extends React.Component {
                                                         Icon={<QuestionAnswerIcon style={{ fontSize: 'large', padding: 8 }} />}
                                                         to={pathPrefix + 'api-chat'}
                                                         open={open}
-                                                        // submenu
                                                         id='left-menu-api-chat'
                                                     />
                                                 )}

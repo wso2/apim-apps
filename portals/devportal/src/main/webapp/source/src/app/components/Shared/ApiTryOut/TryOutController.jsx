@@ -168,6 +168,7 @@ function TryOutController(props) {
         setPassword, username, password, updateSwagger, setProductionApiKey, setSandboxApiKey, productionApiKey,
         sandboxApiKey, environmentObject, setURLs, setAdvAuthHeader, setAdvAuthHeaderValue, advAuthHeader,
         advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs, autoGenerateToken = false,
+        setTestAccessToken = null,
     } = props;
     let { selectedKeyManager } = props;
     selectedKeyManager = selectedKeyManager || 'Resident Key Manager';
