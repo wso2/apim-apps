@@ -513,7 +513,7 @@ export default function RuntimeConfiguration() {
                                         {((api.type !== 'GRAPHQL' || !isAsyncAPI) && api.gatewayType !== 'wso2/apk')
                                             && <SchemaValidation api={apiConfig} 
                                                 configDispatcher={configDispatcher} />}
-                                        {api.type === 'GRAPHQL' && (
+                                        {api.type === 'GRAPHQL' && api.gatewayType !== 'wso2/apk' && (
                                             <Box mt={3}>
                                                 <QueryAnalysis
                                                     api={apiConfig}
