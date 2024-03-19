@@ -147,11 +147,10 @@ export default function DeploymentOnboarding(props) {
     const [api] = useAPI();
     const theme = useTheme();
     const { maxCommentLength } = theme.custom;
-    const assignGateway = api.gatewayType === "wso2/synapse" ? "Regular" : "APK";
+    const assignGateway = (api.gatewayType === "wso2/synapse" || api.apiType === "APIPRODUCT") ? "Regular" : "APK";
     const { settings: { environment: environments } } = useAppContext();
     const internalGatewaysFiltered = environments.filter((p) => !p.provider.toLowerCase().includes('solace'));
-    const internalGateways = api.isAPIProduct() ? environments.filter((p) => 
-        !p.provider.toLowerCase().includes('solace')) : internalGatewaysFiltered &&
+    const internalGateways = internalGatewaysFiltered &&
         internalGatewaysFiltered.filter((p) => p.gatewayType.toLowerCase() === assignGateway.toLowerCase());
     const externalGateways = environments.filter((p) => p.provider.toLowerCase().includes('solace'));
     const hasOnlyOneEnvironment = internalGateways.length === 1;

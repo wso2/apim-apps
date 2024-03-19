@@ -124,9 +124,13 @@ function Subscriptions(props) {
     }
     return (
         (<Root>
-            {(api.gatewayVendor === 'wso2')
+            {(api.gatewayVendor === 'wso2') &&
+            (api.gatewayType === 'wso2/synapse' ||
+            api.apiType === API.CONSTS.APIProduct)
             && (<SubscriptionPoliciesManage api={api} policies={policies} setPolices={setPolices} />)}
-            {tenants !== 0 && settings.crossTenantSubscriptionEnabled && (
+            {tenants !== 0 && settings.crossTenantSubscriptionEnabled
+            (api.gatewayType === 'wso2/synapse' ||
+            api.apiType === API.CONSTS.APIProduct) && (
                 <SubscriptionAvailability
                     api={api}
                     availability={availability}
@@ -136,7 +140,9 @@ function Subscriptions(props) {
                 />
             )}
             { updateInProgress && <Progress /> }
-            {(api.gatewayVendor === 'wso2') && (
+            {(api.gatewayVendor === 'wso2') &&
+            (api.gatewayType === 'wso2/synapse' ||
+            api.apiType === API.CONSTS.APIProduct) && (
                 <Grid
                     container
                     direction='row'

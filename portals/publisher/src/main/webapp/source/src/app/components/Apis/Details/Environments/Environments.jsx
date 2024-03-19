@@ -517,12 +517,11 @@ export default function Environments() {
     const restApi = new API();
     const restProductApi = new APIProduct();
     const [selectedRevision, setRevision] = useState([]);
-    const assignGateway = api.gatewayType === "wso2/synapse" ? "Regular" : "APK";
+    const assignGateway = (api.gatewayType === "wso2/synapse" || api.apiType === "APIPRODUCT") ? "Regular" : "APK";
     const externalGateways = settings && settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
     const internalGatewaysFiltered = settings && settings.environment.filter((p) =>
         p.provider.toLowerCase().includes('wso2'));
-    const internalGateways = api.isAPIProduct() ? settings && settings.environment.filter((p) =>
-        p.provider.toLowerCase().includes('wso2')) : internalGatewaysFiltered && internalGatewaysFiltered.filter((p) => 
+    const internalGateways = internalGatewaysFiltered && internalGatewaysFiltered.filter((p) => 
         p.gatewayType.toLowerCase() === assignGateway.toLowerCase()
     );
     const [selectedVhosts, setVhosts] = useState(null);
