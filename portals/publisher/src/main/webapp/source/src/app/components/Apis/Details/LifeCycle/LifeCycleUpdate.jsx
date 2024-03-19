@@ -136,7 +136,7 @@ class LifeCycleUpdate extends Component {
 
         this.api.getRevisionsWithEnv(apiUUID)
             .then((result) => {
-                this.setState({ deploymentsAvailable: result.body.count > 0 });
+                this.setState({ deploymentsAvailable: result.body.count > 0 && this.hasApprovedStatus(result.body)});
                 api.getSettings()
                     .then((response) => {
                         const { customProperties } = response;
@@ -274,6 +274,25 @@ class LifeCycleUpdate extends Component {
         } else {
             this.updateLCStateOfAPI(apiUUID, action);
         }
+    }
+
+    /**
+     * 
+     * @param {*} data 
+     * @returns boolean
+     */
+    hasApprovedStatus(data) {
+        for (const item of data.list) {
+            if (item && item.deploymentInfo && Array.isArray(item.deploymentInfo)) {
+                for (const deployment of item.deploymentInfo) {
+                    if (deployment && (deployment.status === "APPROVED" || deployment.status === null)) {
+                        return true; // At least one status is APPROVED. Null is for API products.
+                    }
+                }
+            }
+        }
+      
+        return false; // No status with APPROVED found
     }
 
     /**
