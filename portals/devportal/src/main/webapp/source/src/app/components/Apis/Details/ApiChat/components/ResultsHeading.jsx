@@ -17,16 +17,17 @@
  */
 
 import React from 'react';
-import { useIntl } from 'react-intl';
-import Button from '@mui/material/Button';
+// import { useIntl } from 'react-intl';
+// import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
-import UnfoldMoreIcon from '@material-ui/icons/UnfoldMore';
-import UnfoldLessIcon from '@material-ui/icons/UnfoldLess';
-import FindInPageIcon from '@material-ui/icons/FindInPage';
-import CodeIcon from '@material-ui/icons/Code';
-import ToggleButton from '@mui/material/ToggleButton';
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+// import UnfoldMoreIcon from '@material-ui/icons/UnfoldMore';
+// import UnfoldLessIcon from '@material-ui/icons/UnfoldLess';
+// import FindInPageIcon from '@material-ui/icons/FindInPage';
+// import CodeIcon from '@material-ui/icons/Code';
+// import ToggleButton from '@mui/material/ToggleButton';
+// import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { styled } from '@mui/material/styles';
 
 const PREFIX = 'ResultsHeading';
@@ -72,25 +73,19 @@ const Root = styled('div')(({ theme }) => ({
 //   ) => void;
 // }
 
-const ResultsHeading = ({
-    executionResults,
-    handleExpandAll,
-    isExpandAllDisabled,
-    handleCollapseAll,
-    isCollapseAllDisabled,
-    resultView,
-    handleToggleResultView,
-}) => {
-    const intl = useIntl();
+const ResultsHeading = () => {
     return (
         <Root>
             <Box className={classes.testResultsHeading}>
                 <Box className={classes.testResultsTitle}>
-                    <Typography gutterBottom variant='h4' component='h4'>
-                        Execution Results
+                    <Typography gutterBottom variant='h5'>
+                        <FormattedMessage
+                            id='Apis.Details.ApiChat.ApiChat.ResultsHeading.title'
+                            defaultMessage='Execution Results'
+                        />
                     </Typography>
                 </Box>
-                {executionResults.length > 0 && (
+                {/* {executionResults.length > 0 && (
                     <Box className={classes.testResultsActions}>
                         <Box>
                             <Button
@@ -141,7 +136,7 @@ const ResultsHeading = ({
                             </ToggleButtonGroup>
                         </Box>
                     </Box>
-                )}
+                )} */}
             </Box>
         </Root>
     );

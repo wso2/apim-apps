@@ -39,18 +39,27 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { Link } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
+import Accordion from '@mui/material/Accordion';
+import AccordionSummary from '@mui/material/AccordionSummary';
+import AccordionDetails from '@mui/material/AccordionDetails';
 // import AlertTitle from '@mui/material/AlertTitle';
 import Api from 'AppData/api';
 import { app } from 'Settings';
 import { CircularProgress, Typography } from '@mui/material';
+import Card from '@mui/material/Card';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import CardContent from '@mui/material/CardContent';
 import Utils from 'AppData/Utils';
 import Progress from 'AppComponents/Shared/Progress';
-import Input from '@mui/material/Input';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+// import Input from '@mui/material/Input';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
 import ConfigureKeyDrawer from './components/ConfigureKeyDrawer';
 import SampleQueryCard from './components/SampleQueryCard';
+import ResultsHeading from './components/ResultsHeading';
 // @ts-ignore
 // import SamplePrepareResponse from './data/mockData.json';
 // import ApiChatApi from './data/ApiChatApi';
@@ -63,6 +72,8 @@ const PREFIX = 'ApiChat';
 
 const classes = {
     tryWithAiMain: `${PREFIX}-tryWithAiMain`,
+    finalOutcomeContent: `${PREFIX}-finalOutcomeContent`,
+    lastQueryWrap: `${PREFIX}-lastQueryWrap`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -71,6 +82,22 @@ const Root = styled('div')(({ theme }) => ({
         display: 'flex',
         flexDirection: 'column',
         padding: theme.spacing(1),
+    },
+    [`& .${classes.finalOutcomeContent}`]: {
+        background: theme.palette.grey[100],
+        padding: theme.spacing(2),
+        marginTop: theme.spacing(2),
+    },
+    [`& .${classes.lastQueryWrap}`]: {
+        // background: theme.palette.grey[100],
+        // padding: theme.spacing(2),
+        // marginBottom: theme.spacing(2),
+        // borderRadius: 2,
+        // borderColor: theme.palette.grey[100],
+        // padding: theme.spacing(2),
+        // borderColor: theme.palette.grey[100],
+        // borderRadius: theme.spacing(1),
+        // borderWidth: 1,
     },
 }));
 
@@ -154,6 +181,7 @@ const ApiChat = () => {
     const [finalOutcome, setFinalOutcome] = useState('');
     const [executionResults, setExecutionResults] = useState([]);
     const [isExecutionError, setIsExecutionError] = useState(false);
+    // const [expandedPanel, setExpandedPanel] = useState(false);
     // const [request, setRequest] = useState({});
     // const [isAgentTerminating, setIsAgentTerminating] = useState(false);
 
@@ -361,7 +389,7 @@ const ApiChat = () => {
 
     useEffect(() => {
         if (api.id && agentAvailabilityStatus === 'ACTIVE') {
-            setIsAgentRunning(true);
+            // setIsAgentRunning(true);
             setIsEnrichingSpec(true);
             setSpecEnrichmentError('');
             setSpecEnrichmentErrorLevel('');
@@ -387,7 +415,7 @@ const ApiChat = () => {
                     );
                     setSpecEnrichmentErrorLevel(error?.response?.body?.level === 'WARN' ? 'warning' : 'error');
                 });
-            setIsAgentRunning(false);
+            // setIsAgentRunning(false);
         }
     }, [agentAvailabilityStatus]);
 
@@ -461,6 +489,10 @@ const ApiChat = () => {
 
     const sendSubsequentRequest = async (requestId, resource) => {
         const dummyResponse = getDummyApiInvocationResult(resource);
+        setExecutionResults([
+            ...executionResults,
+            dummyResponse,
+        ]);
         const executePromise = apiClient.runAiAgentSubsequentIterations(
             requestId,
             dummyResponse,
@@ -602,6 +634,7 @@ const ApiChat = () => {
                     defaultMessage: 'Execution was terminated.',
                 }),
             );
+            setIsAgentRunning(false);
         } else {
             abortControllerRef.current = new AbortController();
             const query = lastQuery;
@@ -653,6 +686,14 @@ const ApiChat = () => {
         }
     };
 
+    // const handlePanelChange = (panel) => {
+    //     setExpandedPanel(
+    //         isExpanded
+    //             ? [...(expandedPanel || []), panel]
+    //             : (expandedPanel || []).filter((id) => id !== panel),
+    //     );
+    // };
+
     // useEffect(() => {
     //     if (executionResults.length > 0) {
     //         setExpandedPanel([executionResults[executionResults.length - 1].id]);
@@ -677,6 +718,100 @@ const ApiChat = () => {
                     //     lastQuery !== '' || isAgentRunning || finalOutcome !== ''
                     // }
                 />
+                {(isAgentRunning || lastQuery || finalOutcome) && (
+                    <Box maxHeight='60%' overflow='auto'>
+                        <OutlinedInput
+                            fullWidth
+                            disabled
+                            defaultValue={lastQuery}
+                            sx={{ marginBottom: 2 }}
+                            // endAdornment={<InputAdornment position="end">kg</InputAdornment>}
+                        />
+                        {/* <Box className={classes.lastQueryWrap}>
+                            <Typography variant='body1'>
+                                {lastQuery}
+                            </Typography>
+                        </Box> */}
+                        <Box className={classes.resultCard}>
+                            <Card fullHeight testId='results-card'>
+                                <CardContent fullHeight>
+                                    <ResultsHeading />
+                                    {executionResults.map((executionResult) => {
+                                        return (
+                                            <Accordion>
+                                                <AccordionSummary
+                                                    expandIcon={<ExpandMoreIcon />}
+                                                >
+                                                    <>
+                                                        <CheckCircleIcon color='success' sx={{ paddingRight: 2 }} />
+                                                        <Typography variant='body1'>
+                                                            {'Executed ' + executionResult.path}
+                                                        </Typography>
+                                                    </>
+                                                </AccordionSummary>
+                                                <AccordionDetails>
+                                                    <Typography variant='body1'>
+                                                        {executionResult.body.description}
+                                                    </Typography>
+                                                </AccordionDetails>
+                                            </Accordion>
+                                        );
+                                    })}
+                                    {!isAgentRunning && finalOutcome && !isExecutionError && (
+                                        <Box display='flex' justifyContent='center' className={classes.finalOutcomeContent}>
+                                            <Typography variant='body1'>
+                                                {finalOutcome}
+                                            </Typography>
+                                        </Box>
+                                    )}
+                                    {!isAgentRunning && finalOutcome && isExecutionError && (
+                                        <Box>
+                                            <Typography variant='body1'>
+                                                <Alert severity={isExecutionError ? 'error' : 'success'}>
+                                                    {finalOutcome}
+                                                </Alert>
+                                            </Typography>
+                                        </Box>
+                                    )}
+                                    {isAgentRunning && (
+                                        <Box display='flex' justifyContent='center'>
+                                            <CircularProgress size={20} />
+                                            <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
+                                                <FormattedMessage
+                                                    id='Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage'
+                                                    defaultMessage='Loading result ...'
+                                                />
+                                            </Typography>
+                                        </Box>
+                                        // <Box className={classes.queryProcessLoader}>
+                                        //     {isAgentTerminating ? (
+                                        //         <>
+                                        //             <CircularProgress size={20} />
+                                        //             <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
+                                        //                 <FormattedMessage
+                                        //                     id='modules.testComponent.TryWithAIViewer.terminatingExecutionMessage'
+                                        //                     defaultMessage='Execution is terminating...'
+                                        //                 />
+                                        //             </Typography>
+                                        //         </>
+                                        //     ) : (
+                                        //         <>
+                                        //             <CircularProgress size={20} />
+                                        //             <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
+                                        //                 <FormattedMessage
+                                        //                     id='modules.testComponent.TryWithAIViewer.loadingExecutionMessage'
+                                        //                     defaultMessage='Loading next execution step...'
+                                        //                 />
+                                        //             </Typography>
+                                        //         </>
+                                        //     )}
+                                        // </Box>
+                                    )}
+                                </CardContent>
+                            </Card>
+                        </Box>
+                    </Box>
+                )}
                 {!lastQuery && (
                     <ApiChatBanner />
                 )}
@@ -735,14 +870,14 @@ const ApiChat = () => {
                             )}
                         </Box>
                     )}
-                {'executionResults ' + executionResults + 'isExecutionError >> '
-                + isExecutionError + 'finalOutcomee >> ' + finalOutcome}
-                {(isAgentRunning || lastQuery || finalOutcome) && (
+                {/* {'executionResults ' + executionResults + 'isExecutionError >> '
+                + isExecutionError + 'finalOutcomee >> ' + finalOutcome} */}
+                {/* {(isAgentRunning || lastQuery || finalOutcome) && (
                     <Input
                         disableUnderline
                         defaultValue={lastQuery}
                     />
-                )}
+                )} */}
                 <ApiChatExecute
                     isAgentRunning={isAgentRunning}
                     isAgentTerminating={false}
