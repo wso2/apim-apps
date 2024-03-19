@@ -2613,6 +2613,12 @@
       "value": "Provide the document type"
     }
   ],
+  "Apis.Details.Documents.CreateEditForm.document.create.type.other.error.document.category.helper.text": [
+    {
+      "type":0,
+      "value": "Document type cannot be empty"
+    }
+  ],
   "Apis.Details.Documents.CreateEditForm.document.create.type.public.forum": [
     {
       "type": 0,
