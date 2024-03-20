@@ -16,7 +16,6 @@
  * under the License.
  */
 
-/* eslint-disable */
 import React, { useContext, useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
