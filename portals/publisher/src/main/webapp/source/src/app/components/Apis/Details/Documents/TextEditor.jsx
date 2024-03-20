@@ -50,7 +50,7 @@ const classes = {
     button: `${PREFIX}-button`
 };
 
-const Root = styled('div')({
+const StyledDialog = styled(Dialog)({
     [`& .${classes.appBar}`]: {
         position: 'relative',
     },
@@ -154,7 +154,7 @@ function TextEditor(props) {
 
     const {  docName } = props;
     return (
-        <Root>
+        <div>
             <Button
                 onClick={toggleOpen} disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
                 aria-label={'Edit Content of ' + docName}
@@ -162,7 +162,7 @@ function TextEditor(props) {
                 <Icon>description</Icon>
                 <FormattedMessage id='Apis.Details.Documents.TextEditor.edit.content' defaultMessage='Edit Content' />
             </Button>
-            <Dialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
+            <StyledDialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
                 <Paper square className={classes.popupHeader}>
                     <IconButton color='inherit' onClick={toggleOpen} aria-label='Close' size='large'>
                         <Icon>close</Icon>
@@ -196,8 +196,8 @@ function TextEditor(props) {
                         onEditorStateChange={onEditorStateChange}
                     />
                 </div>
-            </Dialog>
-        </Root>
+            </StyledDialog>
+        </div>
     );
 }
 

@@ -194,7 +194,7 @@ function TransportLevel(props) {
     let mandatoryValue = API_SECURITY_MUTUAL_SSL_OPTIONAL;
     // If not mutual ssl security is selected, no mandatory values should be pre-selected
     if (!isMutualSSLEnabled) {
-        mandatoryValue = 'null';
+        mandatoryValue = null;
     } else if (
         !(securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2) || securityScheme.includes(API_SECURITY_BASIC_AUTH)
             || securityScheme.includes(API_SECURITY_API_KEY))
