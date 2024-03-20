@@ -17,7 +17,6 @@
 */
 
 /* eslint-disable react/jsx-props-no-spreading */
-
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import {
@@ -74,6 +73,9 @@ const classes = {
 };
 
 const Root = styled('div')(({ theme }: { theme: Theme }) => ({
+    '&': {
+        padding: `${theme.spacing(1)} ${theme.spacing(3)}`,
+    },
     [`& .${classes.table}`]: {
         marginLeft: 'auto',
         marginRight: 'auto',
@@ -714,20 +716,18 @@ const Listing: React.FC = () => {
                 customBodyRender: (value: string, tableMeta: any) => {        
                     const policyDescription = tableMeta.rowData[3];          
                     return (
-                        <Root>
-                            <Grid container alignItems='center'>
-                                <Grid item>
-                                    {value}
-                                </Grid>
-                                <Grid item>
-                                    <Tooltip title={policyDescription}>       
-                                        <IconButton size='small' aria-label='description-text'>
-                                            <InfoOutlinedIcon/>
-                                        </IconButton>
-                                    </Tooltip>
-                                </Grid>
+                        <Grid container alignItems='center'>
+                            <Grid item>
+                                {value}
                             </Grid>
-                        </Root>
+                            <Grid item>
+                                <Tooltip title={policyDescription}>       
+                                    <IconButton size='small' aria-label='description-text'>
+                                        <InfoOutlinedIcon/>
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                        </Grid>
                     );
                 }
             }      
@@ -1101,78 +1101,80 @@ const Listing: React.FC = () => {
      * MUI Table for the policies.
      */
     return (
-        <div className={classes.heading}>
-            <Grid
-                className={classes.titleWrapper}
-                xs={12}
-                sm={12}
-                md={11}
-                lg={11}
-                item
-            >
-                <Typography
-                    variant='h4'
-                    align='left'
-                    component='h1'
-                    className={classes.mainTitle}
+        <Root>
+            <div className={classes.heading}>
+                <Grid
+                    className={classes.titleWrapper}
+                    xs={12}
+                    sm={12}
+                    md={11}
+                    lg={11}
+                    item
                 >
-                    <FormattedMessage
-                        id='GlobalPolicies.Listing.policies.title.name'
-                        defaultMessage='Global Policies'
-                    />
-                </Typography>
-                <Tooltip
-                    title={
+                    <Typography
+                        variant='h4'
+                        align='left'
+                        component='h1'
+                        className={classes.mainTitle}
+                    >
                         <FormattedMessage
-                            id='GlobalPolicies.Listing.policies.title.tooltip'
-                            defaultMessage={
-                                'This will add policies globally to the gateways. ' +
-                                'Please navigate to the Policies tab under any desired API ' +
-                                'if you want to add API / operation level policies'
-                            }
+                            id='GlobalPolicies.Listing.policies.title.name'
+                            defaultMessage='Global Policies'
                         />
-                    }
-                    placement='bottom-start'
-                >
-                    <IconButton size='small' aria-label='Policy-helper-text'>
-                        <HelpOutlineIcon fontSize='small' />
-                    </IconButton>
-                </Tooltip>
-                {!isRestricted(['apim:gateway_policy_manage']) 
-                    ? <Box pl={1}>
-                        <Button 
-                            color='primary' 
-                            variant='outlined' 
-                            size='small' 
-                            data-testid='add-new-global-policy'
-                            component={Link}
-                            to='/global-policies/create'
-                        >
-                            <AddCircle className={classes.buttonIcon} />
+                    </Typography>
+                    <Tooltip
+                        title={
                             <FormattedMessage
-                                id='GlobalPolicies.Listing.policies.title.add.new.policy'
-                                defaultMessage='Add new global policy'
+                                id='GlobalPolicies.Listing.policies.title.tooltip'
+                                defaultMessage={
+                                    'This will add policies globally to the gateways. ' +
+                                    'Please navigate to the Policies tab under any desired API ' +
+                                    'if you want to add API / operation level policies'
+                                }
                             />
-                        </Button>
-                    </Box>  
-                    :null}
-            </Grid>
-            <Grid
-                className={classes.table}
-                xs={12}
-                sm={12}
-                md={11}
-                lg={11}
-                item
-            >
-                <MUIDataTable
-                    title={false}
-                    data={policiesList}
-                    columns={columns}
-                    options={options}
-                />
-            </Grid>
-        </div>
+                        }
+                        placement='bottom-start'
+                    >
+                        <IconButton size='small' aria-label='Policy-helper-text'>
+                            <HelpOutlineIcon fontSize='small' />
+                        </IconButton>
+                    </Tooltip>
+                    {!isRestricted(['apim:gateway_policy_manage']) 
+                        ? <Box pl={1}>
+                            <Button 
+                                color='primary' 
+                                variant='outlined' 
+                                size='small' 
+                                data-testid='add-new-global-policy'
+                                component={Link}
+                                to='/global-policies/create'
+                            >
+                                <AddCircle className={classes.buttonIcon} />
+                                <FormattedMessage
+                                    id='GlobalPolicies.Listing.policies.title.add.new.policy'
+                                    defaultMessage='Add new global policy'
+                                />
+                            </Button>
+                        </Box>  
+                        :null}
+                </Grid>
+                <Grid
+                    className={classes.table}
+                    xs={12}
+                    sm={12}
+                    md={11}
+                    lg={11}
+                    item
+                >
+                    <MUIDataTable
+                        title={false}
+                        data={policiesList}
+                        columns={columns}
+                        options={options}
+                    />
+                </Grid>
+            </div>
+        </Root>
     );
 };
 

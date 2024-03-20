@@ -50,7 +50,7 @@ const classes = {
     button: `${PREFIX}-button`
 };
 
-const Root = styled('div')({
+const StyledDialog = styled(Dialog)({
     [`& .${classes.appBar}`]: {
         position: 'relative',
     },
@@ -175,7 +175,7 @@ function MarkdownEditor(props) {
 
     const {  docName } = props;
     return (
-        <Root>
+        <div>
             <Button onClick={toggleOpen} disabled={api.isRevision}  aria-label={'Edit Content of ' + docName}>
                 <Icon>code</Icon>
                 <FormattedMessage
@@ -183,7 +183,7 @@ function MarkdownEditor(props) {
                     defaultMessage="Edit Content"
                 />
             </Button>
-            <Dialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
+            <StyledDialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
                 <Paper square className={classes.popupHeader}>
                     <IconButton color="inherit" onClick={toggleOpen} aria-label="Close" size='large'>
                         <Icon>close</Icon>
@@ -257,8 +257,8 @@ function MarkdownEditor(props) {
                         </Grid>
                     </Grid>
                 </div>
-            </Dialog>
-        </Root>
+            </StyledDialog>
+        </div>
     );
 }
 

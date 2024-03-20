@@ -116,8 +116,8 @@ export default function Tags(props) {
                         }}
                         style={{
                             backgroundColor: (regexPattern.test(value) || value.length > 30) ? red[300] : null,
-                            margin: '0 8px 12px 0',
                             float: 'left',
+                            marginRight: '8px',
                         }}
                     />
                 )}
