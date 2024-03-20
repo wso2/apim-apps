@@ -32,6 +32,7 @@ import API from 'AppData/api.js';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { isRestricted } from 'AppData/AuthManager';
 import APIValidation from 'AppData/APIValidation';
+import { Alert } from 'AppComponents/Shared';
 
 const PREFIX = 'BusinessInformation';
 
@@ -143,7 +144,13 @@ class BusinessInformation extends React.Component {
         const businessInformation = {
             businessOwner, businessOwnerEmail, technicalOwner, technicalOwnerEmail,
         };
-        updateAPI({ businessInformation });
+        updateAPI({ businessInformation }).catch((error) => {
+            if (error.response) {
+                Alert.error(error.response.body.description);
+            } else {
+                Alert.error('Error occurred while updating business information');
+            }
+        });
     }
 
     /**

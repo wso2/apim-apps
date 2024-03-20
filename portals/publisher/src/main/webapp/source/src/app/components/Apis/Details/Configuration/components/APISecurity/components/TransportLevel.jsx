@@ -194,7 +194,7 @@ function TransportLevel(props) {
     let mandatoryValue = API_SECURITY_MUTUAL_SSL_OPTIONAL;
     // If not mutual ssl security is selected, no mandatory values should be pre-selected
     if (!isMutualSSLEnabled) {
-        mandatoryValue = 'null';
+        mandatoryValue = null;
     } else if (
         !(securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2) || securityScheme.includes(API_SECURITY_BASIC_AUTH)
             || securityScheme.includes(API_SECURITY_API_KEY))
@@ -216,6 +216,8 @@ function TransportLevel(props) {
             });
         }
     }, []);
+
+    const [mandatoryValueRef, setMandatoryValueRef] = useState(mandatoryValue);
 
     return (
         (<Root>
@@ -249,11 +251,14 @@ function TransportLevel(props) {
                                 <RadioGroup
                                     aria-label='HTTP security SSL mandatory selection'
                                     name={API_SECURITY_MUTUAL_SSL_MANDATORY}
-                                    value={mandatoryValue}
-                                    onChange={({ target: { name, value } }) => configDispatcher({
-                                        action: 'securityScheme',
-                                        event: { name, value },
-                                    })}
+                                    value={mandatoryValueRef}
+                                    onChange={({ target: { name, value } }) => {
+                                        setMandatoryValueRef(value);
+                                        configDispatcher({
+                                            action: 'securityScheme',
+                                            event: { name, value },
+                                        });
+                                    }}
                                     row
                                 >
                                     <FormControlLabel

@@ -39,7 +39,7 @@ const Root = styled('div')((
     [`&.${classes.tokenWrapper}`]: {
         paddingLeft: theme.spacing(2),
         paddingRight: theme.spacing(2),
-        width: '160%',
+        width: '90%',
     },
 }));
 

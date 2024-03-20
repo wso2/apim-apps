@@ -28,7 +28,7 @@ export default {
             },
         },
         MuiButton: {
-            label: {
+            root: {
                 textTransform: 'none',
             },
             contained: {

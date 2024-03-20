@@ -155,7 +155,7 @@ const Root = styled('div')((
     [`& .${classes.shapeRec}`]: {
         backgroundColor: 'black',
         alignSelf: 'center',
-        width: 120,
+        width: 121,
         height: 3,
     },
 
@@ -198,15 +198,15 @@ const Root = styled('div')((
         border: '2px solid #ffffff',
         width: 47,
         height: 47,
-        marginTop: 6,
-        marginLeft: 6,
+        marginTop: 8,
+        marginLeft: 8,
         placeSelf: 'middle',
     },
 
     [`& .${classes.plusIconStyle}`]: {
         marginTop: 8,
         marginLeft: 8,
-        fontSize: 30,
+        fontSize: 30,  
     },
 
     [`& .${classes.shapeDottedStart1}`]: {
@@ -226,7 +226,7 @@ const Root = styled('div')((
     [`& .${classes.textShape2}`]: {
         display: 'flex',
         alignItems: 'center',
-        marginTop: 8,
+        marginTop: 12,
         marginLeft: 115,
         height: '18px',
         fontFamily: 'sans-serif',
@@ -261,7 +261,7 @@ const Root = styled('div')((
         color: '#415A85',
     },
 
-    [`& .${classes.textShape4}`]: {
+    [`& .${classes.textShape4}`]: {             
         marginTop: 55,
     },
 
@@ -307,6 +307,7 @@ const Root = styled('div')((
         paddingLeft: '15px',
         width: 15,
         height: 15,
+        marginBottom: '2px'
     },
 
     [`& .${classes.changeCard}`]: {
@@ -436,6 +437,54 @@ const Root = styled('div')((
     }
 }));
 
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+    [`& .${classes.changeCard}`]: {
+        boxShadow: 15,
+        borderRadius: '10px',
+        backgroundColor: theme.palette.secondary.highlight,
+    },
+
+    [`& .${classes.dialogPaper}`]: {
+        width: '800px',
+        maxHeight: '800px',
+    },
+
+    [`& .${classes.cardHeight}`]: {
+        boxShadow: 1,
+        height: '100%',
+    },
+
+    [`& .${classes.cardContentHeight}`]: {
+        boxShadow: 1,
+        height: '50%',
+    },
+
+    [`& .${classes.createRevisionDialogStyle}`]: {
+        width: '800px',
+    },
+
+    [`& .${classes.dialogContent}`]: {
+        overflow: 'auto',
+        height: '90%',
+    },
+
+    [`& .${classes.warningText}`]: {
+        color: '#ff0000',
+    },
+
+    [`& .${classes.textCount}`]: {
+        marginTop: theme.spacing(-2.5),
+    },
+
+    [`& .${classes.sectionTitle}`]: {
+        marginBottom: theme.spacing(2),
+    },
+
+    [`& .${classes.textCount}`]: {
+        marginTop: theme.spacing(-2.5),
+    },
+}))
+
 /**
  * Renders an Environments list
  * @class Environments
@@ -468,7 +517,7 @@ export default function Environments() {
     const restApi = new API();
     const restProductApi = new APIProduct();
     const [selectedRevision, setRevision] = useState([]);
-    const assignGateway = api.gatewayType === "wso2/synapse" ? "Regular" : "APK";
+    const assignGateway = (api.gatewayType === "wso2/synapse" || api.apiType === "APIPRODUCT") ? "Regular" : "APK";
     const externalGateways = settings && settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
     const internalGatewaysFiltered = settings && settings.environment.filter((p) =>
         p.provider.toLowerCase().includes('wso2'));
@@ -1216,7 +1265,7 @@ export default function Environments() {
         <Grid
             className={classes.containerInline}
         >
-            <Grid item className={classes.shapeRec} />
+            <Grid item className={classes.shapeRec}/>
             <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
                 <Grid className={clsx(classes.shapeInnerInactive, classes.shapeCircle)} />
             </Grid>
@@ -1436,7 +1485,7 @@ export default function Environments() {
                                 </>
                                 }
                             </Grid>
-                            <Grid>
+                            <Grid style={{display:'flex',flexDirection:'row'}}>
                                 <Button
                                     className={classes.textShape3}
                                     onClick={() => toggleOpenConfirmRestore(
@@ -1486,7 +1535,7 @@ export default function Environments() {
                                 </>
                                 }
                             </Grid>
-                            <Grid className={classes.textPadding}>
+                            <Grid className={classes.textPadding} style={{display:'flex',flexDirection:'row'}}>
                                 <Button
                                     className={classes.textShape3}
                                     onClick={() => toggleOpenConfirmRestore(
@@ -1646,7 +1695,7 @@ export default function Environments() {
         if (!gatewayRevisions.length) {
             // Content to display when there is no revision
             return (
-                <div>
+                <div style={{display: 'flex', alignItems: 'center'}}>
                     <TextField
                         id='revision-selector'
                         select
@@ -1756,7 +1805,7 @@ export default function Environments() {
             );
         }
         return (
-            <div>
+            <div style={{display: 'flex', alignItems: 'center'}}>
                 <TextField
                     id='revision-selector'
                     select
@@ -2003,13 +2052,13 @@ export default function Environments() {
                 </Grid>
             )}
             <Grid container>
-                <Dialog
+                <StyledDialog
                     open={openDeployPopup}
                     onClose={handleCloseDeployPopup}
                     aria-labelledby='form-dialog-title'
                     classes={{ paper: classes.dialogPaper }}
                 >
-                    <DialogTitle id='form-dialog-title' variant='h2'>
+                    <DialogTitle id='form-dialog-title' variant='h5'>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.deploy.new.revision.heading'
                             defaultMessage='Deploy New Revision'
@@ -2127,7 +2176,7 @@ export default function Environments() {
                                         <Grid item xs={4}>
                                             <Card
                                                 style={{
-                                                    opacity: allEnvRevision.some(o1 => {
+                                                    opacity: allEnvRevision && allEnvRevision.some(o1 => {
                                                         return o1.deploymentInfo.some(o2 =>
                                                             o2.name === row.name &&
                                                             o2.status === 'CREATED');
@@ -2143,7 +2192,7 @@ export default function Environments() {
                                                     <CardHeader
                                                         action={
                                                             <>
-                                                                {allEnvRevision.some(o1 => {
+                                                                {allEnvRevision && allEnvRevision.some(o1 => {
                                                                     return o1.deploymentInfo.some(o2 =>
                                                                         o2.name === row.name &&
                                                                         o2.status === 'CREATED');
@@ -2253,7 +2302,7 @@ export default function Environments() {
                                                                 </Tooltip>
                                                             </Grid>
                                                             <Grid item>
-                                                                {allEnvRevision
+                                                                {allEnvRevision && allEnvRevision
                                                                     .filter(o1 => {
                                                                         if (o1.deploymentInfo.some(
                                                                             o2 => o2.name === row.name &&
@@ -2276,7 +2325,7 @@ export default function Environments() {
                                                                     ))}
                                                             </Grid>
                                                             <Grid item>
-                                                                {allEnvRevision
+                                                                {allEnvRevision && allEnvRevision
                                                                     .filter(o1 => {
                                                                         if (o1.deploymentInfo.some(
                                                                             o2 => o2.name === row.name &&
@@ -2437,7 +2486,7 @@ export default function Environments() {
                             />
                         </Button>
                     </DialogActions>
-                </Dialog>
+                </StyledDialog>
             </Grid>
             {allRevisions && allRevisions.length !== 0 && (
                 <>
@@ -2486,13 +2535,13 @@ export default function Environments() {
                 </>
             )}
             <Grid container>
-                <Dialog
+                <StyledDialog
                     open={open}
                     onClose={handleClose}
                     aria-labelledby='form-dialog-title'
                     classes={{ paper: classes.createRevisionDialogStyle }}
                 >
-                    <DialogTitle id='form-dialog-title' variant='h2'>
+                    <DialogTitle id='form-dialog-title' variant='h5'>
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.revision.create.heading'
                             defaultMessage='Create New Revision (From Current API)'
@@ -2616,7 +2665,7 @@ export default function Environments() {
                             />
                         </Button>
                     </DialogActions>
-                </Dialog>
+                </StyledDialog>
             </Grid>
             {api.lifeCycleStatus !== 'RETIRED' 
             &&  allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
@@ -2953,7 +3002,7 @@ export default function Environments() {
                                                         </Button>
                                                     </div>
                                                 ) : (
-                                                    <div>
+                                                    <div style={{display:'flex',justifyContent: 'center'}}>
                                                         <TextField
                                                             id='revision-selector'
                                                             select

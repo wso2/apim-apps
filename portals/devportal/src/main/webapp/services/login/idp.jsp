@@ -131,6 +131,16 @@
                 dcrRequestData.put("owner", (String) APIUtil.getTenantAdminUserName(serviceProviderTenantDomain));
                 dcrRequestData.put("grantType", "authorization_code refresh_token");
                 dcrRequestData.put("saasApp", true);
+
+                Object isJWTEnabledObj = Util.readJsonObj(settingsResponse, "IsJWTEnabledForLoginTokens");
+                if (isJWTEnabledObj != null && isJWTEnabledObj instanceof Boolean) {
+                    boolean isJWTEnabledForLoginTokens = (boolean) isJWTEnabledObj;
+                    if (isJWTEnabledForLoginTokens) {
+                        dcrRequestData.put("tokenType", "JWT");
+                        dcrRequestData.put("userStoreDomainInSubject", true);
+                    }
+                }
+                
                 log.debug(dcrRequestData);
                 HttpRequest postReq = HttpRequest.newBuilder()
                         .uri(URI.create(dcrUrl))

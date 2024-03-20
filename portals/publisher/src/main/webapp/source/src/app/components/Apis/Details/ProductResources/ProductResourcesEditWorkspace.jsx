@@ -512,7 +512,8 @@ function ProductResourcesEdit(props) {
                     body: { list },
                 } = response;
                 const filteredList = list.filter((theApi) => theApi.lifeCycleStatus !== 'PROTOTYPED' &&
-                    theApi.lifeCycleStatus !== 'RETIRED' && theApi.lifeCycleStatus !== 'DEPRECATED'
+                    theApi.lifeCycleStatus !== 'RETIRED' && theApi.lifeCycleStatus !== 'DEPRECATED' &&
+                    theApi.gatewayType === 'wso2/synapse'
                 );
 
                 setAllApis(filteredList);
@@ -535,7 +536,7 @@ function ProductResourcesEdit(props) {
         return <ResourceNotFound message={resourceNotFountMessage} />;
     }
     return (
-        <Root style={{ border: '2px solid blue'}}>
+        <Root>
             {allApis.length === 0 && !fromSearch ? (
                 <Grid container>
                     <Typography className={classes.messageWrapper}>

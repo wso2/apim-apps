@@ -490,12 +490,12 @@ function AddEditKeyManager(props) {
         }
         promisedAddKeyManager.then(() => {
             if (id) {
-                Alert.success(`${displayName} ${intl.formatMessage({
+                Alert.success(`${name} ${intl.formatMessage({
                     id: 'KeyManager.edit.success',
                     defaultMessage: ' - Key Manager edited successfully.',
                 })}`);
             } else {
-                Alert.success(`${displayName} ${intl.formatMessage({
+                Alert.success(`${name} ${intl.formatMessage({
                     id: 'KeyManager.add.success.msg',
                     defaultMessage: ' - Key Manager added successfully.',
                 })}`);
@@ -1722,144 +1722,156 @@ function AddEditKeyManager(props) {
                         </>
                     )}
                     {/* Permissions */}
-                    <Grid item xs={12} md={12} lg={3}>
-                        <Box display='flex' flexDirection='row' alignItems='center'>
-                            <Box flex='1'>
-                                <Typography color='inherit' variant='subtitle2' component='div'>
-                                    <FormattedMessage
-                                        id='KeyManager.permissions'
-                                        defaultMessage='Permissions'
-                                    />
-                                </Typography>
-                                <Typography color='inherit' variant='caption' component='p'>
-                                    <FormattedMessage
-                                        id='KeyManager.AddEditKeyManager.permissions.add.description'
-                                        defaultMessage='Permissions for the Key Manager'
-                                    />
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
-                            <FormControl
-                                variant='outlined'
-                                fullWidth
-                            >
-                                <InputLabel sx={{ position: 'relative' }}>
-                                    <FormattedMessage
-                                        defaultMessage='Key Manager Permission'
-                                        id='Admin.KeyManager.permission.type'
-                                    />
-                                    <StyledSpan>*</StyledSpan>
-                                </InputLabel>
-                                <Select
-                                    variant='outlined'
-                                    id='Admin.KeyManager.form.permission.select'
-                                    name='KeyManagerPermissionRestrict'
-                                    value={permissionStatus}
-                                    onChange={onChange}
-                                    data-testid='key-manager-permission-select'
-                                >
-                                    <MenuItem key='PUBLIC' value='PUBLIC'>
-                                        Public
-                                    </MenuItem>
-                                    <MenuItem key='ALLOW' value='ALLOW'>
-                                        Allow for role(s)
-                                    </MenuItem>
-                                    <MenuItem key='DENY' value='DENY'>
-                                        Deny for role(s)
-                                    </MenuItem>
-                                </Select>
-                            </FormControl>
-                            {
-                                (permissionStatus === 'ALLOW' || permissionStatus === 'DENY')
-                                && (
-                                    <Box
-                                        display='flex'
-                                        flexDirection='row'
-                                        alignItems='center'
-                                        sx={{ m: '20px 0px' }}
-                                    >
-                                        <MuiChipsInput
-                                            fullWidth
-                                            label='Roles'
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                            name='KeyManagerPermissions'
-                                            variant='outlined'
-                                            value={validRoles.concat(invalidRoles)}
-                                            placeholder='Type roles and press Enter'
-                                            clearInputOnBlur
-                                            data-testid='key-manager-permission-roles'
-                                            InputProps={{
-                                                endAdornment: !roleValidity && (
-                                                    <InputAdornment
-                                                        position='end'
-                                                        sx={{ position: 'absolute', right: '25px', top: '50%' }}
-                                                    >
-                                                        <Error color='error' />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            onAddChip={handleRoleAddition}
-                                            renderChip={(ChipComponent, key, ChipProps) => (
-                                                <ChipComponent
-                                                    key={ChipProps.label}
-                                                    label={ChipProps.label}
-                                                    onDelete={() => handleRoleDeletion(ChipProps.label)}
-                                                    data-testid={ChipProps.label}
-                                                    style={{
-                                                        backgroundColor: invalidRoles.includes(ChipProps.label)
-                                                            ? red[300] : null,
-                                                        margin: '8px 8px 8px 0',
-                                                        float: 'left',
-                                                    }}
+                    {
+                        !isGlobal && (
+                            <>
+                                <Grid item xs={12} md={12} lg={3}>
+                                    <Box display='flex' flexDirection='row' alignItems='center'>
+                                        <Box flex='1'>
+                                            <Typography color='inherit' variant='subtitle2' component='div'>
+                                                <FormattedMessage
+                                                    id='KeyManager.permissions'
+                                                    defaultMessage='Permissions'
                                                 />
-                                            )}
-                                            error={!roleValidity}
-                                            helperText={
-                                                !roleValidity ? (
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Scopes.Roles.Invalid'
-                                                        defaultMessage='Invalid Role(s) Found'
-                                                    />
-                                                ) : [
-                                                    (permissionStatus === 'ALLOW'
-                                                        ? (
-                                                            <FormattedMessage
-                                                                id='KeyManager.enter.permission.allowed'
-                                                                defaultMessage='Use of this Key-Manager is
-                                                                 "Allowed" for above roles.'
-                                                            />
-                                                        )
-                                                        : (
-                                                            <FormattedMessage
-                                                                id='KeyManager.enter.permission.denied'
-                                                                defaultMessage='Use of this Key-Manager is
-                                                                 "Denied" for above roles.'
-                                                            />
-                                                        )
-                                                    ),
-                                                    ' ',
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Scopes.CreateScope.roles.help'
-                                                        defaultMessage='Enter a valid role and press `Enter`'
-                                                    />,
-                                                ]
-                                            }
-                                        />
+                                            </Typography>
+                                            <Typography color='inherit' variant='caption' component='p'>
+                                                <FormattedMessage
+                                                    id='KeyManager.AddEditKeyManager.permissions.add.description'
+                                                    defaultMessage='Permissions for the Key Manager'
+                                                />
+                                            </Typography>
+                                        </Box>
                                     </Box>
-                                )
-                            }
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
+                                </Grid>
+                                <Grid item xs={12} md={12} lg={9}>
+                                    <Box component='div' m={1}>
+                                        <FormControl
+                                            variant='outlined'
+                                            fullWidth
+                                        >
+                                            <InputLabel sx={{ position: 'relative' }}>
+                                                <FormattedMessage
+                                                    defaultMessage='Key Manager Permission'
+                                                    id='Admin.KeyManager.permission.type'
+                                                />
+                                                <StyledSpan>*</StyledSpan>
+                                            </InputLabel>
+                                            <Select
+                                                variant='outlined'
+                                                id='Admin.KeyManager.form.permission.select'
+                                                name='KeyManagerPermissionRestrict'
+                                                value={permissionStatus}
+                                                onChange={onChange}
+                                                data-testid='key-manager-permission-select'
+                                            >
+                                                <MenuItem key='PUBLIC' value='PUBLIC'>
+                                                    Public
+                                                </MenuItem>
+                                                <MenuItem key='ALLOW' value='ALLOW'>
+                                                    Allow for role(s)
+                                                </MenuItem>
+                                                <MenuItem key='DENY' value='DENY'>
+                                                    Deny for role(s)
+                                                </MenuItem>
+                                            </Select>
+                                        </FormControl>
+                                        {
+                                            (permissionStatus === 'ALLOW' || permissionStatus === 'DENY')
+                                            && (
+                                                <Box
+                                                    display='flex'
+                                                    flexDirection='row'
+                                                    alignItems='center'
+                                                    sx={{ m: '20px 0px' }}
+                                                >
+                                                    <MuiChipsInput
+                                                        fullWidth
+                                                        label='Roles'
+                                                        InputLabelProps={{
+                                                            shrink: true,
+                                                        }}
+                                                        name='KeyManagerPermissions'
+                                                        variant='outlined'
+                                                        value={validRoles.concat(invalidRoles)}
+                                                        placeholder='Type roles and press Enter'
+                                                        clearInputOnBlur
+                                                        data-testid='key-manager-permission-roles'
+                                                        InputProps={{
+                                                            endAdornment: !roleValidity && (
+                                                                <InputAdornment
+                                                                    position='end'
+                                                                    sx={{
+                                                                        position: 'absolute',
+                                                                        right: '25px',
+                                                                        top: '50%',
+                                                                    }}
+                                                                >
+                                                                    <Error color='error' />
+                                                                </InputAdornment>
+                                                            ),
+                                                        }}
+                                                        onAddChip={handleRoleAddition}
+                                                        renderChip={(ChipComponent, key, ChipProps) => (
+                                                            <ChipComponent
+                                                                key={ChipProps.label}
+                                                                label={ChipProps.label}
+                                                                onDelete={() => handleRoleDeletion(ChipProps.label)}
+                                                                data-testid={ChipProps.label}
+                                                                style={{
+                                                                    backgroundColor:
+                                                                        invalidRoles.includes(ChipProps.label)
+                                                                            ? red[300] : null,
+                                                                    margin: '8px 8px 8px 0',
+                                                                    float: 'left',
+                                                                }}
+                                                            />
+                                                        )}
+                                                        error={!roleValidity}
+                                                        helperText={
+                                                            !roleValidity ? (
+                                                                <FormattedMessage
+                                                                    id='Apis.Details.Scopes.Roles.Invalid'
+                                                                    defaultMessage='Invalid Role(s) Found'
+                                                                />
+                                                            ) : [
+                                                                (permissionStatus === 'ALLOW'
+                                                                    ? (
+                                                                        <FormattedMessage
+                                                                            id='KeyManager.enter.permission.allowed'
+                                                                            defaultMessage='Use of this Key-Manager is
+                                                                            "Allowed" for above roles.'
+                                                                        />
+                                                                    )
+                                                                    : (
+                                                                        <FormattedMessage
+                                                                            id='KeyManager.enter.permission.denied'
+                                                                            defaultMessage='Use of this Key-Manager is
+                                                                            "Denied" for above roles.'
+                                                                        />
+                                                                    )
+                                                                ),
+                                                                ' ',
+                                                                <FormattedMessage
+                                                                    id='Apis.Details.Scopes.CreateScope.roles.help'
+                                                                    defaultMessage='Enter a valid role and press
+                                                                    `Enter`'
+                                                                />,
+                                                            ]
+                                                        }
+                                                    />
+                                                </Box>
+                                            )
+                                        }
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Box marginTop={2} marginBottom={2}>
+                                        <StyledHr />
+                                    </Box>
+                                </Grid>
+                            </>
+                        )
+                    }
                     <Grid item xs={12} md={12} lg={3}>
                         <Typography
                             color='inherit'

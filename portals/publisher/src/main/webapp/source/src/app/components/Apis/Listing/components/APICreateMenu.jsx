@@ -49,6 +49,7 @@ const Root = styled('div')(({ theme }) => {
             '-ms-transform': 'translateY(-50%)',
             transform: 'translateY(-50%)',
             margin: 'auto',
+            backgroundColor: 'rgba(0, 0, 0, 0.08)',
         },
         [`& .${classes.popover}`]: {
             [theme.breakpoints.down('md')]: {
@@ -128,7 +129,7 @@ const APICreateMenu = () => {
                                 <GraphqlAPIMenu isCreateMenu icon={graphqlIcon} />
                                 <StreamingAPIMenu isCreateMenu icon={streamingApiIcon} />
                                 <Box display={{ xs: 'none', md: 'block' }} mx={2}>
-                                    <Divider className={classes.dividerCls} light orientation='vertical' 
+                                    <Divider className={classes.dividerCls} orientation='vertical' 
                                         variant='inset' />
                                 </Box>
                                 <ServiceCatalogMenu isCreateMenu icon={streamingApiIcon} />

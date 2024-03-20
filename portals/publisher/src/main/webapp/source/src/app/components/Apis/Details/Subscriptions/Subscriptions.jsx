@@ -91,8 +91,11 @@ function Subscriptions(props) {
                 Alert.info('Subscription configurations updated successfully');
             })
             .catch((error) => {
-                console.error(error);
-                Alert.error('Error occurred while updating subscription configurations');
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error('Error occurred while updating subscription configurations');
+                }
             }).finally(() => {
                 setUpdateInProgress(false);
             });
@@ -121,9 +124,13 @@ function Subscriptions(props) {
     }
     return (
         (<Root>
-            {(api.gatewayVendor === 'wso2')
+            {(api.gatewayVendor === 'wso2') &&
+            (api.gatewayType === 'wso2/synapse' ||
+            api.apiType === API.CONSTS.APIProduct)
             && (<SubscriptionPoliciesManage api={api} policies={policies} setPolices={setPolices} />)}
-            {tenants !== 0 && settings.crossTenantSubscriptionEnabled && (
+            {tenants !== 0 && settings.crossTenantSubscriptionEnabled
+            (api.gatewayType === 'wso2/synapse' ||
+            api.apiType === API.CONSTS.APIProduct) && (
                 <SubscriptionAvailability
                     api={api}
                     availability={availability}
@@ -133,7 +140,9 @@ function Subscriptions(props) {
                 />
             )}
             { updateInProgress && <Progress /> }
-            {(api.gatewayVendor === 'wso2') && (
+            {(api.gatewayVendor === 'wso2') &&
+            (api.gatewayType === 'wso2/synapse' ||
+            api.apiType === API.CONSTS.APIProduct) && (
                 <Grid
                     container
                     direction='row'

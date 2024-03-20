@@ -18,16 +18,13 @@
 
 import React, { useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
-import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
-import CloseIcon from '@mui/icons-material/Close';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Divider from '@mui/material/Divider';
-import Button from '@mui/material/Button';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';
@@ -39,6 +36,7 @@ const classes = {
     title: `${PREFIX}-title`,
     heading: `${PREFIX}-heading`,
     column: `${PREFIX}-column`,
+    row: `${PREFIX}-row`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
@@ -52,13 +50,12 @@ const Root = styled('div')((
     },
 
     [`& .${classes.title}`]: {
-        fontSize: theme.typography.pxToRem(15),
+        fontSize: theme.typography.pxToRem(29),
         fontWeight: 'bold',
         flexBasis: '50%',
         flexShrink: 0,
-        marginTop: theme.spacing(2),
+        marginTop: theme.spacing(1),
         marginBottom: theme.spacing(2),
-        marginLeft: theme.spacing(4),
         marginRight: theme.spacing(1),
     },
 
@@ -71,11 +68,23 @@ const Root = styled('div')((
         marginBottom: theme.spacing(1),
     },
 
+}));
+
+const StyledAccordionDetails = styled(AccordionDetails)((
+    {
+        theme,
+    },
+) => ({
+
     [`& .${classes.column}`]: {
         fontSize: theme.typography.pxToRem(15),
         fontWeight: theme.typography.fontWeightRegular,
         flexBasis: '33.33%',
         marginLeft: theme.spacing(1),
+    },
+
+    [`& .${classes.row}`]: {
+        display: 'flex',
     },
 }));
 
@@ -83,12 +92,27 @@ const Root = styled('div')((
  * This component retrieve complexity details of API
  * @param {*} props The props passed to the layout
  */
-
-export default function QueryComplexityView(props) {
+export default function QueryComplexityView() {
     const { api } = useContext(ApiContext);
-    const { open, setOpen } = props;
     const [typelist, setTypeList] = useState([]);
     const [state, setState] = useState(null);
+
+    const useThemeDetector = () => {
+        const getCurrentTheme = () => window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const [isDarkTheme, setIsDarkTheme] = useState(getCurrentTheme());
+        const mqListener = ((e) => {
+            setIsDarkTheme(e.matches);
+        });
+
+        useEffect(() => {
+            const darkThemeMq = window.matchMedia('(prefers-color-scheme: dark)');
+            darkThemeMq.addEventListener('change', mqListener);
+            return () => darkThemeMq.removeEventListener('change', mqListener);
+        }, []);
+        return isDarkTheme;
+    };
+
+    const isDarkTheme = useThemeDetector();
 
     /**
      * If no complexity is defined for fields,Get default complexity value of 1.
@@ -132,10 +156,6 @@ export default function QueryComplexityView(props) {
             });
     }, []);
 
-    const handleClose = () => {
-        setOpen(!open);
-    };
-
     if (state === null) {
         return <Progress />;
     }
@@ -149,9 +169,6 @@ export default function QueryComplexityView(props) {
                             defaultMessage='Custom Complexity Values'
                         />
                     </div>
-                    <Button size='small' onClick={handleClose}>
-                        <CloseIcon />
-                    </Button>
                 </div>
                 <Divider />
                 <div
@@ -160,9 +177,14 @@ export default function QueryComplexityView(props) {
                 >
                     <div>
                         {typelist.map((res) => (
-                            <Accordion>
+                            <Accordion
+                                sx={{
+                                    backgroundColor: isDarkTheme ? '#212a3b' : '#fff',
+                                    color: isDarkTheme ? '#b7c2d7' : '#3b4b68',
+                                }}
+                            >
                                 <AccordionSummary
-                                    expandIcon={<ExpandMoreIcon />}
+                                    expandIcon={<ExpandMoreIcon sx={{ color: isDarkTheme ? '#b7c2d7' : '#3b4b68' }} />}
                                     aria-controls='panel1a-content'
                                     id='panel1a-header'
                                 >
@@ -172,15 +194,17 @@ export default function QueryComplexityView(props) {
                                 </AccordionSummary>
                                 <Divider />
                                 {state.map((respond) => ((respond.type === res) && (
-                                    <AccordionDetails>
-                                        <div className={classes.column}>
-                                            {respond.field}
-                                            {':'}
+                                    <StyledAccordionDetails>
+                                        <div className={classes.row}>
+                                            <div className={classes.column}>
+                                                {respond.field}
+                                                {':'}
+                                            </div>
+                                            <div className={classes.column}>
+                                                {respond.complexityValue}
+                                            </div>
                                         </div>
-                                        <div className={classes.column}>
-                                            {respond.complexityValue}
-                                        </div>
-                                    </AccordionDetails>
+                                    </StyledAccordionDetails>
                                 )))}
                             </Accordion>
                         ))}
@@ -190,8 +214,3 @@ export default function QueryComplexityView(props) {
         </Root>
     );
 }
-
-QueryComplexityView.propTypes = {
-    open: PropTypes.isRequired,
-    setOpen: PropTypes.func.isRequired,
-};

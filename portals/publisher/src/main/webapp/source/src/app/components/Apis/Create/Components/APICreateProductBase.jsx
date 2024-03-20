@@ -17,8 +17,8 @@ export default function APICreateProductBase(props) {
             Following two grids control the placement of whole create page
             For centering the content better use `container` props, but instead used an empty grid item for flexibility
              */}
-            <Grid item sm={false} md={3}/>
-            <Grid item sm={12} md={6}>
+            <Grid item sm={false} md={2}/>
+            <Grid item sm={12} md={8}>
                 <Grid container sx={{ pt: 2 }}>
                     <Grid item md={12} sx={{ mb: 3 }}>
                         {title}

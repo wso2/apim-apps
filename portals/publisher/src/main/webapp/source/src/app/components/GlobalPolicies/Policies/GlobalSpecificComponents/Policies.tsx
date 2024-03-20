@@ -22,7 +22,6 @@ import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import Alert from 'AppComponents/Shared/Alert';
 import TextField from '@mui/material/TextField';
-import { Theme } from '@mui/material';
 import React, { useState, useEffect, useMemo, FC } from 'react';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
@@ -41,49 +40,41 @@ import { GlobalPolicyContextProvider } from '../GlobalPolicyContext';
 import PolicyPanel from './PolicyPanel';
 import { uuidv4 } from '../Utils';
 
-const PREFIX = 'Policies';
-
-const classes = {
-    textField: `${PREFIX}-textField`,
-    titleLink: `${PREFIX}-titleLink`,
-    titleWrapper: `${PREFIX}-titleWrapper`,
-    operationListingBox: `${PREFIX}-operationListingBox`,
-    paper: `${PREFIX}-paper`,
-    button: `${PREFIX}-button`
-};
-
-const StyledGlobalPolicyContextProvider = styled(GlobalPolicyContextProvider)(({ theme }: { theme: Theme }) => ({
-    [`& .${classes.textField}`]: {
+const styles = {
+    textField: {
         backgroundColor: 'white', 
     },
 
-    [`& .${classes.titleLink}`]: {
-        color: theme.palette.primary.dark,
+    titleLink: (theme : any) => ({
+        color: 'primary.dark',
         marginRight: theme.spacing(1),
-    },
+    }),
 
-    [`& .${classes.titleWrapper}`]: {
+    titleWrapper: (theme : any) => ({
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
         marginBottom: theme.spacing(3),
-    },
+    }),
 
-    [`& .${classes.operationListingBox}`]: {
+    operationListingBox: {
         display: 'flex',
         overflowY: 'scroll',
     },
 
-    [`& .${classes.paper}`]: {
+    paper: {
         display: 'flex',
         flexDirection: 'column',
         flex: 1
     },
 
-    [`& .${classes.button}`]: {
+    button: {
         width: '200px'
     }
-}));
+};
+
+const StyledDiv = styled('div')({});
+const StyledLink = styled(Link)({});
 
 interface PolicyProps {
     isCreateNew: boolean;
@@ -498,22 +489,22 @@ const Policies: FC<PolicyProps> =  ({
     }
 
     return (
-        <StyledGlobalPolicyContextProvider value={providerValue}>
+        <GlobalPolicyContextProvider value={providerValue}>
             <Box mt={3} mb={3} ml={5} mr={5}>   
                 <DndProvider backend={HTML5Backend}>
                     {/**
                     * Breadcrumb Navigation.
                     */}
                     <Grid item md={12}>
-                        <div className={classes.titleWrapper}>
-                            <Link to='/global-policies' className={classes.titleLink}>
+                        <StyledDiv sx={styles.titleWrapper}>
+                            <StyledLink to='/global-policies' sx={styles.titleLink}>
                                 <Typography variant='h4' component='h1'>
                                     <FormattedMessage
                                         id='globalPolicies.heading'
                                         defaultMessage='Global Policies'
                                     />
                                 </Typography>
-                            </Link>
+                            </StyledLink>
                             <Icon>keyboard_arrow_right</Icon>
                             <Typography variant='h4' component='h2'>
                                 {isCreateNew ? 
@@ -528,7 +519,7 @@ const Policies: FC<PolicyProps> =  ({
                                     />
                                 }
                             </Typography>
-                        </div>
+                        </StyledDiv>
                     </Grid>
 
                     {/**
@@ -546,7 +537,7 @@ const Policies: FC<PolicyProps> =  ({
                             variant='outlined'
                             value={name}
                             onChange={handleNameChange}
-                            className={classes.textField}
+                            sx={styles.textField}
                         />
                     </Box>
                     <Box mb={2}>
@@ -563,15 +554,15 @@ const Policies: FC<PolicyProps> =  ({
                             variant='outlined'
                             value={description}
                             onChange={handleDescriptionChange}
-                            className={classes.textField}
+                            sx={styles.textField}
                         />
                     </Box>  
                     
-                    <Box className={classes.operationListingBox}>  
+                    <Box sx={styles.operationListingBox}>  
                         {/**
                         * Left side panel where we can drop policies.
                         */}
-                        <Paper className={classes.paper}>
+                        <Paper sx={styles.paper}>
                             <Card variant='outlined'>
                                 <CardContent>
                                     <Box height='100vh'>
@@ -601,7 +592,7 @@ const Policies: FC<PolicyProps> =  ({
                 */}
                 <Box mt={2}>      
                     <Button
-                        className={classes.button}
+                        sx={styles.button}
                         type='submit'
                         variant='contained'
                         color='primary'
@@ -623,7 +614,7 @@ const Policies: FC<PolicyProps> =  ({
                     </Button> 
                 </Box>
             </Box>
-        </StyledGlobalPolicyContextProvider>
+        </GlobalPolicyContextProvider>
     );
 };
 

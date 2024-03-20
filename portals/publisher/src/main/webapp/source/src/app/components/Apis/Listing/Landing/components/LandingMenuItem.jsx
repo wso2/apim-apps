@@ -49,6 +49,7 @@ const LandingMenuItem = (props) => {
                         id={id}
                         component={RouterLink}
                         to={linkTo}
+                        underline='hover'
                     >
                         {children}
                     </Link>

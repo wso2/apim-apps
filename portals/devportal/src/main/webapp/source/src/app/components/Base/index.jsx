@@ -91,6 +91,7 @@ const Root = styled('div')((
     },
 ) => {
     const pageMaxWidth = theme.custom.page.style === 'fluid' ? 'none' : theme.custom.page.width;
+    const footerHeight = theme.custom.footer.active ? theme.custom.footer.height : 0;
     return {
         [`& .${classes.appBar}`]: {
             position: 'fixed',
@@ -131,9 +132,9 @@ const Root = styled('div')((
             overflowY: 'auto',
             overflowX: 'hidden',
             position: 'relative',
-            minHeight: 'calc(100vh - 114px)',
+            minHeight: theme.custom.banner.active ? `calc(100vh - ${64 + footerHeight}px)` : `calc(100vh - ${footerHeight}px)`,
             marginLeft: -4,
-            marginTop: 64,
+            marginTop: theme.custom.banner.active ? 0 : '64px',
         },
         [`& .${classes.push}`]: {
             height: 50,
@@ -188,6 +189,11 @@ const Root = styled('div')((
             display: 'flex',
             distributeContent: theme.custom.banner.textAlign,
             justifyContent: theme.custom.banner.textAlign,
+            top: 0,
+            position: 'fixed',
+            width: '100%',
+            boxSizing: 'border-box',
+            zIndex: 1000,
         },
         [`& .${classes.listRoot}`]: {
             padding: 0,
@@ -268,6 +274,7 @@ class LayoutLegacy extends React.Component {
             openUserMenu: false,
             selected: 'home',
             anchorEl: null,
+            bannerHeight: 0,
         };
         this.toggleGlobalNavBar = this.toggleGlobalNavBar.bind(this);
         const { history } = props;
@@ -284,6 +291,17 @@ class LayoutLegacy extends React.Component {
         const { history: { location }, theme } = this.props;
         document.body.style.backgroundColor = theme.custom.page.emptyAreadBackground || '#ffffff';
         this.detectCurrentMenu(location);
+        if (theme.custom.banner.active) {
+            if (theme.custom.banner.style === 'image') {
+                setTimeout(() => {
+                    const bannerElement = document.getElementById('bannerElement');
+                    this.setState({ bannerHeight: bannerElement.clientHeight });
+                }, 1000);
+            } else {
+                const bannerElement = document.getElementById('bannerElement');
+                this.setState({ bannerHeight: bannerElement.clientHeight });
+            }
+        }
     }
 
     detectCurrentMenu = (location) => {
@@ -426,7 +444,7 @@ class LayoutLegacy extends React.Component {
         return (
             <Root>
                 {active && (
-                    <div className={classes.banner}>
+                    <div className={classes.banner} id='bannerElement'>
                         {style === 'text' ? text
                             : (
                                 <img
@@ -481,8 +499,13 @@ class LayoutLegacy extends React.Component {
                     }}
                 />
                 <div className={classes.reactRoot} id='pageRoot'>
-                    <div className={classes.wrapper}>
-                        <AppBar position='fixed' className={classes.appBar} id='appBar'>
+                    <div className={classes.wrapper} style={{ marginTop: active ? (this.state.bannerHeight + 64) + 'px' : 0 }}>
+                        <AppBar
+                            position='fixed'
+                            className={classes.appBar}
+                            id='appBar'
+                            style={{ top: active ? this.state.bannerHeight + 'px' : 0 }}
+                        >
                             <Toolbar className={classes.toolbar} id='toolBar'>
                                 <Hidden mdUp>
                                     <IconButton onClick={this.toggleGlobalNavBar} color='inherit' size='large'>

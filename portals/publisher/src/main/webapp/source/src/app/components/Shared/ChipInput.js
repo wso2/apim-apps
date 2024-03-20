@@ -38,7 +38,7 @@ const classes = {
   marginDense: `${PREFIX}-marginDense`
 };
 
-const StyledChip = styled(Chip)(({ theme }) => {
+const StyledFormControl = styled(FormControl)(({ theme }) => {
   const light = theme.palette.mode === 'light'
   const bottomLineColor = light ? 'rgba(0, 0, 0, 0.42)' : 'rgba(255, 255, 255, 0.7)'
   return {
@@ -47,7 +47,7 @@ const StyledChip = styled(Chip)(({ theme }) => {
       display: 'inline-flex',
       flexWrap: 'wrap',
       flex: 1,
-      marginTop: 0,
+      margin: 0,
       minWidth: 70,
       width: '100%',
       '&$outlined,&$filled': {
@@ -82,11 +82,7 @@ const StyledChip = styled(Chip)(({ theme }) => {
     },
     [`& .${classes.outlined}`]: {
       '& input': {
-        height: 16,
-        paddingTop: 4,
-        paddingBottom: 12,
-        marginTop: 4,
-        marginBottom: 4
+        padding: theme.spacing(2),
       }
     },
     [`& .${classes.standard}`]: {},
@@ -104,6 +100,8 @@ const StyledChip = styled(Chip)(({ theme }) => {
     [`& .${classes.labeled}`]: {},
     [`& .${classes.label}`]: {
       top: 4,
+      padding: '0 8px',
+      backgroundColor: theme.palette.background.paper,
       '&$outlined&:not($labelShrink)': {
         top: 2,
         '$marginDense &': {
@@ -182,7 +180,10 @@ const StyledChip = styled(Chip)(({ theme }) => {
       margin: '0 8px 8px 0',
       float: 'left'
     },
-    [`& .${classes.marginDense}`]: {}
+    [`& .${classes.marginDense}`]: {},
+    [`& .MuiChip-root`]: {
+      margin: '0 !important',
+    },
   };
 });
 
@@ -599,7 +600,7 @@ class ChipInput extends React.Component {
     const InputComponent = variantComponent[variant]
 
     return (
-      <FormControl
+      <StyledFormControl
         ref={rootRef}
         fullWidth={fullWidth}
         className={cx(className, classes.root, {
@@ -670,7 +671,7 @@ class ChipInput extends React.Component {
             {helperText}
           </FormHelperText>
         )}
-      </FormControl>
+      </StyledFormControl>
     )
   }
 }

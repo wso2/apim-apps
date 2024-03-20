@@ -95,7 +95,7 @@ const Policies: React.FC = () => {
     const [policies, setPolicies] = useState<Policy[] | null>(null);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
-    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/choreo-connect');
+    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/apk');
     const { showMultiVersionPolicies } = Configurations.apis;
     const [selectedTab, setSelectedTab] = useState((api.apiPolicies != null) ? 0 : 1);
 
@@ -451,7 +451,7 @@ const Policies: React.FC = () => {
 
         // Handles normal policy savings for choreo connect gateway type.
         if(isChoreoConnectEnabled) {
-            getewayTypeForPolicies = "wso2/choreo-connect";
+            getewayTypeForPolicies = "wso2/apk";
         }
 
         const updatePromise = updateAPI({
@@ -461,6 +461,13 @@ const Policies: React.FC = () => {
             gatewayType: getewayTypeForPolicies
         });
         updatePromise
+            .catch((error: any) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error('Error occurred while updating the policies');
+                }
+            })
             .finally(() => {
                 setUpdating(false);
             });
@@ -507,7 +514,7 @@ const Policies: React.FC = () => {
                         />
                     </Typography>
                 </Box>
-                {(api.type === 'HTTP') && (
+                {/* {(api.type === 'HTTP') && (
                     <Box mb={4} px={1}>
                         <GatewaySelector
                             setIsChangedToCCGatewayType={setIsChangedToCCGatewayType}
@@ -515,7 +522,7 @@ const Policies: React.FC = () => {
                             removeAPIPoliciesForGatewayChange={removeAPIPoliciesForGatewayChange}
                         />
                     </Box>
-                )}
+                )} */}
                 <Box display='flex' flexDirection='row'>
                     <Box width='65%' p={1} className={classes.operationListingBox}>
                         <Paper className={classes.paper}>
@@ -539,7 +546,6 @@ const Policies: React.FC = () => {
                                         }
                                         id='api-level-policies-tab'
                                         aria-controls='api-level-policies-tabpanel'
-                                        disabled={isChoreoConnectEnabled}
                                     />
                                     <Tab
                                         label={
