@@ -46,7 +46,9 @@ import {
     API_SECURITY_BASIC_AUTH,
     API_SECURITY_API_KEY,
     API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY,
+    API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL,
     API_SECURITY_MUTUAL_SSL_MANDATORY,
+    API_SECURITY_MUTUAL_SSL_OPTIONAL,
     API_SECURITY_MUTUAL_SSL,
 } from './components/APISecurity/components/apiSecurityConstants';
 import WebSubConfiguration from './components/WebSubConfiguration';
@@ -243,21 +245,26 @@ export default function RuntimeConfiguration() {
                 return { ...copyAPIConfig(state), [action]: value };
             case 'securityScheme':
                 // If event came from mandatory selector of either Application level or Transport level
-                if (
-                    [API_SECURITY_MUTUAL_SSL_MANDATORY, API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY]
-                        .includes(event.name)
-                ) {
-                    // If user select not mandatory (optional) , Remove the respective schema, else add it
-                    if (event.value === 'optional') {
-                        return {
-                            ...copyAPIConfig(state),
-                            [action]: state[action].filter((schema) => schema !== event.name),
-                        };
-                    } else if (state[action].includes(event.name)) {
-                        return state; // Add for completeness, Ideally there couldn't exist this state
-                    } else {
-                        return { ...copyAPIConfig(state), [action]: [...state[action], event.name] };
-                    }
+                if (API_SECURITY_MUTUAL_SSL_MANDATORY === event.name) {
+                    const filteredArray = state[action]
+                        .filter((schema) => (schema !== API_SECURITY_MUTUAL_SSL_MANDATORY
+                            && schema !== API_SECURITY_MUTUAL_SSL_OPTIONAL))
+                        .concat(event.value);
+                    const newState = {
+                        ...copyAPIConfig(state),
+                        [action]: filteredArray,
+                    };
+                    return newState;
+                } else if (API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY === event.name) {
+                    const filteredArray = state[action]
+                        .filter((schema) => (schema !== API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY
+                            && schema !== API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL))
+                        .concat(event.value);
+                    const newState = {
+                        ...copyAPIConfig(state),
+                        [action]: filteredArray,
+                    };
+                    return newState;
                 }
                 // User checked on one of api security schemas (either OAuth, Basic, ApiKey or Mutual SSL)
                 if (event.checked) {
