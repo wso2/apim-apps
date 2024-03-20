@@ -69,7 +69,7 @@ const AIGeneratedApiRequest: React.FC<AIGeneratedApiRequestProps> = ({
         if (accessToken) {
             const temp = generateRequestInterceptor(
                 {
-                    url: api.servers[0].url,
+                    url: 'https://localhost:8243/pizzashack/1.0.0/menu',
                     credentials: 'same-origin',
                     headers: {
                         accept: 'application/json',
