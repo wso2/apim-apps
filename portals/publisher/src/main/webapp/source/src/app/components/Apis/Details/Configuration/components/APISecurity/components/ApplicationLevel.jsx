@@ -216,25 +216,22 @@ export default function ApplicationLevel(props) {
                                     label='Basic'
                                 />
                             )}
-                            {(apiFromContext.gatewayType === 'wso2/synapse' ||
-                                apiFromContext.apiType === API.CONSTS.APIProduct) && (
-                                <FormControlLabel
-                                    control={(
-                                        <Checkbox
-                                            checked={securityScheme.includes(API_SECURITY_API_KEY)}
-                                            disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                            onChange={({ target: { checked, value } }) => configDispatcher({
-                                                action: 'securityScheme',
-                                                event: { checked, value },
-                                            })}
-                                            value={API_SECURITY_API_KEY}
-                                            color='primary'
-                                            id='api-security-api-key-checkbox'
-                                        />
-                                    )}
-                                    label='Api Key'
-                                />
-                            )}
+                            <FormControlLabel
+                                control={(
+                                    <Checkbox
+                                        checked={securityScheme.includes(API_SECURITY_API_KEY)}
+                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                        onChange={({ target: { checked, value } }) => configDispatcher({
+                                            action: 'securityScheme',
+                                            event: { checked, value },
+                                        })}
+                                        value={API_SECURITY_API_KEY}
+                                        color='primary'
+                                        id='api-security-api-key-checkbox'
+                                    />
+                                )}
+                                label='Api Key'
+                            />
                         </FormGroup>
                         <FormControl className={classes.bottomSpace} component='fieldset'>
                             <RadioGroup
