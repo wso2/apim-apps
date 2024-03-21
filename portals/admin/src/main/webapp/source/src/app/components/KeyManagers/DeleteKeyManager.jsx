@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useEffect } from 'react';
+import React from 'react';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
@@ -30,27 +30,11 @@ import { useAppContext } from 'AppComponents/Shared/AppContext';
  * @param {JSON} props component props.
  * @returns {JSX} Loading animation.
  */
-function Delete({ updateList, dataRow }) {
-    const [deletaData, setDeleteData] = React.useState(true);
+function Delete({ updateList, dataRow, isDisabled }) {
     const { id, type, isGlobal } = dataRow;
     const { isSuperTenant, user: { _scopes } } = useAppContext();
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
-    const fetchData = () => {
-        const restApi = new API();
-        restApi.getKeyManagerUsages(id)
-            .then((result) => {
-                if (result.body.apiCount === 0 && result.body.applicationCount === 0) {
-                    setDeleteData(false);
-                }
-            })
-            .catch((error) => {
-                throw (error);
-            });
-    };
 
-    useEffect(() => {
-        fetchData();
-    }, []);
     const formSaveCallback = () => {
         // todo: don't create a new promise
         const promiseAPICall = new Promise((resolve, reject) => {
@@ -84,7 +68,7 @@ function Delete({ updateList, dataRow }) {
             triggerIconProps={{
                 color: 'primary',
                 component: 'span',
-                disabled: type === 'default' || (isGlobal && !isSuperAdmin) || deletaData,
+                disabled: type === 'default' || (isGlobal && !isSuperAdmin) || isDisabled,
             }}
         >
             <DialogContentText>

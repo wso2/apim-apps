@@ -17,6 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
@@ -31,9 +32,11 @@ import Alert from 'AppComponents/Shared/Alert';
 import Paper from '@mui/material/Paper';
 import API from 'AppData/api';
 import WarningBase from 'AppComponents/AdminPages/Addons/WarningBase';
-import { useParams } from 'react-router-dom';
 import Box from '@mui/material/Box';
-import Toolbar from '@mui/material/Toolbar';
+import Tab from '@mui/material/Tab';
+import TabContext from '@mui/lab/TabContext';
+import TabList from '@mui/lab/TabList';
+import TabPanel from '@mui/lab/TabPanel';
 
 const styles = {
     searchInput: (theme) => ({
@@ -57,11 +60,11 @@ const styles = {
         minHeight: 43,
         backgroundColor: '#f6f6f6',
     },
-    root: {
-        flexGrow: 1,
-        minHeight: 'calc(100vh - (100px))',
-        backgroundColor: '#eaeff1',
-    },
+    // root: {
+    //     flexGrow: 1,
+    //     minHeight: 'calc(100vh - (100px))',
+    //     backgroundColor: '#eaeff1',
+    // },
 };
 
 const StyledDiv = styled('div')({});
@@ -71,14 +74,19 @@ const StyledDiv = styled('div')({});
  * @param {JSON} props props passed from parent
  * @returns {JSX} Header AppBar components.
  */
-function ListKeyManagerUsages() {
+function ListKeyManagerUsages(props) {
     const intl = useIntl();
     const [data, setData] = useState(null);
+    const [appData, setAppData] = useState(null);
     const restApi = new API();
     const [hasListPermission, setHasListPermission] = useState(true);
-    const [kmName, setKmName] = useState('');
     const [errorMessage, setError] = useState(null);
-    const { id } = useParams();
+    const { id } = props;
+    const [value, setValue] = useState('1');
+
+    const handleChange = (event, newValue) => {
+        setValue(newValue);
+    };
 
     /**
      * API call to get Detected Data
@@ -86,7 +94,7 @@ function ListKeyManagerUsages() {
      */
     function apiCall() {
         return restApi
-            .getKeyManagerUsages(id)
+            .getKeyManagerApiUsages(id)
             .then((result) => {
                 return result.body;
             })
@@ -96,8 +104,32 @@ function ListKeyManagerUsages() {
                     setHasListPermission(false);
                 } else {
                     Alert.error(intl.formatMessage({
-                        id: 'KeyManagers.ListKeyManagerUsages.error',
-                        defaultMessage: 'Unable to get Key Manager usage details',
+                        id: 'KeyManagers.ListKeyManagerAPIUsages.error',
+                        defaultMessage: 'Unable to get Key Manager API usage details',
+                    }));
+                    throw (error);
+                }
+            });
+    }
+
+    /**
+     * API call to get Application usage data
+     * @returns {Promise}.
+     */
+    function applicationApiCall() {
+        return restApi
+            .getKeyManagerApplicationUsages(id)
+            .then((result) => {
+                return result.body;
+            })
+            .catch((error) => {
+                const { status } = error;
+                if (status === 401) {
+                    setHasListPermission(false);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'KeyManagers.ListKeyManagerApplicationUsages.error',
+                        defaultMessage: 'Unable to get Key Manager application usage details',
                     }));
                     throw (error);
                 }
@@ -115,13 +147,20 @@ function ListKeyManagerUsages() {
                 console.error('Unable to fetch data. ', e.message);
                 setError(e.message);
             });
+
+        setAppData(null);
+        const promiseApplicationAPICall = applicationApiCall();
+        promiseApplicationAPICall.then((LocalData) => {
+            setAppData(LocalData);
+        })
+            .catch((e) => {
+                console.error('Unable to fetch data. ', e.message);
+                setError(e.message);
+            });
     };
 
     useEffect(() => {
         fetchData();
-        restApi.keyManagerGet(id).then((result) => {
-            setKmName(result.body.name);
-        });
     }, []);
 
     const pageProps = {
@@ -243,14 +282,14 @@ function ListKeyManagerUsages() {
                     <CardContent>
                         <Typography gutterBottom variant='h5' component='h2'>
                             <FormattedMessage
-                                id='Workflow.SubscriptionUpdate.List.empty.title.subscriptionUpdate'
-                                defaultMessage='Subscription Update'
+                                id='KeyManagers.ListKeyManagerUsages.empty.title'
+                                defaultMessage='Key Manager Usages'
                             />
                         </Typography>
                         <Typography variant='body2' color='textSecondary' component='p'>
                             <FormattedMessage
-                                id='Workflow.SubscriptionUpdate.List.empty.content.subscriptionUpdates'
-                                defaultMessage='There are no pending workflow requests for subscription updates.'
+                                id='KeyManagers.ListKeyManagerUsages.empty.content'
+                                defaultMessage='There are no Key Manger usages.'
                             />
                         </Typography>
                     </CardContent>
@@ -270,15 +309,15 @@ function ListKeyManagerUsages() {
                 pageProps={pageProps}
                 title={(
                     <FormattedMessage
-                        id='Workflow.SubscriptionUpdate.permission.denied.title'
+                        id='KeyManagers.ListKeyManagerUsages.permission.denied.title'
                         defaultMessage='Permission Denied'
                     />
                 )}
                 content={(
                     <FormattedMessage
-                        id='Workflow.SubscriptionUpdate.permission.denied.content'
-                        defaultMessage={'You dont have enough permission to view Subscription Tier Update - '
-                        + 'Approval Tasks. Please contact the site administrator.'}
+                        id='KeyManagers.ListKeyManagerUsages.permission.denied.content'
+                        defaultMessage={'You dont have enough permission to view Key Manager Usages'
+                        + '. Please contact the site administrator.'}
                     />
                 )}
             />
@@ -302,152 +341,145 @@ function ListKeyManagerUsages() {
     }
     return (
         <>
-            <StyledDiv sx={styles.root}>
-                <Grid
-                    container
-                    direction='row'
-                    justify='center'
-                    alignItems='flex-start'
-                >
-                    <Grid item xs={12}>
-                        <Toolbar sx={styles.pageTitle}>
-                            <Grid container alignItems='center' spacing={1}>
-                                <Grid item xs>
-                                    <Typography color='inherit' variant='h5' component='h1'>
-                                        <FormattedMessage
-                                            id='KeyManagers.AddEditKeyManager.usages.text'
-                                            defaultMessage='Key Manager Usages - '
-                                        />
-                                        {kmName}
-                                    </Typography>
-                                </Grid>
-                            </Grid>
-                        </Toolbar>
-                    </Grid>
-                    <Grid item xs={8}>
-                        <Box pt={6} position='relative'>
-                            <Grid item xs={12}>
-                                <Box pl={2}>
-                                    <Typography variant='h6' gutterBottom>
-                                        <FormattedMessage
-                                            id='KeyManagers.AddEditKeyManager.api.usages'
-                                            defaultMessage='API Usages'
-                                        />
-                                    </Typography>
-                                </Box>
-                            </Grid>
-                            {data.apiCount > 0
-                                ? (
-                                    <>
+            <TabContext value={value}>
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <TabList onChange={handleChange} aria-label='key manager usage tabs'>
+                        <Tab label='API Usages' value='1' sx={{ fontSize: '0.9rem' }} />
+                        <Tab label='Application Usages' value='2' sx={{ fontSize: '0.9rem' }} />
+                    </TabList>
+                </Box>
+                <TabPanel value='1'>
+                    <Grid
+                        container
+                        direction='row'
+                        justifyContent='center'
+                        alignItems='center'
+                    >
+                        <Grid item xs={12}>
+                            <Box position='relative'>
+                                {data.apiCount > 0
+                                    ? (
+                                        <>
+                                            <Grid item xs={12}>
+                                                <Box pl={2}>
+                                                    <Typography variant='h8' gutterBottom>
+                                                        {data.apiCount === 1
+                                                            ? '1 API is using this key manager specifically.'
+                                                            : data.apiCount
+                                                            + ' APIs are using this key manager specifically.'}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Box mt={4} backgroundColor='black' />
+                                            <Box pl={2}>
+                                                <Paper>
+                                                    {data && data.apis.length > 0 && (
+                                                        <MUIDataTable
+                                                            title={null}
+                                                            data={data.apis}
+                                                            columns={columnsApis}
+                                                            options={options}
+                                                        />
+                                                    )}
+                                                    {data && data.apis.length === 0 && (
+                                                        <StyledDiv sx={styles.contentWrapper}>
+                                                            <Typography color='textSecondary' align='center'>
+                                                                {noDataMessage}
+                                                            </Typography>
+                                                        </StyledDiv>
+                                                    )}
+                                                </Paper>
+                                            </Box>
+                                        </>
+                                    )
+                                    : (
                                         <Grid item xs={12}>
                                             <Box pl={2}>
                                                 <Typography variant='h8' gutterBottom>
-                                                    {data.apiCount === 1
-                                                        ? '1 API is using this key manager specifically.'
-                                                        : data.apiCount
-                                                        + ' APIs are using this key manager specifically.'}
+                                                    <FormattedMessage
+                                                        id='KeyManagers.AddEditKeyManager.api.no.usages'
+                                                        defaultMessage='No API usages for
+                                                         this key manager specifically.'
+                                                    />
                                                 </Typography>
                                             </Box>
                                         </Grid>
-                                        <Box mt={4} backgroundColor='black' />
-                                        <Box pl={2}>
-                                            <Paper>
-                                                {data && data.apis.length > 0 && (
-                                                    <MUIDataTable
-                                                        title={null}
-                                                        data={data.apis}
-                                                        columns={columnsApis}
-                                                        options={options}
-                                                    />
-                                                )}
-                                                {data && data.apis.length === 0 && (
-                                                    <StyledDiv sx={styles.contentWrapper}>
-                                                        <Typography color='textSecondary' align='center'>
-                                                            {noDataMessage}
-                                                        </Typography>
-                                                    </StyledDiv>
-                                                )}
-                                            </Paper>
-                                        </Box>
-                                    </>
-                                )
-                                : (
-                                    <Grid item xs={12}>
-                                        <Box pl={2}>
-                                            <Typography variant='h8' gutterBottom>
-                                                <FormattedMessage
-                                                    id='KeyManagers.AddEditKeyManager.api.no.usages'
-                                                    defaultMessage='No API usages for this key manager specifically.'
-                                                />
-                                            </Typography>
-                                        </Box>
-                                    </Grid>
-                                )}
-                            <Box mt={4} backgroundColor='black' />
-                            <Grid item xs={12}>
-                                <Box pl={2}>
-                                    <Typography variant='h6' gutterBottom>
-                                        <FormattedMessage
-                                            id='KeyManagers.AddEditKeyManager.application.usages'
-                                            defaultMessage='Application Usages'
-                                        />
-                                    </Typography>
-                                </Box>
-                            </Grid>
-                            {data.applicationCount > 0
-                                ? (
-                                    <>
+                                    )}
+                            </Box>
+                        </Grid>
+                    </Grid>
+                </TabPanel>
+                <TabPanel value='2'>
+                    <Grid
+                        container
+                        direction='row'
+                        justifyContent='center'
+                        alignItems='flex-start'
+                    >
+                        <Grid item xs={12}>
+                            <Box position='relative'>
+                                {appData.applicationCount > 0
+                                    ? (
+                                        <>
+                                            <Grid item xs={12}>
+                                                <Box pl={2}>
+                                                    <Typography variant='h8' gutterBottom>
+                                                        {appData.applicationCount === 1 ? '1 Application is using this '
+                                                + 'key manager specifically.'
+                                                            : appData.applicationCount + ' Applications are using this '
+                                                + 'key manager specifically.'}
+                                                    </Typography>
+                                                </Box>
+                                            </Grid>
+                                            <Box mt={4} backgroundColor='black' />
+                                            <Box pl={2}>
+                                                <Paper>
+                                                    {appData && appData.applications.length > 0 && (
+                                                        <MUIDataTable
+                                                            title={null}
+                                                            data={appData.applications}
+                                                            columns={columnsApplications}
+                                                            options={options}
+                                                        />
+                                                    )}
+                                                    {appData && appData.applicationCount.length === 0 && (
+                                                        <StyledDiv sx={styles.contentWrapper}>
+                                                            <Typography color='textSecondary' align='center'>
+                                                                {noDataMessage}
+                                                            </Typography>
+                                                        </StyledDiv>
+                                                    )}
+                                                </Paper>
+                                            </Box>
+                                        </>
+                                    )
+                                    : (
                                         <Grid item xs={12}>
                                             <Box pl={2}>
                                                 <Typography variant='h8' gutterBottom>
-                                                    {data.applicationCount === 1 ? '1 Application is using this '
-                                            + 'key manager specifically.'
-                                                        : data.applicationCount + ' Applications are using this '
-                                            + 'key manager specifically.'}
+                                                    <FormattedMessage
+                                                        id='KeyManagers.AddEditKeyManager.application.no.usages'
+                                                        defaultMessage='No Application usages
+                                                         for this key manager specifically.'
+                                                    />
                                                 </Typography>
                                             </Box>
                                         </Grid>
-                                        <Box mt={4} backgroundColor='black' />
-                                        <Box pl={2}>
-                                            <Paper>
-                                                {data && data.applications.length > 0 && (
-                                                    <MUIDataTable
-                                                        title={null}
-                                                        data={data.applications}
-                                                        columns={columnsApplications}
-                                                        options={options}
-                                                    />
-                                                )}
-                                                {data && data.applicationCount.length === 0 && (
-                                                    <StyledDiv sx={styles.contentWrapper}>
-                                                        <Typography color='textSecondary' align='center'>
-                                                            {noDataMessage}
-                                                        </Typography>
-                                                    </StyledDiv>
-                                                )}
-                                            </Paper>
-                                        </Box>
-                                    </>
-                                )
-                                : (
-                                    <Grid item xs={12}>
-                                        <Box pl={2}>
-                                            <Typography variant='h8' gutterBottom>
-                                                <FormattedMessage
-                                                    id='KeyManagers.AddEditKeyManager.application.no.usages'
-                                                    defaultMessage='No Application usages
-                                                     for this key manager specifically.'
-                                                />
-                                            </Typography>
-                                        </Box>
-                                    </Grid>
-                                )}
-                        </Box>
+                                    )}
+                            </Box>
+                        </Grid>
                     </Grid>
-                </Grid>
-            </StyledDiv>
+                </TabPanel>
+            </TabContext>
         </>
     );
 }
+
+ListKeyManagerUsages.propTypes = {
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    dialogOpen: PropTypes.bool.isRequired,
+    closeDialog: PropTypes.func.isRequired,
+};
 
 export default ListKeyManagerUsages;

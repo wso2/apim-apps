@@ -3,7 +3,6 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import ListKeyManagers from './ListKeyManagers';
 import AddEditKeyManager from './AddEditKeyManager';
-import ListKeyManagerUsages from './ListKeyManagerUsages';
 
 /**
  * Render a list
@@ -15,7 +14,6 @@ function KeyManagers() {
             <Route exact path='/settings/key-managers' component={ListKeyManagers} />
             <Route exact path='/settings/key-managers/create' component={AddEditKeyManager} />
             <Route exact path='/settings/key-managers/:id' component={AddEditKeyManager} />
-            <Route exact path='/settings/key-managers/usages/:id' component={ListKeyManagerUsages} />
             <Route component={ResourceNotFound} />
         </Switch>
     );
