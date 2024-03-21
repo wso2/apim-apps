@@ -167,6 +167,26 @@ class API extends Resource {
         return promisedValidate;
     }
 
+    static validateOpenAPIByInlineDefinition(openAPIData) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        let payload, promisedValidate;
+        payload = {
+            inlineAPIDefinition: openAPIData,
+        };
+        const requestBody = {
+            requestBody: {
+                inlineAPIDefinition: openAPIData,
+            },
+        };
+        promisedValidate = apiClient.then(client => {
+            return client.apis.Validation.validateOpenAPIDefinition(
+                payload,
+                requestBody
+            );
+        });
+        return promisedValidate;
+    }
+
     static validateOpenAPIByUrl(url, params = { returnContent: false }) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         const payload = {

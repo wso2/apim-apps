@@ -29,7 +29,6 @@ import Banner from 'AppComponents/Shared/Banner';
 import API from 'AppData/api';
 import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
-import SwaggerParser from '@apidevtools/swagger-parser';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
 import Configurations from 'Config';
@@ -315,7 +314,7 @@ export default function Resources(props) {
      */
     function setSecurityDefScopesFromSpec(spec) {
         const openAPIVersion = getVersion(spec);
-        if (VERSIONS.V3.test(openAPIVersion)) {
+        if (VERSIONS.V3.test(openAPIVersion) || VERSIONS.V3_1.test(openAPIVersion)) {
             if (spec.components && spec.components.securitySchemes && spec.components.securitySchemes.default) {
                 const { flows } = spec.components.securitySchemes.default;
                 if (flows.implicit.scopes) {
@@ -336,7 +335,7 @@ export default function Resources(props) {
      */
     function setSpecScopesFromSecurityDefScopes() {
         const openAPIVersion = getVersion(openAPISpec);
-        if (VERSIONS.V3.test(openAPIVersion)) {
+        if (VERSIONS.V3.test(openAPIVersion) || VERSIONS.V3_1.test(openAPIVersion)) {
             if (openAPISpec.components
                 && openAPISpec.components.securitySchemes
                 && openAPISpec.components.securitySchemes.default) {
@@ -364,15 +363,16 @@ export default function Resources(props) {
         /*
         * Used SwaggerParser.validate() because we can get the errors as well.
         */
-        SwaggerParser.validate(specCopy, (err, result) => {
-            setResolvedSpec(() => {
-                const errors = err ? [err] : [];
-                return {
-                    spec: result,
-                    errors,
-                };
+        API.validateOpenAPIByInlineDefinition(specCopy)
+            .then((response) => {
+                setResolvedSpec(() => {
+                    const errors = response.body.errors ? response.body.errors : [];
+                    return {
+                        spec: response.body.info,
+                        errors,
+                    };
+                });
             });
-        });
         operationsDispatcher({ action: 'init', data: rawSpec.paths });
         setOpenAPISpec(rawSpec);
         setSecurityDefScopesFromSpec(rawSpec);

@@ -18,6 +18,7 @@
 
 const VERSIONS = {
     V3: new RegExp('[3][.][0][.][0-9]'),
+    V3_1: new RegExp('[3][.][1][.][0-9]'),
     V2: new RegExp('[2][.][0]'),
 };
 /**
@@ -110,7 +111,7 @@ function extractPathParameters(target, spec) {
     const params = target.match(regEx) || [];
     let parameters = [];
     const openAPIVersion = getVersion(spec);
-    if (VERSIONS.V3.test(openAPIVersion)) {
+    if (VERSIONS.V3.test(openAPIVersion) || VERSIONS.V3_1.test(openAPIVersion)) {
         parameters = params.map((para) => {
             const paraObj = {};
             paraObj.name = para;
@@ -166,7 +167,7 @@ function extractAsyncAPIPathParameters(target) {
 function getOperationScopes(operation, spec) {
     const openAPIVersion = getVersion(spec);
     let scopes = [];
-    if (VERSIONS.V3.test(openAPIVersion)) {
+    if (VERSIONS.V3.test(openAPIVersion) || VERSIONS.V3_1.test(openAPIVersion)) {
         if (Array.isArray(operation.security) && operation.security.find((item) => item.default)) {
             scopes = operation.security.find((item) => item.default).default;
         } else if (operation['x-scope']) {
