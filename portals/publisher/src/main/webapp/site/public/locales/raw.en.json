@@ -1203,6 +1203,9 @@
   "Apis.Details.Documents.CreateEditForm.document.create.type.other.document.category.helper.text": {
     "defaultMessage": "Provide the document type"
   },
+  "Apis.Details.Documents.CreateEditForm.document.create.type.other.error.document.category.helper.text": {
+    "defaultMessage": "Document type cannot be empty"
+  },
   "Apis.Details.Documents.CreateEditForm.document.create.type.public.forum": {
     "defaultMessage": "Public Forum"
   },
