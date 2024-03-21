@@ -17,7 +17,7 @@
  */
 
 const VERSIONS = {
-    V3: new RegExp('[3][.][0][.][0-9]'),
+    V3: new RegExp('[3][.][0-9][.][0-9]'),
     V2: new RegExp('[2][.][0]'),
 };
 /**
