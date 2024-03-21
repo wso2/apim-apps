@@ -108,7 +108,7 @@ export default function ApiKeyHeader(props) {
                         variant='outlined'
                         onChange={({ target: { value } }) => configDispatcher({
                             action: 'apiKeyHeader',
-                            value: value === '' ? 'ApiKey' : value })}
+                            value: value === '' ? 'ApiKeys' : value })}
                         style={{ display: 'flex' }}
                     />
                 </Grid>
