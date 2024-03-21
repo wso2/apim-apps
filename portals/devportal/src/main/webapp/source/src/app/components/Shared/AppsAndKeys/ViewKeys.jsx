@@ -56,24 +56,7 @@ const classes = {
     iconButton: `${PREFIX}-iconButton`
 };
 
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.button}`]: {
-        margin: theme.spacing(3),
-        color: theme.palette.getContrastText(theme.palette.background.default),
-        display: 'flex',
-        alignItems: 'center',
-        fontSize: '11px',
-        cursor: 'pointer',
-        '& span': {
-            paddingLeft: 6,
-            display: 'inline-block',
-        },
-    },
-
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.inputWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
@@ -451,7 +434,7 @@ class ViewKeys extends React.Component {
                             <Button
                                 variant='contained'
                                 color='primary'
-                                className={classes.button}
+                                sx={{ mt: 1 }}
                                 onClick={() => this.handleSecretRegenerate(consumerKey, keyType, keyMappingId, selectedTab)}
                                 disabled={!isUserOwner}
                             >

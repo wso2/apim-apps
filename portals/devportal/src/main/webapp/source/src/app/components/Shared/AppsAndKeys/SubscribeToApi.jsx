@@ -168,22 +168,9 @@ const subscribeToApi = (props) => {
         renderSmall,
     } = props;
 
-    let sortedThrottlingPolicyList = throttlingPolicyList;
-
     useEffect(() => {
-        sortedThrottlingPolicyList = throttlingPolicyList.sort((a, b) => {
-            // Sort by 'COMMERCIAL' tier plan first
-            if (a.tierPlan === 'COMMERCIAL' && b.tierPlan !== 'COMMERCIAL') {
-                return -1;
-            } else if (a.tierPlan !== 'COMMERCIAL' && b.tierPlan === 'COMMERCIAL') {
-                return 1;
-            }
-        
-            // For options within the same tier plan, sort alphabetically
-            return a.tierName.localeCompare(b.tierName);
-        });
         if (throttlingPolicyList && throttlingPolicyList[0]) {
-            setPolicySelected(sortedThrottlingPolicyList[0]);
+            setPolicySelected(throttlingPolicyList[0]);
         }
     }, [throttlingPolicyList]);
 
@@ -253,7 +240,7 @@ const subscribeToApi = (props) => {
                         </FormHelperText>
                     </FormControl>
                 )}
-                {sortedThrottlingPolicyList && (
+                {throttlingPolicyList && (
                     <FormControl
                         variant="standard"
                         className={classNames(classes.FormControl, classes.smallDisplayFix, {
@@ -270,7 +257,7 @@ const subscribeToApi = (props) => {
                         <Autocomplete
                             id='application-policy'
                             aria-describedby='policies-helper-text'
-                            options={sortedThrottlingPolicyList}
+                            options={throttlingPolicyList}
                             disableClearable
                             value={policySelected}
                             getOptionLabel={(option) => option.tierName}
@@ -315,10 +302,10 @@ const subscribeToApi = (props) => {
                                 id='Shared.AppsAndKeys.SubscribeToApi.available.policies'
                                 defaultMessage='Available Policies -'
                             />{' '}
-                            {sortedThrottlingPolicyList.map((policy, index) => (
+                            {throttlingPolicyList.map((policy, index) => (
                                 <span key={policy.tierName}>
                                     {policy.tierName}
-                                    {index !== sortedThrottlingPolicyList.length - 1 && <span>,</span>}
+                                    {index !== throttlingPolicyList.length - 1 && <span>,</span>}
                                 </span>
                             ))}
                         </FormHelperText>
