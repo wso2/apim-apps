@@ -365,7 +365,6 @@ function TryOutController(props) {
             }
         }
     }, [securitySchemeType, selectedKMObject, user, subscriptions, ksGenerated, selectedApplication]);
-    // }
 
     /**
      *

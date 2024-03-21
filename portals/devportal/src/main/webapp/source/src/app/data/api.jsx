@@ -853,12 +853,12 @@ export default class API extends Resource {
     /**
      * Enrich OpenAPI Specification of the API using API Chat AI service
      *
-     * @param {string} apiChatRequestId UUID for the request
      * @param {string} apiId API ID of the API that needs to be enriched
+     * @param {string} apiChatRequestId UUID for the request
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    enrichOpenApiSpecification(apiChatRequestId, apiId) {
-        const payload = { apiChatRequestId, apiId };
+    enrichOpenApiSpecification(apiId, apiChatRequestId) {
+        const payload = { apiId, apiChatRequestId };
         return this.client.then((client) => {
             return client.apis['API Chat'].apiChatPrepare(payload, this._requestMetaData());
         });
@@ -867,14 +867,16 @@ export default class API extends Resource {
     /**
      * Execute the test initialization request.
      *
+     * @param {string} apiId API UUID
      * @param {string} apiChatRequestId UUID for the request
      * @param {string} command user provided natural language query for API testing
      * @param {JSON} apiSpec enriched API specification
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    runAiAgentInitialIteration(apiChatRequestId, command, apiSpec) {
+    runAiAgentInitialIteration(apiId, apiChatRequestId, command, apiSpec) {
         const promise = this.client.then((client) => {
             const payload = {
+                apiId,
                 apiChatRequestId,
             };
             return client.apis['API Chat'].apiChatExecute(
@@ -894,13 +896,15 @@ export default class API extends Resource {
     /**
      * Execute the subsequent iterations of the test.
      *
+     * @param {string} apiId API UUID
      * @param {string} apiChatRequestId UUID for the request
      * @param {JSON} response response from the previous iteration
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    runAiAgentSubsequentIterations(apiChatRequestId, response) {
+    runAiAgentSubsequentIterations(apiId, apiChatRequestId, response) {
         const promise = this.client.then((client) => {
             const payload = {
+                apiId,
                 apiChatRequestId,
             };
             return client.apis['API Chat'].apiChatExecute(

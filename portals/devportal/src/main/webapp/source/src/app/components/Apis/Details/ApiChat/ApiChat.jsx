@@ -314,7 +314,7 @@ const ApiChat = () => {
             setSpecEnrichmentError('');
             setSpecEnrichmentErrorLevel('');
             const requestId = Utils.generateUUID();
-            const enrichSpecPromise = apiClient.enrichOpenApiSpecification(requestId, api.id);
+            const enrichSpecPromise = apiClient.enrichOpenApiSpecification(api.id, requestId);
             enrichSpecPromise
                 .then((response) => {
                     const { body, status } = response;
@@ -413,6 +413,7 @@ const ApiChat = () => {
             ];
         });
         const executePromise = apiClient.runAiAgentSubsequentIterations(
+            api.id,
             requestId,
             executionResponseForAiAgent,
         );
@@ -486,6 +487,7 @@ const ApiChat = () => {
         setFinalOutcome('');
         const requestId = Utils.generateUUID();
         const executePromise = apiClient.runAiAgentInitialIteration(
+            api.id,
             requestId,
             query,
             enrichedSpec,
