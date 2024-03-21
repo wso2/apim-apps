@@ -100,7 +100,7 @@ function GlobalNavLinks(props) {
                         defaultMessage='APIs'
                     />
                 </GlobalNavLink>
-                {gateway && (
+                {gateway && settings && !settings.readOnlyModeEnabled && (
                     <div>
                         <GlobalNavLink
                             to='/service-catalog'
