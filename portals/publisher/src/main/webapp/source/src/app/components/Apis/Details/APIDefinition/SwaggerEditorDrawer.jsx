@@ -160,7 +160,6 @@ class SwaggerEditorDrawer extends React.Component {
     render() {
         const { language, swagger, errors, setErrors, isSwaggerUI, linterResults, severityMap, 
             linterSelectedSeverity } = this.props;
-        const swaggerUrl = 'data:text/' + language + ',' + encodeURIComponent(swagger);
         return (
             <Root>
                 <Grid container spacing={2} className={classes.editorRoot}>
@@ -206,7 +205,7 @@ class SwaggerEditorDrawer extends React.Component {
                             </Box>
                         )}
                         { isSwaggerUI && (
-                            <SwaggerUI url={swaggerUrl}/>
+                            <SwaggerUI spec={swagger} />
                         )}
                         { !isSwaggerUI && linterResults.length > 0 && (
                             <div data-testid='testid-linter-ui'>
