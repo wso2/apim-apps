@@ -851,16 +851,6 @@ export default class API extends Resource {
     }
 
     /**
-     * Get the health status of API Chat AI service
-     * @returns {promise} With given callback attached to the success chain else API invoke promise.
-     */
-    pingApiChatApi() {
-        return this.client.then((client) => {
-            return client.apis['API Chat'].getApiChatHealth({}, this._requestMetaData());
-        });
-    }
-
-    /**
      * Enrich OpenAPI Specification of the API using API Chat AI service
      *
      * @param {string} apiChatRequestId UUID for the request

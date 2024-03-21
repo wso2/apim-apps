@@ -78,7 +78,7 @@ const ResultsHeading = () => {
         <Root>
             <Box className={classes.testResultsHeading}>
                 <Box className={classes.testResultsTitle}>
-                    <Typography gutterBottom variant='h5'>
+                    <Typography gutterBottom variant='h7'>
                         <FormattedMessage
                             id='Apis.Details.ApiChat.ApiChat.ResultsHeading.title'
                             defaultMessage='Execution Results'

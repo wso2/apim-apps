@@ -74,12 +74,12 @@ interface ApiChatExecuteProps {
     isAgentTerminating: boolean;
     lastQuery: string;
     handleStopAndReExecute: () => Promise<void>;
-    enrichedSpec: JSON | undefined;
     inputQuery: string;
     handleQueryChange: (
       event: React.ChangeEvent<HTMLTextAreaElement | HTMLInputElement>
     ) => void;
     isEnrichingSpec: boolean;
+    specEnrichmentError: string;
     handleExecute: () => Promise<void>;
 }
 
@@ -92,10 +92,10 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
     isAgentTerminating,
     lastQuery,
     handleStopAndReExecute,
-    enrichedSpec,
     inputQuery,
     handleQueryChange,
     isEnrichingSpec,
+    specEnrichmentError,
     handleExecute,
 }) => {
     const intl = useIntl();
@@ -112,7 +112,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                                 size='small'
                                 onClick={handleStopAndReExecute}
                                 id='stop-reexecute-button'
-                                disabled={!enrichedSpec || isAgentTerminating}
+                                disabled={specEnrichmentError !== '' || isAgentTerminating}
                             >
                                 {isAgentRunning ? (
                                     <FormattedMessage
@@ -140,7 +140,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                             })}
                             onChange={handleQueryChange}
                             testId='nl-query-input'
-                            disabled={isAgentRunning || isEnrichingSpec || !enrichedSpec}
+                            disabled={isAgentRunning || isEnrichingSpec || specEnrichmentError !== ''}
                             multiline
                             sx={{
                                 '& .TextInput-textarea': {
@@ -162,7 +162,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                                     disabled={
                                         isAgentRunning
                                     || isEnrichingSpec
-                                    || !enrichedSpec
+                                    || specEnrichmentError !== ''
                                     || inputQuery.length === 0
                                     }
                                     id='run-agent-button'

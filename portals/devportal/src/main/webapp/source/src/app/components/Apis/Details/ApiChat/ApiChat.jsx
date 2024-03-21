@@ -22,18 +22,10 @@ import React, {
     useContext,
     useRef,
 } from 'react';
-// useContext, useState, useRef, useMemo, useEffect,
-// import { Box } from '@material-ui/core';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { styled } from '@mui/material/styles';
-// import API from 'AppData/api';
-// import { AxiosError } from 'axios';
-// import cloneDeep from 'lodash.clonedeep';
-// import API from 'AppData/api';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
-// import { FormattedMessage } from 'react-intl';
-// import Alert from 'AppComponents/Shared/Alert';
 import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import { FormattedMessage, useIntl } from 'react-intl';
 import LaunchIcon from '@mui/icons-material/Launch';
@@ -44,15 +36,13 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 // import AlertTitle from '@mui/material/AlertTitle';
 import Api from 'AppData/api';
-import { app } from 'Settings';
 import { CircularProgress, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
-import OutlinedInput from '@mui/material/OutlinedInput';
 import CardContent from '@mui/material/CardContent';
 import Utils from 'AppData/Utils';
-import Progress from 'AppComponents/Shared/Progress';
+import Paper from '@mui/material/Paper';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-// import Input from '@mui/material/Input';
+import DangerousIcon from '@mui/icons-material/Dangerous';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
@@ -60,13 +50,6 @@ import ApiChatExecute from './components/ApiChatExecute';
 import ConfigureKeyDrawer from './components/ConfigureKeyDrawer';
 import SampleQueryCard from './components/SampleQueryCard';
 import ResultsHeading from './components/ResultsHeading';
-// @ts-ignore
-// import SamplePrepareResponse from './data/mockData.json';
-// import ApiChatApi from './data/ApiChatApi';
-// import ResultsHeading, {
-//     ExecutionResult,
-// } from './components/ResultsHeading';
-// import { ApiContext } from '../ApiContext';
 
 const PREFIX = 'ApiChat';
 
@@ -74,6 +57,8 @@ const classes = {
     tryWithAiMain: `${PREFIX}-tryWithAiMain`,
     finalOutcomeContent: `${PREFIX}-finalOutcomeContent`,
     lastQueryWrap: `${PREFIX}-lastQueryWrap`,
+    resultCard: `${PREFIX}-resultCard`,
+    queryProcessLoader: `${PREFIX}-queryProcessLoader`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -89,15 +74,15 @@ const Root = styled('div')(({ theme }) => ({
         marginTop: theme.spacing(2),
     },
     [`& .${classes.lastQueryWrap}`]: {
-        // background: theme.palette.grey[100],
-        // padding: theme.spacing(2),
-        // marginBottom: theme.spacing(2),
-        // borderRadius: 2,
-        // borderColor: theme.palette.grey[100],
-        // padding: theme.spacing(2),
-        // borderColor: theme.palette.grey[100],
-        // borderRadius: theme.spacing(1),
-        // borderWidth: 1,
+        margin: theme.spacing(1, 4),
+    },
+    [`& .${classes.resultCard}`]: {
+        marginTop: theme.spacing(1),
+    },
+    [`& .${classes.queryProcessLoader}`]: {
+        marginTop: theme.spacing(2),
+        display: 'flex',
+        justifyContent: 'center',
     },
 }));
 
@@ -170,7 +155,6 @@ const ApiChat = () => {
     const [configureKeyDrawerOpen, setConfigureKeyDrawerOpen] = useState(false);
     // const [testAccessToken, setTestAccessToken] = useState('');
     const [isAgentRunning, setIsAgentRunning] = useState(false);
-    const [agentAvailabilityStatus, setAgentAvailabilityStatus] = useState('PENDING'); // 'PENDING' | 'ACTIVE' | 'INACTIVE'
     const [isEnrichingSpec, setIsEnrichingSpec] = useState(false);
     const [specEnrichmentError, setSpecEnrichmentError] = useState('');
     const [specEnrichmentErrorLevel, setSpecEnrichmentErrorLevel] = useState('');
@@ -181,33 +165,13 @@ const ApiChat = () => {
     const [finalOutcome, setFinalOutcome] = useState('');
     const [executionResults, setExecutionResults] = useState([]);
     const [isExecutionError, setIsExecutionError] = useState(false);
-    // const [expandedPanel, setExpandedPanel] = useState(false);
-    // const [request, setRequest] = useState({});
-    // const [isAgentTerminating, setIsAgentTerminating] = useState(false);
+    const [isAgentTerminating, setIsAgentTerminating] = useState(false);
 
     const apiClient = new Api();
     const { api } = useContext(ApiContext);
     const { settings: { isApiChatEnabled, isAIFeatureAuthTokenProvided } } = useSettingsContext();
     const abortControllerRef = useRef(new AbortController());
     const intl = useIntl();
-
-    useEffect(() => {
-        if (isApiChatEnabled === true && isAIFeatureAuthTokenProvided) {
-            const isApiChatAvailablePromise = apiClient.pingApiChatApi();
-            isApiChatAvailablePromise.then((response) => {
-                if (response.status === 200) {
-                    setAgentAvailabilityStatus('ACTIVE');
-                } else {
-                    setAgentAvailabilityStatus('INACTIVE');
-                }
-            }).catch((error) => {
-                console.log(error);
-                setAgentAvailabilityStatus('INACTIVE');
-            });
-        } else {
-            setAgentAvailabilityStatus('INACTIVE');
-        }
-    }, [isApiChatEnabled]);
 
     const setEnrichmentError = (errorCode) => {
         switch (errorCode) {
@@ -216,7 +180,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.invalidSpecificationError',
                         defaultMessage:
-                  'The OpenAPI specification could not be parsed. Ensure you are using a valid specification.',
+                            'The OpenAPI specification could not be parsed. Ensure you are using a valid specification.',
                     }),
                 );
                 break;
@@ -225,7 +189,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.invalidResourcePathError',
                         defaultMessage:
-                  'The OpenAPI specification contain unsupported resource path definitions.',
+                            'The OpenAPI specification contain unsupported resource path definitions.',
                     }),
                 );
                 break;
@@ -234,7 +198,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.unsupportedMediaTypeError',
                         defaultMessage:
-                  'The OpenAPI specification includes non-JSON input types which are not currently supported.',
+                            'The OpenAPI specification includes non-JSON input types which are not currently supported.',
                     }),
                 );
                 break;
@@ -243,7 +207,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.unsupportedSpecificationError',
                         defaultMessage:
-                  'The OpenAPI specification includes components that are currently not supported.',
+                            'The OpenAPI specification includes components that are currently not supported.',
                     }),
                 );
                 break;
@@ -260,7 +224,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.tokenLimitExceededError',
                         defaultMessage:
-                  'The OpenAPI specification exceeds the maximum limit.',
+                            'The OpenAPI specification exceeds the maximum limit.',
                     }),
                 );
                 break;
@@ -269,8 +233,8 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.stackOverflowError',
                         defaultMessage:
-                  'The OpenAPI specification could not be parsed due to a cyclic reference or the excessive length of the'
-                  + ' specification.',
+                            'The OpenAPI specification could not be parsed due to a cyclic reference or the excessive length of the'
+                            + ' specification.',
                     }),
                 );
                 break;
@@ -279,7 +243,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.contentViolationError',
                         defaultMessage:
-                  'The content in the OpenAPI specification violates the Azure OpenAI content policy.',
+                            'The content in the OpenAPI specification violates the Azure OpenAI content policy.',
                     }),
                 );
                 break;
@@ -310,7 +274,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.finalOutcome.llmError',
                         defaultMessage:
-                  'An error occurred during query execution. Try again.',
+                            'An error occurred during query execution. Try again.',
                     }),
                 );
                 break;
@@ -319,7 +283,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.finalOutcome.cachingError',
                         defaultMessage:
-                  'An error occurred during query execution. Try again later.',
+                            'An error occurred during query execution. Try again later.',
                     }),
                 );
                 break;
@@ -328,7 +292,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.finalOutcome.responseParsingError',
                         defaultMessage:
-                  'An error occurred while attempting to extract the API response.',
+                            'An error occurred while attempting to extract the API response.',
                     }),
                 );
                 break;
@@ -337,7 +301,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.finalOutcome.apiCommunicationError',
                         defaultMessage:
-                  'An error occurred while attempting to establish a connection with your API.',
+                            'An error occurred while attempting to establish a connection with your API.',
                     }),
                 );
                 break;
@@ -346,7 +310,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.finalOutcome.tokenLimitExceededError',
                         defaultMessage:
-                  'Execution has been terminated due to exceeding the token limit.',
+                            'Execution has been terminated due to exceeding the token limit.',
                     }),
                 );
                 break;
@@ -363,7 +327,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'modules.testComponent.TryWithAIViewer.finalOutcome.contentViolationError',
                         defaultMessage:
-                  'Your query seems to contain inappropriate content. Please try again with a different query.',
+                            'Your query seems to contain inappropriate content. Please try again with a different query.',
                     }),
                 );
                 break;
@@ -388,8 +352,22 @@ const ApiChat = () => {
     };
 
     useEffect(() => {
-        if (api.id && agentAvailabilityStatus === 'ACTIVE') {
-            // setIsAgentRunning(true);
+        if (abortControllerRef.current.signal.aborted) {
+            setIsAgentTerminating(true);
+        }
+    }, [abortControllerRef.current.signal.aborted]);
+
+    useEffect(() => {
+        if (isAgentTerminating) {
+            setTimeout(() => {
+                setIsAgentTerminating(false);
+                setIsAgentRunning(false);
+            }, 2000);
+        }
+    }, [isAgentTerminating]);
+
+    useEffect(() => {
+        if (api.id) {
             setIsEnrichingSpec(true);
             setSpecEnrichmentError('');
             setSpecEnrichmentErrorLevel('');
@@ -411,13 +389,11 @@ const ApiChat = () => {
                     setIsEnrichingSpec(false);
                     setEnrichmentError(
                         error?.response?.body?.code,
-                        // error?.response?.body?.message || 'Error encountered while preparing the API specification for API Chat.',
                     );
                     setSpecEnrichmentErrorLevel(error?.response?.body?.level === 'WARN' ? 'warning' : 'error');
                 });
-            // setIsAgentRunning(false);
         }
-    }, [agentAvailabilityStatus]);
+    }, []);
 
     const handleOpenConfigureKey = () => {
         setConfigureKeyDrawerOpen(true);
@@ -427,7 +403,7 @@ const ApiChat = () => {
         <FormattedMessage
             id='Apis.Details.ApiChat.warning.authTokenMissing'
             defaultMessage={'You must provide an auth token to start testing. To obtain one, '
-            + 'follow the steps provided under {apiChatDocLink} '}
+                + 'follow the steps provided under {apiChatDocLink} '}
             values={{
                 apiChatDocLink: (
                     <Link
@@ -445,29 +421,6 @@ const ApiChat = () => {
             }}
         />
     );
-
-    while (agentAvailabilityStatus === 'PENDING') {
-        return <Progress />;
-    }
-
-    if (agentAvailabilityStatus === 'INACTIVE' && isAIFeatureAuthTokenProvided) {
-        return (
-            <>
-                <Box display='flex' justifyContent='space-evenly' mt={20}>
-                    <img
-                        alt='API Chat'
-                        src={`${app.context}/site/public/images/ai/ApiChatNotAvailable.svg`}
-                    />
-                </Box>
-                <Typography variant='body1' sx={{ textAlign: 'center' }}>
-                    <FormattedMessage
-                        id='Apis.Details.ApiChat.ApiChatNotAvailable'
-                        defaultMessage='API Chat is not available at the moment. Please try again later.'
-                    />
-                </Typography>
-            </>
-        );
-    }
 
     const handleGoBack = () => {
         setLastQuery('');
@@ -487,12 +440,14 @@ const ApiChat = () => {
         };
     };
 
-    const sendSubsequentRequest = async (requestId, resource) => {
+    const sendSubsequentRequest = (requestId, resource) => {
         const dummyResponse = getDummyApiInvocationResult(resource);
-        setExecutionResults([
-            ...executionResults,
-            dummyResponse,
-        ]);
+        setExecutionResults((prevState) => {
+            return [
+                ...prevState,
+                dummyResponse,
+            ];
+        });
         const executePromise = apiClient.runAiAgentSubsequentIterations(
             requestId,
             dummyResponse,
@@ -519,7 +474,7 @@ const ApiChat = () => {
                             } else {
                                 setFinalOutcome(
                                     intl.formatMessage({
-                                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.taskCompletedOneItr',
+                                        id: 'Apis.Details.ApiChat.ApiChat.subsequentRequset.finalOutcome.taskCompleted',
                                         defaultMessage: 'Task completed',
                                     }),
                                 );
@@ -549,12 +504,11 @@ const ApiChat = () => {
         });
     };
 
-    const sendInitialRequest = async (query) => {
+    const sendInitialRequest = (query) => {
         setIsExecutionError(false);
-        setExecutionResults([]);
-        // setTrackingId('');
-        // setExpandedPanel([]);
-        // setResultView('summary');
+        setExecutionResults(() => {
+            return [];
+        });
         if (query.length < 1) {
             setFinalOutcome(
                 intl.formatMessage({
@@ -586,7 +540,6 @@ const ApiChat = () => {
                     const { body } = response;
                     switch (body.taskStatus) {
                         case 'IN_PROGRESS':
-                            console.log(body.resource);
                             sendSubsequentRequest(requestId, body.resource);
                             break;
                         case 'COMPLETED':
@@ -595,7 +548,7 @@ const ApiChat = () => {
                             } else {
                                 setFinalOutcome(
                                     intl.formatMessage({
-                                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.taskCompletedOneItr',
+                                        id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskCompletedOneItr',
                                         defaultMessage: 'Task completed in 1 iteration.',
                                     }),
                                 );
@@ -625,7 +578,7 @@ const ApiChat = () => {
         });
     };
 
-    const handleStopAndReExecute = async () => {
+    const handleStopAndReExecute = () => {
         if (isAgentRunning) {
             abortControllerRef.current.abort();
             setFinalOutcome(
@@ -634,6 +587,7 @@ const ApiChat = () => {
                     defaultMessage: 'Execution was terminated.',
                 }),
             );
+            setExecutionResults([]);
             setIsAgentRunning(false);
         } else {
             abortControllerRef.current = new AbortController();
@@ -654,21 +608,6 @@ const ApiChat = () => {
         setInputQuery(value);
     };
 
-    // useEffect(() => {
-    //     if (abortControllerRef.current.signal.aborted) {
-    //         setIsAgentTerminating(true);
-    //     }
-    // }, [abortControllerRef.current.signal.aborted]);
-
-    // useEffect(() => {
-    //     if (isAgentTerminating) {
-    //         setTimeout(() => {
-    //             setIsAgentTerminating(false);
-    //             setIsAgentRunning(false);
-    //         }, 2000);
-    //     }
-    // }, [isAgentTerminating]);
-
     const handleExecute = async () => {
         abortControllerRef.current = new AbortController();
         const query = inputQuery;
@@ -686,19 +625,13 @@ const ApiChat = () => {
         }
     };
 
-    // const handlePanelChange = (panel) => {
-    //     setExpandedPanel(
-    //         isExpanded
-    //             ? [...(expandedPanel || []), panel]
-    //             : (expandedPanel || []).filter((id) => id !== panel),
-    //     );
-    // };
-
-    // useEffect(() => {
-    //     if (executionResults.length > 0) {
-    //         setExpandedPanel([executionResults[executionResults.length - 1].id]);
-    //     }
-    // }, []);
+    const Item = styled(Paper)(({ theme }) => ({
+        ...theme.typography.body2,
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+        height: 50,
+        lineHeight: '50px',
+    }));
 
     return (
         <Root>
@@ -713,27 +646,16 @@ const ApiChat = () => {
                     openConfigureKey={handleOpenConfigureKey}
                     goBack={handleGoBack}
                     disableGoBack={isAgentRunning || lastQuery === ''}
-                    // openSampleQueries={handleOpenSampleQueries}
-                    // showSampleQueries={
-                    //     lastQuery !== '' || isAgentRunning || finalOutcome !== ''
-                    // }
+                // openSampleQueries={handleOpenSampleQueries}
+                // showSampleQueries={
+                //     lastQuery !== '' || isAgentRunning || finalOutcome !== ''
+                // }
                 />
                 {(isAgentRunning || lastQuery || finalOutcome) && (
-                    <Box maxHeight='60%' overflow='auto'>
-                        <OutlinedInput
-                            fullWidth
-                            disabled
-                            defaultValue={lastQuery}
-                            sx={{ marginBottom: 2 }}
-                            // endAdornment={<InputAdornment position="end">kg</InputAdornment>}
-                        />
-                        {/* <Box className={classes.lastQueryWrap}>
-                            <Typography variant='body1'>
-                                {lastQuery}
-                            </Typography>
-                        </Box> */}
+                    <Box maxHeight='60%' overflow='auto' className={classes.lastQueryWrap}>
+                        <Item variant='outlined' elevation={1}>{lastQuery}</Item>
                         <Box className={classes.resultCard}>
-                            <Card fullHeight testId='results-card'>
+                            <Card fullHeight testId='results-card' variant='outlined'>
                                 <CardContent fullHeight>
                                     <ResultsHeading />
                                     {executionResults.map((executionResult) => {
@@ -743,7 +665,11 @@ const ApiChat = () => {
                                                     expandIcon={<ExpandMoreIcon />}
                                                 >
                                                     <>
-                                                        <CheckCircleIcon color='success' sx={{ paddingRight: 2 }} />
+                                                        {(executionResult.code >= 200 && executionResult.code < 300) ? (
+                                                            <CheckCircleIcon color='success' sx={{ paddingRight: 2 }} />
+                                                        ) : (
+                                                            <DangerousIcon color='error' sx={{ paddingRight: 2 }} />
+                                                        )}
                                                         <Typography variant='body1'>
                                                             {'Executed ' + executionResult.path}
                                                         </Typography>
@@ -751,61 +677,52 @@ const ApiChat = () => {
                                                 </AccordionSummary>
                                                 <AccordionDetails>
                                                     <Typography variant='body1'>
-                                                        {executionResult.body.description}
+                                                        {JSON.stringify(executionResult.body, null, 2)}
                                                     </Typography>
                                                 </AccordionDetails>
                                             </Accordion>
                                         );
                                     })}
-                                    {!isAgentRunning && finalOutcome && !isExecutionError && (
+                                    {!isAgentRunning && lastQuery && finalOutcome && !isExecutionError && (
                                         <Box display='flex' justifyContent='center' className={classes.finalOutcomeContent}>
                                             <Typography variant='body1'>
                                                 {finalOutcome}
                                             </Typography>
                                         </Box>
                                     )}
-                                    {!isAgentRunning && finalOutcome && isExecutionError && (
-                                        <Box>
-                                            <Typography variant='body1'>
-                                                <Alert severity={isExecutionError ? 'error' : 'success'}>
-                                                    {finalOutcome}
-                                                </Alert>
-                                            </Typography>
-                                        </Box>
-                                    )}
-                                    {isAgentRunning && (
-                                        <Box display='flex' justifyContent='center'>
-                                            <CircularProgress size={20} />
-                                            <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
-                                                <FormattedMessage
-                                                    id='Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage'
-                                                    defaultMessage='Loading result ...'
-                                                />
-                                            </Typography>
-                                        </Box>
-                                        // <Box className={classes.queryProcessLoader}>
-                                        //     {isAgentTerminating ? (
-                                        //         <>
-                                        //             <CircularProgress size={20} />
-                                        //             <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
-                                        //                 <FormattedMessage
-                                        //                     id='modules.testComponent.TryWithAIViewer.terminatingExecutionMessage'
-                                        //                     defaultMessage='Execution is terminating...'
-                                        //                 />
-                                        //             </Typography>
-                                        //         </>
-                                        //     ) : (
-                                        //         <>
-                                        //             <CircularProgress size={20} />
-                                        //             <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
-                                        //                 <FormattedMessage
-                                        //                     id='modules.testComponent.TryWithAIViewer.loadingExecutionMessage'
-                                        //                     defaultMessage='Loading next execution step...'
-                                        //                 />
-                                        //             </Typography>
-                                        //         </>
-                                        //     )}
-                                        // </Box>
+                                    {lastQuery && !finalOutcome && (
+                                        <>
+                                            {/* <Box>
+                                                <Typography variant='body1'>
+                                                    <Alert severity={isExecutionError ? 'error' : 'success'}>
+                                                        {finalOutcome}
+                                                    </Alert>
+                                                </Typography>
+                                            </Box> */}
+                                            <Box className={classes.queryProcessLoader}>
+                                                {isAgentTerminating ? (
+                                                    <>
+                                                        <CircularProgress size={20} />
+                                                        <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
+                                                            <FormattedMessage
+                                                                id='modules.testComponent.TryWithAIViewer.terminatingExecutionMessage'
+                                                                defaultMessage='Execution is terminating...'
+                                                            />
+                                                        </Typography>
+                                                    </>
+                                                ) : (
+                                                    <>
+                                                        <CircularProgress size={20} />
+                                                        <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
+                                                            <FormattedMessage
+                                                                id='modules.testComponent.TryWithAIViewer.loadingExecutionMessage'
+                                                                defaultMessage='Loading next execution step...'
+                                                            />
+                                                        </Typography>
+                                                    </>
+                                                )}
+                                            </Box>
+                                        </>
                                     )}
                                 </CardContent>
                             </Card>
@@ -820,25 +737,25 @@ const ApiChat = () => {
                         <Box display='flex' margin={5}>
                             <Grid container direction='row' spacing={3}>
                                 {sampleQueries
-                                && sampleQueries.map((queryData) => {
-                                    const gridVal = sampleQueries.length === 2 ? 6 : 4;
-                                    return (
-                                        <Grid
-                                            key={queryData.scenario}
-                                            item
-                                            xs={12}
-                                            md={gridVal}
-                                        >
-                                            <SampleQueryCard
-                                                onExecuteClick={handleExecuteSampleQuery}
-                                                // disabled={isAgentRunning}
-                                                queryData={queryData}
-                                                onCopyClick={handleCopyClick}
+                                    && sampleQueries.map((queryData) => {
+                                        const gridVal = sampleQueries.length === 2 ? 6 : 4;
+                                        return (
+                                            <Grid
+                                                key={queryData.scenario}
+                                                item
+                                                xs={12}
+                                                md={gridVal}
+                                            >
+                                                <SampleQueryCard
+                                                    onExecuteClick={handleExecuteSampleQuery}
+                                                    // disabled={isAgentRunning}
+                                                    queryData={queryData}
+                                                    onCopyClick={handleCopyClick}
                                                 // boxShadow='dark'
-                                            />
-                                        </Grid>
-                                    );
-                                })}
+                                                />
+                                            </Grid>
+                                        );
+                                    })}
                             </Grid>
                         </Box>
                     ) : (
@@ -880,23 +797,14 @@ const ApiChat = () => {
                 )} */}
                 <ApiChatExecute
                     isAgentRunning={isAgentRunning}
-                    isAgentTerminating={false}
+                    isAgentTerminating={isAgentTerminating}
                     lastQuery={lastQuery}
                     handleStopAndReExecute={handleStopAndReExecute}
-                    enrichedSpec={enrichedSpec}
                     inputQuery={inputQuery}
                     handleQueryChange={handleQueryChange}
                     isEnrichingSpec={isEnrichingSpec}
+                    specEnrichmentError={specEnrichmentError}
                     handleExecute={handleExecute}
-                    // isAgentRunning={isAgentRunning}
-                    // isAgentTerminating={isAgentTerminating}
-                    // lastQuery={lastQuery}
-                    // handleStopAndReExecute={handleStopAndReExecute}
-                    // enrichedSpec={enrichedSpec}
-                    // inputQuery={inputQuery}
-                    // handleQueryChange={handleQueryChange}
-                    // isEnrichingSpec={isEnrichingSpec}
-                    // handleExecute={handleExecute}
                 />
             </Box>
         </Root>

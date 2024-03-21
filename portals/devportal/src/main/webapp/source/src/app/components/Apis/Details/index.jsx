@@ -118,6 +118,7 @@ const classes = {
     shiftLeft: `${PREFIX}-shiftLeft`,
     contentLoader: `${PREFIX}-contentLoader`,
     contentLoaderRightMenu: `${PREFIX}-contentLoaderRightMenu`,
+    expandIconColor: `${PREFIX}-expandIconColor`,
 };
 
 const Root = styled('div')((
@@ -230,14 +231,8 @@ const Root = styled('div')((
         [`& .${classes.contentLoaderRightMenu}`]: {
             paddingRight: theme.custom.leftMenu.width,
         },
-        expandIconColor: {
+        [`& .${classes.expandIconColor}`]: {
             color: '#ffffff',
-        },
-        leftMenuText: {
-            color: '#ffffff',
-        },
-        iconContainer: {
-            marginRight: theme.spacing(1),
         },
     };
 });
