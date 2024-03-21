@@ -15,8 +15,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import React, { useState } from "react";
-import { styled } from '@mui/material/styles';
 import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Grid, List, ListItem, 
     ListItemIcon, ListItemText, Typography } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
@@ -25,19 +25,6 @@ import LinterUI from "AppComponents/Apis/Details/APIDefinition/LinterUI/LinterUI
 import APILintingSummary from "AppComponents/Apis/Details/APIDefinition/Linting/APILintingSummary";
 import {  
     spectralSeverityMap as severityMap } from "../../../Details/APIDefinition/Linting/Linting"
-
-const PREFIX = 'ValidationResults';
-
-const classes = {
-    importDefinitionDialogHeader: `${PREFIX}-importDefinitionDialogHeader`
-};
-
-
-const Root = styled('div')(() => ({
-    [`& .${classes.importDefinitionDialogHeader}`]: {
-        fontWeight: 600,
-    }
-}));
 
 type APILintingProps = {
     inputValue: any,
@@ -56,8 +43,8 @@ export default function ValidationResults(props: APILintingProps) {
 
 
     return (
-        (<Root>
-            <Grid item xs={10} md={11}>
+        (<>
+            <Grid item xs={10} md={12}>
                 <List>
                     {inputValue && isValidating && (
                         <ListItem>
@@ -84,7 +71,7 @@ export default function ValidationResults(props: APILintingProps) {
                 </List>
             </Grid>
             {!isValidating && validationErrors.length>0 && (
-                <Grid item xs={10} md={11}>
+                <Grid item xs={10} md={12}>
                     <Accordion
                         expanded={expandValidationErrors}
                         onChange={()=>{setExpandValidationErrors(!expandValidationErrors)}}>
@@ -94,7 +81,7 @@ export default function ValidationResults(props: APILintingProps) {
                             id='panel1bh-header'>
                             <Grid container direction='row' 
                                 justifyContent='space-between' alignItems='center'>
-                                <Typography className={classes.importDefinitionDialogHeader}>
+                                <Typography sx={{ fontWeight: 600 }}>
                                     <FormattedMessage
                                         id='Apis.Create.OpenAPI.Steps.ValidationResults.validation.errros'
                                         defaultMessage='Validation Errors'
@@ -126,8 +113,8 @@ export default function ValidationResults(props: APILintingProps) {
                 </Grid>
             )}
             {!isLinting && linterResults.length>0 && (
-                <Grid item xs={10} md={11}
-                    data-testid='itest-id-linter-results'>
+                <Grid item xs={10} md={12}
+                    data-testid='itest-id-linter-results' sx={{ pt: 2 }}>
                     <Accordion
                         expanded={expandLinterResults}
                         onChange={()=>{setExpandLinterResults(!expandLinterResults)}}>
@@ -137,7 +124,7 @@ export default function ValidationResults(props: APILintingProps) {
                             id='panel1bh-header'>
                             <Grid container direction='row' 
                                 justifyContent='space-between' alignItems='center'>
-                                <Typography className={classes.importDefinitionDialogHeader}>
+                                <Typography sx={{ fontWeight: 600 }}>
                                     <FormattedMessage
                                         id='Apis.Create.OpenAPI.Steps.ValidationResults.linter.results'
                                         defaultMessage='Linter Results'
@@ -166,10 +153,9 @@ export default function ValidationResults(props: APILintingProps) {
                                 } }
                             />
                         </AccordionDetails>
-                        
                     </Accordion>
                 </Grid>
             )}
-        </Root>)
+        </>)
     );
 }
