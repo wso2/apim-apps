@@ -65,7 +65,7 @@
         "material-design-icons": "^3.0.1",
         "mui-datatables": "^4.3.0",
         "mui-markdown": "^1.1.13",
-        "openapi-to-postmanv2": "^4.16.0",
+        "openapi-to-postmanv2": "^4.20.0",
         "prop-types": "^15.8.1",
         "qs": "^6.11.0",
         "query-string": "^7.1.3",
