@@ -43,7 +43,6 @@ import { PROPERTIES as UserProperties } from 'AppData/User';
 import { useUser } from 'AppComponents/Shared/AppContext';
 import { useIntl } from 'react-intl';
 
-
 const PREFIX = 'DevelopSectionMenu';
 
 const classes = {
@@ -62,14 +61,16 @@ const Root = styled('div')(({ theme }) => ({
         paddingRight: theme.spacing(2),
         paddingTop: '0',
         paddingBottom: '0',
+        [`& .MuiAccordion-root`]: {
+            [`&.Mui-expanded`]: {
+                margin: 0,
+            },
+        },
         [`& .MuiAccordionSummary-root`]: {
             backgroundColor: '#1a1f2f',
             paddingLeft: '8px',
             borderBottom: '1px solid rgba(0, 0, 0, .125)',
             minHeight: 40,
-            [`&.Mui-expanded`]: {
-                minHeight: 40,
-            },
         },
         [`& .MuiAccordionDetails-root`]: {
             backgroundColor: '#1a1f2f',
@@ -78,10 +79,9 @@ const Root = styled('div')(({ theme }) => ({
             paddingTop: '0',
             paddingBottom: '0',
         },
-    },
-
-    [`& .${classes.footeremaillink}`]: {
-        marginLeft: theme.custom.leftMenuWidth, /* 4px */
+        [`& .MuiAccordionSummary-content.Mui-expanded`]: {
+            margin: '12px 0',
+        },
     },
 
     [`& .${classes.leftLInkText}`]: {
@@ -238,7 +238,7 @@ export default function DevelopSectionMenu(props) {
                             + ' the API to see updates in the API Gateway.'}
                         placement='bottom'
                     >
-                        <IconButton color='primary' size='small' aria-label='delete'>
+                        <IconButton color='primary' size='small' aria-label='delete' sx={{ p: '3px' }}>
                             <InfoOutlinedIcon fontSize='small' />
                         </IconButton>
                     </Tooltip>
