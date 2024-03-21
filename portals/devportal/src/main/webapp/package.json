@@ -36,7 +36,7 @@
         "@mui/icons-material": "^5.15.6",
         "@mui/lab": "^5.0.0-alpha.162",
         "@mui/material": "^5.15.6",
-        "@stoplight/elements": "^7.7.9",
+        "@stoplight/elements": "^8.1.0",
         "@ui5/webcomponents-icons": "^1.9.3",
         "ajv": "^8.12.0",
         "async-mutex": "^0.4.0",
