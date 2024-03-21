@@ -28,6 +28,7 @@ import {
 } from '@mui/material/styles';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Base from 'AppComponents/Base';
+import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
 import userThemes from 'userCustomThemes';
 import defaultTheme from 'AppData/defaultTheme';
@@ -76,11 +77,13 @@ export default class Protected extends Component {
             settings: null,
             clientId: Utils.getCookieWithoutEnvironment(User.CONST.PUBLISHER_CLIENT_ID),
             sessionState: Utils.getCookieWithoutEnvironment(User.CONST.PUBLISHER_SESSION_STATE),
+            notificationCount: 0,
         };
         this.environments = [];
         this.checkSession = this.checkSession.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
         this.updateSettings = this.updateSettings.bind(this);
+        this.updateNotificationCount = this.updateNotificationCount.bind(this);
     }
 
     /**
@@ -114,6 +117,7 @@ export default class Protected extends Component {
                 this.setState({ user: loggedUser });
             });
         }
+        this.getUnreadNotificationCount();
     }
 
     /**
@@ -158,6 +162,15 @@ export default class Protected extends Component {
     }
 
     /**
+     * Update notification count.
+     * @param {number} count The notification count.
+     */
+    updateNotificationCount(count) {
+        this.setState({ notificationCount: count });
+    }
+    
+
+    /**
      *
      * @param {any} settings Publisher settings object
      */
@@ -184,11 +197,27 @@ export default class Protected extends Component {
     }
 
     /**
+     * Get the count of unread notifications.
+     */
+    getUnreadNotificationCount() {
+        const promisedNotifications = API.getNotifications('desc');
+        promisedNotifications
+            .then((res) => {
+                const unreadCount = res.body.list.filter(notification => !notification.isRead).length;
+                this.setState({ notificationCount: unreadCount });
+                console.log('unreadCount-protectedApp.jsx', unreadCount);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+    /**
      * @returns {React.Component} @inheritDoc
      * @memberof Protected
      */
     render() {
-        const { user = AuthManager.getUser(), messages } = this.state;
+        const { user = AuthManager.getUser(), messages, notificationCount } = this.state;
         const { theme, settings } = this.state;
         if (!user) {
             return (
@@ -210,7 +239,7 @@ export default class Protected extends Component {
                 <ThemeProvider theme={effectiveTheme}>
                     <AppErrorBoundary>
                         <QueryClientProviderX>
-                            <Base user={user}>
+                            <Base user={user} notificationCount={notificationCount}>
                                 <AppContextProvider value={{
                                     user,
                                     settings,
@@ -225,7 +254,12 @@ export default class Protected extends Component {
                                         <Route path='/policies' component={CommonPolicies} />
                                         <Route path='/global-policies' component={GlobalPolicies} />
                                         <Route path='/service-catalog' component={ServiceCatalogRouting} />
-                                        <Route path='/notifications' component={Notifications} />
+                                        <Route
+                                            path='/notifications'
+                                            render={() => (
+                                                <Notifications updateNotificationCount={this.updateNotificationCount} />
+                                            )}
+                                        />
                                         <Route component={ResourceNotFound} />
                                     </Switch>
                                 </AppContextProvider>

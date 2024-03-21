@@ -31,8 +31,8 @@ import HeaderOriginal from './HeaderOriginal';
  * @returns {element} Original header component.
  */
 export default function Header(props) {
-    const { avatar, user } = props;
-    return <HeaderOriginal avatar={avatar} user={user} />;
+    const { avatar, user, notificationCount } = props;
+    return <HeaderOriginal avatar={avatar} user={user} notificationCount={notificationCount} />;
 }
 
 Header.propTypes = {

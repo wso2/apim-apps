@@ -12,6 +12,7 @@ import {
     Select,
     MenuItem,
 } from '@mui/material';
+import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import MUIDataTable from 'mui-datatables';
 import dayjs from 'dayjs';
@@ -105,7 +106,7 @@ const Root = styled('div')(({ theme }) => ({
 }));
 
 
-const Notifications = () => {
+const Notifications = ({ updateNotificationCount }) => {
     const intl = useIntl();
     const [notifications, setNotifications] = useState(null);
     const [sortOption, setSortOption] = useState('newest'); 
@@ -118,6 +119,9 @@ const Notifications = () => {
         promisedNotifications
             .then((response) => {
                 setNotifications(response.body.list);
+                const unreadCount = response.body.list.filter(notification => !notification.isRead).length;
+                console.log('unreadCount', unreadCount);
+                updateNotificationCount(unreadCount);
             })
             .catch((error) => {
                 console.error(error);
@@ -464,6 +468,8 @@ const Notifications = () => {
     );
 };
 
-
+Notifications.propTypes = {
+    updateNotificationCount: PropTypes.func.isRequired,
+};
 
 export default Notifications;

@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import { Toolbar } from '@mui/material';
@@ -8,7 +8,6 @@ import SearchIcon from '@mui/icons-material/SearchOutlined';
 import Hidden from '@mui/material/Hidden';
 import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
-import API from 'AppData/api';
 import Avatar from 'AppComponents/Base/Header/avatar/Avatar';
 import CloseIcon from '@mui/icons-material/Close';
 import Configurations from 'Config';
@@ -55,7 +54,7 @@ const Root = styled('div')(({ theme }) => ({
  *
  */
 export default function HeaderOriginal(props) {
-    const { avatar, menuItems, user } = props;
+    const { avatar, menuItems, user, notificationCount } = props;
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [openMiniSearch, setOpenMiniSearch] = React.useState(false);
@@ -64,24 +63,6 @@ export default function HeaderOriginal(props) {
         setOpen(!open);
     };
     const Icon = open ? CloseIcon : MenuIcon;
-
-    const [notificationCount, setNotificationCount] = React.useState(0);
-
-    const getUnreadNotificationCount = () => {
-        const promisedNotifications = API.getNotifications('desc');
-        promisedNotifications
-            .then((res) => { 
-                const unreadCount = res.body.list.filter(notification => !notification.isRead).length;
-                setNotificationCount(unreadCount);
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
-
-    useEffect(() => {
-        getUnreadNotificationCount();
-    }, []); 
 
     return (
         <Root>

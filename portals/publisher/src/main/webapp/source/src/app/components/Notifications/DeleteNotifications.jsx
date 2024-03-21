@@ -110,7 +110,7 @@ const DeleteNotifications = ({ notificationId, fetchNotifications, isDeleteAll }
 
 DeleteNotifications.propTypes = {
     // eslint-disable-next-line react/require-default-props
-    notificationId: PropTypes.number,
+    notificationId: PropTypes.string,
     // eslint-disable-next-line react/require-default-props
     isDeleteAll: PropTypes.bool, 
     fetchNotifications: PropTypes.func.isRequired,
