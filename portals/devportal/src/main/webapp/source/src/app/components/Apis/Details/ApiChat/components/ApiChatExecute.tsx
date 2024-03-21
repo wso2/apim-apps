@@ -81,6 +81,7 @@ interface ApiChatExecuteProps {
     isEnrichingSpec: boolean;
     specEnrichmentError: string;
     handleExecute: () => Promise<void>;
+    isAccessTokenAvailable: boolean
 }
 
 /**
@@ -97,6 +98,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
     isEnrichingSpec,
     specEnrichmentError,
     handleExecute,
+    isAccessTokenAvailable,
 }) => {
     const intl = useIntl();
 
@@ -140,7 +142,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                             })}
                             onChange={handleQueryChange}
                             testId='nl-query-input'
-                            disabled={isAgentRunning || isEnrichingSpec || specEnrichmentError !== ''}
+                            disabled={isAgentRunning || isEnrichingSpec || specEnrichmentError !== '' || !isAccessTokenAvailable}
                             multiline
                             sx={{
                                 '& .TextInput-textarea': {
@@ -164,6 +166,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                                     || isEnrichingSpec
                                     || specEnrichmentError !== ''
                                     || inputQuery.length === 0
+                                    || !isAccessTokenAvailable
                                     }
                                     id='run-agent-button'
                                     startIcon={<ExecuteQuery />}

@@ -34,7 +34,6 @@ import Alert from '@mui/material/Alert';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-// import AlertTitle from '@mui/material/AlertTitle';
 import Api from 'AppData/api';
 import { CircularProgress, Typography } from '@mui/material';
 import Card from '@mui/material/Card';
@@ -86,74 +85,12 @@ const Root = styled('div')(({ theme }) => ({
     },
 }));
 
-// enum TaskStatus {
-//   EXPIRED_TOKEN = 'EXPIRED_TOKEN',
-//   IN_PROGRESS = 'IN_PROGRESS',
-//   COMPLETED = 'COMPLETED',
-//   TERMINATED = 'TERMINATED',
-// }
-
-// interface Task {
-//   taskStatus: TaskStatus;
-//   iteration: number;
-// }
-
-// interface IncomingData {
-//   resource: {
-//     inputs: {
-//       requestBody: any;
-//     };
-//   };
-//   output: {
-//     code: number;
-//     headers: { [key: string]: any };
-//     body: any;
-//   };
-// }
-
-// interface RearrangedData {
-//   inputs: {
-//     requestBody: any;
-//   };
-//   output: {
-//     code: number;
-//     headers: { [key: string]: any };
-//     body: any;
-//   };
-// }
-
-// /**
-//  * Rearranges the incoming data to a format that can be used by the UI.
-//  * @param {JSON} initialData Incoming data from the API.
-//  * @returns {JSON} Rearranged data.
-//  */
-// function rearrangeData(initialData) {
-//     const rearrangedData = {
-//         inputs: {
-//             requestBody: initialData.resource.inputs.requestBody,
-//         },
-//         output: {
-//             code: initialData.output.code,
-//             headers: initialData.output.headers,
-//             body: initialData.output.body,
-//         },
-//     };
-//     return rearrangedData;
-// }
-
-// export interface SampleQuery {
-//   scenario: string;
-//   query: string;
-// }
-
 /**
  * Renders the API Chat UI.
  * @returns {JSX} API Chat page to render.
  */
 const ApiChat = () => {
-    // const intl = useIntl();
     const [configureKeyDrawerOpen, setConfigureKeyDrawerOpen] = useState(false);
-    // const [testAccessToken, setTestAccessToken] = useState('');
     const [isAgentRunning, setIsAgentRunning] = useState(false);
     const [isEnrichingSpec, setIsEnrichingSpec] = useState(false);
     const [specEnrichmentError, setSpecEnrichmentError] = useState('');
@@ -166,6 +103,11 @@ const ApiChat = () => {
     const [executionResults, setExecutionResults] = useState([]);
     const [isExecutionError, setIsExecutionError] = useState(false);
     const [isAgentTerminating, setIsAgentTerminating] = useState(false);
+    const [apiAccessToken, setApiTestAccessToken] = useState('');
+
+    useEffect(() => {
+        setApiTestAccessToken('abc');
+    });
 
     const apiClient = new Api();
     const { api } = useContext(ApiContext);
@@ -412,6 +354,28 @@ const ApiChat = () => {
                         }}
                     >
                         Test APIs with API Chat
+                        <LaunchIcon
+                            style={{ marginLeft: '2px' }}
+                            fontSize='small'
+                        />
+                    </Link>
+                ),
+            }}
+        />
+    );
+
+    const apiAccessTokenNotFoundWarning = (
+        <FormattedMessage
+            id='Apis.Details.ApiChat.warning.apiAccessTokenNotFound'
+            defaultMessage='You must provide an API access token. Configure one by navigating to {configureKeyLink}'
+            values={{
+                configureKeyLink: (
+                    <Link
+                        onClick={() => {
+                            setConfigureKeyDrawerOpen(true);
+                        }}
+                    >
+                        Configure Key
                         <LaunchIcon
                             style={{ marginLeft: '2px' }}
                             fontSize='small'
@@ -759,7 +723,7 @@ const ApiChat = () => {
                             </Grid>
                         </Box>
                     ) : (
-                        <Box display='flex' alignItems='center' flexDirection='column' marginTop={20}>
+                        <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
                             {/* Handle prepare call executing scenario */}
                             {isEnrichingSpec && (
                                 <Box display='flex' justifyContent='center'>
@@ -787,14 +751,13 @@ const ApiChat = () => {
                             )}
                         </Box>
                     )}
-                {/* {'executionResults ' + executionResults + 'isExecutionError >> '
-                + isExecutionError + 'finalOutcomee >> ' + finalOutcome} */}
-                {/* {(isAgentRunning || lastQuery || finalOutcome) && (
-                    <Input
-                        disableUnderline
-                        defaultValue={lastQuery}
-                    />
-                )} */}
+                <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
+                    {apiAccessToken === '' && (
+                        <Alert severity='warning'>
+                            {apiAccessTokenNotFoundWarning}
+                        </Alert>
+                    )}
+                </Box>
                 <ApiChatExecute
                     isAgentRunning={isAgentRunning}
                     isAgentTerminating={isAgentTerminating}
@@ -805,6 +768,7 @@ const ApiChat = () => {
                     isEnrichingSpec={isEnrichingSpec}
                     specEnrichmentError={specEnrichmentError}
                     handleExecute={handleExecute}
+                    isAccessTokenAvailable={apiAccessToken !== ''}
                 />
             </Box>
         </Root>
