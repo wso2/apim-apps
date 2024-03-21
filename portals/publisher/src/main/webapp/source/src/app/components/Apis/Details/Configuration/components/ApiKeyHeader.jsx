@@ -39,6 +39,7 @@ import APIValidation from 'AppData/APIValidation';
 export default function ApiKeyHeader(props) {
     const { api, configDispatcher } = props;
     const [apiFromContext] = useAPI();
+    const isRestAPI = apiFromContext.type==="HTTP";
     const [isHeaderNameValid, setIsHeaderNameValid] = useState(true);
     let hasResourceWithSecurity;
     const apiKeyHeaderValue = api.apiKeyHeader;
@@ -73,63 +74,65 @@ export default function ApiKeyHeader(props) {
         }
     }
 
-    return (
-        <Grid container spacing={1} alignItems='center'>
-            <Grid item xs={11}>
-                <TextField
-                    disabled={isRestricted(['apim:api_create'], apiFromContext) || !hasResourceWithSecurity}
-                    id='outlined-name'
-                    label={(
-                        <FormattedMessage
-                            id='Apis.Details.Configuration.Configuration.apiKey.header.label'
-                            defaultMessage='ApiKey Header'
-                        />
-                    )}
-                    value={hasResourceWithSecurity ? apiKeyHeaderValue : ' '}
-                    error={!isHeaderNameValid}
-                    helperText={
-                        (!isHeaderNameValid)
-                        && (
+    if(isRestAPI){
+        return (
+            <Grid container spacing={1} alignItems='center'>
+                <Grid item xs={11}>
+                    <TextField
+                        disabled={isRestricted(['apim:api_create'], apiFromContext) || !hasResourceWithSecurity}
+                        id='outlined-name'
+                        label={(
                             <FormattedMessage
-                                id='Apis.Details.Configuration.ApiKeyHeader.helper.text'
-                                defaultMessage='ApiKey header name cannot contain spaces or special characters'
+                                id='Apis.Details.Configuration.Configuration.apiKey.header.label'
+                                defaultMessage='ApiKey Header'
                             />
-                        )
-                    }
-                    InputProps={{
-                        id: 'itest-id-apiKeyHeaderName-input',
-                        onBlur: ({ target: { value } }) => {
-                            validateHeader(value);
-                        },
-                    }}
-                    margin='normal'
-                    variant='outlined'
-                    onChange={({ target: { value } }) => configDispatcher({
-                        action: 'apiKeyHeader',
-                        value: value === '' ? 'ApiKey' : value })}
-                    style={{ display: 'flex' }}
-                />
+                        )}
+                        value={hasResourceWithSecurity ? apiKeyHeaderValue : ' '}
+                        error={!isHeaderNameValid}
+                        helperText={
+                            (!isHeaderNameValid)
+                            && (
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.ApiKeyHeader.helper.text'
+                                    defaultMessage='ApiKey header name cannot contain spaces or special characters'
+                                />
+                            )
+                        }
+                        InputProps={{
+                            id: 'itest-id-apiKeyHeaderName-input',
+                            onBlur: ({ target: { value } }) => {
+                                validateHeader(value);
+                            },
+                        }}
+                        margin='normal'
+                        variant='outlined'
+                        onChange={({ target: { value } }) => configDispatcher({
+                            action: 'apiKeyHeader',
+                            value: value === '' ? 'ApiKey' : value })}
+                        style={{ display: 'flex' }}
+                    />
+                </Grid>
+                <Grid item xs={1}>
+                    <Tooltip
+                        title={(
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.Configuration.ApiKeyHeader.tooltip'
+                                defaultMessage={
+                                    ' The header name that is used to send the api key '
+                                    + 'information. "ApiKey" is the default header.'
+                                }
+                            />
+                        )}
+                        aria-label='ApiKey Header'
+                        placement='right-end'
+                        interactive
+                    >
+                        <HelpOutline />
+                    </Tooltip>
+                </Grid>
             </Grid>
-            <Grid item xs={1}>
-                <Tooltip
-                    title={(
-                        <FormattedMessage
-                            id='Apis.Details.Configuration.Configuration.ApiKeyHeader.tooltip'
-                            defaultMessage={
-                                ' The header name that is used to send the api key '
-                                + 'information. "ApiKey" is the default header.'
-                            }
-                        />
-                    )}
-                    aria-label='ApiKey Header'
-                    placement='right-end'
-                    interactive
-                >
-                    <HelpOutline />
-                </Tooltip>
-            </Grid>
-        </Grid>
-    );
+        );
+    }
 }
 
 ApiKeyHeader.propTypes = {
