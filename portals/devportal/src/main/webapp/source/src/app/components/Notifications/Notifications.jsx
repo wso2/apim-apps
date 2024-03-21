@@ -72,9 +72,9 @@ const Notifications = () => {
     const [sortOption, setSortOption] = useState('newest');
     const [notFound, setnotFound] = useState(false);
 
-    const fetchNotifications = () => {
+    const fetchNotifications = (sortOrder) => {
         setLoading(true);
-        const promisedNotifications = Notification.getNotifications();
+        const promisedNotifications = Notification.getNotifications(sortOrder);
         promisedNotifications
             .then((response) => {
                 setNotifications(response.body.list);
@@ -90,8 +90,13 @@ const Notifications = () => {
     };
 
     useEffect(() => {
-        fetchNotifications();
+        fetchNotifications('desc');
     }, []);
+
+    const handleSortChange = (event) => {
+        setSortOption(event.target.value);
+        fetchNotifications(event.target.value === 'newest' ? 'desc' : 'asc');
+    };
 
     const getNotificationList = () => {
         const notificationList = notifications?.map((notification) => {
@@ -105,10 +110,6 @@ const Notifications = () => {
         });
 
         return notificationList;
-    };
-
-    const handleSortChange = (event) => {
-        setSortOption(event.target.value);
     };
 
     const markAsRead = (notificationId) => {
@@ -128,7 +129,7 @@ const Notifications = () => {
                 setnotFound(true);
             })
             .finally(() => {
-                fetchNotifications();
+                fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc');
             });
     };
 
@@ -149,7 +150,7 @@ const Notifications = () => {
                 setnotFound(true);
             })
             .finally(() => {
-                fetchNotifications();
+                fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc');
             });
     };
 
@@ -305,7 +306,10 @@ const Notifications = () => {
                         const notificationId = tableMeta.rowData[0];
                         return (
                             <Box component='span' m={1}>
-                                <DeleteNotifications notificationId={notificationId} fetchNotifications={fetchNotifications} />
+                                <DeleteNotifications
+                                    notificationId={notificationId}
+                                    fetchNotifications={() => fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc')}
+                                />
                             </Box>
                         );
                     }
@@ -433,7 +437,10 @@ const Notifications = () => {
                             <MenuItem value='oldest'>Oldest</MenuItem>
                         </Select>
                     </FormControl>
-                    <DeleteNotifications isDeleteAll fetchNotifications={fetchNotifications} />
+                    <DeleteNotifications
+                        isDeleteAll
+                        fetchNotifications={() => fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc')}
+                    />
                     <Button
                         style={{ backgroundColor: '#072e6e', color: '#ffffff' }}
                         onClick={markAllAsRead}

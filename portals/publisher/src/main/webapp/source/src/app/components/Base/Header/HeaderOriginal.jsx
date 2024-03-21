@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import { Toolbar } from '@mui/material';
@@ -66,14 +66,12 @@ export default function HeaderOriginal(props) {
     const Icon = open ? CloseIcon : MenuIcon;
 
     const [notificationCount, setNotificationCount] = React.useState(0);
-    const [notifications, setNotifications] = React.useState(null);
 
     const getUnreadNotificationCount = () => {
-        const promisedNotifications = API.getNotifications();
+        const promisedNotifications = API.getNotifications('desc');
         promisedNotifications
             .then((res) => { 
-                setNotifications(res.body.list);
-                const unreadCount = notifications.filter(notification => !notification.isRead).length;
+                const unreadCount = res.body.list.filter(notification => !notification.isRead).length;
                 setNotificationCount(unreadCount);
             })
             .catch((error) => {
@@ -83,8 +81,7 @@ export default function HeaderOriginal(props) {
 
     useEffect(() => {
         getUnreadNotificationCount();
-    }, [notifications]); 
-    console.log('Count', notificationCount);
+    }, []); 
 
     return (
         <Root>

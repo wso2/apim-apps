@@ -1,11 +1,10 @@
-import APIClientFactory from 'AppData/APIClientFactory';
-import Utils from 'AppData/Utils';
-import Resource from 'AppData/Resource';
-
-// Class to expose Notification {Resource} related operations
+/* eslint-disable require-jsdoc */
+import APIClientFactory from './APIClientFactory';
+import Utils from './Utils';
+import Resource from './Resource';
 
 // eslint-disable-next-line require-jsdoc
-export default class Notification extends Resource {
+class Notification extends Resource {
     /**
      * Get all Notifications
      * @param {String} sortOrder The attribute used to sort notifications based on created time
@@ -14,8 +13,10 @@ export default class Notification extends Resource {
      * @returns {Promise} Promise containing Notifications list
     */
     static getNotifications(sortOrder, limit = null, offset = 0) {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getEnvironment().label).client;
-        return restApiClient.then((client) => {
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
+        return restApiClient.then(client => {
             // eslint-disable-next-line dot-notation
             return client.apis['Notifications'].getNotifications(
                 { sortOrder, limit, offset },
@@ -31,31 +32,36 @@ export default class Notification extends Resource {
      * @returns {Promise} Response containing the information of the updated Notification
     */
     static markNotificationAsReadById(notificationId, body) {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getEnvironment().label).client;
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
         const requestBody = {
             requestBody: body,
         };
-        return restApiClient.then((client) => {
+        return restApiClient.then(client => {
             // eslint-disable-next-line dot-notation
             return client.apis['Notifications'].markNotificationAsReadById(
-                { notificationId },
+                {notificationId},
                 requestBody,
                 this._requestMetaData(),
             );
         });
     }
 
+
     /**
-     * Update All Notifications as Mark as Read
+     * Update All Notifications as Mark as Read 
      * @param {Object} body object which holds the updated read status
      * @returns {Promise} Response containing the information of the updated Notification
     */
     static markAllNotificationsAsRead(body) {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getEnvironment().label).client;
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
         const requestBody = {
             requestBody: body,
         };
-        return restApiClient.then((client) => {
+        return restApiClient.then(client => {
             // eslint-disable-next-line dot-notation
             return client.apis['Notifications'].markAllNotificationsAsRead(
                 requestBody,
@@ -63,6 +69,7 @@ export default class Notification extends Resource {
             );
         });
     }
+    
 
     /**
      * Delete a Notification by it's Id
@@ -70,23 +77,28 @@ export default class Notification extends Resource {
      * @returns {Promise} Response
     */
     static deleteNotification(notificationId) {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getEnvironment().label).client;
-        return restApiClient.then((client) => {
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
+        return restApiClient.then(client => {
             // eslint-disable-next-line dot-notation
             return client.apis['Notifications'].deleteNotification(
-                { notificationId },
+                {notificationId},
                 this._requestMetaData(),
             );
         });
     }
+
 
     /**
      * Delete all Notifications
      * @returns {Promise} Response
     */
     static deleteNotifications() {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getEnvironment().label).client;
-        return restApiClient.then((client) => {
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
+        return restApiClient.then(client => {
             // eslint-disable-next-line dot-notation
             return client.apis['Notifications'].deleteNotifications(
                 this._requestMetaData(),
@@ -94,3 +106,4 @@ export default class Notification extends Resource {
         });
     }
 }
+export default Notification;

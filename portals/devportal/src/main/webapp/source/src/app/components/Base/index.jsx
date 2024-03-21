@@ -278,7 +278,6 @@ class LayoutLegacy extends React.Component {
             selected: 'home',
             anchorEl: null,
             bannerHeight: 0,
-            // notifications: [],
             notificationCount: 0,
         };
         this.toggleGlobalNavBar = this.toggleGlobalNavBar.bind(this);
@@ -310,19 +309,10 @@ class LayoutLegacy extends React.Component {
         this.getUnreadNotificationCount();
     }
 
-    // // eslint-disable-next-line require-jsdoc
-    // componentDidUpdate(_prevProps, prevState) {
-    //     // eslint-disable-next-line react/destructuring-assignment
-    //     if (prevState.notifications !== this.state.notifications) {
-    //         this.getUnreadNotificationCount();
-    //     }
-    // }
-
     getUnreadNotificationCount = () => {
-        const promisedNotifications = Notification.getNotifications();
+        const promisedNotifications = Notification.getNotifications('desc');
         promisedNotifications
             .then((res) => {
-                // this.setState({ notifications: res.body.list });
                 const unreadCount = res.body.list.filter((notification) => !notification.isRead).length;
                 this.setState({ notificationCount: unreadCount });
             })

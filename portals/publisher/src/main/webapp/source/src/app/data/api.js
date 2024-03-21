@@ -3196,25 +3196,25 @@ class API extends Resource {
             );
         });
     }
-
-
-    /**
+     /**
      * Get all Notifications
+     * @param {String} sortOrder The attribute used to sort notifications based on created time
      * @param {number} limit Limit of the Notifications list which needs to be retrieved
      * @param {number} offset Offset of the Notifications list which needs to be retrieved
-     * @param {String} sortOrder The attribute used to sort notifications based on created time
      * @returns {Promise} Promise containing Notifications list
     */
-    static getNotifications(limit = null, offset = 0, sortOrder = 'desc') {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+     static getNotifications(sortOrder, limit = null, offset = 0) {
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
         return restApiClient.then(client => {
+            // eslint-disable-next-line dot-notation
             return client.apis['Notifications'].getNotifications(
                 { sortOrder, limit, offset },
                 this._requestMetaData(),
             );
         });
     }
-
 
     /**
      * Update Notification's Mark as Read status
@@ -3223,11 +3223,14 @@ class API extends Resource {
      * @returns {Promise} Response containing the information of the updated Notification
     */
     static markNotificationAsReadById(notificationId, body) {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
         const requestBody = {
             requestBody: body,
         };
         return restApiClient.then(client => {
+            // eslint-disable-next-line dot-notation
             return client.apis['Notifications'].markNotificationAsReadById(
                 {notificationId},
                 requestBody,
@@ -3243,11 +3246,14 @@ class API extends Resource {
      * @returns {Promise} Response containing the information of the updated Notification
     */
     static markAllNotificationsAsRead(body) {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
         const requestBody = {
             requestBody: body,
         };
         return restApiClient.then(client => {
+            // eslint-disable-next-line dot-notation
             return client.apis['Notifications'].markAllNotificationsAsRead(
                 requestBody,
                 this._requestMetaData(),
@@ -3262,8 +3268,11 @@ class API extends Resource {
      * @returns {Promise} Response
     */
     static deleteNotification(notificationId) {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
         return restApiClient.then(client => {
+            // eslint-disable-next-line dot-notation
             return client.apis['Notifications'].deleteNotification(
                 {notificationId},
                 this._requestMetaData(),
@@ -3277,8 +3286,11 @@ class API extends Resource {
      * @returns {Promise} Response
     */
     static deleteNotifications() {
-        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
+            .client;
         return restApiClient.then(client => {
+            // eslint-disable-next-line dot-notation
             return client.apis['Notifications'].deleteNotifications(
                 this._requestMetaData(),
             );
