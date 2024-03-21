@@ -309,7 +309,7 @@ const ApiChat = () => {
     }, [isAgentTerminating]);
 
     useEffect(() => {
-        if (api.id) {
+        if (api.id && isApiChatEnabled && isAIFeatureAuthTokenProvided) {
             setIsEnrichingSpec(true);
             setSpecEnrichmentError('');
             setSpecEnrichmentErrorLevel('');
@@ -344,7 +344,7 @@ const ApiChat = () => {
     const authTokenNotProvidedWarning = (
         <FormattedMessage
             id='Apis.Details.ApiChat.warning.authTokenMissing'
-            defaultMessage={'You must provide an auth token to start testing. To obtain one, '
+            defaultMessage={'You must provide a token to start testing. To obtain one, '
                 + 'follow the steps provided under {apiChatDocLink} '}
             values={{
                 apiChatDocLink: (
@@ -405,16 +405,16 @@ const ApiChat = () => {
     };
 
     const sendSubsequentRequest = (requestId, resource) => {
-        const dummyResponse = getDummyApiInvocationResult(resource);
+        const executionResponseForAiAgent = getDummyApiInvocationResult(resource);
         setExecutionResults((prevState) => {
             return [
                 ...prevState,
-                dummyResponse,
+                executionResponseForAiAgent,
             ];
         });
         const executePromise = apiClient.runAiAgentSubsequentIterations(
             requestId,
-            dummyResponse,
+            executionResponseForAiAgent,
         );
         executePromise.then((response) => {
             const { data } = response;
@@ -595,12 +595,13 @@ const ApiChat = () => {
         color: theme.palette.text.secondary,
         height: 50,
         lineHeight: '50px',
+        overflowX: 'scroll',
     }));
 
     return (
         <Root>
             <Box className={classes.tryWithAiMain} sx={{ mr: 5 }}>
-                {isAIFeatureAuthTokenProvided && (
+                {isApiChatEnabled && isAIFeatureAuthTokenProvided && (
                     <ConfigureKeyDrawer
                         isDrawerOpen={configureKeyDrawerOpen}
                         updateDrawerOpen={setConfigureKeyDrawerOpen}
@@ -768,7 +769,7 @@ const ApiChat = () => {
                     isEnrichingSpec={isEnrichingSpec}
                     specEnrichmentError={specEnrichmentError}
                     handleExecute={handleExecute}
-                    isAccessTokenAvailable={apiAccessToken !== ''}
+                    isExecuteDisabled={!isApiChatEnabled || apiAccessToken === '' || !isAIFeatureAuthTokenProvided}
                 />
             </Box>
         </Root>
