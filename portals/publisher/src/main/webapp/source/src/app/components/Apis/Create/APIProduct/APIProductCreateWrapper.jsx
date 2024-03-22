@@ -85,7 +85,6 @@ export default function ApiProductCreateWrapper(props) {
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
     const [apiResources, setApiResources] = useState([]);
-    // const { settings } = useAppContext();
     const { data: settings } = usePublisherSettings();
     const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
     const [isRevisioning, setIsRevisioning] = useState(false);
