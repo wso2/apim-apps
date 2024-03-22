@@ -471,10 +471,12 @@ const ApiChat = () => {
 
     const sendSubsequentRequest = async (requestId, resource) => {
         const executionResponseForAiAgent = await invokeAPI(resource);
-        setExecutionResults([
-            ...executionResults,
-            executionResponseForAiAgent,
-        ]);
+        setExecutionResults((prevState) => {
+            return [
+                ...prevState,
+                executionResponseForAiAgent,
+            ];
+        });
         const executePromise = apiClient.runAiAgentSubsequentIterations(
             api.id,
             requestId,
