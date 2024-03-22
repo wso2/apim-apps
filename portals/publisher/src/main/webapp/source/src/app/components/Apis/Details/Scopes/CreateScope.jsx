@@ -305,26 +305,27 @@ class CreateScope extends React.Component {
         } = this.props;
         const { intl } = this.props;
         apiScope[id] = value;
-        valid[id].invalid = !(value && value.length > 0);
+        valid[id].invalid = false
         // length validation
-        if (valid[id].invalid) {
+        if (!(value && value.length > 0)) {
+            valid[id].invalid = true;
             valid[id].error = 'Scope name cannot be empty';
         }
-        valid[id].invalid = !(value && value.length <= 60);
-        if (valid[id].invalid) {
+        if (!valid[id].invalid && !(value && value.length <= 60)) {
+            valid[id].invalid = true;
             valid[id].error = intl.formatMessage({
                 id: 'Scopes.Create.Scope.name.length.exceeded',
                 defaultMessage: 'Exceeds maximum length limit of 60 characters',
             });
         }
 
-        if (/\s/.test(value)) {
+        if (!valid[id].invalid && /\s/.test(value)) {
             valid[id].invalid = true;
             valid[id].error = 'Scope name cannot have spaces';
         }
 
-        const exist = scopes.find((scope) => {
-            return scope.name === value;
+        const exist = scopes.find((scopeEntry) => {
+            return scopeEntry.scope.name === value;
         });
         if (!valid[id].invalid && exist) {
             valid[id].invalid = true;
