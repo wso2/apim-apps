@@ -29,6 +29,7 @@ import Banner from 'AppComponents/Shared/Banner';
 import API from 'AppData/api';
 import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
+import SwaggerParser from '@apidevtools/swagger-parser';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
 import Configurations from 'Config';
@@ -354,9 +355,23 @@ export default function Resources(props) {
      */
     function resolveAndUpdateSpec(rawSpec) {
         /*
+         * Deep copying the spec.
+         * Otherwise it will resolved to the original parameter passed (rawSpec) to the validate method.
+         * We will not alter the provided spec.
+         */
+        const specCopy = cloneDeep(rawSpec);
+        /*
         * Used SwaggerParser.validate() because we can get the errors as well.
         */
-        setResolvedSpec({ spec: rawSpec })
+        SwaggerParser.validate(specCopy, (err, result) => {
+            setResolvedSpec(() => {
+                const errors = err ? [err] : [];
+                return {
+                    spec: result,
+                    errors,
+                };
+            });
+        });
         operationsDispatcher({ action: 'init', data: rawSpec.paths });
         setOpenAPISpec(rawSpec);
         setSecurityDefScopesFromSpec(rawSpec);
@@ -569,7 +584,7 @@ export default function Resources(props) {
 
     // Note: Make sure not to use any hooks after/within this condition , because it returns conditionally
     // If you do so, You will probably get `Rendered more hooks than during the previous render.` exception
-    if ((!pageError && isEmpty(openAPISpec))) {
+    if ((!pageError && isEmpty(openAPISpec)) || (resolvedSpec.errors.length === 0 && isEmpty(resolvedSpec.spec))) {
         return (
             <Grid container direction='row' justifyContent='center' alignItems='center'>
                 <Grid item>
