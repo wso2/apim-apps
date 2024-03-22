@@ -466,7 +466,7 @@ class CreateEditForm extends React.Component {
             setSaveDisabled(true);
         }
 
-        if(type === 'OTHER' && otherTypeName === '') {
+        if (type === 'OTHER' && otherTypeName === '') {
             setSaveDisabled(true);
         }
         return (
