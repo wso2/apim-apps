@@ -1971,12 +1971,6 @@
       "value": "Certificate Deleted Successfully"
     }
   ],
-  "Apis.Details.Configuration.components.APISecurity.allOptional": [
-    {
-      "type": 0,
-      "value": "Please select at least one API security level as 'Mandatory'!"
-    }
-  ],
   "Apis.Details.Configuration.components.APISecurity.api.unsecured": [
     {
       "type": 0,

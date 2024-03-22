@@ -882,9 +882,6 @@
   "Apis.Details.Configuration.components.APISecurity.TranportLevel.certificate.delete.success": {
     "defaultMessage": "Certificate Deleted Successfully"
   },
-  "Apis.Details.Configuration.components.APISecurity.allOptional": {
-    "defaultMessage": "Please select at least one API security level as 'Mandatory'!"
-  },
   "Apis.Details.Configuration.components.APISecurity.api.unsecured": {
     "defaultMessage": "Application level security is not required since API has no secured resources"
   },
