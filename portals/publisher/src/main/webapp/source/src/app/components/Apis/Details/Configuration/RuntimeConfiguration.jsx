@@ -32,6 +32,7 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Api from 'AppData/api';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import ResponseCaching from './components/ResponseCaching';
@@ -212,6 +213,7 @@ function copyAPIConfig(api) {
 export default function RuntimeConfiguration() {
     const [keyManagersConfigured, setKeyManagersConfigured] = useState([]);
     const [saveButtonDisabled, setSaveButtonDisabled] = useState(false);
+    const { settings } = useAppContext();
     /**
      *
      * Reduce the configuration UI related actions in to updated state
@@ -513,7 +515,7 @@ export default function RuntimeConfiguration() {
                                         {((api.type !== 'GRAPHQL' || !isAsyncAPI) && api.gatewayType !== 'wso2/apk')
                                             && <SchemaValidation api={apiConfig} 
                                                 configDispatcher={configDispatcher} />}
-                                        {api.type === 'GRAPHQL' && (
+                                        {api.type === 'GRAPHQL' && api.gatewayType !== 'wso2/apk' && (
                                             <Box mt={3}>
                                                 <QueryAnalysis
                                                     api={apiConfig}
@@ -621,7 +623,7 @@ export default function RuntimeConfiguration() {
                 <Grid container>
                     <Grid container direction='row' alignItems='center' spacing={1} style={{ marginTop: 20 }}>
                         <Grid item id='save-runtime-configurations'>
-                            {api.isRevision
+                            {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                                 || ((apiConfig.visibility === 'RESTRICTED' && apiConfig.visibleRoles.length === 0)
                                 || isRestricted(['apim:api_create'], api)) || saveButtonDisabled ? (
                                     <Button

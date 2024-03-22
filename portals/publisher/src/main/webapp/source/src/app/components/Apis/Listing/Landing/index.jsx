@@ -86,37 +86,50 @@ const APILanding = () => {
                             id='Apis.Listing.SampleAPI.SampleAPI.create.new'
                             defaultMessage='Let’s get started !'
                         />
-                        <Box color='text.secondary' pt={2}>
-                            <Typography display='block' gutterBottom align='center' variant='body1'>
-                                <FormattedMessage
-                                    id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
-                                    defaultMessage='Choose your option to create an API '
-                                />
-                            </Typography>
-                        </Box>
+                        {settings && settings.portalConfigurationOnlyModeEnabled ? (
+                            <Box color='text.secondary' pt={2}>
+                                <Typography display='block' gutterBottom align='center' variant='body1'>
+                                    <FormattedMessage
+                                        id='Apis.Listing.SampleAPI.SampleAPI.no.apis.deployed'
+                                        defaultMessage='No APIs have been deployed yet '
+                                    />
+                                </Typography>
+                            </Box>
+                        ) : (
+                            <Box color='text.secondary' pt={2}>
+                                <Typography display='block' gutterBottom align='center' variant='body1'>
+                                    <FormattedMessage
+                                        id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
+                                        defaultMessage='Choose your option to create an API '
+                                    />
+                                </Typography>
+                            </Box>
+                        )}
                     </Typography>
                 </Grid>
 
-                <Grid item xs={12}>
-                    <Box pt={isXsOrBelow ? 2 : 7} pb={5} mx={isXsOrBelow ? 12 : 3}>
-                        <Grid
-                            container
-                            direction='row'
-                            justifyContent='center'
-                            alignItems='flex-start'
-                            spacing={3}
-                        >
-                            <RestAPIMenu icon={restApiIcon} />
-                            {gateway &&
-                                <SoapAPIMenu icon={soapApiIcon} />
-                            }
-                            <GraphqlAPIMenu icon={graphqlIcon} />
-                            {gateway &&
-                                <StreamingAPIMenu icon={streamingApiIcon} />
-                            }
-                        </Grid>
-                    </Box>
-                </Grid>
+                {settings && !settings.portalConfigurationOnlyModeEnabled && (
+                    <Grid item xs={12}>
+                        <Box pt={isXsOrBelow ? 2 : 7} pb={5} mx={isXsOrBelow ? 12 : 3}>
+                            <Grid
+                                container
+                                direction='row'
+                                justifyContent='center'
+                                alignItems='flex-start'
+                                spacing={3}
+                            >
+                                <RestAPIMenu icon={restApiIcon} />
+                                {gateway &&
+                                    <SoapAPIMenu icon={soapApiIcon} />
+                                }
+                                <GraphqlAPIMenu icon={graphqlIcon} />
+                                {gateway &&
+                                    <StreamingAPIMenu icon={streamingApiIcon} />
+                                }
+                            </Grid>
+                        </Box>
+                    </Grid>
+                )}
             </Grid>
         </Root>
     );

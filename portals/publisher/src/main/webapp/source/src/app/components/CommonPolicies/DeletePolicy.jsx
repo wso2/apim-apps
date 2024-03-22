@@ -67,6 +67,7 @@ const DeletePolicy = ({ policyId, policyName, fetchCommonPolicies }) => {
         <>
             <Button
                 onClick={toggleOpen}
+                sx={{width:100}}
                 disabled={
                     isRestricted([
                         'apim:api_create',

@@ -2613,6 +2613,12 @@
       "value": "Provide the document type"
     }
   ],
+  "Apis.Details.Documents.CreateEditForm.document.create.type.other.error.document.category.helper.text": [
+    {
+      "type":0,
+      "value": "Document type cannot be empty"
+    }
+  ],
   "Apis.Details.Documents.CreateEditForm.document.create.type.public.forum": [
     {
       "type": 0,
@@ -8031,6 +8037,12 @@
     {
       "type": 0,
       "value": "Choose your option to create an API"
+    }
+  ],
+  "Apis.Listing.SampleAPI.SampleAPI.no.apis.deployed": [
+    {
+      "type": 0,
+      "value": "No APIs have been deployed yet "
     }
   ],
   "Apis.Listing.SampleAPI.SampleAPI.graphql.api": [

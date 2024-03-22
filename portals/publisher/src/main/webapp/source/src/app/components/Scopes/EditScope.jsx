@@ -389,15 +389,14 @@ class EditScope extends React.Component {
             return <Progress />;
         }
         return (
-            <StyledGrid container spacing={3}>
-                <Grid item sm={12} md={12} />
+            <StyledGrid container>
                 {/*
             Following two grids control the placement of whole create page
             For centering the content better use `container` props, but instead used an empty grid item for flexibility
              */}
                 <Grid item sm={0} md={0} lg={2} />
                 <Grid item sm={12} md={12} lg={8}>
-                    <Grid container spacing={5} className={classes.titleGrid}>
+                    <Grid container className={classes.titleGrid}  sx={{ pt: 2 }}>
                         <Grid item md={12}>
                             <div className={classes.titleWrapper}>
                                 <Link to={url} className={classes.titleLink}>

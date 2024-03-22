@@ -358,37 +358,46 @@ function APICreateDefault(props) {
                         }
                     },
                 });
-                promisedDeployment.then(() => {
+                promisedDeployment.then((res) => {
                     setIsDeploying(false);
-                    // Publishing API after deploying
-                    setIsPublishing(true);
-                    const promisedPublish = api.publish();
-                    Alert.loading(promisedPublish, {
-                        loading: 'Publishing API...',
-                        success: (response) => {
-                            const { workflowStatus } = response.body;
-                            if (workflowStatus === APICreateDefault.WORKFLOW_STATUS.CREATED) {
-                                return intl.formatMessage({
-                                    id: 'Apis.Create.Default.APICreateDefault.success.publishStatus',
-                                    defaultMessage: 'Lifecycle state change request has been sent',
-                                });
-                            } else {
-                                return intl.formatMessage({
-                                    id: 'Apis.Create.Default.APICreateDefault.success.otherStatus',
-                                    defaultMessage: 'API updated successfully',
-                                });
-                            }
-                        },
-                        error: () => intl.formatMessage({
-                            id: 'Apis.Create.Default.APICreateDefault.error.otherStatus',
-                            defaultMessage: 'Error while publishing the API',
-                        }),
-                    });
-                    promisedPublish.then(() => history.push(`/apis/${api.id}/overview`))
-                        .finally(() => {
-                            setIsPublishing(false);
-                            setIsPublishButtonClicked(false);
+
+                    const deploymentStatus = res.body[0].status;
+                    if (deploymentStatus === 'CREATED') {
+                        setIsPublishing(false);
+                        setIsPublishButtonClicked(false);
+                        history.push(`/apis/${api.id}/overview`)
+
+                    } else {
+                        setIsPublishing(true);
+                        const promisedPublish = api.publish();
+                        Alert.loading(promisedPublish, {
+                            loading: 'Publishing API...',
+                            success: (response) => {
+                                const { workflowStatus } = response.body;
+                                if (workflowStatus === APICreateDefault.WORKFLOW_STATUS.CREATED) {
+                                    return intl.formatMessage({
+                                        id: 'Apis.Create.Default.APICreateDefault.success.publishStatus',
+                                        defaultMessage: 'Lifecycle state change request has been sent',
+                                    });
+                                } else {
+                                    return intl.formatMessage({
+                                        id: 'Apis.Create.Default.APICreateDefault.success.otherStatus',
+                                        defaultMessage: 'API updated successfully',
+                                    });
+                                }
+                            },
+                            error: () => intl.formatMessage({
+                                id: 'Apis.Create.Default.APICreateDefault.error.otherStatus',
+                                defaultMessage: 'Error while publishing the API',
+                            }),
                         });
+                        promisedPublish.then(() => history.push(`/apis/${api.id}/overview`))
+                            .finally(() => {
+                                setIsPublishing(false);
+                                setIsPublishButtonClicked(false);
+                            });
+                    }
+
                 })
                     .finally(() => {
                         setIsDeploying(false);

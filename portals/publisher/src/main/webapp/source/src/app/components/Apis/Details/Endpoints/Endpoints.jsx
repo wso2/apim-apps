@@ -23,12 +23,14 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { Link, withRouter } from 'react-router-dom';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import NewEndpointCreate from 'AppComponents/Apis/Details/Endpoints/NewEndpointCreate';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import cloneDeep from 'lodash.clonedeep';
 import { isRestricted } from 'AppData/AuthManager';
+import { Alert } from 'AppComponents/Shared';
 import EndpointOverview from './EndpointOverview';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
 
@@ -95,6 +97,7 @@ const defaultSwagger = { paths: {} };
 function Endpoints(props) {
     const {  intl, history } = props;
     const { api, updateAPI } = useContext(APIContext);
+    const { settings } = useAppContext();
     const [swagger, setSwagger] = useState(defaultSwagger);
     const [endpointValidity, setAPIEndpointsValid] = useState({ isValid: true, message: '' });
     const [isUpdating, setUpdating] = useState(false);
@@ -210,7 +213,14 @@ function Endpoints(props) {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
             }).then(() => {
-                updateAPI({ endpointConfig, endpointImplementationType, serviceInfo });
+                updateAPI({ endpointConfig, endpointImplementationType, serviceInfo })
+                    .catch((error) => {
+                        if (error.response) {
+                            Alert.error(error.response.body.description);
+                        } else {
+                            Alert.error('Error occurred while updating endpoint configurations');
+                        }
+                    });
             }).finally(() => {
                 setUpdating(false);
                 if (isRedirect) {
@@ -222,12 +232,20 @@ function Endpoints(props) {
             if (apiObjectCopy.endpointConfig.endpoint_type === 'service') {
                 apiObjectCopy.endpointConfig.endpoint_type = 'http';
             }
-            updateAPI(apiObjectCopy).finally(() => {
-                setUpdating(false);
-                if (isRedirect) {
-                    history.push('/apis/' + api.id + '/policies');
-                }
-            });
+            updateAPI(apiObjectCopy)
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error('Error occurred while updating endpoint configurations');
+                    }
+                })
+                .finally(() => {
+                    setUpdating(false);
+                    if (isRedirect) {
+                        history.push('/apis/' + api.id + '/policies');
+                    }
+                });
         }
     };
 
@@ -241,7 +259,14 @@ function Endpoints(props) {
             api.updateSwagger(swagger).then((resp) => {
                 setSwagger(resp.obj);
             }).then(() => {
-                updateAPI({ endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo });
+                updateAPI({ endpointConfig, endpointImplementationType, endpointSecurity, serviceInfo })
+                    .catch((error) => {
+                        if (error.response) {
+                            Alert.error(error.response.body.description);
+                        } else {
+                            Alert.error('Error occurred while updating endpoint configurations');
+                        }
+                    }); 
             }).finally(() => history.push({
                 pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
                     : `/apis/${api.id}/deployments`,
@@ -252,11 +277,19 @@ function Endpoints(props) {
             if (apiObjectCopy.endpointConfig.endpoint_type === 'service') {
                 apiObjectCopy.endpointConfig.endpoint_type = 'http';
             }
-            updateAPI(apiObjectCopy).finally(() => history.push({
-                pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
-                    : `/apis/${api.id}/deployments`,
-                state: 'deploy',
-            }));
+            updateAPI(apiObjectCopy)
+                .catch((error) => {
+                    if (error.response) {
+                        Alert.error(error.response.body.description);
+                    } else {
+                        Alert.error('Error occurred while updating endpoint configurations');
+                    }
+                })
+                .finally(() => history.push({
+                    pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
+                        : `/apis/${api.id}/deployments`,
+                    state: 'deploy',
+                }));
         }
     };
 
@@ -556,6 +589,7 @@ function Endpoints(props) {
                             >
                                 <Grid item>
                                     {api.isRevision || !endpointValidity.isValid
+                                        || (settings && settings.portalConfigurationOnlyModeEnabled)
                                         || isRestricted(['apim:api_create'], api) ? (
                                             <Button
                                                 disabled

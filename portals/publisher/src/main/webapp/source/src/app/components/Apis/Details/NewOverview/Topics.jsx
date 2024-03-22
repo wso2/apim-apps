@@ -162,7 +162,7 @@ class Topics extends React.Component {
                                     <div className={classes.root}>
                                         <Grid container spacing={1}>
                                             <Grid item xs={12}>
-                                                <Grid container direction='row' spacing={1}>
+                                                <Grid container direction='row' spacing={1} sx={{ mb: 1 }}>
                                                     <Grid item>
                                                         <VerbElement verb={topic.type.substr(0, 3)} />
                                                     </Grid>

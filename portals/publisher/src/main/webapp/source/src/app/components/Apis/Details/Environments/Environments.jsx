@@ -132,11 +132,7 @@ const classes = {
 };
 
 
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.root}`]: {
         display: 'flex',
         flexWrap: 'wrap',
@@ -517,12 +513,11 @@ export default function Environments() {
     const restApi = new API();
     const restProductApi = new APIProduct();
     const [selectedRevision, setRevision] = useState([]);
-    const assignGateway = api.gatewayType === "wso2/synapse" ? "Regular" : "APK";
+    const assignGateway = (api.gatewayType === "wso2/synapse" || api.apiType === "APIPRODUCT") ? "Regular" : "APK";
     const externalGateways = settings && settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
     const internalGatewaysFiltered = settings && settings.environment.filter((p) =>
         p.provider.toLowerCase().includes('wso2'));
-    const internalGateways = api.isAPIProduct() ? settings && settings.environment.filter((p) =>
-        p.provider.toLowerCase().includes('wso2')) : internalGatewaysFiltered && internalGatewaysFiltered.filter((p) => 
+    const internalGateways = internalGatewaysFiltered && internalGatewaysFiltered.filter((p) => 
         p.gatewayType.toLowerCase() === assignGateway.toLowerCase()
     );
     const [selectedVhosts, setVhosts] = useState(null);
@@ -1224,36 +1219,30 @@ export default function Environments() {
                     />
                     <Popover
                         id='mouse-over-popover'
-                        className={classes.popover}
-                        classes={{
-                            paper: classes.paper,
-
-                        }}
+                        sx={{ pointerEvents: 'none' }}
                         open={openPopover}
                         anchorEl={anchorEl}
                         anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
+                            vertical: 'bottom',
+                            horizontal: 'left',
                         }}
                         transformOrigin={{
-                            vertical: 'bottom',
+                            vertical: 'top',
                             horizontal: 'left',
                         }}
                         onClose={handlePopoverClose}
                         disableRestoreFocus
                     >
-                        <div>
-                            <Typography variant='body1'>
+                        <div style={{ padding: '8px' }}>
+                            <Typography variant='body1' sx={{ mb: 0.5 }}>
                                 <b>{revName}</b>
                             </Typography>
-                            <Typography variant='body2'>
+                            <Typography variant='body2' sx={{ mb: 1}}>
                                 {revDescription}
                             </Typography>
-                            <div className={classes.timePaddingStyle}>
-                                <Typography variant='caption'>
-                                    <span>{moment(revCreatedTime).fromNow()}</span>
-                                </Typography>
-                            </div>
+                            <Typography variant='caption'>
+                                <span>{moment(revCreatedTime).fromNow()}</span>
+                            </Typography>
                         </div>
                     </Popover>
                 </Grid>
@@ -1366,15 +1355,12 @@ export default function Environments() {
                     />
                     <Popover
                         id='mouse-over-popover'
-                        className={classes.popover}
-                        classes={{
-                            paper: classes.paper,
-                        }}
+                        sx={{ pointerEvents: 'none' }}
                         open={openPopover}
                         anchorEl={anchorEl1}
                         anchorOrigin={{
                             vertical: 'bottom',
-                            horizontal: 'right',
+                            horizontal: 'left',
                         }}
                         transformOrigin={{
                             vertical: 'top',
@@ -1383,18 +1369,16 @@ export default function Environments() {
                         onClose={handlePopoverClose}
                         disableRestoreFocus
                     >
-                        <div>
-                            <Typography variant='body1'>
+                        <div style={{ padding: '8px' }}>
+                            <Typography variant='body1' sx={{ mb: 0.5 }}>
                                 <b>{revName}</b>
                             </Typography>
-                            <Typography variant='body2'>
+                            <Typography variant='body2' sx={{ mb: 1}}>
                                 {revDescription}
                             </Typography>
-                            <div className={classes.timePaddingStyle}>
-                                <Typography variant='caption'>
-                                    <span>{moment(revCreatedTime).fromNow()}</span>
-                                </Typography>
-                            </div>
+                            <Typography variant='caption'>
+                                <span>{moment(revCreatedTime).fromNow()}</span>
+                            </Typography>
                         </div>
                     </Popover>
                 </Grid>
@@ -1429,29 +1413,21 @@ export default function Environments() {
                 />
                 <Popover
                     id='mouse-over-popover'
-                    className={classes.popover}
-                    classes={{
-                        paper: classes.paper,
-
-                    }}
+                    sx={{ pointerEvents: 'none' }}
                     open={openPopover}
                     anchorEl={anchorEl}
                     anchorOrigin={{
-                        vertical: 'top',
-                        horizontal: 'right',
+                        vertical: 'bottom',
+                        horizontal: 'left',
                     }}
                     transformOrigin={{
-                        vertical: 'bottom',
+                        vertical: 'top',
                         horizontal: 'left',
                     }}
                     onClose={handlePopoverClose}
                     disableRestoreFocus
                 >
-                    <div>
-                        <Typography variant='body2'>
-                            {revDescription}
-                        </Typography>
-                    </div>
+                    <Typography sx={{ p: 1 }}>{revDescription}</Typography>
                 </Popover>
             </>
 
@@ -1460,7 +1436,7 @@ export default function Environments() {
     }
 
     const items = [];
-    if (!api.isRevision) {
+    if (!api.isRevision && (settings && !settings.portalConfigurationOnlyModeEnabled)) {
         if (allRevisions && allRevisions.length !== 0) {
             items.push(
                 <Grid item className={clsx(classes.shapeCircleBlack, classes.shapeCircle)} />,
@@ -1478,15 +1454,14 @@ export default function Environments() {
                             {item1}
                             <Grid className={classes.textShape2}>
                                 {allRevisions[revision].displayName}
-                                {allRevisions[revision].description && <>
-                                    <ReturnInfoIconItem
-                                        revDescription={allRevisions[revision].description}
-                                    />
-                                    {infoIconItem}
-                                </>
-                                }
+                                {allRevisions[revision].description && (
+                                    <>
+                                        <ReturnInfoIconItem revDescription={allRevisions[revision].description} />
+                                        {infoIconItem}
+                                    </>
+                                )}
                             </Grid>
-                            <Grid style={{display:'flex',flexDirection:'row'}}>
+                            <Grid style={{display:'flex', flexDirection:'row'}}>
                                 <Button
                                     className={classes.textShape3}
                                     onClick={() => toggleOpenConfirmRestore(
@@ -1720,7 +1695,9 @@ export default function Environments() {
                         margin='dense'
                         variant='outlined'
                         style={{width: '50%'}}
-                        disabled={api.isRevision || !allRevisions || allRevisions.length === 0}
+                        disabled={api.isRevision ||
+                            (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                            !allRevisions || allRevisions.length === 0}
                     >
                         {allRevisions && allRevisions.length !== 0 && allRevisions.map((number) => (
                             <MenuItem value={number.id}>{number.displayName}</MenuItem>
@@ -1729,7 +1706,7 @@ export default function Environments() {
                     <Button
                         className={classes.button2}
                         disabled={
-                            api.isRevision ||
+                            api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
                             !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                             !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                             (api.advertiseInfo && api.advertiseInfo.advertised) ||
@@ -1792,7 +1769,9 @@ export default function Environments() {
                     <Button
                         className={classes.button1}
                         variant='outlined'
-                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        disabled={api.isRevision ||
+                            (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                            isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                         onClick={() => cancelRevisionDeploymentWorkflow(pendingDeployment.id, row.name)}
                         size='small'
                         id='cancel-btn'
@@ -1830,7 +1809,9 @@ export default function Environments() {
                     margin='dense'
                     variant='outlined'
                     style={{width: '50%'}}
-                    disabled={api.isRevision || !filteredRevisions || filteredRevisions.length === 0}
+                    disabled={api.isRevision ||
+                        (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                        !filteredRevisions || filteredRevisions.length === 0}
                 >
                     {filteredRevisions && filteredRevisions.length !== 0 && filteredRevisions.map((number) => (
                         <MenuItem value={number.id}>{number.displayName}</MenuItem>
@@ -1839,7 +1820,7 @@ export default function Environments() {
                 <Button
                     className={classes.button2}
                     disabled={
-                        api.isRevision ||
+                        api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
                         !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                         !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                         (api.advertiseInfo && api.advertiseInfo.advertised) ||
@@ -1903,7 +1884,9 @@ export default function Environments() {
                     <Button
                         className={classes.button1}
                         variant='outlined'
-                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        disabled={api.isRevision ||
+                            (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                            isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                         onClick={() => undeployRevision(approvedDeployment.id, row.name)}
                         size='small'
                         id='undeploy-btn'
@@ -2014,7 +1997,8 @@ export default function Environments() {
                     </Typography>
                 </Grid>
             )}
-            {!api.isRevision && allRevisions && allRevisions.length !== 0
+            {!api.isRevision && (settings && !settings.portalConfigurationOnlyModeEnabled) &&
+                allRevisions && allRevisions.length !== 0
             && (
                 <Grid container>
                     <Tooltip
@@ -2067,7 +2051,7 @@ export default function Environments() {
                     </DialogTitle>
                     <DialogContent className={classes.dialogContent}>
                         { allRevisions && allRevisions.length === revisionCount && (
-                            <Typography variant='body' align='left' className={classes.warningText}>
+                            <Typography align='left' className={classes.warningText}>
                                 <FormattedMessage
                                     id='Apis.Details.Environments.Environments.select.rev.warning'
                                     defaultMessage={'Please delete a revision as '
@@ -2089,15 +2073,6 @@ export default function Environments() {
                                             defaultMessage='Revision to delete'
                                         />
                                     )}
-                                    SelectProps={{
-                                        MenuProps: {
-                                            anchorOrigin: {
-                                                vertical: 'bottom',
-                                                horizontal: 'left',
-                                            },
-                                            getContentAnchorEl: null,
-                                        },
-                                    }}
                                     name='extraRevisionToDelete'
                                     onChange={handleDeleteSelect}
                                     helperText={allRevisions && allRevisions.filter(
@@ -2120,9 +2095,11 @@ export default function Environments() {
                                         )}
                                     margin='normal'
                                     variant='outlined'
-                                    disabled={api.isRevision || allRevisions.filter(
-                                        (o1) => o1.deploymentInfo.length === 0,
-                                    ).length === 0}
+                                    disabled={api.isRevision ||
+                                        (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                                            allRevisions.filter(
+                                                (o1) => o1.deploymentInfo.length === 0,
+                                            ).length === 0}
                                 >
                                     {allRevisions && allRevisions.length !== 0 && allRevisions.filter(
                                         (o1) => o1.deploymentInfo.length === 0,
@@ -2550,7 +2527,7 @@ export default function Environments() {
                     </DialogTitle>
                     <DialogContent className={classes.dialogContent}>
                         { allRevisions && allRevisions.length === revisionCount && (
-                            <Typography variant='body' align='left' className={classes.warningText}>
+                            <Typography align='left' className={classes.warningText}>
                                 <FormattedMessage
                                     id='Apis.Details.Environments.Environments.select.rev.warning'
                                     defaultMessage={'Please delete a revision as '
@@ -2572,15 +2549,6 @@ export default function Environments() {
                                             defaultMessage='Revision to delete'
                                         />
                                     )}
-                                    SelectProps={{
-                                        MenuProps: {
-                                            anchorOrigin: {
-                                                vertical: 'bottom',
-                                                horizontal: 'left',
-                                            },
-                                            getContentAnchorEl: null,
-                                        },
-                                    }}
                                     name='extraRevisionToDelete'
                                     onChange={handleDeleteSelect}
                                     helperText={allRevisions && allRevisions.filter(
@@ -2603,9 +2571,11 @@ export default function Environments() {
                                         )}
                                     margin='normal'
                                     variant='outlined'
-                                    disabled={api.isRevision || allRevisions.filter(
-                                        (o1) => o1.deploymentInfo.length === 0,
-                                    ).length === 0}
+                                    disabled={api.isRevision ||
+                                        (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                                            allRevisions.filter(
+                                                (o1) => o1.deploymentInfo.length === 0,
+                                            ).length === 0}
                                 >
                                     {allRevisions && allRevisions.length !== 0 && allRevisions.filter(
                                         (o1) => o1.deploymentInfo.length === 0,
@@ -2657,7 +2627,7 @@ export default function Environments() {
                             type='submit'
                             variant='contained'
                             color='primary'
-                            disabled={api.isRevision
+                            disabled={api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)}
                         >
                             <FormattedMessage
@@ -2823,6 +2793,7 @@ export default function Environments() {
                                                             className={classes.vhostSelect}
                                                             fullWidth
                                                             disabled={api.isRevision
+                                                            || (settings && settings.portalConfigurationOnlyModeEnabled)
                                                             || !allRevisions || allRevisions.length === 0}
                                                             helperText={getVhostHelperText(row.name, selectedVhosts,
                                                                 true, 100)}
@@ -2989,7 +2960,10 @@ export default function Environments() {
                                                         <Button
                                                             className={classes.button1}
                                                             variant='outlined'
-                                                            disabled={api.isRevision}
+                                                            disabled={api.isRevision ||
+                                                                (settings &&
+                                                                    settings.portalConfigurationOnlyModeEnabled
+                                                                )}
                                                             onClick={() => undeployRevision(
                                                                 allExternalGatewaysMap[row.name]
                                                                     .revision.id, row.name,
@@ -3028,7 +3002,10 @@ export default function Environments() {
                                                             margin='dense'
                                                             variant='outlined'
                                                             style={{ width: '50%' }}
-                                                            disabled={api.isRevision
+                                                            disabled={api.isRevision ||
+                                                                (settings &&
+                                                                    settings.portalConfigurationOnlyModeEnabled
+                                                                )
                                                             || !allRevisions || allRevisions.length === 0}
                                                         >
                                                             {allRevisions && allRevisions.length !== 0
@@ -3042,9 +3019,13 @@ export default function Environments() {
                                                         </TextField>
                                                         <Button
                                                             className={classes.button2}
-                                                            disabled={api.isRevision || !selectedRevision.some(
-                                                                (r) => r.env === row.name && r.revision,
-                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                                            disabled={api.isRevision ||
+                                                                (settings &&
+                                                                    settings.portalConfigurationOnlyModeEnabled
+                                                                )
+                                                                || !selectedRevision.some(
+                                                                    (r) => r.env === row.name && r.revision,
+                                                                ) || (api.advertiseInfo && api.advertiseInfo.advertised)
                                                             || isDeployButtonDisabled}
                                                             variant='outlined'
                                                             onClick={() => deployRevision(selectedRevision.find(

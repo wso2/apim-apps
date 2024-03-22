@@ -88,12 +88,7 @@ const classes = {
     editorRoot: `${PREFIX}-editorRoot`
 };
 
-
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.preview}`]: {
         height: theme.spacing(16),
         marginBottom: theme.spacing(3),
@@ -184,16 +179,18 @@ const Root = styled('div')((
         marginRight: theme.spacing(1),
     },
 
-    [`& .${classes.button}`]: {
-        marginLeft: theme.spacing(2),
-    },
-
     [`& .${classes.buttonIcon}`]: {
         marginRight: theme.spacing(1),
     },
 
     [`& .${classes.downloadButtonSpacing}`]: {
         marginLeft: theme.spacing(1),
+    },
+}));
+
+const StyledDialog = styled(Dialog)(({ theme }) => ({
+    [`& .${classes.button}`]: {
+        marginLeft: theme.spacing(2),
     },
 
     [`& .${classes.editorPane}`]: {
@@ -624,12 +621,12 @@ function Overview(props) {
                                                         </Button>
                                                     </div>
                                                 </div>
-                                                <Dialog
+                                                <StyledDialog
                                                     fullScreen
                                                     open={openReadOnlyDefinition}
                                                     onClose={closeEditor}
                                                 >
-                                                    <Paper square className={classes.popupHeader}>
+                                                    <Paper square>
                                                         <IconButton
                                                             className={classes.button}
                                                             color='inherit'
@@ -679,7 +676,7 @@ function Overview(props) {
                                                             />
                                                         )}
                                                     </Suspense>
-                                                </Dialog>
+                                                </StyledDialog>
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>

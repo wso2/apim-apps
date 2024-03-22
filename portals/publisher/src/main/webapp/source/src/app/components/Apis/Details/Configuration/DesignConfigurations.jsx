@@ -444,6 +444,8 @@ export default function DesignConfigurations() {
             .catch((error) => {
                 if (error.response) {
                     Alert.error(error.response.body.description);
+                } else {
+                    Alert.error('Error occurred while updating design configurations');
                 }
             });
         if (descriptionType === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {

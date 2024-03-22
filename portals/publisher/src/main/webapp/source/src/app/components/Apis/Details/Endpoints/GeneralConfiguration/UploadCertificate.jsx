@@ -260,7 +260,8 @@ export default function UploadCertificate(props) {
             <DialogContent>
                 <Grid>
                     <div>
-                        {isMutualSSLEnabled && api.gatewayType === 'wso2/synapse' && (
+                        {isMutualSSLEnabled && (api.gatewayType === 'wso2/synapse' ||
+                        api.apiType === 'APIPRODUCT') && (
                             <SelectPolicies
                                 multiple={false}
                                 policies={policy}

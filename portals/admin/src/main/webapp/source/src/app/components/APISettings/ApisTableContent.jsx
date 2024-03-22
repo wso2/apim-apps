@@ -145,7 +145,7 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                 )
             );
         } else {
-            return restApi.updateApiProvider(apiId, apiProvider)
+            return restApi.updateApiProvider(apiId, apiProvider.trim())
                 .then(() => {
                     return (
                         Alert.success(
