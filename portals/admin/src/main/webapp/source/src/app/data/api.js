@@ -885,7 +885,7 @@ class API extends Resource {
      */
      getKeyManagerApplicationUsages(keyManagerId) {
         return this.client.then((client) => {
-            return client.apis["Key Manager (Individual)"].get_key_managers__keyManagerId__app_usages(
+            return client.apis['Key Manager (Individual)'].get_key_managers__keyManagerId__app_usages(
                 { keyManagerId: keyManagerId },
                 this._requestMetaData(),
             );
@@ -897,7 +897,7 @@ class API extends Resource {
      */
      getKeyManagerApiUsages(keyManagerId) {
         return this.client.then((client) => {
-            return client.apis["Key Manager (Individual)"].get_key_managers__keyManagerId__api_usages(
+            return client.apis['Key Manager (Individual)'].get_key_managers__keyManagerId__api_usages(
                 { keyManagerId: keyManagerId },
                 this._requestMetaData(),
             );
