@@ -17,7 +17,7 @@
  */
 
 import React, {
-    useEffect, useState,
+    useEffect, useState, useRef,
 } from 'react';
 import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
@@ -168,7 +168,7 @@ function TryOutController(props) {
         setPassword, username, password, updateSwagger, setProductionApiKey, setSandboxApiKey, productionApiKey,
         sandboxApiKey, environmentObject, setURLs, setAdvAuthHeader, setAdvAuthHeaderValue, advAuthHeader,
         advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs, autoGenerateToken = false,
-        setTestAccessToken = null,
+        setTestAccessToken = null, onConfigChange,
     } = props;
     let { selectedKeyManager } = props;
     selectedKeyManager = selectedKeyManager || 'Resident Key Manager';
@@ -187,6 +187,22 @@ function TryOutController(props) {
     const apiID = api.id;
     const restApi = new Api();
     const user = AuthManager.getUser();
+    const selectedEnvironmentRef = useRef(selectedEnvironment);
+    const securitySchemeTypeRef = useRef(securitySchemeType);
+
+    const handleConfigChange = ({ newAccessToken, newSecurityScheme, newUsername, newPassword, newSelectedEnvironment }) => {
+        if (onConfigChange) {
+            onConfigChange({ newAccessToken, newSecurityScheme, newUsername, newPassword, newSelectedEnvironment });
+        }
+    };
+
+    useEffect(() => {
+        selectedEnvironmentRef.current = selectedEnvironment;
+    }, [selectedEnvironment]);
+
+    useEffect(() => {
+        securitySchemeTypeRef.current = securitySchemeType;
+    }, [securitySchemeType]);
 
     useEffect(() => {
         let subscriptionsList;
@@ -306,6 +322,13 @@ function TryOutController(props) {
                     } else {
                         setSandboxAccessToken(response.accessToken);
                     }
+                    handleConfigChange({
+                        newAccessToken: response.accessToken,
+                        newSecurityScheme: securitySchemeTypeRef.current,
+                        newUsername: null,
+                        newPassword: null,
+                        newSelectedEnvironment: selectedEnvironmentRef.current,
+                    });
                     setIsUpdating(false);
                 })
                 .catch((error) => {
@@ -335,6 +358,13 @@ function TryOutController(props) {
                     } else {
                         setSandboxApiKey(response.body.apikey);
                     }
+                    handleConfigChange({
+                        newAccessToken: response.body.apikey,
+                        newSecurityScheme: securitySchemeTypeRef.current,
+                        newUsername: null,
+                        newPassword: null,
+                        newSelectedEnvironment: selectedEnvironmentRef.current,
+                    });
                     setIsUpdating(false);
                 })
                 .catch((error) => {
@@ -418,6 +448,13 @@ function TryOutController(props) {
 
     useEffect(() => {
         updateApplication();
+        handleConfigChange({
+            newAccessToken: null,
+            newSecurityScheme: securitySchemeTypeRef.current,
+            newUsername: null,
+            newPassword: null,
+            newSelectedEnvironment: selectedEnvironmentRef.current,
+        });
     }, [selectedApplication, selectedKeyType, selectedEnvironment, securitySchemeType]);
 
     /**
@@ -461,11 +498,29 @@ function TryOutController(props) {
                 break;
             case 'username':
                 setUsername(value);
+                handleConfigChange({
+                    newAccessToken: null,
+                    newSecurityScheme: securitySchemeType,
+                    newUsername: value,
+                    newPassword: null,
+                });
                 break;
             case 'password':
                 setPassword(value);
+                handleConfigChange({
+                    newAccessToken: null,
+                    newSecurityScheme: securitySchemeType,
+                    newUsername: null,
+                    newPassword: value,
+                });
                 break;
             case 'accessToken':
+                handleConfigChange({
+                    newAccessToken: value,
+                    newSecurityScheme: securitySchemeType,
+                    newUsername: null,
+                    newPassword: null,
+                });
                 if (securitySchemeType === 'API-KEY' && selectedKeyType === 'PRODUCTION') {
                     setProductionApiKey(value);
                 } else if (securitySchemeType === 'API-KEY' && selectedKeyType === 'SANDBOX') {

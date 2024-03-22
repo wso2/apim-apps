@@ -37,6 +37,7 @@ const ConfigureKeyDrawer = ({
     isDrawerOpen,
     updateDrawerOpen,
     setTestAccessToken,
+    onConfigChange,
 }) => {
     const [api, setApi] = useState(null);
     const [securityScheme, setSecurityScheme] = useState('OAUTH');
@@ -399,6 +400,7 @@ const ConfigureKeyDrawer = ({
                             URLs={null}
                             autoGenerateToken
                             setTestAccessToken={setTestAccessToken}
+                            onConfigChange={onConfigChange}
                         />
                     </Grid>
                 </Box>
