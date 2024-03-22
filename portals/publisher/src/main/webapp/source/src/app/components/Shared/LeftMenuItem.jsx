@@ -91,14 +91,17 @@ const StyledLink = styled(Link)(({theme}) => ({
     },
 
     [`&.${classes.leftLInkOverview}`]: {
-        paddingTop: theme.spacing(1),
+        paddingTop: theme.spacing(2),
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
+        paddingBottom: theme.spacing(2),
         height: '18px',
         fontSize: theme.typography.caption.fontSize,
         cursor: 'pointer',
         textDecoration: 'none',
+        [`& .${classes.leftLink_Icon}`]: {
+            marginRight: theme.spacing(1),
+        }
     },
 
     [`& .${classes.leftLink_Icon}`]: {
