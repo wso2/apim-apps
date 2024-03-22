@@ -1,4 +1,3 @@
-/* eslint-disable require-jsdoc */
 /*
  * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -108,7 +107,25 @@ function globalAPICall() {
     return new API()
         .getGlobalKeyManagersList()
         .then((result) => {
-            return result.body.list;
+            const resultList = result.body.list;
+            resultList.forEach((item) => {
+                if (item.tokenType === 'DIRECT') {
+                    // eslint-disable-next-line no-param-reassign
+                    item.tokenType = <Chip variant='outlined' color='primary' size='small' label='Direct' />;
+                } else if (item.tokenType === 'BOTH') {
+                    // eslint-disable-next-line no-param-reassign
+                    item.tokenType = (
+                        <div>
+                            <Chip variant='outlined' color='primary' size='small' label='Direct' />
+                            <Chip variant='outlined' color='primary' size='small' label='Exchange' />
+                        </div>
+                    );
+                } else {
+                    // eslint-disable-next-line no-param-reassign
+                    item.tokenType = <Chip variant='outlined' color='primary' size='small' label='Exchange' />;
+                }
+            });
+            return resultList;
         })
         .catch((error) => {
             throw error;
