@@ -623,7 +623,7 @@ export default function RuntimeConfiguration() {
                 <Grid container>
                     <Grid container direction='row' alignItems='center' spacing={1} style={{ marginTop: 20 }}>
                         <Grid item id='save-runtime-configurations'>
-                            {api.isRevision || (settings && settings.readOnlyModeEnabled)
+                            {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                                 || ((apiConfig.visibility === 'RESTRICTED' && apiConfig.visibleRoles.length === 0)
                                 || isRestricted(['apim:api_create'], api)) || saveButtonDisabled ? (
                                     <Button

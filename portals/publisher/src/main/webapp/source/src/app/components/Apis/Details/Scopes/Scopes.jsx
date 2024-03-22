@@ -126,7 +126,7 @@ class Scopes extends React.Component {
     componentDidMount() {
         const { api } = this.props;
         api.getSettings().then((settings) => {
-            this.setState({ enableReadOnly: settings.readOnlyModeEnabled });
+            this.setState({ enableReadOnly: settings.portalConfigurationOnlyModeEnabled });
         });
     }
 

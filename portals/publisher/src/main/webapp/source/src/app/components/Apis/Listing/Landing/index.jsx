@@ -86,7 +86,7 @@ const APILanding = () => {
                             id='Apis.Listing.SampleAPI.SampleAPI.create.new'
                             defaultMessage='Let’s get started !'
                         />
-                        {settings && settings.readOnlyModeEnabled ? (
+                        {settings && settings.portalConfigurationOnlyModeEnabled ? (
                             <Box color='text.secondary' pt={2}>
                                 <Typography display='block' gutterBottom align='center' variant='body1'>
                                     <FormattedMessage
@@ -108,7 +108,7 @@ const APILanding = () => {
                     </Typography>
                 </Grid>
 
-                {settings && settings.readOnlyModeEnabled && (
+                {settings && !settings.portalConfigurationOnlyModeEnabled && (
                     <Grid item xs={12}>
                         <Box pt={isXsOrBelow ? 2 : 7} pb={5} mx={isXsOrBelow ? 12 : 3}>
                             <Grid

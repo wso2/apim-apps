@@ -622,7 +622,7 @@ function Properties(props) {
         (customProperties && customProperties.length > 0 && !isCustomPropsFilled)
         || editing
         || api.isRevision
-        || (settings && settings.readOnlyModeEnabled) 
+        || (settings && settings.portalConfigurationOnlyModeEnabled) 
         || (isEmpty(additionalProperties) && !isAdditionalPropertiesStale)
         || isRestricted(['apim:api_create', 'apim:api_publish'], api)
     ) {
@@ -709,7 +709,7 @@ function Properties(props) {
                             onClick={toggleAddProperty}
                             disabled={showAddProperty
                             || isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision
-                            || (settings && settings.readOnlyModeEnabled) }
+                            || (settings && settings.portalConfigurationOnlyModeEnabled) }
                         >
                             <AddCircle className={classes.buttonIcon} />
                             <FormattedMessage
@@ -771,7 +771,7 @@ function Properties(props) {
                                     onClick={toggleAddProperty}
                                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
                                         || api.isRevision
-                                        || (settings && settings.readOnlyModeEnabled)}
+                                        || (settings && settings.portalConfigurationOnlyModeEnabled)}
                                 >
                                     <FormattedMessage
                                         id='Apis.Details.Properties.Properties.add.new.property'

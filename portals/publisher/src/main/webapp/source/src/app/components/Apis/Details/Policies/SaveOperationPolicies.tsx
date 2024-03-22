@@ -68,7 +68,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({
         <Grid container direction='row' spacing={1}>
             <Grid item>
                 <Box p={1} mt={3}>
-                    {api.isRevision || (settings && settings.readOnlyModeEnabled) || isRestricted(['apim:api_create'], api) ? (
+                    {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) || isRestricted(['apim:api_create'], api) ? (
                         <Button
                             disabled
                             type='submit'

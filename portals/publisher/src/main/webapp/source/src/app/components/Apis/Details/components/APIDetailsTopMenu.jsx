@@ -424,7 +424,7 @@ const APIDetailsTopMenu = (props) => {
                 )}
                 {/* Page error banner */}
                 {/* end of Page error banner */}
-                {api.isRevision || (settings && settings.readOnlyModeEnabled)
+                {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                     ? null :
                     <CreateNewVersionButton buttonClass={classes.viewInStoreLauncher}
                         api={api} isAPIProduct={isAPIProduct} />}
@@ -449,7 +449,8 @@ const APIDetailsTopMenu = (props) => {
                         </a>
                     )}
                 </div>
-                {api.isRevision || (settings && settings.readOnlyModeEnabled) || isRestricted(['apim:api_create'], api)
+                {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
+                    || isRestricted(['apim:api_create'], api)
                     ? (<div className={classes.revisionWrapper} />)
                     : (
                         <DeleteApiButton 

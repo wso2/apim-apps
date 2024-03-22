@@ -105,7 +105,7 @@ const APICreateMenu = () => {
         streamingApiIcon,
     } = theme.custom.landingPage.icons;
     return (
-        !AuthManager.isNotCreator() && (settings && !settings.readOnlyModeEnabled) &&(
+        !AuthManager.isNotCreator() && (settings && !settings.portalConfigurationOnlyModeEnabled) &&(
             <Root>
                 <MenuButton
                     buttonProps={{

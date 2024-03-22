@@ -83,7 +83,7 @@ export default function SaveOperations(props) {
         <>
             <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
                 <Grid item>
-                    {api.isRevision || (settings && settings.readOnlyModeEnabled)
+                    {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                         || isRestricted(['apim:api_create'], api) ? (
                             <Button
                                 disabled

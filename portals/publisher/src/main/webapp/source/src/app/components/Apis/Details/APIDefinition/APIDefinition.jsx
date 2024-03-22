@@ -813,7 +813,7 @@ class APIDefinition extends React.Component {
                                 className={classes.button}
                                 onClick={this.openEditor}
                                 disabled={isRestricted(['apim:api_create'], api) || api.isRevision
-                                || (settings && settings.readOnlyModeEnabled)}
+                                || (settings && settings.portalConfigurationOnlyModeEnabled)}
                                 id='edit-definition-btn'
                             >
                                 <EditRounded className={classes.buttonIcon} />

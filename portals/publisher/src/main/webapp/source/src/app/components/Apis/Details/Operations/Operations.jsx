@@ -221,7 +221,7 @@ class Operations extends React.Component {
         this.setState({ apiScopesByName: apiScopesByNameList });
         this.getAllSharedScopes();
         api.getSettings().then((settings) => {
-            this.setState({ enableReadOnly: settings.readOnlyModeEnabled });
+            this.setState({ enableReadOnly: settings.portalConfigurationOnlyModeEnabled });
         });
     }
 

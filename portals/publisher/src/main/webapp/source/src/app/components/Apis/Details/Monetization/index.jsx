@@ -89,7 +89,7 @@ class Monetization extends Component {
     getMonetizationData() {
         const { api } = this.props;
         api.getSettings().then((settings) => {
-            this.setState({ enableReadOnly: settings.readOnlyModeEnabled });
+            this.setState({ enableReadOnly: settings.portalConfigurationOnlyModeEnabled });
         });
         if (api.apiType === API.CONSTS.APIProduct) {
             const apiProduct = new APIProduct(api.name, api.context, api.policies);

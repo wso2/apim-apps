@@ -420,7 +420,7 @@ export default function ImportDefinition(props) {
                     className={classes.button}
                     onClick={handleAPIDefinitionImportOpen}
                     disabled={isRestricted(['apim:api_create'], api) || api.isRevision
-                    || (settings && settings.readOnlyModeEnabled)}
+                    || (settings && settings.portalConfigurationOnlyModeEnabled)}
                     id='import-definition-btn'
                 >
                     <CloudUploadRounded className={classes.buttonIcon} />

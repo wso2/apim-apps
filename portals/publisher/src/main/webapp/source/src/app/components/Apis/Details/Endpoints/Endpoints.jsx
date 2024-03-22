@@ -589,7 +589,7 @@ function Endpoints(props) {
                             >
                                 <Grid item>
                                     {api.isRevision || !endpointValidity.isValid
-                                        || (settings && settings.readOnlyModeEnabled)
+                                        || (settings && settings.portalConfigurationOnlyModeEnabled)
                                         || isRestricted(['apim:api_create'], api) ? (
                                             <Button
                                                 disabled
