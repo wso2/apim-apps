@@ -108,6 +108,11 @@ const ApiChat = () => {
     useEffect(() => {
         setApiTestAccessToken('abc');
     });
+    const [accessToken, setAccessToken] = useState(null);
+    const [securityScheme, setSecurityScheme] = useState(null);
+    const [username, setUsername] = useState(null);
+    const [password, setPassword] = useState(null);
+    const [selectedEnvironment, setSelectedEnvironment] = useState(null);
 
     const apiClient = new Api();
     const { api } = useContext(ApiContext);
@@ -392,20 +397,80 @@ const ApiChat = () => {
         setFinalOutcome('');
     };
 
-    const getDummyApiInvocationResult = (generatedRequest) => {
-        const responseCode = generatedRequest.method === 'POST' ? 201 : 200;
-        return {
-            code: responseCode,
-            path: generatedRequest.path,
-            headers: {},
-            body: {
-                description: 'API invocation successful',
-            },
-        };
+    const handleConfigChangeChange = ({
+        newAccessToken, newSecurityScheme, newUsername, newPassword, newSelectedEnvironment,
+    }) => {
+        if (newAccessToken !== undefined) setAccessToken(newAccessToken);
+        if (newSecurityScheme !== undefined) setSecurityScheme(newSecurityScheme);
+        if (newUsername !== undefined) setUsername(newUsername);
+        if (newPassword !== undefined) setPassword(newPassword);
+        if (newSelectedEnvironment !== undefined) setSelectedEnvironment(newSelectedEnvironment);
     };
 
-    const sendSubsequentRequest = (requestId, resource) => {
-        const executionResponseForAiAgent = getDummyApiInvocationResult(resource);
+    const getEnvironmentURLs = (endpointURLs, environmentName) => {
+        const environment = endpointURLs.find((env) => env.environmentName === environmentName);
+        return environment ? environment.URLs : {};
+    };
+
+    const invokeAPI = async (generatedRequest) => {
+        const { method, path, inputs } = generatedRequest;
+        const { parameters, requestBody } = inputs || {};
+        const resolvedPath = Object.entries(parameters || {}).reduce((acc, [key, value]) => acc.replace(`{${key}}`, value), path);
+
+        const environmentURLs = getEnvironmentURLs(api.endpointURLs, selectedEnvironment);
+        const url = `${environmentURLs.https}${resolvedPath}`;
+
+        const headers = {
+            'Content-Type': 'application/json',
+        };
+
+        if (securityScheme === 'OAUTH') {
+            headers.Authorization = `Bearer ${accessToken}`;
+        } else if (securityScheme === 'BASIC') {
+            headers.Authorization = `Basic ${btoa(`${username}:${password}`)}`;
+        } else if (securityScheme === 'API-KEY') {
+            headers.ApiKey = accessToken;
+        }
+
+        const fetchOptions = {
+            method,
+            headers,
+            ...(method !== 'GET' && requestBody !== null && { body: JSON.stringify(requestBody) }),
+        };
+
+        try {
+            const response = await fetch(url, fetchOptions);
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                return {
+                    code: response.status,
+                    path: resolvedPath,
+                    headers: response.headers,
+                    body: data,
+                };
+            }
+            return {
+                code: response.status,
+                path: resolvedPath,
+                headers: response.headers,
+                body: data,
+            };
+        } catch (error) {
+            return {
+                code: 500,
+                path: resolvedPath,
+                headers: {},
+                body: {
+                    description: 'API invocation failed',
+                    error: error.message,
+                },
+            };
+        }
+    };
+
+    const sendSubsequentRequest = async (requestId, resource) => {
+        const executionResponseForAiAgent = await invokeAPI(resource);
         setExecutionResults((prevState) => {
             return [
                 ...prevState,
@@ -607,6 +672,7 @@ const ApiChat = () => {
                     <ConfigureKeyDrawer
                         isDrawerOpen={configureKeyDrawerOpen}
                         updateDrawerOpen={setConfigureKeyDrawerOpen}
+                        onConfigChange={handleConfigChangeChange}
                     />
                 )}
                 <ApiChatPoweredBy
