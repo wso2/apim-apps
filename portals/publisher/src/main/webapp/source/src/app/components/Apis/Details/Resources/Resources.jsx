@@ -34,7 +34,6 @@ import CONSTS from 'AppData/Constants';
 import Configurations from 'Config';
 import Operation from './components/Operation';
 import GroupOfOperations from './components/GroupOfOperations';
-import SpecErrors from './components/SpecErrors';
 import AddOperation from './components/AddOperation';
 import GoToDefinitionLink from './components/GoToDefinitionLink';
 import APIRateLimiting from './components/APIRateLimiting';
@@ -355,24 +354,9 @@ export default function Resources(props) {
      */
     function resolveAndUpdateSpec(rawSpec) {
         /*
-         * Deep copying the spec.
-         * Otherwise it will resolved to the original parameter passed (rawSpec) to the validate method.
-         * We will not alter the provided spec.
-         */
-        const specCopy = cloneDeep(rawSpec);
-        /*
         * Used SwaggerParser.validate() because we can get the errors as well.
         */
-        API.validateOpenAPIByInlineDefinition(specCopy)
-            .then((response) => {
-                setResolvedSpec(() => {
-                    const errors = response.body.errors ? response.body.errors : [];
-                    return {
-                        spec: response.body.info,
-                        errors,
-                    };
-                });
-            });
+        setResolvedSpec({ spec: rawSpec })
         operationsDispatcher({ action: 'init', data: rawSpec.paths });
         setOpenAPISpec(rawSpec);
         setSecurityDefScopesFromSpec(rawSpec);
@@ -585,7 +569,7 @@ export default function Resources(props) {
 
     // Note: Make sure not to use any hooks after/within this condition , because it returns conditionally
     // If you do so, You will probably get `Rendered more hooks than during the previous render.` exception
-    if ((!pageError && isEmpty(openAPISpec)) || (resolvedSpec.errors.length === 0 && isEmpty(resolvedSpec.spec))) {
+    if ((!pageError && isEmpty(openAPISpec))) {
         return (
             <Grid container direction='row' justifyContent='center' alignItems='center'>
                 <Grid item>
@@ -618,7 +602,6 @@ export default function Resources(props) {
                     <AddOperation operationsDispatcher={operationsDispatcher} />
                 </Grid>
             )}
-            {resolvedSpec.errors.length > 0 && <SpecErrors specErrors={resolvedSpec.errors} />}
             <Grid item md={12}>
                 <Paper>
                     {!disableMultiSelect && (
