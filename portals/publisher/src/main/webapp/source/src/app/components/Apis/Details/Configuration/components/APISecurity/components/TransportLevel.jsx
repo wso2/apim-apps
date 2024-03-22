@@ -219,6 +219,10 @@ function TransportLevel(props) {
 
     const [mandatoryValueRef, setMandatoryValueRef] = useState(mandatoryValue);
 
+    useEffect(() => {
+        setMandatoryValueRef(mandatoryValue);
+    });
+
     return (
         (<Root>
             <Grid item xs={12}>

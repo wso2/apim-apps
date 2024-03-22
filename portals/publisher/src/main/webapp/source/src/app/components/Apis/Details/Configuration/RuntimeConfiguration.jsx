@@ -270,9 +270,21 @@ export default function RuntimeConfiguration() {
                 if (event.checked) {
                     if (state[action].includes(event.value)) {
                         return state; // Add for completeness, Ideally there couldn't exist this state
-                    } else {
-                        return { ...copyAPIConfig(state), [action]: [...state[action], event.value] };
+                    } else if (event.value === API_SECURITY_MUTUAL_SSL 
+                        && event.value !== DEFAULT_API_SECURITY_OAUTH2
+                        && event.value !== API_SECURITY_BASIC_AUTH
+                        && event.value !== API_SECURITY_API_KEY) {
+                        return { ...copyAPIConfig(state), 
+                            [action]: [...state[action], event.value, API_SECURITY_MUTUAL_SSL_MANDATORY] };
+                    } else if (event.value !== API_SECURITY_MUTUAL_SSL 
+                        && (event.value === DEFAULT_API_SECURITY_OAUTH2
+                        || event.value === API_SECURITY_BASIC_AUTH
+                        || event.value === API_SECURITY_API_KEY)) {
+                        return { ...copyAPIConfig(state), 
+                            [action]: [...state[action], event.value,
+                                API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY] };
                     }
+                    return { ...copyAPIConfig(state), [action]: [...state[action], event.value] };
                 } else if (state[action].includes(event.value)) {
                     // User has unchecked a security schema type
                     const newState = {
@@ -287,17 +299,31 @@ export default function RuntimeConfiguration() {
                         )
                     ) {
                         const noMandatoryOAuthBasicAuth = newState[action]
-                            .filter((schema) => schema !== API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY);
+                            .filter((schema) => (schema !== API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY 
+                                && schema !== API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL
+                                && schema !== API_SECURITY_MUTUAL_SSL_MANDATORY
+                                && schema !== API_SECURITY_MUTUAL_SSL_OPTIONAL));
+                        const newSecurityScheme = newState[action].includes(API_SECURITY_MUTUAL_SSL) ?
+                            [...noMandatoryOAuthBasicAuth, API_SECURITY_MUTUAL_SSL_MANDATORY]
+                            : noMandatoryOAuthBasicAuth;
                         return {
                             ...newState,
-                            [action]: noMandatoryOAuthBasicAuth,
+                            [action]: newSecurityScheme,
                         };
                     } else if (!newState[action].includes(API_SECURITY_MUTUAL_SSL)) {
                         const noMandatoryMutualSSL = newState[action]
-                            .filter((schema) => schema !== API_SECURITY_MUTUAL_SSL_MANDATORY);
+                            .filter((schema) => (schema !== API_SECURITY_MUTUAL_SSL_MANDATORY
+                                && schema !== API_SECURITY_MUTUAL_SSL_OPTIONAL
+                                && schema !== API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY 
+                                && schema !== API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_OPTIONAL));
+                        const newSecurityScheme = (newState[action].includes(DEFAULT_API_SECURITY_OAUTH2)
+                            || newState[action].includes(API_SECURITY_BASIC_AUTH)
+                            || newState[action].includes(API_SECURITY_API_KEY)) ?
+                            [...noMandatoryMutualSSL, API_SECURITY_OAUTH_BASIC_AUTH_API_KEY_MANDATORY]
+                            : noMandatoryMutualSSL;
                         return {
                             ...newState,
-                            [action]: noMandatoryMutualSSL,
+                            [action]: newSecurityScheme,
                         };
                     }
 
