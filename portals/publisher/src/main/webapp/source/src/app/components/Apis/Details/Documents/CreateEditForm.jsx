@@ -456,7 +456,6 @@ class CreateEditForm extends React.Component {
         if (
             name !== '' &&
             summary !== '' &&
-            (otherTypeName !== '' && type === 'OTHER') &&
             nameNotDuplicate &&
             !nameMaxLengthExceeds &&
             !invalidDocName &&
@@ -464,6 +463,10 @@ class CreateEditForm extends React.Component {
         ) {
             setSaveDisabled(false);
         } else {
+            setSaveDisabled(true);
+        }
+
+        if (type === 'OTHER' && otherTypeName === '') {
             setSaveDisabled(true);
         }
         return (
@@ -904,6 +907,9 @@ const ForwardedCreateEditForm = forwardRef((props, ref) => {
     useImperativeHandle(ref, () => ({
         addDocument: (apiId) => {
             return childRef.current.addDocument(apiId);
+        },
+        updateDocument: (apiId) => {
+            return childRef.current.updateDocument(apiId);
         }
     }));
     return <CreateEditForm ref={childRef} {...props} />;

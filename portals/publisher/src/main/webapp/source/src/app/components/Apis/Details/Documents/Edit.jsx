@@ -89,7 +89,7 @@ function Edit(props) {
 
     const updateDoc = () => {
         const { apiId } = props;
-        const promiseWrapper = createEditForm.updateDocument(apiId);
+        const promiseWrapper = createEditForm.current.updateDocument(apiId);
         promiseWrapper.docPromise
             .then((doc) => {
                 const { documentId, name } = doc.body;
@@ -175,9 +175,7 @@ function Edit(props) {
                 </Paper>
                 <div className={classes.splitWrapper}>
                     <CreateEditForm
-                        innerRef={(node) => {
-                            createEditForm = node;
-                        }}
+                        ref={createEditForm}
                         docId={docId}
                         apiId={apiId}
                         apiType={apiType}
