@@ -1,13 +1,41 @@
+/*
+ * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import React from 'react';
+import { styled } from '@mui/material/styles';
 import AsyncApiComponent from '@asyncapi/react-component';
-import '@asyncapi/react-component/lib/styles/fiori.css';
-// import './styles.css';
+import "@asyncapi/react-component/styles/default.min.css";
+
+const Root = styled('div')(({ theme }) => ({
+    '&': {
+        fontFamily: theme.typography.fontFamily,
+    }
+}));
 
 const AsyncApiUI = (props) => {
     const {
         spec,
     } = props;
-    return <AsyncApiComponent schema={spec} />;
+    return (
+        <Root>
+            <AsyncApiComponent schema={spec} />
+        </Root>
+    )
 };
 
 export default AsyncApiUI;

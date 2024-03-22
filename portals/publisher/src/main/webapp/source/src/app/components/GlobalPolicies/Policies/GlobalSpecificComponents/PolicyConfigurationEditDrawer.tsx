@@ -124,6 +124,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
             open={drawerOpen}
             onClose={handleDrawerClose}
             classes={{ paper: classes.drawerPaper }}
+            sx={{ zIndex: 1300}}
         >
             <Box role='presentation'>
                 <List>

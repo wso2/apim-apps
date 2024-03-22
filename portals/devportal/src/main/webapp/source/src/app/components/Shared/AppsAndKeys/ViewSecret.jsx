@@ -18,6 +18,7 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
+import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import FileCopy from '@mui/icons-material/FileCopy';
 import Typography from '@mui/material/Typography';

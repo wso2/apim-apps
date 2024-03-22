@@ -257,7 +257,16 @@ class Credentials extends React.Component {
         const { api, applicationsAvailable } = this.context;
         const { subscriptionRequest } = this.state;
         const newSubscriptionRequest = { ...subscriptionRequest, apiId: api.id };
-        const throttlingPolicyList = api.tiers;
+        const throttlingPolicyList = api.tiers.sort((a, b) => {
+            // Sort by 'COMMERCIAL' tier plan first
+            if (a.tierPlan === 'COMMERCIAL' && b.tierPlan !== 'COMMERCIAL') {
+                return -1;
+            } else if (a.tierPlan !== 'COMMERCIAL' && b.tierPlan === 'COMMERCIAL') {
+                return 1;
+            }
+            // For options within the same tier plan, sort alphabetically
+            return a.tierName.localeCompare(b.tierName);
+        });
         if (throttlingPolicyList && throttlingPolicyList[0]) {
             newSubscriptionRequest.throttlingPolicy = throttlingPolicyList[0].tierName;
         }
@@ -512,9 +521,7 @@ class Credentials extends React.Component {
                                                 applicationsAvailable={applicationsAvailable}
                                                 subscriptionRequest={subscriptionRequest}
                                                 throttlingPolicyList={throttlingPolicyList}
-                                                updateSubscriptionRequest={
-                                                    this.updateSubscriptionRequest
-                                                }
+                                                updateSubscriptionRequest={this.updateSubscriptionRequest}
                                                 renderSmall
                                             />
                                             <Button

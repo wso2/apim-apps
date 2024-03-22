@@ -39,14 +39,9 @@ const classes = {
     divider: `${PREFIX}-divider`
 };
 
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.root}`]: {
         flexGrow: 1,
-        height: 250,
     },
 
     [`&.${classes.container}`]: {
@@ -217,6 +212,7 @@ function DownshiftMultiple(props) {
                 inputValue: inputValue2,
                 tenantList: tenantList2,
                 highlightedIndex,
+                getRootProps,
             }) => {
                 const {
                     onBlur, onChange, onFocus, ...inputProps
@@ -226,7 +222,7 @@ function DownshiftMultiple(props) {
                 });
 
                 return (
-                    <Root className={classes.container}>
+                    <Root className={classes.container} {...getRootProps({ }, { suppressRefError: true })}>
                         {renderInput({
                             fullWidth: true,
                             classes,

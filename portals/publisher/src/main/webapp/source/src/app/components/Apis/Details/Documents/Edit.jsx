@@ -45,7 +45,7 @@ const classes = {
     editMetaButton: `${PREFIX}-editMetaButton`
 };
 
-const Root = styled('div')({
+const StyledDialog = styled(Dialog)({
     [`& .${classes.appBar}`]: {
         position: 'relative',
     },
@@ -67,9 +67,6 @@ const Root = styled('div')({
     [`& .${classes.button}`]: {
         height: 30,
         marginLeft: 30,
-    },
-    [`& .${classes.editMetaButton}`]: {
-        whiteSpace: 'nowrap',
     },
 });
 
@@ -138,11 +135,11 @@ function Edit(props) {
 
     const {  docId, apiId, docName } = props;
     return (
-        <Root>
+        <div>
             <Button
                 onClick={toggleOpen}
                 disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
-                className={classes.editMetaButton}
+                sx={{ whiteSpace: 'nowrap' }}
                 aria-label={'Edit Meta Data of ' + docName}
             >
                 <Icon>edit</Icon>
@@ -151,7 +148,7 @@ function Edit(props) {
                     defaultMessage='Edit Meta Data'
                 />
             </Button>
-            <Dialog open={open} onClose={toggleOpen} TransitionComponent={Transition} fullScreen>
+            <StyledDialog open={open} onClose={toggleOpen} TransitionComponent={Transition} fullScreen>
                 <Paper square className={classes.popupHeader}>
                     <IconButton color='inherit' onClick={toggleOpen} aria-label='Close' size='large'>
                         <Icon>close</Icon>
@@ -188,8 +185,8 @@ function Edit(props) {
                         setSaveDisabled={setSaveDisabled}
                     />
                 </div>
-            </Dialog>
-        </Root>
+            </StyledDialog>
+        </div>
     );
 }
 Edit.propTypes = {

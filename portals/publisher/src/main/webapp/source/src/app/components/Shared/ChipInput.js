@@ -81,9 +81,6 @@ const StyledFormControl = styled(FormControl)(({ theme }) => {
       }
     },
     [`& .${classes.outlined}`]: {
-      '& input': {
-        padding: theme.spacing(2),
-      }
     },
     [`& .${classes.standard}`]: {},
     [`& .${classes.filled}`]: {
@@ -181,9 +178,6 @@ const StyledFormControl = styled(FormControl)(({ theme }) => {
       float: 'left'
     },
     [`& .${classes.marginDense}`]: {},
-    [`& .MuiChip-root`]: {
-      margin: '0 !important',
-    },
   };
 });
 
@@ -763,7 +757,7 @@ export const defaultChipRenderer = ({ value, text, isFocused, isDisabled, isRead
     className={className}
     style={{
       pointerEvents: isDisabled || isReadOnly ? 'none' : undefined,
-      backgroundColor: isFocused ? blue[300] : undefined
+      backgroundColor: isFocused ? blue[300] : undefined,
     }}
     onClick={handleClick}
     onDelete={handleDelete}

@@ -166,12 +166,13 @@ class CreateEditForm extends React.Component {
             sourceUrl: '',
             file: null,
             disableName: false,
-            otherTypeName: null,
+            otherTypeName: '',
             nameNotDuplicate: true,
             nameMaxLengthExceeds: false,
             invalidUrl: false,
             nameEmpty: false,
             summeryEmpty: false,
+            otherTypeEmpty: false,
             urlEmpty: false,
             invalidDocName: false,
             visibility: 'API_LEVEL'
@@ -198,6 +199,7 @@ class CreateEditForm extends React.Component {
             }
         }
     };
+
     handleChange = name => (e) => {
         const { value } = e.target;
         if (name === 'name') {
@@ -208,7 +210,7 @@ class CreateEditForm extends React.Component {
             this.setState({ sourceUrl: value });
         } else if (name === 'otherTypeName') {
             this.setState({ otherTypeName: value });
-        }else if (name === 'visibility') {
+        } else if (name === 'visibility') {
             this.setState({ visibility: value });
         }
     };
@@ -245,6 +247,7 @@ class CreateEditForm extends React.Component {
         });
         return { docPromise, file };
     };
+
     updateDocument = (apiId) => {
         const { apiType } = this.props;
         const restAPI = apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
@@ -264,6 +267,7 @@ class CreateEditForm extends React.Component {
         });
         return { docPromise, file };
     };
+
     getDocument() {
         const { apiId, docId, apiType } = this.props;
         const restAPI = apiType === Api.CONSTS.APIProduct ? new APIProduct() : new Api();
@@ -295,6 +299,7 @@ class CreateEditForm extends React.Component {
                 });
         }
     }
+
     validate(field=null, value=null) {
         let invalidUrl = false;
         if (field === 'url') {
@@ -311,17 +316,17 @@ class CreateEditForm extends React.Component {
                 if (nameValidity === null) {
                     this.setState({ invalidDocName: false });
                     const promise = APIValidation.apiDocument.validate({ id: this.props.apiId, name: value });
-                        promise
-                            .then((isDocumentPresent) => {
-                                this.setState({ nameNotDuplicate: !isDocumentPresent });
-                            })
-                            .catch((error) => {
-                                if (error.status === 404) {
-                                    this.setState({ nameNotDuplicate: true });
-                                } else {
-                                    Alert.error('Error when validating document name');
-                                }
-                            });
+                    promise
+                        .then((isDocumentPresent) => {
+                            this.setState({ nameNotDuplicate: !isDocumentPresent });
+                        })
+                        .catch((error) => {
+                            if (error.status === 404) {
+                                this.setState({ nameNotDuplicate: true });
+                            } else {
+                                Alert.error('Error when validating document name');
+                            }
+                        });
                 } else {
                     this.setState({ invalidDocName: true });
                 }
@@ -342,8 +347,15 @@ class CreateEditForm extends React.Component {
             } else {
                 this.setState({ summeryEmpty: false });
             }
+        } else if (field === 'otherTypeName') {
+            if (value === '') {
+                this.setState({ otherTypeEmpty: true });
+            } else {
+                this.setState({ otherTypeEmpty: false });
+            }
         }
     }
+
     componentDidMount() {
         this.getDocument();
         const { apiId, docId } = this.props;
@@ -351,6 +363,7 @@ class CreateEditForm extends React.Component {
             this.setState({ disableName: true });
         }
     }
+
     showNameHelper() {
         const { nameEmpty, nameNotDuplicate, nameMaxLengthExceeds, invalidDocName } = this.state;
         if (nameMaxLengthExceeds) {
@@ -390,6 +403,7 @@ class CreateEditForm extends React.Component {
             );
         }
     }
+
     getUrlHelperText() {
         const { invalidUrl, urlEmpty} = this.state;
 
@@ -416,6 +430,7 @@ class CreateEditForm extends React.Component {
             );
         }
     }
+
     render() {
         const {
             name,
@@ -432,6 +447,7 @@ class CreateEditForm extends React.Component {
             nameEmpty,
             invalidDocName,
             summeryEmpty,
+            otherTypeEmpty,
             urlEmpty,
             visibility
         } = this.state;
@@ -440,6 +456,7 @@ class CreateEditForm extends React.Component {
         if (
             name !== '' &&
             summary !== '' &&
+            (otherTypeName !== '' && type === 'OTHER') &&
             nameNotDuplicate &&
             !nameMaxLengthExceeds &&
             !invalidDocName &&
@@ -527,18 +544,18 @@ class CreateEditForm extends React.Component {
                 </FormControl>
                 {settingsContext.docVisibilityEnabled && 
                 <FormControl margin='normal' className={classes.FormControlOdd}>
-                <TextField
-                    fullWidth
-                    id='docVisibility-selector'
-                    select
-                    variant='outlined'
-                    label={
+                    <TextField
+                        fullWidth
+                        id='docVisibility-selector'
+                        select
+                        variant='outlined'
+                        label={
                         <FormattedMessage
                             id='Apis.Details.Documents.CreateEditForm.document.docVisibility'
                             defaultMessage='Document Visibility'
                         />
                     }
-                    helperText={
+                        helperText={
                         summeryEmpty ? (
                             <FormattedMessage
                                 id='Apis.Details.Documents.CreateEditForm.document.summary.error.empty'
@@ -551,33 +568,33 @@ class CreateEditForm extends React.Component {
                             />
                         )
                     }
-                    type='text'
-                    name='visibility'
-                    margin='normal'
-                    value={visibility}
-                    onChange={this.handleChange('visibility')}
-                    error={summeryEmpty}
+                        type='text'
+                        name='visibility'
+                        margin='normal'
+                        value={visibility}
+                        onChange={this.handleChange('visibility')}
+                        error={summeryEmpty}
                 >
-                    <MenuItem value='API_LEVEL'>
-                        <FormattedMessage
-                            id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.public'
-                            defaultMessage='Same as API Visibility'
+                        <MenuItem value='API_LEVEL'>
+                            <FormattedMessage
+                                id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.public'
+                                defaultMessage='Same as API Visibility'
                         />
-                    </MenuItem>
-                    <MenuItem value='PRIVATE'>
-                        <FormattedMessage
-                            id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.private'
-                            defaultMessage='Private'
+                        </MenuItem>
+                        <MenuItem value='PRIVATE'>
+                            <FormattedMessage
+                                id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.private'
+                                defaultMessage='Private'
                         />
-                    </MenuItem>
-                    <MenuItem value='OWNER_ONLY'>
-                        <FormattedMessage
-                            id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.ownerOnly'
-                            defaultMessage='Owner Only'
+                        </MenuItem>
+                        <MenuItem value='OWNER_ONLY'>
+                            <FormattedMessage
+                                id='Apis.Details.Documents.CreateEditForm.document.docVisibility.dropdown.ownerOnly'
+                                defaultMessage='Owner Only'
                         />
-                    </MenuItem>
-                </TextField>
-            </FormControl>}
+                        </MenuItem>
+                    </TextField>
+                </FormControl>}
                 <FormControl component='fieldset' className={classes.formControlFirst}>
                     <FormLabel component='legend'>
                         <FormattedMessage
@@ -681,6 +698,14 @@ class CreateEditForm extends React.Component {
                     <FormControl margin='normal' className={classes.FormControlOdd}>
                         <TextField
                             fullWidth
+                            InputProps={{
+                                onBlur: ({ target: { value } }) => {
+                                    this.validate('otherTypeName', value);
+                                },
+                                onKeyUp: ({ target: { value } }) => {
+                                    this.validate('otherTypeName', value);
+                                },
+                            }}
                             label={
                                 <FormattedMessage
                                     id={
@@ -691,19 +716,30 @@ class CreateEditForm extends React.Component {
                                 />
                             }
                             helperText={
-                                <FormattedMessage
-                                    id={
-                                        'Apis.Details.Documents.CreateEditForm.document.create.type.other.document.' +
-                                        'category.helper.text'
-                                    }
-                                    defaultMessage='Provide the document type'
-                                />
+                                otherTypeEmpty ? (
+                                    <FormattedMessage
+                                        id={
+                                            'Apis.Details.Documents.CreateEditForm.document.create.type.other.error.document.' +
+                                            'category.helper.text'
+                                        }
+                                        defaultMessage='Document type cannot be empty'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id={
+                                            'Apis.Details.Documents.CreateEditForm.document.create.type.other.document.' +
+                                            'category.helper.text'
+                                        }
+                                        defaultMessage='Provide the document type'
+                                    />
+                                )
                             }
                             type='text'
                             id='other-doc-type'
                             name='otherTypeName'
                             margin='normal'
                             value={otherTypeName}
+                            error={otherTypeEmpty}
                             variant='outlined'
                             onChange={this.handleChange('otherTypeName')}
                             InputLabelProps={{
