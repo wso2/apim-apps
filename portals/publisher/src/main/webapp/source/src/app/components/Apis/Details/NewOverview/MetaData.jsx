@@ -119,23 +119,19 @@ function MetaData(props) {
                         </Typography>
                     </Grid>
                     {/* Version */}
-                    {api.apiType === API.CONSTS.API && (
-                        <>
-                            <Grid item xs={12} md={6} lg={4}>
-                                <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
-                                    <FormattedMessage
-                                        id='Apis.Details.NewOverview.MetaData.version'
-                                        defaultMessage='Version'
-                                    />
-                                </Typography>
-                            </Grid>
-                            <Grid item xs={12} md={6} lg={8}>
-                                <Typography component='p' variant='body1'>
-                                    {api.version && <>{api.version}</>}
-                                </Typography>
-                            </Grid>
-                        </>
-                    )}
+                    <Grid item xs={12} md={6} lg={4}>
+                        <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                            <FormattedMessage
+                                id='Apis.Details.NewOverview.MetaData.version'
+                                defaultMessage='Version'
+                            />
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={8}>
+                        <Typography component='p' variant='body1'>
+                            {api.version && <>{api.version}</>}
+                        </Typography>
+                    </Grid>
                     {/* Gateway type */}
                     {settings && settings.gatewayTypes &&
                         settings.gatewayTypes.length === 2 && api.apiType !== API.CONSTS.APIProduct && (
