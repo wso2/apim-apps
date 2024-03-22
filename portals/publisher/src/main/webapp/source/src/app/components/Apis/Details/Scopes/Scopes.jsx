@@ -118,6 +118,16 @@ class Scopes extends React.Component {
         this.api = new Api();
         this.api_uuid = props.match.params.api_uuid;
         this.api_data = props.api;
+        this.state = {
+            enableReadOnly: false
+        };
+    }
+
+    componentDidMount() {
+        const { api } = this.props;
+        api.getSettings().then((settings) => {
+            this.setState({ enableReadOnly: settings.portalConfigurationOnlyModeEnabled });
+        });
     }
 
     /**
@@ -127,6 +137,7 @@ class Scopes extends React.Component {
      */
     render() {
         const { intl, api } = this.props;
+        const { enableReadOnly } = this.state;
         const urlPrefix = (api.apiType === Api.CONSTS.APIProduct) ? 'api-products' : 'apis';
         const { scopes } = api;
         const url = `/${urlPrefix}/${api.id}/scopes/create`;
@@ -199,7 +210,7 @@ class Scopes extends React.Component {
                                                 disabled={isRestricted(
                                                     ['apim:api_create'],
                                                     api,
-                                                ) || api.isRevision}
+                                                ) || api.isRevision || enableReadOnly}
                                                 to={
                                                     !isRestricted(['apim:api_create'], api) && !api.isRevision && {
                                                         pathname: editUrl,
@@ -324,7 +335,8 @@ class Scopes extends React.Component {
                                     variant='contained'
                                     color='primary'
                                     className={classes.button}
-                                    disabled={isRestricted(['apim:api_create'], api) || api.isRevision}
+                                    disabled={isRestricted(['apim:api_create'], api) || api.isRevision
+                                    || enableReadOnly}
                                     component={Link}
                                     to={!isRestricted(['apim:api_create'], api) && !api.isRevision && url}
                                     id='create-scope-btn'
@@ -367,7 +379,7 @@ class Scopes extends React.Component {
                         variant='outlined'
                         color='primary'
                         size='small'
-                        disabled={isRestricted(['apim:api_create'], api) || api.isRevision}
+                        disabled={isRestricted(['apim:api_create'], api) || api.isRevision || enableReadOnly}
                         component={Link}
                         to={!isRestricted(['apim:api_create'], api) && !api.isRevision && url}
                     >

@@ -74,6 +74,7 @@ class Monetization extends Component {
         this.state = {
             monetizationAttributes: [],
             monStatus: null,
+            enableReadOnly: false,
             property: {},
         };
         this.handleChange = this.handleChange.bind(this);
@@ -87,6 +88,9 @@ class Monetization extends Component {
 
     getMonetizationData() {
         const { api } = this.props;
+        api.getSettings().then((settings) => {
+            this.setState({ enableReadOnly: settings.portalConfigurationOnlyModeEnabled });
+        });
         if (api.apiType === API.CONSTS.APIProduct) {
             const apiProduct = new APIProduct(api.name, api.context, api.policies);
             apiProduct.getSettings().then((settings) => {
@@ -197,7 +201,7 @@ class Monetization extends Component {
 
     render() {
         const { api, } = this.props;
-        const { monetizationAttributes, monStatus } = this.state;
+        const { monetizationAttributes, monStatus, enableReadOnly } = this.state;
         if (api && isRestricted(['apim:api_publish'], api)) {
             return (
                 <Grid
@@ -302,7 +306,7 @@ class Monetization extends Component {
                             color='primary'
                             variant='contained'
                             className={classes.button}
-                            disabled={api.isRevision}
+                            disabled={api.isRevision || enableReadOnly}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Monetization.Index.save'

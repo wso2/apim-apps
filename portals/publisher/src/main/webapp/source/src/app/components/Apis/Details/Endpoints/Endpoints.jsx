@@ -23,6 +23,7 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { Link, withRouter } from 'react-router-dom';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import NewEndpointCreate from 'AppComponents/Apis/Details/Endpoints/NewEndpointCreate';
@@ -96,6 +97,7 @@ const defaultSwagger = { paths: {} };
 function Endpoints(props) {
     const {  intl, history } = props;
     const { api, updateAPI } = useContext(APIContext);
+    const { settings } = useAppContext();
     const [swagger, setSwagger] = useState(defaultSwagger);
     const [endpointValidity, setAPIEndpointsValid] = useState({ isValid: true, message: '' });
     const [isUpdating, setUpdating] = useState(false);
@@ -587,6 +589,7 @@ function Endpoints(props) {
                             >
                                 <Grid item>
                                     {api.isRevision || !endpointValidity.isValid
+                                        || (settings && settings.portalConfigurationOnlyModeEnabled)
                                         || isRestricted(['apim:api_create'], api) ? (
                                             <Button
                                                 disabled

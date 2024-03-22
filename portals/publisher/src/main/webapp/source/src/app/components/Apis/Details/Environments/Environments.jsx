@@ -1436,7 +1436,7 @@ export default function Environments() {
     }
 
     const items = [];
-    if (!api.isRevision) {
+    if (!api.isRevision && (settings && !settings.portalConfigurationOnlyModeEnabled)) {
         if (allRevisions && allRevisions.length !== 0) {
             items.push(
                 <Grid item className={clsx(classes.shapeCircleBlack, classes.shapeCircle)} />,
@@ -1695,7 +1695,9 @@ export default function Environments() {
                         margin='dense'
                         variant='outlined'
                         style={{width: '50%'}}
-                        disabled={api.isRevision || !allRevisions || allRevisions.length === 0}
+                        disabled={api.isRevision ||
+                            (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                            !allRevisions || allRevisions.length === 0}
                     >
                         {allRevisions && allRevisions.length !== 0 && allRevisions.map((number) => (
                             <MenuItem value={number.id}>{number.displayName}</MenuItem>
@@ -1704,7 +1706,7 @@ export default function Environments() {
                     <Button
                         className={classes.button2}
                         disabled={
-                            api.isRevision ||
+                            api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
                             !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                             !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                             (api.advertiseInfo && api.advertiseInfo.advertised) ||
@@ -1767,7 +1769,9 @@ export default function Environments() {
                     <Button
                         className={classes.button1}
                         variant='outlined'
-                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        disabled={api.isRevision ||
+                            (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                            isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                         onClick={() => cancelRevisionDeploymentWorkflow(pendingDeployment.id, row.name)}
                         size='small'
                         id='cancel-btn'
@@ -1805,7 +1809,9 @@ export default function Environments() {
                     margin='dense'
                     variant='outlined'
                     style={{width: '50%'}}
-                    disabled={api.isRevision || !filteredRevisions || filteredRevisions.length === 0}
+                    disabled={api.isRevision ||
+                        (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                        !filteredRevisions || filteredRevisions.length === 0}
                 >
                     {filteredRevisions && filteredRevisions.length !== 0 && filteredRevisions.map((number) => (
                         <MenuItem value={number.id}>{number.displayName}</MenuItem>
@@ -1814,7 +1820,7 @@ export default function Environments() {
                 <Button
                     className={classes.button2}
                     disabled={
-                        api.isRevision ||
+                        api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
                         !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                         !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                         (api.advertiseInfo && api.advertiseInfo.advertised) ||
@@ -1878,7 +1884,9 @@ export default function Environments() {
                     <Button
                         className={classes.button1}
                         variant='outlined'
-                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        disabled={api.isRevision ||
+                            (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                            isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                         onClick={() => undeployRevision(approvedDeployment.id, row.name)}
                         size='small'
                         id='undeploy-btn'
@@ -1989,7 +1997,8 @@ export default function Environments() {
                     </Typography>
                 </Grid>
             )}
-            {!api.isRevision && allRevisions && allRevisions.length !== 0
+            {!api.isRevision && (settings && !settings.portalConfigurationOnlyModeEnabled) &&
+                allRevisions && allRevisions.length !== 0
             && (
                 <Grid container>
                     <Tooltip
@@ -2086,9 +2095,11 @@ export default function Environments() {
                                         )}
                                     margin='normal'
                                     variant='outlined'
-                                    disabled={api.isRevision || allRevisions.filter(
-                                        (o1) => o1.deploymentInfo.length === 0,
-                                    ).length === 0}
+                                    disabled={api.isRevision ||
+                                        (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                                            allRevisions.filter(
+                                                (o1) => o1.deploymentInfo.length === 0,
+                                            ).length === 0}
                                 >
                                     {allRevisions && allRevisions.length !== 0 && allRevisions.filter(
                                         (o1) => o1.deploymentInfo.length === 0,
@@ -2560,9 +2571,11 @@ export default function Environments() {
                                         )}
                                     margin='normal'
                                     variant='outlined'
-                                    disabled={api.isRevision || allRevisions.filter(
-                                        (o1) => o1.deploymentInfo.length === 0,
-                                    ).length === 0}
+                                    disabled={api.isRevision ||
+                                        (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                                            allRevisions.filter(
+                                                (o1) => o1.deploymentInfo.length === 0,
+                                            ).length === 0}
                                 >
                                     {allRevisions && allRevisions.length !== 0 && allRevisions.filter(
                                         (o1) => o1.deploymentInfo.length === 0,
@@ -2614,7 +2627,7 @@ export default function Environments() {
                             type='submit'
                             variant='contained'
                             color='primary'
-                            disabled={api.isRevision
+                            disabled={api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)}
                         >
                             <FormattedMessage
@@ -2780,6 +2793,7 @@ export default function Environments() {
                                                             className={classes.vhostSelect}
                                                             fullWidth
                                                             disabled={api.isRevision
+                                                            || (settings && settings.portalConfigurationOnlyModeEnabled)
                                                             || !allRevisions || allRevisions.length === 0}
                                                             helperText={getVhostHelperText(row.name, selectedVhosts,
                                                                 true, 100)}
@@ -2946,7 +2960,10 @@ export default function Environments() {
                                                         <Button
                                                             className={classes.button1}
                                                             variant='outlined'
-                                                            disabled={api.isRevision}
+                                                            disabled={api.isRevision ||
+                                                                (settings &&
+                                                                    settings.portalConfigurationOnlyModeEnabled
+                                                                )}
                                                             onClick={() => undeployRevision(
                                                                 allExternalGatewaysMap[row.name]
                                                                     .revision.id, row.name,
@@ -2985,7 +3002,10 @@ export default function Environments() {
                                                             margin='dense'
                                                             variant='outlined'
                                                             style={{ width: '50%' }}
-                                                            disabled={api.isRevision
+                                                            disabled={api.isRevision ||
+                                                                (settings &&
+                                                                    settings.portalConfigurationOnlyModeEnabled
+                                                                )
                                                             || !allRevisions || allRevisions.length === 0}
                                                         >
                                                             {allRevisions && allRevisions.length !== 0
@@ -2999,9 +3019,13 @@ export default function Environments() {
                                                         </TextField>
                                                         <Button
                                                             className={classes.button2}
-                                                            disabled={api.isRevision || !selectedRevision.some(
-                                                                (r) => r.env === row.name && r.revision,
-                                                            ) || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                                            disabled={api.isRevision ||
+                                                                (settings &&
+                                                                    settings.portalConfigurationOnlyModeEnabled
+                                                                )
+                                                                || !selectedRevision.some(
+                                                                    (r) => r.env === row.name && r.revision,
+                                                                ) || (api.advertiseInfo && api.advertiseInfo.advertised)
                                                             || isDeployButtonDisabled}
                                                             variant='outlined'
                                                             onClick={() => deployRevision(selectedRevision.find(

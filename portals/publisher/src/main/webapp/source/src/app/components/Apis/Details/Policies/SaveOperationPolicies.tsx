@@ -24,6 +24,7 @@ import { useHistory } from 'react-router-dom';
 import { isRestricted } from 'AppData/AuthManager';
 import { FormattedMessage } from 'react-intl';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
+import AppContext  from 'AppComponents/Shared/AppContext';
 import ApiContext from '../components/ApiContext';
 
 interface SaveOperationPoliciesProps {
@@ -41,6 +42,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({
 }) => {
     const { api } = useContext<any>(ApiContext);
     const history = useHistory();
+    const { settings } = useContext<any>(AppContext);
 
     /**
      * Handle save button event
@@ -66,7 +68,7 @@ const SaveOperationPolicies: React.FC<SaveOperationPoliciesProps> = ({
         <Grid container direction='row' spacing={1}>
             <Grid item>
                 <Box p={1} mt={3}>
-                    {api.isRevision || isRestricted(['apim:api_create'], api) ? (
+                    {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) || isRestricted(['apim:api_create'], api) ? (
                         <Button
                             disabled
                             type='submit'

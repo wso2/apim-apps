@@ -37,6 +37,7 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from '@mui/material/Box';
@@ -203,7 +204,7 @@ function Properties(props) {
     const history = useHistory();
     const { api, updateAPI } = useContext(APIContext);
     const customPropertiesTemp = cloneDeep(api.additionalProperties);
-
+    const { settings } = useAppContext();
     const [customProperties, setCustomProperties] = useState([]);
     const [additionalProperties, setAdditionalProperties] = useState([]);
     const [showAddProperty, setShowAddProperty] = useState(false);
@@ -242,13 +243,13 @@ function Properties(props) {
     };
 
     const getDefaultCustomProperties = () => {
-        api.getSettings().then((settings) => {
-            if (settings.customProperties != null) {
-                setCustomProperties(settings.customProperties);
+        api.getSettings().then((setting) => {
+            if (setting.customProperties != null) {
+                setCustomProperties(setting.customProperties);
             }
             const additionalPropertiesTemp = customPropertiesTemp.filter(
                 (additionalProp) =>
-                    !settings.customProperties.some((customProp) => customProp.Name === additionalProp.name)
+                    !setting.customProperties.some((customProp) => customProp.Name === additionalProp.name)
             );
             if (Object.prototype.hasOwnProperty.call(additionalPropertiesTemp, 'github_repo')) {
                 delete additionalPropertiesTemp.github_repo;
@@ -621,6 +622,7 @@ function Properties(props) {
         (customProperties && customProperties.length > 0 && !isCustomPropsFilled)
         || editing
         || api.isRevision
+        || (settings && settings.portalConfigurationOnlyModeEnabled) 
         || (isEmpty(additionalProperties) && !isAdditionalPropertiesStale)
         || isRestricted(['apim:api_create', 'apim:api_publish'], api)
     ) {
@@ -706,7 +708,8 @@ function Properties(props) {
                             size='small'
                             onClick={toggleAddProperty}
                             disabled={showAddProperty
-                            || isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
+                            || isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision
+                            || (settings && settings.portalConfigurationOnlyModeEnabled) }
                         >
                             <AddCircle className={classes.buttonIcon} />
                             <FormattedMessage
@@ -767,7 +770,8 @@ function Properties(props) {
                                     color='primary'
                                     onClick={toggleAddProperty}
                                     disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                        || api.isRevision}
+                                        || api.isRevision
+                                        || (settings && settings.portalConfigurationOnlyModeEnabled)}
                                 >
                                     <FormattedMessage
                                         id='Apis.Details.Properties.Properties.add.new.property'

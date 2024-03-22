@@ -25,6 +25,7 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Typography } from '@mui/material';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import CloudUploadRounded from '@mui/icons-material/CloudUploadRounded';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
@@ -63,7 +64,7 @@ const Root = styled('div')(() => ({
  */
 export default function ImportDefinition(props) {
     const { setSchemaDefinition, editAndImport } = props;
-
+    const { settings } = useAppContext();
     const [openAPIDefinitionImport, setOpenAPIDefinitionImport] = useState(false);
     const [isImporting, setIsImporting] = useState(false);
     const [api, updateAPI] = useAPI();
@@ -418,7 +419,8 @@ export default function ImportDefinition(props) {
                     size='small'
                     className={classes.button}
                     onClick={handleAPIDefinitionImportOpen}
-                    disabled={isRestricted(['apim:api_create'], api) || api.isRevision}
+                    disabled={isRestricted(['apim:api_create'], api) || api.isRevision
+                    || (settings && settings.portalConfigurationOnlyModeEnabled)}
                     id='import-definition-btn'
                 >
                     <CloudUploadRounded className={classes.buttonIcon} />
