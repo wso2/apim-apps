@@ -309,7 +309,7 @@ const ApiChat = () => {
     }, [isAgentTerminating]);
 
     useEffect(() => {
-        if (api.id && apiChatEnabled && aiAuthTokenProvided) {
+        if (api && api.id && apiChatEnabled && aiAuthTokenProvided) {
             setIsEnrichingSpec(true);
             setSpecEnrichmentError('');
             setSpecEnrichmentErrorLevel('');
