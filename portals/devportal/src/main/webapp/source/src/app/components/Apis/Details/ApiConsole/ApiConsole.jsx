@@ -41,7 +41,7 @@ import { ApiContext } from '../ApiContext';
 import Progress from '../../../Shared/Progress';
 import Api from '../../../../data/api';
 import SwaggerUI from './SwaggerUI';
-import TryOutController from './TryOutController';
+import TryOutController from '../../../Shared/ApiTryOut/TryOutController';
 import Application from '../../../../data/Application';
 
 const PREFIX = 'ApiConsole';

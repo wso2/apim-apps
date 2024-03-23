@@ -17,7 +17,7 @@
  */
 
 import React, {
-    useEffect, useState,
+    useEffect, useState, useRef,
 } from 'react';
 import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
@@ -41,10 +41,10 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import AdvertiseDetailsPanel from 'AppComponents/Apis/Details/ApiConsole/AdvertiseDetailsPanel';
-import Progress from '../../../Shared/Progress';
-import Api from '../../../../data/api';
-import Application from '../../../../data/Application';
+import AdvertiseDetailsPanel from 'AppComponents/Shared/ApiTryOut/AdvertiseDetailsPanel';
+import Progress from '../Progress';
+import Api from '../../../data/api';
+import Application from '../../../data/Application';
 import SelectAppPanel from './SelectAppPanel';
 
 const PREFIX = 'TryOutController';
@@ -167,7 +167,8 @@ function TryOutController(props) {
         setSelectedEnvironment, setProductionAccessToken, setSandboxAccessToken, scopes, setSecurityScheme, setUsername,
         setPassword, username, password, updateSwagger, setProductionApiKey, setSandboxApiKey, productionApiKey,
         sandboxApiKey, environmentObject, setURLs, setAdvAuthHeader, setAdvAuthHeaderValue, advAuthHeader,
-        advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs,
+        advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs, autoGenerateToken = false,
+        setTestAccessToken = null, onConfigChange,
     } = props;
     let { selectedKeyManager } = props;
     selectedKeyManager = selectedKeyManager || 'Resident Key Manager';
@@ -182,8 +183,26 @@ function TryOutController(props) {
     const [selectedKMObject, setSelectedKMObject] = useState(null);
     const [ksGenerated, setKSGenerated] = useState(false);
     const [showMoreGWUrls, setShowMoreGWUrls] = useState(false);
+    const [tokenValue, setTokenValue] = useState('');
     const apiID = api.id;
     const restApi = new Api();
+    const user = AuthManager.getUser();
+    const selectedEnvironmentRef = useRef(selectedEnvironment);
+    const securitySchemeTypeRef = useRef(securitySchemeType);
+
+    const handleConfigChange = ({ newAccessToken, newSecurityScheme, newUsername, newPassword, newSelectedEnvironment }) => {
+        if (onConfigChange) {
+            onConfigChange({ newAccessToken, newSecurityScheme, newUsername, newPassword, newSelectedEnvironment });
+        }
+    };
+
+    useEffect(() => {
+        selectedEnvironmentRef.current = selectedEnvironment;
+    }, [selectedEnvironment]);
+
+    useEffect(() => {
+        securitySchemeTypeRef.current = securitySchemeType;
+    }, [securitySchemeType]);
 
     useEffect(() => {
         let subscriptionsList;
@@ -303,6 +322,13 @@ function TryOutController(props) {
                     } else {
                         setSandboxAccessToken(response.accessToken);
                     }
+                    handleConfigChange({
+                        newAccessToken: response.accessToken,
+                        newSecurityScheme: securitySchemeTypeRef.current,
+                        newUsername: null,
+                        newPassword: null,
+                        newSelectedEnvironment: selectedEnvironmentRef.current,
+                    });
                     setIsUpdating(false);
                 })
                 .catch((error) => {
@@ -332,6 +358,13 @@ function TryOutController(props) {
                     } else {
                         setSandboxApiKey(response.body.apikey);
                     }
+                    handleConfigChange({
+                        newAccessToken: response.body.apikey,
+                        newSecurityScheme: securitySchemeTypeRef.current,
+                        newUsername: null,
+                        newPassword: null,
+                        newSelectedEnvironment: selectedEnvironmentRef.current,
+                    });
                     setIsUpdating(false);
                 })
                 .catch((error) => {
@@ -344,6 +377,24 @@ function TryOutController(props) {
                 });
         }
     }
+
+    /**
+     * Generate test key by default
+     */
+    useEffect(() => {
+        if (
+            autoGenerateToken && securitySchemeType !== 'BASIC'
+            && securitySchemeType !== 'TEST' && selectedKMObject
+            && !selectedKMObject.enableTokenHashing && !(!user || (subscriptions && subscriptions.length === 0)
+            || (!ksGenerated && securitySchemeType === 'OAUTH'))
+        ) {
+            if (securitySchemeType === 'API-KEY') {
+                generateApiKey();
+            } else {
+                generateAccessToken();
+            }
+        }
+    }, [securitySchemeType, selectedKMObject, user, subscriptions, ksGenerated, selectedApplication]);
 
     /**
      *
@@ -397,6 +448,13 @@ function TryOutController(props) {
 
     useEffect(() => {
         updateApplication();
+        handleConfigChange({
+            newAccessToken: null,
+            newSecurityScheme: securitySchemeTypeRef.current,
+            newUsername: null,
+            newPassword: null,
+            newSelectedEnvironment: selectedEnvironmentRef.current,
+        });
     }, [selectedApplication, selectedKeyType, selectedEnvironment, securitySchemeType]);
 
     /**
@@ -440,11 +498,29 @@ function TryOutController(props) {
                 break;
             case 'username':
                 setUsername(value);
+                handleConfigChange({
+                    newAccessToken: null,
+                    newSecurityScheme: securitySchemeType,
+                    newUsername: value,
+                    newPassword: null,
+                });
                 break;
             case 'password':
                 setPassword(value);
+                handleConfigChange({
+                    newAccessToken: null,
+                    newSecurityScheme: securitySchemeType,
+                    newUsername: null,
+                    newPassword: value,
+                });
                 break;
             case 'accessToken':
+                handleConfigChange({
+                    newAccessToken: value,
+                    newSecurityScheme: securitySchemeType,
+                    newUsername: null,
+                    newPassword: null,
+                });
                 if (securitySchemeType === 'API-KEY' && selectedKeyType === 'PRODUCTION') {
                     setProductionApiKey(value);
                 } else if (securitySchemeType === 'API-KEY' && selectedKeyType === 'SANDBOX') {
@@ -468,7 +544,6 @@ function TryOutController(props) {
         }
     }
 
-    const user = AuthManager.getUser();
     if (api == null) {
         return <Progress />;
     }
@@ -499,14 +574,15 @@ function TryOutController(props) {
     const isPublished = api.lifeCycleStatus.toLowerCase() === 'published';
     const showSecurityType = isPublished || isPrototypedAPI;
 
-    let tokenValue = '';
-    if (securitySchemeType === 'API-KEY') {
-        tokenValue = selectedKeyType === 'PRODUCTION' ? productionApiKey : sandboxApiKey;
-    } else {
-        tokenValue = selectedKeyType === 'PRODUCTION' ? productionAccessToken : sandboxAccessToken;
-    }
-
     const authHeader = `${authorizationHeader}: ${prefix}`;
+
+    useEffect(() => {
+        if (securitySchemeType === 'API-KEY') {
+            setTokenValue(selectedKeyType === 'PRODUCTION' ? productionApiKey : sandboxApiKey);
+        } else {
+            setTokenValue(selectedKeyType === 'PRODUCTION' ? productionAccessToken : sandboxAccessToken);
+        }
+    }, [securitySchemeType, selectedKeyType, productionAccessToken, sandboxAccessToken, productionApiKey, sandboxApiKey]);
 
     return (
         <Root>
@@ -794,7 +870,7 @@ function TryOutController(props) {
                                                 <CircularProgress size={15} />
                                             )}
                                             <FormattedMessage
-                                                id='Apis.Details.ApiCOnsole.generate.test.key'
+                                                id='Apis.Details.ApiConsole.generate.test.key'
                                                 defaultMessage='GET TEST KEY'
                                             />
                                         </Button>

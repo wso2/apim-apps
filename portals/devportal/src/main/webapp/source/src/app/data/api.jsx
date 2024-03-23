@@ -546,7 +546,7 @@ export default class API extends Resource {
      * @param callback {function} Function which needs to be called upon success
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    getSubscriptions(apiId, applicationId, limit = 25, callback = null) {
+    getSubscriptions(apiId, applicationId = undefined, limit = 25, callback = null) {
         const payload = { apiId };
         if (applicationId) {
             payload[applicationId] = applicationId;
@@ -848,5 +848,116 @@ export default class API extends Resource {
             return client.apis.Subscriptions.getAdditionalInfoOfAPISubscriptions(payload, this._requestMetaData());
         });
         return promiseAdditionalInfo;
+    }
+
+    /**
+     * Enrich OpenAPI Specification of the API using API Chat AI service
+     *
+     * @param {string} apiId API ID of the API that needs to be enriched
+     * @param {string} apiChatRequestId UUID for the request
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    enrichOpenApiSpecification(apiId, apiChatRequestId) {
+        const payload = {
+            apiId,
+            apiChatAction: 'PREPARE',
+        };
+        return this.client.then((client) => {
+            return client.apis['API Chat'].apiChatPost(
+                payload,
+                {
+                    requestBody: {
+                        apiChatRequestId,
+                    },
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Execute the test initialization request.
+     *
+     * @param {string} apiId API UUID
+     * @param {string} apiChatRequestId UUID for the request
+     * @param {string} command user provided natural language query for API testing
+     * @param {JSON} apiSpec enriched API specification
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    runAiAgentInitialIteration(apiId, apiChatRequestId, command, apiSpec) {
+        const promise = this.client.then((client) => {
+            const payload = {
+                apiId,
+                apiChatAction: 'EXECUTE',
+            };
+            return client.apis['API Chat'].apiChatPost(
+                payload,
+                {
+                    requestBody: {
+                        apiChatRequestId,
+                        command,
+                        apiSpec,
+                    },
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promise;
+    }
+
+    /**
+     * Execute the subsequent iterations of the test.
+     *
+     * @param {string} apiId API UUID
+     * @param {string} apiChatRequestId UUID for the request
+     * @param {JSON} response response from the previous iteration
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    runAiAgentSubsequentIterations(apiId, apiChatRequestId, response) {
+        const promise = this.client.then((client) => {
+            const payload = {
+                apiId,
+                apiChatAction: 'EXECUTE',
+            };
+            return client.apis['API Chat'].apiChatPost(
+                payload,
+                {
+                    requestBody: {
+                        apiChatRequestId,
+                        response,
+                    },
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promise;
+    }
+
+    /**
+     * Execute the user query in the marketplace assistant
+     * @param query {String} user nl query
+     * @param tenantDomain {String} Tenant domain
+     * @param history {Array} Chat history
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    marketplaceAssistantExecute(query, history) {
+        const payload = {
+            query,
+            history,
+        };
+        return this.client.then((client) => {
+            return client.apis['Marketplace Assistant'].marketplaceAssistantExecute({}, { requestBody: payload }, this._requestMetaData());
+        });
+    }
+
+    /**
+     *Get the no of apis in the vectorDB
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    getMarketplaceAssistantApiCount() {
+        console.log(this.client);
+        return this.client.then((client) => {
+            return client.apis['Marketplace Assistant'].getMarketplaceAssistantApiCount(this._requestMetaData());
+        });
     }
 }
