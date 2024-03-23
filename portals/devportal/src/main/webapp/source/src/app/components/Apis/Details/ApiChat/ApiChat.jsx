@@ -410,10 +410,25 @@ const ApiChat = () => {
     const invokeAPI = async (generatedRequest) => {
         const { method, path, inputs } = generatedRequest;
         const { parameters, requestBody } = inputs || {};
-        const resolvedPath = Object.entries(parameters || {}).reduce((acc, [key, value]) => acc.replace(`{${key}}`, value), path);
+        const usedKeys = [];
+        const resolvedPath = Object.entries(parameters || {}).reduce((acc, [key, value]) => {
+            if (acc.includes(`{${key}}`)) {
+                usedKeys.push(key);
+                return acc.replace(`{${key}}`, encodeURIComponent(value));
+            }
+            return acc;
+        }, path);
+        const remainingParameters = Object.keys(parameters || {}).reduce((acc, key) => {
+            if (!usedKeys.includes(key)) {
+                acc[key] = parameters[key];
+            }
+            return acc;
+        }, {});
 
+        const queryString = new URLSearchParams(remainingParameters).toString();
+        const fullPath = queryString ? `${resolvedPath}?${queryString}` : resolvedPath;
         const environmentURLs = getEnvironmentURLs(api.endpointURLs, selectedEnvironment);
-        const url = `${environmentURLs.https}${resolvedPath}`;
+        const url = `${environmentURLs.https}${fullPath}`;
 
         const headers = {
             'Content-Type': 'application/json',
@@ -440,21 +455,21 @@ const ApiChat = () => {
             if (!response.ok) {
                 return {
                     code: response.status,
-                    path: resolvedPath,
+                    path: fullPath,
                     headers: response.headers,
                     body: data,
                 };
             }
             return {
                 code: response.status,
-                path: resolvedPath,
+                path: fullPath,
                 headers: response.headers,
                 body: data,
             };
         } catch (error) {
             return {
                 code: 500,
-                path: resolvedPath,
+                path: fullPath,
                 headers: {},
                 body: {
                     description: 'API invocation failed',
