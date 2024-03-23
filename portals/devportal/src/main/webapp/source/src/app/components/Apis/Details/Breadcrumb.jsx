@@ -76,10 +76,17 @@ export default function Breadcrumb(props) {
             }),
         },
         {
-            route: 'test',
+            route: 'api-console',
             text: intl.formatMessage({
-                defaultMessage: 'Try Out',
-                id: 'Apis.Details.Breadcrumb.try.out',
+                defaultMessage: 'API Console',
+                id: 'Apis.Details.Breadcrumb.try.out.api-console',
+            }),
+        },
+        {
+            route: 'api-chat',
+            text: intl.formatMessage({
+                defaultMessage: 'API Chat',
+                id: 'Apis.Details.Breadcrumb.try.out.api-chat',
             }),
         },
         {
@@ -144,6 +151,9 @@ export default function Breadcrumb(props) {
                     >
                         {api.name}
                     </MUILink>
+                    {(selected.route === 'api-console' || selected.route === 'api-chat') && (
+                        <Typography color='textPrimary'>Try Out</Typography>
+                    )}
                     { (selected.route === 'documents' && document) && (
                         <MUILink
                             color='textPrimary'

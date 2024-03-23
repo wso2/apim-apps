@@ -26,7 +26,8 @@ const CONSTS = {
         SSE: 'SSE',
         WS: 'WS',
         WEBSUB: 'WEBSUB',
-        ASYNC: 'ASYNC'
+        ASYNC: 'ASYNC',
+        GRAPHQL: 'GRAPHQL',
     },
 };
 
