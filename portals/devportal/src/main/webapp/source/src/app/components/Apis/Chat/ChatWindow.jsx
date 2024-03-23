@@ -84,7 +84,7 @@ function ChatWindow(props) {
                 throw error;
             })
             .finally(() => {
-                // setLoading(false);
+                setLoading(false);
             });
     };
 
