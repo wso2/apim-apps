@@ -55,11 +55,8 @@ const ConfigureKeyDrawer = ({
     const [advAuthHeader, setAdvAuthHeader] = useState('Authorization');
     const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
     const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
-    // const [authorizationHeader, setAuthorizationHeader] = useState('Authorization');
-    // const [swagger, setSwagger] = useState(null);
 
     const user = AuthManager.getUser();
-    // const apiClient = new Api();
     const { api: apiObj } = useContext(ApiContext);
 
     useEffect(() => {
