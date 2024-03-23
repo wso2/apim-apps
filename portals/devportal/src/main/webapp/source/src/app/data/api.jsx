@@ -932,4 +932,32 @@ export default class API extends Resource {
         });
         return promise;
     }
+
+    /**
+     * Execute the user query in the marketplace assistant
+     * @param query {String} user nl query
+     * @param tenantDomain {String} Tenant domain
+     * @param history {Array} Chat history
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    marketplaceAssistantExecute(query, history) {
+        const payload = {
+            query,
+            history,
+        };
+        return this.client.then((client) => {
+            return client.apis['Marketplace Assistant'].marketplaceAssistantExecute({}, { requestBody: payload }, this._requestMetaData());
+        });
+    }
+
+    /**
+     *Get the no of apis in the vectorDB
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    getMarketplaceAssistantApiCount() {
+        console.log(this.client);
+        return this.client.then((client) => {
+            return client.apis['Marketplace Assistant'].getMarketplaceAssistantApiCount(this._requestMetaData());
+        });
+    }
 }
