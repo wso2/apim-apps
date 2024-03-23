@@ -17,17 +17,9 @@
  */
 
 import React from 'react';
-// import { useIntl } from 'react-intl';
-// import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import Box from '@mui/material/Box';
-// import UnfoldMoreIcon from '@material-ui/icons/UnfoldMore';
-// import UnfoldLessIcon from '@material-ui/icons/UnfoldLess';
-// import FindInPageIcon from '@material-ui/icons/FindInPage';
-// import CodeIcon from '@material-ui/icons/Code';
-// import ToggleButton from '@mui/material/ToggleButton';
-// import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import { styled } from '@mui/material/styles';
 
 const PREFIX = 'ResultsHeading';
@@ -35,7 +27,6 @@ const PREFIX = 'ResultsHeading';
 const classes = {
     testResultsHeading: `${PREFIX}-testResultsHeading`,
     testResultsTitle: `${PREFIX}-testResultsTitle`,
-    testResultsActions: `${PREFIX}-testResultsActions`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -48,30 +39,7 @@ const Root = styled('div')(({ theme }) => ({
     [`& .${classes.testResultsTitle}`]: {
         flexGrow: 1,
     },
-    [`& .${classes.testResultsActions}`]: {
-        display: 'flex',
-        alignItems: 'center',
-        gridGap: theme.spacing(2),
-    },
 }));
-
-// export interface ExecutionResult {
-//   id: number;
-//   result: string;
-// }
-
-// interface ResultsHeadingProps {
-//   executionResults: ExecutionResult[];
-//   handleExpandAll: () => void;
-//   isExpandAllDisabled: boolean;
-//   handleCollapseAll: () => void;
-//   isCollapseAllDisabled: boolean;
-//   resultView: string | null;
-//   handleToggleResultView: (
-//     event: React.MouseEvent<HTMLElement>,
-//     newView: string | null
-//   ) => void;
-// }
 
 const ResultsHeading = () => {
     return (
@@ -85,58 +53,6 @@ const ResultsHeading = () => {
                         />
                     </Typography>
                 </Box>
-                {/* {executionResults.length > 0 && (
-                    <Box className={classes.testResultsActions}>
-                        <Box>
-                            <Button
-                                variant='outlined'
-                                id='expand-accordion'
-                                onClick={handleExpandAll}
-                                disabled={isExpandAllDisabled}
-                                startIcon={<UnfoldMoreIcon fontSize='inherit' />}
-                            >
-                                {intl.formatMessage({
-                                    id: 'Apis.Details.ApiChat.ApiChat.ResultsHeading.expandAll',
-                                    defaultMessage: 'Expand All',
-                                })}
-                            </Button>
-                        </Box>
-                        <Box>
-                            <Button
-                                variant='outlined'
-                                id='collapse-accordion'
-                                onClick={handleCollapseAll}
-                                disabled={isCollapseAllDisabled}
-                                startIcon={<UnfoldLessIcon fontSize='inherit' />}
-                            >
-                                {intl.formatMessage({
-                                    id: 'Apis.Details.ApiChat.ApiChat.ResultsHeading.collapseAll',
-                                    defaultMessage: 'Collapse All',
-                                })}
-                            </Button>
-                        </Box>
-                        <Box>
-                            <ToggleButtonGroup
-                                value={resultView}
-                                exclusive
-                                onChange={handleToggleResultView}
-                                aria-label='storybook toggle button group'
-                                id='results-view-toggle-button'
-                            >
-                                <ToggleButton
-                                    value='summary'
-                                    aria-label='summary'
-                                    id='summary-view'
-                                >
-                                    <FindInPageIcon fontSize='inherit' />
-                                </ToggleButton>
-                                <ToggleButton value='json' aria-label='json' id='json-view'>
-                                    <CodeIcon fontSize='inherit' />
-                                </ToggleButton>
-                            </ToggleButtonGroup>
-                        </Box>
-                    </Box>
-                )} */}
             </Box>
         </Root>
     );
