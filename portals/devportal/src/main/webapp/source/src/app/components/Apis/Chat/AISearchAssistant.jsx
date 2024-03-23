@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
 import Settings from 'Settings';
-import queryString from 'query-string';
 import User from 'AppData/User';
 import Utils from 'AppData/Utils';
 import ChatBotIcon from './ChatIcon';
@@ -46,7 +45,6 @@ function AISearchAssistant() {
     const [showChatbot, setShowChatbot] = useState(true);
     const [messages, setMessages] = useState(getMessages);
     const [chatbotDisabled, setChatbotDisabled] = useState(false);
-    const [tenantDomain, setTenantDomain] = useState('carbon.super');
 
     const toggleChatbot = () => {
         setShowChatbot(!showChatbot);
@@ -79,20 +77,6 @@ function AISearchAssistant() {
         }
     }, []);
 
-    useEffect(() => {
-        if (window.location.search) {
-            const { tenant } = queryString.parse(window.location.search);
-            setTenantDomain(tenant);
-        } else {
-            const { app: { customUrl: { tenantDomain: customUrlEnabledDomain } } } = Settings;
-            let tenantID = '';
-            if (customUrlEnabledDomain !== 'null') {
-                tenantID = customUrlEnabledDomain;
-                setTenantDomain(tenantID);
-            }
-        }
-    }, []);
-
     let content;
 
     if (chatbotDisabled) {
@@ -109,7 +93,6 @@ function AISearchAssistant() {
                 toggleChatbot={toggleChatbot}
                 messages={messages}
                 setMessages={setMessages}
-                tenantDomain={tenantDomain}
                 introMessage={introMessage}
                 user={user}
             />

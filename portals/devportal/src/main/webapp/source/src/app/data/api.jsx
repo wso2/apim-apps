@@ -933,24 +933,31 @@ export default class API extends Resource {
         return promise;
     }
 
-    // eslint-disable-next-line no-dupe-class-members, require-jsdoc
-    marketplaceChatExecute(query, tenant, chatHistory) {
+    /**
+     * Execute the user query in the marketplace assistant
+     * @param query {String} user nl query
+     * @param tenantDomain {String} Tenant domain
+     * @param history {Array} Chat history
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    marketplaceAssistantExecute(query, history) {
         const payload = {
-            message: query,
-            messageList: { messageList: chatHistory },
-            tenantDomain: tenant,
+            query,
+            history,
         };
         return this.client.then((client) => {
-            // eslint-disable-next-line max-len
-            return client.apis['Marketplace Chat'].marketplaceChatExecute({}, { requestBody: payload }, this._requestMetaData());
+            return client.apis['Marketplace Assistant'].marketplaceAssistantExecute({}, { requestBody: payload }, this._requestMetaData());
         });
     }
 
-    // eslint-disable-next-line require-jsdoc
-    getMarketplaceChatApiCount() {
+    /**
+     *Get the no of apis in the vectorDB
+     * @returns {promise} With given callback attached to the success chain else API invoke promise.
+     */
+    getMarketplaceAssistantApiCount() {
         console.log(this.client);
         return this.client.then((client) => {
-            return client.apis['Marketplace Chat'].getMarketplaceChatApiCount(this._requestMetaData());
+            return client.apis['Marketplace Assistant'].getMarketplaceAssistantApiCount(this._requestMetaData());
         });
     }
 }

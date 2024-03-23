@@ -23,12 +23,12 @@ function ChatMessages(props) {
     const style = {
         width: '30px',
         height: '30px',
-        borderRadius: '50%',
         backgroundColor: '#567189',
         alignItems: 'center',
         justifyContent: 'center',
         display: 'flex',
         margin: '10px 10px 10px 0px',
+        borderRadius: '50% 50% 50% 0',
     };
 
     const scrollToBottom = () => {
@@ -69,7 +69,7 @@ function ChatMessages(props) {
                         >
                             <Box display='flex' alignItems='center'>
                                 <div style={style}>
-                                    <ChatIcon fontSize='small' style={{ fill: '#fff', stroke: '#fff' }} />
+                                    <ChatIcon style={{ fill: '#fff', stroke: '#fff', fontSize: 'small' }} />
                                 </div>
                                 <Typography variant='body1' style={{ fontWeight: '500', fontSize: '12pt' }}>Assistant</Typography>
                             </Box>
@@ -79,10 +79,11 @@ function ChatMessages(props) {
                                 borderRadius='10px'
                                 justifyContent='flex-start'
                                 px={3}
-                                marginLeft='18px'
-                                style={{
-                                    maxWidth: '30px',
-                                }}
+                                marginLeft='12px'
+                                marginBottom='10px'
+                                // style={{
+                                //     maxWidth: '30px',
+                                // }}
                             >
                                 <Loader />
                             </Box>

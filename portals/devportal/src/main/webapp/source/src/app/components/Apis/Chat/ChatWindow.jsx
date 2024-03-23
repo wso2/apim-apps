@@ -17,7 +17,7 @@ import Header from './Header';
  */
 function ChatWindow(props) {
     const {
-        toggleChatbot, toggleClearChatbot, messages, setMessages, tenantDomain, introMessage, user,
+        toggleChatbot, toggleClearChatbot, messages, setMessages, introMessage, user,
     } = props;
 
     const [loading, setLoading] = useState(false);
@@ -46,8 +46,8 @@ function ChatWindow(props) {
         const messagesWithoutApis = messages.slice(-10).map(({ apis, ...message }) => message);
 
         restApi
-            .marketplaceChatExecute(
-                query, tenantDomain, messagesWithoutApis,
+            .marketplaceAssistantExecute(
+                query, messagesWithoutApis,
             )
             .then((result) => {
                 const { apis } = result.body;
@@ -84,7 +84,7 @@ function ChatWindow(props) {
                 throw error;
             })
             .finally(() => {
-                setLoading(false);
+                // setLoading(false);
             });
     };
 
@@ -109,11 +109,12 @@ function ChatWindow(props) {
         const restApi = new Api();
 
         restApi
-            .getMarketplaceChatApiCount()
+            .getMarketplaceAssistantApiCount()
             .then((data) => {
-                const apis = parseInt(data.body.count, 10);
-                setApisCount(apis);
-                if (data.body.apiLimitExceeded) {
+                const apiCount = data.body.count;
+                const apiLimit = data.body.limit;
+                setApisCount(apiCount);
+                if (apiCount >= apiLimit) {
                     setApiLimitExceeded(true);
                 }
             })
@@ -225,7 +226,6 @@ ChatWindow.propTypes = {
     toggleClearChatbot: PropTypes.func.isRequired,
     messages: PropTypes.instanceOf(Array).isRequired,
     setMessages: PropTypes.func.isRequired,
-    tenantDomain: PropTypes.string.isRequired,
     introMessage: PropTypes.shape({
         role: PropTypes.string.isRequired,
         content: PropTypes.string.isRequired,

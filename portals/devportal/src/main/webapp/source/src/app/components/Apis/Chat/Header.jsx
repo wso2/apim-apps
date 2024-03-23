@@ -3,7 +3,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, IconButton, Typography } from '@mui/material';
-// import { makeStyles } from '@mui/styles';
 import 'react-resizable/css/styles.css';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
@@ -11,19 +10,10 @@ import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
 import Tooltip from '@mui/material/Tooltip';
 import RestartAltTwoToneIcon from '@mui/icons-material/RestartAltTwoTone';
 
-// const useStyles = makeStyles(() => ({
-//     button: {
-//         '&:hover': {
-//             backgroundColor: '#096183',
-//         },
-//     },
-// }));
-
 function Header(props) {
     const {
         toggleChatbot, toggleFullScreen, isClicked, handleReset,
     } = props;
-    // const classes = useStyles();
     return (
         <Box
             display='flex'
@@ -53,8 +43,8 @@ function Header(props) {
                 </Tooltip>
             </Box>
             <Box display='flex'>
-                <Typography variant='body1' fontWeight='500' color='#000' padding='5px 8px 3px 8px' margin='12px 0 12px 0'>AI Assistant</Typography>
-                <Typography variant='body1' fontWeight='bold' color='#fff' padding='5px 8px 3px 8px' margin='12px 0 12px 0' backgroundColor='#297d9e' borderRadius='10px'>Beta</Typography>
+                <Typography variant='body1' fontSize='12pt' fontWeight='500' color='#000' padding='5px 8px 3px 8px' margin='12px 0 12px 0'>AI Assistant</Typography>
+                <Typography variant='body1' fontSize='7pt' color='#fff' padding='2px 4px 0px 4px' margin='10px 0 28px 0' backgroundColor='#297d9e' borderRadius='6px'>Beta</Typography>
                 <IconButton
                     onClick={toggleChatbot}
                     style={{ alignSelf: 'flex-end', padding: '12px', marginRight: '6px' }}
