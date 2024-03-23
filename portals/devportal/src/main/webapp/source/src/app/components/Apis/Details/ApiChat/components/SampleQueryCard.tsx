@@ -62,15 +62,14 @@ interface SampleQueryCardProps {
   onExecuteClick: (query: string) => void;
   queryData: SampleQuery;
   onCopyClick: (query: string) => void;
-//   disabled: boolean;
-//   boxShadow?: CardBoxShadow;
-//   bgColor?: CardBgColor;
+  disabled: boolean;
 }
 
 const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
     onExecuteClick,
     queryData,
     onCopyClick,
+    disabled,
 }) => {
     const intl = useIntl();
 
@@ -97,15 +96,8 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
     return (
         <Root>
             <Card className={classes.sampleQueryCard}>
-                {/* boxShadow={boxShadow}
-                id={`query-card-${queryData.scenario}`}
-                fullHeight
-                bgColor={bgColor}
-            > */}
                 <CardActionArea
-                    // id={`query-card-action-${queryData.scenario}`}
-                    // fullHeight
-                    // className={classes.sampleCardActionArea}
+                    disabled={disabled}
                     onClick={() => onExecuteClick(queryData.query)}
                 >
                     <CardContent>
@@ -122,10 +114,9 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
                                 <Box>
                                     <Button
                                         size='small'
-                                        // id='sample-query-execute'
+                                        id='sample-query-execute'
                                         variant='outlined'
-                                        // className={classes.sampleExecuteButton}
-                                        // disabled={disabled}
+                                        disabled={disabled}
                                         onClick={(e) => {
                                             onExecuteClick(queryData.query);
                                             e.stopPropagation();
@@ -142,14 +133,14 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
                                         placement='top-end'
                                     >
                                         <IconButton
-                                            // testId='sample-query-copy'
-                                            // size='small'
-                                            // variant='text'
-                                            // color='secondary'
+                                            id='sample-query-copy'
+                                            size='small'
+                                            color='secondary'
                                             onClick={(e: any) => {
                                                 handleCopyClick(queryData.query);
                                                 e.stopPropagation();
                                             }}
+                                            sx={{ ml: 1 }}
                                         >
                                             <ContentCopyIcon fontSize='inherit' />
                                         </IconButton>

@@ -858,9 +858,20 @@ export default class API extends Resource {
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
     enrichOpenApiSpecification(apiId, apiChatRequestId) {
-        const payload = { apiId, apiChatRequestId };
+        const payload = {
+            apiId,
+            apiChatAction: 'PREPARE',
+        };
         return this.client.then((client) => {
-            return client.apis['API Chat'].apiChatPrepare(payload, this._requestMetaData());
+            return client.apis['API Chat'].apiChatPost(
+                payload,
+                {
+                    requestBody: {
+                        apiChatRequestId,
+                    },
+                },
+                this._requestMetaData(),
+            );
         });
     }
 
@@ -877,12 +888,13 @@ export default class API extends Resource {
         const promise = this.client.then((client) => {
             const payload = {
                 apiId,
-                apiChatRequestId,
+                apiChatAction: 'EXECUTE',
             };
-            return client.apis['API Chat'].apiChatExecute(
+            return client.apis['API Chat'].apiChatPost(
                 payload,
                 {
                     requestBody: {
+                        apiChatRequestId,
                         command,
                         apiSpec,
                     },
@@ -905,12 +917,13 @@ export default class API extends Resource {
         const promise = this.client.then((client) => {
             const payload = {
                 apiId,
-                apiChatRequestId,
+                apiChatAction: 'EXECUTE',
             };
-            return client.apis['API Chat'].apiChatExecute(
+            return client.apis['API Chat'].apiChatPost(
                 payload,
                 {
                     requestBody: {
+                        apiChatRequestId,
                         response,
                     },
                 },

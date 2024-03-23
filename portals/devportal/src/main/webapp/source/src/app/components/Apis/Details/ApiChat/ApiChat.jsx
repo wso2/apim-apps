@@ -103,11 +103,6 @@ const ApiChat = () => {
     const [executionResults, setExecutionResults] = useState([]);
     const [isExecutionError, setIsExecutionError] = useState(false);
     const [isAgentTerminating, setIsAgentTerminating] = useState(false);
-    const [apiAccessToken, setApiTestAccessToken] = useState('');
-
-    useEffect(() => {
-        setApiTestAccessToken('abc');
-    });
     const [accessToken, setAccessToken] = useState(null);
     const [securityScheme, setSecurityScheme] = useState(null);
     const [username, setUsername] = useState(null);
@@ -116,7 +111,7 @@ const ApiChat = () => {
 
     const apiClient = new Api();
     const { api } = useContext(ApiContext);
-    const { settings: { isApiChatEnabled, isAIFeatureAuthTokenProvided } } = useSettingsContext();
+    const { settings: { apiChatEnabled, aiAuthTokenProvided } } = useSettingsContext();
     const abortControllerRef = useRef(new AbortController());
     const intl = useIntl();
 
@@ -314,7 +309,7 @@ const ApiChat = () => {
     }, [isAgentTerminating]);
 
     useEffect(() => {
-        if (api.id && isApiChatEnabled && isAIFeatureAuthTokenProvided) {
+        if (api.id && apiChatEnabled && aiAuthTokenProvided) {
             setIsEnrichingSpec(true);
             setSpecEnrichmentError('');
             setSpecEnrichmentErrorLevel('');
@@ -668,7 +663,7 @@ const ApiChat = () => {
     return (
         <Root>
             <Box className={classes.tryWithAiMain} sx={{ mr: 5 }}>
-                {isApiChatEnabled && isAIFeatureAuthTokenProvided && (
+                {apiChatEnabled && aiAuthTokenProvided && (
                     <ConfigureKeyDrawer
                         isDrawerOpen={configureKeyDrawerOpen}
                         updateDrawerOpen={setConfigureKeyDrawerOpen}
@@ -725,13 +720,6 @@ const ApiChat = () => {
                                     )}
                                     {lastQuery && !finalOutcome && (
                                         <>
-                                            {/* <Box>
-                                                <Typography variant='body1'>
-                                                    <Alert severity={isExecutionError ? 'error' : 'success'}>
-                                                        {finalOutcome}
-                                                    </Alert>
-                                                </Typography>
-                                            </Box> */}
                                             <Box className={classes.queryProcessLoader}>
                                                 {isAgentTerminating ? (
                                                     <>
@@ -781,10 +769,9 @@ const ApiChat = () => {
                                             >
                                                 <SampleQueryCard
                                                     onExecuteClick={handleExecuteSampleQuery}
-                                                    // disabled={isAgentRunning}
+                                                    disabled={!apiChatEnabled || !aiAuthTokenProvided || !securityScheme}
                                                     queryData={queryData}
                                                     onCopyClick={handleCopyClick}
-                                                // boxShadow='dark'
                                                 />
                                             </Grid>
                                         );
@@ -813,7 +800,7 @@ const ApiChat = () => {
                                 </Alert>
                             )}
                             {/* Handle auth token not provided scenario */}
-                            {(!isAIFeatureAuthTokenProvided || !isApiChatEnabled) && (
+                            {(!aiAuthTokenProvided || !apiChatEnabled) && (
                                 <Alert severity='warning'>
                                     {authTokenNotProvidedWarning}
                                 </Alert>
@@ -821,7 +808,7 @@ const ApiChat = () => {
                         </Box>
                     )}
                 <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
-                    {apiAccessToken === '' && (
+                    {!securityScheme && (
                         <Alert severity='warning'>
                             {apiAccessTokenNotFoundWarning}
                         </Alert>
@@ -837,7 +824,7 @@ const ApiChat = () => {
                     isEnrichingSpec={isEnrichingSpec}
                     specEnrichmentError={specEnrichmentError}
                     handleExecute={handleExecute}
-                    isExecuteDisabled={!isApiChatEnabled || apiAccessToken === '' || !isAIFeatureAuthTokenProvided}
+                    isExecuteDisabled={!apiChatEnabled || !aiAuthTokenProvided || !securityScheme}
                 />
             </Box>
         </Root>
