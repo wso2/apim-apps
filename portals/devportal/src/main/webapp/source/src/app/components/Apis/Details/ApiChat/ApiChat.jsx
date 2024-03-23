@@ -392,7 +392,7 @@ const ApiChat = () => {
         setFinalOutcome('');
     };
 
-    const handleConfigChangeChange = ({
+    const handleConfigChange = ({
         newAccessToken, newSecurityScheme, newUsername, newPassword, newSelectedEnvironment,
     }) => {
         if (newAccessToken !== undefined) setAccessToken(newAccessToken);
@@ -667,17 +667,13 @@ const ApiChat = () => {
                     <ConfigureKeyDrawer
                         isDrawerOpen={configureKeyDrawerOpen}
                         updateDrawerOpen={setConfigureKeyDrawerOpen}
-                        onConfigChange={handleConfigChangeChange}
+                        onConfigChange={handleConfigChange}
                     />
                 )}
                 <ApiChatPoweredBy
                     openConfigureKey={handleOpenConfigureKey}
                     goBack={handleGoBack}
                     disableGoBack={isAgentRunning || lastQuery === ''}
-                // openSampleQueries={handleOpenSampleQueries}
-                // showSampleQueries={
-                //     lastQuery !== '' || isAgentRunning || finalOutcome !== ''
-                // }
                 />
                 {(isAgentRunning || lastQuery || finalOutcome) && (
                     <Box maxHeight='60%' overflow='auto' className={classes.lastQueryWrap}>

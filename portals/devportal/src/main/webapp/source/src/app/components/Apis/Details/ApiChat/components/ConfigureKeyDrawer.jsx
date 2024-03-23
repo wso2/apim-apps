@@ -99,21 +99,14 @@ const ConfigureKeyDrawer = ({
         }
     }, [api]);
 
-    // useEffect(() => {
-    //     // Update selected environment only when environments change
-    //     if (api) {
-    //         let promiseSwagger = null;
-    //         if (environments && environments.length > 0) {
-    //             setSelectedEnvironment(environments[0].name);
-    //             promiseSwagger = apiClient.getSwaggerByAPIIdAndEnvironment(api.id, selectedEnvironment);
-    //         } else {
-    //             promiseSwagger = apiClient.getSwaggerByAPIId(api.id);
-    //         }
-    //         promiseSwagger.then((swaggerResponse) => {
-    //             setSwagger(swaggerResponse.obj);
-    //         });
-    //     }
-    // }, [environments, api]);
+    useEffect(() => {
+        // Update selected environment only when environments change
+        if (api) {
+            if (environments && environments.length > 0) {
+                setSelectedEnvironment(environments[0].name);
+            }
+        }
+    }, [environments, api]);
 
     useEffect(() => {
         updateDrawerOpen(isDrawerOpen);
@@ -158,87 +151,6 @@ const ConfigureKeyDrawer = ({
             setSelectedKeyManager(keyManager);
         }
     };
-
-    // // Set the servers spec for the swagger
-    // const setServersSpec = (spec, serverUrl) => {
-    //     let schemes;
-    //     const [protocol, host] = serverUrl.split('://');
-    //     if (protocol === 'http') {
-    //         schemes = ['http'];
-    //     } else if (protocol === 'https') {
-    //         schemes = ['https'];
-    //     }
-    //     return {
-    //         ...spec,
-    //         schemes,
-    //         host,
-    //     };
-    // };
-
-    // // Provides the access token
-    // const accessTokenProvider = () => {
-    //     if (api.advertiseInfo && api.advertiseInfo.advertised) {
-    //         return advAuthHeaderValue;
-    //     }
-    //     if (securityScheme === 'BASIC') {
-    //         const credentials = username + ':' + password;
-    //         return btoa(credentials);
-    //     }
-    //     if (securityScheme === 'API-KEY') {
-    //         if (selectedKeyType === 'PRODUCTION') {
-    //             return productionApiKey;
-    //         } else {
-    //             return sandboxApiKey;
-    //         }
-    //     } else if (selectedKeyType === 'PRODUCTION') {
-    //         return productionAccessToken;
-    //     } else {
-    //         return sandboxAccessToken;
-    //     }
-    // };
-
-    // useEffect(() => {
-    //     if (api) {
-    //         let isApiKeyEnabled = false;
-    //         if (api && api.authorizationHeader) {
-    //             setAuthorizationHeader(api.authorizationHeader);
-    //         }
-    //         if (api && api.securityScheme) {
-    //             isApiKeyEnabled = api.securityScheme.includes('api_key');
-    //             if (isApiKeyEnabled && securityScheme === 'API-KEY') {
-    //                 setAuthorizationHeader(api.apiKeyHeader ? api.apiKeyHeader : 'ApiKey');
-    //             }
-    //         }
-    //         if (swagger) {
-    //             if (api.advertiseInfo && api.advertiseInfo.advertised) {
-    //                 let swaggerSpec = swagger;
-    //                 setAuthorizationHeader(advAuthHeader);
-    //                 if (swaggerSpec.openapi) {
-    //                     if (selectedEndpoint === 'PRODUCTION') {
-    //                         swaggerSpec = {
-    //                             ...swagger,
-    //                             servers: [
-    //                                 { url: api.advertiseInfo.apiExternalProductionEndpoint },
-    //                             ],
-    //                         };
-    //                     } else {
-    //                         swaggerSpec = {
-    //                             ...swagger,
-    //                             servers: [
-    //                                 { url: api.advertiseInfo.apiExternalSandboxEndpoint },
-    //                             ],
-    //                         };
-    //                     }
-    //                 } else if (selectedEndpoint === 'PRODUCTION') {
-    //                     swaggerSpec = setServersSpec(swaggerSpec, api.advertiseInfo.apiExternalProductionEndpoint);
-    //                 } else {
-    //                     swaggerSpec = setServersSpec(swaggerSpec, api.advertiseInfo.apiExternalSandboxEndpoint);
-    //                 }
-    //                 setSwagger(swaggerSpec);
-    //             }
-    //         }
-    //     }
-    // }, [api, swagger, selectedEndpoint, advAuthHeader, securityScheme]);
 
     if (api == null) {
         return <Progress />;
