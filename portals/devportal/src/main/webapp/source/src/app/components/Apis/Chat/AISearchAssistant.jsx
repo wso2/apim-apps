@@ -66,7 +66,7 @@ function AISearchAssistant() {
         const messagesJSON = localStorage.getItem('messages');
         const loadedMessages = JSON.parse(messagesJSON);
         setMessages(loadedMessages);
-    });
+    }, []);
 
     const toggleChatbot = () => {
         setShowChatbot(!showChatbot);
