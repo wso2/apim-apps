@@ -18,6 +18,7 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
+import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import {
     TextField, Snackbar,
 } from '@mui/material';
@@ -31,6 +32,8 @@ function ChatInput(props) {
     const { onSend } = props;
     const [content, setContent] = useState('');
     const [notificationOpen, setNotificationOpen] = useState(false);
+
+    const { settings: { marketplaceAssistantEnabled, aiAuthTokenProvided } } = useSettingsContext();
 
     const handleChange = (e) => {
         const { value } = e.target;
@@ -76,6 +79,7 @@ function ChatInput(props) {
                 multiline
                 size='small'
                 maxRows={12}
+                disabled={(marketplaceAssistantEnabled && !aiAuthTokenProvided) || !marketplaceAssistantEnabled}
                 InputProps={{
                     style: {
                         borderRadius: 10, padding: 18,
