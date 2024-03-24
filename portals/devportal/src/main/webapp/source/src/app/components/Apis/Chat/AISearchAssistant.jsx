@@ -18,6 +18,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { Box } from '@mui/material';
+import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import Settings from 'Settings';
 import User from 'AppData/User';
 import Utils from 'AppData/Utils';
@@ -25,16 +26,23 @@ import ChatBotIcon from './ChatIcon';
 import ChatWindow from './ChatWindow';
 
 /**
- * Renders AI Search Assistant view..
+ * Renders AI Search Assistant view.
+ *
  * @returns {JSX} renders Chat Icon view.
  */
 function AISearchAssistant() {
+    const { settings: { marketplaceAssistantEnabled } } = useSettingsContext();
+
+    const [showChatbot, setShowChatbot] = useState(true);
+    const [messages, setMessages] = useState('');
+    const [chatbotDisabled, setChatbotDisabled] = useState(!marketplaceAssistantEnabled);
+    const [user, setUser] = useState('You');
+
     const introMessage = {
         role: 'assistant',
-        // eslint-disable-next-line max-len
-        content: 'Hi there! I\'m Marketplace Assistant. I can help you with finding APIs and providing information related to APIs. How can I help you?',
+        content: 'Hi there! I\'m Marketplace Assistant. I can help you with finding APIs '
+            + 'and providing information related to APIs. How can I help you?',
     };
-    const [user, setUser] = useState('You');
 
     const getUser = (environmentName = Utils.getCurrentEnvironment().label) => {
         const userData = localStorage.getItem(`${User.CONST.LOCALSTORAGE_USER}_${environmentName}`);
@@ -54,15 +62,11 @@ function AISearchAssistant() {
         return User.fromJson(JSON.parse(userData), environmentName);
     };
 
-    const getMessages = () => {
+    useEffect(() => {
         const messagesJSON = localStorage.getItem('messages');
         const loadedMessages = JSON.parse(messagesJSON);
-        return loadedMessages;
-    };
-
-    const [showChatbot, setShowChatbot] = useState(true);
-    const [messages, setMessages] = useState(getMessages);
-    const [chatbotDisabled, setChatbotDisabled] = useState(false);
+        setMessages(loadedMessages);
+    });
 
     const toggleChatbot = () => {
         setShowChatbot(!showChatbot);
@@ -95,35 +99,27 @@ function AISearchAssistant() {
         }
     }, []);
 
-    const getContent = () => {
-        if (chatbotDisabled) {
-            return null;
-        } else if (showChatbot) {
-            return (
-                <Box position='absolute' bottom={24} right={24}>
-                    <ChatBotIcon
-                        toggleChatbot={toggleChatbot}
-                        handleDisableChatbot={handleDisableChatbot}
-                        chatbotDisabled={chatbotDisabled}
-                    />
-                </Box>
-            );
-        } else {
-            return (
-                <ChatWindow
-                    toggleChatbot={toggleChatbot}
-                    messages={messages}
-                    setMessages={setMessages}
-                    introMessage={introMessage}
-                    user={user}
-                />
-            );
-        }
-    };
-
     return (
         <Box>
-            {getContent()}
+            {!chatbotDisabled && (
+                showChatbot ? (
+                    <Box position='absolute' bottom={24} right={24}>
+                        <ChatBotIcon
+                            toggleChatbot={toggleChatbot}
+                            handleDisableChatbot={handleDisableChatbot}
+                            chatbotDisabled={chatbotDisabled}
+                        />
+                    </Box>
+                ) : (
+                    <ChatWindow
+                        toggleChatbot={toggleChatbot}
+                        messages={messages}
+                        setMessages={setMessages}
+                        introMessage={introMessage}
+                        user={user}
+                    />
+                )
+            )}
         </Box>
     );
 }

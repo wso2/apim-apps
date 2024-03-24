@@ -73,8 +73,7 @@ function ChatWindow(props) {
                 responseRef.current = [...responseRef.current, { role: 'assistant', content: result.body.response, apis: apiPaths }];
                 setMessages(responseRef.current);
                 return result.body;
-            })
-            .catch((error) => {
+            }).catch((error) => {
                 let content;
                 try {
                     switch (error.response.status) {
@@ -97,8 +96,7 @@ function ChatWindow(props) {
                 setMessages(responseRef.current);
 
                 throw error;
-            })
-            .finally(() => {
+            }).finally(() => {
                 setLoading(false);
             });
     };
