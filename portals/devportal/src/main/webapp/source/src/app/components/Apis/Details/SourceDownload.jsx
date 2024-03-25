@@ -20,6 +20,7 @@
 import React, { useContext, useState } from 'react';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
+import { Link } from '@mui/material';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
@@ -201,33 +202,30 @@ function SourceDownload(props) {
                     placement='right'
                     sx={(theme) => ({
                         cursor: 'pointer',
-                        margin: '-10px 0',
-                        padding: '0 0 0 5px',
                         '& .material-icons': {
                             fontSize: 18,
                             color: theme.palette.secondary.main,
                         },
                     })}
                 >
-                    <a
+                    <Link
                         onClick={downloadSwagger}
                         onKeyDown={downloadSwagger}
-                        className={(theme) => ({
+                        sx={(theme) => ({
                             fontSize: 14,
                             color: theme.palette.primary.main,
                             display: 'flex',
+                            textDecoration: 'none',
                         })}
                         id='swagger-download-btn'
+                        variant='body2'
                     >
-                        <CloudDownloadRounded sx={{
-                            marginRight: 1,
-                        }}
-                        />
+                        <CloudDownloadRounded sx={{ mt: 0.5, mr: 1 }} />
                         <FormattedMessage
                             id='Apis.Details.Environments.download.swagger.text'
                             defaultMessage='Download Swagger'
                         />
-                    </a>
+                    </Link>
                 </Tooltip>
                 <Tooltip
                     title={isTokenCopied
@@ -255,11 +253,9 @@ function SourceDownload(props) {
                             + tenant + '&environmentName='
                             + selectedEndpoint.environmentName).then(() => setIsTokenCopied('urlCopied'));
                         }}
+                        sx={{ minWidth: 'auto', ml: 1 }}
                     >
-                        <FileCopyIcon sx={{
-                            marginRight: 1,
-                        }}
-                        />
+                        <FileCopyIcon />
                     </Button>
                 </Tooltip>
             </Box>
