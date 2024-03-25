@@ -21,7 +21,7 @@ import { styled } from '@mui/material/styles';
 import { List, IconButton , Theme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
@@ -35,9 +35,10 @@ import clsx from 'clsx';
 import Icon from '@mui/material/Icon';
 import { HelpOutline } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
-
+import APIMAlert from 'AppComponents/Shared/Alert';
 
 const PREFIX = 'UploadPolicyDropzone';
+
 
 const classes = {
     dropZoneWrapper: `${PREFIX}-dropZoneWrapper`,
@@ -102,10 +103,23 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
     policyDefinitionFile,
     setPolicyDefinitionFile,
 }) => {
-
+    const intl = useIntl();
 
     const handleDrop = (policyDefinition: any) => {
-        setPolicyDefinitionFile(policyDefinition);
+        if(policyDefinition===null || policyDefinition===undefined) {
+            APIMAlert.error(intl.formatMessage({
+                id: 'Uploading.Policies.Error',
+                defaultMessage: 'Incompatible file type',
+            }));
+        }
+        if (policyDefinition[0].name.endsWith('.j2') || policyDefinition[0].name.endsWith('.xml')) {
+            setPolicyDefinitionFile(policyDefinition);
+        } else {
+            APIMAlert.error(intl.formatMessage({
+                id: 'Uploading.Policies.Error',
+                defaultMessage: 'Incompatible file type',
+            }));
+        }
     };
 
     const renderPolicyFileDropzone = () => {
