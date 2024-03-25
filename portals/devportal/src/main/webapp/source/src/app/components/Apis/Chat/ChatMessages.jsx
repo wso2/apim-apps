@@ -71,7 +71,7 @@ function ChatMessages(props) {
                 marketplaceAssistantDocLink: (
                     <Link
                         onClick={() => {
-                            window.location.href = 'https://apim.docs.wso2.com/en/latest/get-started/overview/';
+                            window.location.href = 'https://apim.docs.wso2.com/en/4.3.0/consume/discover-apis/marketplace-assistant/';
                         }}
                     >
                         Search APIs with Marketplace Assistant
@@ -102,7 +102,7 @@ function ChatMessages(props) {
                     width='100%'
                 >
                     {aiAuthTokenProvided ? (
-                        messages.map((message) => (
+                        messages && messages.map((message) => (
                             <Box my={1}>
                                 <ChatMessage message={message} user={user} />
                             </Box>
