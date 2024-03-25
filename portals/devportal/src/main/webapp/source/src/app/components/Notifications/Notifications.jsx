@@ -9,6 +9,7 @@ import {
     Paper,
 } from '@mui/material';
 import Box from '@mui/material/Box';
+import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
@@ -65,7 +66,7 @@ const Root = styled('div')(({ theme }) => ({
     },
 }));
 
-const Notifications = () => {
+const Notifications = ({ updateNotificationCount }) => {
     const intl = useIntl();
     const [notifications, setNotifications] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -78,6 +79,9 @@ const Notifications = () => {
         promisedNotifications
             .then((response) => {
                 setNotifications(response.body.list);
+                const unreadCount = response.body.list.filter((notification) => !notification.isRead).length;
+                console.log('unreadCount', unreadCount);
+                updateNotificationCount(unreadCount);
             })
             .catch((error) => {
                 console.error(error);
@@ -423,15 +427,22 @@ const Notifications = () => {
                     />
                 </Typography>
                 <Box display='flex' alignItems='center'>
-                    <FormControl sx={(theme) => ({
-                        border: '1px solid #ccc',
-                        borderRadius: theme.spacing(1),
-                        margin: theme.spacing(0, 1),
-                    })}
+                    <FormControl
+                        sx={(theme) => ({
+                            border: '1px solid #ccc',
+                            borderRadius: theme.spacing(1),
+                            margin: theme.spacing(0, 1),
+                        })}
                     >
                         <Select
                             value={sortOption}
                             onChange={handleSortChange}
+                            sx={{
+                                '& .MuiSelect-select': {
+                                    paddingTop: 1,
+                                    paddingBottom: 1,
+                                },
+                            }}
                         >
                             <MenuItem value='newest'>Newest</MenuItem>
                             <MenuItem value='oldest'>Oldest</MenuItem>
@@ -442,10 +453,11 @@ const Notifications = () => {
                         fetchNotifications={() => fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc')}
                     />
                     <Button
-                        style={{ backgroundColor: '#072e6e', color: '#ffffff' }}
+                        variant='contained'
+                        color='primary'
                         onClick={markAllAsRead}
                         sx={(theme) => ({
-                            margin: theme.spacing(0, 0.5),
+                            margin: theme.spacing(0, 1),
                         })}
                     >
                         Mark All As Read
@@ -478,6 +490,10 @@ const Notifications = () => {
             </Paper>
         </Box>
     );
+};
+
+Notifications.propTypes = {
+    updateNotificationCount: PropTypes.func.isRequired,
 };
 
 export default Notifications;

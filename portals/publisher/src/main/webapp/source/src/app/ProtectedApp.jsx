@@ -159,16 +159,7 @@ export default class Protected extends Component {
         } else {
             this.setState({ theme: userThemes.light });
         }
-    }
-
-    /**
-     * Update notification count.
-     * @param {number} count The notification count.
-     */
-    updateNotificationCount(count) {
-        this.setState({ notificationCount: count });
-    }
-    
+    }  
 
     /**
      *
@@ -210,6 +201,14 @@ export default class Protected extends Component {
             .catch((error) => {
                 console.error(error);
             });
+    }
+
+    /**
+     * Update notification count.
+     * @param {number} count The notification count.
+     */
+    updateNotificationCount(count) {
+        this.setState({ notificationCount: count });
     }
 
     /**

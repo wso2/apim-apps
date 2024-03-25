@@ -61,7 +61,13 @@ const DeleteNotifications = ({ notificationId, fetchNotifications, isDeleteAll }
     return (
         <>
             {isDeleteAll ? (
-                <Button onClick={toggleOpen} style={{ backgroundColor: '#ffa911' }}>Clear All</Button>
+                <Button 
+                    onClick={toggleOpen} 
+                    variant='contained'
+                    style={{ backgroundColor: 'orange' }}
+                >
+                    Clear All
+                </Button>
             ) : (
                 <Button onClick={toggleOpen} aria-label='Delete Notification'>
                     <Icon>delete_forever</Icon>

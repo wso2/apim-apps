@@ -46,7 +46,6 @@ import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import Box from '@mui/material/Box';
 import Badge from '@mui/material/Badge';
 import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import Notification from 'AppData/Notifications';
 import AuthManager from '../../data/AuthManager';
 import LanguageSelector from './Header/LanuageSelector';
 import GlobalNavBar from './Header/GlobalNavbar';
@@ -278,7 +277,6 @@ class LayoutLegacy extends React.Component {
             selected: 'home',
             anchorEl: null,
             bannerHeight: 0,
-            notificationCount: 0,
         };
         this.toggleGlobalNavBar = this.toggleGlobalNavBar.bind(this);
         const { history } = props;
@@ -306,20 +304,7 @@ class LayoutLegacy extends React.Component {
                 this.setState({ bannerHeight: bannerElement.clientHeight });
             }
         }
-        this.getUnreadNotificationCount();
     }
-
-    getUnreadNotificationCount = () => {
-        const promisedNotifications = Notification.getNotifications('desc');
-        promisedNotifications
-            .then((res) => {
-                const unreadCount = res.body.list.filter((notification) => !notification.isRead).length;
-                this.setState({ notificationCount: unreadCount });
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    };
 
     detectCurrentMenu = (location) => {
         const { pathname } = location;
@@ -407,7 +392,7 @@ class LayoutLegacy extends React.Component {
      */
     render() {
         const {
-            theme, children,
+            theme, children, notificationCount,
         } = this.props;
         const {
             custom: {
@@ -427,7 +412,6 @@ class LayoutLegacy extends React.Component {
         const { openNavBar, selected } = this.state;
         const { tenantDomain, setTenantDomain } = this.context;
         const { customUrl: { tenantDomain: customUrlEnabledDomain } } = app;
-        const { notificationCount } = this.state;
 
         const user = AuthManager.getUser();
         // TODO: Refer to fix: https://github.com/mui-org/material-ui/issues/10076#issuecomment-361232810 ~tmkb
@@ -764,6 +748,7 @@ LayoutLegacy.contextType = Settings;
 LayoutLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
+    notificationCount: PropTypes.number.isRequired,
 };
 
 function Layout(props) {

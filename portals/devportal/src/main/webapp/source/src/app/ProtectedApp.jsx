@@ -24,6 +24,7 @@ import queryString from 'query-string';
 import PropTypes from 'prop-types';
 import SettingsContext from 'AppComponents/Shared/SettingsContext';
 import RedirectToLogin from 'AppComponents/Login/RedirectToLogin';
+import Notification from 'AppData/Notifications';
 import API from './data/api';
 import Base from './components/Base/index';
 import AuthManager from './data/AuthManager';
@@ -53,10 +54,12 @@ class ProtectedApp extends Component {
             tenantList: [],
             clientId: Utils.getCookieWithoutEnvironment(User.CONST.DEVPORTAL_CLIENT_ID),
             sessionStateCookie: Utils.getCookieWithoutEnvironment(User.CONST.DEVPORTAL_SESSION_STATE),
+            notificationCount: 0,
         };
         this.environments = [];
         this.checkSession = this.checkSession.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
+        this.updateNotificationCount = this.updateNotificationCount.bind(this);
         /* TODO: need to fix the header to avoid conflicting with messages ~tmkb */
     }
 
@@ -157,6 +160,8 @@ class ProtectedApp extends Component {
                     }
                 });
         }
+
+        this.getUnreadNotificationCount();
     }
 
     handleMessage(e) {
@@ -209,12 +214,36 @@ class ProtectedApp extends Component {
     }
 
     /**
+     * Get the count of unread notifications.
+     */
+    getUnreadNotificationCount() {
+        const promisedNotifications = Notification.getNotifications('desc');
+        promisedNotifications
+            .then((res) => {
+                const unreadCount = res.body.list.filter((notification) => !notification.isRead).length;
+                this.setState({ notificationCount: unreadCount });
+                console.log('unreadCount-protectedApp.jsx', unreadCount);
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    }
+
+    /**
+     * Update notification count.
+     * @param {number} count The notification count.
+     */
+    updateNotificationCount(count) {
+        this.setState({ notificationCount: count });
+    }
+
+    /**
      *  renders the compopnent
      * @returns {Component}
      */
     render() {
         const {
-            userResolved, tenantList, notEnoughPermission, tenantResolved, clientId,
+            userResolved, tenantList, notEnoughPermission, tenantResolved, clientId, notificationCount,
         } = this.state;
         const checkSessionURL = Settings.idp.checkSessionEndpoint + '?client_id='
             + clientId + '&redirect_uri=' + window.location.origin
@@ -267,7 +296,11 @@ class ProtectedApp extends Component {
                             height='0%'
                         />
                     )}
-                    <AppRouts isAuthenticated={isAuthenticated} isUserFound={isUserFound} />
+                    <AppRouts
+                        isAuthenticated={isAuthenticated}
+                        isUserFound={isUserFound}
+                        updateNotificationCount={this.updateNotificationCount}
+                    />
                 </>
             );
         }
@@ -278,18 +311,21 @@ class ProtectedApp extends Component {
          * @returns {Component}
          */
         return (
-            <Base>
-                {clientId
-                    && (
-                        <iframe
-                            title='iframeOP'
-                            id='iframeOP'
-                            src={checkSessionURL}
-                            width='0%'
-                            height='0%'
-                        />
-                    )}
-                <AppRouts isAuthenticated={isAuthenticated} isUserFound={isUserFound} />
+            <Base notificationCount={notificationCount}>
+                {clientId && (
+                    <iframe
+                        title='iframeOP'
+                        id='iframeOP'
+                        src={checkSessionURL}
+                        width='0%'
+                        height='0%'
+                    />
+                )}
+                <AppRouts
+                    isAuthenticated={isAuthenticated}
+                    isUserFound={isUserFound}
+                    updateNotificationCount={this.updateNotificationCount}
+                />
             </Base>
         );
     }

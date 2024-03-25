@@ -425,6 +425,12 @@ const Notifications = ({ updateNotificationCount }) => {
                                     <Select
                                         value={sortOption}
                                         onChange={handleSortChange}
+                                        sx={{
+                                            '& .MuiSelect-select': {
+                                                paddingTop: 1,
+                                                paddingBottom: 1,
+                                            },
+                                        }}
                                     >
                                         <MenuItem value='newest'>Newest</MenuItem>
                                         <MenuItem value='oldest'>Oldest</MenuItem>
@@ -437,8 +443,9 @@ const Notifications = ({ updateNotificationCount }) => {
                                             sortOption === 'newest' ? 'desc' : 'asc'
                                         )}
                                     />
-                                    <Button 
-                                        style={{ backgroundColor: '#072e6e', color: '#ffffff'}} 
+                                    <Button
+                                        variant='contained'
+                                        color='primary' 
                                         onClick={markAllAsRead}
                                     >
                                         Mark All As Read

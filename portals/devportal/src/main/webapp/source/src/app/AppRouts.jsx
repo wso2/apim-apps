@@ -56,7 +56,7 @@ function getRedirectingPath(theme) {
  * @returns {*}
  */
 function AppRouts(props) {
-    const { isAuthenticated, isUserFound } = props;
+    const { isAuthenticated, isUserFound, updateNotificationCount } = props;
     const theme = useTheme();
     return (
         <Suspense fallback={<Progress />}>
@@ -140,7 +140,7 @@ function AppRouts(props) {
                     path='/notifications'
                     render={(localProps) => {
                         if (isAuthenticated) {
-                            return <Notifications />;
+                            return <Notifications updateNotificationCount={updateNotificationCount} />;
                         } else {
                             return <RedirectToLogin {...localProps} />;
                         }
