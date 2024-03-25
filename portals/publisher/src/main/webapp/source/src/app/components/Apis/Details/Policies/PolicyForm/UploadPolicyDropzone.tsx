@@ -106,20 +106,16 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
     const intl = useIntl();
 
     const handleDrop = (policyDefinition: any) => {
-        if(policyDefinition===null || policyDefinition===undefined) {
-            APIMAlert.error(intl.formatMessage({
-                id: 'Uploading.Policies.Error',
-                defaultMessage: 'Incompatible file type',
-            }));
-        }
-        if (policyDefinition[0].name.endsWith('.j2') || policyDefinition[0].name.endsWith('.xml')) {
+        if (policyDefinition && policyDefinition[0] && 
+                (policyDefinition[0].name.endsWith('.j2') || 
+                policyDefinition[0].name.endsWith('.xml'))) {
             setPolicyDefinitionFile(policyDefinition);
-        } else {
-            APIMAlert.error(intl.formatMessage({
-                id: 'Uploading.Policies.Error',
-                defaultMessage: 'Incompatible file type',
-            }));
+            return;
         }
+        APIMAlert.error(intl.formatMessage({
+            id: 'Uploading.Policies.Error',
+            defaultMessage: 'Incompatible file type',
+        }));
     };
 
     const renderPolicyFileDropzone = () => {
