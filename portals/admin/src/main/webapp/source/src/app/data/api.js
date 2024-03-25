@@ -868,6 +868,42 @@ class API extends Resource {
             });
         }
 
+     /**
+     * Get key manager usages
+     */
+    getKeyManagerUsages(keyManagerId) {
+        return this.client.then((client) => {
+            return client.apis['Key Manager (Individual)'].get_key_managers__keyManagerId__usages(
+                { keyManagerId: keyManagerId },
+                this._requestMetaData(),
+            );
+        });
+    }
+    
+     /**
+     * Get key manager application usages
+     */
+     getKeyManagerApplicationUsages(keyManagerId) {
+        return this.client.then((client) => {
+            return client.apis['Key Manager (Individual)'].get_key_managers__keyManagerId__app_usages(
+                { keyManagerId: keyManagerId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+     /**
+     * Get key manager api usages
+     */
+     getKeyManagerApiUsages(keyManagerId) {
+        return this.client.then((client) => {
+            return client.apis['Key Manager (Individual)'].get_key_managers__keyManagerId__api_usages(
+                { keyManagerId: keyManagerId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
     /**
      * Add an Key Manager
      */
