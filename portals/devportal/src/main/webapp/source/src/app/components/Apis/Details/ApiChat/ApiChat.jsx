@@ -350,7 +350,8 @@ const ApiChat = () => {
                 apiChatDocLink: (
                     <Link
                         onClick={() => {
-                            window.location.href = 'https://apim.docs.wso2.com/en/latest/get-started/overview/';
+                            window.location.href = 'https://apim.docs.wso2.com/en/4.3.0/consume/invoke-apis/invoke-apis-using-tools/'
+                                + 'test-apis-with-apichat/';
                         }}
                     >
                         Test APIs with API Chat
@@ -764,62 +765,64 @@ const ApiChat = () => {
                 {!lastQuery && (
                     <ApiChatBanner />
                 )}
-                {!isAgentRunning && !lastQuery && !finalOutcome && sampleQueries && sampleQueries.length > 0
-                    ? (
-                        <Box display='flex' margin={5}>
-                            <Grid container direction='row' spacing={3}>
-                                {sampleQueries
-                                    && sampleQueries.map((queryData) => {
-                                        const gridVal = sampleQueries.length === 2 ? 6 : 4;
-                                        return (
-                                            <Grid
-                                                key={queryData.scenario}
-                                                item
-                                                xs={12}
-                                                md={gridVal}
-                                            >
-                                                <SampleQueryCard
-                                                    onExecuteClick={handleExecuteSampleQuery}
-                                                    disabled={!apiChatEnabled || !aiAuthTokenProvided || !securityScheme}
-                                                    queryData={queryData}
-                                                    onCopyClick={handleCopyClick}
-                                                />
-                                            </Grid>
-                                        );
-                                    })}
-                            </Grid>
-                        </Box>
-                    ) : (
-                        <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
-                            {/* Handle prepare call executing scenario */}
-                            {isEnrichingSpec && (
-                                <Box display='flex' justifyContent='center'>
-                                    <CircularProgress size={20} />
-                                    <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
-                                        <FormattedMessage
-                                            id='Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage'
-                                            defaultMessage='We are in the process of preparing the API specification
-                                    for API Chat.'
+                {!isAgentRunning && !lastQuery && !finalOutcome && sampleQueries && sampleQueries.length > 0 && (
+                    <Box display='flex' margin={5}>
+                        <Grid container direction='row' spacing={3}>
+                            {sampleQueries && sampleQueries.map((queryData) => {
+                                const gridVal = sampleQueries.length === 2 ? 6 : 4;
+                                return (
+                                    <Grid
+                                        key={queryData.scenario}
+                                        item
+                                        xs={12}
+                                        md={gridVal}
+                                    >
+                                        <SampleQueryCard
+                                            onExecuteClick={handleExecuteSampleQuery}
+                                            disabled={
+                                                !apiChatEnabled
+                                                || !aiAuthTokenProvided
+                                                || !securityScheme
+                                                || !(securityScheme && (accessToken || password))
+                                            }
+                                            queryData={queryData}
+                                            onCopyClick={handleCopyClick}
                                         />
-                                    </Typography>
-                                </Box>
-                            )}
-                            {/* Handle prepare call failed scenario */}
-                            {specEnrichmentError && specEnrichmentErrorLevel && (
-                                <Alert severity={specEnrichmentErrorLevel}>
-                                    {specEnrichmentError}
-                                </Alert>
-                            )}
-                            {/* Handle auth token not provided scenario */}
-                            {(!aiAuthTokenProvided || !apiChatEnabled) && (
-                                <Alert severity='warning'>
-                                    {authTokenNotProvidedWarning}
-                                </Alert>
-                            )}
+                                    </Grid>
+                                );
+                            })}
+                        </Grid>
+                    </Box>
+                )}
+                <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
+                    {/* Handle prepare call executing scenario */}
+                    {isEnrichingSpec && (
+                        <Box display='flex' justifyContent='center'>
+                            <CircularProgress size={20} />
+                            <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
+                                <FormattedMessage
+                                    id='Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage'
+                                    defaultMessage='We are in the process of preparing the API specification
+                            for API Chat.'
+                                />
+                            </Typography>
                         </Box>
                     )}
+                    {/* Handle prepare call failed scenario */}
+                    {specEnrichmentError && specEnrichmentErrorLevel && (
+                        <Alert severity={specEnrichmentErrorLevel}>
+                            {specEnrichmentError}
+                        </Alert>
+                    )}
+                    {/* Handle auth token not provided scenario */}
+                    {!aiAuthTokenProvided && (
+                        <Alert severity='warning'>
+                            {authTokenNotProvidedWarning}
+                        </Alert>
+                    )}
+                </Box>
                 <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
-                    {!securityScheme && (
+                    {(!securityScheme || !(securityScheme && (accessToken || password))) && (
                         <Alert severity='warning'>
                             {apiAccessTokenNotFoundWarning}
                         </Alert>
@@ -835,7 +838,12 @@ const ApiChat = () => {
                     isEnrichingSpec={isEnrichingSpec}
                     specEnrichmentError={specEnrichmentError}
                     handleExecute={handleExecute}
-                    isExecuteDisabled={!apiChatEnabled || !aiAuthTokenProvided || !securityScheme}
+                    isExecuteDisabled={
+                        !apiChatEnabled
+                        || !aiAuthTokenProvided
+                        || !securityScheme
+                        || !(securityScheme && (accessToken || password))
+                    }
                 />
             </Box>
         </Root>

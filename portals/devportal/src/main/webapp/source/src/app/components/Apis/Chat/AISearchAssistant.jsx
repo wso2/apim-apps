@@ -34,7 +34,7 @@ function AISearchAssistant() {
     const { settings: { marketplaceAssistantEnabled } } = useSettingsContext();
 
     const [showChatbot, setShowChatbot] = useState(true);
-    const [messages, setMessages] = useState('');
+    const [messages, setMessages] = useState(null);
     const [chatbotDisabled, setChatbotDisabled] = useState(!marketplaceAssistantEnabled);
     const [user, setUser] = useState('You');
 

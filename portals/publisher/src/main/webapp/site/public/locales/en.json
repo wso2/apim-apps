@@ -8033,12 +8033,6 @@
       "value": "Choose your option to create an API"
     }
   ],
-  "Apis.Listing.SampleAPI.SampleAPI.no.apis.deployed": [
-    {
-      "type": 0,
-      "value": "No APIs have been deployed yet "
-    }
-  ],
   "Apis.Listing.SampleAPI.SampleAPI.graphql.api": [
     {
       "type": 0,
@@ -8055,6 +8049,12 @@
     {
       "type": 0,
       "value": "Import GraphQL SDL"
+    }
+  ],
+  "Apis.Listing.SampleAPI.SampleAPI.no.apis.deployed": [
+    {
+      "type": 0,
+      "value": "No APIs have been deployed yet"
     }
   ],
   "Apis.Listing.SampleAPI.SampleAPI.rest.api": [
