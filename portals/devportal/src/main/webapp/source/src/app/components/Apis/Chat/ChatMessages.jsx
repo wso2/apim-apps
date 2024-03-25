@@ -133,7 +133,7 @@ function ChatMessages(props) {
                                 borderRadius='10px'
                                 justifyContent='flex-start'
                                 px={3}
-                                marginLeft='12px'
+                                marginLeft='16px'
                                 marginBottom='10px'
                             >
                                 <Loader />

@@ -39,16 +39,19 @@ const Root = styled('div')(() => ({
         variant: 'body1',
         fontSize: '12pt',
         fontWeight: '500',
-        color: '#000',
-        padding: '5px 8px 3px 8px',
+        color: '#297d9e',
+        padding: '5px 16px 3px 8px',
         margin: '12px 0 12px 0',
+        borderBottom: '2px solid #297d9e',
+        borderLeft: '2px solid #297d9e',
+        borderRadius: '18px 0 12px 18px',
     },
     [`& .${classes.betaChip}`]: {
         variant: 'body1',
         fontSize: '7pt',
         color: '#fff',
         padding: '2px 4px 0px 4px',
-        margin: '10px 0 28px 0',
+        margin: '10px 0 30px -12px',
         backgroundColor: '#297d9e',
         borderRadius: '6px',
     },
@@ -71,12 +74,12 @@ function Header(props) {
                 flexDirection='row'
                 justifyContent='space-between'
                 borderBottom={1}
-                borderColor='#808e96'
+                borderColor='#297d9e'
             >
                 <Box>
                     <IconButton
                         onClick={toggleFullScreen}
-                        style={{ alignSelf: 'flex-end', padding: '12px' }}
+                        style={{ alignSelf: 'flex-end', padding: '12px', color: '#297d9e' }}
                     >
                         {isClicked ? (
                             <FullscreenExitIcon fontSize='large' />
@@ -87,7 +90,7 @@ function Header(props) {
                     <Tooltip title='Reset Chat' placement='right'>
                         <IconButton
                             onClick={handleReset}
-                            style={{ alignSelf: 'flex-end', padding: '12px' }}
+                            style={{ alignSelf: 'flex-end', padding: '12px', color: '#297d9e' }}
                         >
                             <RestartAltTwoToneIcon fontSize='large' />
                         </IconButton>
@@ -102,7 +105,7 @@ function Header(props) {
                     </Typography>
                     <IconButton
                         onClick={toggleChatbot}
-                        style={{ alignSelf: 'flex-end', padding: '12px', marginRight: '6px' }}
+                        style={{ alignSelf: 'flex-end', padding: '12px', color: '#297d9e' }}
                     >
                         <ExpandMoreTwoToneIcon fontSize='large' />
                     </IconButton>
