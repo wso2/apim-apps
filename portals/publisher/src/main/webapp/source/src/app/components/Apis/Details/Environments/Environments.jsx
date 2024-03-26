@@ -357,7 +357,6 @@ const Root = styled('div')(({ theme }) => ({
 
     [`& .${classes.dialogPaper}`]: {
         width: '800px',
-        maxHeight: '800px',
     },
 
     [`& .${classes.createRevisionDialogStyle}`]: {
