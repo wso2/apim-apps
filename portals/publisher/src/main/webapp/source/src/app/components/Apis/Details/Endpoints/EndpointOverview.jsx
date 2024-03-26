@@ -227,7 +227,8 @@ function EndpointOverview(props) {
         } else if (apiObject.endpointImplementationType === 'MOCKED_OAS') {
             return endpointTypes[7];
         } else if (apiObject.endpointImplementationType === 'ENDPOINT'
-            && apiObject.endpointConfig.implementation_status === 'prototyped') {
+            && apiObject.endpointConfig.implementation_status === 'prototyped'
+            && api.lifeCycleStatus === 'PROTOTYPED') {
             return endpointTypes[3];
         } else if (type === 'http') {
             if (typeChangeConfirmation.serviceInfo) {
