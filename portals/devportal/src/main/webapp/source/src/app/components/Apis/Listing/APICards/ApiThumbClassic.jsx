@@ -160,7 +160,7 @@ const StyledCard = styled(Card)((
     },
 
     [`& .${classes.contextBox}`]: {
-        width: parseInt((theme.custom.thumbnail.width - theme.spacing(1)) / 2, 10),
+        width: `calc((${parseInt(theme.custom.thumbnail.width, 10)}px - ${theme.spacing(1)}) / 2)`,
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
