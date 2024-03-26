@@ -955,7 +955,6 @@ export default class API extends Resource {
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
     getMarketplaceAssistantApiCount() {
-        console.log(this.client);
         return this.client.then((client) => {
             return client.apis['Marketplace Assistant'].getMarketplaceAssistantApiCount(this._requestMetaData());
         });
