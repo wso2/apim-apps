@@ -3,7 +3,7 @@
   "Apis.Details.APIConsole.APIConsole.download.swagger": "Swagger ( /swagger.json )",
   "Apis.Details.ApiChat.ApiChat.ResultsHeading.title": "Execution Results",
   "Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskCompletedOneItr": "Task completed in 1 iteration.",
-  "Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage": "We are in the process of preparing the API specification\n                                    for API Chat.",
+  "Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage": "We are in the process of preparing the API specification\n                            for API Chat.",
   "Apis.Details.ApiChat.ApiChat.subsequentRequset.finalOutcome.taskCompleted": "Task completed",
   "Apis.Details.ApiChat.components.ConfigureKeyDrawer.title": "Configure Key",
   "Apis.Details.ApiChat.warning.apiAccessTokenNotFound": "You must provide an API access token. Configure one by navigating to {configureKeyLink}",
