@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
 import {
@@ -35,17 +35,12 @@ import Header from './Header';
  */
 function ChatWindow(props) {
     const {
-        toggleChatbot, toggleClearChatbot, messages, setMessages, introMessage, user,
+        toggleChatbot, toggleClearChatbot, messages, setMessages, introMessage, user, loading, responseRef, apiCall,
     } = props;
 
-    const [loading, setLoading] = useState(false);
     const [isClicked, setIsClicked] = useState(false);
     const [apiLimitExceeded, setApiLimitExceeded] = useState(false);
     const [apisCount, setApisCount] = useState(0);
-    const responseRef = useRef([]);
-
-    const pathName = window.location.pathname;
-    const { search, origin } = window.location;
 
     const [, setWindowSize] = useState({
         width: window.innerWidth,
@@ -55,50 +50,6 @@ function ChatWindow(props) {
     const toggleFullScreen = (e) => {
         e.preventDefault();
         setIsClicked(!isClicked);
-    };
-
-    const apiCall = (query) => {
-        setLoading(true);
-
-        const restApi = new Api();
-        const messagesWithoutApis = messages.slice(-10).map(({ apis, ...message }) => message);
-
-        restApi.marketplaceAssistantExecute(query, messagesWithoutApis)
-            .then((result) => {
-                const { apis } = result.body;
-
-                const apiPaths = apis.map((api) => {
-                    return { apiPath: `${origin}${pathName}/${api.apiId}/overview${search}`, name: api.apiName };
-                });
-                responseRef.current = [...responseRef.current, { role: 'assistant', content: result.body.response, apis: apiPaths }];
-                setMessages(responseRef.current);
-                return result.body;
-            }).catch((error) => {
-                let content;
-                try {
-                    switch (error.response.status) {
-                        case 401: // Unauthorized
-                            content = 'Unauthorized access. Please login to continue.';
-                            break;
-                        case 429: // Token limit exceeded
-                            content = 'Token Limit is exceeded. Please try again later.';
-                            break;
-                        default:
-                            content = 'Something went wrong. Please try again later.';
-                            break;
-                    }
-                } catch (err) {
-                    content = 'Something went wrong. Please try again later.';
-                }
-
-                const errorMessage = { role: 'assistant', content };
-                responseRef.current = [...responseRef.current, errorMessage];
-                setMessages(responseRef.current);
-
-                throw error;
-            }).finally(() => {
-                setLoading(false);
-            });
     };
 
     const handleClear = () => {
@@ -244,5 +195,13 @@ ChatWindow.propTypes = {
         content: PropTypes.string.isRequired,
     }).isRequired,
     user: PropTypes.string.isRequired,
+    loading: PropTypes.bool.isRequired,
+    responseRef: PropTypes.shape({
+        current: PropTypes.arrayOf(PropTypes.shape({
+            role: PropTypes.string.isRequired,
+            content: PropTypes.string.isRequired,
+        })).isRequired,
+    }).isRequired,
+    apiCall: PropTypes.func.isRequired,
 };
 export default ChatWindow;

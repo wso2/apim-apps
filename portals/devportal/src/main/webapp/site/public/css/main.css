@@ -393,7 +393,7 @@
 }
 .loader {
   height: 9px;
-  width: 60px;
+  width: 75px;
   --c:no-repeat linear-gradient(#000 0 0);
   background: var(--c), var(--c), var(--c), var(--c);
   background-size: 26% 3px;
