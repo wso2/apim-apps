@@ -72,15 +72,18 @@ const Notifications = ({ updateNotificationCount }) => {
     const [loading, setLoading] = useState(false);
     const [sortOption, setSortOption] = useState('newest');
     const [notFound, setnotFound] = useState(false);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(10);
+    const [count, setCount] = useState(0);
 
-    const fetchNotifications = (sortOrder) => {
+    const fetchNotifications = (sortOrder, limit, offset) => {
         setLoading(true);
-        const promisedNotifications = Notification.getNotifications(sortOrder);
+        const promisedNotifications = Notification.getNotifications(sortOrder, limit, offset);
         promisedNotifications
             .then((response) => {
                 setNotifications(response.body.list);
+                setCount(response.body.pagination.total);
                 const unreadCount = response.body.list.filter((notification) => !notification.isRead).length;
-                console.log('unreadCount', unreadCount);
                 updateNotificationCount(unreadCount);
             })
             .catch((error) => {
@@ -91,15 +94,6 @@ const Notifications = ({ updateNotificationCount }) => {
             .finally(() => {
                 setLoading(false);
             });
-    };
-
-    useEffect(() => {
-        fetchNotifications('desc');
-    }, []);
-
-    const handleSortChange = (event) => {
-        setSortOption(event.target.value);
-        fetchNotifications(event.target.value === 'newest' ? 'desc' : 'asc');
     };
 
     const getNotificationList = () => {
@@ -114,6 +108,28 @@ const Notifications = ({ updateNotificationCount }) => {
         });
 
         return notificationList;
+    };
+
+    useEffect(() => {
+        fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc', rowsPerPage, page * rowsPerPage);
+    }, [page, rowsPerPage]);
+
+    const notificationList = getNotificationList();
+
+    const handlePageChange = (newPage) => {
+        setPage(newPage);
+    };
+
+    const handleRowsPerPageChange = (newRowsPerPage) => {
+        if (page * rowsPerPage > count) {
+            setPage(0);
+        }
+        setRowsPerPage(newRowsPerPage);
+    };
+
+    const handleSortChange = (event) => {
+        setSortOption(event.target.value);
+        fetchNotifications(event.target.value === 'newest' ? 'desc' : 'asc', rowsPerPage, page * rowsPerPage);
     };
 
     const markAsRead = (notificationId) => {
@@ -133,7 +149,7 @@ const Notifications = ({ updateNotificationCount }) => {
                 setnotFound(true);
             })
             .finally(() => {
-                fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc');
+                fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc', rowsPerPage, page * rowsPerPage);
             });
     };
 
@@ -154,11 +170,9 @@ const Notifications = ({ updateNotificationCount }) => {
                 setnotFound(true);
             })
             .finally(() => {
-                fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc');
+                fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc', rowsPerPage, page * rowsPerPage);
             });
     };
-
-    const notificationList = getNotificationList();
 
     const notificationTypeColors = {
         API_STATE_CHANGE: '#a2e8ff',
@@ -312,7 +326,11 @@ const Notifications = ({ updateNotificationCount }) => {
                             <Box component='span' m={1}>
                                 <DeleteNotifications
                                     notificationId={notificationId}
-                                    fetchNotifications={() => fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc')}
+                                    fetchNotifications={() => fetchNotifications(
+                                        sortOption === 'newest' ? 'desc' : 'asc',
+                                        rowsPerPage,
+                                        page * rowsPerPage,
+                                    )}
                                 />
                             </Box>
                         );
@@ -342,6 +360,22 @@ const Notifications = ({ updateNotificationCount }) => {
         viewColumns: false,
         customToolbar: false,
         rowsPerPageOptions: [5, 10, 25, 50, 100],
+        pagination: true,
+        count,
+        page,
+        rowsPerPage,
+        onChangePage: handlePageChange,
+        onChangeRowsPerPage: handleRowsPerPageChange,
+        onTableChange: (action, tableState) => {
+            switch (action) {
+                case 'changePage':
+                    handlePageChange(tableState.page);
+                    break;
+                default:
+                    break;
+            }
+        },
+        serverSide: true,
     };
 
     if (loading) {
@@ -450,7 +484,11 @@ const Notifications = ({ updateNotificationCount }) => {
                     </FormControl>
                     <DeleteNotifications
                         isDeleteAll
-                        fetchNotifications={() => fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc')}
+                        fetchNotifications={() => fetchNotifications(
+                            sortOption === 'newest' ? 'desc' : 'asc',
+                            rowsPerPage,
+                            page * rowsPerPage,
+                        )}
                     />
                     <Button
                         variant='contained'
