@@ -19,6 +19,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
+import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import {
     Container, Box,
 } from '@mui/material';
@@ -41,6 +42,8 @@ function ChatWindow(props) {
     const [isClicked, setIsClicked] = useState(false);
     const [apiLimitExceeded, setApiLimitExceeded] = useState(false);
     const [apisCount, setApisCount] = useState(0);
+
+    const { settings: { marketplaceAssistantEnabled, aiAuthTokenProvided } } = useSettingsContext();
 
     const [, setWindowSize] = useState({
         width: window.innerWidth,
@@ -70,21 +73,23 @@ function ChatWindow(props) {
 
     useEffect(() => {
         responseRef.current = messages;
-        const restApi = new Api();
 
-        restApi
-            .getMarketplaceAssistantApiCount()
-            .then((data) => {
-                const apiCount = data.body.count;
-                const apiLimit = data.body.limit;
-                setApisCount(apiCount);
-                if (apiCount >= apiLimit) {
-                    setApiLimitExceeded(true);
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        if (marketplaceAssistantEnabled && aiAuthTokenProvided) {
+            const restApi = new Api();
+            restApi
+                .getMarketplaceAssistantApiCount()
+                .then((data) => {
+                    const apiCount = data.body.count;
+                    const apiLimit = data.body.limit;
+                    setApisCount(apiCount);
+                    if (apiCount >= apiLimit) {
+                        setApiLimitExceeded(true);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
     }, []);
 
     useEffect(() => {

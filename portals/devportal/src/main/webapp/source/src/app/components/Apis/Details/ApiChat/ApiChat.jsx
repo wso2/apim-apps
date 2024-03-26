@@ -40,6 +40,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Utils from 'AppData/Utils';
 import Paper from '@mui/material/Paper';
+import Chip from '@mui/material/Chip';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -485,7 +486,10 @@ const ApiChat = () => {
         setExecutionResults((prevState) => {
             return [
                 ...prevState,
-                executionResponseForAiAgent,
+                {
+                    ...executionResponseForAiAgent,
+                    method: resource.method,
+                },
             ];
         });
         const executePromise = apiClient.runAiAgentSubsequentIterations(
@@ -690,6 +694,7 @@ const ApiChat = () => {
                     openConfigureKey={handleOpenConfigureKey}
                     goBack={handleGoBack}
                     disableGoBack={isAgentRunning || lastQuery === ''}
+                    disableConfigureKey={!apiChatEnabled || !aiAuthTokenProvided || specEnrichmentError}
                 />
                 {(isAgentRunning || lastQuery || finalOutcome) && (
                     <Box maxHeight='60%' overflow='auto' className={classes.lastQueryWrap}>
@@ -706,12 +711,24 @@ const ApiChat = () => {
                                                 >
                                                     <>
                                                         {(executionResult.code >= 200 && executionResult.code < 300) ? (
-                                                            <CheckCircleIcon color='success' sx={{ paddingRight: 2 }} />
+                                                            <Chip
+                                                                icon={<CheckCircleIcon color='success' />}
+                                                                label={executionResult.code}
+                                                                color='success'
+                                                                variant='outlined'
+                                                                size='small'
+                                                            />
                                                         ) : (
-                                                            <DangerousIcon color='error' sx={{ paddingRight: 2 }} />
+                                                            <Chip
+                                                                icon={<DangerousIcon color='error' />}
+                                                                label={executionResult.code}
+                                                                color='error'
+                                                                variant='outlined'
+                                                                size='small'
+                                                            />
                                                         )}
-                                                        <Typography variant='body1'>
-                                                            {'Executed ' + executionResult.path}
+                                                        <Typography variant='body1' ml={2} sx={{ alignContent: 'center' }}>
+                                                            {'Executed ' + executionResult.method + ' ' + executionResult.path}
                                                         </Typography>
                                                     </>
                                                 </AccordionSummary>
@@ -822,7 +839,7 @@ const ApiChat = () => {
                     )}
                 </Box>
                 <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
-                    {(!securityScheme || !(securityScheme && (accessToken || password))) && (
+                    {(!securityScheme || !(securityScheme && (accessToken || password))) && aiAuthTokenProvided && (
                         <Alert severity='warning'>
                             {apiAccessTokenNotFoundWarning}
                         </Alert>

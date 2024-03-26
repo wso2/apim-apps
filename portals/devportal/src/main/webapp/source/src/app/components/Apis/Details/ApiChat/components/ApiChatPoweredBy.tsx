@@ -29,6 +29,7 @@ interface ApiChatPoweredByProps {
     showSampleQueries?: boolean;
     goBack: () => void;
     disableGoBack: boolean;
+    disableConfigureKey: boolean;
 }
 
 /**
@@ -39,6 +40,7 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
     openConfigureKey,
     goBack,
     disableGoBack,
+    disableConfigureKey,
 }) => {
     return (
         <Box display='flex' width='100%' m={3}>
@@ -80,6 +82,7 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                             variant='text'
                             size='small'
                             onClick={openConfigureKey}
+                            disabled={disableConfigureKey}
                         >
                             <FormattedMessage
                                 id='Apis.Details.ApiChat.components.ApiChatPoweredBy.configureKey'
