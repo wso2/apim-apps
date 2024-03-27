@@ -344,13 +344,19 @@ class Listing extends React.Component {
                             const docName = tableMeta.rowData[1];
                             const docId = tableMeta.rowData[0];
                             const sourceType = tableMeta.rowData[2];
+                            const docType = tableMeta.rowData[3];
                             const sourceUrl = tableMeta.rowData[4];
                             if (sourceType === 'MARKDOWN') {
                                 return (
                                     <table className={classes.actionTable}>
                                         <tr>
                                             <td>
-                                                <MarkdownEditor docName={docName} docId={docId} apiId={this.apiId} />
+                                                <MarkdownEditor
+                                                    docName={docName}
+                                                    docId={docId}
+                                                    apiId={this.apiId}
+                                                    docType={docType}
+                                                />
                                             </td>
                                             <td>
                                                 <Edit
