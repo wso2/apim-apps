@@ -60,9 +60,9 @@ const LandingMenu = (props) => {
             className={classes.root}
             item
             xs={12}
-            sm={5}
-            md={4}
-            xl={2}
+            sm={6}
+            md={3}
+            lg={2}
         >
             <Box
                 id={id}
