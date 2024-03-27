@@ -217,12 +217,11 @@ class ProtectedApp extends Component {
      * Get the count of unread notifications.
      */
     getUnreadNotificationCount() {
-        const promisedNotifications = Notification.getNotifications('desc');
+        const promisedNotifications = Notification.getNotifications('desc', 5, 0);
         promisedNotifications
             .then((res) => {
-                const unreadCount = res.body.list.filter((notification) => !notification.isRead).length;
+                const { unreadCount } = res.body;
                 this.setState({ notificationCount: unreadCount });
-                console.log('unreadCount-protectedApp.jsx', unreadCount);
             })
             .catch((error) => {
                 console.error(error);

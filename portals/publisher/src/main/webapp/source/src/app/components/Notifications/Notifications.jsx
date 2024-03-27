@@ -121,9 +121,9 @@ const Notifications = ({ updateNotificationCount }) => {
         const promisedNotifications = API.getNotifications(sortOrder, limit, offset);
         promisedNotifications
             .then((response) => {
-                setNotifications(response.body.list);
-                setCount(response.body.pagination.total);
-                const unreadCount = response.body.list.filter((notification) => !notification.isRead).length;
+                const { list, pagination, unreadCount } = response.body;
+                setNotifications(list);
+                setCount(pagination.total);
                 updateNotificationCount(unreadCount);
             })
             .catch((error) => {
