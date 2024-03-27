@@ -132,7 +132,7 @@ function MockScriptOperation(props) {
                 <Suspense fallback={<CircularProgress />}>
                     <MonacoEditor
                         height='50vh'
-                        width='100%'
+                        width='calc(100% - 250px)'
                         theme='vs-dark'
                         value={script}
                         options={{

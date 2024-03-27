@@ -16,30 +16,10 @@
  *  under the License.
  */
 
-import React, {
-    useContext,
-    useEffect,
-    useState,
-} from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-import {
-    Button,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    FormControlLabel,
-    Grid,
-    Icon,
-    Paper,
-    Radio,
-    RadioGroup,
-    Tooltip,
-    Typography,
-} from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { Grid, Paper } from '@mui/material';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
-import MockedOASOperation from 'AppComponents/Apis/Details/Endpoints/Prototype/MockedOASOperation';
 import MockScriptOperation from 'AppComponents/Apis/Details/Endpoints/Prototype/MockScriptOperation';
 import GenericOperation from 'AppComponents/Apis/Details/Resources/components/GenericOperation';
 import GroupOfOperations from 'AppComponents/Apis/Details/Resources/components/GroupOfOperations';
@@ -81,105 +61,15 @@ const useFetchScripts = () => {
  * */
 function MockImplEndpoints(props) {
     const {
-        paths, swagger, updatePaths, endpointType, endpointConfig, endpointsDispatcher
+        paths, swagger, updatePaths,
     } = props;
-    const scriptType = ['INLINE', 'MOCKED_OAS'].includes(endpointType) ? endpointType : 'INLINE';
-    const [changedToType, setChangedToType] = useState(scriptType);
-    const [typeChangeConfirmation, setTypeChangeConfirmation] = useState(false);
-
     const { mockScripts, progress } = useFetchScripts();
-
-    /**
-     * Handles the endpoint type change event. 
-     * @param {any} type The endpoint type to change in to.
-     * */
-    const handleEndpointTypeChange = (type) => {
-        setTypeChangeConfirmation(false)
-        endpointsDispatcher({
-            action: 'set_inline_or_mocked_oas',
-            value: {
-                endpointConfig,
-                endpointImplementationType: type,
-            },
-        });
-    };
-
-    /**
-     * Handles the endpoint type select event. If endpoint scripts has existing values, show confirmation dialog.
-     * @param {any} event The select event.
-     * */
-    const handleEndpointTypeSelect = (event) => {
-        // endpoint type changed from inline to mocked_oas need the confirmation dialog.
-        // also the selected type should be temperarily keep till the change has confirmed.
-        if (event.target.value === 'MOCKED_OAS') {
-            setTypeChangeConfirmation(true);
-            setChangedToType(event.target.value);
-        } else {
-            handleEndpointTypeChange(event.target.value)
-        }
-    };
 
     if (progress) {
         return <Progress />
     }
 
     return <>
-        <Grid item>
-            <Typography>
-                <FormattedMessage
-                    id='Apis.Details.Endpoints.EndpointOverview.MockImpl.Options'
-                    defaultMessage='Select the gateway type'
-                />
-            </Typography>
-            <RadioGroup
-                aria-label='accessMethod'
-                name='accessMethod'
-                value={scriptType}
-                onChange={handleEndpointTypeSelect}
-            >
-                <div>
-                    <FormControlLabel
-                        value='INLINE'
-                        control={<Radio color='primary' />}
-                        label={
-                            (
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.Inline'
-                                    defaultMessage='Regular gateway (Synapse gateway)'
-                                />
-                            )
-                        }
-                    />
-                </div>
-                <div>
-                    <FormControlLabel
-                        value='MOCKED_OAS'
-                        control={<Radio color='primary' />}
-                        label={
-                            (
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS'
-                                    defaultMessage='Choreo Connect'
-                                />
-                            )
-                        }
-                    />
-                    <Tooltip
-                        title={
-                            (
-                                <FormattedMessage
-                                    id={'Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS'
-                                        + '.description'}
-                                    defaultMessage='If you want to add/update examples, update the API Definition'
-                                />
-                            )
-                        }
-                    >
-                        <Icon>help_outline</Icon>
-                    </Tooltip>
-                </div>
-            </RadioGroup>
-        </Grid>
         <Grid container direction='row' justifyContent='flex-start' spacing={2} alignItems='stretch'>
             <Grid item md={12}>
                 <Paper>
@@ -200,20 +90,14 @@ function MockImplEndpoints(props) {
                                                     <GenericOperation
                                                         target={path}
                                                         verb={method}>
-                                                        {scriptType === 'MOCKED_OAS' ?
-                                                            <MockedOASOperation
-                                                                operation={paths[path][method]}
-                                                            />
-                                                            :
-                                                            <MockScriptOperation
-                                                                resourcePath={path}
-                                                                resourceMethod={method}
-                                                                operation={paths[path][method]}
-                                                                updatePaths={updatePaths}
-                                                                paths={paths}
-                                                                mockScripts={mockScripts}
-                                                            />
-                                                        }
+                                                        <MockScriptOperation
+                                                            resourcePath={path}
+                                                            resourceMethod={method}
+                                                            operation={paths[path][method]}
+                                                            updatePaths={updatePaths}
+                                                            paths={paths}
+                                                            mockScripts={mockScripts}
+                                                        />
                                                     </GenericOperation>
                                                 </Grid>
                                             ) : null;
@@ -226,55 +110,14 @@ function MockImplEndpoints(props) {
                 </Paper>
             </Grid>
         </Grid>
-
-        <Dialog open={typeChangeConfirmation}>
-            <DialogTitle>
-                <Typography>
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation'
-                        defaultMessage='Change Mock implementation'
-                    />
-                </Typography>
-            </DialogTitle>
-            <DialogContent>
-                <Typography>
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation.message'
-                        defaultMessage='Your current mock endpoint implementation scripts will be lost.'
-                    />
-                </Typography>
-            </DialogContent>
-            <DialogActions>
-                <Button
-                    onClick={() => { setTypeChangeConfirmation(false) }}
-                    color='primary'
-                >
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.cancel'
-                        defaultMessage='Cancel'
-                    />
-                </Button>
-                <Button
-                    onClick={() => { handleEndpointTypeChange(changedToType) }}
-                    color='primary'
-                >
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints..EndpointOverview.MockImpl.type.change.proceed'
-                        defaultMessage='Proceed'
-                    />
-                </Button>
-            </DialogActions>
-        </Dialog>
     </>;
 }
 
 MockImplEndpoints.propTypes = {
     paths: PropTypes.shape({}).isRequired,
     updatePaths: PropTypes.func.isRequired,
-    endpointsDispatcher: PropTypes.func.isRequired,
     endpointConfig: PropTypes.shape({}).isRequired,
     swagger: PropTypes.shape({}).isRequired,
-    endpointType: PropTypes.string.isRequired,
 };
 
 export default React.memo(MockImplEndpoints);

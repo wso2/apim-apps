@@ -78,7 +78,7 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
                 supportedApiTypes={policySpec.supportedApiTypes}
                 isViewMode
             />
-            <Divider light />
+            <Divider sx={{ opacity: 0.2 }} />
             {/* Gateway specific details of policy */}
             <SourceDetails
                 supportedGateways={policySpec.supportedGateways}
@@ -86,7 +86,7 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
                 policyId={policySpec.id}
                 isAPISpecific={policySpec.isAPISpecific}
             />
-            <Divider light />
+            <Divider sx={{ opacity: 0.2 }} />
             {/* Attributes of policy */}
             <PolicyAttributes
                 policyAttributes={getPolicyAttributes()}
