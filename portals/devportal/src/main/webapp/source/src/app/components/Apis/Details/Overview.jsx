@@ -645,7 +645,19 @@ function Overview() {
                         <Box mt={6}>
                             <Social />
                         </Box>
-                        <Box mt={6} mb={1}>
+                        {/* Subscription count */}
+                        <Box mt={2} mb={1}>
+                            <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
+                                <FormattedMessage
+                                    id='Apis.Details.Overview.subscriptions.title'
+                                    defaultMessage='Subscriptions'
+                                />
+                            </Typography>
+                            <Typography variant='body2'>
+                                {api.subscriptions || 0}
+                            </Typography>
+                        </Box>
+                        <Box mt={2} mb={1}>
                             <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
                                 <FormattedMessage
                                     id='Apis.Details.Overview.tags.title'
