@@ -54,8 +54,8 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                     </Typography>
                     <Box
                         display='flex-start'
-                        style={{
-                            backgroundColor: '#567189',
+                        sx={{
+                            backgroundColor: '#10597f',
                             color: '#fff',
                             marginLeft: '8px',
                             maxWidth: '45px',

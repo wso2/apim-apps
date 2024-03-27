@@ -23,7 +23,6 @@ import { FormattedMessage } from 'react-intl';
 import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Alert from '@mui/material/Alert';
-import { Link } from 'react-router-dom';
 import ChatIcon from '@mui/icons-material/Chat';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
@@ -69,17 +68,18 @@ function ChatMessages(props) {
                 + 'follow the steps provided under {marketplaceAssistantDocLink} '}
             values={{
                 marketplaceAssistantDocLink: (
-                    <Link
-                        onClick={() => {
-                            window.location.href = 'https://apim.docs.wso2.com/en/4.3.0/consume/discover-apis/marketplace-assistant/';
-                        }}
+                    <a
+                        id='marketplace-assistant-doc-link'
+                        href='https://apim.docs.wso2.com/en/4.3.0/consume/discover-apis/marketplace-assistant/'
+                        target='_blank'
+                        rel='noopener noreferrer'
                     >
                         Search APIs with Marketplace Assistant
                         <LaunchIcon
                             style={{ marginLeft: '2px' }}
                             fontSize='small'
                         />
-                    </Link>
+                    </a>
                 ),
             }}
         />
