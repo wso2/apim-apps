@@ -111,6 +111,7 @@ class ProtectedApp extends Component {
             if (hasViewScope) {
                 this.checkSession();
                 this.setState({ userResolved: true, scopesFound: true });
+                this.getUnreadNotificationCount();
             } else {
                 console.log('No relevant scopes found, redirecting to Anonymous View');
                 this.setState({ userResolved: true, notEnoughPermission: true });
@@ -142,6 +143,7 @@ class ProtectedApp extends Component {
                                     );
                                 });
                             this.checkSession();
+                            this.getUnreadNotificationCount();
                         } else {
                             console.log('No relevant scopes found, redirecting to Anonymous View');
                             this.setState({ userResolved: true });
@@ -160,8 +162,6 @@ class ProtectedApp extends Component {
                     }
                 });
         }
-
-        this.getUnreadNotificationCount();
     }
 
     handleMessage(e) {
