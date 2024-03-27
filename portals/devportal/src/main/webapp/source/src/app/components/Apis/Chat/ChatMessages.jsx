@@ -43,7 +43,7 @@ function ChatMessages(props) {
     const { settings: { aiAuthTokenProvided } } = useSettingsContext();
     const messagesEndRef = useRef(null);
 
-    const subjectLine = 'AI Assistant can make mistakes. Consider checking important information.';
+    const subjectLine = 'Marketplace Assistant can make mistakes. Consider checking important information.';
 
     const style = {
         width: '30px',
