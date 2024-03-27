@@ -40,9 +40,11 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Utils from 'AppData/Utils';
 import Paper from '@mui/material/Paper';
+import Chip from '@mui/material/Chip';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AuthManager from 'AppData/AuthManager';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
@@ -109,6 +111,7 @@ const ApiChat = () => {
     const [password, setPassword] = useState(null);
     const [selectedEnvironment, setSelectedEnvironment] = useState(null);
 
+    const user = AuthManager.getUser();
     const apiClient = new Api();
     const { api } = useContext(ApiContext);
     const { settings: { apiChatEnabled, aiAuthTokenProvided } } = useSettingsContext();
@@ -120,7 +123,7 @@ const ApiChat = () => {
             case 'INVALID_SPECIFICATION':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.invalidSpecificationError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.invalidSpecificationError',
                         defaultMessage:
                             'The OpenAPI specification could not be parsed. Ensure you are using a valid specification.',
                     }),
@@ -129,7 +132,7 @@ const ApiChat = () => {
             case 'INVALID_RESOURCE_PATH':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.invalidResourcePathError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.invalidResourcePathError',
                         defaultMessage:
                             'The OpenAPI specification contain unsupported resource path definitions.',
                     }),
@@ -138,7 +141,7 @@ const ApiChat = () => {
             case 'UNSUPPORTED_MEDIA_TYPE':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.unsupportedMediaTypeError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.unsupportedMediaTypeError',
                         defaultMessage:
                             'The OpenAPI specification includes non-JSON input types which are not currently supported.',
                     }),
@@ -147,7 +150,7 @@ const ApiChat = () => {
             case 'UNSUPPORTED_SPECIFICATION':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.unsupportedSpecificationError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.unsupportedSpecificationError',
                         defaultMessage:
                             'The OpenAPI specification includes components that are currently not supported.',
                     }),
@@ -156,7 +159,7 @@ const ApiChat = () => {
             case 'LLM':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.llmError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.llmError',
                         defaultMessage: 'Failed to load API Chat.',
                     }),
                 );
@@ -164,7 +167,7 @@ const ApiChat = () => {
             case 'TOKEN_LIMIT_EXCEEDED':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.tokenLimitExceededError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.tokenLimitExceededError',
                         defaultMessage:
                             'The OpenAPI specification exceeds the maximum limit.',
                     }),
@@ -173,7 +176,7 @@ const ApiChat = () => {
             case 'STACK_OVERFLOW':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.stackOverflowError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.stackOverflowError',
                         defaultMessage:
                             'The OpenAPI specification could not be parsed due to a cyclic reference or the excessive length of the'
                             + ' specification.',
@@ -183,7 +186,7 @@ const ApiChat = () => {
             case 'CONTENT_POLICY_VIOLATION':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.contentViolationError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.contentViolationError',
                         defaultMessage:
                             'The content in the OpenAPI specification violates the Azure OpenAI content policy.',
                     }),
@@ -192,7 +195,7 @@ const ApiChat = () => {
             case 'LLM_CONNECTION':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.llmConnectionError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.llmConnectionError',
                         defaultMessage: 'There was an error connecting to Azure OpenAI.',
                     }),
                 );
@@ -201,7 +204,7 @@ const ApiChat = () => {
             default:
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.genericError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.genericError',
                         defaultMessage: 'An error occurred when loading API Chat.',
                     }),
                 );
@@ -214,7 +217,7 @@ const ApiChat = () => {
             case 'LLM':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.llmError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.llmError',
                         defaultMessage:
                             'An error occurred during query execution. Try again.',
                     }),
@@ -223,7 +226,7 @@ const ApiChat = () => {
             case 'CACHING':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.cachingError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.cachingError',
                         defaultMessage:
                             'An error occurred during query execution. Try again later.',
                     }),
@@ -232,7 +235,7 @@ const ApiChat = () => {
             case 'RESPONSE_PARSING':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.responseParsingError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.responseParsingError',
                         defaultMessage:
                             'An error occurred while attempting to extract the API response.',
                     }),
@@ -241,7 +244,7 @@ const ApiChat = () => {
             case 'API_COMMUNICATION':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.apiCommunicationError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.apiCommunicationError',
                         defaultMessage:
                             'An error occurred while attempting to establish a connection with your API.',
                     }),
@@ -250,7 +253,7 @@ const ApiChat = () => {
             case 'TOKEN_LIMIT_EXCEEDED':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.tokenLimitExceededError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.tokenLimitExceededError',
                         defaultMessage:
                             'Execution has been terminated due to exceeding the token limit.',
                     }),
@@ -259,7 +262,7 @@ const ApiChat = () => {
             case 'INVALID_COMMAND':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.invalidCommandError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.invalidCommandError',
                         defaultMessage: 'An invalid query is provided.',
                     }),
                 );
@@ -267,7 +270,7 @@ const ApiChat = () => {
             case 'CONTENT_POLICY_VIOLATION':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.contentViolationError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.contentViolationError',
                         defaultMessage:
                             'Your query seems to contain inappropriate content. Please try again with a different query.',
                     }),
@@ -276,7 +279,7 @@ const ApiChat = () => {
             case 'LLM_CONNECTION':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.llmConnectionError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.llmConnectionError',
                         defaultMessage: 'There was an error connecting to Azure OpenAI.',
                     }),
                 );
@@ -285,7 +288,7 @@ const ApiChat = () => {
             default:
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.genericError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.genericError',
                         defaultMessage: 'An error occurred during query execution.',
                     }),
                 );
@@ -309,7 +312,7 @@ const ApiChat = () => {
     }, [isAgentTerminating]);
 
     useEffect(() => {
-        if (api && api.id && apiChatEnabled && aiAuthTokenProvided) {
+        if (api && api.id && apiChatEnabled && aiAuthTokenProvided && user) {
             setIsEnrichingSpec(true);
             setSpecEnrichmentError('');
             setSpecEnrichmentErrorLevel('');
@@ -348,17 +351,18 @@ const ApiChat = () => {
                 + 'follow the steps provided under {apiChatDocLink} '}
             values={{
                 apiChatDocLink: (
-                    <Link
-                        onClick={() => {
-                            window.location.href = 'https://apim.docs.wso2.com/en/latest/get-started/overview/';
-                        }}
+                    <a
+                        id='api-chat-doc-link'
+                        href='https://apim.docs.wso2.com/en/4.3.0/consume/invoke-apis/invoke-apis-using-tools/test-apis-with-apichat/'
+                        target='_blank'
+                        rel='noopener noreferrer'
                     >
                         Test APIs with API Chat
                         <LaunchIcon
                             style={{ marginLeft: '2px' }}
                             fontSize='small'
                         />
-                    </Link>
+                    </a>
                 ),
             }}
         />
@@ -484,7 +488,10 @@ const ApiChat = () => {
         setExecutionResults((prevState) => {
             return [
                 ...prevState,
-                executionResponseForAiAgent,
+                {
+                    ...executionResponseForAiAgent,
+                    method: resource.method,
+                },
             ];
         });
         const executePromise = apiClient.runAiAgentSubsequentIterations(
@@ -525,7 +532,7 @@ const ApiChat = () => {
                             setIsExecutionError(true);
                             setFinalOutcome(
                                 intl.formatMessage({
-                                    id: 'modules.testComponent.TryWithAIViewer.finalOutcome.taskExecutionDefault',
+                                    id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
                                     defaultMessage: 'An error occurred during query execution.',
                                 }),
                             );
@@ -552,7 +559,7 @@ const ApiChat = () => {
         if (query.length < 1) {
             setFinalOutcome(
                 intl.formatMessage({
-                    id: 'modules.testComponent.TryWithAIViewer.finalOutcome.noQuery',
+                    id: 'Apis.Details.ApiChat.components.finalOutcome.noQuery',
                     defaultMessage: 'An invalid query is provided.',
                 }),
             );
@@ -600,7 +607,7 @@ const ApiChat = () => {
                             setIsExecutionError(true);
                             setFinalOutcome(
                                 intl.formatMessage({
-                                    id: 'modules.testComponent.TryWithAIViewer.finalOutcome.taskExecutionDefault',
+                                    id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
                                     defaultMessage: 'An error occurred during query execution.',
                                 }),
                             );
@@ -624,7 +631,7 @@ const ApiChat = () => {
             abortControllerRef.current.abort();
             setFinalOutcome(
                 intl.formatMessage({
-                    id: 'modules.testComponent.TryWithAIViewer.finalOutcome.executionTerminated',
+                    id: 'Apis.Details.ApiChat.components.finalOutcome.executionTerminated',
                     defaultMessage: 'Execution was terminated.',
                 }),
             );
@@ -689,6 +696,7 @@ const ApiChat = () => {
                     openConfigureKey={handleOpenConfigureKey}
                     goBack={handleGoBack}
                     disableGoBack={isAgentRunning || lastQuery === ''}
+                    disableConfigureKey={!apiChatEnabled || !aiAuthTokenProvided || specEnrichmentError}
                 />
                 {(isAgentRunning || lastQuery || finalOutcome) && (
                     <Box maxHeight='60%' overflow='auto' className={classes.lastQueryWrap}>
@@ -705,12 +713,24 @@ const ApiChat = () => {
                                                 >
                                                     <>
                                                         {(executionResult.code >= 200 && executionResult.code < 300) ? (
-                                                            <CheckCircleIcon color='success' sx={{ paddingRight: 2 }} />
+                                                            <Chip
+                                                                icon={<CheckCircleIcon color='success' />}
+                                                                label={executionResult.code}
+                                                                color='success'
+                                                                variant='outlined'
+                                                                size='small'
+                                                            />
                                                         ) : (
-                                                            <DangerousIcon color='error' sx={{ paddingRight: 2 }} />
+                                                            <Chip
+                                                                icon={<DangerousIcon color='error' />}
+                                                                label={executionResult.code}
+                                                                color='error'
+                                                                variant='outlined'
+                                                                size='small'
+                                                            />
                                                         )}
-                                                        <Typography variant='body1'>
-                                                            {'Executed ' + executionResult.path}
+                                                        <Typography variant='body1' ml={2} sx={{ alignContent: 'center' }}>
+                                                            {'Executed ' + executionResult.method + ' ' + executionResult.path}
                                                         </Typography>
                                                     </>
                                                 </AccordionSummary>
@@ -737,7 +757,7 @@ const ApiChat = () => {
                                                         <CircularProgress size={20} />
                                                         <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
                                                             <FormattedMessage
-                                                                id='modules.testComponent.TryWithAIViewer.terminatingExecutionMessage'
+                                                                id='Apis.Details.ApiChat.components.terminatingExecutionMessage'
                                                                 defaultMessage='Execution is terminating...'
                                                             />
                                                         </Typography>
@@ -747,7 +767,7 @@ const ApiChat = () => {
                                                         <CircularProgress size={20} />
                                                         <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
                                                             <FormattedMessage
-                                                                id='modules.testComponent.TryWithAIViewer.loadingExecutionMessage'
+                                                                id='Apis.Details.ApiChat.components.loadingExecutionMessage'
                                                                 defaultMessage='Loading next execution step...'
                                                             />
                                                         </Typography>
@@ -764,62 +784,74 @@ const ApiChat = () => {
                 {!lastQuery && (
                     <ApiChatBanner />
                 )}
-                {!isAgentRunning && !lastQuery && !finalOutcome && sampleQueries && sampleQueries.length > 0
-                    ? (
-                        <Box display='flex' margin={5}>
-                            <Grid container direction='row' spacing={3}>
-                                {sampleQueries
-                                    && sampleQueries.map((queryData) => {
-                                        const gridVal = sampleQueries.length === 2 ? 6 : 4;
-                                        return (
-                                            <Grid
-                                                key={queryData.scenario}
-                                                item
-                                                xs={12}
-                                                md={gridVal}
-                                            >
-                                                <SampleQueryCard
-                                                    onExecuteClick={handleExecuteSampleQuery}
-                                                    disabled={!apiChatEnabled || !aiAuthTokenProvided || !securityScheme}
-                                                    queryData={queryData}
-                                                    onCopyClick={handleCopyClick}
-                                                />
-                                            </Grid>
-                                        );
-                                    })}
-                            </Grid>
-                        </Box>
-                    ) : (
-                        <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
-                            {/* Handle prepare call executing scenario */}
-                            {isEnrichingSpec && (
-                                <Box display='flex' justifyContent='center'>
-                                    <CircularProgress size={20} />
-                                    <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
-                                        <FormattedMessage
-                                            id='Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage'
-                                            defaultMessage='We are in the process of preparing the API specification
-                                    for API Chat.'
+                {!isAgentRunning && !lastQuery && !finalOutcome && sampleQueries && sampleQueries.length > 0 && (
+                    <Box display='flex' margin={5}>
+                        <Grid container direction='row' spacing={3}>
+                            {sampleQueries && sampleQueries.map((queryData) => {
+                                const gridVal = sampleQueries.length === 2 ? 6 : 4;
+                                return (
+                                    <Grid
+                                        key={queryData.scenario}
+                                        item
+                                        xs={12}
+                                        md={gridVal}
+                                    >
+                                        <SampleQueryCard
+                                            onExecuteClick={handleExecuteSampleQuery}
+                                            disabled={
+                                                !apiChatEnabled
+                                                || !aiAuthTokenProvided
+                                                || !securityScheme
+                                                || !(securityScheme && (accessToken || password))
+                                            }
+                                            queryData={queryData}
+                                            onCopyClick={handleCopyClick}
                                         />
-                                    </Typography>
-                                </Box>
-                            )}
-                            {/* Handle prepare call failed scenario */}
-                            {specEnrichmentError && specEnrichmentErrorLevel && (
-                                <Alert severity={specEnrichmentErrorLevel}>
-                                    {specEnrichmentError}
-                                </Alert>
-                            )}
-                            {/* Handle auth token not provided scenario */}
-                            {(!aiAuthTokenProvided || !apiChatEnabled) && (
-                                <Alert severity='warning'>
-                                    {authTokenNotProvidedWarning}
-                                </Alert>
-                            )}
+                                    </Grid>
+                                );
+                            })}
+                        </Grid>
+                    </Box>
+                )}
+                <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
+                    {/* Handle prepare call executing scenario */}
+                    {isEnrichingSpec && (
+                        <Box display='flex' justifyContent='center'>
+                            <CircularProgress size={20} />
+                            <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
+                                <FormattedMessage
+                                    id='Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage'
+                                    defaultMessage='We are in the process of preparing the API specification
+                            for API Chat.'
+                                />
+                            </Typography>
                         </Box>
                     )}
+                    {/* Handle prepare call failed scenario */}
+                    {specEnrichmentError && specEnrichmentErrorLevel && (
+                        <Alert severity={specEnrichmentErrorLevel}>
+                            {specEnrichmentError}
+                        </Alert>
+                    )}
+                    {/* Handle auth token not provided scenario */}
+                    {!aiAuthTokenProvided && (
+                        <Alert severity='warning'>
+                            {authTokenNotProvidedWarning}
+                        </Alert>
+                    )}
+                    {/* Hanlde not logged in scenario */}
+                    {!user && (
+                        <Alert severity='info'>
+                            <FormattedMessage
+                                id='Apis.Details.ApiChat.warning.notSignedIn'
+                                defaultMessage='You must sign in to use the API Chat.'
+                            />
+                        </Alert>
+                    )}
+                </Box>
                 <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
-                    {!securityScheme && (
+                    {(!securityScheme || !(securityScheme && (accessToken || password)))
+                    && aiAuthTokenProvided && user && !specEnrichmentError && !isEnrichingSpec && (
                         <Alert severity='warning'>
                             {apiAccessTokenNotFoundWarning}
                         </Alert>
@@ -835,7 +867,12 @@ const ApiChat = () => {
                     isEnrichingSpec={isEnrichingSpec}
                     specEnrichmentError={specEnrichmentError}
                     handleExecute={handleExecute}
-                    isExecuteDisabled={!apiChatEnabled || !aiAuthTokenProvided || !securityScheme}
+                    isExecuteDisabled={
+                        !apiChatEnabled
+                        || !aiAuthTokenProvided
+                        || !securityScheme
+                        || !(securityScheme && (accessToken || password))
+                    }
                 />
             </Box>
         </Root>

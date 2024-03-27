@@ -935,9 +935,9 @@ export default class API extends Resource {
 
     /**
      * Execute the user query in the marketplace assistant
-     * @param query {String} user nl query
-     * @param tenantDomain {String} Tenant domain
-     * @param history {Array} Chat history
+     *
+     * @param {string} query Natural language query provided by the user
+     * @param {Array} history Chat history
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
     marketplaceAssistantExecute(query, history) {
@@ -951,11 +951,11 @@ export default class API extends Resource {
     }
 
     /**
-     *Get the no of apis in the vectorDB
+     * Get the API count in the vectorDB
+     *
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
     getMarketplaceAssistantApiCount() {
-        console.log(this.client);
         return this.client.then((client) => {
             return client.apis['Marketplace Assistant'].getMarketplaceAssistantApiCount(this._requestMetaData());
         });

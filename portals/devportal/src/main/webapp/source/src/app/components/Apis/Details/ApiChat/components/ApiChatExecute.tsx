@@ -46,8 +46,8 @@ const Root = styled('div')(({ theme }) => ({
         padding: theme.spacing(3, 1),
     },
     [`& .${classes.reExecuteWrap}`]: {
-        marginTop: theme.spacing(1),
-        marginBottom: theme.spacing(1),
+        marginTop: theme.spacing(2),
+        marginBottom: theme.spacing(2),
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -109,7 +109,6 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                     {(isAgentRunning || lastQuery) && (
                         <Box className={classes.reExecuteWrap}>
                             <Button
-                                color='secondary'
                                 variant='outlined'
                                 size='small'
                                 onClick={handleStopAndReExecute}
@@ -138,7 +137,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                             value={inputQuery}
                             placeholder={intl.formatMessage({
                                 id: 'Apis.Details.ApiChat.components.ApiChatExecute.queryInput.placeholder',
-                                defaultMessage: 'Send Query',
+                                defaultMessage: 'Type the test scenario here...',
                             })}
                             onChange={handleQueryChange}
                             testId='nl-query-input'
@@ -164,16 +163,16 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                                     onClick={handleExecute}
                                     disabled={
                                         isAgentRunning
-                                    || isEnrichingSpec
-                                    || specEnrichmentError !== ''
-                                    || inputQuery.length === 0
-                                    || isExecuteDisabled
+                                        || isEnrichingSpec
+                                        || specEnrichmentError !== ''
+                                        || inputQuery.length === 0
+                                        || isExecuteDisabled
                                     }
                                     id='run-agent-button'
                                     startIcon={<ExecuteQuery />}
                                 >
                                     <FormattedMessage
-                                        id='modules.testComponent.TryWithAIViewer.TryWithAIViews.TryAIExecute.executeButton.label'
+                                        id='Apis.Details.ApiChat.components.ApiChatExecute.executeButton.label'
                                         defaultMessage='Execute'
                                     />
                                 </Button>

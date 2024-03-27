@@ -29,6 +29,7 @@ interface ApiChatPoweredByProps {
     showSampleQueries?: boolean;
     goBack: () => void;
     disableGoBack: boolean;
+    disableConfigureKey: boolean;
 }
 
 /**
@@ -39,16 +40,38 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
     openConfigureKey,
     goBack,
     disableGoBack,
+    disableConfigureKey,
 }) => {
     return (
         <Box display='flex' width='100%' m={3}>
             <Box display='flex' flexDirection='column' flexGrow={1}>
-                <Typography id='itest-api-details-api-chat-title' variant='h3' component='h3'>
-                    <FormattedMessage
-                        id='Apis.Details.ApiChat.components.ApiChatPoweredBy.apiChatMainHeader'
-                        defaultMessage='API Chat'
-                    />
-                </Typography>
+                <Box display='flex'>
+                    <Typography id='itest-api-details-api-chat-title' variant='h3' component='h3'>
+                        <FormattedMessage
+                            id='Apis.Details.ApiChat.components.ApiChatPoweredBy.apiChatMainHeader'
+                            defaultMessage='API Chat'
+                        />
+                    </Typography>
+                    <Box
+                        display='flex-start'
+                        sx={{
+                            backgroundColor: '#10597f',
+                            color: '#fff',
+                            marginLeft: '8px',
+                            maxWidth: '45px',
+                            padding: '0px 4px',
+                            borderRadius: '6px',
+                            maxHeight: '21px',
+                        }}
+                    >
+                        <Typography variant='body1'>
+                            <FormattedMessage
+                                id='Apis.Details.ApiChat.components.ApiChatBanner.apiChatBannerHeader'
+                                defaultMessage='Beta'
+                            />
+                        </Typography>
+                    </Box>
+                </Box>
                 <Typography variant='body2' color='textSecondary' component='p'>
                     <FormattedMessage
                         id='Apis.Details.ApiChat.components.ApiChatPoweredBy.poweredByText'
@@ -80,6 +103,7 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                             variant='text'
                             size='small'
                             onClick={openConfigureKey}
+                            disabled={disableConfigureKey}
                         >
                             <FormattedMessage
                                 id='Apis.Details.ApiChat.components.ApiChatPoweredBy.configureKey'
