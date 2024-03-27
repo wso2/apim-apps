@@ -61,8 +61,8 @@ const LandingMenu = (props) => {
             item
             xs={12}
             sm={5}
-            md={3}
-            lg={2}
+            md={4}
+            xl={2}
         >
             <Box
                 id={id}
@@ -101,7 +101,13 @@ const LandingMenu = (props) => {
                             display={{ xs: 'none', sm: 'flex' }}
                         >
                             <img
-                                width='190px'
+                                style={{
+                                    maxWidth: '100%',
+                                    height: 'auto',
+                                    objectFit: 'contain',
+                                    minWidth: '150px',
+                                    minHeight: '150px',
+                                }}
                                 src={Configurations.app.context
                                     + icon}
                                 alt={title}
