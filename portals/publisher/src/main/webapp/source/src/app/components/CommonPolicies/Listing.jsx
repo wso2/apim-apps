@@ -38,7 +38,6 @@ import TrendingDown from '@mui/icons-material/TrendingDown';
 import ResourceNotFoundError from 'AppComponents/Base/Errors/ResourceNotFoundError';
 import CONSTS from 'AppData/Constants';
 import Delete from './DeletePolicy';
-import CommonPolicyGatewaySelector from './CommonPolicyGatewaySelector';
 
 const PREFIX = 'CommonPolicyListing';
 
@@ -108,15 +107,6 @@ const Listing = () => {
     const [policies, setPolicies] = useState(null);
     const [loading, setLoading] = useState(false);
     const [notFound, setnotFound] = useState(false);
-    const [isAllowedToFilterCCPolicies, setIsAllowedToFilterCCPolicies] = useState(false);
-
-    /**
-     * 
-     * @param {boolean} isCCEnabled : Indicates whether Choreo Connect is selected or not.
-     */
-    const handleGatewayTypeSelection = (isCCEnabled) => {
-        setIsAllowedToFilterCCPolicies(isCCEnabled);
-    } 
 
     const fetchCommonPolicies = () => {
         setLoading(true);
@@ -136,17 +126,13 @@ const Listing = () => {
 
     // Provides the gateway specific policies list.
     const getPoliciesList = () => {
-        let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
-        if (isAllowedToFilterCCPolicies) {
-            gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
-        }
-        // removes irrelevant policies for the selected gateway type
+        // removes irrelevant policies for the synapse gateway type
         return policies?.filter((policy) => {
-            return policy.supportedGateways.includes(gatewayType)
+            return policy.supportedGateways.includes(CONSTS.GATEWAY_TYPE.synapse)
         }).map((policyObj) => {
             const policy = [];
             policyObj.supportedGateways.forEach((policyGateway) => {
-                if (gatewayType === policyGateway) {
+                if (CONSTS.GATEWAY_TYPE.synapse === policyGateway) {
                     policy.push(policyObj.id);
                     policy.push(policyObj.displayName);
                     policy.push(policyObj.version);
@@ -449,12 +435,6 @@ const Listing = () => {
                         )}
                     </Grid>
                     <Grid className={classes.table} xs={12} item>
-                        <Box>
-                            <CommonPolicyGatewaySelector
-                                handleGatewayTypeSelection={handleGatewayTypeSelection}
-                                isAllowedToFilterCCPolicies={isAllowedToFilterCCPolicies}
-                            />
-                        </Box>
                         <MUIDataTable
                             title={false}
                             data={policiesList}

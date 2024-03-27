@@ -35,7 +35,6 @@ import clsx from 'clsx';
 import Icon from '@mui/material/Icon';
 import { HelpOutline } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
-import { GATEWAY_TYPE_LABELS } from './SourceDetails';
 
 
 const PREFIX = 'UploadPolicyDropzone';
@@ -92,7 +91,6 @@ const Root = styled('div')(({ theme }: { theme: Theme }) => ({
 interface UploadPolicyDropzoneProps {
     policyDefinitionFile: any[];
     setPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
-    gateway: string;
 }
 
 /**
@@ -103,7 +101,6 @@ interface UploadPolicyDropzoneProps {
 const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
     policyDefinitionFile,
     setPolicyDefinitionFile,
-    gateway,
 }) => {
 
 
@@ -163,16 +160,11 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                     >
                         <FormattedMessage
                             id='Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title'
-                            defaultMessage='Upload Policy File for {gateway}'
-                            values={{ gateway }}
+                            defaultMessage='Upload Policy File'
                         />
                         <sup className={classes.mandatoryStar}>*</sup>
                         <Tooltip
-                            title={
-                                gateway === GATEWAY_TYPE_LABELS.SYNAPSE
-                                    ? 'Regular gateway only supports .j2 and .xml file uploads'
-                                    : 'Choreo Connect only supports .gotmpl file uploads'
-                            }
+                            title={'This only supports .j2 and .xml file uploads'}
                             placement='right'
                         >
                             <IconButton aria-label='policy-file-upload-helper-text' size='large'>

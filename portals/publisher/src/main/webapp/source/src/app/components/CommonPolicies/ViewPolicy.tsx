@@ -36,7 +36,6 @@ const PREFIX = 'ViewPolicy';
 const classes = {
     titleWrapper: `${PREFIX}-titleWrapper`,
     titleLink: `${PREFIX}-titleLink`,
-    titleGrid: `${PREFIX}-titleGrid`
 };
 
 const StyledGrid = styled(Grid)(({ theme }:{ theme: Theme }) => ({
@@ -51,13 +50,6 @@ const StyledGrid = styled(Grid)(({ theme }:{ theme: Theme }) => ({
         color: theme.palette.primary.dark,
         marginRight: theme.spacing(1),
     },
-
-    [`& .${classes.titleGrid}`]: {
-        ' & .MuiGrid-item': {
-            padding: 0,
-            margin: 0,
-        },
-    }
 }));
 
 /**
@@ -112,11 +104,10 @@ const ViewPolicy: React.FC = () => {
     }
 
     return (
-        <StyledGrid container spacing={3}>
-            <Grid item sm={12} md={12} />
+        <StyledGrid container>
             <Grid item sm={2} md={2} />
             <Grid item sm={12} md={8}>
-                <Grid container spacing={5} className={classes.titleGrid}>
+                <Grid container sx={{ pt: 2 }}>
                     <Grid item md={12}>
                         <div className={classes.titleWrapper}>
                             <Link
