@@ -159,14 +159,17 @@ function ChatWindow(props) {
                         handleReset={handleReset}
                         isClicked={isClicked}
                     />
-                    {apiLimitExceeded ? (
-                        <Alert severity='warning' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
-                            You have reached your maximum number of apis. The answers will be limited to the first 1000 apis.
-                        </Alert>
-                    ) : (
-                        <Alert severity='info' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
-                            {`The Assistant is using ${apisCount} apis to provide answers.`}
-                        </Alert>
+                    {/* Alert to show API count info */}
+                    {marketplaceAssistantEnabled && aiAuthTokenProvided && (
+                        apiLimitExceeded ? (
+                            <Alert severity='warning' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
+                                You have reached your maximum number of apis. The answers will be limited to the first 1000 apis.
+                            </Alert>
+                        ) : (
+                            <Alert severity='info' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
+                                {`The Assistant is using ${apisCount} apis to provide answers.`}
+                            </Alert>
+                        )
                     )}
 
                     <Box

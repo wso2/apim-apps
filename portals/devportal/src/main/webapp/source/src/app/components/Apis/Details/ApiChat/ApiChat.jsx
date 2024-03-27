@@ -44,6 +44,7 @@ import Chip from '@mui/material/Chip';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import AuthManager from 'AppData/AuthManager';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
@@ -110,6 +111,7 @@ const ApiChat = () => {
     const [password, setPassword] = useState(null);
     const [selectedEnvironment, setSelectedEnvironment] = useState(null);
 
+    const user = AuthManager.getUser();
     const apiClient = new Api();
     const { api } = useContext(ApiContext);
     const { settings: { apiChatEnabled, aiAuthTokenProvided } } = useSettingsContext();
@@ -310,7 +312,7 @@ const ApiChat = () => {
     }, [isAgentTerminating]);
 
     useEffect(() => {
-        if (api && api.id && apiChatEnabled && aiAuthTokenProvided) {
+        if (api && api.id && apiChatEnabled && aiAuthTokenProvided && user) {
             setIsEnrichingSpec(true);
             setSpecEnrichmentError('');
             setSpecEnrichmentErrorLevel('');
@@ -837,9 +839,18 @@ const ApiChat = () => {
                             {authTokenNotProvidedWarning}
                         </Alert>
                     )}
+                    {/* Hanlde not logged in scenario */}
+                    {!user && (
+                        <Alert severity='info'>
+                            <FormattedMessage
+                                id='Apis.Details.ApiChat.warning.notSignedIn'
+                                defaultMessage='You must sign in to use the API Chat.'
+                            />
+                        </Alert>
+                    )}
                 </Box>
                 <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
-                    {(!securityScheme || !(securityScheme && (accessToken || password))) && aiAuthTokenProvided && (
+                    {(!securityScheme || !(securityScheme && (accessToken || password))) && aiAuthTokenProvided && user && (
                         <Alert severity='warning'>
                             {apiAccessTokenNotFoundWarning}
                         </Alert>
