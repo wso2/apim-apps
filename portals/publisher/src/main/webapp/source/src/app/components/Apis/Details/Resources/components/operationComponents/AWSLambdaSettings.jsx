@@ -38,42 +38,11 @@ import { FormattedMessage } from 'react-intl';
 const PREFIX = 'AWSLambdaSettings';
 
 const classes = {
-    root: `${PREFIX}-root`,
-    container: `${PREFIX}-container`,
-    paper: `${PREFIX}-paper`,
-    chip: `${PREFIX}-chip`,
     inputRoot: `${PREFIX}-inputRoot`,
     inputInput: `${PREFIX}-inputInput`
 };
 
-
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.root}`]: {
-        flexGrow: 1,
-        border: '2px solid red'
-    },
-
-    [`& .${classes.container}`]: {
-        flexGrow: 1,
-        position: 'relative',
-    },
-
-    [`& .${classes.paper}`]: {
-        position: 'absolute',
-        zIndex: 1000,
-        marginTop: theme.spacing(-2),
-        left: 0,
-        right: 0,
-    },
-
-    [`& .${classes.chip}`]: {
-        margin: theme.spacing(0.5, 0.25),
-    },
-
+const StyledTextField = styled(TextField)(() => ({
     [`& .${classes.inputRoot}`]: {
         flexWrap: 'wrap',
     },
@@ -94,7 +63,7 @@ function renderInput(inputProps) {
         InputProps, ref, ...other
     } = inputProps;
     return (
-        <TextField
+        <StyledTextField
             InputProps={{
                 inputRef: ref,
                 classes: {
@@ -245,7 +214,7 @@ export default function IntegrationDownshift(props) {
         console.log('changing content encode ' + event.target.checked + ' dispatched');
     };
     return (
-        (<Root>
+        (<>
             <Grid item md={12} xs={12}>
                 <Typography variant='subtitle1'>
                     <FormattedMessage
@@ -300,7 +269,7 @@ export default function IntegrationDownshift(props) {
                             placeholder: 'Select or type an ARN',
                         });
                         return (
-                            <div className={classes.container}>
+                            <div style={{ flexGrow: 1 }}>
                                 {renderInput({
                                     variant: 'outlined',
                                     required: true,
@@ -324,7 +293,13 @@ export default function IntegrationDownshift(props) {
 
                                 <div {...getMenuProps()}>
                                     {isOpen ? (
-                                        <Paper className={classes.paper} square>
+                                        <Paper square sx={{
+                                            position: 'absolute',
+                                            zIndex: 1000,
+                                            marginTop: -2,
+                                            left: 0,
+                                            right: 0,
+                                        }}>
                                             {getSuggestions(inputValue, { showEmpty: true }, arns)
                                                 .map((suggestion, index) => renderSuggestion({
                                                     suggestion,
@@ -400,7 +375,7 @@ export default function IntegrationDownshift(props) {
                 </FormControl>
             </Grid>
             <Grid item md={1} xs={1} />
-        </Root>)
+        </>)
     );
 }
 

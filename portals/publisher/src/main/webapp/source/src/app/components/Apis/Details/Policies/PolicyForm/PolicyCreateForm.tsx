@@ -298,7 +298,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                 dispatch={dispatch}
                 isViewMode={false}
             />
-            <Divider light />
+            <Divider sx={{ opacity: 0.2 }} />
             {/* Gateway specific details of policy */}
             <SourceDetails
                 supportedGateways={state.supportedGateways}
@@ -308,7 +308,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                 setCcPolicyDefinitionFile={setCcPolicyDefinitionFile}
                 dispatch={dispatch}
             />
-            <Divider light />
+            <Divider sx={{ opacity: 0.2 }} />
             {/* Attributes of policy */}
             <PolicyAttributes
                 policyAttributes={state.policyAttributes}
