@@ -16,7 +16,8 @@
  * under the License.
  */
 
-import React, { useState, useContext, Suspense, lazy } from 'react';
+import React, { useState, useEffect, useContext, Suspense, lazy } from 'react';
+import { useLocation } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import { withRouter } from 'react-router-dom';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -87,21 +88,53 @@ function Transition(props) {
 }
 
 function MarkdownEditor(props) {
+    const location = useLocation();
+    const { doc } = location.state || {};
     const skipHtml = Configurations.app.markdown ? Configurations.app.markdown.skipHtml : true;
     const markdownSyntaxHighlighterProps = Configurations.app.markdown ?
         Configurations.app.markdown.syntaxHighlighterProps: {};
     const syntaxHighlighterDarkTheme = Configurations.app.markdown ? 
         Configurations.app.markdown.syntaxHighlighterDarkTheme: false;
-    const { intl, showAtOnce, history } = props;
+    const templateAvailble = Configurations.app.markdown && Configurations.app.markdown.template ? true : false
+    const howTotemplate = templateAvailble && Configurations.app.markdown.template.howTo ? Configurations.app.markdown.template.howTo : '';
+    const sampleTemplate = templateAvailble && Configurations.app.markdown.template.sample ? Configurations.app.markdown.template.sample : '';
+    const otherTemplate = templateAvailble && Configurations.app.markdown.template.other ? Configurations.app.markdown.template.other : '';
+    const { intl, showAtOnce, history, docType } = props;
     const { api, isAPIProduct } = useContext(APIContext);
     const [isUpdating, setIsUpdating] = useState(false);
     const [open, setOpen] = useState(showAtOnce);
-    const [docContent, setDocContent] = useState(
-        intl.formatMessage({
-            id: 'documents.markdown.editor.default',
-            defaultMessage: '#Enter your markdown content',
-        }),
-    );
+    const [docContent, setDocContent] = useState();
+    
+    useEffect(() => {
+        let templatePath = '';
+        if (howTotemplate && howTotemplate !== '' && ((doc && doc.type === 'HOWTO') || docType === 'HOWTO')) {
+            templatePath = `${Configurations.app.context}/site/public/templates/${howTotemplate}`;
+        } else if (sampleTemplate && sampleTemplate !== '' && ((doc && doc.type === 'SAMPLES') || docType === 'SAMPLES')) {
+            templatePath = `${Configurations.app.context}/site/public/templates/${sampleTemplate}`;
+        } else if (otherTemplate && otherTemplate !== '' && ((doc && doc.type === 'OTHER') || docType === 'OTHER')) {
+            templatePath = `${Configurations.app.context}/site/public/templates/${otherTemplate}`;
+        }
+
+        if (templatePath !== '') {
+            fetch(templatePath)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to fetch template');
+                    }
+                    return response.text();
+                })
+                .then(text => setDocContent(text))
+                .catch(error => console.error(error));
+        } else {
+            setDocContent(
+                intl.formatMessage({
+                    id: 'documents.markdown.editor.default',
+                    defaultMessage: '#Enter your markdown content',
+                })
+            );
+        }
+    }, [docType]);
+
     const toggleOpen = () => {
         if (!open) updateDoc();
         if (open && showAtOnce) {
