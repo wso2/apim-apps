@@ -123,7 +123,7 @@ const ApiChat = () => {
             case 'INVALID_SPECIFICATION':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.invalidSpecificationError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.invalidSpecificationError',
                         defaultMessage:
                             'The OpenAPI specification could not be parsed. Ensure you are using a valid specification.',
                     }),
@@ -132,7 +132,7 @@ const ApiChat = () => {
             case 'INVALID_RESOURCE_PATH':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.invalidResourcePathError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.invalidResourcePathError',
                         defaultMessage:
                             'The OpenAPI specification contain unsupported resource path definitions.',
                     }),
@@ -141,7 +141,7 @@ const ApiChat = () => {
             case 'UNSUPPORTED_MEDIA_TYPE':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.unsupportedMediaTypeError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.unsupportedMediaTypeError',
                         defaultMessage:
                             'The OpenAPI specification includes non-JSON input types which are not currently supported.',
                     }),
@@ -150,7 +150,7 @@ const ApiChat = () => {
             case 'UNSUPPORTED_SPECIFICATION':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.unsupportedSpecificationError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.unsupportedSpecificationError',
                         defaultMessage:
                             'The OpenAPI specification includes components that are currently not supported.',
                     }),
@@ -159,7 +159,7 @@ const ApiChat = () => {
             case 'LLM':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.llmError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.llmError',
                         defaultMessage: 'Failed to load API Chat.',
                     }),
                 );
@@ -167,7 +167,7 @@ const ApiChat = () => {
             case 'TOKEN_LIMIT_EXCEEDED':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.tokenLimitExceededError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.tokenLimitExceededError',
                         defaultMessage:
                             'The OpenAPI specification exceeds the maximum limit.',
                     }),
@@ -176,7 +176,7 @@ const ApiChat = () => {
             case 'STACK_OVERFLOW':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.stackOverflowError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.stackOverflowError',
                         defaultMessage:
                             'The OpenAPI specification could not be parsed due to a cyclic reference or the excessive length of the'
                             + ' specification.',
@@ -186,7 +186,7 @@ const ApiChat = () => {
             case 'CONTENT_POLICY_VIOLATION':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.contentViolationError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.contentViolationError',
                         defaultMessage:
                             'The content in the OpenAPI specification violates the Azure OpenAI content policy.',
                     }),
@@ -195,7 +195,7 @@ const ApiChat = () => {
             case 'LLM_CONNECTION':
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.llmConnectionError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.llmConnectionError',
                         defaultMessage: 'There was an error connecting to Azure OpenAI.',
                     }),
                 );
@@ -204,7 +204,7 @@ const ApiChat = () => {
             default:
                 setSpecEnrichmentError(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.specEnrichmentError.genericError',
+                        id: 'Apis.Details.ApiChat.components.specEnrichmentError.genericError',
                         defaultMessage: 'An error occurred when loading API Chat.',
                     }),
                 );
@@ -217,7 +217,7 @@ const ApiChat = () => {
             case 'LLM':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.llmError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.llmError',
                         defaultMessage:
                             'An error occurred during query execution. Try again.',
                     }),
@@ -226,7 +226,7 @@ const ApiChat = () => {
             case 'CACHING':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.cachingError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.cachingError',
                         defaultMessage:
                             'An error occurred during query execution. Try again later.',
                     }),
@@ -235,7 +235,7 @@ const ApiChat = () => {
             case 'RESPONSE_PARSING':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.responseParsingError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.responseParsingError',
                         defaultMessage:
                             'An error occurred while attempting to extract the API response.',
                     }),
@@ -244,7 +244,7 @@ const ApiChat = () => {
             case 'API_COMMUNICATION':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.apiCommunicationError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.apiCommunicationError',
                         defaultMessage:
                             'An error occurred while attempting to establish a connection with your API.',
                     }),
@@ -253,7 +253,7 @@ const ApiChat = () => {
             case 'TOKEN_LIMIT_EXCEEDED':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.tokenLimitExceededError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.tokenLimitExceededError',
                         defaultMessage:
                             'Execution has been terminated due to exceeding the token limit.',
                     }),
@@ -262,7 +262,7 @@ const ApiChat = () => {
             case 'INVALID_COMMAND':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.invalidCommandError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.invalidCommandError',
                         defaultMessage: 'An invalid query is provided.',
                     }),
                 );
@@ -270,7 +270,7 @@ const ApiChat = () => {
             case 'CONTENT_POLICY_VIOLATION':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.contentViolationError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.contentViolationError',
                         defaultMessage:
                             'Your query seems to contain inappropriate content. Please try again with a different query.',
                     }),
@@ -279,7 +279,7 @@ const ApiChat = () => {
             case 'LLM_CONNECTION':
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.llmConnectionError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.llmConnectionError',
                         defaultMessage: 'There was an error connecting to Azure OpenAI.',
                     }),
                 );
@@ -288,7 +288,7 @@ const ApiChat = () => {
             default:
                 setFinalOutcome(
                     intl.formatMessage({
-                        id: 'modules.testComponent.TryWithAIViewer.finalOutcome.genericError',
+                        id: 'Apis.Details.ApiChat.components.finalOutcome.genericError',
                         defaultMessage: 'An error occurred during query execution.',
                     }),
                 );
@@ -351,18 +351,18 @@ const ApiChat = () => {
                 + 'follow the steps provided under {apiChatDocLink} '}
             values={{
                 apiChatDocLink: (
-                    <Link
-                        onClick={() => {
-                            window.location.href = 'https://apim.docs.wso2.com/en/4.3.0/consume/invoke-apis/invoke-apis-using-tools/'
-                                + 'test-apis-with-apichat/';
-                        }}
+                    <a
+                        id='api-chat-doc-link'
+                        href='https://apim.docs.wso2.com/en/4.3.0/consume/invoke-apis/invoke-apis-using-tools/test-apis-with-apichat/'
+                        target='_blank'
+                        rel='noopener noreferrer'
                     >
                         Test APIs with API Chat
                         <LaunchIcon
                             style={{ marginLeft: '2px' }}
                             fontSize='small'
                         />
-                    </Link>
+                    </a>
                 ),
             }}
         />
@@ -532,7 +532,7 @@ const ApiChat = () => {
                             setIsExecutionError(true);
                             setFinalOutcome(
                                 intl.formatMessage({
-                                    id: 'modules.testComponent.TryWithAIViewer.finalOutcome.taskExecutionDefault',
+                                    id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
                                     defaultMessage: 'An error occurred during query execution.',
                                 }),
                             );
@@ -559,7 +559,7 @@ const ApiChat = () => {
         if (query.length < 1) {
             setFinalOutcome(
                 intl.formatMessage({
-                    id: 'modules.testComponent.TryWithAIViewer.finalOutcome.noQuery',
+                    id: 'Apis.Details.ApiChat.components.finalOutcome.noQuery',
                     defaultMessage: 'An invalid query is provided.',
                 }),
             );
@@ -607,7 +607,7 @@ const ApiChat = () => {
                             setIsExecutionError(true);
                             setFinalOutcome(
                                 intl.formatMessage({
-                                    id: 'modules.testComponent.TryWithAIViewer.finalOutcome.taskExecutionDefault',
+                                    id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
                                     defaultMessage: 'An error occurred during query execution.',
                                 }),
                             );
@@ -631,7 +631,7 @@ const ApiChat = () => {
             abortControllerRef.current.abort();
             setFinalOutcome(
                 intl.formatMessage({
-                    id: 'modules.testComponent.TryWithAIViewer.finalOutcome.executionTerminated',
+                    id: 'Apis.Details.ApiChat.components.finalOutcome.executionTerminated',
                     defaultMessage: 'Execution was terminated.',
                 }),
             );
@@ -757,7 +757,7 @@ const ApiChat = () => {
                                                         <CircularProgress size={20} />
                                                         <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
                                                             <FormattedMessage
-                                                                id='modules.testComponent.TryWithAIViewer.terminatingExecutionMessage'
+                                                                id='Apis.Details.ApiChat.components.terminatingExecutionMessage'
                                                                 defaultMessage='Execution is terminating...'
                                                             />
                                                         </Typography>
@@ -767,7 +767,7 @@ const ApiChat = () => {
                                                         <CircularProgress size={20} />
                                                         <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
                                                             <FormattedMessage
-                                                                id='modules.testComponent.TryWithAIViewer.loadingExecutionMessage'
+                                                                id='Apis.Details.ApiChat.components.loadingExecutionMessage'
                                                                 defaultMessage='Loading next execution step...'
                                                             />
                                                         </Typography>
@@ -850,7 +850,8 @@ const ApiChat = () => {
                     )}
                 </Box>
                 <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
-                    {(!securityScheme || !(securityScheme && (accessToken || password))) && aiAuthTokenProvided && user && (
+                    {(!securityScheme || !(securityScheme && (accessToken || password)))
+                    && aiAuthTokenProvided && user && !specEnrichmentError && !isEnrichingSpec && (
                         <Alert severity='warning'>
                             {apiAccessTokenNotFoundWarning}
                         </Alert>
