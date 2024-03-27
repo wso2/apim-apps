@@ -26,7 +26,7 @@
                 "showLineNumbers": false
             },
             "syntaxHighlighterDarkTheme": false,
-            "templates": {
+            "template": {
                 "howTo": "",
                 "sample": "",
                 "other": ""
