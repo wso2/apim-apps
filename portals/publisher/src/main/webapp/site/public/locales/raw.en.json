@@ -1482,9 +1482,6 @@
   "Apis.Details.Endpoints.\n                                                                GenericEndpoint.security.endpoint": {
     "defaultMessage": "Endpoint security"
   },
-  "Apis.Details.Endpoints..EndpointOverview.MockImpl.type.change.proceed": {
-    "defaultMessage": "Proceed"
-  },
   "Apis.Details.Endpoints..EndpointOverview.change.type.proceed": {
     "defaultMessage": "Proceed"
   },
@@ -1580,27 +1577,6 @@
   },
   "Apis.Details.Endpoints.AdvancedConfig.AdvanceEndpointConfig.tpp.protocol.violation": {
     "defaultMessage": "TTP Protocol Violation"
-  },
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.Inline": {
-    "defaultMessage": "Regular gateway (Synapse gateway)"
-  },
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS": {
-    "defaultMessage": "Choreo Connect"
-  },
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS.description": {
-    "defaultMessage": "If you want to add/update examples, update the API Definition"
-  },
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Options": {
-    "defaultMessage": "Select the gateway type"
-  },
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation": {
-    "defaultMessage": "Change Mock implementation"
-  },
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation.message": {
-    "defaultMessage": "Your current mock endpoint implementation scripts will be lost."
   },
   "Apis.Details.Endpoints.EndpointOverview.advance.endpoint.configuration": {
     "defaultMessage": "Advanced Configurations"
@@ -2739,18 +2715,6 @@
   "Apis.Details.Policies.DraggablePolicyCard.policy.view": {
     "defaultMessage": "View"
   },
-  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content": {
-    "defaultMessage": "Changing the gateway type will remove all existing policies added to the API"
-  },
-  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": {
-    "defaultMessage": "Proceed"
-  },
-  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.title": {
-    "defaultMessage": "Change Gateway Type"
-  },
   "Apis.Details.Policies.OperationPolicy.operation.used.in.products": {
     "defaultMessage": "This operation is used in {isUsedInAPIProduct} API product(s)"
   },
@@ -2907,9 +2871,6 @@
   "Apis.Details.Policies.PolicyForm.SourceDetails.form.policy.file.title": {
     "defaultMessage": "Policy File(s)"
   },
-  "Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label": {
-    "defaultMessage": "Supported Gateways"
-  },
   "Apis.Details.Policies.PolicyForm.SourceDetails.title": {
     "defaultMessage": "Gateway Specific Details"
   },
@@ -2920,7 +2881,7 @@
     "defaultMessage": "Click or drag the policy file to upload"
   },
   "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title": {
-    "defaultMessage": "Upload Policy File for {gateway}"
+    "defaultMessage": "Upload Policy File"
   },
   "Apis.Details.Policies.PolicyList.add.new.policy": {
     "defaultMessage": "Add New Policy"

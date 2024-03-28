@@ -167,8 +167,7 @@ function TryOutController(props) {
         setSelectedEnvironment, setProductionAccessToken, setSandboxAccessToken, scopes, setSecurityScheme, setUsername,
         setPassword, username, password, updateSwagger, setProductionApiKey, setSandboxApiKey, productionApiKey,
         sandboxApiKey, environmentObject, setURLs, setAdvAuthHeader, setAdvAuthHeaderValue, advAuthHeader,
-        advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs, autoGenerateToken = false,
-        setTestAccessToken = null, onConfigChange,
+        advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs, onConfigChange,
     } = props;
     let { selectedKeyManager } = props;
     selectedKeyManager = selectedKeyManager || 'Resident Key Manager';
@@ -377,24 +376,6 @@ function TryOutController(props) {
                 });
         }
     }
-
-    /**
-     * Generate test key by default
-     */
-    useEffect(() => {
-        if (
-            autoGenerateToken && securitySchemeType !== 'BASIC'
-            && securitySchemeType !== 'TEST' && selectedKMObject
-            && !selectedKMObject.enableTokenHashing && !(!user || (subscriptions && subscriptions.length === 0)
-            || (!ksGenerated && securitySchemeType === 'OAUTH'))
-        ) {
-            if (securitySchemeType === 'API-KEY') {
-                generateApiKey();
-            } else {
-                generateAccessToken();
-            }
-        }
-    }, [securitySchemeType, selectedKMObject, user, subscriptions, ksGenerated, selectedApplication]);
 
     /**
      *

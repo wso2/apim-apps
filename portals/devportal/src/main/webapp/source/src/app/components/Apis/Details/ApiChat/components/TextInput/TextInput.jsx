@@ -20,6 +20,7 @@ import React, { forwardRef } from 'react';
 import {
     Box,
     InputBase,
+    Typography,
 } from '@mui/material';
 import clsx from 'clsx';
 import { styled, alpha } from '@mui/material/styles';
@@ -32,9 +33,6 @@ const classes = {
     rootLarge: `${PREFIX}-rootLarge`,
     readOnlyDefault: `${PREFIX}-readOnlyDefault`,
     readOnlyPlain: `${PREFIX}-readOnlyPlain`,
-    multiline: `${PREFIX}-multiline`,
-    multilineReadonly: `${PREFIX}-multilineReadonly`,
-    multilineResizeIndicator: `${PREFIX}-multilineResizeIndicator`,
     rounded: `${PREFIX}-rounded`,
     focused: `${PREFIX}-focused`,
     error: `${PREFIX}-error`,
@@ -108,12 +106,6 @@ const Root = styled('div')(({ theme }) => ({
         backgroundColor: theme.palette.common.white,
         paddingLeft: 0,
         paddingRight: 0,
-    },
-    [`& .${classes.multiline}`]: {
-    },
-    [`& .${classes.multilineReadonly}`]: {
-    },
-    [`& .${classes.multilineResizeIndicator}`]: {
     },
     [`& .${classes.rounded}`]: {
         borderRadius: theme.spacing(2.5),
@@ -241,6 +233,13 @@ const TextInput = (
                         data-cyid={testId}
                     />
                 </Box>
+                {helperText && (
+                    <Box display='flex' alignItems='center' ml={1}>
+                        <Typography variant='body2' color='textSecondary' component='p'>
+                            {helperText}
+                        </Typography>
+                    </Box>
+                )}
             </Box>
         </Root>
     );
