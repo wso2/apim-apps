@@ -341,16 +341,18 @@ class ViewKeys extends React.Component {
                 const { status } = error;
                 if (status === 404) {
                     this.setState({ notFound: true });
+                } else if (error.response.body.code === 900905) {
+                    Alert.error(error.response.body.description);
                 } else if (status === 400) {
                     Alert.error(error.description
                         || intl.formatMessage({
                             id: 'Shared.AppsAndKeys.TokenManager.key.generate.bad.request.error',
                             defaultMessage: 'Error occurred when generating Access Token',
                         }));
-                }
+                } 
                 this.setState({ isUpdating: false });
                 const { response } = error;
-                if (response && response.body) {
+                if (response && response.body && error.response.body.code !== 900905) {
                     Alert.error(response.body.message);
                 }
             });
