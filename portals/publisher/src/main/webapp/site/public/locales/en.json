@@ -2721,12 +2721,6 @@
       "value": "File"
     }
   ],
-  "Apis.Details.Documents.CreateEditForm.source.file.name.error.invalid": [
-    {
-      "type": 0,
-      "value": "Document source file name cannot contain spaces or special characters"
-    }
-  ],
   "Apis.Details.Documents.CreateEditForm.source.inline": [
     {
       "type": 0,
@@ -3179,12 +3173,6 @@
       "value": "Endpoint security"
     }
   ],
-  "Apis.Details.Endpoints..EndpointOverview.MockImpl.type.change.proceed": [
-    {
-      "type": 0,
-      "value": "Proceed"
-    }
-  ],
   "Apis.Details.Endpoints..EndpointOverview.change.type.proceed": [
     {
       "type": 0,
@@ -3375,48 +3363,6 @@
     {
       "type": 0,
       "value": "TTP Protocol Violation"
-    }
-  ],
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.Inline": [
-    {
-      "type": 0,
-      "value": "Regular gateway (Synapse gateway)"
-    }
-  ],
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS": [
-    {
-      "type": 0,
-      "value": "Choreo Connect"
-    }
-  ],
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Option.MockedOAS.description": [
-    {
-      "type": 0,
-      "value": "If you want to add/update examples, update the API Definition"
-    }
-  ],
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.Options": [
-    {
-      "type": 0,
-      "value": "Select the gateway type"
-    }
-  ],
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.cancel": [
-    {
-      "type": 0,
-      "value": "Cancel"
-    }
-  ],
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation": [
-    {
-      "type": 0,
-      "value": "Change Mock implementation"
-    }
-  ],
-  "Apis.Details.Endpoints.EndpointOverview.MockImpl.type.change.confirmation.message": [
-    {
-      "type": 0,
-      "value": "Your current mock endpoint implementation scripts will be lost."
     }
   ],
   "Apis.Details.Endpoints.EndpointOverview.advance.endpoint.configuration": [
@@ -5757,30 +5703,6 @@
       "value": "View"
     }
   ],
-  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.cancel": [
-    {
-      "type": 0,
-      "value": "Cancel"
-    }
-  ],
-  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.content": [
-    {
-      "type": 0,
-      "value": "Changing the gateway type will remove all existing policies added to the API"
-    }
-  ],
-  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.proceed": [
-    {
-      "type": 0,
-      "value": "Proceed"
-    }
-  ],
-  "Apis.Details.Policies.GatewaySelector.change.gateway.confirm.title": [
-    {
-      "type": 0,
-      "value": "Change Gateway Type"
-    }
-  ],
   "Apis.Details.Policies.OperationPolicy.operation.used.in.products": [
     {
       "type": 0,
@@ -6109,12 +6031,6 @@
       "value": "Policy File(s)"
     }
   ],
-  "Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label": [
-    {
-      "type": 0,
-      "value": "Supported Gateways"
-    }
-  ],
   "Apis.Details.Policies.PolicyForm.SourceDetails.title": [
     {
       "type": 0,
@@ -6136,11 +6052,7 @@
   "Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.title": [
     {
       "type": 0,
-      "value": "Upload Policy File for "
-    },
-    {
-      "type": 1,
-      "value": "gateway"
+      "value": "Upload Policy File"
     }
   ],
   "Apis.Details.Policies.PolicyList.add.new.policy": [
