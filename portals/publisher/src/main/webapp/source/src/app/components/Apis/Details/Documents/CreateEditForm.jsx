@@ -220,10 +220,7 @@ class CreateEditForm extends React.Component {
         var specialChars = /[`!@#%^*()+\={};'"\\|,<>\/~]/;
         if (specialChars.test(acceptedFile[0].name)) {
             this.setState({ file: null });
-            Alert.error(intl.formatMessage({
-                id: 'Apis.Details.Documents.CreateEditForm.source.file.name.error.invalid',
-                defaultMessage: 'Document source file name cannot contain spaces or special characters',
-            }));
+            Alert.error('Document source file name cannot contain spaces or special characters');
         } else {
             this.setState({ file: acceptedFile });
         }

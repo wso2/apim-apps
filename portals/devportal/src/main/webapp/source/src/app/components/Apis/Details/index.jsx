@@ -64,7 +64,12 @@ const AsyncApiDefinition = lazy(() => import('./Definitions/AsyncApi/AsyncApiDef
 const ApiChat = lazy(() => import('./ApiChat/ApiChat' /* webpackChunkName: "ApiChat" */));
 
 const LoadableSwitch = withRouter((props) => {
-    const { match, api, setbreadcrumbDocument } = props;
+    const {
+        match,
+        api,
+        setbreadcrumbDocument,
+        apiChatEnabled,
+    } = props;
     const { apiUuid } = match.params;
     const path = '/apis/';
     const redirectURL = path + apiUuid + '/overview';
@@ -94,7 +99,9 @@ const LoadableSwitch = withRouter((props) => {
                 <Route path='/apis/:apiUuid/comments' component={Comments} />
                 <Route path='/apis/:apiUuid/credentials' component={Credentials} />
                 {tryoutRoute}
-                <Route path='/apis/:apiUuid/api-chat' component={ApiChat} />
+                {apiChatEnabled && (
+                    <Route path='/apis/:apiUuid/api-chat' component={ApiChat} />
+                )}
                 <Route path='/apis/:apiUuid/sdk' component={Sdk} />
                 <Route component={ResourceNotFound} />
             </Switch>
@@ -354,6 +361,7 @@ class DetailsLegacy extends React.Component {
             xo: null,
             breadcrumbDocument: '',
             tryOutExpanded: true,
+            apiChatEnabled: false,
         };
         this.setDetailsAPI = this.setDetailsAPI.bind(this);
         this.api_uuid = this.props.match.params.apiUuid;
@@ -367,6 +375,17 @@ class DetailsLegacy extends React.Component {
      */
     componentDidMount() {
         this.updateSubscriptionData();
+        const api = new Api();
+        const promisedSettings = api.getSettings();
+        promisedSettings
+            .then((response) => {
+                this.setState({ apiChatEnabled: response.body.apiChatEnabled });
+            }).catch((error) => {
+                console.error(
+                    'Error while receiving settings : ',
+                    error,
+                );
+            });
     }
 
     /**
@@ -445,7 +464,7 @@ class DetailsLegacy extends React.Component {
         } = this.props;
         const user = AuthManager.getUser();
         const {
-            api, notFound, open, breadcrumbDocument, tryOutExpanded,
+            api, notFound, open, breadcrumbDocument, tryOutExpanded, apiChatEnabled,
         } = this.state;
         const {
             custom: {
@@ -580,7 +599,7 @@ class DetailsLegacy extends React.Component {
                                                     open={open}
                                                     id='left-menu-test'
                                                 />
-                                                {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi && (
+                                                {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi && apiChatEnabled && (
                                                     <LeftMenuItem
                                                         text={(
                                                             <FormattedMessage
@@ -720,6 +739,7 @@ class DetailsLegacy extends React.Component {
                                 api={api}
                                 updateSubscriptionData={this.updateSubscriptionData}
                                 setbreadcrumbDocument={this.setbreadcrumbDocument}
+                                apiChatEnabled={apiChatEnabled}
                             />
                         </div>
                     </div>

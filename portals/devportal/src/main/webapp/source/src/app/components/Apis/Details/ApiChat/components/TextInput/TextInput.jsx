@@ -53,7 +53,7 @@ const Root = styled('div')(({ theme }) => ({
         width: '100%',
         minHeight: theme.spacing(5),
         backgroundColor: theme.palette.common.white,
-        border: `1px solid ${theme.palette.grey[100]}`,
+        border: `1px solid ${alpha(theme.palette.primary.main, 0.5)}`,
         boxShadow: `0 1px 2px -1px ${alpha(
             theme.palette.common.black,
             0.08,
@@ -83,7 +83,7 @@ const Root = styled('div')(({ theme }) => ({
             paddingLeft: theme.spacing(2),
         },
         '&:hover': {
-            borderColor: theme.palette.grey[100],
+            borderColor: `${alpha(theme.palette.primary.main, 0.5)}`,
         },
     },
     [`& .${classes.rootSmall}`]: {
@@ -125,9 +125,6 @@ const Root = styled('div')(({ theme }) => ({
             theme.palette.common.black,
             0.04,
         )} inset, 0 0 0 2px ${theme.palette.grey[100]}`,
-        '&:hover': {
-            borderColor: theme.palette.primary.light,
-        },
     },
     [`& .${classes.error}`]: {
         background: theme.palette.error.light,
@@ -153,8 +150,9 @@ const Root = styled('div')(({ theme }) => ({
         lineHeight: theme.typography.overline.lineHeight,
     },
     [`& .${classes.textInputDisabled}`]: {
+        borderColor: theme.palette.grey[300],
         '&:hover': {
-            borderColor: theme.palette.grey[100],
+            borderColor: theme.palette.grey[300],
         },
     },
     [`& .${classes.inputAdornedEnd}`]: {

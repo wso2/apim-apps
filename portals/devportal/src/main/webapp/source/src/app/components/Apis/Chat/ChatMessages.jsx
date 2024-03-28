@@ -23,7 +23,6 @@ import { FormattedMessage } from 'react-intl';
 import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Alert from '@mui/material/Alert';
-import { Link } from 'react-router-dom';
 import ChatIcon from '@mui/icons-material/Chat';
 import ChatInput from './ChatInput';
 import ChatMessage from './ChatMessage';
@@ -43,7 +42,7 @@ function ChatMessages(props) {
     const { settings: { aiAuthTokenProvided } } = useSettingsContext();
     const messagesEndRef = useRef(null);
 
-    const subjectLine = 'AI Assistant can make mistakes. Consider checking important information.';
+    const subjectLine = 'Marketplace Assistant can make mistakes. Consider checking important information.';
 
     const style = {
         width: '30px',
@@ -69,17 +68,18 @@ function ChatMessages(props) {
                 + 'follow the steps provided under {marketplaceAssistantDocLink} '}
             values={{
                 marketplaceAssistantDocLink: (
-                    <Link
-                        onClick={() => {
-                            window.location.href = 'https://apim.docs.wso2.com/en/latest/get-started/overview/';
-                        }}
+                    <a
+                        id='marketplace-assistant-doc-link'
+                        href='https://apim.docs.wso2.com/en/4.3.0/consume/discover-apis/marketplace-assistant/'
+                        target='_blank'
+                        rel='noopener noreferrer'
                     >
                         Search APIs with Marketplace Assistant
                         <LaunchIcon
                             style={{ marginLeft: '2px' }}
                             fontSize='small'
                         />
-                    </Link>
+                    </a>
                 ),
             }}
         />
@@ -102,7 +102,7 @@ function ChatMessages(props) {
                     width='100%'
                 >
                     {aiAuthTokenProvided ? (
-                        messages.map((message) => (
+                        messages && messages.map((message) => (
                             <Box my={1}>
                                 <ChatMessage message={message} user={user} />
                             </Box>
@@ -133,7 +133,7 @@ function ChatMessages(props) {
                                 borderRadius='10px'
                                 justifyContent='flex-start'
                                 px={3}
-                                marginLeft='12px'
+                                marginLeft='16px'
                                 marginBottom='10px'
                             >
                                 <Loader />

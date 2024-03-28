@@ -36,8 +36,9 @@ import CONSTS from 'AppData/Constants';
 import { ACTIONS } from './PolicyCreateForm';
 import UploadPolicyDropzone from './UploadPolicyDropzone';
 import ApiContext from '../../components/ApiContext';
+import { Link } from 'react-router-dom';
 
-const PREFIX = 'GATEWAY_TYPE_LABELS';
+const PREFIX = 'SourceDetails';
 
 const classes = {
     mandatoryStar: `${PREFIX}-mandatoryStar`,
@@ -55,11 +56,6 @@ const StyledBox = styled(Box)(({ theme }: { theme: Theme }) => ({
         flexDirection: 'row',
     }
 }));
-
-export const GATEWAY_TYPE_LABELS = {
-    SYNAPSE: 'Regular Gateway',
-    CC: 'Choreo Connect'
-}
 
 interface SourceDetailsProps {
     supportedGateways: string[];
@@ -166,13 +162,11 @@ const SourceDetails: FC<SourceDetailsProps> = ({
     const renderPolicyFileUpload = (
         policyFile: any[],
         setPolicyFile: React.Dispatch<React.SetStateAction<any[]>>,
-        gateway: string,
     ) => {
         return (
             <UploadPolicyDropzone
                 policyDefinitionFile={policyFile}
                 setPolicyDefinitionFile={setPolicyFile}
-                gateway={gateway}
             />
         );
     };
@@ -255,52 +249,6 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                 </Box>
             </Box>
             <Box width='60%'>
-                <Box display='flex' flexDirection='row' alignItems='center' data-testid='supported-gateways-form'>
-                    <Typography color='inherit' variant='body1' component='div'>
-                        <FormattedMessage
-                            id='Apis.Details.Policies.PolicyForm.SourceDetails.form.supported.gateways.label'
-                            defaultMessage='Supported Gateways'
-                        />
-                        <sup className={classes.mandatoryStar}>*</sup>
-                    </Typography>
-                    <Box
-                        flex='1'
-                        display='flex'
-                        flexDirection='row-reverse'
-                        justifyContent='space-around'
-                    >
-                        <FormControl
-                            required
-                            component='fieldset'
-                            variant='standard'
-                            margin='normal'
-                            error={supportedGatewaysError}
-                        >
-                            <FormGroup className={classes.formGroup}>
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            name='regularGateway'
-                                            color='primary'
-                                            checked={supportedGateways.includes(
-                                                CONSTS.GATEWAY_TYPE.synapse,
-                                            )}
-                                            onChange={handleChange}
-                                        />
-                                    }
-                                    label={GATEWAY_TYPE_LABELS.SYNAPSE}
-                                    data-testid='regular-gateway-label'
-                                />
-                            </FormGroup>
-                            <FormHelperText>
-                                {supportedGatewaysError
-                                    ? 'Please select Regular Gateways'
-                                    : ''}
-                            </FormHelperText>
-                        </FormControl>
-                    </Box>
-                </Box>
-
                 {/* Render dropzones for policy file uploads */}
                 {supportedGateways.includes(CONSTS.GATEWAY_TYPE.synapse) &&
                     !isViewMode &&
@@ -309,17 +257,6 @@ const SourceDetails: FC<SourceDetailsProps> = ({
                     renderPolicyFileUpload(
                         synapsePolicyDefinitionFile,
                         setSynapsePolicyDefinitionFile,
-                        GATEWAY_TYPE_LABELS.SYNAPSE,
-                        
-                    )}
-                {supportedGateways.includes(CONSTS.GATEWAY_TYPE.choreoConnect) &&
-                    !isViewMode &&
-                    ccPolicyDefinitionFile &&
-                    setCcPolicyDefinitionFile &&
-                    renderPolicyFileUpload(
-                        ccPolicyDefinitionFile,
-                        setCcPolicyDefinitionFile,
-                        GATEWAY_TYPE_LABELS.CC,
                     )}
 
                 {/* Render policy file download option in view mode */}

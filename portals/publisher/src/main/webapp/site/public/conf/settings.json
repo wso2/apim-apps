@@ -25,7 +25,12 @@
             "syntaxHighlighterProps": {
                 "showLineNumbers": false
             },
-            "syntaxHighlighterDarkTheme": false
+            "syntaxHighlighterDarkTheme": false,
+            "template": {
+                "howTo": "",
+                "sample": "",
+                "other": ""
+            }
         },
         "reactHTMLParser": {
           "decodeEntries": true,

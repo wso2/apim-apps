@@ -109,8 +109,8 @@ const APILanding = () => {
                 </Grid>
 
                 {settings && !settings.portalConfigurationOnlyModeEnabled && (
-                    <Grid item xs={12}>
-                        <Box pt={isXsOrBelow ? 2 : 7} pb={5} mx={isXsOrBelow ? 12 : 3}>
+                    <Grid item xs={12} md={2} lg={2} xl={2}>
+                        <Box pt={isXsOrBelow ? 2 : 7} pb={5} >
                             <Grid
                                 container
                                 direction='row'

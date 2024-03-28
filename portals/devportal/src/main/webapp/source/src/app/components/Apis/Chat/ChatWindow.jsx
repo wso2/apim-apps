@@ -16,9 +16,10 @@
  * under the License.
  */
 
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
+import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import {
     Container, Box,
 } from '@mui/material';
@@ -35,17 +36,14 @@ import Header from './Header';
  */
 function ChatWindow(props) {
     const {
-        toggleChatbot, toggleClearChatbot, messages, setMessages, introMessage, user,
+        toggleChatbot, toggleClearChatbot, messages, setMessages, introMessage, user, loading, responseRef, apiCall,
     } = props;
 
-    const [loading, setLoading] = useState(false);
     const [isClicked, setIsClicked] = useState(false);
     const [apiLimitExceeded, setApiLimitExceeded] = useState(false);
     const [apisCount, setApisCount] = useState(0);
-    const responseRef = useRef([]);
 
-    const pathName = window.location.pathname;
-    const { search, origin } = window.location;
+    const { settings: { marketplaceAssistantEnabled, aiAuthTokenProvided } } = useSettingsContext();
 
     const [, setWindowSize] = useState({
         width: window.innerWidth,
@@ -55,50 +53,6 @@ function ChatWindow(props) {
     const toggleFullScreen = (e) => {
         e.preventDefault();
         setIsClicked(!isClicked);
-    };
-
-    const apiCall = (query) => {
-        setLoading(true);
-
-        const restApi = new Api();
-        const messagesWithoutApis = messages.slice(-10).map(({ apis, ...message }) => message);
-
-        restApi.marketplaceAssistantExecute(query, messagesWithoutApis)
-            .then((result) => {
-                const { apis } = result.body;
-
-                const apiPaths = apis.map((api) => {
-                    return { apiPath: `${origin}${pathName}/${api.apiId}/overview${search}`, name: api.apiName };
-                });
-                responseRef.current = [...responseRef.current, { role: 'assistant', content: result.body.response, apis: apiPaths }];
-                setMessages(responseRef.current);
-                return result.body;
-            }).catch((error) => {
-                let content;
-                try {
-                    switch (error.response.status) {
-                        case 401: // Unauthorized
-                            content = 'Unauthorized access. Please login to continue.';
-                            break;
-                        case 429: // Token limit exceeded
-                            content = 'Token Limit is exceeded. Please try again later.';
-                            break;
-                        default:
-                            content = 'Something went wrong. Please try again later.';
-                            break;
-                    }
-                } catch (err) {
-                    content = 'Something went wrong. Please try again later.';
-                }
-
-                const errorMessage = { role: 'assistant', content };
-                responseRef.current = [...responseRef.current, errorMessage];
-                setMessages(responseRef.current);
-
-                throw error;
-            }).finally(() => {
-                setLoading(false);
-            });
     };
 
     const handleClear = () => {
@@ -119,21 +73,23 @@ function ChatWindow(props) {
 
     useEffect(() => {
         responseRef.current = messages;
-        const restApi = new Api();
 
-        restApi
-            .getMarketplaceAssistantApiCount()
-            .then((data) => {
-                const apiCount = data.body.count;
-                const apiLimit = data.body.limit;
-                setApisCount(apiCount);
-                if (apiCount >= apiLimit) {
-                    setApiLimitExceeded(true);
-                }
-            })
-            .catch((error) => {
-                console.error(error);
-            });
+        if (marketplaceAssistantEnabled && aiAuthTokenProvided) {
+            const restApi = new Api();
+            restApi
+                .getMarketplaceAssistantApiCount()
+                .then((data) => {
+                    const apiCount = data.body.count;
+                    const apiLimit = data.body.limit;
+                    setApisCount(apiCount);
+                    if (apiCount >= apiLimit) {
+                        setApiLimitExceeded(true);
+                    }
+                })
+                .catch((error) => {
+                    console.error(error);
+                });
+        }
     }, []);
 
     useEffect(() => {
@@ -203,14 +159,17 @@ function ChatWindow(props) {
                         handleReset={handleReset}
                         isClicked={isClicked}
                     />
-                    {apiLimitExceeded ? (
-                        <Alert severity='warning' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
-                            You have reached your maximum number of apis. The answers will be limited to the first 1000 apis.
-                        </Alert>
-                    ) : (
-                        <Alert severity='info' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
-                            {`The Assistant is using ${apisCount} apis to provide answers.`}
-                        </Alert>
+                    {/* Alert to show API count info */}
+                    {marketplaceAssistantEnabled && aiAuthTokenProvided && (
+                        apiLimitExceeded ? (
+                            <Alert severity='warning' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
+                                You have reached your maximum number of apis. The answers will be limited to the first 1000 apis.
+                            </Alert>
+                        ) : (
+                            <Alert severity='info' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
+                                {`The Assistant is using ${apisCount} apis to provide answers.`}
+                            </Alert>
+                        )
                     )}
 
                     <Box
@@ -244,5 +203,13 @@ ChatWindow.propTypes = {
         content: PropTypes.string.isRequired,
     }).isRequired,
     user: PropTypes.string.isRequired,
+    loading: PropTypes.bool.isRequired,
+    responseRef: PropTypes.shape({
+        current: PropTypes.arrayOf(PropTypes.shape({
+            role: PropTypes.string.isRequired,
+            content: PropTypes.string.isRequired,
+        })).isRequired,
+    }).isRequired,
+    apiCall: PropTypes.func.isRequired,
 };
 export default ChatWindow;

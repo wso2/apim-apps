@@ -265,7 +265,6 @@ function View(props) {
             {doc.sourceType === 'FILE' && (
                 <Button
                     variant='contained'
-                    color='grey'
                     className={classes.button}
                     disabled={!isFileAvailable}
                     onClick={handleDownload}

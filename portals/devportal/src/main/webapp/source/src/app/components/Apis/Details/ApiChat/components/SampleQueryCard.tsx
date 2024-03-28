@@ -123,7 +123,7 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
                                         }}
                                     >
                                         {intl.formatMessage({
-                                            id: 'modules.testComponent.TryWithAIViewer.TryWithAIViews.SampleQueryCard.executeButton',
+                                            id: 'Apis.Details.ApiChat.components.SampleQueryCard.executeButton',
                                             defaultMessage: 'Execute',
                                         })}
                                     </Button>

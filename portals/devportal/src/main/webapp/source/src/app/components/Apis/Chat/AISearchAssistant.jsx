@@ -16,11 +16,12 @@
  * under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Box } from '@mui/material';
 import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import Settings from 'Settings';
 import User from 'AppData/User';
+import Api from 'AppData/api';
 import Utils from 'AppData/Utils';
 import ChatBotIcon from './ChatIcon';
 import ChatWindow from './ChatWindow';
@@ -31,18 +32,23 @@ import ChatWindow from './ChatWindow';
  * @returns {JSX} renders Chat Icon view.
  */
 function AISearchAssistant() {
-    const { settings: { marketplaceAssistantEnabled } } = useSettingsContext();
+    const { settings: { marketplaceAssistantEnabled, aiAuthTokenProvided } } = useSettingsContext();
 
     const [showChatbot, setShowChatbot] = useState(true);
-    const [messages, setMessages] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [messages, setMessages] = useState(null);
     const [chatbotDisabled, setChatbotDisabled] = useState(!marketplaceAssistantEnabled);
     const [user, setUser] = useState('You');
+    const responseRef = useRef([]);
 
     const introMessage = {
         role: 'assistant',
         content: 'Hi there! I\'m Marketplace Assistant. I can help you with finding APIs '
             + 'and providing information related to APIs. How can I help you?',
     };
+
+    const pathName = window.location.pathname;
+    const { search, origin } = window.location;
 
     const getUser = (environmentName = Utils.getCurrentEnvironment().label) => {
         const userData = localStorage.getItem(`${User.CONST.LOCALSTORAGE_USER}_${environmentName}`);
@@ -59,14 +65,58 @@ function AISearchAssistant() {
             return null;
         }
 
-        return User.fromJson(JSON.parse(userData), environmentName);
+        const { name } = User.fromJson(JSON.parse(userData), environmentName);
+        if (name) {
+            setUser(name);
+        }
+        return null;
     };
 
-    useEffect(() => {
-        const messagesJSON = localStorage.getItem('messages');
-        const loadedMessages = JSON.parse(messagesJSON);
-        setMessages(loadedMessages);
-    }, []);
+    const apiCall = (query) => {
+        setLoading(true);
+
+        if (marketplaceAssistantEnabled && aiAuthTokenProvided) {
+            const restApi = new Api();
+            const messagesWithoutApis = messages.slice(-10).map(({ apis, ...message }) => message);
+
+            restApi.marketplaceAssistantExecute(query, messagesWithoutApis)
+                .then((result) => {
+                    const { apis } = result.body;
+
+                    const apiPaths = apis.map((api) => {
+                        return { apiPath: `${origin}${pathName}/${api.apiId}/overview${search}`, name: api.apiName };
+                    });
+                    responseRef.current = [...responseRef.current, { role: 'assistant', content: result.body.response, apis: apiPaths }];
+                    setMessages(responseRef.current);
+                    return result.body;
+                }).catch((error) => {
+                    let content;
+                    try {
+                        switch (error.response.status) {
+                            case 401: // Unauthorized
+                                content = 'Unauthorized access. Please login to continue.';
+                                break;
+                            case 429: // Token limit exceeded
+                                content = 'Token Limit is exceeded. Please try again later.';
+                                break;
+                            default:
+                                content = 'Something went wrong. Please try again later.';
+                                break;
+                        }
+                    } catch (err) {
+                        content = 'Something went wrong. Please try again later.';
+                    }
+
+                    const errorMessage = { role: 'assistant', content };
+                    responseRef.current = [...responseRef.current, errorMessage];
+                    setMessages(responseRef.current);
+
+                    throw error;
+                }).finally(() => {
+                    setLoading(false);
+                });
+        }
+    };
 
     const toggleChatbot = () => {
         setShowChatbot(!showChatbot);
@@ -78,14 +128,15 @@ function AISearchAssistant() {
     };
 
     useEffect(() => {
-        const messagesJSON = JSON.stringify(messages);
-        localStorage.setItem('messages', messagesJSON);
+        if (messages) {
+            const messagesJSON = JSON.stringify(messages);
+            localStorage.setItem('messages', messagesJSON);
+        }
     }, [messages]);
 
     useEffect(() => {
         try {
-            const { name } = getUser();
-            setUser(name);
+            getUser();
             const messagesJSON = localStorage.getItem('messages');
             const loadedMessages = JSON.parse(messagesJSON);
             if (loadedMessages) {
@@ -117,6 +168,9 @@ function AISearchAssistant() {
                         setMessages={setMessages}
                         introMessage={introMessage}
                         user={user}
+                        loading={loading}
+                        responseRef={responseRef}
+                        apiCall={apiCall}
                     />
                 )
             )}
