@@ -20,8 +20,11 @@ import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import {
-    TextField, Snackbar,
+    TextField, Snackbar, Typography, Box,
 } from '@mui/material';
+import IconButton from '@mui/material/IconButton';
+import SendIcon from '@mui/icons-material/Send';
+import InputAdornment from '@mui/material/InputAdornment';
 
 /**
  * Renders Chat Input view..
@@ -32,25 +35,23 @@ function ChatInput(props) {
     const { onSend } = props;
     const [content, setContent] = useState('');
     const [notificationOpen, setNotificationOpen] = useState(false);
+    const QUERY_CHARACTER_LIMIT = 500;
 
     const { settings: { marketplaceAssistantEnabled, aiAuthTokenProvided } } = useSettingsContext();
 
     const handleChange = (e) => {
-        const { value } = e.target;
-        if (value.length > 4000) {
-            setNotificationOpen(true);
-            return;
+        let { value } = e.target;
+        if (value.length > QUERY_CHARACTER_LIMIT) {
+            value = value.slice(0, QUERY_CHARACTER_LIMIT);
         }
         setContent(value);
     };
 
     const handleSend = () => {
-        if (!content) {
-            setNotificationOpen(true);
-            return;
+        if (content) {
+            onSend({ role: 'user', content });
+            setContent('');
         }
-        onSend({ role: 'user', content });
-        setContent('');
     };
 
     const handleKeyDown = (e) => {
@@ -82,10 +83,27 @@ function ChatInput(props) {
                 disabled={(marketplaceAssistantEnabled && !aiAuthTokenProvided) || !marketplaceAssistantEnabled}
                 InputProps={{
                     style: {
-                        borderRadius: 10, padding: 18,
+                        borderRadius: 10, padding: 18, paddingRight: 4,
                     },
+                    endAdornment: (
+                        <InputAdornment position='end'>
+                            <IconButton
+                                aria-label='marketplace-chat-message'
+                                onClick={handleSend}
+                            >
+                                <SendIcon color='primary' />
+                            </IconButton>
+                        </InputAdornment>
+                    ),
                 }}
             />
+            <Box display='flex' justifyContent='flex-end' mt={1} mr={1}>
+                <Typography variant='caption'>
+                    {content.length}
+                    /
+                    {QUERY_CHARACTER_LIMIT}
+                </Typography>
+            </Box>
             <Snackbar
                 anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
                 open={notificationOpen}
