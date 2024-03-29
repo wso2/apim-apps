@@ -1257,9 +1257,6 @@
   "Apis.Details.Documents.CreateEditForm.source.file": {
     "defaultMessage": "File"
   },
-  "Apis.Details.Documents.CreateEditForm.source.file.name.error.invalid": {
-    "defaultMessage": "Document source file name cannot contain spaces or special characters"
-  },
   "Apis.Details.Documents.CreateEditForm.source.inline": {
     "defaultMessage": "Inline"
   },
