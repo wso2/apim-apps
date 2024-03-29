@@ -172,7 +172,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                                 </Button>
                             )}
                             inputProps={{
-                                maxLength: QUERY_CHARACTER_LIMIT
+                                maxLength: QUERY_CHARACTER_LIMIT,
                             }}
                         />
                         <Box display='flex' justifyContent='flex-end' mt={1} mr={2}>

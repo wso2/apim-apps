@@ -39,7 +39,6 @@ const Root = styled('div')(({ theme }: any) => ({
         display: 'flex',
         gridGap: theme.spacing(1.5),
         maxWidth: theme.spacing(85),
-        // marginBottom: theme.spacing(25),
     },
     [`& .${classes.tryAiBannerImgWrap}`]: {
         flex: `0 0 ${theme.spacing(15)}px`,
