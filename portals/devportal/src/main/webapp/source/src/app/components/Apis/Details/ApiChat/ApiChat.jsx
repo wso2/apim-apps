@@ -657,11 +657,13 @@ const ApiChat = () => {
     };
 
     const handleExecute = async () => {
-        abortControllerRef.current = new AbortController();
-        const query = inputQuery;
-        setInputQuery('');
-        setLastQuery(inputQuery);
-        sendInitialRequest(query);
+        if (inputQuery.length !== 0) {
+            abortControllerRef.current = new AbortController();
+            const query = inputQuery;
+            setInputQuery('');
+            setLastQuery(inputQuery);
+            sendInitialRequest(query);
+        }
     };
 
     const handleExecuteSampleQuery = async (query) => {
