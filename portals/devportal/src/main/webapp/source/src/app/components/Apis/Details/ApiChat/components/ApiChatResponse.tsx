@@ -32,7 +32,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
-import { styled } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 import { CircularProgress, Typography } from '@mui/material';
 import Utils from 'AppData/Utils';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
@@ -84,7 +84,7 @@ const Root = styled('div')(({ theme }) => ({
         position: 'relative',
     },
     [`& .${classes.queryBannerContent}`]: {
-        background: theme.palette.grey[100],
+        background: `${alpha(theme.palette.primary.main, 0.1)}`,
         padding: theme.spacing(2),
         borderRadius: theme.spacing(2, 0, 2, 2),
         position: 'relative',
