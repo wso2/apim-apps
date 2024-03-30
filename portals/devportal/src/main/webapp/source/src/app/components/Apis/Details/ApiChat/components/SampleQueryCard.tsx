@@ -27,7 +27,7 @@ import Typography from '@mui/material/Typography';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { styled } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 
 const PREFIX = 'SampleQueryCard';
 
@@ -36,7 +36,7 @@ const classes = {
     sampleQueryCard: `${PREFIX}-SampleQueryCard`,
 };
 
-const Root = styled('div')(() => ({
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.sampleQuery}`]: {
         maxHeight: '25px',
         overflow: 'hidden',
@@ -44,11 +44,9 @@ const Root = styled('div')(() => ({
         whiteSpace: 'nowrap',
     },
     [`& .${classes.sampleQueryCard}`]: {
-        // transition: 'border-color 0.3s',
         '&:hover': {
-            borderColor: '#006e9c',
-            borderWidth: '1px',
-            borderStyle: 'solid',
+            backgroundColor: 'transparent',
+            border: `1px solid ${alpha(theme.palette.primary.main, 0.5)}`,
         },
     },
 }));
@@ -135,7 +133,6 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
                                         <IconButton
                                             id='sample-query-copy'
                                             size='small'
-                                            color='secondary'
                                             onClick={(e: any) => {
                                                 handleCopyClick(queryData.query);
                                                 e.stopPropagation();

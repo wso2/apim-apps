@@ -50,10 +50,11 @@ const classes = {
 
 const Root = styled('div')(({ theme }) => ({
     [`& .${classes.tryWithAiMain}`]: {
-        height: '100%',
         display: 'flex',
         flexDirection: 'column',
-        padding: theme.spacing(1),
+        minHeight: '85vh',
+        marginRight: theme.spacing(6),
+        marginLeft: theme.spacing(2),
     },
 }));
 
@@ -662,124 +663,135 @@ const ApiChat = () => {
 
     return (
         <Root>
-            <Box className={classes.tryWithAiMain} sx={{ mr: 5 }}>
-                {apiChatEnabled && aiAuthTokenProvided && (
-                    <ConfigureKeyDrawer
-                        isDrawerOpen={configureKeyDrawerOpen}
-                        updateDrawerOpen={setConfigureKeyDrawerOpen}
-                        onConfigChange={handleConfigChange}
+            <Box className={classes.tryWithAiMain}>
+                <Box sx={{ flexGrow: 1 }}>
+                    {apiChatEnabled && aiAuthTokenProvided && (
+                        <ConfigureKeyDrawer
+                            isDrawerOpen={configureKeyDrawerOpen}
+                            updateDrawerOpen={setConfigureKeyDrawerOpen}
+                            onConfigChange={handleConfigChange}
+                        />
+                    )}
+                    <ApiChatPoweredBy
+                        openConfigureKey={handleOpenConfigureKey}
+                        goBack={handleGoBack}
+                        disableGoBack={isAgentRunning || lastQuery === ''}
+                        disableConfigureKey={!apiChatEnabled || !aiAuthTokenProvided || specEnrichmentError}
                     />
-                )}
-                <ApiChatPoweredBy
-                    openConfigureKey={handleOpenConfigureKey}
-                    goBack={handleGoBack}
-                    disableGoBack={isAgentRunning || lastQuery === ''}
-                    disableConfigureKey={!apiChatEnabled || !aiAuthTokenProvided || specEnrichmentError}
-                />
-                {(isAgentRunning || lastQuery || finalOutcome) && (
-                    <ApiChatResponse
-                        lastQuery={lastQuery}
-                        executionResults={executionResults}
-                        finalOutcome={finalOutcome}
-                        isAgentRunning={isAgentRunning}
-                        isAgentTerminating={isAgentTerminating}
-                        isExecutionErro={isExecutionError}
-                    />
-                )}
-                {!lastQuery && (
-                    <ApiChatBanner />
-                )}
-                {!isAgentRunning && !lastQuery && !finalOutcome && sampleQueries && sampleQueries.length > 0 && (
-                    <Box display='flex' ml={3}>
-                        <Grid container direction='row' spacing={3}>
-                            {sampleQueries && sampleQueries.map((queryData) => {
-                                const gridVal = sampleQueries.length === 2 ? 6 : 4;
-                                return (
-                                    <Grid
-                                        key={queryData.scenario}
-                                        item
-                                        xs={12}
-                                        md={gridVal}
-                                    >
-                                        <SampleQueryCard
-                                            onExecuteClick={handleExecuteSampleQuery}
-                                            disabled={
-                                                !apiChatEnabled
-                                                || !aiAuthTokenProvided
-                                                || !securityScheme
-                                                || !(securityScheme && (accessToken || password))
-                                            }
-                                            queryData={queryData}
-                                            onCopyClick={handleCopyClick}
-                                        />
-                                    </Grid>
-                                );
-                            })}
-                        </Grid>
-                    </Box>
-                )}
-                <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
-                    {/* Handle prepare call executing scenario */}
-                    {isEnrichingSpec && (
-                        <Box display='flex' justifyContent='center'>
-                            <CircularProgress size={20} />
-                            <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
-                                <FormattedMessage
-                                    id='Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage'
-                                    defaultMessage='We are in the process of preparing the API specification
-                            for API Chat.'
-                                />
-                            </Typography>
+                    {(isAgentRunning || lastQuery || finalOutcome) && (
+                        <ApiChatResponse
+                            lastQuery={lastQuery}
+                            executionResults={executionResults}
+                            finalOutcome={finalOutcome}
+                            isAgentRunning={isAgentRunning}
+                            isAgentTerminating={isAgentTerminating}
+                            isExecutionErro={isExecutionError}
+                        />
+                    )}
+                    {!lastQuery && (
+                        <ApiChatBanner />
+                    )}
+                    {!isAgentRunning && !lastQuery && !finalOutcome && sampleQueries && sampleQueries.length > 0 && (
+                        <Box display='flex' ml={3} mt={3}>
+                            <Grid container direction='row' spacing={3}>
+                                {sampleQueries && sampleQueries.map((queryData) => {
+                                    const gridVal = sampleQueries.length === 2 ? 6 : 4;
+                                    return (
+                                        <Grid
+                                            key={queryData.scenario}
+                                            item
+                                            xs={12}
+                                            md={gridVal}
+                                        >
+                                            <SampleQueryCard
+                                                onExecuteClick={handleExecuteSampleQuery}
+                                                disabled={
+                                                    !apiChatEnabled
+                                            || !aiAuthTokenProvided
+                                            || !securityScheme
+                                            || !(securityScheme && (accessToken || password))
+                                                }
+                                                queryData={queryData}
+                                                onCopyClick={handleCopyClick}
+                                            />
+                                        </Grid>
+                                    );
+                                })}
+                            </Grid>
                         </Box>
                     )}
-                    {/* Handle prepare call failed scenario */}
-                    {specEnrichmentError && specEnrichmentErrorLevel && (
-                        <Alert severity={specEnrichmentErrorLevel}>
-                            {specEnrichmentError}
-                        </Alert>
-                    )}
-                    {/* Handle auth token not provided scenario */}
-                    {!aiAuthTokenProvided && (
-                        <Alert severity='warning'>
-                            {authTokenNotProvidedWarning}
-                        </Alert>
-                    )}
-                    {/* Hanlde not logged in scenario */}
-                    {!user && (
-                        <Alert severity='info'>
-                            <FormattedMessage
-                                id='Apis.Details.ApiChat.warning.notSignedIn'
-                                defaultMessage='You must sign in to use the API Chat.'
-                            />
-                        </Alert>
-                    )}
                 </Box>
-                <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
-                    {(!securityScheme || !(securityScheme && (accessToken || password)))
-                    && aiAuthTokenProvided && user && !specEnrichmentError && !isEnrichingSpec && (
-                        <Alert severity='warning'>
-                            {apiAccessTokenNotFoundWarning}
-                        </Alert>
-                    )}
-                </Box>
-                <Box sx={{ ml: 7, mr: 7 }}>
-                    <ApiChatExecute
-                        isAgentRunning={isAgentRunning}
-                        isAgentTerminating={isAgentTerminating}
-                        lastQuery={lastQuery}
-                        handleStopAndReExecute={handleStopAndReExecute}
-                        inputQuery={inputQuery}
-                        handleQueryChange={handleQueryChange}
-                        isEnrichingSpec={isEnrichingSpec}
-                        specEnrichmentError={specEnrichmentError}
-                        handleExecute={handleExecute}
-                        isExecuteDisabled={
-                            !apiChatEnabled
+                <Box>
+                    <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
+                        {/* Handle prepare call executing scenario */}
+                        {isEnrichingSpec && (
+                            <Box display='flex' justifyContent='center'>
+                                <CircularProgress size={20} />
+                                <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage'
+                                        defaultMessage='We are in the process of preparing the API specification for API Chat.'
+                                    />
+                                </Typography>
+                            </Box>
+                        )}
+                        {/* Handle prepare call failed scenario */}
+                        {specEnrichmentError && specEnrichmentErrorLevel && (
+                            <Alert severity={specEnrichmentErrorLevel}>
+                                <Typography variant='body1'>
+                                    {specEnrichmentError}
+                                </Typography>
+                            </Alert>
+                        )}
+                        {/* Handle auth token not provided scenario */}
+                        {!aiAuthTokenProvided && (
+                            <Alert severity='warning'>
+                                <Typography variant='body1'>
+                                    {authTokenNotProvidedWarning}
+                                </Typography>
+                            </Alert>
+                        )}
+                        {/* Handle not logged in scenario */}
+                        {!user && (
+                            <Alert severity='info'>
+                                <Typography variant='body1'>
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiChat.warning.notSignedIn'
+                                        defaultMessage='You must sign in if you wish to interact with API Chat bot.'
+                                    />
+                                </Typography>
+                            </Alert>
+                        )}
+                    </Box>
+                    <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
+                        {(!securityScheme || !(securityScheme && (accessToken || password)))
+                        && aiAuthTokenProvided && user && !specEnrichmentError && !isEnrichingSpec && (
+                            <Alert severity='warning'>
+                                <Typography variant='body1'>
+                                    {apiAccessTokenNotFoundWarning}
+                                </Typography>
+                            </Alert>
+                        )}
+                    </Box>
+                    <Box sx={{ ml: 7, mr: 7 }}>
+                        <ApiChatExecute
+                            isAgentRunning={isAgentRunning}
+                            isAgentTerminating={isAgentTerminating}
+                            lastQuery={lastQuery}
+                            handleStopAndReExecute={handleStopAndReExecute}
+                            inputQuery={inputQuery}
+                            handleQueryChange={handleQueryChange}
+                            isEnrichingSpec={isEnrichingSpec}
+                            specEnrichmentError={specEnrichmentError}
+                            handleExecute={handleExecute}
+                            isExecuteDisabled={
+                                !apiChatEnabled
                             || !aiAuthTokenProvided
                             || !securityScheme
                             || !(securityScheme && (accessToken || password))
-                        }
-                    />
+                            }
+                        />
+                    </Box>
                 </Box>
             </Box>
         </Root>

@@ -225,11 +225,21 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                 );
                             })}
                             {!isAgentRunning && lastQuery && finalOutcome && !isExecutionError && (
-                                <Box display='flex' justifyContent='center' className={classes.finalOutcomeContent}>
-                                    <Typography variant='body1'>
-                                        {finalOutcome}
-                                    </Typography>
-                                </Box>
+                                <>
+                                    {executionResults.length === 0 ? (
+                                        <Box display='flex'>
+                                            <Typography variant='body1'>
+                                                {finalOutcome}
+                                            </Typography>
+                                        </Box>
+                                    ) : (
+                                        <Box display='flex' justifyContent='center' className={classes.finalOutcomeContent}>
+                                            <Typography variant='body1'>
+                                                {finalOutcome}
+                                            </Typography>
+                                        </Box>
+                                    )}
+                                </>
                             )}
                             {lastQuery && !finalOutcome && (
                                 <>
