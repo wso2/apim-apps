@@ -266,6 +266,15 @@ const ApiChat = () => {
         }
     };
 
+    const setTokenInvalidErrorMessage = () => {
+        setSpecEnrichmentError(
+            intl.formatMessage({
+                id: 'Apis.Details.ApiChat.components.onPremKeyInvalid.vaidationError',
+                defaultMessage: 'The provided token is invalid. Please provide a valid token to start testing.',
+            }),
+        );
+    };
+
     useEffect(() => {
         if (abortControllerRef.current.signal.aborted) {
             setIsAgentTerminating(true);
@@ -302,6 +311,12 @@ const ApiChat = () => {
                     }
                 }).catch((error) => {
                     setIsEnrichingSpec(false);
+                    // Hanlde on-prem key vaidation failed scenario
+                    if (error?.response?.text.includes('invalid key')) {
+                        setTokenInvalidErrorMessage();
+                        setSpecEnrichmentErrorLevel('error');
+                        return;
+                    }
                     setEnrichmentError(
                         error?.response?.body?.code,
                     );
