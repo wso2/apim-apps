@@ -17,9 +17,10 @@
  */
 
 import React, { useEffect, useContext, useState } from 'react';
+import { PropTypes } from 'prop-types';
 import Drawer from '@mui/material/Drawer';
 import {
-    Box, Grid, Paper, Typography,
+    Box, Grid, Paper, Typography, Button,
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
 import InfoIcon from '@mui/icons-material/Info';
@@ -30,7 +31,6 @@ import TryOutController from 'AppComponents/Shared/ApiTryOut/TryOutController';
 import Application from 'AppData/Application';
 import IconButton from '@mui/material/IconButton';
 import { Close } from '@mui/icons-material';
-// import Api from 'AppData/api';
 
 const ConfigureKeyDrawer = ({
     isDrawerOpen,
@@ -126,7 +126,7 @@ const ConfigureKeyDrawer = ({
                 })
                 .then((appKeys) => {
                     if (appKeys.get(selectedKeyManager)
-                    && appKeys.get(selectedKeyManager).keyType === selectedKeyType) {
+                        && appKeys.get(selectedKeyManager).keyType === selectedKeyType) {
                         ({ accessToken } = appKeys.get(selectedKeyManager).token);
                     }
                     if (appKeys.get(selectedKeyManager).keyType === 'PRODUCTION') {
@@ -193,8 +193,8 @@ const ConfigureKeyDrawer = ({
                                     <FormattedMessage
                                         id='api.console.require.access.token'
                                         defaultMessage={'You need an access token to try the API. Please log '
-                                        + 'in and subscribe to the API to generate an access token. If you already '
-                                        + 'have an access token, please provide it below.'}
+                                            + 'in and subscribe to the API to generate an access token. If you already '
+                                            + 'have an access token, please provide it below.'}
                                     />
                                 </Typography>
                             </Paper>
@@ -238,10 +238,46 @@ const ConfigureKeyDrawer = ({
                             onConfigChange={onConfigChange}
                         />
                     </Grid>
+                    <Grid container justifyContent='right' pr={2}>
+                        <Button
+                            variant='outlined'
+                            type='submit'
+                            color='primary'
+                            data-testid='key-details-cancel'
+                            onClick={() => updateDrawerOpen(false)}
+                            sx={{
+                                marginRight: '1em',
+                            }}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.ApiChat.components.ConfigureKeyDrawer.cancel'
+                                defaultMessage='Cancel'
+                            />
+                        </Button>
+                        <Button
+                            variant='contained'
+                            type='submit'
+                            color='primary'
+                            data-testid='key-details-save'
+                            onClick={() => updateDrawerOpen(false)}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.ApiChat.components.ConfigureKeyDrawer.done'
+                                defaultMessage='Done'
+                            />
+                        </Button>
+                    </Grid>
                 </Box>
             </Drawer>
         </>
     );
+};
+
+ConfigureKeyDrawer.propTypes = {
+    isDrawerOpen: PropTypes.bool.isRequired,
+    updateDrawerOpen: PropTypes.func.isRequired,
+    setTestAccessToken: PropTypes.func.isRequired,
+    onConfigChange: PropTypes.func.isRequired,
 };
 
 export default ConfigureKeyDrawer;

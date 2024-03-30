@@ -675,7 +675,7 @@ const ApiChat = () => {
                     <ApiChatBanner />
                 )}
                 {!isAgentRunning && !lastQuery && !finalOutcome && sampleQueries && sampleQueries.length > 0 && (
-                    <Box display='flex' margin={5}>
+                    <Box display='flex' ml={3}>
                         <Grid container direction='row' spacing={3}>
                             {sampleQueries && sampleQueries.map((queryData) => {
                                 const gridVal = sampleQueries.length === 2 ? 6 : 4;
@@ -747,23 +747,25 @@ const ApiChat = () => {
                         </Alert>
                     )}
                 </Box>
-                <ApiChatExecute
-                    isAgentRunning={isAgentRunning}
-                    isAgentTerminating={isAgentTerminating}
-                    lastQuery={lastQuery}
-                    handleStopAndReExecute={handleStopAndReExecute}
-                    inputQuery={inputQuery}
-                    handleQueryChange={handleQueryChange}
-                    isEnrichingSpec={isEnrichingSpec}
-                    specEnrichmentError={specEnrichmentError}
-                    handleExecute={handleExecute}
-                    isExecuteDisabled={
-                        !apiChatEnabled
-                        || !aiAuthTokenProvided
-                        || !securityScheme
-                        || !(securityScheme && (accessToken || password))
-                    }
-                />
+                <Box sx={{ ml: 7, mr: 7 }}>
+                    <ApiChatExecute
+                        isAgentRunning={isAgentRunning}
+                        isAgentTerminating={isAgentTerminating}
+                        lastQuery={lastQuery}
+                        handleStopAndReExecute={handleStopAndReExecute}
+                        inputQuery={inputQuery}
+                        handleQueryChange={handleQueryChange}
+                        isEnrichingSpec={isEnrichingSpec}
+                        specEnrichmentError={specEnrichmentError}
+                        handleExecute={handleExecute}
+                        isExecuteDisabled={
+                            !apiChatEnabled
+                            || !aiAuthTokenProvided
+                            || !securityScheme
+                            || !(securityScheme && (accessToken || password))
+                        }
+                    />
+                </Box>
             </Box>
         </Root>
     );
