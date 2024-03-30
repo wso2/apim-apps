@@ -19,8 +19,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Box } from '@mui/material';
 import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
-import Settings from 'Settings';
-import User from 'AppData/User';
 import Api from 'AppData/api';
 import Utils from 'AppData/Utils';
 import ChatBotIcon from './ChatIcon';
@@ -49,28 +47,6 @@ function AISearchAssistant() {
 
     const pathName = window.location.pathname;
     const { search, origin } = window.location;
-
-    const getUser = (environmentName = Utils.getCurrentEnvironment().label) => {
-        const userData = localStorage.getItem(`${User.CONST.LOCALSTORAGE_USER}_${environmentName}`);
-        const partialToken = Utils.getCookie(User.CONST.WSO2_AM_TOKEN_1, environmentName);
-        const refreshToken = Utils.getCookie(User.CONST.WSO2_AM_REFRESH_TOKEN_1, environmentName);
-
-        const isLoginCookie = Utils.getCookie('IS_LOGIN', 'DEFAULT');
-        if (isLoginCookie) {
-            Utils.deleteCookie('IS_LOGIN', Settings.app.context, 'DEFAULT');
-            localStorage.removeItem(`${User.CONST.LOCALSTORAGE_USER}_${environmentName}`);
-            return null;
-        }
-        if (!(userData && (partialToken || refreshToken))) {
-            return null;
-        }
-
-        const { name } = User.fromJson(JSON.parse(userData), environmentName);
-        if (name) {
-            setUser(name);
-        }
-        return null;
-    };
 
     const apiCall = (query) => {
         setLoading(true);
@@ -136,7 +112,10 @@ function AISearchAssistant() {
 
     useEffect(() => {
         try {
-            getUser();
+            const loggedInUser = Utils.getUser();
+            if (loggedInUser) {
+                setUser(loggedInUser);
+            }
             const messagesJSON = localStorage.getItem('messages');
             const loadedMessages = JSON.parse(messagesJSON);
             if (loadedMessages) {

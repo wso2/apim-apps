@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import Utils from './Utils'
+import Utils from './Utils';
 
 /**
  * Represent an user logged in to the application, There will be allays one user per session and

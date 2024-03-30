@@ -31,35 +31,21 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { Link } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
 import Api from 'AppData/api';
 import { CircularProgress, Typography } from '@mui/material';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 import Utils from 'AppData/Utils';
-import Paper from '@mui/material/Paper';
-import Chip from '@mui/material/Chip';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DangerousIcon from '@mui/icons-material/Dangerous';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AuthManager from 'AppData/AuthManager';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
 import ConfigureKeyDrawer from './components/ConfigureKeyDrawer';
 import SampleQueryCard from './components/SampleQueryCard';
-import ResultsHeading from './components/ResultsHeading';
+import ApiChatResponse from './components/ApiChatResponse';
 
 const PREFIX = 'ApiChat';
 
 const classes = {
     tryWithAiMain: `${PREFIX}-tryWithAiMain`,
-    finalOutcomeContent: `${PREFIX}-finalOutcomeContent`,
-    lastQueryWrap: `${PREFIX}-lastQueryWrap`,
-    resultCard: `${PREFIX}-resultCard`,
-    queryProcessLoader: `${PREFIX}-queryProcessLoader`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -68,22 +54,6 @@ const Root = styled('div')(({ theme }) => ({
         display: 'flex',
         flexDirection: 'column',
         padding: theme.spacing(1),
-    },
-    [`& .${classes.finalOutcomeContent}`]: {
-        background: theme.palette.grey[100],
-        padding: theme.spacing(2),
-        marginTop: theme.spacing(2),
-    },
-    [`& .${classes.lastQueryWrap}`]: {
-        margin: theme.spacing(1, 4),
-    },
-    [`& .${classes.resultCard}`]: {
-        marginTop: theme.spacing(1),
-    },
-    [`& .${classes.queryProcessLoader}`]: {
-        marginTop: theme.spacing(2),
-        display: 'flex',
-        justifyContent: 'center',
     },
 }));
 
@@ -675,15 +645,6 @@ const ApiChat = () => {
         }
     };
 
-    const Item = styled(Paper)(({ theme }) => ({
-        ...theme.typography.body2,
-        textAlign: 'center',
-        color: theme.palette.text.secondary,
-        height: 50,
-        lineHeight: '50px',
-        overflowX: 'scroll',
-    }));
-
     return (
         <Root>
             <Box className={classes.tryWithAiMain} sx={{ mr: 5 }}>
@@ -701,87 +662,14 @@ const ApiChat = () => {
                     disableConfigureKey={!apiChatEnabled || !aiAuthTokenProvided || specEnrichmentError}
                 />
                 {(isAgentRunning || lastQuery || finalOutcome) && (
-                    <Box maxHeight='60%' overflow='auto' className={classes.lastQueryWrap}>
-                        <Item variant='outlined' elevation={1}>{lastQuery}</Item>
-                        <Box className={classes.resultCard}>
-                            <Card fullHeight testId='results-card' variant='outlined'>
-                                <CardContent fullHeight>
-                                    <ResultsHeading />
-                                    {executionResults.map((executionResult) => {
-                                        return (
-                                            <Accordion>
-                                                <AccordionSummary
-                                                    expandIcon={<ExpandMoreIcon />}
-                                                >
-                                                    <>
-                                                        {(executionResult.code >= 200 && executionResult.code < 300) ? (
-                                                            <Chip
-                                                                icon={<CheckCircleIcon color='success' />}
-                                                                label={executionResult.code}
-                                                                color='success'
-                                                                variant='outlined'
-                                                                size='small'
-                                                            />
-                                                        ) : (
-                                                            <Chip
-                                                                icon={<DangerousIcon color='error' />}
-                                                                label={executionResult.code}
-                                                                color='error'
-                                                                variant='outlined'
-                                                                size='small'
-                                                            />
-                                                        )}
-                                                        <Typography variant='body1' ml={2} sx={{ alignContent: 'center' }}>
-                                                            {'Executed ' + executionResult.method + ' ' + executionResult.path}
-                                                        </Typography>
-                                                    </>
-                                                </AccordionSummary>
-                                                <AccordionDetails>
-                                                    <Typography variant='body1'>
-                                                        {JSON.stringify(executionResult.body, null, 2)}
-                                                    </Typography>
-                                                </AccordionDetails>
-                                            </Accordion>
-                                        );
-                                    })}
-                                    {!isAgentRunning && lastQuery && finalOutcome && !isExecutionError && (
-                                        <Box display='flex' justifyContent='center' className={classes.finalOutcomeContent}>
-                                            <Typography variant='body1'>
-                                                {finalOutcome}
-                                            </Typography>
-                                        </Box>
-                                    )}
-                                    {lastQuery && !finalOutcome && (
-                                        <>
-                                            <Box className={classes.queryProcessLoader}>
-                                                {isAgentTerminating ? (
-                                                    <>
-                                                        <CircularProgress size={20} />
-                                                        <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
-                                                            <FormattedMessage
-                                                                id='Apis.Details.ApiChat.components.terminatingExecutionMessage'
-                                                                defaultMessage='Execution is terminating...'
-                                                            />
-                                                        </Typography>
-                                                    </>
-                                                ) : (
-                                                    <>
-                                                        <CircularProgress size={20} />
-                                                        <Typography variant='body1' sx={{ paddingLeft: '5px' }}>
-                                                            <FormattedMessage
-                                                                id='Apis.Details.ApiChat.components.loadingExecutionMessage'
-                                                                defaultMessage='Loading next execution step...'
-                                                            />
-                                                        </Typography>
-                                                    </>
-                                                )}
-                                            </Box>
-                                        </>
-                                    )}
-                                </CardContent>
-                            </Card>
-                        </Box>
-                    </Box>
+                    <ApiChatResponse
+                        lastQuery={lastQuery}
+                        executionResults={executionResults}
+                        finalOutcome={finalOutcome}
+                        isAgentRunning={isAgentRunning}
+                        isAgentTerminating={isAgentTerminating}
+                        isExecutionErro={isExecutionError}
+                    />
                 )}
                 {!lastQuery && (
                     <ApiChatBanner />
