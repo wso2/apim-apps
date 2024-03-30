@@ -222,9 +222,9 @@ export default function RuntimeConfiguration() {
                 return nextState;
             case 'allKeyManagersEnabled':
                 if (value) {
-                    nextState.keyManagers = [];
-                } else {
                     nextState.keyManagers = ['all'];
+                } else {
+                    nextState.keyManagers = [];
                 }
                 return nextState;
             case 'securityScheme':
