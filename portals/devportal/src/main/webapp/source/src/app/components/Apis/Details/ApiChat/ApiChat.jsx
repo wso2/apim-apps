@@ -267,15 +267,6 @@ const ApiChat = () => {
         }
     };
 
-    const setTokenInvalidErrorMessage = () => {
-        setSpecEnrichmentError(
-            intl.formatMessage({
-                id: 'Apis.Details.ApiChat.components.onPremKeyInvalid.vaidationError',
-                defaultMessage: 'The provided token is invalid. Please provide a valid token to start testing.',
-            }),
-        );
-    };
-
     useEffect(() => {
         if (abortControllerRef.current.signal.aborted) {
             setIsAgentTerminating(true);
@@ -290,6 +281,20 @@ const ApiChat = () => {
             }, 2000);
         }
     }, [isAgentTerminating]);
+
+    const getUnauthorizedErrorMessage = () => {
+        return intl.formatMessage({
+            id: 'Apis.Details.ApiChat.components.onPremKeyInvalid.error',
+            defaultMessage: 'Provided token is invalid. Please use a valid token to start testing.',
+        });
+    };
+
+    const getTooManyRequestsErrorMessage = () => {
+        return intl.formatMessage({
+            id: 'Apis.Details.ApiChat.components.throttledOut.error',
+            defaultMessage: 'The request has been throttled out. Please try again later.',
+        });
+    };
 
     useEffect(() => {
         if (api && api.id && apiChatEnabled && aiAuthTokenProvided && user) {
@@ -312,16 +317,19 @@ const ApiChat = () => {
                     }
                 }).catch((error) => {
                     setIsEnrichingSpec(false);
-                    // Hanlde on-prem key vaidation failed scenario
-                    if (error?.response?.text.includes('invalid key')) {
-                        setTokenInvalidErrorMessage();
+                    const statusCode = error?.response?.status;
+                    if (statusCode === 401) { // Hanlde on-prem key vaidation failed scenario
+                        setSpecEnrichmentError(getUnauthorizedErrorMessage());
                         setSpecEnrichmentErrorLevel('error');
-                        return;
+                    } else if (statusCode === 429) { // Handle throttled out scenario
+                        setSpecEnrichmentError(getTooManyRequestsErrorMessage());
+                        setSpecEnrichmentErrorLevel('error');
+                    } else {
+                        setEnrichmentError(
+                            error?.response?.body?.code,
+                        );
+                        setSpecEnrichmentErrorLevel(error?.response?.body?.level === 'WARN' ? 'warning' : 'error');
                     }
-                    setEnrichmentError(
-                        error?.response?.body?.code,
-                    );
-                    setSpecEnrichmentErrorLevel(error?.response?.body?.level === 'WARN' ? 'warning' : 'error');
                 });
         }
     }, []);
@@ -532,7 +540,14 @@ const ApiChat = () => {
             }
         }).catch((error) => {
             setIsExecutionError(true);
-            setExecutionErrorMessage((error).response?.data?.code);
+            const statusCode = error?.response?.status;
+            if (statusCode === 401) { // Hanlde on-prem key vaidation failed scenario
+                setExecutionErrorMessage(getUnauthorizedErrorMessage());
+            } else if (statusCode === 429) { // Handle throttled out scenario
+                setExecutionErrorMessage(getTooManyRequestsErrorMessage());
+            } else {
+                setExecutionErrorMessage(error?.response?.data);
+            }
             setIsAgentRunning(false);
         });
     };
@@ -607,7 +622,14 @@ const ApiChat = () => {
             }
         }).catch((error) => {
             setIsExecutionError(true);
-            setExecutionErrorMessage((error).response?.data?.code);
+            const statusCode = error?.response?.status;
+            if (statusCode === 401) { // Hanlde on-prem key vaidation failed scenario
+                setExecutionErrorMessage(getUnauthorizedErrorMessage());
+            } else if (statusCode === 429) { // Handle throttled out scenario
+                setExecutionErrorMessage(getTooManyRequestsErrorMessage());
+            } else {
+                setExecutionErrorMessage(error?.response?.data);
+            }
             setIsAgentRunning(false);
         });
     };

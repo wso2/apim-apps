@@ -70,10 +70,10 @@ function AISearchAssistant() {
                     try {
                         switch (error.response.status) {
                             case 401: // Unauthorized
-                                content = 'Unauthorized access. Please login to continue.';
+                                content = 'Provided token is invalid. Please use a valid token and try again.';
                                 break;
                             case 429: // Token limit exceeded
-                                content = 'Token Limit is exceeded. Please try again later.';
+                                content = 'Token limit is exceeded. Please try again later.';
                                 break;
                             default:
                                 content = 'Something went wrong. Please try again later.';

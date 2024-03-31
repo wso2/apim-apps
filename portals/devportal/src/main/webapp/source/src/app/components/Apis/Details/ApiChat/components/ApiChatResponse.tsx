@@ -73,7 +73,6 @@ const Root = styled('div')(({ theme }) => ({
         justifyContent: 'flex-end',
     },
     [`& .${classes.responseBannerContent}`]: {
-        width: '100%',
         background: theme.palette.grey[100],
         padding: theme.spacing(2),
         borderRadius: theme.spacing(0, 2, 2, 2),
@@ -170,7 +169,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                     <Box className={classes.queryBannerContentWrap} ml={6} mr={6} mt={-1}>
                         <Box className={classes.queryBannerContent}>
                             <Box className={classes.queryBannerTriangle} />
-                            <Typography variant='body1' align='right'>
+                            <Typography variant='body1' align='left'>
                                 {lastQuery}
                             </Typography>
                         </Box>
