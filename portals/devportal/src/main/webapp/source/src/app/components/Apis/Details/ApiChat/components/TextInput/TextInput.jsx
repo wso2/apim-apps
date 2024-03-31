@@ -38,7 +38,6 @@ const classes = {
     error: `${PREFIX}-error`,
     textInput: `${PREFIX}-textInput`,
     textInputLarge: `${PREFIX}-textInputLarge`,
-    textInputDisabled: `${PREFIX}-textInputDisabled`,
     inputAdornedEnd: `${PREFIX}-inputAdornedEnd`,
     inputAdornedEndAlignTop: `${PREFIX}-inputAdornedEndAlignTop`,
     textarea: `${PREFIX}-textarea`,
@@ -52,10 +51,6 @@ const Root = styled('div')(({ theme }) => ({
         minHeight: theme.spacing(5),
         backgroundColor: theme.palette.common.white,
         border: `1px solid ${alpha(theme.palette.primary.main, 0.5)}`,
-        boxShadow: `0 1px 2px -1px ${alpha(
-            theme.palette.common.black,
-            0.08,
-        )}, 0 -3px 9px 0 ${alpha(theme.palette.common.black, 0.04)} inset`,
         borderRadius: 5,
         '&$multiline': {
             height: 'auto',
@@ -113,10 +108,6 @@ const Root = styled('div')(({ theme }) => ({
     [`& .${classes.focused}`]: {
         borderColor: theme.palette.primary.light,
         borderWidth: 1,
-        boxShadow: `0 -3px 9px 0 ${alpha(
-            theme.palette.common.black,
-            0.04,
-        )} inset, 0 0 0 2px ${theme.palette.grey[100]}`,
     },
     [`& .${classes.error}`]: {
         background: theme.palette.error.light,
@@ -140,12 +131,6 @@ const Root = styled('div')(({ theme }) => ({
         fontSize: theme.typography.overline.fontSize,
         fontWeight: theme.typography.overline.fontWeight,
         lineHeight: theme.typography.overline.lineHeight,
-    },
-    [`& .${classes.textInputDisabled}`]: {
-        borderColor: theme.palette.grey[300],
-        '&:hover': {
-            borderColor: theme.palette.grey[300],
-        },
     },
     [`& .${classes.inputAdornedEnd}`]: {
         '& .MuiInputAdornment-root': {
@@ -209,7 +194,7 @@ const TextInput = (
                                 [classes.multiline]: multiline,
                                 [classes.multilineReadonly]: multiline && readOnly,
                                 [classes.multilineResizeIndicator]:
-                        multiline && !resizeIndicator,
+                                    multiline && !resizeIndicator,
                                 [classes.rounded]: rounded,
                             }),
                             focused: classes.focused,
@@ -219,7 +204,6 @@ const TextInput = (
                                 [classes.textInput]: true,
                                 [classes.textInputLarge]: size === 'large',
                             }),
-                            disabled: classes.textInputDisabled,
                             adornedEnd: clsx({
                                 [classes.inputAdornedEnd]: true,
                                 [classes.inputAdornedEndAlignTop]: multiline,
@@ -235,7 +219,7 @@ const TextInput = (
                 </Box>
                 {helperText && (
                     <Box display='flex' alignItems='center' ml={1}>
-                        <Typography variant='body2' color='textSecondary' component='p'>
+                        <Typography variant='body2' component='p'>
                             {helperText}
                         </Typography>
                     </Box>

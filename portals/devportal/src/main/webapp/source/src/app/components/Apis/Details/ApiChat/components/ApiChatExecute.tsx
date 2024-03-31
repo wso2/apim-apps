@@ -135,7 +135,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                             value={inputQuery}
                             placeholder={intl.formatMessage({
                                 id: 'Apis.Details.ApiChat.components.ApiChatExecute.queryInput.placeholder',
-                                defaultMessage: 'Type the test scenario here ...',
+                                defaultMessage: 'Type the test scenario here...',
                             })}
                             onChange={handleQueryChange}
                             testId='nl-query-input'

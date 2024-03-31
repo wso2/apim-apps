@@ -51,7 +51,9 @@ const classes = {
 
 const Root = styled('div')(({ theme }) => ({
     [`& .${classes.finalOutcomeContent}`]: {
-        padding: theme.spacing(2),
+        paddingTop: theme.spacing(2),
+        paddingBottom: theme.spacing(2),
+        textAlign: 'justify',
     },
     [`& .${classes.lastQueryWrap}`]: {
         margin: theme.spacing(1, 4),
@@ -73,6 +75,7 @@ const Root = styled('div')(({ theme }) => ({
         justifyContent: 'flex-end',
     },
     [`& .${classes.responseBannerContent}`]: {
+        width: '100%',
         background: theme.palette.grey[100],
         padding: theme.spacing(2),
         borderRadius: theme.spacing(0, 2, 2, 2),
@@ -174,7 +177,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                             </Typography>
                         </Box>
                     </Box>
-                    <CustomIcon width={60} height={60} icon='api-chat' />
+                    <CustomIcon width={50} height={50} icon='api-chat' />
                     <Box className={classes.responseBannerContentWrap} ml={6} mr={6} mt={-2.5}>
                         <Box className={classes.responseBannerContent}>
                             <Box className={classes.responseBannerTriangle} />
