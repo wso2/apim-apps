@@ -28,6 +28,7 @@ import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import ChatMessages from './ChatMessages';
 import Header from './Header';
+import findBestMatchingAnswer from './SimilaritySearch';
 
 /**
  * Renders Chat Messages view..
@@ -41,7 +42,8 @@ function ChatWindow(props) {
 
     const [isClicked, setIsClicked] = useState(false);
     const [apiLimitExceeded, setApiLimitExceeded] = useState(false);
-    const [apisCount, setApisCount] = useState(0);
+    const [apisCount, setApisCount] = useState(null);
+    const [limit, setLimit] = useState(null);
 
     const { settings: { marketplaceAssistantEnabled, aiAuthTokenProvided } } = useSettingsContext();
 
@@ -63,7 +65,16 @@ function ChatWindow(props) {
     const handleSend = async (message) => {
         responseRef.current = [...responseRef.current, { role: 'user', content: message.content.trim() }];
         setMessages(responseRef.current);
-        apiCall(message.content);
+
+        const query = message.content.trim().toLowerCase();
+
+        const response = findBestMatchingAnswer(query);
+        if (response) {
+            responseRef.current = [...responseRef.current, { role: 'assistant', content: response.trim() }];
+            setMessages(responseRef.current);
+        } else {
+            apiCall(message.content);
+        }
     };
 
     const handleReset = () => {
@@ -82,7 +93,8 @@ function ChatWindow(props) {
                     const apiCount = data.body.count;
                     const apiLimit = data.body.limit;
                     setApisCount(apiCount);
-                    if (apiCount >= apiLimit) {
+                    setLimit(apiLimit);
+                    if (apiCount >= apiLimit - 50) {
                         setApiLimitExceeded(true);
                     }
                 })
@@ -160,14 +172,15 @@ function ChatWindow(props) {
                         isClicked={isClicked}
                     />
                     {/* Alert to show API count info */}
-                    {marketplaceAssistantEnabled && aiAuthTokenProvided && (
-                        apiLimitExceeded ? (
-                            <Alert severity='warning' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
-                                You have reached your maximum number of apis. The answers will be limited to the first 1000 apis.
+                    {marketplaceAssistantEnabled && aiAuthTokenProvided && apiLimitExceeded && (
+                        (apisCount >= limit) ? (
+                            <Alert severity='error' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
+                                {`You are reached your maximum limit (${limit} apis) for API usage.`}
                             </Alert>
                         ) : (
-                            <Alert severity='info' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
-                                {`The Assistant is using ${apisCount} apis to provide answers.`}
+                            <Alert severity='warning' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
+                                {`You are approaching your maximum limit for API usage. You can utilize up to ${limit} APIs.
+                                    Currently, you have utilized ${apisCount} APIs.`}
                             </Alert>
                         )
                     )}
