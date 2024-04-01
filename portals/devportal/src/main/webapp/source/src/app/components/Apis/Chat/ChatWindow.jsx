@@ -43,6 +43,7 @@ function ChatWindow(props) {
     const [isClicked, setIsClicked] = useState(false);
     const [apiLimitExceeded, setApiLimitExceeded] = useState(false);
     const [apisCount, setApisCount] = useState(0);
+    const [limit, setLimit] = useState(null);
 
     const { settings: { marketplaceAssistantEnabled, aiAuthTokenProvided } } = useSettingsContext();
 
@@ -92,6 +93,7 @@ function ChatWindow(props) {
                     const apiCount = data.body.count;
                     const apiLimit = data.body.limit;
                     setApisCount(apiCount);
+                    setLimit(apiLimit);
                     if (apiCount >= apiLimit) {
                         setApiLimitExceeded(true);
                     }
@@ -173,11 +175,12 @@ function ChatWindow(props) {
                     {marketplaceAssistantEnabled && aiAuthTokenProvided && (
                         apiLimitExceeded ? (
                             <Alert severity='warning' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
-                                You have reached your maximum number of apis. The answers will be limited to the first 1000 apis.
+                                {`You have reached your maximum number of apis. The answers will be limited to the first ${limit} apis.`}
                             </Alert>
                         ) : (
                             <Alert severity='info' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
-                                {`The Assistant is using ${apisCount} apis to provide answers.`}
+                                {`The Assistant is using ${apisCount} APIs to provide answers.`}
+                                {limit ? `You can publish up to ${limit} APIs.` : ''}
                             </Alert>
                         )
                     )}
