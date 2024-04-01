@@ -42,7 +42,7 @@ function ChatMessages(props) {
     const { settings: { aiAuthTokenProvided } } = useSettingsContext();
     const messagesEndRef = useRef(null);
 
-    const subjectLine = 'Marketplace Assistant can make mistakes. Consider checking important information.';
+    const subjectLine = 'API Marketplace Assistant is an early feature and can make mistakes. Verify its outputs.';
 
     const style = {
         width: '30px',
