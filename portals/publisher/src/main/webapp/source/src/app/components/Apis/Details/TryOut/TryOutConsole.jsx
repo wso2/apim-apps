@@ -179,7 +179,7 @@ const TryOutConsole = () => {
         if (selectedDeployment && oasDefinition) {
             const selectedGWEnvironment = publisherSettings.environment
                 .find((env) => env.name === selectedDeployment.name);
-            let selectedDeploymentVhost = selectedGWEnvironment.vhosts
+            let selectedDeploymentVhost = selectedGWEnvironment && selectedGWEnvironment.vhosts
                 .find((vhost) => vhost.host === selectedDeployment.vhost);
             if (!selectedDeploymentVhost) {
                 selectedDeploymentVhost = { ...CONSTS.DEFAULT_VHOST, host: selectedDeployment.vhost };
