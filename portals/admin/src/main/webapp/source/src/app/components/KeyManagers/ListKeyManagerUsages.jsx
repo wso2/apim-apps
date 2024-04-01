@@ -413,7 +413,7 @@ function ListKeyManagerUsages(props) {
                     >
                         <Grid item xs={12}>
                             <Box position='relative'>
-                                {appData.applicationCount > 0
+                                {appData?.applicationCount > 0
                                     ? (
                                         <>
                                             <Grid item xs={12}>
