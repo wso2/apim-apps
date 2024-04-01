@@ -41,7 +41,7 @@ function AISearchAssistant() {
 
     const introMessage = {
         role: 'assistant',
-        content: 'Hello! Welcome to Marketplace Assistant. I\'m here to assist you in discovering and obtaining information about APIs.'
+        content: 'Hello! I\'m here to assist you in discovering and obtaining information about APIs.'
         + ' How can I help you?',
     };
 
