@@ -118,6 +118,7 @@ const tokens = (props) => {
                     name='scopesSelected'
                     options={subscriptionScopes}
                     noOptionsText='No scopes available'
+                    disabled={subscriptionScopes.length === 0}
                     disableCloseOnSelect
                     value={accessTokenRequest.scopesSelected}
                     onChange={(e, newValue) => handleChange('scopesSelected', { target: { value: newValue } })}
