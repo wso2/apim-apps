@@ -210,7 +210,7 @@ class Scopes extends React.Component {
                                                 disabled={isRestricted(
                                                     ['apim:api_create'],
                                                     api,
-                                                ) || api.isRevision || enableReadOnly}
+                                                ) || api.isRevision}
                                                 to={
                                                     !isRestricted(['apim:api_create'], api) && !api.isRevision && {
                                                         pathname: editUrl,
@@ -229,9 +229,11 @@ class Scopes extends React.Component {
                                                 />
                                             </Button>
                                         </td>
-                                        <td>
-                                            <Delete scopeName={scopeName} api={api} isAPIProduct />
-                                        </td>
+                                        {!enableReadOnly && (
+                                            <td>
+                                                <Delete scopeName={scopeName} api={api} isAPIProduct />
+                                            </td>
+                                        )}
                                     </tr>
                                 </table>
                             );
