@@ -124,9 +124,9 @@ export default function ApiCreateOpenAPI(props) {
         } = apiInputs;
         let defaultGatewayType;
         if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
-            defaultGatewayType = 'Regular';
+            defaultGatewayType = 'wso2/synapse';
         } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')){
-            defaultGatewayType = 'APK';
+            defaultGatewayType = 'wso2/apk';
         } else {
             defaultGatewayType = 'default';
         }
