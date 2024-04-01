@@ -19,6 +19,7 @@
   "Apis.Details.ApiChat.components.finalOutcome.responseParsingError": "An error occurred while attempting to extract the API response.",
   "Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault": "An error occurred during query execution.",
   "Apis.Details.ApiChat.components.finalOutcome.tokenLimitExceededError": "Execution has been terminated due to exceeding the token limit.",
+  "Apis.Details.ApiChat.components.gatewayTimeout.error": "The request has timed out. Please try again later.",
   "Apis.Details.ApiChat.components.onPremKeyInvalid.error": "Provided token is invalid. Please use a valid token to start testing.",
   "Apis.Details.ApiChat.components.specEnrichmentError.contentViolationError": "The content in the OpenAPI specification violates the Azure OpenAI content policy.",
   "Apis.Details.ApiChat.components.specEnrichmentError.genericError": "An error occurred when loading API Chat.",

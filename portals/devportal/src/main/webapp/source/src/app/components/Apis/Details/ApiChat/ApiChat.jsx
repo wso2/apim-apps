@@ -296,6 +296,13 @@ const ApiChat = () => {
         });
     };
 
+    const getGatewayTimeoutErrorMessage = () => {
+        return intl.formatMessage({
+            id: 'Apis.Details.ApiChat.components.gatewayTimeout.error',
+            defaultMessage: 'The request has timed out. Please try again later.',
+        });
+    };
+
     useEffect(() => {
         if (api && api.id && apiChatEnabled && aiAuthTokenProvided && user) {
             setIsEnrichingSpec(true);
@@ -324,9 +331,12 @@ const ApiChat = () => {
                     } else if (statusCode === 429) { // Handle throttled out scenario
                         setSpecEnrichmentError(getTooManyRequestsErrorMessage());
                         setSpecEnrichmentErrorLevel('error');
+                    } else if (statusCode === 504) { // Handle gateway timeout scenario
+                        setSpecEnrichmentError(getGatewayTimeoutErrorMessage());
+                        setSpecEnrichmentErrorLevel('error');
                     } else {
                         setEnrichmentError(
-                            error?.response?.body?.code,
+                            error?.response?.body?.code || 'GENERIC',
                         );
                         setSpecEnrichmentErrorLevel(error?.response?.body?.level === 'WARN' ? 'warning' : 'error');
                     }
@@ -545,8 +555,11 @@ const ApiChat = () => {
                 setExecutionErrorMessage(getUnauthorizedErrorMessage());
             } else if (statusCode === 429) { // Handle throttled out scenario
                 setExecutionErrorMessage(getTooManyRequestsErrorMessage());
+            } else if (statusCode === 504) { // Handle gateway timeout scenario
+                setExecutionErrorMessage(getGatewayTimeoutErrorMessage());
             } else {
-                setExecutionErrorMessage(error?.response?.data);
+                const errorMessage = error?.response?.data || 'An error occurred during query execution.';
+                setExecutionErrorMessage(errorMessage);
             }
             setIsAgentRunning(false);
         });
@@ -627,8 +640,11 @@ const ApiChat = () => {
                 setExecutionErrorMessage(getUnauthorizedErrorMessage());
             } else if (statusCode === 429) { // Handle throttled out scenario
                 setExecutionErrorMessage(getTooManyRequestsErrorMessage());
+            } else if (statusCode === 504) { // Handle gateway timeout scenario
+                setExecutionErrorMessage(getGatewayTimeoutErrorMessage());
             } else {
-                setExecutionErrorMessage(error?.response?.data);
+                const errorMessage = error?.response?.data || 'An error occurred during query execution.';
+                setExecutionErrorMessage(errorMessage);
             }
             setIsAgentRunning(false);
         });
