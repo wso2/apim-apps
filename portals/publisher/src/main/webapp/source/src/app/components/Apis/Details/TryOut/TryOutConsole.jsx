@@ -424,10 +424,6 @@ const TryOutConsole = () => {
                                                 variant='outlined'
                                                 SelectProps={{
                                                     MenuProps: {
-                                                        anchorOrigin: {
-                                                            vertical: 'bottom',
-                                                            horizontal: 'left',
-                                                        },
                                                         getContentAnchorEl: null,
                                                     },
                                                 }}
