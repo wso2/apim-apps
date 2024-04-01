@@ -322,6 +322,7 @@ function APICreateDefault(props) {
                     }
                 } else {
                     const envList1 = settings.environment;
+                    let foundEnv = false;
                     envList1.forEach((env) => {
                         let tmpEnv = '';
                         if (env.gatewayType === 'APK') {
@@ -329,12 +330,13 @@ function APICreateDefault(props) {
                         } else if (env.gatewayType === 'Regular') {
                             tmpEnv = 'wso2/synapse';
                         }
-                        if (tmpEnv === apiInputs.gatewayType && getFirstVhost(env.name)) {
+                        if (!foundEnv && tmpEnv === apiInputs.gatewayType && getFirstVhost(env.name)) {
                             body1.push({
                                 name: env.name,
                                 displayOnDevportal: true,
                                 vhost: getFirstVhost(env.name),
                             });
+                            foundEnv = true;
                         }
                     });
                 }
