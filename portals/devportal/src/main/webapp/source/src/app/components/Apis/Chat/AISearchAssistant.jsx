@@ -42,8 +42,7 @@ function AISearchAssistant() {
     const introMessage = {
         role: 'assistant',
         content: 'Hello! Welcome to Marketplace Assistant. I\'m here to assist you in discovering and obtaining information about APIs.'
-        + ' Please note that the responses provided are limited to publicly available APIs. During the trial period,'
-        + ' users are granted the ability to upload up to specific no of APIs and the number of tokens available for chat is limited.',
+        + ' How can I help you?',
     };
 
     const pathName = window.location.pathname;
