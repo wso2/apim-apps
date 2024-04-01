@@ -42,7 +42,7 @@ function ChatWindow(props) {
 
     const [isClicked, setIsClicked] = useState(false);
     const [apiLimitExceeded, setApiLimitExceeded] = useState(false);
-    const [apisCount, setApisCount] = useState(0);
+    const [apisCount, setApisCount] = useState(null);
     const [limit, setLimit] = useState(null);
 
     const { settings: { marketplaceAssistantEnabled, aiAuthTokenProvided } } = useSettingsContext();
@@ -94,7 +94,7 @@ function ChatWindow(props) {
                     const apiLimit = data.body.limit;
                     setApisCount(apiCount);
                     setLimit(apiLimit);
-                    if (apiCount >= apiLimit) {
+                    if (apiCount >= apiLimit - 50) {
                         setApiLimitExceeded(true);
                     }
                 })
@@ -172,15 +172,15 @@ function ChatWindow(props) {
                         isClicked={isClicked}
                     />
                     {/* Alert to show API count info */}
-                    {marketplaceAssistantEnabled && aiAuthTokenProvided && (
-                        apiLimitExceeded ? (
-                            <Alert severity='warning' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
-                                {`You have reached your maximum number of apis. The answers will be limited to the first ${limit} apis.`}
+                    {marketplaceAssistantEnabled && aiAuthTokenProvided && apiLimitExceeded && (
+                        (apisCount >= limit) ? (
+                            <Alert severity='error' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
+                                {`You are reached your maximum limit (${limit} apis) for API usage.`}
                             </Alert>
                         ) : (
-                            <Alert severity='info' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
-                                {`The Assistant is using ${apisCount} APIs to provide answers.`}
-                                {limit ? `You can publish up to ${limit} APIs.` : ''}
+                            <Alert severity='warning' style={{ borderRadius: '0px', zIndex: 2999, padding: '0 10px 0 10px' }}>
+                                {`You are approaching your maximum limit for API usage. You can utilize up to ${limit} APIs.
+                                    Currently, you have utilized ${apisCount} APIs.`}
                             </Alert>
                         )
                     )}
