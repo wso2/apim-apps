@@ -36,7 +36,7 @@ function AISearchAssistant() {
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState(null);
     const [chatbotDisabled, setChatbotDisabled] = useState(!marketplaceAssistantEnabled);
-    const userRef = useRef('You');
+    const [user, setUser] = useState('You');
     const responseRef = useRef([]);
 
     const introMessage = {
@@ -156,7 +156,7 @@ function AISearchAssistant() {
                         messages={messages}
                         setMessages={setMessages}
                         introMessage={introMessage}
-                        user={userRef.current}
+                        user={user}
                         loading={loading}
                         responseRef={responseRef}
                         apiCall={apiCall}
