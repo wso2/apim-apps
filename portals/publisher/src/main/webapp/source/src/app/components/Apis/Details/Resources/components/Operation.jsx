@@ -321,7 +321,7 @@ function Operation(props) {
                         </Grid>
                     </Grid>
                 </AccordionSummary>
-                <Divider light sx={{ backgroundColor }} />
+                <Divider sx={{ backgroundColor }} />
                 <AccordionDetails>
                     <Grid spacing={2} container direction='row' justifyContent='flex-start' alignItems='flex-start'>
                         <DescriptionAndSummary

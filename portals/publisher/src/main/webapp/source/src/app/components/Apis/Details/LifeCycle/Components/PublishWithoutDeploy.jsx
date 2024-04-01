@@ -196,7 +196,7 @@ export default function PublishWithoutDeploy(props) {
                     defaultMessage='Publish API without deployments'
                 />
             </DialogTitle>
-            <Divider light />
+            <Divider />
             <DialogContent
                 classes={{
                     root: classes.root

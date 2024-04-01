@@ -103,7 +103,7 @@ export default function PublishWithoutDeployProduct(props) {
                     defaultMessage='Deploy API product before publishing'
                 />
             </DialogTitle>
-            <Divider light />
+            <Divider />
             <DialogContent
                 classes={{
                     root: classes.root

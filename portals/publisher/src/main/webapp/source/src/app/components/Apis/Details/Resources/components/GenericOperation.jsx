@@ -140,7 +140,7 @@ function GenericOperation(props) {
                         </Grid>
                     </Grid>
                 </AccordionSummary>
-                <Divider light sx={{ backgroundColor }} />
+                <Divider sx={{ backgroundColor }} />
                 <AccordionDetails>
                     {children}
                 </AccordionDetails>

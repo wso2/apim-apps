@@ -285,7 +285,7 @@ function Environments(props) {
                                 {api.type === 'GRAPHQL' && (selectedEndpoint.URLs.ws || selectedEndpoint.URLs.wss)
                             && (
                                 <>
-                                    <Divider light />
+                                    <Divider sx={{ opacity: 0.2 }} />
                                     <Box pt={0.5} display='flex' alignItems='center' width='100%' flexDirection='row'>
                                         <>
                                             <Tooltip
@@ -415,7 +415,7 @@ function Environments(props) {
                                 </Box>
                                 {advertiseInfo.apiExternalSandboxEndpoint && (
                                     <>
-                                        <Divider light />
+                                        <Divider sx={{ opacity: 0.2 }} />
                                         <Box pt={0.5} display='flex' alignItems='center' width='100%' flexDirection='row'>
                                             <>
                                                 <Tooltip

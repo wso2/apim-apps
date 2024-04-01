@@ -442,7 +442,7 @@ class Comment extends React.Component {
                             .slice(0)
                             .map((comment, index) => (
                                 <div key={comment.id} className={classes.contentWrapper}>
-                                    {index !== 0 && <Divider light className={classes.divider} />}
+                                    {index !== 0 && <Divider className={classes.divider} />}
                                     <Grid
                                         md={8}
                                         container
@@ -494,7 +494,7 @@ class Comment extends React.Component {
                                                 <>
                                                     <Box ml={8}>
                                                         {commentIndex !== 0
-                                                            && <Divider light className={classes.divider} />}
+                                                            && <Divider className={classes.divider} />}
                                                         <Grid container spacing={1} className={classes.root}>
                                                             <Grid item>
                                                                 <Icon className={classes.commentIcon}>

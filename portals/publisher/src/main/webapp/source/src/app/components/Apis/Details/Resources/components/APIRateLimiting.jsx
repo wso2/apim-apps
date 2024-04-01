@@ -167,7 +167,7 @@ function APIRateLimiting(props) {
                             </Tooltip>
                         </Typography>
                     </Box>
-                    <Divider light variant='middle' />
+                    <Divider variant='middle' />
                 </Grid>
                 <Grid item md={6} xs={12} sx={{ p: 1 }}>
                     <FormControl component='fieldset'>
@@ -212,7 +212,7 @@ function APIRateLimiting(props) {
                     </FormControl>
                 </Grid>
                 <Grid item md={6} xs={12} sx={{ p: 1 }}>
-                    <Box minHeight={70} borderLeft={1} pl={10}>
+                    <Box minHeight={70} pl={10} sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)' }}>
                         {isResourceLevel ? (
                             operationRateLimitMessage
                         ) : (

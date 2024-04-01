@@ -136,7 +136,7 @@ export default function APICategoriesCard() {
                         </Box>
                     </Box>
 
-                    <Divider light />
+                    <Divider sx={{ opacity: 0.2 }} />
 
                     <Box height={170} mt={1} mb={-2}>
                         {apiCategoriesList.map((category) => {

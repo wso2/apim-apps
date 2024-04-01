@@ -159,7 +159,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                         </ListItemIcon>
                     </ListItem>
                 </List>
-                <Divider light />
+                <Divider />
                 <General
                     policyObj={getPolicyOfTypeAttachedPolicy()}
                     setDroppedPolicy={setDroppedPolicy}

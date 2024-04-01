@@ -282,7 +282,7 @@ export default function TasksWorkflowCard() {
                         </Box>
                     </Box>
 
-                    <Divider light />
+                    <Divider sx={{ opacity: 0.2 }} />
 
                     <Box
                         display='flex'

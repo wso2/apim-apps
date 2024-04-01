@@ -192,7 +192,7 @@ function AdditionalHeaders(props) {
                 </AccordionSummary>
                 <AccordionDetails classes={{ root: classes.expandContentRoot }}>
                     <>
-                        <Divider light className={classes.customDivider} />
+                        <Divider sx={{ opacity: 0.2 }} className={classes.customDivider} />
                         <Box component='div' marginLeft={1} display='flex' alignItems='center'>
                             <Box flex={1}>
                                 <Typography variant='caption'>

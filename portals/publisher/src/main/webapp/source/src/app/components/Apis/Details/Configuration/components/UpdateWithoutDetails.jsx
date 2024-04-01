@@ -132,7 +132,7 @@ export default function UpdateWithoutDetails(props) {
                     </IconButton>
                 ) : null}
             </MuiDialogTitle>
-            <Divider light />
+            <Divider />
             <MuiDialogContent>
                 <Box my={1}>
                     <DialogContentText id='itest-confirm-update-text'>

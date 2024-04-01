@@ -70,7 +70,7 @@ export default function SpecErrors(props) {
                 <List>
                     {specErrors.map((error, index) => (
                         <span key={error.description}>
-                            {index % 2 !== 0 && <Divider light variant='inset' />}
+                            {index % 2 !== 0 && <Divider variant='inset' />}
                             <ListItem>
                                 <ListItemText
                                     primary={error.message}
