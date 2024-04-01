@@ -37,6 +37,7 @@ const classes = {
 const Root = styled('div')(({ theme }: any) => ({
     [`& .${classes.tryAiBannerCont}`]: {
         display: 'flex',
+        paddingLeft: theme.spacing(1),
         gridGap: theme.spacing(1.5),
         maxWidth: theme.spacing(85),
     },

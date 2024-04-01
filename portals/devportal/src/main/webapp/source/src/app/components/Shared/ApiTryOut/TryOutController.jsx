@@ -194,7 +194,7 @@ function TryOutController(props) {
                 newSecurityScheme: securitySchemeType,
                 newUsername: username,
                 newPassword: password,
-                newSelectedEnvironment: selectedEnvironment
+                newSelectedEnvironment: selectedEnvironment,
             });
         }
     };
