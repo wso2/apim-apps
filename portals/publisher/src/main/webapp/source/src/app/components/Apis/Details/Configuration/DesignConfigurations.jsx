@@ -42,6 +42,7 @@ import ThumbnailView from 'AppComponents/Apis/Listing/components/ImageGenerator/
 import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api.js';
 import APIProduct from 'AppData/APIProduct';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import DefaultVersion from './components/DefaultVersion';
 import DescriptionEditor from './components/DescriptionEditor';
 import AccessControl from './components/AccessControl';
@@ -307,6 +308,7 @@ function configReducer(state, configAction) {
  */
 export default function DesignConfigurations() {
     const { api, updateAPI } = useContext(APIContext);
+    const { data: settings } = usePublisherSettings();
     const [isUpdating, setIsUpdating] = useState(false);
     const [errorInAccessRoles, setErrorInAccessRoles] = useState(false);
     const [errorInRoleVisibility, setErrorInRoleVisibility] = useState(false);
@@ -609,9 +611,11 @@ export default function DesignConfigurations() {
                                             />
                                         )}
                                     </Box>
-                                    <Box py={1}>
-                                        <DefaultVersion api={apiConfig} configDispatcher={configDispatcher} />
-                                    </Box>
+                                    { settings && !settings.portalConfigurationOnlyModeEnabled && (
+                                        <Box py={1}>
+                                            <DefaultVersion api={apiConfig} configDispatcher={configDispatcher} />
+                                        </Box>
+                                    )}
                                     <Box pt={2}>
                                         <Button
                                             disabled={errorInAccessRoles ||
