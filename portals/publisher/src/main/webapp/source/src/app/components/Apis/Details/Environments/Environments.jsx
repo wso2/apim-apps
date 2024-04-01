@@ -1682,10 +1682,6 @@ export default function Environments() {
                         )}
                         SelectProps={{
                             MenuProps: {
-                                anchorOrigin: {
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                },
                                 getContentAnchorEl: null,
                             },
                         }}
@@ -1796,10 +1792,6 @@ export default function Environments() {
                     )}
                     SelectProps={{
                         MenuProps: {
-                            anchorOrigin: {
-                                vertical: 'bottom',
-                                horizontal: 'left',
-                            },
                             getContentAnchorEl: null,
                         },
                     }}
@@ -2972,7 +2964,7 @@ export default function Environments() {
                                                         </Button>
                                                     </div>
                                                 ) : (
-                                                    <div style={{display:'flex',justifyContent: 'center'}}>
+                                                    <div style={{ display:'flex', justifyContent: 'center' }}>
                                                         <TextField
                                                             id='revision-selector'
                                                             select
@@ -2985,10 +2977,6 @@ export default function Environments() {
                                                             )}
                                                             SelectProps={{
                                                                 MenuProps: {
-                                                                    anchorOrigin: {
-                                                                        vertical: 'bottom',
-                                                                        horizontal: 'left',
-                                                                    },
                                                                     getContentAnchorEl: null,
                                                                 },
                                                             }}

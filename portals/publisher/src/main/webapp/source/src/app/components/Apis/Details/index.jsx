@@ -410,7 +410,7 @@ class Details extends Component {
                     id: 'Apis.Details.index.api.definition2',
                     defaultMessage: 'API definition',
                 })}
-                route='api definition'
+                route='api-definition'
                 to={pathPrefix + 'api-definition'}
                 Icon={<CodeIcon />}
                 id='left-menu-itemAPIdefinition'

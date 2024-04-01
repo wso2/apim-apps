@@ -105,7 +105,7 @@ export default function RateLimitingCard() {
                     />
                 </Typography>
 
-                <Divider light />
+                <Divider sx={{ opacity: 0.2 }} />
                 <Box mt={1} mb={-2}>
                     {selectedPolicies.map((policy) => {
                         return (

@@ -163,7 +163,7 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
                         </ListItemIcon>
                     </ListItem>
                 </List>
-                <Divider light />
+                <Divider />
                 {policySpec && (
                     <General
                         policyObj={policyObj}
