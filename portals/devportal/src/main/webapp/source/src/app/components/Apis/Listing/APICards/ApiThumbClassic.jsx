@@ -36,7 +36,7 @@ import Popover from '@mui/material/Popover';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
 import EmailIcon from '@mui/icons-material/Email';
 import Divider from '@mui/material/Divider';
-import { useTheme } from '@mui/material';
+import { CardActionArea, useTheme } from '@mui/material';
 import ImageGenerator from './ImageGenerator';
 import Api from '../../../../data/api';
 import { ApiContext } from '../../Details/ApiContext';
@@ -301,14 +301,12 @@ class ApiThumbClassicLegacy extends React.Component {
             color: null,
             backgroundIndex: null,
             imageObj: null,
-            isHover: false,
             imageLoaded: !!defaultApiImage, // Convert the image string to boolean value.
             businessAnchorEl: null,
             buniessOpenPopover: false,
             technicalAnchorEl: null,
             technicalOpenPopover: false,
         };
-        this.toggleMouseOver = this.toggleMouseOver.bind(this);
     }
 
     /**
@@ -363,16 +361,6 @@ class ApiThumbClassicLegacy extends React.Component {
         return path;
     }
 
-    /**
-     * Toggle mouse Hover state to set the card `raised` property
-     *
-     * @param {React.SyntheticEvent} event mouseover and mouseout
-     * @memberof APIThumb
-     */
-    toggleMouseOver(event) {
-        this.setState({ isHover: event.type === 'mouseover' });
-    }
-
     handleBusinessPopoverOpen = (event) => {
         this.setState({ businessAnchorEl: event.currentTarget, buniessOpenPopover: true });
     };
@@ -396,7 +384,7 @@ class ApiThumbClassicLegacy extends React.Component {
      */
     render() {
         const {
-            imageObj, selectedIcon, color, backgroundIndex, category, isHover, imageLoaded,
+            imageObj, selectedIcon, color, backgroundIndex, category, imageLoaded,
         } = this.state;
         const path = this.getPathPrefix();
         const { isMonetizationEnabled } = this.context;
@@ -571,265 +559,279 @@ class ApiThumbClassicLegacy extends React.Component {
             );
         }
         return (
-            <StyledCard
-                onMouseOver={this.toggleMouseOver}
-                onFocus={this.toggleMouseOver}
-                onMouseOut={this.toggleMouseOver}
-                onBlur={this.toggleMouseOver}
-                raised={isHover}
-                className={classNames('image-thumbnail', classes.card)}
-            >
-                {api.advertiseInfo && api.advertiseInfo.advertised && (
-                    <div className={classes.ribbon} data-testid='third-party-api-card-label'>third party</div>
-                )}
-                {isMonetizationEnabled && (
-                    <div className={classNames(classes.textblock, 'image-thumb-text-block')}>{api.monetizationLabel}</div>
-                )}
-                <Link className={classNames(classes.actionArea, 'image-thumb-action-area')} to={detailsLink} area-label={'Go to ' + name}>
-                    <div style={{ position: 'relative' }}>
-                        <CardMedia area-hidden='true' classes={{ root: 'image-thumb-card-root' }}>
-                            {!defaultImage && ImageView}
-                            {defaultImage && <img src={app.context + defaultImage} alt='img' />}
-                        </CardMedia>
-                        {tileDisplayInfo.showMonetizedState && api.monetizedInfo && (
-                            <div className={classes.thumbLeft} style={{ position: 'absolute', bottom: 0 }}>
-                                <MonetizationOnIcon fontSize='medium' style={{ color: '#FFD700', paddingLeft: '2px' }} />
-                            </div>
-                        )}
-                    </div>
-                    <CardContent classes={{ root: classNames(classes.apiDetails, 'image-thumb-card-content') }}>
-                        <Typography
-                            className={classNames(classes.thumbHeader, 'image-thumb-card-thumb-header')}
-                            variant='h5'
-                            component='h2'
-                            gutterBottom
-                            onClick={this.handleRedirectToAPIOverview}
-                            title={name}
-                        >
-                            {name}
-                        </Typography>
-                        <div className={classNames(classes.row, 'image-thumb-provider-wrapper')}>
-                            <Typography
-                                variant='caption'
-                                gutterBottom
-                                align='left'
-                                className={classNames(classes.thumbBy, 'image-thumb-provider')}
-                            >
-                                <FormattedMessage defaultMessage='By' id='Apis.Listing.ApiThumb.by' />
-                                <FormattedMessage defaultMessage=' : ' id='Apis.Listing.ApiThumb.by.colon' />
-                                {provider}
-                            </Typography>
-                        </div>
-                        <div className={classNames(classes.thumbInfo, 'image-thumb-info')}>
-                            <div className={classNames(classes.row, 'image-thumb-row')}>
-                                <div className={classNames(classes.thumbLeft, 'image-thumb-left-version')}>
-                                    <Typography variant='subtitle1' component='div'>{version}</Typography>
-                                    <Typography variant='caption' component='div' gutterBottom align='left'>
-                                        <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
-                                    </Typography>
-                                </div>
-                            </div>
-                            <div className={classNames(classes.row, 'image-thumb-context')}>
-                                <div className={classes.thumbRight}>
-                                    <Typography
-                                        variant='subtitle1'
-                                        component='div'
-                                        align='right'
-                                        className={classes.contextBox}
-                                    >
-                                        {context}
-                                    </Typography>
-                                    <Typography
-                                        variant='caption'
-                                        gutterBottom
-                                        align='right'
-                                        className={classes.context}
-                                        Component='div'
-                                    >
-                                        <FormattedMessage defaultMessage='Context' id='Apis.Listing.ApiThumb.context' />
-                                    </Typography>
-                                </div>
-                            </div>
-                        </div>
-                        {(tileDisplayInfo.showBusinessDetails || tileDisplayInfo.showTechnicalDetails) && (
-                            <>
-                                <Box mt={1} mb={1}>
-                                    <Divider />
-                                    <div>
-                                        <div className={classes.row}>
-                                            <div className={classes.thumbLeft}>
-                                                <Typography variant='body2' gutterBottom align='left'>
-                                                    <FormattedMessage defaultMessage='Owners' id='Apis.Listing.ApiThumb.owners' />
-                                                </Typography>
-                                            </div>
-                                            {tileDisplayInfo.showBusinessDetails && (
-                                                <div>
-                                                    <Typography
-                                                        variant='caption'
-                                                        gutterBottom
-                                                        align='left'
-                                                        onMouseEnter={this.handleBusinessPopoverOpen}
-                                                        onMouseLeave={this.handleBusinessPopoverClose}
-                                                        className={classes.typo}
-                                                    >
-                                                        <div style={{ paddingLeft: '5px', whiteSpace: 'nowrap', paddingRight: '5px' }}>
-                                                            <FormattedMessage
-                                                                defaultMessage='Business'
-                                                                id='Apis.Listing.ApiThumb.owners.business'
-                                                            />
-                                                            {' : '}
-                                                        </div>
-                                                        <div className={classes.truncate}>
-                                                            {api.businessInformation.businessOwner
-                                                                ? (api.businessInformation.businessOwner)
-                                                                : (
-                                                                    <span
-                                                                        style={{ color: '#808080', fontWeight: 'bold' }}
-                                                                    >
-                                                                        Not Provided
-                                                                    </span>
-                                                                )}
-                                                        </div>
-                                                    </Typography>
-                                                    {api.businessInformation.businessOwnerEmail && (
-                                                        <Popover
-                                                            id='mouse-over-popover'
-                                                            className={classes.popover}
-                                                            classes={{
-                                                                paper: classes.paper,
-                                                            }}
-                                                            open={this.state.buniessOpenPopover}
-                                                            anchorEl={this.state.businessAnchorEl}
-                                                            anchorOrigin={{
-                                                                vertical: 'top',
-                                                                horizontal: 'right',
-                                                            }}
-                                                            transformOrigin={{
-                                                                vertical: 'bottom',
-                                                                horizontal: 'left',
-                                                            }}
-                                                            onClose={this.handleBusinessPopoverClose}
-                                                            disableRestoreFocus
-                                                        >
-                                                            <div style={{
-                                                                display: 'flex',
-                                                                flexDirection: 'row',
-                                                                alignItems: 'center',
-                                                            }}
-                                                            >
-                                                                <EmailIcon fontSize='small' />
-                                                                <Typography variant='body2' style={{ marginLeft: '8px' }}>
-                                                                    {api.businessInformation.businessOwnerEmail}
-                                                                </Typography>
-                                                            </div>
-                                                        </Popover>
-                                                    )}
-                                                </div>
-                                            )}
-                                            {tileDisplayInfo.showTechnicalDetails && (
-                                                <div>
-                                                    <Typography
-                                                        variant='caption'
-                                                        gutterBottom
-                                                        align='left'
-                                                        onMouseEnter={this.handleTechnicalPopoverOpen}
-                                                        onMouseLeave={this.handleTechnicalPopoverClose}
-                                                        className={classes.typo}
-                                                    >
-                                                        <div style={{ paddingLeft: '5px', whiteSpace: 'nowrap', paddingRight: '5px' }}>
-                                                            <FormattedMessage
-                                                                defaultMessage='Technical'
-                                                                id='Apis.Listing.ApiThumb.owners.technical'
-                                                            />
-                                                            {' : '}
-                                                        </div>
-                                                        <div className={classes.truncate}>
-                                                            {api.businessInformation.technicalOwner
-                                                                ? (api.businessInformation.technicalOwner)
-                                                                : (
-                                                                    <span
-                                                                        style={{ color: '#808080', fontWeight: 'bold' }}
-                                                                    >
-                                                                        Not Provided
-                                                                    </span>
-                                                                )}
-                                                        </div>
-                                                    </Typography>
-                                                    {api.businessInformation.technicalOwnerEmail && (
-                                                        <Popover
-                                                            id='mouse-over-popover'
-                                                            className={classes.popover}
-                                                            classes={{
-                                                                paper: classes.paper,
-                                                            }}
-                                                            open={this.state.technicalOpenPopover}
-                                                            anchorEl={this.state.technicalAnchorEl}
-                                                            anchorOrigin={{
-                                                                vertical: 'top',
-                                                                horizontal: 'right',
-                                                            }}
-                                                            transformOrigin={{
-                                                                vertical: 'bottom',
-                                                                horizontal: 'left',
-                                                            }}
-                                                            onClose={this.handleTechnicalPopoverClose}
-                                                            disableRestoreFocus
-                                                        >
-                                                            <div style={{
-                                                                display: 'flex',
-                                                                flexDirection: 'row',
-                                                                alignItems: 'center',
-                                                            }}
-                                                            >
-                                                                <EmailIcon fontSize='small' />
-                                                                <Typography variant='body2' style={{ marginLeft: '8px' }}>
-                                                                    {api.businessInformation.technicalOwnerEmail}
-                                                                </Typography>
-                                                            </div>
-                                                        </Popover>
-                                                    )}
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-                                    <Divider />
-                                </Box>
-                            </>
-                        )}
-                        <div className={classNames(classes.thumbInfo, 'api-thumb-rating-chip-wrapper')}>
-                            {showRating && (
-                                <div className={classNames(classes.thumbLeftAction, 'api-thumb-rating-wrapper')}>
-                                    <Typography
-                                        variant='subtitle1'
-                                        component='div'
-                                        aria-label='API Rating'
-                                        gutterBottom
-                                        align='left'
-                                        className={classNames('api-thumb-rating', classes.ratingWrapper)}
-                                    >
-                                        <StarRatingBar
-                                            apiRating={api.avgRating}
-                                            apiId={api.id}
-                                            isEditable={false}
-                                            showSummary={false}
-                                        />
-                                    </Typography>
+            <StyledCard className={classNames('image-thumbnail', classes.card)}>
+                <CardActionArea>
+                    {api.advertiseInfo && api.advertiseInfo.advertised && (
+                        <div className={classes.ribbon} data-testid='third-party-api-card-label'>third party</div>
+                    )}
+                    {isMonetizationEnabled && (
+                        <div className={classNames(classes.textblock, 'image-thumb-text-block')}>{api.monetizationLabel}</div>
+                    )}
+                    <Link
+                        className={classNames(classes.actionArea, 'image-thumb-action-area')}
+                        to={detailsLink}
+                        area-label={'Go to ' + name}
+                    >
+                        <div style={{ position: 'relative' }}>
+                            <CardMedia area-hidden='true' classes={{ root: 'image-thumb-card-root' }}>
+                                {!defaultImage && ImageView}
+                                {defaultImage && <img src={app.context + defaultImage} alt='img' />}
+                            </CardMedia>
+                            {tileDisplayInfo.showMonetizedState && api.monetizedInfo && (
+                                <div className={classes.thumbLeft} style={{ position: 'absolute', bottom: 0 }}>
+                                    <MonetizationOnIcon fontSize='medium' style={{ color: '#FFD700', paddingLeft: '2px' }} />
                                 </div>
                             )}
-                            <div className={classNames(classes.thumbRight, 'api-thumb-chips-wrapper')}>
+                        </div>
+                        <CardContent classes={{ root: classNames(classes.apiDetails, 'image-thumb-card-content') }}>
+                            <Typography
+                                className={classNames(classes.thumbHeader, 'image-thumb-card-thumb-header')}
+                                variant='h5'
+                                component='h2'
+                                gutterBottom
+                                onClick={this.handleRedirectToAPIOverview}
+                                title={name}
+                            >
+                                {name}
+                            </Typography>
+                            <div className={classNames(classes.row, 'image-thumb-provider-wrapper')}>
                                 <Typography
-                                    variant='subtitle1'
-                                    component='div'
+                                    variant='caption'
                                     gutterBottom
-                                    align='right'
-                                    className={classes.chipWrapper}
+                                    align='left'
+                                    className={classNames(classes.thumbBy, 'image-thumb-provider')}
                                 >
-                                    {showChips()}
+                                    <FormattedMessage defaultMessage='By' id='Apis.Listing.ApiThumb.by' />
+                                    <FormattedMessage defaultMessage=' : ' id='Apis.Listing.ApiThumb.by.colon' />
+                                    {provider}
                                 </Typography>
                             </div>
-                        </div>
-                    </CardContent>
-                </Link>
+                            <div className={classNames(classes.thumbInfo, 'image-thumb-info')}>
+                                <div className={classNames(classes.row, 'image-thumb-row')}>
+                                    <div className={classNames(classes.thumbLeft, 'image-thumb-left-version')}>
+                                        <Typography variant='subtitle1' component='div'>{version}</Typography>
+                                        <Typography variant='caption' component='div' gutterBottom align='left'>
+                                            <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
+                                        </Typography>
+                                    </div>
+                                </div>
+                                <div className={classNames(classes.row, 'image-thumb-context')}>
+                                    <div className={classes.thumbRight}>
+                                        <Typography
+                                            variant='subtitle1'
+                                            component='div'
+                                            align='right'
+                                            className={classes.contextBox}
+                                        >
+                                            {context}
+                                        </Typography>
+                                        <Typography
+                                            variant='caption'
+                                            gutterBottom
+                                            align='right'
+                                            className={classes.context}
+                                            Component='div'
+                                        >
+                                            <FormattedMessage defaultMessage='Context' id='Apis.Listing.ApiThumb.context' />
+                                        </Typography>
+                                    </div>
+                                </div>
+                            </div>
+                            {(tileDisplayInfo.showBusinessDetails || tileDisplayInfo.showTechnicalDetails) && (
+                                <>
+                                    <Box mt={1} mb={1}>
+                                        <Divider />
+                                        <div>
+                                            <div className={classes.row}>
+                                                <div className={classes.thumbLeft}>
+                                                    <Typography variant='body2' gutterBottom align='left'>
+                                                        <FormattedMessage defaultMessage='Owners' id='Apis.Listing.ApiThumb.owners' />
+                                                    </Typography>
+                                                </div>
+                                                {tileDisplayInfo.showBusinessDetails && (
+                                                    <div>
+                                                        <Typography
+                                                            variant='caption'
+                                                            gutterBottom
+                                                            align='left'
+                                                            onMouseEnter={this.handleBusinessPopoverOpen}
+                                                            onMouseLeave={this.handleBusinessPopoverClose}
+                                                            className={classes.typo}
+                                                        >
+                                                            <div style={{ paddingLeft: '5px', whiteSpace: 'nowrap', paddingRight: '5px' }}>
+                                                                <FormattedMessage
+                                                                    defaultMessage='Business'
+                                                                    id='Apis.Listing.ApiThumb.owners.business'
+                                                                />
+                                                                {' : '}
+                                                            </div>
+                                                            <div className={classes.truncate}>
+                                                                {api.businessInformation.businessOwner
+                                                                    ? (api.businessInformation.businessOwner)
+                                                                    : (
+                                                                        <span
+                                                                            style={{ color: '#808080', fontWeight: 'bold' }}
+                                                                        >
+                                                                            Not Provided
+                                                                        </span>
+                                                                    )}
+                                                            </div>
+                                                        </Typography>
+                                                        {api.businessInformation.businessOwnerEmail && (
+                                                            <Popover
+                                                                id='mouse-over-popover'
+                                                                className={classes.popover}
+                                                                classes={{
+                                                                    paper: classes.paper,
+                                                                }}
+                                                                open={this.state.buniessOpenPopover}
+                                                                anchorEl={this.state.businessAnchorEl}
+                                                                anchorOrigin={{
+                                                                    vertical: 'top',
+                                                                    horizontal: 'right',
+                                                                }}
+                                                                transformOrigin={{
+                                                                    vertical: 'bottom',
+                                                                    horizontal: 'left',
+                                                                }}
+                                                                onClose={this.handleBusinessPopoverClose}
+                                                                disableRestoreFocus
+                                                            >
+                                                                <div style={{
+                                                                    display: 'flex',
+                                                                    flexDirection: 'row',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                                >
+                                                                    <EmailIcon fontSize='small' />
+                                                                    <Typography
+                                                                        variant='body2'
+                                                                        style={{ marginLeft: '8px' }}
+                                                                    >
+                                                                        {api.businessInformation.businessOwnerEmail}
+                                                                    </Typography>
+                                                                </div>
+                                                            </Popover>
+                                                        )}
+                                                    </div>
+                                                )}
+                                                {tileDisplayInfo.showTechnicalDetails && (
+                                                    <div>
+                                                        <Typography
+                                                            variant='caption'
+                                                            gutterBottom
+                                                            align='left'
+                                                            onMouseEnter={this.handleTechnicalPopoverOpen}
+                                                            onMouseLeave={this.handleTechnicalPopoverClose}
+                                                            className={classes.typo}
+                                                        >
+                                                            <div
+                                                                style={{
+                                                                    paddingLeft: '5px',
+                                                                    whiteSpace: 'nowrap',
+                                                                    paddingRight: '5px',
+                                                                }}
+                                                            >
+                                                                <FormattedMessage
+                                                                    defaultMessage='Technical'
+                                                                    id='Apis.Listing.ApiThumb.owners.technical'
+                                                                />
+                                                                {' : '}
+                                                            </div>
+                                                            <div className={classes.truncate}>
+                                                                {api.businessInformation.technicalOwner
+                                                                    ? (api.businessInformation.technicalOwner)
+                                                                    : (
+                                                                        <span
+                                                                            style={{
+                                                                                color: '#808080',
+                                                                                fontWeight: 'bold',
+                                                                            }}
+                                                                        >
+                                                                            Not Provided
+                                                                        </span>
+                                                                    )}
+                                                            </div>
+                                                        </Typography>
+                                                        {api.businessInformation.technicalOwnerEmail && (
+                                                            <Popover
+                                                                id='mouse-over-popover'
+                                                                className={classes.popover}
+                                                                classes={{
+                                                                    paper: classes.paper,
+                                                                }}
+                                                                open={this.state.technicalOpenPopover}
+                                                                anchorEl={this.state.technicalAnchorEl}
+                                                                anchorOrigin={{
+                                                                    vertical: 'top',
+                                                                    horizontal: 'right',
+                                                                }}
+                                                                transformOrigin={{
+                                                                    vertical: 'bottom',
+                                                                    horizontal: 'left',
+                                                                }}
+                                                                onClose={this.handleTechnicalPopoverClose}
+                                                                disableRestoreFocus
+                                                            >
+                                                                <div style={{
+                                                                    display: 'flex',
+                                                                    flexDirection: 'row',
+                                                                    alignItems: 'center',
+                                                                }}
+                                                                >
+                                                                    <EmailIcon fontSize='small' />
+                                                                    <Typography
+                                                                        variant='body2'
+                                                                        style={{ marginLeft: '8px' }}
+                                                                    >
+                                                                        {api.businessInformation.technicalOwnerEmail}
+                                                                    </Typography>
+                                                                </div>
+                                                            </Popover>
+                                                        )}
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <Divider />
+                                    </Box>
+                                </>
+                            )}
+                            <div className={classNames(classes.thumbInfo, 'api-thumb-rating-chip-wrapper')}>
+                                {showRating && (
+                                    <div className={classNames(classes.thumbLeftAction, 'api-thumb-rating-wrapper')}>
+                                        <Typography
+                                            variant='subtitle1'
+                                            component='div'
+                                            aria-label='API Rating'
+                                            gutterBottom
+                                            align='left'
+                                            className={classNames('api-thumb-rating', classes.ratingWrapper)}
+                                        >
+                                            <StarRatingBar
+                                                apiRating={api.avgRating}
+                                                apiId={api.id}
+                                                isEditable={false}
+                                                showSummary={false}
+                                            />
+                                        </Typography>
+                                    </div>
+                                )}
+                                <div className={classNames(classes.thumbRight, 'api-thumb-chips-wrapper')}>
+                                    <Typography
+                                        variant='subtitle1'
+                                        component='div'
+                                        gutterBottom
+                                        align='right'
+                                        className={classes.chipWrapper}
+                                    >
+                                        {showChips()}
+                                    </Typography>
+                                </div>
+                            </div>
+                        </CardContent>
+                    </Link>
+                </CardActionArea>
             </StyledCard>
         );
     }

@@ -2224,7 +2224,7 @@ export default function Environments() {
                                                             direction='column'
                                                             spacing={2}
                                                         >
-                                                            <Grid item xs={12}>
+                                                            <Grid item xs={12} sx={{ width: '100%' }}>
                                                                 <Tooltip
                                                                     title={(
                                                                         <>
@@ -2248,10 +2248,6 @@ export default function Environments() {
                                                                         )}
                                                                         SelectProps={{
                                                                             MenuProps: {
-                                                                                anchorOrigin: {
-                                                                                    vertical: 'bottom',
-                                                                                    horizontal: 'left',
-                                                                                },
                                                                                 getContentAnchorEl: null,
                                                                             },
                                                                         }}

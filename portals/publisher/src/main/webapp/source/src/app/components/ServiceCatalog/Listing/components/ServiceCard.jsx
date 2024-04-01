@@ -29,12 +29,8 @@ const classes = {
     usageChip: `${PREFIX}-usageChip`
 };
 
-const StyledPaper = styled(Paper)((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.root}`]: {
+const StyledPaper = styled(Paper)(({ theme }) => ({
+    [`&.${classes.root}`]: {
         width: theme.spacing(25),
         height: theme.spacing(35),
         backgroundColor: theme.palette.background.paper,

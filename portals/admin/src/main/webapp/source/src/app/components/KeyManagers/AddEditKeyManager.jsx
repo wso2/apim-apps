@@ -776,11 +776,13 @@ function AddEditKeyManager(props) {
                                             onChange={onChange}
                                             data-testid='key-manager-type-select'
                                         >
-                                            {settings.keyManagerConfiguration.map((keymanager) => (
-                                                <MenuItem key={keymanager.type} value={keymanager.type}>
-                                                    {keymanager.displayName || keymanager.type}
-                                                </MenuItem>
-                                            ))}
+                                            {settings.keyManagerConfiguration
+                                                .sort((a, b) => a.displayName.localeCompare(b.displayName))
+                                                .map((keymanager) => (
+                                                    <MenuItem key={keymanager.type} value={keymanager.type}>
+                                                        {keymanager.displayName || keymanager.type}
+                                                    </MenuItem>
+                                                ))}
                                             <MenuItem key='other' value='other' id='Admin.KeyManager.form.type.menu'>
                                                 {'Other' || 'other'}
                                             </MenuItem>
