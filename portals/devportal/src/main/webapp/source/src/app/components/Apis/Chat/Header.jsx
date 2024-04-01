@@ -98,7 +98,7 @@ function Header(props) {
                 </Box>
                 <Box display='flex'>
                     <Typography className={classes.chatbotName}>
-                        Marketplace Assistant
+                        API Marketplace Assistant
                     </Typography>
                     <Typography className={classes.betaChip}>
                         Beta

@@ -28,6 +28,7 @@ import { ResizableBox } from 'react-resizable';
 import 'react-resizable/css/styles.css';
 import ChatMessages from './ChatMessages';
 import Header from './Header';
+import findBestMatchingAnswer from './SimilaritySearch';
 
 /**
  * Renders Chat Messages view..
@@ -63,7 +64,16 @@ function ChatWindow(props) {
     const handleSend = async (message) => {
         responseRef.current = [...responseRef.current, { role: 'user', content: message.content.trim() }];
         setMessages(responseRef.current);
-        apiCall(message.content);
+
+        const query = message.content.trim().toLowerCase();
+
+        const response = findBestMatchingAnswer(query);
+        if (response) {
+            responseRef.current = [...responseRef.current, { role: 'assistant', content: response.trim() }];
+            setMessages(responseRef.current);
+        } else {
+            apiCall(message.content);
+        }
     };
 
     const handleReset = () => {

@@ -47,6 +47,7 @@ class Logout extends Component {
      */
     componentDidMount() {
         const environmentName = Utils.getEnvironment().label;
+        localStorage.removeItem('messages'); // Clear marketplace assistant chat history when logout
         localStorage.removeItem(`${User.CONST.LOCALSTORAGE_USER}_${environmentName}`);
         localStorage.removeItem('graphiql:tabState');
         localStorage.removeItem('graphiql:queries');

@@ -112,45 +112,6 @@ function ChatMessage(props) {
                         </div>
                         <Typography variant='body1' style={{ fontWeight: '500', fontSize: '12pt' }}>Assistant</Typography>
                     </Box>
-                    {message.apis && (
-                        <Box display='flex' flexDirection='row' flexWrap='wrap' marginLeft='26px' marginRight='16px' width='100%'>
-                            {message.apis.map((api) => (
-                                <a
-                                    key={api.id}
-                                    href={api.apiPath}
-                                    target='_blank'
-                                    rel='noopener noreferrer'
-                                    style={{
-                                        textDecoration: 'none',
-                                        color: 'inherit',
-                                        width: '33%',
-                                    }}
-                                >
-                                    <Card style={{
-                                        margin: '0 10px 10px 0', width: '97%', height: '56px', backgroundColor: '#6694a7',
-                                    }}
-                                    >
-                                        <CardContent style={{ wordWrap: 'break-word' }}>
-                                            <Typography
-                                                variant='subtitle1'
-                                                gutterBottom
-                                                style={{
-                                                    whiteSpace: 'nowrap',
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                    cursor: 'pointer',
-                                                    margin: 0,
-                                                    color: '#fff',
-                                                }}
-                                            >
-                                                {api.name}
-                                            </Typography>
-                                        </CardContent>
-                                    </Card>
-                                </a>
-                            ))}
-                        </Box>
-                    )}
                 </Box>
             )}
 
@@ -181,6 +142,60 @@ function ChatMessage(props) {
                     </MuiMarkdown>
                 </Typography>
             </Box>
+            <Box display='flex-start' alignItems='center' flexDirection='column' width='90%'>
+                {message.apis && (
+                    <Box display='flex' flexDirection='row' flexWrap='wrap' marginLeft='26px' marginRight='16px' width='100%'>
+                        {message.apis.map((api) => (
+                            <a
+                                key={api.id}
+                                href={api.apiPath}
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                style={{
+                                    textDecoration: 'none',
+                                    color: 'inherit',
+                                    width: '33%',
+                                }}
+                            >
+                                <Card style={{
+                                    margin: '10px 10px 0 0', width: '97%', height: '70px', backgroundColor: '#6694a7',
+                                }}
+                                >
+                                    <CardContent style={{ wordWrap: 'break-word', alignItems: 'center', cursor: 'pointer' }}>
+                                        <Typography
+                                            variant='subtitle1'
+                                            gutterBottom
+                                            style={{
+                                                whiteSpace: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                margin: 0,
+                                                color: '#fff',
+                                            }}
+                                        >
+                                            {api.name}
+                                        </Typography>
+                                        <Typography
+                                            variant='subtitle1'
+                                            gutterBottom
+                                            style={{
+                                                whiteSpace: 'nowrap',
+                                                overflow: 'hidden',
+                                                textOverflow: 'ellipsis',
+                                                fontSize: '10px',
+                                                color: '#fff',
+                                            }}
+                                        >
+                                            Version:
+                                            {api.version}
+                                        </Typography>
+                                    </CardContent>
+                                </Card>
+                            </a>
+                        ))}
+                    </Box>
+                )}
+            </Box>
         </Box>
     );
 }
@@ -189,7 +204,8 @@ ChatMessage.propTypes = {
     message: PropTypes.shape({
         role: PropTypes.string.isRequired,
         content: PropTypes.string.isRequired,
-        apis: PropTypes.arrayOf(PropTypes.string), // Added propType for apis
+        apis: PropTypes.arrayOf(PropTypes.string),
     }).isRequired,
+    user: PropTypes.string.isRequired,
 };
 export default ChatMessage;

@@ -36,13 +36,14 @@ function AISearchAssistant() {
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState(null);
     const [chatbotDisabled, setChatbotDisabled] = useState(!marketplaceAssistantEnabled);
-    const [user, setUser] = useState('You');
+    const userRef = useRef('You');
     const responseRef = useRef([]);
 
     const introMessage = {
         role: 'assistant',
-        content: 'Hi there! I\'m Marketplace Assistant. I can help you with finding APIs '
-            + 'and providing information related to APIs. How can I help you?',
+        content: 'Hello! Welcome to Marketplace Assistant. I\'m here to assist you in discovering and obtaining information about APIs.'
+        + ' Please note that the responses provided are limited to publicly available APIs. During the trial period,'
+        + ' users are granted the ability to upload up to specific no of APIs and the number of tokens available for chat is limited.',
     };
 
     const pathName = window.location.pathname;
@@ -60,7 +61,7 @@ function AISearchAssistant() {
                     const { apis } = result.body;
 
                     const apiPaths = apis.map((api) => {
-                        return { apiPath: `${origin}${pathName}/${api.apiId}/overview${search}`, name: api.apiName };
+                        return { apiPath: `${origin}${pathName}/${api.apiId}/overview${search}`, name: api.apiName, version: api.version };
                     });
                     responseRef.current = [...responseRef.current, { role: 'assistant', content: result.body.response, apis: apiPaths }];
                     setMessages(responseRef.current);
@@ -69,18 +70,22 @@ function AISearchAssistant() {
                     let content;
                     try {
                         switch (error.response.status) {
-                            case 401: // Unauthorized
-                                content = 'Provided token is invalid. Please use a valid token and try again.';
+                            case 401:
+                                content = 'Apologies for the inconvenience. It appears that your token is invalid or expired. Please'
+                                + ' provide a valid token or upgrade your subscription plan.';
                                 break;
                             case 429: // Token limit exceeded
-                                content = 'Token limit is exceeded. Please try again later.';
+                                content = 'Apologies for the inconvenience. It appears that the token limit has been exceeded.'
+                                + ' Please attempt your request again.';
                                 break;
                             default:
-                                content = 'Something went wrong. Please try again later.';
+                                content = 'Apologies for the inconvenience. It seems that something went wrong with the'
+                                + ' Marketplace Assistant. Please try again later.';
                                 break;
                         }
                     } catch (err) {
-                        content = 'Something went wrong. Please try again later.';
+                        content = 'Apologies for the inconvenience. It seems that something went wrong with the'
+                        + ' Marketplace Assistant. Please try again later.';
                     }
 
                     const errorMessage = { role: 'assistant', content };
@@ -105,7 +110,7 @@ function AISearchAssistant() {
 
     useEffect(() => {
         if (messages) {
-            const messagesJSON = JSON.stringify(messages);
+            const messagesJSON = JSON.stringify({ messages, timestamp: Date.now() });
             localStorage.setItem('messages', messagesJSON);
         }
     }, [messages]);
@@ -116,13 +121,19 @@ function AISearchAssistant() {
             if (loggedInUser) {
                 setUser(loggedInUser);
             }
-            const messagesJSON = localStorage.getItem('messages');
-            const loadedMessages = JSON.parse(messagesJSON);
-            if (loadedMessages) {
-                setMessages(loadedMessages);
+            const storedData = localStorage.getItem('messages');
+            if (storedData) {
+                const { messages: storedMessages, timestamp } = JSON.parse(storedData);
+                if (Date.now() - timestamp > 60 * 60 * 1000) {
+                    setMessages([introMessage]);
+                    localStorage.setItem('messages',
+                        JSON.stringify({ messages: [introMessage], timestamp: Date.now() }));
+                } else {
+                    setMessages(storedMessages);
+                }
             } else {
                 setMessages([introMessage]);
-                localStorage.setItem('messages', JSON.stringify([introMessage]));
+                localStorage.setItem('messages', JSON.stringify({ messages: [introMessage], timestamp: Date.now() }));
             }
         } catch (error) {
             console.error('Error loading messages from localStorage:', error);
@@ -146,7 +157,7 @@ function AISearchAssistant() {
                         messages={messages}
                         setMessages={setMessages}
                         introMessage={introMessage}
-                        user={user}
+                        user={userRef.current}
                         loading={loading}
                         responseRef={responseRef}
                         apiCall={apiCall}
