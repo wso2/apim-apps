@@ -293,13 +293,7 @@ export default function IntegrationDownshift(props) {
 
                                 <div {...getMenuProps()}>
                                     {isOpen ? (
-                                        <Paper square sx={{
-                                            position: 'absolute',
-                                            zIndex: 1000,
-                                            marginTop: -2,
-                                            left: 0,
-                                            right: 0,
-                                        }}>
+                                        <Paper square>
                                             {getSuggestions(inputValue, { showEmpty: true }, arns)
                                                 .map((suggestion, index) => renderSuggestion({
                                                     suggestion,

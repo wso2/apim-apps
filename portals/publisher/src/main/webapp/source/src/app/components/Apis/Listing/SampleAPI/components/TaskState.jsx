@@ -67,8 +67,7 @@ export default function TaskState(props) {
 
     return (
         <>
-            <Grid item md={2} lg={3} xs={3} />
-            <Grid item md={9} lg={8} xs={9}>
+            <Grid item xs={12}>
                 <Alert
                     icon={inProgress ? <CircularProgress size={20} thickness={2} /> : null}
                     variant={errors ? 'standard' : 'plain'}
@@ -77,7 +76,6 @@ export default function TaskState(props) {
                     {message}
                 </Alert>
             </Grid>
-            <Grid item md={1} lg={1} xs={0} />
         </>
     );
 }
