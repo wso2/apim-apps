@@ -45,9 +45,9 @@ function ChatMessages(props) {
     const subjectLine = 'API Marketplace Assistant is an early feature and can make mistakes. Verify its outputs.';
 
     const style = {
-        width: '30px',
-        height: '30px',
-        backgroundColor: '#567189',
+        width: '26px',
+        height: '26px',
+        backgroundColor: '#10597f',
         alignItems: 'center',
         justifyContent: 'center',
         display: 'flex',
@@ -133,7 +133,7 @@ function ChatMessages(props) {
                                 borderRadius='10px'
                                 justifyContent='flex-start'
                                 px={3}
-                                marginLeft='16px'
+                                marginLeft='12px'
                                 marginBottom='10px'
                             >
                                 <Loader />
