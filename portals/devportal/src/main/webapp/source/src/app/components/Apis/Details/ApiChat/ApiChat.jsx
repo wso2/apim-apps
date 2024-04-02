@@ -292,7 +292,7 @@ const ApiChat = () => {
     const getTooManyRequestsErrorMessage = () => {
         return intl.formatMessage({
             id: 'Apis.Details.ApiChat.components.throttledOut.error',
-            defaultMessage: 'The request has been throttled out. Please try again later.',
+            defaultMessage: 'Your request has been throttled out. Please reach out to the administrator for assistance.',
         });
     };
 
