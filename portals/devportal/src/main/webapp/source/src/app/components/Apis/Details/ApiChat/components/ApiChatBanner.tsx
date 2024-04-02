@@ -104,7 +104,7 @@ const ApiChatBanner: React.FC = () => {
                             {intl.formatMessage({
                                 id: 'Apis.Details.ApiChat.components.ApiChatBanner.apiChatMainTextContent',
                                 defaultMessage:
-                    'Effortlessly engage with your APIs in natural language with our API Chat Agent powered by Azure '
+                    'Effortlessly test your APIs in natural language with our API Chat Agent powered by Azure '
                     + "OpenAI's cutting-edge language models.",
                             })}
                         </Typography>

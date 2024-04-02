@@ -69,13 +69,12 @@ function AISearchAssistant() {
                     let content;
                     try {
                         switch (error.response.status) {
-                            case 401:
+                            case 401: // Unauthorized
                                 content = 'Apologies for the inconvenience. It appears that your token is invalid or expired. Please'
                                 + ' provide a valid token or upgrade your subscription plan.';
                                 break;
                             case 429: // Token limit exceeded
-                                content = 'Apologies for the inconvenience. It appears that the token limit has been exceeded.'
-                                + ' Please attempt your request again.';
+                                content = 'Apologies for the inconvenience. It appears that the token limit has been exceeded.';
                                 break;
                             default:
                                 content = 'Apologies for the inconvenience. It seems that something went wrong with the'
