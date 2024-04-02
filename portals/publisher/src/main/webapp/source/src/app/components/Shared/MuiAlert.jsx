@@ -43,11 +43,7 @@ const classes = {
     plainError: `${PREFIX}-plainError`
 };
 
-const StyledPaper = styled(Paper)((
-    {
-        theme
-    }
-) => {
+const StyledPaper = styled(Paper)(({ theme }) => {
     const getColor = theme.palette.mode === 'light' ? darken : lighten;
     const getBackgroundColor = theme.palette.mode === 'light' ? lighten : darken;
 
@@ -59,128 +55,128 @@ const StyledPaper = styled(Paper)((
             backgroundColor: 'transparent',
             display: 'flex',
             padding: '6px 16px',
-            /* Styles applied to the root element if `variant="standard"` and `color="success"`. */
-            [`&.MuiAlert-standardSuccess`]: {
-                color: getColor(theme.palette.success.main, 0.6),
-                backgroundColor: getBackgroundColor(theme.palette.success.main, 0.9),
-                '& $icon': {
-                    color: theme.palette.success.main,
-                },
+        },
+        /* Styles applied to the root element if `variant="standard"` and `color="success"`. */
+        [`&.MuiAlert-standardSuccess`]: {
+            color: getColor(theme.palette.success.main, 0.6),
+            backgroundColor: getBackgroundColor(theme.palette.success.main, 0.9),
+            '& $icon': {
+                color: theme.palette.success.main,
             },
-            /* Styles applied to the root element if `variant="standard"` and `color="info"`. */
-            [`&.MuiAlert-standardInfo`]: {
-                color: getColor(theme.palette.info.main, 0.6),
-                backgroundColor: getBackgroundColor(theme.palette.info.main, 0.9),
-                '& $icon': {
-                    color: theme.palette.info.main,
-                },
+        },
+        /* Styles applied to the root element if `variant="standard"` and `color="info"`. */
+        [`&.MuiAlert-standardInfo`]: {
+            color: getColor(theme.palette.info.main, 0.6),
+            backgroundColor: getBackgroundColor(theme.palette.info.main, 0.9),
+            '& $icon': {
+                color: theme.palette.info.main,
             },
-            /* Styles applied to the root element if `variant="standard"` and `color="warning"`. */
-            [`&.MuiAlert-standardWarning`]: {
-                color: getColor(theme.palette.warning.main, 0.6),
-                backgroundColor: getBackgroundColor(theme.palette.warning.main, 0.9),
-                '& $icon': {
-                    color: theme.palette.warning.main,
-                },
+        },
+        /* Styles applied to the root element if `variant="standard"` and `color="warning"`. */
+        [`&.MuiAlert-standardWarning`]: {
+            color: getColor(theme.palette.warning.main, 0.6),
+            backgroundColor: getBackgroundColor(theme.palette.warning.main, 0.9),
+            '& $icon': {
+                color: theme.palette.warning.main,
             },
-            /* Styles applied to the root element if `variant="standard"` and `color="error"`. */
-            [`&.MuiAlert-standardError`]: {
-                color: getColor(theme.palette.error.main, 0.6),
-                backgroundColor: getBackgroundColor(theme.palette.error.main, 0.9),
-                '& $icon': {
-                    color: theme.palette.error.main,
-                },
+        },
+        /* Styles applied to the root element if `variant="standard"` and `color="error"`. */
+        [`&.MuiAlert-standardError`]: {
+            color: getColor(theme.palette.error.main, 0.6),
+            backgroundColor: getBackgroundColor(theme.palette.error.main, 0.9),
+            '& $icon': {
+                color: theme.palette.error.main,
             },
-            /* Styles applied to the root element if `variant="outlined"` and `color="success"`. */
-            [`&.MuiAlert-outlinedSuccess`]: {
-                color: getColor(theme.palette.success.main, 0.6),
-                border: `1px solid ${theme.palette.success.main}`,
-                '& $icon': {
-                    color: theme.palette.success.main,
-                },
+        },
+        /* Styles applied to the root element if `variant="outlined"` and `color="success"`. */
+        [`&.MuiAlert-outlinedSuccess`]: {
+            color: getColor(theme.palette.success.main, 0.6),
+            border: `1px solid ${theme.palette.success.main}`,
+            '& $icon': {
+                color: theme.palette.success.main,
             },
-            /* Styles applied to the root element if `variant="outlined"` and `color="info"`. */
-            [`&.MuiAlert-outlinedInfo`]: {
-                color: getColor(theme.palette.info.main, 0.6),
-                border: `1px solid ${theme.palette.info.main}`,
-                '& $icon': {
-                    color: theme.palette.info.main,
-                },
+        },
+        /* Styles applied to the root element if `variant="outlined"` and `color="info"`. */
+        [`&.MuiAlert-outlinedInfo`]: {
+            color: getColor(theme.palette.info.main, 0.6),
+            border: `1px solid ${theme.palette.info.main}`,
+            '& $icon': {
+                color: theme.palette.info.main,
             },
-            /* Styles applied to the root element if `variant="outlined"` and `color="warning"`. */
-            [`&.MuiAlert-outlinedWarning`]: {
-                color: getColor(theme.palette.warning.main, 0.6),
-                border: `1px solid ${theme.palette.warning.main}`,
-                '& $icon': {
-                    color: theme.palette.warning.main,
-                },
+        },
+        /* Styles applied to the root element if `variant="outlined"` and `color="warning"`. */
+        [`&.MuiAlert-outlinedWarning`]: {
+            color: getColor(theme.palette.warning.main, 0.6),
+            border: `1px solid ${theme.palette.warning.main}`,
+            '& $icon': {
+                color: theme.palette.warning.main,
             },
-            /* Styles applied to the root element if `variant="outlined"` and `color="error"`. */
-            [`&.MuiAlert-outlinedError`]: {
-                color: getColor(theme.palette.error.main, 0.6),
-                border: `1px solid ${theme.palette.error.main}`,
-                '& $icon': {
-                    color: theme.palette.error.main,
-                },
+        },
+        /* Styles applied to the root element if `variant="outlined"` and `color="error"`. */
+        [`&.MuiAlert-outlinedError`]: {
+            color: getColor(theme.palette.error.main, 0.6),
+            border: `1px solid ${theme.palette.error.main}`,
+            '& $icon': {
+                color: theme.palette.error.main,
             },
-            /* Styles applied to the root element if `variant="filled"` and `color="success"`. */
-            [`& .${classes.filledSuccess}`]: {
-                color: '#fff',
-                fontWeight: theme.typography.fontWeightMedium,
-                backgroundColor: theme.palette.success.main,
+        },
+        /* Styles applied to the root element if `variant="filled"` and `color="success"`. */
+        [`&.${classes.filledSuccess}`]: {
+            color: '#fff',
+            fontWeight: theme.typography.fontWeightMedium,
+            backgroundColor: theme.palette.success.main,
+        },
+        /* Styles applied to the root element if `variant="filled"` and `color="info"`. */
+        [`&.${classes.filledInfo}`]: {
+            color: '#fff',
+            fontWeight: theme.typography.fontWeightMedium,
+            backgroundColor: theme.palette.info.main,
+        },
+        /* Styles applied to the root element if `variant="filled"` and `color="warning"`. */
+        [`&.${classes.filledWarning}`]: {
+            color: '#fff',
+            fontWeight: theme.typography.fontWeightMedium,
+            backgroundColor: theme.palette.warning.main,
+        },
+        /* Styles applied to the root element if `variant="filled"` and `color="error"`. */
+        [`&.${classes.filledError}`]: {
+            color: '#fff',
+            fontWeight: theme.typography.fontWeightMedium,
+            backgroundColor: theme.palette.error.main,
+        },
+        /* Styles applied to the root element if `variant="plain"` and `color="info"`. */
+        [`&.${classes.plainInfo}`]: {
+            color: getColor(theme.palette.info.main, 0.6),
+            '& $icon': {
+                color: theme.palette.info.main,
             },
-            /* Styles applied to the root element if `variant="filled"` and `color="info"`. */
-            [`& .${classes.filledInfo}`]: {
-                color: '#fff',
-                fontWeight: theme.typography.fontWeightMedium,
-                backgroundColor: theme.palette.info.main,
+        },
+        /* Styles applied to the root element if `variant="plain"` and `color="warning"`. */
+        [`&.${classes.plainWarning}`]: {
+            color: getColor(theme.palette.warning.main, 0.6),
+            '& $icon': {
+                color: theme.palette.warning.main,
             },
-            /* Styles applied to the root element if `variant="filled"` and `color="warning"`. */
-            [`& .${classes.filledWarning}`]: {
-                color: '#fff',
-                fontWeight: theme.typography.fontWeightMedium,
-                backgroundColor: theme.palette.warning.main,
+        },
+        /* Styles applied to the root element if `variant="plain"` and `color="success"`. */
+        [`&.${classes.plainSuccess}`]: {
+            color: getColor(theme.palette.success.main, 0.6),
+            '& $icon': {
+                color: theme.palette.success.main,
             },
-            /* Styles applied to the root element if `variant="filled"` and `color="error"`. */
-            [`& .${classes.filledError}`]: {
-                color: '#fff',
-                fontWeight: theme.typography.fontWeightMedium,
-                backgroundColor: theme.palette.error.main,
+        },
+        /* Styles applied to the root element if `variant="plain"` and `color="error"`. */
+        [`&.${classes.plainError}`]: {
+            color: getColor(theme.palette.error.main, 0.6),
+            '& $icon': {
+                color: theme.palette.error.main,
             },
-            /* Styles applied to the root element if `variant="plain"` and `color="info"`. */
-            [`& .${classes.plainInfo}`]: {
-                color: getColor(theme.palette.info.main, 0.6),
-                '& $icon': {
-                    color: theme.palette.info.main,
-                },
-            },
-            /* Styles applied to the root element if `variant="plain"` and `color="warning"`. */
-            [`& .${classes.plainWarning}`]: {
-                color: getColor(theme.palette.warning.main, 0.6),
-                '& $icon': {
-                    color: theme.palette.warning.main,
-                },
-            },
-            /* Styles applied to the root element if `variant="plain"` and `color="success"`. */
-            [`& .${classes.plainSuccess}`]: {
-                color: getColor(theme.palette.success.main, 0.6),
-                '& $icon': {
-                    color: theme.palette.success.main,
-                },
-            },
-            /* Styles applied to the root element if `variant="plain"` and `color="error"`. */
-            [`& .${classes.plainError}`]: {
-                color: getColor(theme.palette.error.main, 0.6),
-                '& $icon': {
-                    color: theme.palette.error.main,
-                },
-            },
-            /* Styles applied to the root element if `variant="plain"` and `color="waiting"`. */
-            [`& .${classes.plainWaiting}`]: {
-                color: getColor(theme.palette.text.secondary, 0.6),
-                '& $icon': {
-                    color: theme.palette.text.secondary,
-                },
+        },
+        /* Styles applied to the root element if `variant="plain"` and `color="waiting"`. */
+        [`&.${classes.plainWaiting}`]: {
+            color: getColor(theme.palette.text.secondary, 0.6),
+            '& $icon': {
+                color: theme.palette.text.secondary,
             },
         },
         /* Styles applied to the icon wrapper element. */
@@ -203,8 +199,6 @@ const StyledPaper = styled(Paper)((
             paddingLeft: 16,
             marginRight: -8,
         },
-       
-        
     };
 });
 
@@ -233,15 +227,15 @@ const Alert = React.forwardRef((props, ref) => {
         variant = 'standard',
         ...other
     } = props;
-
+    const clsName = `${PREFIX}-${variant}${capitalize(color || severity)}`;
     return (
         <StyledPaper
             role={role}
             square
             elevation={0}
             className={clsx(
-                classes.root,
-                classes[`${variant}${capitalize(color || severity)}`],
+                classes.root, 
+                clsName,
                 className,
             )}
             ref={ref}
