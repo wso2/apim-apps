@@ -38,8 +38,8 @@ const classes = {
 
 const Root = styled('div')(({ theme }) => ({
     [`& .${classes.chatbotNameBox}`]: {
-        padding: '5px 18px 3px 18px',
-        margin: '12px 0 12px 0',
+        padding: '2px 18px 1px 10px',
+        margin: '12px 0 12px auto',
         borderBottom: '2px solid #10597f',
         borderLeft: '2px solid #10597f',
         borderRight: '2px solid #10597f',
@@ -78,7 +78,9 @@ function Header(props) {
                 <Box>
                     <IconButton
                         onClick={toggleFullScreen}
-                        style={{ alignSelf: 'flex-end', padding: '12px', color: '#10597f' }}
+                        style={{
+                            alignSelf: 'flex-end', padding: '12px', color: '#10597f', height: '100%',
+                        }}
                     >
                         {isClicked ? (
                             <FullscreenExitIcon fontSize='large' />
@@ -89,7 +91,9 @@ function Header(props) {
                     <Tooltip title='Reset Chat' placement='right'>
                         <IconButton
                             onClick={handleReset}
-                            style={{ alignSelf: 'flex-end', padding: '12px', color: '#10597f' }}
+                            style={{
+                                alignSelf: 'flex-end', padding: '12px', color: '#10597f', height: '100%',
+                            }}
                         >
                             <RestartAltTwoToneIcon fontSize='large' />
                         </IconButton>
@@ -109,12 +113,16 @@ function Header(props) {
                         />
                     </Typography>
                 </Box>
-                <IconButton
-                    onClick={toggleChatbot}
-                    style={{ alignSelf: 'flex-end', padding: '12px', color: '#10597f' }}
-                >
-                    <ExpandMoreTwoToneIcon fontSize='large' />
-                </IconButton>
+                <Box>
+                    <IconButton
+                        onClick={toggleChatbot}
+                        style={{
+                            alignSelf: 'flex-end', padding: '10px', color: '#10597f', height: '100%',
+                        }}
+                    >
+                        <ExpandMoreTwoToneIcon fontSize='large' />
+                    </IconButton>
+                </Box>
             </Box>
         </Root>
     );
