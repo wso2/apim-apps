@@ -22,7 +22,7 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Delete from 'AppComponents/KeyManagers/DeleteKeyManager';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import Alert from 'AppComponents/Shared/Alert';
+import Alert from '@mui/material/Alert';
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import {
