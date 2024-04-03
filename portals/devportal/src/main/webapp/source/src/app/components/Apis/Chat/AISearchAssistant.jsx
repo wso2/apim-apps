@@ -53,9 +53,15 @@ function AISearchAssistant() {
 
         if (marketplaceAssistantEnabled && aiAuthTokenProvided) {
             const restApi = new Api();
-            const messagesWithoutApis = messages.slice(-10).map(({ apis, ...message }) => message);
+            const messagePayload = messages.slice(-10).map(({ apis, ...message }) => {
+                if (!apis) {
+                    return message;
+                }
+                const apiList = apis.map((api) => ({ name: api.name, version: api.version }));
+                return { role: message.role, content: JSON.stringify({ response: message.content, apis: apiList }) };
+            });
 
-            restApi.marketplaceAssistantExecute(query, messagesWithoutApis)
+            restApi.marketplaceAssistantExecute(query, messagePayload)
                 .then((result) => {
                     const { apis } = result.body;
 
