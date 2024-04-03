@@ -458,21 +458,36 @@ const ApiChat = () => {
 
         try {
             const response = await fetch(url, fetchOptions);
-            const data = await response.json().catch(() => ({}));
+            const contentType = response.headers.get('Content-Type');
 
-            if (!response.ok) {
+            // Check if response is JSON
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json().catch(() => ({}));
                 return {
                     code: response.status,
                     path: fullPath,
                     headers: response.headers,
-                    body: data,
+                    body: data, // Return the JSON data
                 };
             }
+
+            // Check if response is XML
+            if (contentType && contentType.includes('application/xml')) {
+                const text = await response.text();
+                return {
+                    code: response.status,
+                    path: fullPath,
+                    headers: response.headers,
+                    body: text, // Return the XML data
+                };
+            }
+
+            // If response is neither JSON nor XML
             return {
                 code: response.status,
                 path: fullPath,
                 headers: response.headers,
-                body: data,
+                body: 'Unsupported Content-Type detected',
             };
         } catch (error) {
             return {
