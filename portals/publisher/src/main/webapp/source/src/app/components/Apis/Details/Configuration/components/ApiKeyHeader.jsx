@@ -41,26 +41,7 @@ export default function ApiKeyHeader(props) {
     const [apiFromContext] = useAPI();
     const loadAPIKeyHeader = apiFromContext.type==="HTTP" || apiFromContext.apiType===API.CONSTS.APIProduct;
     const [isHeaderNameValid, setIsHeaderNameValid] = useState(true);
-    let hasResourceWithSecurity;
     const apiKeyHeaderValue = api.apiKeyHeader;
-    if (apiFromContext.apiType === API.CONSTS.APIProduct) {
-        const apiList = apiFromContext.apis;
-        for (const apiInProduct in apiList) {
-            if (Object.prototype.hasOwnProperty.call(apiList, apiInProduct)) {
-                hasResourceWithSecurity = apiList[apiInProduct].operations.findIndex(
-                    (op) => op.authType !== 'None',
-                ) > -1;
-                if (hasResourceWithSecurity) {
-                    break;
-                }
-            }
-        }
-    } else {
-        hasResourceWithSecurity = apiFromContext.operations.findIndex((op) => op.authType !== 'None') > -1;
-    }
-    if (!hasResourceWithSecurity && api.apiKeyHeader !== '') {
-        configDispatcher({ action: 'apiKeyHeader', value: '' });
-    }
 
     function validateHeader(value) {
         const headerValidity = APIValidation.apiKeyHeader.required()
@@ -79,7 +60,7 @@ export default function ApiKeyHeader(props) {
             <Grid container spacing={1} alignItems='center'>
                 <Grid item xs={11}>
                     <TextField
-                        disabled={isRestricted(['apim:api_create'], apiFromContext) || !hasResourceWithSecurity}
+                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
                         id='outlined-name'
                         label={(
                             <FormattedMessage
@@ -87,7 +68,7 @@ export default function ApiKeyHeader(props) {
                                 defaultMessage='ApiKey Header'
                             />
                         )}
-                        value={hasResourceWithSecurity ? apiKeyHeaderValue : ' '}
+                        value={apiKeyHeaderValue}
                         error={!isHeaderNameValid}
                         helperText={
                             (!isHeaderNameValid)
