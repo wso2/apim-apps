@@ -20,6 +20,7 @@ import React from 'react';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Chip from '@mui/material/Chip';
 import { FormattedMessage } from 'react-intl';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
@@ -52,25 +53,15 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                             defaultMessage='API Chat'
                         />
                     </Typography>
-                    <Box
-                        display='flex-start'
+                    <Chip
+                        label='Experimental'
+                        variant='outlined'
+                        size='small'
+                        color='primary'
                         sx={{
-                            backgroundColor: '#10597f',
-                            color: '#fff',
-                            marginLeft: '8px',
-                            maxWidth: '45px',
-                            padding: '0px 4px',
-                            borderRadius: '6px',
-                            maxHeight: '21px',
+                            ml: 1,
                         }}
-                    >
-                        <Typography variant='body1'>
-                            <FormattedMessage
-                                id='Apis.Details.ApiChat.components.ApiChatBanner.apiChatBannerHeader'
-                                defaultMessage='Beta'
-                            />
-                        </Typography>
-                    </Box>
+                    />
                 </Box>
                 <Typography variant='body2' color='textSecondary' component='p'>
                     <FormattedMessage

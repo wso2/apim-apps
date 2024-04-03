@@ -19,41 +19,40 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, IconButton, Typography } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
 import 'react-resizable/css/styles.css';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
 import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
 import Tooltip from '@mui/material/Tooltip';
 import RestartAltTwoToneIcon from '@mui/icons-material/RestartAltTwoTone';
-import { styled } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 
 const PREFIX = 'marketplace-assistant-chatbot-header';
 
 const classes = {
+    mainHeader: `${PREFIX}-mainHeader`,
+    chatbotNameBox: `${PREFIX}-chatbotNameBox`,
     chatbotName: `${PREFIX}-chatbotName`,
-    betaChip: `${PREFIX}-betaChip`,
 };
 
-const Root = styled('div')(() => ({
-    [`& .${classes.chatbotName}`]: {
-        variant: 'body1',
-        fontSize: '12pt',
-        fontWeight: '500',
-        color: '#10597f',
-        padding: '5px 16px 3px 8px',
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.chatbotNameBox}`]: {
+        padding: '5px 18px 3px 18px',
         margin: '12px 0 12px 0',
         borderBottom: '2px solid #10597f',
         borderLeft: '2px solid #10597f',
-        borderRadius: '18px 0 12px 18px',
+        borderRight: '2px solid #10597f',
+        borderRadius: '38px',
     },
-    [`& .${classes.betaChip}`]: {
-        variant: 'body1',
-        fontSize: '7pt',
-        color: '#fff',
-        padding: '2px 4px 0px 4px',
-        margin: '10px 0 30px -12px',
-        backgroundColor: '#10597f',
-        borderRadius: '6px',
+    [`& .${classes.chatbotName}`]: {
+        marginBottom: -5,
+        fontSize: '12pt',
+        fontWeight: '500',
+        color: '#10597f',
+    },
+    [`& .${classes.mainHeader}`]: {
+        borderColor: alpha(theme.palette.common.black, 0.1),
     },
 }));
 
@@ -74,7 +73,7 @@ function Header(props) {
                 flexDirection='row'
                 justifyContent='space-between'
                 borderBottom={1}
-                borderColor='#297d9e'
+                className={classes.mainHeader}
             >
                 <Box>
                     <IconButton
@@ -96,20 +95,26 @@ function Header(props) {
                         </IconButton>
                     </Tooltip>
                 </Box>
-                <Box display='flex'>
-                    <Typography className={classes.chatbotName}>
-                        API Marketplace Assistant
+                <Box display='flex' flexDirection='column' className={classes.chatbotNameBox}>
+                    <Typography variant='body1' className={classes.chatbotName}>
+                        <FormattedMessage
+                            id='Apis.Chat.Header.MarketplaceAssistantBanner.title'
+                            defaultMessage='API Marketplace Assistant'
+                        />
                     </Typography>
-                    <Typography className={classes.betaChip}>
-                        Beta
+                    <Typography variant='caption' sx={{ textAlign: 'right', marginRight: -1 }}>
+                        <FormattedMessage
+                            id='Apis.Chat.Header.MarketplaceAssistantBanner.experimental'
+                            defaultMessage='Experimental'
+                        />
                     </Typography>
-                    <IconButton
-                        onClick={toggleChatbot}
-                        style={{ alignSelf: 'flex-end', padding: '12px', color: '#10597f' }}
-                    >
-                        <ExpandMoreTwoToneIcon fontSize='large' />
-                    </IconButton>
                 </Box>
+                <IconButton
+                    onClick={toggleChatbot}
+                    style={{ alignSelf: 'flex-end', padding: '12px', color: '#10597f' }}
+                >
+                    <ExpandMoreTwoToneIcon fontSize='large' />
+                </IconButton>
             </Box>
         </Root>
     );
