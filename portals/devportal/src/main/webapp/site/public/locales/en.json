@@ -1,4 +1,6 @@
 {
+  "Apis.Chat.Header.MarketplaceAssistantBanner.experimental": "Experimental",
+  "Apis.Chat.Header.MarketplaceAssistantBanner.title": "API Marketplace Assistant",
   "Apis.Details.APIConsole.APIConsole.download.postman": "Postman collection",
   "Apis.Details.APIConsole.APIConsole.download.swagger": "Swagger ( /swagger.json )",
   "Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskCompletedOneItr": "Task completed in 1 iteration.",
