@@ -155,7 +155,7 @@ function ChatMessages(props) {
                     maxWidth='1380px'
                     marginRight='5%'
                 >
-                    <ChatInput onSend={onSend} />
+                    <ChatInput onSend={onSend} loading={loading} />
                 </Box>
 
             </Box>
