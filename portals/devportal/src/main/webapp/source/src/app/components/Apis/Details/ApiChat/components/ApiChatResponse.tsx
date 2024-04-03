@@ -32,6 +32,8 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import { styled, alpha } from '@mui/material/styles';
 import { CircularProgress, Typography } from '@mui/material';
+import MonacoEditor from 'react-monaco-editor';
+import xmlFormat from 'xml-formatter';
 import Utils from 'AppData/Utils';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 
@@ -156,6 +158,54 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
         }
     }, []);
 
+    /**
+     * Renders the execution result body.
+     *
+     * @param {any} executionResult Execution result to render.
+     * @returns {JSX.Element} Execution result body to render.
+     */
+    const renderExecutionResultBody = (executionResult: any) => {
+        const contentType = executionResult.headers.get('Content-Type');
+        if (contentType.includes('application/json') && executionResult.body !== '') {
+            return (
+                <MonacoEditor
+                    width='100%'
+                    height='200'
+                    language='json'
+                    value={JSON.stringify(executionResult.body, null, 2)}
+                    options={{
+                        readOnly: true,
+                        minimap: { enabled: false },
+                        scrollBeyondLastLine: false,
+                        wordWrap: 'on',
+                    }}
+                />
+            );
+        } else if (contentType.includes('application/xml') && executionResult.body !== '') {
+            const formattedMessage = xmlFormat(executionResult.body);
+            return (
+                <MonacoEditor
+                    width='100%'
+                    height='200'
+                    language='xml'
+                    value={formattedMessage}
+                    options={{
+                        readOnly: true,
+                        minimap: { enabled: false },
+                        scrollBeyondLastLine: false,
+                        wordWrap: 'on',
+                    }}
+                />
+            );
+        } else {
+            return (
+                <Typography variant='body1'>
+                    {executionResult.body}
+                </Typography>
+            );
+        }
+    };
+
     return (
         <Root>
             <Box maxHeight='60%' overflow='auto' className={classes.lastQueryWrap}>
@@ -220,7 +270,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography variant='body1'>
-                                                {JSON.stringify(executionResult.body, null, 2)}
+                                                {renderExecutionResultBody(executionResult)}
                                             </Typography>
                                         </AccordionDetails>
                                     </Accordion>

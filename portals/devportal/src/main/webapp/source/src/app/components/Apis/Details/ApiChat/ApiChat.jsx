@@ -483,11 +483,12 @@ const ApiChat = () => {
             }
 
             // If response is neither JSON nor XML
+            const text = await response.text().catch(() => 'Unable to render this Content-Type');
             return {
                 code: response.status,
                 path: fullPath,
                 headers: response.headers,
-                body: 'Unsupported Content-Type detected',
+                body: text,
             };
         } catch (error) {
             return {
