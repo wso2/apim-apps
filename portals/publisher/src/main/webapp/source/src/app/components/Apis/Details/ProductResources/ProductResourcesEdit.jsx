@@ -121,7 +121,7 @@ function ProductResourcesEdit() {
     };
 
     return (
-        <Root className={classes.root} style={{ border: '2px solid red'}}>
+        <Root className={classes.root}>
             <div className={classes.titleWrapper}>
                 <Typography variant='h4' align='left' className={classes.mainTitle}>
                     <FormattedMessage
