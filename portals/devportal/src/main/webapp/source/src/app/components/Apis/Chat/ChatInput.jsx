@@ -32,7 +32,7 @@ import InputAdornment from '@mui/material/InputAdornment';
  * @returns {JSX} renders Chat Input view.
  */
 function ChatInput(props) {
-    const { onSend } = props;
+    const { onSend, loading } = props;
     const [content, setContent] = useState('');
     const [notificationOpen, setNotificationOpen] = useState(false);
     const QUERY_CHARACTER_LIMIT = 500;
@@ -57,7 +57,9 @@ function ChatInput(props) {
     const handleKeyDown = (e) => {
         if (e.key === 'Enter' && !e.shiftKey) {
             e.preventDefault();
-            handleSend();
+            if (!loading) {
+                handleSend();
+            }
         }
         if (e.keyCode === 13 && e.shiftKey) {
             e.preventDefault();
@@ -90,6 +92,7 @@ function ChatInput(props) {
                             <IconButton
                                 aria-label='marketplace-chat-message'
                                 onClick={handleSend}
+                                disabled={loading}
                             >
                                 <SendIcon color='primary' />
                             </IconButton>
@@ -124,5 +127,6 @@ function ChatInput(props) {
 
 ChatInput.propTypes = {
     onSend: PropTypes.func.isRequired,
+    loading: PropTypes.bool.isRequired,
 };
 export default ChatInput;
