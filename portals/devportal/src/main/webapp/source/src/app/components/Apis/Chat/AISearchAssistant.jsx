@@ -57,7 +57,7 @@ function AISearchAssistant() {
                 if (!apis) {
                     return message;
                 }
-                const apiList = apis.map((api) => ({ name: api.name, version: api.version }));
+                const apiList = apis.map((api) => ({ apiName: api.name, version: api.version }));
                 return { role: message.role, content: JSON.stringify({ response: message.content, apis: apiList }) };
             });
 
