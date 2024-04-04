@@ -18,7 +18,7 @@
 
 import React, { useMemo } from 'react';
 import 'swagger-ui-react/swagger-ui.css';
-import LockIcon from '@mui/icons-material//Lock';
+import LockIcon from '@mui/icons-material/Lock';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import Grid from '@mui/material/Grid';

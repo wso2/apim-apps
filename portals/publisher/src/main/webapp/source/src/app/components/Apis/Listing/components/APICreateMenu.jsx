@@ -49,7 +49,6 @@ const Root = styled('div')(({ theme }) => {
             '-ms-transform': 'translateY(-50%)',
             transform: 'translateY(-50%)',
             margin: 'auto',
-            backgroundColor: 'rgba(0, 0, 0, 0.08)',
         },
         [`& .${classes.popover}`]: {
             [theme.breakpoints.down('md')]: {
@@ -105,7 +104,7 @@ const APICreateMenu = () => {
         streamingApiIcon,
     } = theme.custom.landingPage.icons;
     return (
-        !AuthManager.isNotCreator() && (
+        !AuthManager.isNotCreator() && (settings && !settings.portalConfigurationOnlyModeEnabled) &&(
             <Root>
                 <MenuButton
                     buttonProps={{

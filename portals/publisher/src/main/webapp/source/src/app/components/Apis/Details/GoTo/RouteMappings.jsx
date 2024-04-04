@@ -163,19 +163,19 @@ const suggestions = {
         },
         {
             label: 'Business Information',
-            route: 'business info',
+            route: 'business-info',
         },
         {
             label: 'Business Owner',
-            route: 'business info',
+            route: 'business-info',
         },
         {
             label: 'Technical Owner',
-            route: 'business info',
+            route: 'business-info',
         },
         {
             label: 'Properties',
-            route: 'business info',
+            route: 'business-info',
         },
         {
             label: 'Subscriptions',
@@ -309,51 +309,51 @@ const suggestions = {
         },
         {
             label: 'API Definition',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Import API Definition',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Download API Definition',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Swagger',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Import Swagger',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Download Swagger',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'OAS',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Import OAS',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Download OAS',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'OpenAPI',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Import OpenAPI',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Download OpenAPI',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Resources',
@@ -407,51 +407,51 @@ const suggestions = {
         },
         {
             label: 'API Definition',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Import API Definition',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Download API Definition',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Swagger',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Import Swagger',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Download Swagger',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'OAS',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Import OAS',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Download OAS',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'OpenAPI',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Import OpenAPI',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Download OpenAPI',
-            route: 'api definition',
+            route: 'api-definition',
         },
         {
             label: 'Resources',

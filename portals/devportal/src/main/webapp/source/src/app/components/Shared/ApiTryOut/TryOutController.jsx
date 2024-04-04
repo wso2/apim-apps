@@ -17,7 +17,7 @@
  */
 
 import React, {
-    useEffect, useState,
+    useEffect, useState, useRef,
 } from 'react';
 import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
@@ -41,10 +41,10 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import AdvertiseDetailsPanel from 'AppComponents/Apis/Details/ApiConsole/AdvertiseDetailsPanel';
-import Progress from '../../../Shared/Progress';
-import Api from '../../../../data/api';
-import Application from '../../../../data/Application';
+import AdvertiseDetailsPanel from 'AppComponents/Shared/ApiTryOut/AdvertiseDetailsPanel';
+import Progress from '../Progress';
+import Api from '../../../data/api';
+import Application from '../../../data/Application';
 import SelectAppPanel from './SelectAppPanel';
 
 const PREFIX = 'TryOutController';
@@ -167,7 +167,7 @@ function TryOutController(props) {
         setSelectedEnvironment, setProductionAccessToken, setSandboxAccessToken, scopes, setSecurityScheme, setUsername,
         setPassword, username, password, updateSwagger, setProductionApiKey, setSandboxApiKey, productionApiKey,
         sandboxApiKey, environmentObject, setURLs, setAdvAuthHeader, setAdvAuthHeaderValue, advAuthHeader,
-        advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs,
+        advAuthHeaderValue, setSelectedEndpoint, selectedEndpoint, api, URLs, onConfigChange,
     } = props;
     let { selectedKeyManager } = props;
     selectedKeyManager = selectedKeyManager || 'Resident Key Manager';
@@ -182,8 +182,22 @@ function TryOutController(props) {
     const [selectedKMObject, setSelectedKMObject] = useState(null);
     const [ksGenerated, setKSGenerated] = useState(false);
     const [showMoreGWUrls, setShowMoreGWUrls] = useState(false);
+    const [tokenValue, setTokenValue] = useState('');
     const apiID = api.id;
     const restApi = new Api();
+    const user = AuthManager.getUser();
+
+    const handleAccessTokenChange = ({ newAccessToken }) => {
+        if (onConfigChange) {
+            onConfigChange({
+                newAccessToken,
+                newSecurityScheme: securitySchemeType,
+                newUsername: username,
+                newPassword: password,
+                newSelectedEnvironment: selectedEnvironment,
+            });
+        }
+    };
 
     useEffect(() => {
         let subscriptionsList;
@@ -303,6 +317,7 @@ function TryOutController(props) {
                     } else {
                         setSandboxAccessToken(response.accessToken);
                     }
+                    handleAccessTokenChange({ newAccessToken: response.accessToken });
                     setIsUpdating(false);
                 })
                 .catch((error) => {
@@ -332,6 +347,7 @@ function TryOutController(props) {
                     } else {
                         setSandboxApiKey(response.body.apikey);
                     }
+                    handleAccessTokenChange({ newAccessToken: response.body.apikey });
                     setIsUpdating(false);
                 })
                 .catch((error) => {
@@ -399,6 +415,18 @@ function TryOutController(props) {
         updateApplication();
     }, [selectedApplication, selectedKeyType, selectedEnvironment, securitySchemeType]);
 
+    useEffect(() => {
+        if (onConfigChange) {
+            onConfigChange({
+                newAccessToken: null,
+                newSecurityScheme: securitySchemeType,
+                newUsername: username,
+                newPassword: password,
+                newSelectedEnvironment: selectedEnvironment
+            });
+        }
+    }, [username, password, selectedEnvironment, securitySchemeType]); 
+
     /**
      * Handle onChange of inputs
      * @param {*} event event
@@ -445,6 +473,7 @@ function TryOutController(props) {
                 setPassword(value);
                 break;
             case 'accessToken':
+                handleAccessTokenChange({ newAccessToken: value });
                 if (securitySchemeType === 'API-KEY' && selectedKeyType === 'PRODUCTION') {
                     setProductionApiKey(value);
                 } else if (securitySchemeType === 'API-KEY' && selectedKeyType === 'SANDBOX') {
@@ -468,7 +497,6 @@ function TryOutController(props) {
         }
     }
 
-    const user = AuthManager.getUser();
     if (api == null) {
         return <Progress />;
     }
@@ -499,14 +527,15 @@ function TryOutController(props) {
     const isPublished = api.lifeCycleStatus.toLowerCase() === 'published';
     const showSecurityType = isPublished || isPrototypedAPI;
 
-    let tokenValue = '';
-    if (securitySchemeType === 'API-KEY') {
-        tokenValue = selectedKeyType === 'PRODUCTION' ? productionApiKey : sandboxApiKey;
-    } else {
-        tokenValue = selectedKeyType === 'PRODUCTION' ? productionAccessToken : sandboxAccessToken;
-    }
-
     const authHeader = `${authorizationHeader}: ${prefix}`;
+
+    useEffect(() => {
+        if (securitySchemeType === 'API-KEY') {
+            setTokenValue(selectedKeyType === 'PRODUCTION' ? productionApiKey : sandboxApiKey);
+        } else {
+            setTokenValue(selectedKeyType === 'PRODUCTION' ? productionAccessToken : sandboxAccessToken);
+        }
+    }, [securitySchemeType, selectedKeyType, productionAccessToken, sandboxAccessToken, productionApiKey, sandboxApiKey]);
 
     return (
         <Root>
@@ -794,7 +823,7 @@ function TryOutController(props) {
                                                 <CircularProgress size={15} />
                                             )}
                                             <FormattedMessage
-                                                id='Apis.Details.ApiCOnsole.generate.test.key'
+                                                id='Apis.Details.ApiConsole.generate.test.key'
                                                 defaultMessage='GET TEST KEY'
                                             />
                                         </Button>

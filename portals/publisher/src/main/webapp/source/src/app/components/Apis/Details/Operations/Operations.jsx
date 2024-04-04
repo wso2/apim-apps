@@ -172,6 +172,7 @@ class Operations extends React.Component {
         this.state = {
             notFound: false,
             apiPolicies: [],
+            enableReadOnly: false,
             operations: operationCopy,
             apiThrottlingPolicy: api.apiThrottlingPolicy,
             filterKeyWord: '',
@@ -219,6 +220,9 @@ class Operations extends React.Component {
         }
         this.setState({ apiScopesByName: apiScopesByNameList });
         this.getAllSharedScopes();
+        api.getSettings().then((settings) => {
+            this.setState({ enableReadOnly: settings.portalConfigurationOnlyModeEnabled });
+        });
     }
 
     /**
@@ -348,7 +352,8 @@ class Operations extends React.Component {
     render() {
         const { api, resourceNotFoundMessage } = this.props;
         const {
-            operations, apiPolicies, apiThrottlingPolicy, isSaving, filterKeyWord, notFound, sharedScopes,
+            operations, apiPolicies, apiThrottlingPolicy, isSaving,
+            filterKeyWord, notFound, sharedScopes, enableReadOnly,
         } = this.state;
         if (notFound) {
             return <ResourceNotFound message={resourceNotFoundMessage} />;
@@ -455,7 +460,7 @@ class Operations extends React.Component {
                     </Grid>
                     <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
                         <Grid item>
-                            {api.isRevision
+                            {api.isRevision || enableReadOnly
                                 || isRestricted(['apim:api_create'], api) ? (
                                     <Button
                                         disabled

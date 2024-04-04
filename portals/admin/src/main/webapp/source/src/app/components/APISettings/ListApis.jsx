@@ -255,8 +255,8 @@ export default function ListApis() {
                                     nextIconButtonProps={{
                                         'aria-label': 'Next Page',
                                     }}
-                                    onChangePage={handleChangePage}
-                                    onChangeRowsPerPage={handleChangeRowsPerPage}
+                                    onPageChange={handleChangePage}
+                                    onRowsPerPageChange={handleChangeRowsPerPage}
                                 />
                             </TableRow>
                         </TableFooter>

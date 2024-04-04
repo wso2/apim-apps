@@ -15,8 +15,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import React from 'react';
 import { styled } from '@mui/material/styles';
+import { withRouter } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import IconButton from '@mui/material/IconButton';
 import Button from '@mui/material/Button';
@@ -56,24 +58,7 @@ const classes = {
     iconButton: `${PREFIX}-iconButton`
 };
 
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.button}`]: {
-        margin: theme.spacing(3),
-        color: theme.palette.getContrastText(theme.palette.background.default),
-        display: 'flex',
-        alignItems: 'center',
-        fontSize: '11px',
-        cursor: 'pointer',
-        '& span': {
-            paddingLeft: 6,
-            display: 'inline-block',
-        },
-    },
-
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.inputWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
@@ -147,6 +132,28 @@ class ViewKeys extends React.Component {
      * Fetch Application object by ID coming from URL path params and fetch related keys to display
      */
     componentDidMount() {
+        this.getGeneratedKeys();
+    }
+
+    /**
+     * Adding this here becasue it is not possible to add in the render method becasue isKeyJWT in state is used
+     * to close the dialog box and render method will casue this to be always true and cannot close the box.
+     * Rule is ignored becasue according to react docs its ok to setstate as long as we are checking a condition
+     * This is an ani pattern to be fixed later.
+     *  wso2/product-apim#5293
+     * https://reactjs.org/docs/react-component.html#componentdidupdate
+     * @param {*} prevProps previous props
+     * @memberof ViewKeys
+     */
+    componentDidUpdate(prevProps) {
+        const { isKeyJWT } = this.props;
+        if (isKeyJWT && !prevProps.isKeyJWT) {
+            // eslint-disable-next-line react/no-did-update-set-state
+            this.setState({ isKeyJWT: true });
+        }
+    }
+
+    getGeneratedKeys = () => {
         const { accessTokenRequest } = this.state;
         const { keyType } = this.props;
         this.applicationPromise
@@ -237,6 +244,31 @@ class ViewKeys extends React.Component {
     };
 
     /**
+     * Handle onCLick of remove keys
+     * */
+    handleClickRemove = (keyMappingId) => {
+        const {
+            selectedTab, keyType, intl, loadApplication,
+        } = this.props;
+        this.applicationPromise
+            .then((application) => {
+                return application.removeKeys(keyType, selectedTab, keyMappingId);
+            })
+            .then((result) => {
+                if (result) {
+                    loadApplication();
+                    Alert.info(intl.formatMessage({
+                        id: 'Shared.AppsAndKeys.TokenManager.key.cleanupall.success',
+                        defaultMessage: 'Application keys removed successfully',
+                    }));
+                }
+            })
+            .catch((error) => {
+                throw (error);
+            });
+    };
+
+    /**
      * Handle onCLick of regenerate consumer secret
      * */
     handleSecretRegenerate = (consumerKey, keyType, keyMappingId, selectedTab) => {
@@ -309,16 +341,18 @@ class ViewKeys extends React.Component {
                 const { status } = error;
                 if (status === 404) {
                     this.setState({ notFound: true });
+                } else if (error.response.body.code === 900905) {
+                    Alert.error(error.response.body.description);
                 } else if (status === 400) {
                     Alert.error(error.description
                         || intl.formatMessage({
                             id: 'Shared.AppsAndKeys.TokenManager.key.generate.bad.request.error',
                             defaultMessage: 'Error occurred when generating Access Token',
                         }));
-                }
+                } 
                 this.setState({ isUpdating: false });
                 const { response } = error;
-                if (response && response.body) {
+                if (response && response.body && response.body.code !== 900905) {
                     Alert.error(response.body.message);
                 }
             });
@@ -364,24 +398,26 @@ class ViewKeys extends React.Component {
                                             }
                                             placement='right'
                                         >
-                                                <IconButton
-                                                    aria-label='Copy to clipboard'
-                                                    classes={{ root: classes.iconButton }}
-                                                    size="large"
-                                                    onClick={() => {navigator.clipboard.writeText(consumerKey).
-                                                    then(() => this.onCopy('keyCopied'))}}
-                                                >
-                                                    <Icon color='secondary'>
-                                                        file_copy
-                                                    </Icon>
-                                                </IconButton>
+                                            <IconButton
+                                                aria-label='Copy to clipboard'
+                                                classes={{ root: classes.iconButton }}
+                                                size='large'
+                                                onClick={() => {
+                                                    navigator.clipboard.writeText(consumerKey)
+                                                        .then(() => this.onCopy('keyCopied'));
+                                                }}
+                                            >
+                                                <Icon color='secondary'>
+                                                    file_copy
+                                                </Icon>
+                                            </IconButton>
                                         </Tooltip>
                                     </InputAdornment>
                                 ),
                             }}
                         />
                     </Root>
-                    <FormControl variant="standard">
+                    <FormControl variant='standard'>
                         <FormHelperText id='consumer-key-helper-text'>
                             <FormattedMessage
                                 id='Shared.AppsAndKeys.ViewKeys.consumer.key.title'
@@ -416,7 +452,8 @@ class ViewKeys extends React.Component {
                                                 onClick={() => this.handleShowHidden('showCS')}
                                                 onMouseDown={this.handleMouseDownGeneric}
                                                 id='visibility-toggle-btn'
-                                                size="large">
+                                                size='large'
+                                            >
                                                 {showCS ? <Icon>visibility_off</Icon> : <Icon>visibility</Icon>}
                                             </IconButton>
                                             <Tooltip
@@ -436,9 +473,11 @@ class ViewKeys extends React.Component {
                                                 <IconButton
                                                     aria-label='Copy to clipboard'
                                                     classes={{ root: classes.iconButton }}
-                                                    size="large"
-                                                    onClick={() => {navigator.clipboard.
-                                                    writeText(consumerSecret).then(() => this.onCopy('secretCopied'))}}
+                                                    size='large'
+                                                    onClick={() => {
+                                                        navigator.clipboard
+                                                            .writeText(consumerSecret).then(() => this.onCopy('secretCopied'));
+                                                    }}
                                                 >
                                                     <Icon color='secondary'>file_copy</Icon>
                                                 </IconButton>
@@ -451,7 +490,7 @@ class ViewKeys extends React.Component {
                             <Button
                                 variant='contained'
                                 color='primary'
-                                className={classes.button}
+                                sx={{ mt: 1 }}
                                 onClick={() => this.handleSecretRegenerate(consumerKey, keyType, keyMappingId, selectedTab)}
                                 disabled={!isUserOwner}
                             >
@@ -463,7 +502,7 @@ class ViewKeys extends React.Component {
                         )}
                     </Root>
                     {!hashEnabled && (
-                        <FormControl variant="standard">
+                        <FormControl variant='standard'>
                             <FormHelperText id='consumer-secret-helper-text'>
                                 <FormattedMessage
                                     id='Shared.AppsAndKeys.ViewKeys.consumer.secret.of.application'
@@ -621,11 +660,12 @@ class ViewKeys extends React.Component {
                                         />
                                     </Button>
                                 )}
-                                <Button 
-                                onClick={this.handleClose} 
-                                id='generate-access-token-close-btn'
-                                color='primary' 
-                                autoFocus>
+                                <Button
+                                    onClick={this.handleClose}
+                                    id='generate-access-token-close-btn'
+                                    color='primary'
+                                    autoFocus
+                                >
                                     <FormattedMessage
                                         id='Shared.AppsAndKeys.ViewKeys.consumer.close.btn'
                                         defaultMessage='Close'
@@ -698,4 +738,4 @@ ViewKeys.propTypes = {
     mode: PropTypes.string,
 };
 
-export default injectIntl((ViewKeys));
+export default injectIntl(withRouter(ViewKeys));

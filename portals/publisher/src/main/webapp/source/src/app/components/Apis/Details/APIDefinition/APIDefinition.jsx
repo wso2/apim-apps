@@ -202,8 +202,10 @@ class APIDefinition extends React.Component {
             promisedApi = api.getSwagger(api.id);
         }
 
-        this.setState({ securityAuditProperties: settings.securityAuditProperties });
-
+        if (settings) {
+            this.setState({ securityAuditProperties: settings.securityAuditProperties });
+        }
+        
         promisedApi
             .then((response) => {
                 if (api.type === 'GRAPHQL') {
@@ -733,6 +735,8 @@ class APIDefinition extends React.Component {
             resourceNotFountMessage, api, match,
         } = this.props;
 
+        const { settings } = this.context;
+
         const isApiProduct = match.path.search('/api-products/') !== -1 ;
 
         let downloadLink;
@@ -808,7 +812,8 @@ class APIDefinition extends React.Component {
                                 size='small'
                                 className={classes.button}
                                 onClick={this.openEditor}
-                                disabled={isRestricted(['apim:api_create'], api) || api.isRevision}
+                                disabled={isRestricted(['apim:api_create'], api) || api.isRevision
+                                || (settings && settings.portalConfigurationOnlyModeEnabled)}
                                 id='edit-definition-btn'
                             >
                                 <EditRounded className={classes.buttonIcon} />

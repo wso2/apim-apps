@@ -100,8 +100,8 @@ const RestAPIMenu = (props) => {
             {(!isCreateMenu || (isCreateMenu && alwaysShowDeploySampleButton)) && showSampleDeploy &&
                 !apkGatewayType && (
                 <>
-                    <Box width={1} sx={{ pt: '16px' }}>
-                        <Divider light variant='middle' />
+                    <Box width={1} sx={{ pt: 2, pr: 2, pl: 2, ml: 2 }}>
+                        <Divider variant='middle' />
                     </Box>
                     <SampleAPI dense={dense} />
                 </>

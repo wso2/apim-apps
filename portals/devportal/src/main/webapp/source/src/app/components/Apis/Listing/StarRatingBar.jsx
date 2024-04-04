@@ -330,13 +330,19 @@ class StarRatingBarLegacy extends React.Component {
                                     classes={{ iconEmpty: classes.iconEmpty, iconFilled: classes.iconFilled }}
                                 />
                                 <Typography variant='caption' gutterBottom align='left' component='div'>
-                                    {`${avgRating}/5.0 (${total}`}
-                                    {total === 1 ? (
-                                        <FormattedMessage defaultMessage='user' id='Apis.Listing.StarRatingBar.user' />
-                                    ) : (
-                                        <FormattedMessage defaultMessage='users' id='Apis.Listing.StarRatingBar.users' />
+                                    {`${apiRating}/5.0`}
+                                    {total > 0 && (
+                                        <>
+                                            {` (${total} `}
+                                            {total === 1 ? (
+                                                <FormattedMessage defaultMessage='user' id='Apis.Listing.StarRatingBar.user' />
+                                            ) : (
+                                                <FormattedMessage defaultMessage=' users' id='Apis.Listing.StarRatingBar.users' />
+                                            )}
+                                            {')'}
+                                        </>
                                     )}
-                                    {')'}
+
                                 </Typography>
                             </>
                         )}

@@ -35,7 +35,6 @@ import CONSTS from 'AppData/Constants';
 import Configurations from 'Config';
 import Operation from './components/Operation';
 import GroupOfOperations from './components/GroupOfOperations';
-import SpecErrors from './components/SpecErrors';
 import AddOperation from './components/AddOperation';
 import GoToDefinitionLink from './components/GoToDefinitionLink';
 import APIRateLimiting from './components/APIRateLimiting';
@@ -315,7 +314,7 @@ export default function Resources(props) {
      */
     function setSecurityDefScopesFromSpec(spec) {
         const openAPIVersion = getVersion(spec);
-        if (VERSIONS.V3.test(openAPIVersion)) {
+        if (VERSIONS.V3.test(openAPIVersion) || VERSIONS.V3_1.test(openAPIVersion)) {
             if (spec.components && spec.components.securitySchemes && spec.components.securitySchemes.default) {
                 const { flows } = spec.components.securitySchemes.default;
                 if (flows.implicit.scopes) {
@@ -336,7 +335,7 @@ export default function Resources(props) {
      */
     function setSpecScopesFromSecurityDefScopes() {
         const openAPIVersion = getVersion(openAPISpec);
-        if (VERSIONS.V3.test(openAPIVersion)) {
+        if (VERSIONS.V3.test(openAPIVersion) || VERSIONS.V3_1.test(openAPIVersion)) {
             if (openAPISpec.components
                 && openAPISpec.components.securitySchemes
                 && openAPISpec.components.securitySchemes.default) {
@@ -618,7 +617,6 @@ export default function Resources(props) {
                     <AddOperation operationsDispatcher={operationsDispatcher} />
                 </Grid>
             )}
-            {resolvedSpec.errors.length > 0 && <SpecErrors specErrors={resolvedSpec.errors} />}
             <Grid item md={12}>
                 <Paper>
                     {!disableMultiSelect && (

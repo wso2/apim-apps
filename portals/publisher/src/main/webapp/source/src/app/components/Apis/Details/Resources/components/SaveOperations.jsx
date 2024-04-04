@@ -24,6 +24,7 @@ import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import { useHistory } from 'react-router-dom';
 import Box from '@mui/material/Box';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -45,6 +46,7 @@ export default function SaveOperations(props) {
     const [isUpdating, setIsSaving] = useState(false);
     const history = useHistory();
     const [isOpen, setIsOpen] = useState(false);
+    const { settings } = useAppContext();
     function handleSaveAndDeploy() {
         setIsSaving(true);
         if (updateAsyncAPI) {
@@ -81,7 +83,7 @@ export default function SaveOperations(props) {
         <>
             <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
                 <Grid item>
-                    {api.isRevision
+                    {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                         || isRestricted(['apim:api_create'], api) ? (
                             <Button
                                 disabled

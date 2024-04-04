@@ -148,7 +148,7 @@
                 dcrRequestData.put("grantType", "authorization_code refresh_token");
                 dcrRequestData.put("saasApp", true);
 
-                Object isJWTEnabledObj = Util.readJsonObj(settingsResponse, "IsJWTEnabledForLoginTokens");
+                Object isJWTEnabledObj = Util.readJsonObj(settingsResponse, "isJWTEnabledForLoginTokens");
                 if (isJWTEnabledObj != null && isJWTEnabledObj instanceof Boolean) {
                     boolean isJWTEnabledForLoginTokens = (boolean) isJWTEnabledObj;
                     if (isJWTEnabledForLoginTokens) {

@@ -29,7 +29,7 @@ import fileDownload from 'js-file-download';
 import converter from 'graphql-to-postman';
 import Box from '@mui/material/Box';
 import GraphQLUI from './GraphQLUI';
-import TryOutController from '../ApiConsole/TryOutController';
+import TryOutController from '../../../Shared/ApiTryOut/TryOutController';
 import { ApiContext } from '../ApiContext';
 import Api from '../../../../data/api';
 import Progress from '../../../Shared/Progress';

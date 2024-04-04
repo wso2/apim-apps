@@ -17,6 +17,7 @@
  */
 
 import React, { useReducer, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { Redirect, Link as RouterLink } from 'react-router-dom';
@@ -28,11 +29,29 @@ import AuthManager from 'AppData/AuthManager';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import LandingMenuItem from 'AppComponents/Apis/Listing/Landing/components/LandingMenuItem';
 import TaskState from 'AppComponents/Apis/Listing/SampleAPI/components/TaskState';
-import useMediaQuery from '@mui/material/useMediaQuery';
-import { useTheme } from '@mui/material';
 import Link from '@mui/material/Link';
 import Button from '@mui/material/Button';
 import { getSampleAPIData, getSampleOpenAPI } from 'AppData/SamplePizzaShack';
+
+const PREFIX = 'SampleAPI';
+
+const classes = {
+    wrapper: `${PREFIX}-wrapper`,
+};
+
+const StyledModal = styled(Modal)(({ theme }) => ({
+    '&': {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    [`& .${classes.wrapper}`]: {
+        width: theme.spacing(35),
+        borderRadius: theme.spacing(1),
+        outline: 'none',
+        padding: theme.spacing(1),
+    },
+}));
 
 
 const initialTaskStates = {
@@ -66,8 +85,6 @@ const SampleAPI = (props) => {
     const [newSampleAPI, setNewSampleAPI] = useState();
 
     const { data: publisherSettings, isLoading } = usePublisherSettings();
-    const theme = useTheme();
-    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const taskManager = async (promisedTask, name) => {
         tasksStatusDispatcher({ name, status: { inProgress: true } });
         let taskResult;
@@ -185,17 +202,16 @@ const SampleAPI = (props) => {
                     defaultMessage='Deploy Sample API'
                 />
             </LandingMenuItem>
-            <Modal
+            <StyledModal
                 aria-labelledby='transition-modal-title'
                 aria-describedby='transition-modal-description'
                 open={showStatus}
                 closeAfterTransition
-                sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
                 <Fade in={showStatus}>
                     <Box
                         bgcolor='background.paper'
-                        sx={{ width: `${isXsOrBelow ? 4 / 5 : 1 / 4}`, outline: 'none' }}
+                        className={classes.wrapper}
                     >
                         <Grid
                             container
@@ -345,7 +361,7 @@ const SampleAPI = (props) => {
                         </Grid>
                     </Box>
                 </Fade>
-            </Modal>
+            </StyledModal>
         </>
     );
 };

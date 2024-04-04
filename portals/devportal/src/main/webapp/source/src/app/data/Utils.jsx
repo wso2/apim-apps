@@ -18,7 +18,7 @@
 
 import Axios from "axios";
 import Settings from 'Settings';
-import AuthManager from "./AuthManager";
+import User from "./User";
 
 /**
  * Utility class for Developer Portal application
@@ -319,6 +319,49 @@ class Utils {
                 return hex.length === 1 ? '0' + hex : hex;
             }).join('');
         }
+
+    /**
+     * Generate UUID V4 Source https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
+     * @returns {String} UUID
+     */
+    static generateUUID() {
+        return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, (c) => {
+            // Disable the no bitwise rule as this is a `very rare` usage of bitwise logic operators
+            // eslint-disable-next-line no-bitwise
+            const r = (Math.random() * 16) | 0;
+            const // eslint-disable-next-line no-bitwise
+                v = c === 'x' ? r : r & (0x3 | 0x8);
+            return v.toString(16);
+        });
+    }
+
+    /**
+     * Get the current user
+     *
+     * @param {string} environmentName - Name of the environment
+     * @returns {string} - Current user
+     */
+    static getUser(environmentName = Utils.getCurrentEnvironment().label) {
+        const userData = localStorage.getItem(`${User.CONST.LOCALSTORAGE_USER}_${environmentName}`);
+        const partialToken = Utils.getCookie(User.CONST.WSO2_AM_TOKEN_1, environmentName);
+        const refreshToken = Utils.getCookie(User.CONST.WSO2_AM_REFRESH_TOKEN_1, environmentName);
+
+        const isLoginCookie = Utils.getCookie('IS_LOGIN', 'DEFAULT');
+        if (isLoginCookie) {
+            Utils.deleteCookie('IS_LOGIN', Settings.app.context, 'DEFAULT');
+            localStorage.removeItem(`${User.CONST.LOCALSTORAGE_USER}_${environmentName}`);
+            return null;
+        }
+        if (!(userData && (partialToken || refreshToken))) {
+            return null;
+        }
+
+        const { name } = User.fromJson(JSON.parse(userData), environmentName);
+        if (name) {
+            return name;
+        }
+        return null;
+    }
 }
 
 Utils.CONST = {

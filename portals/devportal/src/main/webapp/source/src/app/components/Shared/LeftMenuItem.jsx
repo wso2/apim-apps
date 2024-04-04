@@ -88,10 +88,10 @@ const StyledBootstrapTooltip = styled(BootstrapTooltip)((
         paddingTop: theme.spacing(0.6),
         paddingBottom: theme.spacing(0.6),
         paddingLeft: theme.spacing(1),
+        paddingRight: theme.spacing(1),
         [theme.breakpoints.down('md')]: {
             paddingLeft: 0,
         },
-        paddingRight: 0,
         fontSize: theme.typography.caption.fontSize,
         cursor: 'pointer',
         textDecoration: 'none',
@@ -256,7 +256,6 @@ function LeftMenuItem(props) {
                             )}
                         />
                     )}
-
 
                 </Link>
             </div>

@@ -252,20 +252,35 @@ const APICreateStreamingAPI = (props) => {
                         );
                         return env && env.vhosts[0].host;
                     };
-                    if (envList && envList.length > 0) {
-                        if (envList.includes('Default') && getFirstVhost('Default')) {
-                            body1.push({
-                                name: 'Default',
-                                displayOnDevportal: true,
-                                vhost: getFirstVhost('Default'),
-                            });
-                        } else if (getFirstVhost(envList[0])) {
-                            body1.push({
-                                name: envList[0],
-                                displayOnDevportal: true,
-                                vhost: getFirstVhost(envList[0]),
-                            });
+                    if (settings.gatewayTypes && settings.gatewayTypes.length === 1) {
+                        if (envList && envList.length > 0) {
+                            if (envList.includes('Default') && getFirstVhost('Default')) {
+                                body1.push({
+                                    name: 'Default',
+                                    displayOnDevportal: true,
+                                    vhost: getFirstVhost('Default'),
+                                });
+                            } else if (getFirstVhost(envList[0])) {
+                                body1.push({
+                                    name: envList[0],
+                                    displayOnDevportal: true,
+                                    vhost: getFirstVhost(envList[0]),
+                                });
+                            }
                         }
+                    } else {
+                        const envList1 = settings.environment;
+                        let foundEnv = false;
+                        envList1.forEach((env) => {
+                            if (!foundEnv && env.gatewayType === 'Regular' && getFirstVhost(env.name)) {
+                                body1.push({
+                                    name: env.name,
+                                    displayOnDevportal: true,
+                                    vhost: getFirstVhost(env.name),
+                                });
+                                foundEnv = true;
+                            }
+                        });
                     }
                     setIsDeploying(true);
                     streamingApi.deployRevision(api.id, revisionId, body1)

@@ -79,7 +79,11 @@ const StyledCard = styled(Card)((
 
     [`& .${classes.apiDetails}`]: { padding: theme.spacing(1), paddingBottom: 0 },
 
-    [`& .${classes.apiActions}`]: { justifyContent: 'space-between', padding: `0px 0px ${theme.spacing(1)} 8px` },
+    [`& .${classes.apiActions}`]: { 
+        justifyContent: 'space-between',
+        padding: `0px 0px ${theme.spacing(1)} 8px`,
+        height: 48
+    },
 
     [`& .${classes.deleteProgress}`]: {
         color: green[200],

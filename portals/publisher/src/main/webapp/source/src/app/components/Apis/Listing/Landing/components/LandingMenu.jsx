@@ -60,7 +60,7 @@ const LandingMenu = (props) => {
             className={classes.root}
             item
             xs={12}
-            sm={5}
+            sm={6}
             md={3}
             lg={2}
         >
@@ -101,7 +101,13 @@ const LandingMenu = (props) => {
                             display={{ xs: 'none', sm: 'flex' }}
                         >
                             <img
-                                width='190px'
+                                style={{
+                                    maxWidth: '100%',
+                                    height: 'auto',
+                                    objectFit: 'contain',
+                                    minWidth: '150px',
+                                    minHeight: '150px',
+                                }}
                                 src={Configurations.app.context
                                     + icon}
                                 alt={title}

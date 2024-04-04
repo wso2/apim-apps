@@ -38,51 +38,18 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import MonacoEditor from 'react-monaco-editor';
 
-const PREFIX = 'APISecurityAudit';
-
-const classes = {
-    rootPaper: `${PREFIX}-rootPaper`,
-    inlineDecoration: `${PREFIX}-inlineDecoration`,
-    contentLine: `${PREFIX}-contentLine`,
-    htmlToolTip: `${PREFIX}-htmlToolTip`,
-    helpButton: `${PREFIX}-helpButton`,
-    helpIcon: `${PREFIX}-helpIcon`,
-    tableRow: `${PREFIX}-tableRow`,
-    referenceErrorTypography: `${PREFIX}-referenceErrorTypography`,
-    referenceTypography: `${PREFIX}-referenceTypography`,
-    subheadingTypography: `${PREFIX}-subheadingTypography`,
-    paperDiv: `${PREFIX}-paperDiv`,
-    sectionHeadingTypography: `${PREFIX}-sectionHeadingTypography`,
-    auditSummaryDiv: `${PREFIX}-auditSummaryDiv`,
-    auditSummarySubDiv: `${PREFIX}-auditSummarySubDiv`,
-    circularProgressBarScore: `${PREFIX}-circularProgressBarScore`,
-    circularProgressBarScoreFooter: `${PREFIX}-circularProgressBarScoreFooter`,
-    auditSummaryDivRight: `${PREFIX}-auditSummaryDivRight`,
-    columnOne: `${PREFIX}-columnOne`,
-    columnTwo: `${PREFIX}-columnTwo`,
-    head: `${PREFIX}-head`,
-    linkText: `${PREFIX}-linkText`
-};
-
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.rootPaper}`]: {
+const styles = {
+    rootPaper: (theme) => ({
         padding: theme.spacing(3),
         margin: theme.spacing(2),
-    },
-
-    [`& .${classes.inlineDecoration}`]: {
+    }),
+    inlineDecoration: {
         background: '#FF0000',
     },
-
-    [`& .${classes.contentLine}`]: {
+    contentLine: {
         background: '#add8e6',
     },
-
-    [`& .${classes.htmlToolTip}`]: {
+    htmlToolTip: (theme) => ({
         backgroundColor: '#f5f5f9',
         color: 'rgba(0, 0, 0, 0.87)',
         maxWidth: 220,
@@ -91,93 +58,78 @@ const Root = styled('div')((
         '& b': {
             fontWeight: theme.typography.fontWeightMedium,
         },
-    },
-
-    [`& .${classes.helpButton}`]: {
+    }),
+    helpButton: {
         padding: 0,
         minWidth: 20,
         'margin-left': 10,
     },
-
-    [`& .${classes.helpIcon}`]: {
+    helpIcon: {
         fontSize: 16,
     },
-
-    [`& .${classes.tableRow}`]: {
+    tableRow: {
         'background-color': '#d3d3d3',
     },
-
-    [`& .${classes.referenceErrorTypography}`]: {
+    referenceErrorTypography: {
         width: '70%',
         marginTop: '15%',
     },
-
-    [`& .${classes.referenceTypography}`]: {
+    referenceTypography: {
         width: '70%',
     },
-
-    [`& .${classes.subheadingTypography}`]: {
-        paddingTop: 30,
-        paddingLeft: 20,
+    subheadingTypography: {
+        paddingTop: '30px',
+        paddingLeft: '20px',
     },
-
-    [`& .${classes.paperDiv}`]: {
-        marginTop: 30,
+    paperDiv: {
+        marginTop: '30px',
     },
-
-    [`& .${classes.sectionHeadingTypography}`]: {
-        marginBottom: 18,
+    sectionHeadingTypography: {
+        marginBottom: '18px',
     },
-
-    [`& .${classes.auditSummaryDiv}`]: {
+    auditSummaryDiv: {
         display: 'flex',
-        marginTop: 25,
+        marginTop: '25px',
     },
-
-    [`& .${classes.auditSummarySubDiv}`]: {
-        width: 250,
-        marginLeft: 40,
-        marginRight: 40,
+    auditSummarySubDiv: {
+        width: '250px',
+        marginLeft: '40px',
+        marginRight: '40px',
         display: 'table',
     },
-
-    [`& .${classes.circularProgressBarScore}`]: {
+    circularProgressBarScore: {
         fontSize: 70,
         color: '#3d98c7',
-        marginTop: 18,
+        marginTop: '18px',
     },
-
-    [`& .${classes.circularProgressBarScoreFooter}`]: {
+    circularProgressBarScoreFooter: {
         fontSize: 18,
-        marginTop: 10,
+        marginTop: '10px',
     },
-
-    [`& .${classes.auditSummaryDivRight}`]: {
+    auditSummaryDivRight: {
         flexGrow: 1,
-        marginLeft: 200,
-        marginTop: 10,
+        marginLeft: '200px',
+        marginTop: '10px',
     },
-
-    [`& .${classes.columnOne}`]: {
+    columnOne: {
         display: 'block',
         width: '50%',
         float: 'left',
     },
-
-    [`& .${classes.columnTwo}`]: {
+    columnTwo: {
         width: '40%',
         float: 'right',
     },
-
-    [`& .${classes.head}`]: {
+    head: {
         fontWeight: 200,
-        marginBottom: 20,
+        marginBottom: '20px',
     },
-
-    [`& .${classes.linkText}`]: {
+    linkText: {
         float: 'right',
-    }
-}));
+    },
+}
+
+const StyledDiv = styled('div')({});
 
 /**
  * This Component hosts the API Security Audit Component
@@ -417,8 +369,8 @@ class APISecurityAudit extends Component {
                         ),
                         options: {
                             isWholeLine: true,
-                            className: classes.inlineDecoration,
-                            glyphMarginClassName: classes.contentLine,
+                            sx: styles.inlineDecoration,
+                            glyphMarginClassName: styles.contentLine,
                         },
                     },
                 ]);
@@ -451,29 +403,29 @@ class APISecurityAudit extends Component {
         const linkToDetailedReport = 'https://platform.42crunch.com/apis/' + externalApiId + '/security-audit-report';
         if (loading) {
             return (
-                <Root>
+                <div>
                     <InlineMessage type='info' height={140}>
-                        <div className={classes.contentWrapper}>
+                        <StyledDiv sx={styles.contentWrapper}>
                             <Typography
                                 variant='h5'
                                 component='h3'
-                                className={classes.head}
+                                sx={styles.head}
                             >
                                 <FormattedMessage
                                     id='Apis.Details.APIDefinition.AuditApi.WaitForReport'
                                     defaultMessage='Please wait...'
                                 />
                             </Typography>
-                            <Typography component='p' className={classes.content}>
+                            <Typography component='p' sx={styles.content}>
                                 <FormattedMessage
                                     id='Apis.Details.APIDefinition.AuditApi.WaitForReport.Content'
                                     defaultMessage='Auditing an API for the first time will take some time'
                                 />
                             </Typography>
-                        </div>
+                        </StyledDiv>
                     </InlineMessage>
                     <Progress />
-                </Root>
+                </div>
             );
         }
         const columns = [
@@ -620,8 +572,8 @@ class APISecurityAudit extends Component {
                     searchTerm = reportObject.index[rowData[1]];
 
                     return (
-                        <TableRow className={classes.tableRow}>
-                            <TableCell className={classes.columnOne}>
+                        <TableRow sx={styles.tableRow}>
+                            <TableCell sx={styles.columnOne}>
                                 <MonacoEditor
                                     height='250px'
                                     theme='vs-dark'
@@ -630,8 +582,8 @@ class APISecurityAudit extends Component {
                                     editorDidMount={(editor, monaco) => this.editorDidMount(editor, monaco, searchTerm)}
                                 />
                             </TableCell>
-                            <TableCell className={classes.columnTwo}>
-                                <Typography variant='body1' className={classes.referenceErrorTypography}>
+                            <TableCell sx={styles.columnTwo}>
+                                <Typography variant='body1' sx={styles.referenceErrorTypography}>
                                     <FormattedMessage
                                         id='Apis.Details.APIDefinition.AuditApi.ReferenceSection'
                                         description='Link to visit for detail on how to remedy issue'
@@ -657,7 +609,7 @@ class APISecurityAudit extends Component {
                 } else {
                     searchTerm = reportObject.index[rowData[3]];
                     return (
-                        <TableRow className={classes.tableRow}>
+                        <TableRow sx={styles.tableRow}>
                             <TableCell colSpan='2'>
                                 <MonacoEditor
                                     width='85%'
@@ -669,7 +621,7 @@ class APISecurityAudit extends Component {
                                 />
                             </TableCell>
                             <TableCell>
-                                <Typography variant='body1' className={classes.referenceTypography}>
+                                <Typography variant='body1' sx={styles.referenceTypography}>
                                     <FormattedMessage
                                         id='Apis.Details.APIDefinition.AuditApi.ReferenceSection'
                                         description='Link to visit for detail on how to remedy issue'
@@ -702,22 +654,22 @@ class APISecurityAudit extends Component {
                         width='100%'
                         height='calc(100vh - 51px)'
                     >
-                        <Typography variant='h4' className={classes.subheadingTypography}>
+                        <Typography variant='h4' sx={styles.subheadingTypography}>
                             <FormattedMessage
                                 id='Apis.Details.APIDefinition.AuditApi.ApiSecurityAuditReport'
                                 defaultMessage='API Security Audit Report'
                             />
                         </Typography>
-                        <div className={classes.paperDiv}>
-                            <Paper elevation={1} className={classes.rootPaper}>
+                        <StyledDiv sx={styles.paperDiv}>
+                            <Paper elevation={1} sx={styles.rootPaper}>
                                 <div>
-                                    <Typography variant='h5' className={classes.sectionHeadingTypography}>
+                                    <Typography variant='h5' sx={styles.sectionHeadingTypography}>
                                         <FormattedMessage
                                             id='Apis.Details.APIDefinition.AuditApi.AuditScoreSummary'
                                             defaultMessage='Audit Score and Summary'
                                         />
                                     </Typography>
-                                    <Typography variant='body1' className={classes.linkText}>
+                                    <Typography variant='body1' sx={styles.linkText}>
                                         <FormattedMessage
                                             id='Apis.Details.APIDefinition.AuditApi.LinkToDetailedReport'
                                             defaultMessage='{linkToDetailedReportText} {link} {afterLinkText}'
@@ -737,14 +689,14 @@ class APISecurityAudit extends Component {
                                             }}
                                         />
                                     </Typography>
-                                    <div className={classes.auditSummaryDiv}>
-                                        <div className={classes.auditSummarySubDiv}>
+                                    <StyledDiv sx={styles.auditSummaryDiv}>
+                                        <StyledDiv sx={styles.auditSummarySubDiv}>
                                             <CircularProgressbarWithChildren
                                                 value={overallScore}
                                             >
                                                 <Typography
                                                     variant='body1'
-                                                    className={classes.circularProgressBarScore}
+                                                    sx={styles.circularProgressBarScore}
                                                 >
                                                     <FormattedMessage
                                                         id='Apis.Details.APIDefinition.AuditApi
@@ -759,7 +711,7 @@ class APISecurityAudit extends Component {
                                                 </Typography>
                                                 <Typography
                                                     variant='body1'
-                                                    className={classes.circularProgressBarScoreFooter}
+                                                    sx={styles.circularProgressBarScoreFooter}
                                                 >
                                                     <FormattedMessage
                                                         id='Apis.Details.APIDefinition.AuditApi.ScoreFooter'
@@ -767,8 +719,8 @@ class APISecurityAudit extends Component {
                                                     />
                                                 </Typography>
                                             </CircularProgressbarWithChildren>
-                                        </div>
-                                        <div className={classes.auditSummaryDivRight}>
+                                        </StyledDiv>
+                                        <StyledDiv sx={styles.auditSummaryDivRight}>
                                             {{}.hasOwnProperty.call(reportObject, 'score')
                                                 && (
                                                     <Typography variant='body1'>
@@ -817,8 +769,8 @@ class APISecurityAudit extends Component {
                                                             />
                                                             <Tooltip
                                                                 placement='right'
-                                                                classes={{
-                                                                    tooltip: classes.htmlTooltip,
+                                                                styles={{
+                                                                    tooltip: styles.htmlTooltip,
                                                                 }}
                                                                 title={(
                                                                     <>
@@ -861,8 +813,8 @@ class APISecurityAudit extends Component {
                                                                     </>
                                                                 )}
                                                             >
-                                                                <Button className={classes.helpButton}>
-                                                                    <HelpOutline className={classes.helpIcon} />
+                                                                <Button sx={styles.helpButton}>
+                                                                    <HelpOutline sx={styles.helpIcon} />
                                                                 </Button>
                                                             </Tooltip>
                                                         </Typography>
@@ -926,11 +878,11 @@ class APISecurityAudit extends Component {
                                             {{}.hasOwnProperty.call(reportObject, 'validationErrors')
                                                 && (
                                                     <InlineMessage type='warning' height={140}>
-                                                        <div className={classes.contentWrapper}>
+                                                        <StyledDiv sx={styles.contentWrapper}>
                                                             <Typography
                                                                 variant='h5'
                                                                 component='h3'
-                                                                className={classes.head}
+                                                                sx={styles.head}
                                                             >
                                                                 <FormattedMessage
                                                                     id={'Apis.Details.APIDefinition'
@@ -938,7 +890,7 @@ class APISecurityAudit extends Component {
                                                                     defaultMessage='Failed to Validate OpenAPI File'
                                                                 />
                                                             </Typography>
-                                                            <Typography component='p' className={classes.content}>
+                                                            <Typography component='p' sx={styles.content}>
                                                                 <FormattedMessage
                                                                     id={'Apis.Details.APIDefinition'
                                                                     + '.AuditApi.FailedToValidate.Content'}
@@ -946,19 +898,19 @@ class APISecurityAudit extends Component {
                                                                     + 'shown below and run the audit again.'}
                                                                 />
                                                             </Typography>
-                                                        </div>
+                                                        </StyledDiv>
                                                     </InlineMessage>
                                                 )}
-                                        </div>
-                                    </div>
+                                        </StyledDiv>
+                                    </StyledDiv>
                                 </div>
                             </Paper>
-                        </div>
+                        </StyledDiv>
                         {
-                            <div className={classes.paperDiv}>
-                                <Paper elevation={1} className={classes.rootPaper}>
+                            <StyledDiv sx={styles.paperDiv}>
+                                <Paper elevation={1} sx={styles.rootPaper}>
                                     <div>
-                                        <Typography variant='h5' className={classes.sectionHeadingTypography}>
+                                        <Typography variant='h5' sx={styles.sectionHeadingTypography}>
                                             <FormattedMessage
                                                 id='Apis.Details.APIDefinition.AuditApi.OpenApiFormatRequirements'
                                                 defaultMessage='OpenAPI Format Requirements'
@@ -1046,14 +998,14 @@ class APISecurityAudit extends Component {
                                         )}
                                     </div>
                                 </Paper>
-                            </div>
+                            </StyledDiv>
                         }
                         {{}.hasOwnProperty.call(reportObject, 'security')
                             && (
-                                <div className={classes.paperDiv}>
-                                    <Paper elevation={1} className={classes.rootPaper}>
+                                <StyledDiv sx={styles.paperDiv}>
+                                    <Paper elevation={1} sx={styles.rootPaper}>
                                         <div>
-                                            <Typography variant='h5' className={classes.sectionHeadingTypography}>
+                                            <Typography variant='h5' sx={styles.sectionHeadingTypography}>
                                                 <FormattedMessage
                                                     id='Apis.Details.APIDefinition.AuditApi.Security'
                                                     defaultMessage='Security'
@@ -1102,8 +1054,8 @@ class APISecurityAudit extends Component {
                                                     />
                                                     <Tooltip
                                                         placement='right'
-                                                        classes={{
-                                                            tooltip: classes.htmlTooltip,
+                                                        styles={{
+                                                            tooltip: styles.htmlTooltip,
                                                         }}
                                                         title={(
                                                             <>
@@ -1146,8 +1098,8 @@ class APISecurityAudit extends Component {
                                                             </>
                                                         )}
                                                     >
-                                                        <Button className={classes.helpButton}>
-                                                            <HelpOutline className={classes.helpIcon} />
+                                                        <Button sx={styles.helpButton}>
+                                                            <HelpOutline sx={styles.helpIcon} />
                                                         </Button>
                                                     </Tooltip>
                                                 </Typography>
@@ -1176,14 +1128,14 @@ class APISecurityAudit extends Component {
                                             )}
                                         </div>
                                     </Paper>
-                                </div>
+                                </StyledDiv>
                             )}
                         {{}.hasOwnProperty.call(reportObject, 'data')
                             && (
-                                <div className={classes.paperDiv}>
-                                    <Paper elevation={1} className={classes.rootPaper}>
+                                <StyledDiv sx={styles.paperDiv}>
+                                    <Paper elevation={1} sx={styles.rootPaper}>
                                         <div>
-                                            <Typography variant='h5' className={classes.sectionHeadingTypography}>
+                                            <Typography variant='h5' sx={styles.sectionHeadingTypography}>
                                                 <FormattedMessage
                                                     id='Apis.Details.APIDefinition.AuditApi.DataValidation'
                                                     defaultMessage='Data Validation'
@@ -1231,8 +1183,8 @@ class APISecurityAudit extends Component {
                                                     />
                                                     <Tooltip
                                                         placement='right'
-                                                        classes={{
-                                                            tooltip: classes.htmlTooltip,
+                                                        styles={{
+                                                            tooltip: styles.htmlTooltip,
                                                         }}
                                                         title={(
                                                             <>
@@ -1275,8 +1227,8 @@ class APISecurityAudit extends Component {
                                                             </>
                                                         )}
                                                     >
-                                                        <Button className={classes.helpButton}>
-                                                            <HelpOutline className={classes.helpIcon} />
+                                                        <Button sx={styles.helpButton}>
+                                                            <HelpOutline sx={styles.helpIcon} />
                                                         </Button>
                                                     </Tooltip>
                                                 </Typography>
@@ -1305,7 +1257,7 @@ class APISecurityAudit extends Component {
                                             )}
                                         </div>
                                     </Paper>
-                                </div>
+                                </StyledDiv>
                             )}
                     </div>
                 )}
@@ -1315,7 +1267,6 @@ class APISecurityAudit extends Component {
 }
 
 APISecurityAudit.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     apiId: PropTypes.string.isRequired,
     theme: PropTypes.shape({}).isRequired,
     history: PropTypes.shape({

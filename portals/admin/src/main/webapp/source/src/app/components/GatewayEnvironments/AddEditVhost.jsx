@@ -284,6 +284,7 @@ function AddEditVhost(props) {
                                                         sx={(theme) => ({
                                                             borderColor: 'LightGray',
                                                             margin: theme.spacing(1),
+                                                            opacity: 0.2,
                                                         })}
                                                     />
                                                 </Grid>

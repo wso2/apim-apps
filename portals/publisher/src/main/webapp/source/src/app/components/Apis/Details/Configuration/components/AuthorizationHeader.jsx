@@ -25,7 +25,6 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import API from 'AppData/api';
 import APIValidation from 'AppData/APIValidation';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 
@@ -42,26 +41,7 @@ export default function AuthorizationHeader(props) {
     const [apiFromContext] = useAPI();
     const [isHeaderNameValid, setIsHeaderNameValid] = useState(true);
     const { settings } = useAppContext();
-    let hasResourceWithSecurity;
-    const authorizationHeaderValue = api.authorizationHeader ? api.authorizationHeader : settings.authorizationHeader;
-    if (apiFromContext.apiType === API.CONSTS.APIProduct) {
-        const apiList = apiFromContext.apis;
-        for (const apiInProduct in apiList) {
-            if (Object.prototype.hasOwnProperty.call(apiList, apiInProduct)) {
-                hasResourceWithSecurity = apiList[apiInProduct].operations.findIndex(
-                    (op) => op.authType !== 'None',
-                ) > -1;
-                if (hasResourceWithSecurity) {
-                    break;
-                }
-            }
-        }
-    } else {
-        hasResourceWithSecurity = apiFromContext.operations.findIndex((op) => op.authType !== 'None') > -1;
-    }
-    if (!hasResourceWithSecurity && api.authorizationHeader !== '') {
-        configDispatcher({ action: 'authorizationHeader', value: '' });
-    }
+    const authorizationHeaderValue = api.authorizationHeader ? api.authorizationHeader : settings?.authorizationHeader;
 
     function validateHeader(value) {
         const headerValidity = APIValidation.authorizationHeader.required()
@@ -79,7 +59,7 @@ export default function AuthorizationHeader(props) {
         <Grid container spacing={1} alignItems='center'>
             <Grid item xs={11}>
                 <TextField
-                    disabled={isRestricted(['apim:api_create'], apiFromContext) || !hasResourceWithSecurity}
+                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
                     id='outlined-name'
                     label={(
                         <FormattedMessage
@@ -87,7 +67,7 @@ export default function AuthorizationHeader(props) {
                             defaultMessage='Authorization Header'
                         />
                     )}
-                    value={hasResourceWithSecurity ? authorizationHeaderValue : ' '}
+                    value={authorizationHeaderValue}
                     error={!isHeaderNameValid}
                     helperText={
                         (!isHeaderNameValid)

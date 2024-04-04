@@ -131,6 +131,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
             open={drawerOpen}
             onClose={handleDrawerClose}
             classes={{ paper: classes.drawerPaper }}
+            sx={{ zIndex: 1300}}
         >
             <Box role='presentation'>
                 <List>
@@ -158,7 +159,7 @@ const PolicyConfiguringDrawer: FC<PolicyConfiguringDrawerProps> = ({
                         </ListItemIcon>
                     </ListItem>
                 </List>
-                <Divider light />
+                <Divider />
                 <General
                     policyObj={getPolicyOfTypeAttachedPolicy()}
                     setDroppedPolicy={setDroppedPolicy}

@@ -100,7 +100,7 @@ function Endpoints(props) {
     const { api } = props;
 
     const isPrototypedAvailable = api.endpointConfig !== null
-        && api.endpointConfig.implementation_status === 'prototyped';
+        && api.endpointConfig.implementation_status === 'prototyped' && api.lifeCycleStatus === 'PROTOTYPED';
 
     /**
      * Check whether the endpoint configuration is dynamic

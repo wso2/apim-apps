@@ -282,10 +282,6 @@ function AddOperation(props) {
                             }}
                             MenuProps={{
                                 getContentAnchorEl: null,
-                                anchorOrigin: {
-                                    vertical: 'bottom',
-                                    horizontal: 'left',
-                                },
                             }}
                         >
                             {getSupportedVerbs().map((verb) => (

@@ -17,7 +17,7 @@
  *
  */
 
-import TryOutController from './app/components/Apis/Details/ApiConsole/TryOutController.jsx';
+import TryOutController from './app/components/Shared/ApiTryOut/TryOutController.jsx';
 import SwaggerUI from './app/components/Apis/Details/ApiConsole/SwaggerUI.jsx';
 
 export {

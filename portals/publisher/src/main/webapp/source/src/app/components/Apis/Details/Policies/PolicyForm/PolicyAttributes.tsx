@@ -380,7 +380,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                             }}
                                         />
                                     </Grid>
-                                    <Box m={1}>
+                                    <Box m={1} sx={{ pt: 1 }}>
                                         <ToggleButtonGroup>
                                             {/* Attribute required or not */}
                                             <Tooltip
