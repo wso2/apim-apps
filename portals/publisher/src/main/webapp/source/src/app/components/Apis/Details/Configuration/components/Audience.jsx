@@ -22,28 +22,9 @@ import ChipInput from 'AppComponents/Shared/ChipInput';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import { makeStyles } from "@material-ui/core";
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Switch from '@mui/material/Switch';
 import { ALL_AUDIENCES_ALLOWED } from './APISecurity/components/apiSecurityConstants';
-
-const useStyles = makeStyles((theme) => ({
-    actionSpace: {
-        marginLeft: theme.spacing(20),
-        marginTop: '-7px',
-        marginBottom: '-7px',
-    },
-    subHeading: {
-        fontSize: '1rem',
-        fontWeight: 400,
-        margin: 0,
-        display: 'inline-flex',
-        lineHeight: 1.5,
-    },
-    container: {
-        marginBottom: 8,
-    },
-}));
 
 /**
  *
@@ -61,13 +42,21 @@ export default function Audience(props) {
         !(audiences.includes(ALL_AUDIENCES_ALLOWED)));
     const [audienceValues, setAudienceValues] = useState(Array.isArray(audiences) ?
         audiences.filter(value => value !== ALL_AUDIENCES_ALLOWED) : []);
-    const classes = useStyles();
     return (
         <>
-            <Grid className={classes.container}>
-                <Grid container className={classes.container} alignItems='center'>
+            <Grid sx={() => ({ marginBottom: 2, })}>
+                <Grid container sx={() => ({ marginBottom: 2, })} alignItems='center'>
                     <Grid item>
-                        <Typography className={classes.subHeading} variant='h6' component='h4'>
+                        <Typography 
+                            sx={() => ({ 
+                                fontSize: '1rem',
+                                fontWeight: 400,
+                                margin: 0,
+                                display: 'inline-flex',
+                                lineHeight: 1.5, })}
+                            variant='subtitle2'
+                            component='h5'
+                        >
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.Audience.Validation.Title'
                                 defaultMessage='Audience Validation'
@@ -76,7 +65,10 @@ export default function Audience(props) {
                     </Grid>
                     <Grid item>
                         <FormControlLabel
-                            className={classes.actionSpace}
+                            sx={(theme) => ({ 
+                                marginLeft: theme.spacing(20),
+                                marginTop: '-7px',
+                                marginBottom: '-7px', })}
                             control={(
                                 <Switch
                                     checked={isAudValidationEnabled}
