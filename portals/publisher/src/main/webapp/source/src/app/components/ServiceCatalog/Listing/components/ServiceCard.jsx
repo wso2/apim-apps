@@ -31,7 +31,7 @@ const classes = {
 
 const StyledPaper = styled(Paper)(({ theme }) => ({
     [`&.${classes.root}`]: {
-        width: theme.spacing(25),
+        width: theme.spacing(27),
         height: theme.spacing(35),
         backgroundColor: theme.palette.background.paper,
         '&:hover': {
