@@ -79,7 +79,7 @@ function Header(props) {
                     <IconButton
                         onClick={toggleFullScreen}
                         style={{
-                            alignSelf: 'flex-end', padding: '12px', color: '#10597f', height: '100%',
+                            alignSelf: 'flex-end', padding: '12px', color: '#10597f', margin: '6px 2px',
                         }}
                     >
                         {isClicked ? (
@@ -92,7 +92,7 @@ function Header(props) {
                         <IconButton
                             onClick={handleReset}
                             style={{
-                                alignSelf: 'flex-end', padding: '12px', color: '#10597f', height: '100%',
+                                alignSelf: 'flex-end', padding: '12px', color: '#10597f', margin: '6px 0',
                             }}
                         >
                             <RestartAltTwoToneIcon fontSize='large' />
@@ -117,7 +117,7 @@ function Header(props) {
                     <IconButton
                         onClick={toggleChatbot}
                         style={{
-                            alignSelf: 'flex-end', padding: '10px', color: '#10597f', height: '100%',
+                            alignSelf: 'flex-end', padding: '12px', color: '#10597f', margin: '6px 2px',
                         }}
                     >
                         <ExpandMoreTwoToneIcon fontSize='large' />
