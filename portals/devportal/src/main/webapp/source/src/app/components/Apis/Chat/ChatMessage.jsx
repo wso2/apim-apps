@@ -22,7 +22,6 @@ import Utils from 'AppData/Utils';
 import {
     Box, Typography, Card, CardContent, useTheme,
 } from '@mui/material';
-import { MuiMarkdown } from 'mui-markdown';
 import PersonIcon from '@mui/icons-material/Person';
 import ChatIcon from '@mui/icons-material/Chat';
 
@@ -81,45 +80,6 @@ function ChatMessage(props) {
         maxWidth: '84%',
     };
 
-    const markdownOverrides = {
-        heading1: {
-            component: Typography,
-            props: {
-                variant: 'h6',
-            },
-        },
-        heading2: {
-            component: Typography,
-            props: {
-                variant: 'subtitle1',
-            },
-        },
-        heading3: {
-            component: Typography,
-            props: {
-                variant: 'subtitle2',
-            },
-        },
-        heading4: {
-            component: Typography,
-            props: {
-                variant: 'body1',
-            },
-        },
-        heading5: {
-            component: Typography,
-            props: {
-                variant: 'body2',
-            },
-        },
-        heading6: {
-            component: Typography,
-            props: {
-                variant: 'caption',
-            },
-        },
-    };
-
     return (
         <Box
             display='flex'
@@ -157,11 +117,7 @@ function ChatMessage(props) {
                 py={message.role === 'assistant' ? 2 : 0}
             >
                 <Typography>
-                    <MuiMarkdown
-                        overrides={markdownOverrides}
-                    >
-                        {message.content}
-                    </MuiMarkdown>
+                    {message.content}
                 </Typography>
             </Box>
             <Box display='flex-start' alignItems='center' flexDirection='column' width='90%'>
