@@ -104,7 +104,7 @@ function ChatMessages(props) {
                     {aiAuthTokenProvided ? (
                         messages && messages.map((message) => (
                             <Box my={1}>
-                                <ChatMessage message={message} user={user} />
+                                <ChatMessage message={message} />
                             </Box>
                         ))
                     ) : (
@@ -155,7 +155,7 @@ function ChatMessages(props) {
                     maxWidth='1380px'
                     marginRight='5%'
                 >
-                    <ChatInput onSend={onSend} loading={loading} />
+                    <ChatInput onSend={onSend} loading={loading} user={user} />
                 </Box>
 
             </Box>

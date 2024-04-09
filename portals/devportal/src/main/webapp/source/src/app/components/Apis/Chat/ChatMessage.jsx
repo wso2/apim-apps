@@ -48,7 +48,7 @@ const getColorFromLetter = (letter, colorMap, offset) => {
  * @returns {JSX} Renders single Chat Message view.
  */
 function ChatMessage(props) {
-    const { message, user } = props;
+    const { message } = props;
     const outerBoxRef = useRef(null);
     const theme = useTheme();
     const {
@@ -97,13 +97,13 @@ function ChatMessage(props) {
                 </Box>
             )}
 
-            {message.role === 'user' && (
+            {message.role !== 'assistant' && (
                 <Box display='flex' alignItems='center'>
                     <div style={profileStyle}>
                         <PersonIcon style={{ fill: '#fff', stroke: '#fff', fontSize: 'large' }} />
                     </div>
                     <Typography variant='body1' fontWeight='500' fontSize='12pt'>
-                        {user.charAt(0).toUpperCase() + user.slice(1)}
+                        {message.role.charAt(0).toUpperCase() + message.role.slice(1)}
                     </Typography>
                 </Box>
             )}
@@ -190,6 +190,5 @@ ChatMessage.propTypes = {
         content: PropTypes.string.isRequired,
         apis: PropTypes.arrayOf(PropTypes.string),
     }).isRequired,
-    user: PropTypes.string.isRequired,
 };
 export default ChatMessage;

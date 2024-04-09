@@ -36,7 +36,7 @@ function AISearchAssistant() {
     const [loading, setLoading] = useState(false);
     const [messages, setMessages] = useState(null);
     const [chatbotDisabled, setChatbotDisabled] = useState(!marketplaceAssistantEnabled);
-    const [user, setUser] = useState('You');
+    const [user, setUser] = useState('Anonymous User');
     const responseRef = useRef([]);
 
     const introMessage = {
@@ -55,10 +55,13 @@ function AISearchAssistant() {
             const restApi = new Api();
             const messagePayload = messages.slice(-10).map(({ apis, ...message }) => {
                 if (!apis) {
-                    return message;
+                    return { role: message.role === 'assistant' ? 'assistant' : 'user', content: message.content };
                 }
                 const apiList = apis.map((api) => ({ apiName: api.name, version: api.version }));
-                return { role: message.role, content: JSON.stringify({ response: message.content, apis: apiList }) };
+                return {
+                    role: message.role === 'assistant' ? 'assistant' : 'user',
+                    content: JSON.stringify({ response: message.content, apis: apiList }),
+                };
             });
 
             restApi.marketplaceAssistantExecute(query, messagePayload)
@@ -128,10 +131,22 @@ function AISearchAssistant() {
             const storedData = localStorage.getItem('messages');
             if (storedData) {
                 const { messages: storedMessages, timestamp } = JSON.parse(storedData);
-                if (Date.now() - timestamp > 60 * 60 * 1000) {
-                    setMessages([introMessage]);
-                    localStorage.setItem('messages',
-                        JSON.stringify({ messages: [introMessage], timestamp: Date.now() }));
+                if (storedMessages.length > 1) {
+                    if (storedMessages[storedMessages.length - 2].role !== 'Anonymous User') {
+                        if (Date.now() - timestamp > 60 * 60 * 1000) {
+                            setMessages([introMessage]);
+                            localStorage.setItem('messages',
+                                JSON.stringify({ messages: [introMessage], timestamp: Date.now() }));
+                        } else {
+                            setMessages(storedMessages);
+                        }
+                    } else if (Date.now() - timestamp > 15 * 60 * 1000) {
+                        setMessages([introMessage]);
+                        localStorage.setItem('messages',
+                            JSON.stringify({ messages: [introMessage], timestamp: Date.now() }));
+                    } else {
+                        setMessages(storedMessages);
+                    }
                 } else {
                     setMessages(storedMessages);
                 }

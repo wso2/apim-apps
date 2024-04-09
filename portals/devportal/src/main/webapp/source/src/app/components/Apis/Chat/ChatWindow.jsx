@@ -63,7 +63,7 @@ function ChatWindow(props) {
     };
 
     const handleSend = async (message) => {
-        responseRef.current = [...responseRef.current, { role: 'user', content: message.content.trim() }];
+        responseRef.current = [...responseRef.current, { role: user, content: message.content.trim() }];
         setMessages(responseRef.current);
 
         const query = message.content.trim().toLowerCase();
