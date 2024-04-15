@@ -258,7 +258,7 @@ function DocList(props) {
                     value={selectedDoc}
                     id='document-autocomplete'
                     className={classes.autocomplete}
-                    options={documentList}
+                    options={documentList.sort((a, b) => -b.type.localeCompare(a.type))}
                     groupBy={(document) => document.type}
                     getOptionLabel={(document) => document.name}
                     disableClearable
