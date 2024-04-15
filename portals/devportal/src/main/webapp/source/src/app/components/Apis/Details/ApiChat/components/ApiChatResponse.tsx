@@ -170,16 +170,16 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
         const jsonRegex = /^[\\{\\[](.*?)[\\}\]]$/;
 
         if (xmlRegex.test(trimmedStr)) {
-            return 'XML';
+            return 'application/xml';
         } else if (jsonRegex.test(trimmedStr)) {
             try {
                 JSON.parse(trimmedStr);
-                return 'JSON';
+                return 'application/json';
             } catch (error) {
-                return 'Unknown'; // Handle potential invalid JSON structure
+                return 'text/plain'; // Handle potential invalid JSON structure
             }
         } else {
-            return 'Unknown';
+            return 'text/plain';
         }
     };
 
@@ -194,18 +194,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
         let contentType = 'application/json';
         const noContentType = executionResult.headers && Object.keys(executionResult.headers).length === 0;
         if (noContentType) {
-            const inferredContentType = inferContentType(executionResult.body);
-            switch (inferredContentType) {
-                case 'XML':
-                    contentType = 'application/xml';
-                    break;
-                case 'JSON':
-                    contentType = 'application/json';
-                    break;
-                default:
-                    contentType = 'text/plain';
-                    break;
-            }
+            contentType = inferContentType(executionResult.body);
         } else {
             contentType = executionResult.headers['Content-Type'];
         }
