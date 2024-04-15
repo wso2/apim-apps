@@ -914,7 +914,7 @@ export default class API extends Resource {
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
     runAiAgentSubsequentIterations(apiId, apiChatRequestId, response) {
-        const promise = this.client.then((client) => {
+        return this.client.then((client) => {
             const payload = {
                 apiId,
                 apiChatAction: 'EXECUTE',
@@ -930,7 +930,6 @@ export default class API extends Resource {
                 this._requestMetaData(),
             );
         });
-        return promise;
     }
 
     /**

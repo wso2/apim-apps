@@ -159,20 +159,64 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
     }, []);
 
     /**
+     * Infer the content type of the response.
+     *
+     * @param {string} str Response body.
+     * @returns {string} Content type of the response.
+     */
+    const inferContentType = (str: string) => {
+        const trimmedStr = str.trim();
+        const xmlRegex = /^\s*<[^>]+>/;
+        const jsonRegex = /^[\\{\\[](.*?)[\\}\]]$/;
+
+        if (xmlRegex.test(trimmedStr)) {
+            return 'XML';
+        } else if (jsonRegex.test(trimmedStr)) {
+            try {
+                JSON.parse(trimmedStr);
+                return 'JSON';
+            } catch (error) {
+                return 'Unknown'; // Handle potential invalid JSON structure
+            }
+        } else {
+            return 'Unknown';
+        }
+    };
+
+    /**
      * Renders the execution result body.
      *
      * @param {any} executionResult Execution result to render.
      * @returns {JSX.Element} Execution result body to render.
      */
     const renderExecutionResultBody = (executionResult: any) => {
-        const contentType = executionResult.headers.get('Content-Type');
+        // Determine content type
+        let contentType = 'application/json';
+        const noContentType = executionResult.headers && Object.keys(executionResult.headers).length === 0;
+        if (noContentType) {
+            const inferredContentType = inferContentType(executionResult.body);
+            switch (inferredContentType) {
+                case 'XML':
+                    contentType = 'application/xml';
+                    break;
+                case 'JSON':
+                    contentType = 'application/json';
+                    break;
+                default:
+                    contentType = 'text/plain';
+                    break;
+            }
+        } else {
+            contentType = executionResult.headers['Content-Type'];
+        }
+
         if (contentType.includes('application/json') && executionResult.body !== '') {
             return (
                 <MonacoEditor
                     width='100%'
                     height='200'
                     language='json'
-                    value={JSON.stringify(executionResult.body, null, 2)}
+                    value={JSON.stringify(JSON.parse(executionResult.body), null, 2)}
                     options={{
                         readOnly: true,
                         minimap: { enabled: false },
