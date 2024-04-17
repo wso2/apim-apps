@@ -33,18 +33,14 @@ const classes = {
     headerTableRow: `${PREFIX}-headerTableRow`
 };
 
-const StyledPaper = styled(Paper)((
-    {
-        theme
-    }
-) => ({
+const StyledPaper = styled(Paper)(({ theme }) => ({
     [`& .${classes.tableCell}`]: {
         border: 'none',
         fontSize: '10px !important',
     },
 
     [`& .${classes.headerTableCell}`]: {
-        background: 'transparent',
+        background: theme.palette.background.paper,
         fontSize: 10,
         fontWeight: 'bold',
         border: 'none',

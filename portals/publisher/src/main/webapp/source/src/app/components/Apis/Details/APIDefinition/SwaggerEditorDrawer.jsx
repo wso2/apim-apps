@@ -41,16 +41,17 @@ const classes = {
     topMargin: `${PREFIX}-topMargin`
 };
 
-
-const Root = styled('div')(() => ({
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.editorPane}`]: {
-        width: '50%',
+        width: `calc(50% - ${theme.spacing(1)})`,
         height: '100%',
         overflow: 'auto',
     },
 
     [`& .${classes.editorRoot}`]: {
         height: '100%',
+        marginTop: theme.spacing(-1),
+        marginLeft: theme.spacing(-1),
     },
 
     [`& .${classes.glyphMargin}`]: {
