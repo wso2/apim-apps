@@ -29,7 +29,7 @@ import Banner from 'AppComponents/Shared/Banner';
 import API from 'AppData/api';
 import CircularProgress from '@mui/material/CircularProgress';
 import PropTypes from 'prop-types';
-import SwaggerParser from '@apidevtools/swagger-parser';
+import SwaggerClient from 'swagger-client';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
 import Configurations from 'Config';
@@ -363,18 +363,15 @@ export default function Resources(props) {
         /*
         * Used SwaggerParser.validate() because we can get the errors as well.
         */
-        SwaggerParser.validate(specCopy, (err, result) => {
-            setResolvedSpec(() => {
-                const errors = err ? [err] : [];
-                return {
-                    spec: result,
-                    errors,
-                };
+        SwaggerClient.resolve({ spec: specCopy })
+            .then(specR => {
+                setResolvedSpec(specR);
+            })
+            .finally(() => {
+                operationsDispatcher({ action: 'init', data: rawSpec.paths });
+                setOpenAPISpec(rawSpec);
+                setSecurityDefScopesFromSpec(rawSpec);
             });
-        });
-        operationsDispatcher({ action: 'init', data: rawSpec.paths });
-        setOpenAPISpec(rawSpec);
-        setSecurityDefScopesFromSpec(rawSpec);
     }
 
     /**
