@@ -72,12 +72,7 @@ export default function ListParameters(props) {
                 disableActions
                 dense
                 type='error'
-                message={(
-                    <FormattedMessage
-                        id='Apis.Details.Resources.components.operationComponents.ListParameter.parameter.spec.error'
-                        defaultMessage='Error in resolving the definition!'
-                    />
-                )}
+                message='Error in resolving the definition!'
             />
         );
     }
