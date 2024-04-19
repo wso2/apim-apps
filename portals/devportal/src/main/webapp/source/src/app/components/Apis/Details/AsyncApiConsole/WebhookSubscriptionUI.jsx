@@ -112,7 +112,7 @@ function WebhookSubscriptionUI(props) {
                 </Grid>
             </AccordionSummary>
             <AccordionDetails>
-                <Grid container direction='column' wrap='nowrap'>
+                <Grid container direction='column' wrap='nowrap' spacing={3}>
                     <Grid item xs={6}>
                         <RadioGroup aria-label='mode' name='mode' value={state.mode} row onChange={handleChange}>
                             <FormControlLabel

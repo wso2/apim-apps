@@ -19,6 +19,7 @@
 import React, {
     useState, useEffect, useRef, useContext,
 } from 'react';
+import { styled } from '@mui/material';
 import GraphiQL from 'graphiql';
 import 'graphiql/graphiql.css';
 import '@graphiql/plugin-explorer/dist/style.css';
@@ -33,6 +34,18 @@ import QueryComplexityView from './QueryComplexityView';
 import Progress from '../../../Shared/Progress';
 
 const { buildSchema } = require('graphql');
+
+const Root = styled('div')(() => ({
+    '& .graphiql-explorer-root': {
+        height: '716px !important',
+        '&>div:first-child': {
+            overflow: 'auto !important',
+        },
+    },
+    '& .graphiql-container .graphiql-plugin': {
+        overflowY: 'unset',
+    },
+}));
 
 /**
  *
@@ -108,7 +121,7 @@ export default function GraphQLUI(props) {
     } else {
         return (
             <>
-                <div>
+                <Root>
                     <Box display='flex'>
                         <Box display='flex' width={1}>
                             <Box display='flex' height='800px' flexGrow={1}>
@@ -123,7 +136,7 @@ export default function GraphQLUI(props) {
                             </Box>
                         </Box>
                     </Box>
-                </div>
+                </Root>
             </>
         );
     }
