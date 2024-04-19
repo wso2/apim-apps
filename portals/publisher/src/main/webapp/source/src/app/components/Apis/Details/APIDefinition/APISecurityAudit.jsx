@@ -369,8 +369,8 @@ class APISecurityAudit extends Component {
                         ),
                         options: {
                             isWholeLine: true,
-                            sx: styles.inlineDecoration,
-                            glyphMarginClassName: styles.contentLine,
+                            className: 'background: #FF0000;',
+                            glyphMarginClassName: 'background: #add8e6;',
                         },
                     },
                 ]);
