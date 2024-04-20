@@ -56,9 +56,9 @@ function Endpoints(props) {
         && api.endpointConfig.implementation_status === 'prototyped'
         && api.lifeCycleStatus === 'PROTOTYPED';
     const productionEndpointSecurity = api.endpointConfig && api.endpointConfig.endpoint_security
-        && api.endpointConfig.endpoint_security.production.type;
+        && api.endpointConfig.endpoint_security.production && api.endpointConfig.endpoint_security.production.type;
     const sandboxEndpointSecurity = api.endpointConfig && api.endpointConfig.endpoint_security
-        && api.endpointConfig.endpoint_security.sandbox.type;
+        && api.endpointConfig.endpoint_security.sandbox && api.endpointConfig.endpoint_security.sandbox.type;
     const authTypes = {
         NONE: 'None',
         BASIC: 'Basic Auth',
