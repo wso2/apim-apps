@@ -114,6 +114,29 @@ const Notifications = ({ updateNotificationCount }) => {
         fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc', rowsPerPage, page * rowsPerPage);
     }, [page, rowsPerPage]);
 
+    useEffect(() => {
+        const socket = new WebSocket('ws://localhost:8000/ws');
+
+        socket.onopen = () => {
+            console.log('Connected to WebSocket server');
+        };
+
+        socket.onmessage = (event) => {
+            const message = event.data;
+            console.log('Received message from WebSocket server:', message);
+            fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc', rowsPerPage, page * rowsPerPage);
+        };
+
+        socket.onclose = () => {
+            console.log('Disconnected from WebSocket server');
+        };
+
+        // Cleanup function to close socket on component unmount
+        return () => {
+            socket.close();
+        };
+    }, []);
+
     const notificationList = getNotificationList();
 
     const handlePageChange = (newPage) => {
