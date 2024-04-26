@@ -123,7 +123,8 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'Apis.Details.ApiChat.components.specEnrichmentError.unsupportedSpecificationError',
                         defaultMessage:
-                            'The OpenAPI specification includes components that are currently not supported.',
+                            'Provided API specification is currently not supported. Only OpenAPI 3.x specifications with '
+                            + 'certain definitions are allowed for now.',
                     }),
                 );
                 break;
