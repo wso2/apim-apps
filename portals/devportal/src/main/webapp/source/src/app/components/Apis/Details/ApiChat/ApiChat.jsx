@@ -43,6 +43,9 @@ import SampleQueryCard from './components/SampleQueryCard';
 import ApiChatResponse from './components/ApiChatResponse';
 
 const PREFIX = 'ApiChat';
+const CONTENT_TYPE = 'Content-Type';
+const APPLICATION_JSON = 'application/json';
+const APPLICATION_XML = 'application/xml';
 
 const classes = {
     tryWithAiMain: `${PREFIX}-tryWithAiMain`,
@@ -177,7 +180,7 @@ const ApiChat = () => {
                 setSpecEnrichmentError(
                     intl.formatMessage({
                         id: 'Apis.Details.ApiChat.components.specEnrichmentError.genericError',
-                        defaultMessage: 'Error occurred when loading API Chat.',
+                        defaultMessage: 'Error occurred while loading API Chat.',
                     }),
                 );
                 break;
@@ -440,7 +443,7 @@ const ApiChat = () => {
         const url = `${environmentURLs.https}${fullPath}`;
 
         const headers = {
-            'Content-Type': 'application/json',
+            CONTENT_TYPE: APPLICATION_JSON,
         };
 
         if (securityScheme === 'OAUTH') {
@@ -459,10 +462,10 @@ const ApiChat = () => {
 
         try {
             const response = await fetch(url, fetchOptions);
-            const contentType = response.headers['Content-Type'] || null;
+            const contentType = response.headers[CONTENT_TYPE] || null;
 
             // Check if response is JSON
-            if (contentType && contentType.includes('application/json')) {
+            if (contentType && contentType.includes(APPLICATION_JSON)) {
                 const data = await response.json().catch(() => ({}));
                 return {
                     code: response.status,
@@ -473,7 +476,7 @@ const ApiChat = () => {
             }
 
             // Check if response is XML
-            if (contentType && contentType.includes('application/xml')) {
+            if (contentType && contentType.includes(APPLICATION_XML)) {
                 const text = await response.text();
                 return {
                     code: response.status,
