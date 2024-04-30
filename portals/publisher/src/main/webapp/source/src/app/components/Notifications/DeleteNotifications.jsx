@@ -15,7 +15,7 @@ const DeleteNotifications = ({ notificationId, fetchNotifications, isDeleteAll }
     };
 
     const deleteNotificationById = () => {
-        const promisedNotificationDelete = API.deleteNotification(notificationId);
+        const promisedNotificationDelete = API.deleteNotificationById(notificationId);
         promisedNotificationDelete
             .then(() => {
                 Alert.info('Notification deleted successfully!');

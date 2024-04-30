@@ -69,11 +69,11 @@ export default class Notification extends Resource {
      * @param {String} notificationId UUID of the Notification
      * @returns {Promise} Response
     */
-    static deleteNotification(notificationId) {
+    static deleteNotificationById(notificationId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getEnvironment().label).client;
         return restApiClient.then((client) => {
             // eslint-disable-next-line dot-notation
-            return client.apis['Notifications'].deleteNotification(
+            return client.apis['Notifications'].deleteNotificationById(
                 { notificationId },
                 this._requestMetaData(),
             );

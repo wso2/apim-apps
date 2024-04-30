@@ -3267,13 +3267,13 @@ class API extends Resource {
      * @param {String} notificationId UUID of the Notification
      * @returns {Promise} Response
     */
-    static deleteNotification(notificationId) {
+    static deleteNotificationById(notificationId) {
         const restApiClient = new APIClientFactory()
             .getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT)
             .client;
         return restApiClient.then(client => {
             // eslint-disable-next-line dot-notation
-            return client.apis['Notifications'].deleteNotification(
+            return client.apis['Notifications'].deleteNotificationById(
                 {notificationId},
                 this._requestMetaData(),
             );
