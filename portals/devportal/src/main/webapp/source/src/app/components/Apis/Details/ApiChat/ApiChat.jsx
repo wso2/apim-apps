@@ -43,6 +43,9 @@ import SampleQueryCard from './components/SampleQueryCard';
 import ApiChatResponse from './components/ApiChatResponse';
 
 const PREFIX = 'ApiChat';
+const CONTENT_TYPE = 'Content-Type';
+const APPLICATION_JSON = 'application/json';
+const APPLICATION_XML = 'application/xml';
 
 const classes = {
     tryWithAiMain: `${PREFIX}-tryWithAiMain`,
@@ -123,7 +126,8 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'Apis.Details.ApiChat.components.specEnrichmentError.unsupportedSpecificationError',
                         defaultMessage:
-                            'The OpenAPI specification includes components that are currently not supported.',
+                            'Provided API specification is currently not supported. Only OpenAPI 3.x specifications with '
+                            + 'certain definitions are allowed for now.',
                     }),
                 );
                 break;
@@ -176,7 +180,7 @@ const ApiChat = () => {
                 setSpecEnrichmentError(
                     intl.formatMessage({
                         id: 'Apis.Details.ApiChat.components.specEnrichmentError.genericError',
-                        defaultMessage: 'An error occurred when loading API Chat.',
+                        defaultMessage: 'Error occurred while loading API Chat.',
                     }),
                 );
                 break;
@@ -190,7 +194,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'Apis.Details.ApiChat.components.finalOutcome.llmError',
                         defaultMessage:
-                            'An error occurred during query execution. Try again.',
+                            'Error occurred during query execution. Try again.',
                     }),
                 );
                 break;
@@ -199,7 +203,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'Apis.Details.ApiChat.components.finalOutcome.cachingError',
                         defaultMessage:
-                            'An error occurred during query execution. Try again later.',
+                            'Error occurred during query execution. Try again later.',
                     }),
                 );
                 break;
@@ -208,7 +212,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'Apis.Details.ApiChat.components.finalOutcome.responseParsingError',
                         defaultMessage:
-                            'An error occurred while attempting to extract the API response.',
+                            'Error occurred while attempting to extract the API response.',
                     }),
                 );
                 break;
@@ -217,7 +221,7 @@ const ApiChat = () => {
                     intl.formatMessage({
                         id: 'Apis.Details.ApiChat.components.finalOutcome.apiCommunicationError',
                         defaultMessage:
-                            'An error occurred while attempting to establish a connection with your API.',
+                            'Error occurred while attempting to establish a connection with your API.',
                     }),
                 );
                 break;
@@ -260,7 +264,7 @@ const ApiChat = () => {
                 setFinalOutcome(
                     intl.formatMessage({
                         id: 'Apis.Details.ApiChat.components.finalOutcome.genericError',
-                        defaultMessage: 'An error occurred during query execution.',
+                        defaultMessage: 'Error occurred during query execution.',
                     }),
                 );
                 break;
@@ -417,7 +421,7 @@ const ApiChat = () => {
 
     const invokeAPI = async (generatedRequest) => {
         const { method, path, inputs } = generatedRequest;
-        const { parameters, requestBody } = inputs || {};
+        const { parameters = {}, requestBody = {} } = inputs || {};
         const usedKeys = [];
         const resolvedPath = Object.entries(parameters || {}).reduce((acc, [key, value]) => {
             if (acc.includes(`{${key}}`)) {
@@ -439,7 +443,7 @@ const ApiChat = () => {
         const url = `${environmentURLs.https}${fullPath}`;
 
         const headers = {
-            'Content-Type': 'application/json',
+            CONTENT_TYPE: APPLICATION_JSON,
         };
 
         if (securityScheme === 'OAUTH') {
@@ -458,10 +462,10 @@ const ApiChat = () => {
 
         try {
             const response = await fetch(url, fetchOptions);
-            const contentType = response.headers.get('Content-Type');
+            const contentType = response.headers[CONTENT_TYPE] || null;
 
             // Check if response is JSON
-            if (contentType && contentType.includes('application/json')) {
+            if (contentType && contentType.includes(APPLICATION_JSON)) {
                 const data = await response.json().catch(() => ({}));
                 return {
                     code: response.status,
@@ -472,7 +476,7 @@ const ApiChat = () => {
             }
 
             // Check if response is XML
-            if (contentType && contentType.includes('application/xml')) {
+            if (contentType && contentType.includes(APPLICATION_XML)) {
                 const text = await response.text();
                 return {
                     code: response.status,
@@ -495,10 +499,8 @@ const ApiChat = () => {
                 code: 500,
                 path: fullPath,
                 headers: {},
-                body: {
-                    description: 'API invocation failed',
-                    error: error.message,
-                },
+                body: 'I seem to be having trouble completing your request.'
+                    + ' This could be due to CORS restrictions or network connectivity issues.',
             };
         }
     };
@@ -761,9 +763,9 @@ const ApiChat = () => {
                                                 onExecuteClick={handleExecuteSampleQuery}
                                                 disabled={
                                                     !apiChatEnabled
-                                            || !aiAuthTokenProvided
-                                            || !securityScheme
-                                            || !(securityScheme && (accessToken || password))
+                                                    || !aiAuthTokenProvided
+                                                    || !securityScheme
+                                                    || !(securityScheme && (accessToken || password))
                                                 }
                                                 queryData={queryData}
                                                 onCopyClick={handleCopyClick}
@@ -819,7 +821,7 @@ const ApiChat = () => {
                     </Box>
                     <Box display='flex' alignItems='center' flexDirection='column' marginTop={1}>
                         {(!securityScheme || !(securityScheme && (accessToken || password)))
-                        && aiAuthTokenProvided && user && !specEnrichmentError && !isEnrichingSpec && (
+                            && aiAuthTokenProvided && user && !specEnrichmentError && !isEnrichingSpec && (
                             <Alert severity='warning'>
                                 <Typography variant='body1'>
                                     {apiAccessTokenNotFoundWarning}
@@ -840,9 +842,9 @@ const ApiChat = () => {
                             handleExecute={handleExecute}
                             isExecuteDisabled={
                                 !apiChatEnabled
-                            || !aiAuthTokenProvided
-                            || !securityScheme
-                            || !(securityScheme && (accessToken || password))
+                                || !aiAuthTokenProvided
+                                || !securityScheme
+                                || !(securityScheme && (accessToken || password))
                             }
                         />
                     </Box>

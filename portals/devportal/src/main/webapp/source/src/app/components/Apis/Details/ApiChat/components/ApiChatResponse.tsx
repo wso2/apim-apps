@@ -38,6 +38,10 @@ import Utils from 'AppData/Utils';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 
 const PREFIX = 'ApiChatResponse';
+const CONTENT_TYPE: string = 'Content-Type';
+const APPLICATION_JSON: string = 'application/json';
+const APPLICATION_XML: string = 'application/xml';
+const TEXT_PLAIN: string = 'text/plain';
 
 const classes = {
     finalOutcomeContent: `${PREFIX}-finalOutcomeContent`,
@@ -159,20 +163,53 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
     }, []);
 
     /**
+     * Infer the content type of the response.
+     *
+     * @param {string} str Response body.
+     * @returns {string} Content type of the response.
+     */
+    const inferContentType = (str: string) => {
+        const trimmedStr = str.trim();
+        const xmlRegex = /^\s*<[^>]+>/;
+        const jsonRegex = /^[\\{\\[](.*?)[\\}\]]$/;
+
+        if (xmlRegex.test(trimmedStr)) {
+            return APPLICATION_XML;
+        }
+        if (jsonRegex.test(trimmedStr)) {
+            try {
+                JSON.parse(trimmedStr);
+                return APPLICATION_JSON;
+            } catch (error) {
+                // Handle potential invalid JSON structure
+            }
+        }
+        return TEXT_PLAIN;
+    };
+
+    /**
      * Renders the execution result body.
      *
      * @param {any} executionResult Execution result to render.
      * @returns {JSX.Element} Execution result body to render.
      */
     const renderExecutionResultBody = (executionResult: any) => {
-        const contentType = executionResult.headers.get('Content-Type');
-        if (contentType.includes('application/json') && executionResult.body !== '') {
+        // Determine content type
+        let contentType = APPLICATION_JSON;
+        const noContentType = executionResult.headers && Object.keys(executionResult.headers).length === 0;
+        if (noContentType) {
+            contentType = inferContentType(executionResult.body);
+        } else {
+            contentType = executionResult.headers[CONTENT_TYPE];
+        }
+
+        if (contentType.includes(APPLICATION_JSON) && executionResult.body !== '') {
             return (
                 <MonacoEditor
                     width='100%'
                     height='200'
                     language='json'
-                    value={JSON.stringify(executionResult.body, null, 2)}
+                    value={JSON.stringify(JSON.parse(executionResult.body), null, 2)}
                     options={{
                         readOnly: true,
                         minimap: { enabled: false },
@@ -181,7 +218,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                     }}
                 />
             );
-        } else if (contentType.includes('application/xml') && executionResult.body !== '') {
+        } else if (contentType.includes(APPLICATION_XML) && executionResult.body !== '') {
             const formattedMessage = xmlFormat(executionResult.body);
             return (
                 <MonacoEditor
