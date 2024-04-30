@@ -220,13 +220,13 @@ class SubscriptionTableData extends React.Component {
     render() {
         const {
             subscription: {
-                apiInfo, status, throttlingPolicy, subscriptionId, apiId, requestedThrottlingPolicy, applicationId,
+                apiInfo, status, throttlingPolicy, subscriptionId, apiId, requestedThrottlingPolicy,
             },
         } = this.props;
         const {
             openMenu, isMonetizedAPI, isDynamicUsagePolicy, openMenuEdit, selectedTier, tiers,
         } = this.state;
-        let link = (
+        const link = (
             <Link
                 to={tiers.length === 0 ? '' : '/apis/' + apiId}
                 style={{ cursor: tiers.length === 0 ? 'default' : '' }}
@@ -236,16 +236,6 @@ class SubscriptionTableData extends React.Component {
                 <MDIcon path={mdiOpenInNew} size='12px' />
             </Link>
         );
-        if (apiInfo.type === 'WEBSUB') {
-            link = (
-                <Link
-                    to={tiers.length === 0 ? '' : '/applications/' + applicationId + '/webhooks/' + apiId}
-                    style={{ cursor: tiers.length === 0 ? 'default' : '' }}
-                >
-                    {apiInfo.name + ' - ' + apiInfo.version}
-                </Link>
-            );
-        }
         return (
             <TableRow hover>
                 <TableCell>
