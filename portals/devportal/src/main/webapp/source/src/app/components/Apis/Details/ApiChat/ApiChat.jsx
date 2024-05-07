@@ -443,7 +443,7 @@ const ApiChat = () => {
         const url = `${environmentURLs.https}${fullPath}`;
 
         const headers = {
-            CONTENT_TYPE: APPLICATION_JSON,
+            [CONTENT_TYPE]: APPLICATION_JSON,
         };
 
         if (securityScheme === 'OAUTH') {
