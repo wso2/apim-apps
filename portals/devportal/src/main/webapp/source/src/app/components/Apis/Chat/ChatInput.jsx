@@ -32,7 +32,7 @@ import InputAdornment from '@mui/material/InputAdornment';
  * @returns {JSX} renders Chat Input view.
  */
 function ChatInput(props) {
-    const { onSend, loading } = props;
+    const { onSend, loading, user } = props;
     const [content, setContent] = useState('');
     const [notificationOpen, setNotificationOpen] = useState(false);
     const QUERY_CHARACTER_LIMIT = 500;
@@ -49,7 +49,7 @@ function ChatInput(props) {
 
     const handleSend = () => {
         if (content) {
-            onSend({ role: 'user', content });
+            onSend({ role: user, content });
             setContent('');
         }
     };
@@ -128,5 +128,6 @@ function ChatInput(props) {
 ChatInput.propTypes = {
     onSend: PropTypes.func.isRequired,
     loading: PropTypes.bool.isRequired,
+    user: PropTypes.string.isRequired,
 };
 export default ChatInput;
