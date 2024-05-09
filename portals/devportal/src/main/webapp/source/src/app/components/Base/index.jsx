@@ -44,8 +44,7 @@ import Settings, { useSettingsContext } from 'AppComponents/Shared/SettingsConte
 import { app } from 'Settings';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import Box from '@mui/material/Box';
-import Badge from '@mui/material/Badge';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
+import NotificationIconNotificationIcon from 'AppComponents/Base/Header/NotificationIcon';
 import AuthManager from '../../data/AuthManager';
 import LanguageSelector from './Header/LanuageSelector';
 import GlobalNavBar from './Header/GlobalNavbar';
@@ -392,7 +391,7 @@ class LayoutLegacy extends React.Component {
      */
     render() {
         const {
-            theme, children, notificationCount,
+            theme, children,
         } = this.props;
         const {
             custom: {
@@ -597,30 +596,7 @@ class LayoutLegacy extends React.Component {
                                     </Link>
                                 )}
                                 {user ? (
-                                    <Box display='flex' alignItems='center' mr={2.5}>
-                                        <Link to='/notifications' aria-label='Go to notification page'>
-                                            {notificationCount > 0 ? (
-                                                <Badge
-                                                    badgeContent={(
-                                                        <span style={{
-                                                            backgroundColor: 'orange',
-                                                            borderRadius: '50%',
-                                                            padding: '3px 6px',
-                                                            fontSize: '0.8rem',
-                                                            color: '#000000',
-                                                        }}
-                                                        >
-                                                            {notificationCount}
-                                                        </span>
-                                                    )}
-                                                >
-                                                    <NotificationsNoneIcon style={{ color: 'white', fontSize: 25 }} />
-                                                </Badge>
-                                            ) : (
-                                                <NotificationsNoneIcon style={{ color: 'white', fontSize: 25 }} />
-                                            )}
-                                        </Link>
-                                    </Box>
+                                    <NotificationIconNotificationIcon />
                                 ) : null}
                                 <VerticalDivider height={64} />
                                 {languageSwitchActive && <LanguageSelector />}
@@ -748,7 +724,6 @@ LayoutLegacy.contextType = Settings;
 LayoutLegacy.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
-    notificationCount: PropTypes.number.isRequired,
 };
 
 function Layout(props) {

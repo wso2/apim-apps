@@ -24,7 +24,6 @@ import queryString from 'query-string';
 import PropTypes from 'prop-types';
 import SettingsContext from 'AppComponents/Shared/SettingsContext';
 import RedirectToLogin from 'AppComponents/Login/RedirectToLogin';
-import Notification from 'AppData/Notifications';
 import API from './data/api';
 import Base from './components/Base/index';
 import AuthManager from './data/AuthManager';
@@ -54,12 +53,10 @@ class ProtectedApp extends Component {
             tenantList: [],
             clientId: Utils.getCookieWithoutEnvironment(User.CONST.DEVPORTAL_CLIENT_ID),
             sessionStateCookie: Utils.getCookieWithoutEnvironment(User.CONST.DEVPORTAL_SESSION_STATE),
-            notificationCount: 0,
         };
         this.environments = [];
         this.checkSession = this.checkSession.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
-        this.updateNotificationCount = this.updateNotificationCount.bind(this);
         /* TODO: need to fix the header to avoid conflicting with messages ~tmkb */
     }
 
@@ -111,8 +108,6 @@ class ProtectedApp extends Component {
             if (hasViewScope) {
                 this.checkSession();
                 this.setState({ userResolved: true, scopesFound: true });
-                this.getUnreadNotificationCount();
-                this.notificationPollingInterval = setInterval(this.getUnreadNotificationCount, 5000);
             } else {
                 console.log('No relevant scopes found, redirecting to Anonymous View');
                 this.setState({ userResolved: true, notEnoughPermission: true });
@@ -144,8 +139,6 @@ class ProtectedApp extends Component {
                                     );
                                 });
                             this.checkSession();
-                            this.getUnreadNotificationCount();
-                            this.notificationPollingInterval = setInterval(this.getUnreadNotificationCount, 5000);
                         } else {
                             console.log('No relevant scopes found, redirecting to Anonymous View');
                             this.setState({ userResolved: true });
@@ -164,13 +157,6 @@ class ProtectedApp extends Component {
                     }
                 });
         }
-    }
-
-    /**
-     * Clear the notification polling interval when the component is unmounted.
-     */
-    componentWillUnmount() {
-        clearInterval(this.notificationPollingInterval);
     }
 
     handleMessage(e) {
@@ -223,35 +209,12 @@ class ProtectedApp extends Component {
     }
 
     /**
-     * Get the count of unread notifications.
-     */
-    getUnreadNotificationCount = () => {
-        const promisedNotifications = Notification.getNotifications('desc', 5, 0);
-        promisedNotifications
-            .then((res) => {
-                const { unreadCount } = res.body;
-                this.setState({ notificationCount: unreadCount });
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }
-
-    /**
-     * Update notification count.
-     * @param {number} count The notification count.
-     */
-    updateNotificationCount(count) {
-        this.setState({ notificationCount: count });
-    }
-
-    /**
      *  renders the compopnent
      * @returns {Component}
      */
     render() {
         const {
-            userResolved, tenantList, notEnoughPermission, tenantResolved, clientId, notificationCount,
+            userResolved, tenantList, notEnoughPermission, tenantResolved, clientId,
         } = this.state;
         const checkSessionURL = Settings.idp.checkSessionEndpoint + '?client_id='
             + clientId + '&redirect_uri=' + window.location.origin
@@ -307,7 +270,6 @@ class ProtectedApp extends Component {
                     <AppRouts
                         isAuthenticated={isAuthenticated}
                         isUserFound={isUserFound}
-                        updateNotificationCount={this.updateNotificationCount}
                     />
                 </>
             );
@@ -319,7 +281,7 @@ class ProtectedApp extends Component {
          * @returns {Component}
          */
         return (
-            <Base notificationCount={notificationCount}>
+            <Base>
                 {clientId && (
                     <iframe
                         title='iframeOP'
@@ -332,7 +294,6 @@ class ProtectedApp extends Component {
                 <AppRouts
                     isAuthenticated={isAuthenticated}
                     isUserFound={isUserFound}
-                    updateNotificationCount={this.updateNotificationCount}
                 />
             </Base>
         );
