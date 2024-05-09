@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { notificationTypes } from 'Settings';
 import { styled } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
@@ -96,11 +97,15 @@ const Notifications = ({ updateNotificationCount }) => {
             });
     };
 
+    const getNotificationTypeDisplayName = (notificationType) => {
+        return notificationTypes[notificationType] || notificationType;
+    };
+
     const getNotificationList = () => {
         const notificationList = notifications?.map((notification) => {
             return {
                 notificationId: notification.notificationId,
-                notificationType: notification.notificationType,
+                notificationType: getNotificationTypeDisplayName(notification.notificationType),
                 sentDate: notification.createdTime,
                 notification: notification.comments,
                 isRead: notification.isRead,
@@ -113,29 +118,6 @@ const Notifications = ({ updateNotificationCount }) => {
     useEffect(() => {
         fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc', rowsPerPage, page * rowsPerPage);
     }, [page, rowsPerPage]);
-
-    // useEffect(() => {
-    //     const socket = new WebSocket('ws://localhost:8000/ws');
-
-    //     socket.onopen = () => {
-    //         console.log('Connected to WebSocket server');
-    //     };
-
-    //     socket.onmessage = (event) => {
-    //         const message = event.data;
-    //         console.log('Received message from WebSocket server:', message);
-    //         fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc', rowsPerPage, page * rowsPerPage);
-    //     };
-
-    //     socket.onclose = () => {
-    //         console.log('Disconnected from WebSocket server');
-    //     };
-
-    //     // Cleanup function to close socket on component unmount
-    //     return () => {
-    //         socket.close();
-    //     };
-    // }, []);
 
     const notificationList = getNotificationList();
 
@@ -198,13 +180,13 @@ const Notifications = ({ updateNotificationCount }) => {
     };
 
     const notificationTypeColors = {
-        API_STATE_CHANGE: '#a2e8ff',
-        APPLICATION_CREATION: '#ffa966',
-        SUBSCRIPTION_CREATION: '#eff589',
-        SUBSCRIPTION_UPDATE: '#f7bef4',
-        SUBSCRIPTION_DELETION: '#ab93fc',
-        APPLICATION_REGISTRATION_PRODUCTION: '#93fcb8',
-        APPLICATION_REGISTRATION_SANDBOX: '#fcd693',
+        'Api state change': '#a2e8ff',
+        'Application Creation': '#ffa966',
+        'Subscription Creation': '#eff589',
+        'Subscription Update': '#f7bef4',
+        'Subscription Deletion': '#ab93fc',
+        'Application Registration Production': '#93fcb8',
+        'Application Registration Sandbox': '#fcd693',
     };
 
     const columns = [

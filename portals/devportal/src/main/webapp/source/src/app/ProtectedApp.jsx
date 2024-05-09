@@ -112,6 +112,7 @@ class ProtectedApp extends Component {
                 this.checkSession();
                 this.setState({ userResolved: true, scopesFound: true });
                 this.getUnreadNotificationCount();
+                this.notificationPollingInterval = setInterval(this.getUnreadNotificationCount, 5000);
             } else {
                 console.log('No relevant scopes found, redirecting to Anonymous View');
                 this.setState({ userResolved: true, notEnoughPermission: true });
@@ -144,6 +145,7 @@ class ProtectedApp extends Component {
                                 });
                             this.checkSession();
                             this.getUnreadNotificationCount();
+                            this.notificationPollingInterval = setInterval(this.getUnreadNotificationCount, 5000);
                         } else {
                             console.log('No relevant scopes found, redirecting to Anonymous View');
                             this.setState({ userResolved: true });
@@ -162,6 +164,13 @@ class ProtectedApp extends Component {
                     }
                 });
         }
+    }
+
+    /**
+     * Clear the notification polling interval when the component is unmounted.
+     */
+    componentWillUnmount() {
+        clearInterval(this.notificationPollingInterval);
     }
 
     handleMessage(e) {
@@ -216,7 +225,7 @@ class ProtectedApp extends Component {
     /**
      * Get the count of unread notifications.
      */
-    getUnreadNotificationCount() {
+    getUnreadNotificationCount = () => {
         const promisedNotifications = Notification.getNotifications('desc', 5, 0);
         promisedNotifications
             .then((res) => {

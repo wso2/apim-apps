@@ -94,25 +94,6 @@ export default function HeaderOriginal(props) {
                                 </Link>
                             </Box>
                             <Box display='flex'>
-                                <Box display='flex' alignItems='center' mr={2.5}>
-                                    <Link to='/notifications' aria-label='Go to notification page'>
-                                        {notificationCount > 0 ? (
-                                            <Badge 
-                                                badgeContent={<span style={{ 
-                                                    backgroundColor: 'orange', 
-                                                    borderRadius: '50%', 
-                                                    padding: '3px 6px', 
-                                                    fontSize: '0.8rem',
-                                                    color: '#000000' 
-                                                }}>{notificationCount}</span>} 
-                                            >
-                                                <NotificationsNoneIcon style={{ color: 'white', fontSize: 25 }}/>
-                                            </Badge>
-                                        ) : (
-                                            <NotificationsNoneIcon style={{ color: 'white', fontSize: 25 }}/>
-                                        )}
-                                    </Link>
-                                </Box>
                                 <Hidden mdDown>
                                     <HeaderSearch />
                                 </Hidden>
@@ -131,7 +112,32 @@ export default function HeaderOriginal(props) {
                                 </Hidden>
                                 <div style={{ paddingTop: 6}}>
                                     {menuItems}
-                                    {avatar || <Avatar user={user} />}
+                                    <Box display='flex' alignItems='center'>
+                                        <Box display='flex' alignItems='center' mr={2} mt={6} >
+                                            <Link to='/notifications' aria-label='Go to notification page' >
+                                                {notificationCount > 0 ? (
+                                                    <Badge 
+                                                        badgeContent={<span style={{ 
+                                                            backgroundColor: 'orange', 
+                                                            borderRadius: '50%', 
+                                                            padding: '3px 6px', 
+                                                            fontSize: '0.8rem',
+                                                            color: '#000000' 
+                                                        }}>{notificationCount}</span>} 
+                                                    >
+                                                        <NotificationsNoneIcon 
+                                                            style={{ color: 'white', fontSize: 25 }}
+                                                        />
+                                                    </Badge>
+                                                ) : (
+                                                    <NotificationsNoneIcon 
+                                                        style={{ color: 'white', fontSize: 25 }}
+                                                    />
+                                                )}
+                                            </Link>
+                                        </Box>           
+                                        {avatar || <Avatar user={user} />}
+                                    </Box>
                                 </div>
                             </Box>                            
                         </Box>

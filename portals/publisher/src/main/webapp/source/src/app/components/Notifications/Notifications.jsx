@@ -13,6 +13,7 @@ import {
     MenuItem,
 } from '@mui/material';
 import PropTypes from 'prop-types';
+import Configurations from 'Config';
 import { FormattedMessage, useIntl } from 'react-intl';
 import MUIDataTable from 'mui-datatables';
 import dayjs from 'dayjs';
@@ -135,11 +136,15 @@ const Notifications = ({ updateNotificationCount }) => {
             });
     };
 
+    const getNotificationTypeDisplayName = (notificationType) => {
+        return Configurations.notificationTypes[notificationType] || notificationType;
+    };
+
     const getNotificationList = () => {
         const notificationList = notifications?.map(notification => {
             return {
                 notificationId: notification.notificationId,
-                notificationType: notification.notificationType,
+                notificationType: getNotificationTypeDisplayName(notification.notificationType),
                 sentDate: notification.createdTime,
                 notification: notification.comments,
                 isRead: notification.isRead,
@@ -217,9 +222,9 @@ const Notifications = ({ updateNotificationCount }) => {
     };
 
     const notificationTypeColors = {
-        'API_STATE_CHANGE': '#a2e8ff',
-        'API_PRODUCT_STATE_CHANGE': '#ffa966',
-        'API_REVISION_DEPLOYMENT': '#ff5d5d',
+        'Api State Change': '#a2e8ff',
+        'Api Product State Change': '#ffa966',
+        'Api Revision Deployment': '#ff5d5d',
     };
 
     const columns = [

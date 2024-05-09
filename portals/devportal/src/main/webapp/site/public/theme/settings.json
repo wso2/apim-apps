@@ -58,5 +58,14 @@
             "showBusinessDetails": false,
             "showTechnicalDetails": false
         }
+    },
+    "notificationTypes": {
+        "API_STATE_CHANGE": "Api State Change",
+        "APPLICATION_CREATION": "Application Creation",
+        "SUBSCRIPTION_CREATION": "Subscription Creation",
+        "SUBSCRIPTION_UPDATE": "Subscription Update",
+        "SUBSCRIPTION_DELETION": "Subscription Deletion",
+        "APPLICATION_REGISTRATION_PRODUCTION": "Application Registration Production",
+        "APPLICATION_REGISTRATION_SANDBOX": "Application Registration Sandbox"
     }
 }

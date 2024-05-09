@@ -118,6 +118,14 @@ export default class Protected extends Component {
             });
         }
         this.getUnreadNotificationCount();
+        this.notificationPollingInterval = setInterval(this.getUnreadNotificationCount, 5000);
+    }
+
+    /**
+     * Clear the notification polling interval when the component is unmounted.
+     */
+    componentWillUnmount() {
+        clearInterval(this.notificationPollingInterval);
     }
 
     /**
@@ -190,7 +198,7 @@ export default class Protected extends Component {
     /**
      * Get the count of unread notifications.
      */
-    getUnreadNotificationCount() {
+    getUnreadNotificationCount = () => {
         const promisedNotifications = API.getNotifications('desc', 5, 0);
         promisedNotifications
             .then((res) => {
