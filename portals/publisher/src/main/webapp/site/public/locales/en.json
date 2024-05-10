@@ -9054,7 +9054,7 @@
   "Notification.onboarding.display.message": [
     {
       "type": 0,
-      "value": "You do not have any notification!"
+      "value": "You do not have any notifications!"
     }
   ],
   "Notification.page.title": [
@@ -9072,7 +9072,13 @@
   "Notification.table.header.markAsRead": [
     {
       "type": 0,
-      "value": "Mark As Read"
+      "value": "Mark as Read"
+    }
+  ],
+  "Notification.table.header.markAsRead.tooltip": [
+    {
+      "type": 0,
+      "value": "Mark as Read"
     }
   ],
   "Notification.table.header.notification": [
@@ -9115,6 +9121,12 @@
     {
       "type": 0,
       "value": "Confirm Delete"
+    }
+  ],
+  "Notifications.DeleteNotifications.delete.tooltip": [
+    {
+      "type": 0,
+      "value": "Delete"
     }
   ],
   "Notifications.DeleteNotifications.deleteAll.confirm.dialog.confirm.content": [

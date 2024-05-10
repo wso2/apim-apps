@@ -4330,7 +4330,7 @@
     "defaultMessage": "Error 403 : Forbidden"
   },
   "Notification.onboarding.display.message": {
-    "defaultMessage": "You do not have any notification!"
+    "defaultMessage": "You do not have any notifications!"
   },
   "Notification.page.title": {
     "defaultMessage": "Notifications"
@@ -4339,7 +4339,10 @@
     "defaultMessage": "Action"
   },
   "Notification.table.header.markAsRead": {
-    "defaultMessage": "Mark As Read"
+    "defaultMessage": "Mark as Read"
+  },
+  "Notification.table.header.markAsRead.tooltip": {
+    "defaultMessage": "Mark as Read"
   },
   "Notification.table.header.notification": {
     "defaultMessage": "Notification"
@@ -4361,6 +4364,9 @@
   },
   "Notifications.DeleteNotifications.confirm.dialog.confirm.title": {
     "defaultMessage": "Confirm Delete"
+  },
+  "Notifications.DeleteNotifications.delete.tooltip": {
+    "defaultMessage": "Delete"
   },
   "Notifications.DeleteNotifications.deleteAll.confirm.dialog.confirm.content": {
     "defaultMessage": "Are you sure you want to delete all Notifications?"

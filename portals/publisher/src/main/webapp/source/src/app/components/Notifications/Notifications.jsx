@@ -1,3 +1,21 @@
+/*
+* Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+*
+* WSO2 LLC. licenses this file to you under the Apache License,
+* Version 2.0 (the "License"); you may not use this file except
+* in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import {
@@ -105,7 +123,10 @@ const Root = styled('div')(({ theme }) => ({
     },
 }));
 
-
+/**
+* Notification page
+* @returns {any} render the notification page
+*/
 const Notifications = () => {
     const intl = useIntl();
     const [notifications, setNotifications] = useState(null);
@@ -319,7 +340,7 @@ const Notifications = () => {
             name: 'markAsRead',
             label: intl.formatMessage({
                 id: 'Notification.table.header.markAsRead',
-                defaultMessage: 'Mark As Read',
+                defaultMessage: 'Mark as Read',
             }),
             options: {
                 sort: false,
@@ -328,18 +349,26 @@ const Notifications = () => {
                     return (
                         <div>
                             <Box component='span' m={1}>
-                                <IconButton
-                                    color='primary'
-                                    aria-label='make mark as read'
-                                    onClick={() => markAsRead(dataRow.notificationId)}
-                                    disabled={dataRow.isRead}
+                                <Tooltip title={dataRow.isRead ? null : (
+                                    <FormattedMessage
+                                        id='Notification.table.header.markAsRead.tooltip'
+                                        defaultMessage='Mark as Read'
+                                    />
+                                )}
                                 >
-                                    {dataRow.isRead ? (
-                                        <DoneAllIcon />
-                                    ) : (
-                                        <MarkunreadIcon />
-                                    )}
-                                </IconButton>
+                                    <IconButton
+                                        color='primary'
+                                        aria-label='make mark as read'
+                                        onClick={() => markAsRead(dataRow.notificationId)}
+                                        disabled={dataRow.isRead}
+                                    >
+                                        {dataRow.isRead ? (
+                                            <DoneAllIcon />
+                                        ) : (
+                                            <MarkunreadIcon />
+                                        )}
+                                    </IconButton>
+                                </Tooltip>
                             </Box>
                         </div>
                     );
@@ -418,7 +447,7 @@ const Notifications = () => {
                 title={
                     <FormattedMessage
                         id='Notification.onboarding.display.message'
-                        defaultMessage='You do not have any notification!'
+                        defaultMessage='You do not have any notifications!'
                     />
                 }  
             />

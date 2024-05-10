@@ -787,7 +787,7 @@
   "Workflow.UserCreation.updateStatus.has.errors": "Unable to complete User creation approve/reject process.",
   "Workflow.WFRejectionPopup.dialog.open.button.reject": "Reject",
   "Workflow.WFRejectionPopup.dialog.title": "Workflow Rejection",
-  "Workflow.WFRejectionPopup.dialogBox.helperText": "Please provide a reason for rejection",
+  "Workflow.WFRejectionPopup.dialogBox.helperText": "Please provide a reason for rejection (optional)",
   "Workflow.WFRejectionPopup.dialogBox.label": "Reason for rejection",
   "Workflow.api.statechange.search.default": "Search by API, Request state, Current state or Creator",
   "Workflow.apiProduct.statechange.search.default": "Search by API Product, Request state, Current state or Creator",
