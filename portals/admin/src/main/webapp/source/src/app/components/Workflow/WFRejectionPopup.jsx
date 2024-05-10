@@ -79,7 +79,7 @@ function WFRejectionPopup(props) {
                     (
                         <FormattedMessage
                             id='Workflow.WFRejectionPopup.dialogBox.helperText'
-                            defaultMessage='Please provide a reason for rejection'
+                            defaultMessage='Please provide a reason for rejection (optional)'
                         />
                     )
                 }

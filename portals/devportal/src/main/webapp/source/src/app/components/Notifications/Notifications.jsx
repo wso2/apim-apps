@@ -10,7 +10,6 @@ import {
     Paper,
 } from '@mui/material';
 import Box from '@mui/material/Box';
-import PropTypes from 'prop-types';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
@@ -67,7 +66,7 @@ const Root = styled('div')(({ theme }) => ({
     },
 }));
 
-const Notifications = ({ updateNotificationCount }) => {
+const Notifications = () => {
     const intl = useIntl();
     const [notifications, setNotifications] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -82,10 +81,9 @@ const Notifications = ({ updateNotificationCount }) => {
         const promisedNotifications = Notification.getNotifications(sortOrder, limit, offset);
         promisedNotifications
             .then((response) => {
-                const { list, pagination, unreadCount } = response.body;
+                const { list, pagination } = response.body;
                 setNotifications(list);
                 setCount(pagination.total);
-                updateNotificationCount(unreadCount);
             })
             .catch((error) => {
                 console.error(error);
@@ -180,7 +178,7 @@ const Notifications = ({ updateNotificationCount }) => {
     };
 
     const notificationTypeColors = {
-        'Api state change': '#a2e8ff',
+        'API state change': '#a2e8ff',
         'Application Creation': '#ffa966',
         'Subscription Creation': '#eff589',
         'Subscription Update': '#f7bef4',
@@ -533,10 +531,6 @@ const Notifications = ({ updateNotificationCount }) => {
             </Paper>
         </Box>
     );
-};
-
-Notifications.propTypes = {
-    updateNotificationCount: PropTypes.func.isRequired,
 };
 
 export default Notifications;

@@ -94,9 +94,9 @@
     "maxScopeCount": 2000
   },
   "notificationTypes": {
-    "API_STATE_CHANGE": "Api State Change",
-    "API_PRODUCT_STATE_CHANGE": "Api Product State Change",
-    "API_REVISION_DEPLOYMENT": "Api Revision Deployment"
+    "API_STATE_CHANGE": "API State Change",
+    "API_PRODUCT_STATE_CHANGE": "API Product State Change",
+    "API_REVISION_DEPLOYMENT": "API Revision Deployment"
   }
 }
 

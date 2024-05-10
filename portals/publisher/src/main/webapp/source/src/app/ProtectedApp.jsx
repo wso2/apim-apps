@@ -28,7 +28,6 @@ import {
 } from '@mui/material/styles';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Base from 'AppComponents/Base';
-import API from 'AppData/api';
 import AuthManager from 'AppData/AuthManager';
 import userThemes from 'userCustomThemes';
 import defaultTheme from 'AppData/defaultTheme';
@@ -77,13 +76,11 @@ export default class Protected extends Component {
             settings: null,
             clientId: Utils.getCookieWithoutEnvironment(User.CONST.PUBLISHER_CLIENT_ID),
             sessionState: Utils.getCookieWithoutEnvironment(User.CONST.PUBLISHER_SESSION_STATE),
-            notificationCount: 0,
         };
         this.environments = [];
         this.checkSession = this.checkSession.bind(this);
         this.handleMessage = this.handleMessage.bind(this);
         this.updateSettings = this.updateSettings.bind(this);
-        this.updateNotificationCount = this.updateNotificationCount.bind(this);
     }
 
     /**
@@ -117,15 +114,6 @@ export default class Protected extends Component {
                 this.setState({ user: loggedUser });
             });
         }
-        this.getUnreadNotificationCount();
-        this.notificationPollingInterval = setInterval(this.getUnreadNotificationCount, 5000);
-    }
-
-    /**
-     * Clear the notification polling interval when the component is unmounted.
-     */
-    componentWillUnmount() {
-        clearInterval(this.notificationPollingInterval);
     }
 
     /**
@@ -196,34 +184,11 @@ export default class Protected extends Component {
     }
 
     /**
-     * Get the count of unread notifications.
-     */
-    getUnreadNotificationCount = () => {
-        const promisedNotifications = API.getNotifications('desc', 5, 0);
-        promisedNotifications
-            .then((res) => {
-                const { unreadCount } = res.body; 
-                this.setState({ notificationCount: unreadCount });
-            })
-            .catch((error) => {
-                console.error(error);
-            });
-    }
-
-    /**
-     * Update notification count.
-     * @param {number} count The notification count.
-     */
-    updateNotificationCount(count) {
-        this.setState({ notificationCount: count });
-    }
-
-    /**
      * @returns {React.Component} @inheritDoc
      * @memberof Protected
      */
     render() {
-        const { user = AuthManager.getUser(), messages, notificationCount } = this.state;
+        const { user = AuthManager.getUser(), messages } = this.state;
         const { theme, settings } = this.state;
         if (!user) {
             return (
@@ -245,7 +210,7 @@ export default class Protected extends Component {
                 <ThemeProvider theme={effectiveTheme}>
                     <AppErrorBoundary>
                         <QueryClientProviderX>
-                            <Base user={user} notificationCount={notificationCount}>
+                            <Base user={user}>
                                 <AppContextProvider value={{
                                     user,
                                     settings,
@@ -263,7 +228,7 @@ export default class Protected extends Component {
                                         <Route
                                             path='/notifications'
                                             render={() => (
-                                                <Notifications updateNotificationCount={this.updateNotificationCount} />
+                                                <Notifications />
                                             )}
                                         />
                                         <Route component={ResourceNotFound} />

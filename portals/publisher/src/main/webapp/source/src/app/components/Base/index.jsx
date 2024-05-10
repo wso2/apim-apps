@@ -77,7 +77,7 @@ const Root = styled('div')(({ theme }) => ({
  * @class Layout
  * @extends {React.Component}
  */
-const Base = ({ children, user, notificationCount }) => {
+const Base = ({ children, user }) => {
 
     const theme = useTheme();
 
@@ -140,7 +140,7 @@ const Base = ({ children, user, notificationCount }) => {
                 }}
             />
             <div className={classes.wrapper}>
-                <Header user={user} notificationCount={notificationCount}/>
+                <Header user={user} />
                 <main className={classes.contentWrapper}>
                     <div className={classes.drawerHeader} />
                     <div className={classes.contentRoot}>
@@ -156,7 +156,6 @@ const Base = ({ children, user, notificationCount }) => {
 Base.propTypes = {
     children: PropTypes.element.isRequired,
     user: PropTypes.shape({}).isRequired,
-    notificationCount: PropTypes.number.isRequired,
 };
 
 export default Base;

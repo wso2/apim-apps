@@ -60,7 +60,7 @@
         }
     },
     "notificationTypes": {
-        "API_STATE_CHANGE": "Api State Change",
+        "API_STATE_CHANGE": "API State Change",
         "APPLICATION_CREATION": "Application Creation",
         "SUBSCRIPTION_CREATION": "Subscription Creation",
         "SUBSCRIPTION_UPDATE": "Subscription Update",

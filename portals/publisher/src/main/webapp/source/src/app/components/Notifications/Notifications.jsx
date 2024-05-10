@@ -12,7 +12,6 @@ import {
     Select,
     MenuItem,
 } from '@mui/material';
-import PropTypes from 'prop-types';
 import Configurations from 'Config';
 import { FormattedMessage, useIntl } from 'react-intl';
 import MUIDataTable from 'mui-datatables';
@@ -107,7 +106,7 @@ const Root = styled('div')(({ theme }) => ({
 }));
 
 
-const Notifications = ({ updateNotificationCount }) => {
+const Notifications = () => {
     const intl = useIntl();
     const [notifications, setNotifications] = useState(null);
     const [sortOption, setSortOption] = useState('newest'); 
@@ -122,10 +121,9 @@ const Notifications = ({ updateNotificationCount }) => {
         const promisedNotifications = API.getNotifications(sortOrder, limit, offset);
         promisedNotifications
             .then((response) => {
-                const { list, pagination, unreadCount } = response.body;
+                const { list, pagination } = response.body;
                 setNotifications(list);
                 setCount(pagination.total);
-                updateNotificationCount(unreadCount);
             })
             .catch((error) => {
                 console.error(error);
@@ -222,9 +220,9 @@ const Notifications = ({ updateNotificationCount }) => {
     };
 
     const notificationTypeColors = {
-        'Api State Change': '#a2e8ff',
-        'Api Product State Change': '#ffa966',
-        'Api Revision Deployment': '#ff5d5d',
+        'API State Change': '#a2e8ff',
+        'API Product State Change': '#ffa966',
+        'API Revision Deployment': '#ff5d5d',
     };
 
     const columns = [
@@ -511,10 +509,6 @@ const Notifications = ({ updateNotificationCount }) => {
             </div>
         </Root>    
     );
-};
-
-Notifications.propTypes = {
-    updateNotificationCount: PropTypes.func.isRequired,
 };
 
 export default Notifications;

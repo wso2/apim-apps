@@ -14,8 +14,7 @@ import Configurations from 'Config';
 import HeaderSearch from 'AppComponents/Base/Header/headersearch/HeaderSearch';
 import GlobalNavBar from 'AppComponents/Base/Header/navbar/GlobalNavBar';
 import { GlobalDrawerProvider } from 'AppComponents/Base/Header/navbar/useNavBar';
-import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
-import Badge from '@mui/material/Badge';
+import NotificationIcon from 'AppComponents/Base/Header/notificationIcon/NotificationIcon';
 
 const PREFIX = 'HeaderOriginal';
 
@@ -54,7 +53,7 @@ const Root = styled('div')(({ theme }) => ({
  *
  */
 export default function HeaderOriginal(props) {
-    const { avatar, menuItems, user, notificationCount } = props;
+    const { avatar, menuItems, user } = props;
     const theme = useTheme();
     const [open, setOpen] = React.useState(false);
     const [openMiniSearch, setOpenMiniSearch] = React.useState(false);
@@ -113,29 +112,7 @@ export default function HeaderOriginal(props) {
                                 <div style={{ paddingTop: 6}}>
                                     {menuItems}
                                     <Box display='flex' alignItems='center'>
-                                        <Box display='flex' alignItems='center' mr={2} mt={6} >
-                                            <Link to='/notifications' aria-label='Go to notification page' >
-                                                {notificationCount > 0 ? (
-                                                    <Badge 
-                                                        badgeContent={<span style={{ 
-                                                            backgroundColor: 'orange', 
-                                                            borderRadius: '50%', 
-                                                            padding: '3px 6px', 
-                                                            fontSize: '0.8rem',
-                                                            color: '#000000' 
-                                                        }}>{notificationCount}</span>} 
-                                                    >
-                                                        <NotificationsNoneIcon 
-                                                            style={{ color: 'white', fontSize: 25 }}
-                                                        />
-                                                    </Badge>
-                                                ) : (
-                                                    <NotificationsNoneIcon 
-                                                        style={{ color: 'white', fontSize: 25 }}
-                                                    />
-                                                )}
-                                            </Link>
-                                        </Box>           
+                                        <NotificationIcon />
                                         {avatar || <Avatar user={user} />}
                                     </Box>
                                 </div>
