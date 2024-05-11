@@ -100,7 +100,7 @@ function AdvanceEndpointConfig(props) {
     const [advanceConfigObj, setAdvanceConfig] = useState(() => {
         const config = {};
         if (isSOAPEndpoint) {
-            config.format = 'soap11';
+            config.format = 'leave-as-is';
             config.optimize = 'leave-as-is';
         }
         config.actionDuration = '30000';
