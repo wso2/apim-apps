@@ -293,7 +293,7 @@ function Overview(props) {
                 console.error(error);
             }
             const { response } = error;
-            if (response && response.body) {
+            if (response?.body) {
                 if (error.status === 400) {
                     Alert.error(response.body.description);
                 } else {
