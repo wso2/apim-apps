@@ -52,14 +52,14 @@ const classes = {
     iconButton: `${PREFIX}-iconButton`,
     titleColumn: `${PREFIX}-titleColumn`,
     keyInfoTable: `${PREFIX}-keyInfoTable`,
-    leftCol: `${PREFIX}-leftCol`
+    leftCol: `${PREFIX}-leftCol`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
 const Root = styled('div')((
     {
-        theme
-    }
+        theme,
+    },
 ) => ({
     [`& .${classes.FormControl}`]: {
         paddingTop: 0,
@@ -177,13 +177,7 @@ const KeyConfiguration = (props) => {
                 defaultMessage: 'Call back URL can not be empty when Implicit or Authorization Code grants are selected.',
                 id: 'Shared.AppsAndKeys.KeyConfCiguration.Invalid.callback.empty.error.text',
             }));
-        } else if (Validation.url.validate(callbackUrl).error) {
-            updateHasError(true);
-            setCallbackHelper(intl.formatMessage({
-                defaultMessage: 'Invalid URL. Please enter a valid URL.',
-                id: 'Shared.AppsAndKeys.KeyConfCiguration.Invalid.callback.url.error.text',
-            }));
-        }else {
+        } else {
             setCallbackHelper(false);
             updateHasError(false);
         }
@@ -222,8 +216,8 @@ const KeyConfiguration = (props) => {
                 break;
             case 'additionalProperties':
                 const clonedAdditionalProperties = newRequest.additionalProperties;
-                if(currentTarget.type === 'checkbox') {
-                    clonedAdditionalProperties[currentTarget.name] = currentTarget.checked + "";
+                if (currentTarget.type === 'checkbox') {
+                    clonedAdditionalProperties[currentTarget.name] = currentTarget.checked + '';
                 } else {
                     clonedAdditionalProperties[currentTarget.name] = currentTarget.value;
                 }
