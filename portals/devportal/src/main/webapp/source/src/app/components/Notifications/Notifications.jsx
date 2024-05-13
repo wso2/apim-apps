@@ -93,7 +93,7 @@ const Notifications = () => {
     const [notifications, setNotifications] = useState(null);
     const [loading, setLoading] = useState(false);
     const [sortOption, setSortOption] = useState('newest');
-    const [notFound, setnotFound] = useState(false);
+    const [notFound, setNotFound] = useState(false);
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [count, setCount] = useState(0);
@@ -109,8 +109,14 @@ const Notifications = () => {
             })
             .catch((error) => {
                 console.error(error);
-                Alert.error('Error occurred while fetching notifications', error);
-                setnotFound(true);
+                Alert.error(
+                    <FormattedMessage
+                        id='Notification.fetchNotifications.error'
+                        defaultMessage='Error occurred while fetching notifications'
+                    />,
+                    error,
+                );
+                setNotFound(true);
             })
             .finally(() => {
                 setLoading(false);
@@ -165,13 +171,24 @@ const Notifications = () => {
         const promisedMarkAsRead = Notification.markNotificationAsReadById(notificationId, body);
         promisedMarkAsRead
             .then((response) => {
-                console.log(response);
-                Alert.info('Marked the notification as read successfully!');
+                console.log(response.notificationId);
+                Alert.info(
+                    <FormattedMessage
+                        id='Notification.markNotificationAsReadById.success'
+                        defaultMessage='Marked the notification as read successfully!'
+                    />,
+                );
             })
             .catch((error) => {
                 console.error(error);
-                Alert.error('Error while marking the notification as read!', error);
-                setnotFound(true);
+                Alert.error(
+                    <FormattedMessage
+                        id='Notification.markNotificationAsReadById.error'
+                        defaultMessage='Error while marking the notification as read!'
+                    />,
+                    error,
+                );
+                setNotFound(true);
             })
             .finally(() => {
                 fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc', rowsPerPage, page * rowsPerPage);
@@ -186,13 +203,24 @@ const Notifications = () => {
         const promisedMarkAsRead = Notification.markAllNotificationsAsRead(body);
         promisedMarkAsRead
             .then((response) => {
-                console.log(response);
-                Alert.info('Marked all notifications as read successfully!');
+                console.log(response.notificationId);
+                Alert.info(
+                    <FormattedMessage
+                        id='Notification.markAllNotificationsAsRead.success'
+                        defaultMessage='Marked all notifications as read successfully!'
+                    />,
+                );
             })
             .catch((error) => {
                 console.error(error);
-                Alert.error('Error while marking all notifications as read!', error);
-                setnotFound(true);
+                Alert.error(
+                    <FormattedMessage
+                        id='Notification.markAllNotificationsAsRead.error'
+                        defaultMessage='Error while marking all notifications as read!'
+                    />,
+                    error,
+                );
+                setNotFound(true);
             })
             .finally(() => {
                 fetchNotifications(sortOption === 'newest' ? 'desc' : 'asc', rowsPerPage, page * rowsPerPage);
@@ -200,13 +228,13 @@ const Notifications = () => {
     };
 
     const notificationTypeColors = {
-        'API state change': '#a2e8ff',
+        'API State Change': '#a2e8ff',
         'Application Creation': '#ffa966',
         'Subscription Creation': '#eff589',
         'Subscription Update': '#f7bef4',
         'Subscription Deletion': '#ab93fc',
-        'Application Registration Production': '#93fcb8',
-        'Application Registration Sandbox': '#fcd693',
+        'Application Registration for Production': '#93fcb8',
+        'Application Registration for Sandbox': '#fcd693',
     };
 
     const columns = [
@@ -523,7 +551,7 @@ const Notifications = () => {
                             margin: theme.spacing(0, 1),
                         })}
                     >
-                        Mark All As Read
+                        Mark all as Read
                     </Button>
                 </Box>
             </Box>

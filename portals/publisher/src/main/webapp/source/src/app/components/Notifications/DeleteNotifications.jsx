@@ -42,13 +42,24 @@ const DeleteNotifications = ({ notificationId, fetchNotifications, isDeleteAll }
         const promisedNotificationDelete = API.deleteNotificationById(notificationId);
         promisedNotificationDelete
             .then(() => {
-                Alert.info('Notification deleted successfully!');
+                Alert.info(
+                    <FormattedMessage
+                        id='Notifications.DeleteNotifications.deleteNotificationById.success'
+                        defaultMessage='Notification deleted successfully!'
+                    />,
+                );
                 setOpen(!open);
                 fetchNotifications(); 
             })
             .catch((errorResponse) => {
                 console.error(errorResponse);
-                Alert.error('Error occurred while deleting the notification');
+                Alert.error(
+                    <FormattedMessage
+                        id='Notifications.DeleteNotifications.deleteNotificationById.error'
+                        defaultMessage='Error occurred while deleting the notification'
+                    />,
+                    errorResponse,
+                );
                 setOpen(!open);
             });
        
@@ -58,13 +69,24 @@ const DeleteNotifications = ({ notificationId, fetchNotifications, isDeleteAll }
         const promisedNotificationsDelete = API.deleteNotifications();
         promisedNotificationsDelete
             .then(() => {
-                Alert.info('All Notifications deleted successfully!');
+                Alert.info(
+                    <FormattedMessage
+                        id='Notifications.DeleteNotifications.deleteAllNotifications.success'
+                        defaultMessage='All notifications are deleted successfully!'
+                    />,
+                );
                 setOpen(!open);
                 fetchNotifications(); 
             })
             .catch((errorResponse) => {
                 console.error(errorResponse);
-                Alert.error('Error occurred while deleting notifications');
+                Alert.error(
+                    <FormattedMessage
+                        id='Notifications.DeleteNotifications.deleteAllNotifications.error'
+                        defaultMessage='Error occurred while deleting notifications'
+                    />,
+                    errorResponse,
+                );
                 setOpen(!open);
             });
        
@@ -125,12 +147,12 @@ const DeleteNotifications = ({ notificationId, fetchNotifications, isDeleteAll }
                     isDeleteAll ? (
                         <FormattedMessage
                             id='Notifications.DeleteNotifications.deleteAll.confirm.dialog.confirm.content'
-                            defaultMessage='Are you sure you want to delete all Notifications?'
+                            defaultMessage='Are you sure you want to delete all notifications?'
                         />
                     ) : (
                         <FormattedMessage
                             id='Notifications.DeleteNotifications.deleteNotificationById.confirm.dialog.confirm.content'
-                            defaultMessage='Are you sure you want to delete this Notification?'
+                            defaultMessage='Are you sure you want to delete this notification?'
                         />
                     )
                 }

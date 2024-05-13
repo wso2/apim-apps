@@ -40,9 +40,6 @@ function WFRejectionPopup(props) {
     }, []);
 
     const formSaveCallback = () => {
-        if (typeof updateStatus !== 'function') {
-            console.error('updateStatus prop is not a function:', updateStatus);
-        }
         updateStatus(referenceId, 'REJECTED', reason);
     };
 
@@ -62,7 +59,7 @@ function WFRejectionPopup(props) {
                     />
                 )
             }
-            saveButtonText='Confirm Reject'
+            saveButtonText='Confirm Rejection'
             triggerButtonText={(
                 <>
                     <ClearIcon />

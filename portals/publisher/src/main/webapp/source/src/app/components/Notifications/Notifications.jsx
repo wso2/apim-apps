@@ -148,6 +148,13 @@ const Notifications = () => {
             })
             .catch((error) => {
                 console.error(error);
+                Alert.error(
+                    <FormattedMessage
+                        id='Notification.fetchNotifications.error'
+                        defaultMessage='Error occurred while fetching notifications'
+                    />,
+                    error,
+                );
                 setnotFound(true);
             })
             .finally(() => {
@@ -203,13 +210,24 @@ const Notifications = () => {
         const promisedMarkAsRead = API.markNotificationAsReadById(notificationId, body);
         promisedMarkAsRead
             .then((response) => {
-                console.log(response);
-                Alert.info('Marked the notification as read successfully!');
+                console.log(response.notificationId);
+                Alert.info(
+                    <FormattedMessage
+                        id='Notification.markNotificationAsReadById.success'
+                        defaultMessage='Marked the notification as read successfully!'
+                    />,
+                );
 
             })
             .catch((error) => {
                 console.error(error);
-                Alert.error('Error while marking the notification as read!');
+                Alert.error(
+                    <FormattedMessage
+                        id='Notification.markNotificationAsReadById.error'
+                        defaultMessage='Error while marking the notification as read!'
+                    />,
+                    error,
+                );
                 setnotFound(true);
             })
             .finally(() => {
@@ -226,13 +244,24 @@ const Notifications = () => {
         const promisedMarkAsRead = API.markAllNotificationsAsRead(body);
         promisedMarkAsRead
             .then((response) => {
-                console.log(response);
-                Alert.info('Marked all notifications as read successfully!');
+                console.log(response.notificationId);
+                Alert.info(
+                    <FormattedMessage
+                        id='Notification.markAllNotificationsAsRead.success'
+                        defaultMessage='Marked all notifications as read successfully!'
+                    />,
+                );
 
             })
             .catch((error) => {
                 console.error(error);
-                Alert.error('Error while marking all notifications as read!');
+                Alert.error(
+                    <FormattedMessage
+                        id='Notification.markAllNotificationsAsRead.error'
+                        defaultMessage='Error while marking all notifications as read!'
+                    />,
+                    error,
+                );
                 setnotFound(true);
             })
             .finally(() => {
@@ -513,7 +542,7 @@ const Notifications = () => {
                                         color='primary' 
                                         onClick={markAllAsRead}
                                     >
-                                        Mark All As Read
+                                        Mark all as Read
                                     </Button>
                                 </Box>
                             </Box>

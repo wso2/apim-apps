@@ -9051,6 +9051,36 @@
       "value": "Error 403 : Forbidden"
     }
   ],
+  "Notification.fetchNotifications.error": [
+    {
+      "type": 0,
+      "value": "Error occurred while fetching notifications"
+    }
+  ],
+  "Notification.markAllNotificationsAsRead.error": [
+    {
+      "type": 0,
+      "value": "Error while marking all notifications as read!"
+    }
+  ],
+  "Notification.markAllNotificationsAsRead.success": [
+    {
+      "type": 0,
+      "value": "Marked all notifications as read successfully!"
+    }
+  ],
+  "Notification.markNotificationAsReadById.error": [
+    {
+      "type": 0,
+      "value": "Error while marking the notification as read!"
+    }
+  ],
+  "Notification.markNotificationAsReadById.success": [
+    {
+      "type": 0,
+      "value": "Marked the notification as read successfully!"
+    }
+  ],
   "Notification.onboarding.display.message": [
     {
       "type": 0,
@@ -9132,13 +9162,37 @@
   "Notifications.DeleteNotifications.deleteAll.confirm.dialog.confirm.content": [
     {
       "type": 0,
-      "value": "Are you sure you want to delete all Notifications?"
+      "value": "Are you sure you want to delete all notifications?"
+    }
+  ],
+  "Notifications.DeleteNotifications.deleteAllNotifications.error": [
+    {
+      "type": 0,
+      "value": "Error occurred while deleting notifications"
+    }
+  ],
+  "Notifications.DeleteNotifications.deleteAllNotifications.success": [
+    {
+      "type": 0,
+      "value": "All notifications are deleted successfully!"
     }
   ],
   "Notifications.DeleteNotifications.deleteNotificationById.confirm.dialog.confirm.content": [
     {
       "type": 0,
-      "value": "Are you sure you want to delete this Notification?"
+      "value": "Are you sure you want to delete this notification?"
+    }
+  ],
+  "Notifications.DeleteNotifications.deleteNotificationById.error": [
+    {
+      "type": 0,
+      "value": "Error occurred while deleting the notification"
+    }
+  ],
+  "Notifications.DeleteNotifications.deleteNotificationById.success": [
+    {
+      "type": 0,
+      "value": "Notification deleted successfully!"
     }
   ],
   "Polcies.TextField.Description": [
