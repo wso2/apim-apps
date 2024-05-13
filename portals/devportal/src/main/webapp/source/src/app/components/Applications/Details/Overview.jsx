@@ -7,7 +7,8 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Icon from '@mui/material/Icon';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import Button from '@mui/material/Button';
+import { FormattedMessage, injectIntl, useIntl } from 'react-intl';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import API from 'AppData/api';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
@@ -15,6 +16,12 @@ import {
     Grid, List, ListItem, MenuItem, Paper, TextField,
 } from '@mui/material';
 import { upperCaseString } from 'AppData/stringFormatter';
+import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
+import ResetThrottlePolicyDialog from 'AppComponents/Applications/Listing/ResetPolicyDialog';
+import Alert from 'AppComponents/Shared/Alert';
+import Tooltip from '@mui/material/Tooltip';
+import InfoIcon from '@mui/icons-material/InfoOutlined';
+import IconButton from '@mui/material/IconButton';
 
 const PREFIX = 'Overview';
 
@@ -38,6 +45,7 @@ const classes = {
     input: `${PREFIX}-input`,
     avatar: `${PREFIX}-avatar`,
     iconStyle: `${PREFIX}-iconStyle`,
+    infoButton: `${PREFIX}-infoButton`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
@@ -176,6 +184,11 @@ const Root = styled('div')((
             color: '#9c9c9c',
         },
     },
+
+    [`& .${classes.infoButton}`]: {
+        marginLeft: theme.spacing(1),
+        color: theme.palette.grey[600],
+    },
 }));
 
 /**
@@ -193,6 +206,9 @@ function Overview(props) {
     const [selectedProtocol, setSelectedProtocol] = useState(null);
     const [selectedEndpoint, setSelectedEndpoint] = useState(null);
     const [topics, setTopics] = useState(null);
+    const [isResetOpen, setIsResetOpen] = useState(false);
+    const intl = useIntl();
+
     useEffect(() => {
         const client = new API();
         // Get application
@@ -262,6 +278,39 @@ function Overview(props) {
             setTopics(environment.SolaceTopicsObject.defaultSyntax);
         }
     };
+    const handleReset = (userId) => {
+        const client = new API();
+        const promisedReset = client.resetApplicationPolicy(userId, application.applicationId);
+        promisedReset.then((Response) => {
+            if (Response.status === 200) {
+                Alert.success(intl.formatMessage({
+                    defaultMessage: 'Application Policy Reset request for {name} has been triggered successfully',
+                    id: 'Applications.Details.Overview.reset.successful',
+                }, { name: userId }));
+            }
+        }).catch((error) => {
+            if (process.env.NODE_ENV !== 'production') {
+                console.error(error);
+            }
+            const { response } = error;
+            if (response && response.body) {
+                if (error.status === 400) {
+                    Alert.error(response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        defaultMessage: 'Error while resetting application policy for {name}',
+                        id: 'Applications.Details.Overview.reset.error',
+                    }, { name: userId }));
+                }
+            }
+        });
+    };
+    const toggleResetConfirmation = () => {
+        setIsResetOpen(false);
+    };
+    const handleResetConfirmation = () => {
+        setIsResetOpen(true);
+    };
     return (
         <Root>
             <div className={classes.root}>
@@ -303,10 +352,54 @@ function Overview(props) {
                                     </TableCell>
                                     {application
                                         && (
-                                            <TableCell>
+                                            <TableCell className={classes.iconAligner}>
                                                 {application.throttlingPolicy}
                                                 {' '}
                                                 <span className={tierDisabled ? classes.disabledTier : ''}>{`(${tierDescription})`}</span>
+
+                                                <VerticalDivider height={40} />
+                                                <Grid item xs={1} m={1}>
+                                                    <Button
+                                                        id='reset-application-policy'
+                                                        style={{ padding: '1px' }}
+                                                        onClick={handleResetConfirmation}
+                                                        color='grey'
+                                                        aria-label={(
+                                                            <FormattedMessage
+                                                                id='Applications.Details.Overview.application.reset'
+                                                                defaultMessage='Reset'
+                                                            />
+                                                        )}
+                                                    >
+                                                        <Icon>replay</Icon>
+                                                        <Typography variant='caption'>
+                                                            <FormattedMessage
+                                                                id='Applications.Details.Overview.application.reset.text'
+                                                                defaultMessage='RESET'
+                                                            />
+                                                        </Typography>
+                                                    </Button>
+                                                    <Tooltip
+                                                        interactive
+                                                        title={(
+                                                            <FormattedMessage
+                                                                id='Applications.Details.Overview.application.reset.tooltip'
+                                                                defaultMessage='Reset the Application Throttle Policy for a Specific User'
+                                                            />
+                                                        )}
+                                                        placement='right'
+                                                        classeName={classes.infoToolTip}
+                                                    >
+                                                        <IconButton className={classes.infoButton} aria-label='arch'>
+                                                            <InfoIcon />
+                                                        </IconButton>
+                                                    </Tooltip>
+                                                    <ResetThrottlePolicyDialog
+                                                        handleResetThrottlePolicy={handleReset}
+                                                        isResetOpen={isResetOpen}
+                                                        toggleResetConfirmation={toggleResetConfirmation}
+                                                    />
+                                                </Grid>
                                             </TableCell>
                                         )}
                                 </TableRow>
