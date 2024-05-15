@@ -110,11 +110,16 @@ class BusinessPlans extends Component {
      * @memberof BusinessPlans
      */
     componentDidMount() {
+        this.getPoliciesAndMonetization();
+    }
+
+    getPoliciesAndMonetization() {
         const { api } = this.props;
         api.getSubscriptionPolicies(api.id).then((policies) => {
             const filteredPolicies = policies.filter((policy) => policy.tierPlan === 'COMMERCIAL');
             this.setState({ policies: filteredPolicies });
         });
+
         api.getMonetization(api.id).then((status) => {
             this.setState({ monetizedPolices: status.properties });
         });
