@@ -30,9 +30,9 @@ describe("Change subscription tier of an application", () => {
         Utils.addAPIWithEndpoints({ name: apiName, version: apiVersion, context: apiContext }).then((apiId) => {
             testApiId = apiId;
             Utils.publishAPI(apiId).then(() => {
-                
+
                 cy.visit(`/publisher/apis/${apiId}/subscriptions`);
-                cy.get('[data-testid="policy-checkbox-silver"]', {timeout: Cypress.config().largeTimeout});
+                cy.get('[data-testid="policy-checkbox-silver"]', { timeout: Cypress.config().largeTimeout });
                 cy.get('[data-testid="policy-checkbox-silver"]').click();
                 cy.get('#subscriptions-save-btn').click();
                 // TODO: Proper error handling here instead of cypress wait
@@ -46,9 +46,9 @@ describe("Change subscription tier of an application", () => {
                 // Go to application subscription page
                 cy.get('#left-menu-subscriptions').click();
                 cy.contains('Subscribe APIs').click();
-                
-                cy.get('[aria-labelledby="simple-dialog-title"]').find('input[placeholder="Search APIs"]').click().type(apiName+"{enter}");
-                cy.contains('1-1 of 1'); 
+
+                cy.get('[aria-labelledby="simple-dialog-title"]').find('input[placeholder="Search APIs"]').click().type(apiName + "{enter}");
+                cy.contains('1-1 of 1');
 
                 cy.get(`#policy-select`).click();
                 cy.get(`#policy-select-Unlimited`).click();
@@ -62,7 +62,7 @@ describe("Change subscription tier of an application", () => {
                 cy.get(`#edit-api-subscription-${apiId}`).click();
                 cy.get('#application-policy').click();
                 cy.contains('.MuiAutocomplete-option', 'Silver').click();
-                cy.get('button span').contains('Update').click();
+                cy.get('button').contains('Update').click();
 
                 // Checking the update is success.
                 cy.wait(4000);
