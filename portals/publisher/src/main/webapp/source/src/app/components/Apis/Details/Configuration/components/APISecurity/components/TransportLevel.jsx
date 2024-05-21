@@ -103,12 +103,13 @@ function TransportLevel(props) {
      * Method to upload the certificate content by calling the rest api.
      *
      * @param {string} certificate The certificate needs to be associated with the API
+     * @param {string} endpointType The endpoint type of the certificate. (whether production or sandbox)
      * @param {string} policy The tier to be used for the certificate.
      * @param {string} alias The alias of the certificate to be deleted.
      *
      * */
-    const saveClientCertificate = (certificate, policy, alias) => {
-        return API.addClientCertificate(id, certificate, policy, alias).then((resp) => {
+    const saveClientCertificate = (certificate, endpointType, policy, alias) => {
+        return API.addClientCertificate(id, certificate, endpointType, policy, alias).then((resp) => {
             if (resp.status === 201) {
                 Alert.info(intl.formatMessage({
                     id: 'Apis.Details.Configuration.components.APISecurity.TranportLevel.certificate.add.success',
