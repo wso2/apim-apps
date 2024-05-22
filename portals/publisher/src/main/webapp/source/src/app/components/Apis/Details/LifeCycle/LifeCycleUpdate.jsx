@@ -115,6 +115,7 @@ class LifeCycleUpdate extends Component {
             isMandatoryPropertiesAvailable: false,
             loading: true,
             isMandatoryPropertiesConfigured: false,
+            message: null,
         };
         this.setIsOpen = this.setIsOpen.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -202,7 +203,11 @@ class LifeCycleUpdate extends Component {
                 // get the latest state of the API
                 this.context.updateAPI();
                 const newState = response.body.lifecycleState.state;
-                const { workflowStatus } = response.body;
+                const { workflowStatus, jsonPayload } = response.body;
+                if (jsonPayload && jsonPayload !== '') {
+                    const { message } = JSON.parse(jsonPayload);
+                    this.setState({ message });
+                }
                 this.setState({ newState });
                 const { intl } = this.props;
 
@@ -211,11 +216,26 @@ class LifeCycleUpdate extends Component {
                         id: 'Apis.Details.LifeCycle.LifeCycleUpdate.success.createStatus',
                         defaultMessage: 'Lifecycle state change request has been sent',
                     }));
-                } if (workflowStatus === this.WORKFLOW_STATUS.REJECTED) {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.LifeCycle.LifeCycleUpdate.reject.rejectStatus',
-                        defaultMessage: 'Lifecycle state change action rejected due to validation failure',
-                    }));
+                } 
+                if (workflowStatus === this.WORKFLOW_STATUS.APPROVED) {
+                    if (this.state.message && this.state.message !== '') {
+                        Alert.info(this.state.message);
+                    } else{
+                        Alert.info(intl.formatMessage({
+                            id: 'Apis.Details.LifeCycle.LifeCycleUpdate.approve.approveStatus',
+                            defaultMessage: 'Lifecycle state change action approved successfully',
+                        }));
+                    }
+                }
+                if (workflowStatus === this.WORKFLOW_STATUS.REJECTED) {
+                    if (this.state.message && this.state.message !== '') {
+                        Alert.error(this.state.message);
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.LifeCycle.LifeCycleUpdate.reject.rejectStatus',
+                            defaultMessage: 'Lifecycle state change action rejected due to validation failure',
+                        }));
+                    }
                 } else {
                     Alert.info(intl.formatMessage({
                         id: 'Apis.Details.LifeCycle.LifeCycleUpdate.success.otherStatus',
