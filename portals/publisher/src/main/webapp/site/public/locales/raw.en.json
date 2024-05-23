@@ -1722,6 +1722,12 @@
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.details.close.button": {
     "defaultMessage": "Close"
   },
+  "Apis.Details.Endpoints.GeneralConfiguration.Certificates.production.certificates": {
+    "defaultMessage": "Production"
+  },
+  "Apis.Details.Endpoints.GeneralConfiguration.Certificates.sandbox.certificates": {
+    "defaultMessage": "Sandbox"
+  },
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.status": {
     "defaultMessage": "Status"
   },
@@ -1856,6 +1862,9 @@
   },
   "Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.invalid.file": {
     "defaultMessage": "Invalid file type"
+  },
+  "Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.keyType": {
+    "defaultMessage": "Choose the key type of the certificate"
   },
   "Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.uploadCertificate": {
     "defaultMessage": "Upload Certificate"
