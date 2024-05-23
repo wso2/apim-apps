@@ -43,8 +43,8 @@ import RadioGroup from '@mui/material/RadioGroup';
 import SelectEndpoint from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/SelectEndpoint';
 import SelectPolicies from '../../../Create/Components/SelectPolicies';
 import { 
-    API_SECURITY_ENDPOINT_TYPE_PRODUCTION, 
-    API_SECURITY_ENDPOINT_TYPE_SANDBOX 
+    API_SECURITY_KEY_TYPE_PRODUCTION, 
+    API_SECURITY_KEY_TYPE_SANDBOX 
 } from '../../Configuration/components/APISecurity/components/apiSecurityConstants';
 
 const PREFIX = 'UploadCertificate';
@@ -145,7 +145,7 @@ export default function UploadCertificate(props) {
     const [isEndpointEmpty, setIsEndpointEmpty] = useState(false);
     const [isPoliciesEmpty, setPoliciesEmpty] = useState(false);
     const [aliasValidity, setAliasValidity] = useState();
-    const [endpointType, setendpointType] = useState(API_SECURITY_ENDPOINT_TYPE_PRODUCTION);
+    const [keyType, setkeyType] = useState(API_SECURITY_KEY_TYPE_PRODUCTION);
 
     const [isRejected, setIsRejected] = useState(false);
 
@@ -154,7 +154,7 @@ export default function UploadCertificate(props) {
         setAliasValidity();
         setCertificate({ name: '', content: '' });
         setAlias('');
-        setendpointType(API_SECURITY_ENDPOINT_TYPE_PRODUCTION);
+        setkeyType(API_SECURITY_KEY_TYPE_PRODUCTION);
         setEndpoint('');
         setPolicy('');
     };
@@ -170,14 +170,13 @@ export default function UploadCertificate(props) {
     }
 
     /**
-     * On change functionality to handle the endpointType radio button
+     * On change functionality to handle the keyType radio button
      *
      * @param {*} event
      */
-    function handleOnChangeEndpointType(event) {
+    function handleOnChangekeyType(event) {
         const { value } = event.target;
-        setendpointType(value);
-        console.log("EP Type : ", endpointType);
+        setkeyType(value);
     }
 
     /**
@@ -194,7 +193,7 @@ export default function UploadCertificate(props) {
     const saveCertificate = () => {
         setSaving(true);
         if (isMutualSSLEnabled) {
-            uploadCertificate(certificate.content, endpointType, policy, alias)
+            uploadCertificate(certificate.content, keyType, policy, alias)
                 .then(() => {
                     closeCertificateUpload();
                     aliasList.push(alias);
@@ -283,13 +282,13 @@ export default function UploadCertificate(props) {
                     <div>
                         <RadioGroup
                             aria-label='Production Sandbox type selection'
-                            name={API_SECURITY_ENDPOINT_TYPE_PRODUCTION}
-                            value={endpointType}
-                            onChange={handleOnChangeEndpointType}
+                            name={API_SECURITY_KEY_TYPE_PRODUCTION}
+                            value={keyType}
+                            onChange={handleOnChangekeyType}
                             row
                         >
                             <FormControlLabel
-                                value={API_SECURITY_ENDPOINT_TYPE_PRODUCTION}
+                                value={API_SECURITY_KEY_TYPE_PRODUCTION}
                                 control={(
                                     <Radio
                                         color='primary'
@@ -299,7 +298,7 @@ export default function UploadCertificate(props) {
                                 labelPlacement='end'
                             />
                             <FormControlLabel
-                                value={API_SECURITY_ENDPOINT_TYPE_SANDBOX}
+                                value={API_SECURITY_KEY_TYPE_SANDBOX}
                                 control={(
                                     <Radio
                                         color='primary'
@@ -311,8 +310,8 @@ export default function UploadCertificate(props) {
                         </RadioGroup>
                         <FormHelperText>
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.endpointType'
-                                defaultMessage='Choose the endpoint type of the certificate'
+                                id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.keyType'
+                                defaultMessage='Choose the key type of the certificate'
                             />
                         </FormHelperText>
                         {isMutualSSLEnabled && (api.gatewayType === 'wso2/synapse' ||

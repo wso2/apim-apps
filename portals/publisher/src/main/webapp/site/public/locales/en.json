@@ -3665,6 +3665,18 @@
       "value": "Close"
     }
   ],
+  "Apis.Details.Endpoints.GeneralConfiguration.Certificates.production.certificates": [
+    {
+      "type": 0,
+      "value": "Production"
+    }
+  ],
+  "Apis.Details.Endpoints.GeneralConfiguration.Certificates.sandbox.certificates": [
+    {
+      "type": 0,
+      "value": "Sandbox"
+    }
+  ],
   "Apis.Details.Endpoints.GeneralConfiguration.Certificates.status": [
     {
       "type": 0,
@@ -3933,6 +3945,12 @@
     {
       "type": 0,
       "value": "Invalid file type"
+    }
+  ],
+  "Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.keyType": [
+    {
+      "type": 0,
+      "value": "Choose the key type of the certificate"
     }
   ],
   "Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.uploadCertificate": [
