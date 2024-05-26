@@ -15,7 +15,6 @@
  */
 
 
-import CONSTS from 'AppData/Constants';
 import APIClientFactory from './APIClientFactory';
 import Resource from './Resource';
 import Wsdl from './Wsdl';
@@ -957,6 +956,21 @@ export default class API extends Resource {
     getMarketplaceAssistantApiCount() {
         return this.client.then((client) => {
             return client.apis['Marketplace Assistant'].getMarketplaceAssistantApiCount(this._requestMetaData());
+        });
+    }
+
+    resetApplicationPolicy(userId, applicationId) {
+        const payload = { applicationId: applicationId };
+        return this.client.then((client) => {
+            return client.apis.Applications.post_applications__applicationId__reset_throttle_policy(
+                payload,
+                {
+                    requestBody: {
+                        userName: userId,
+                    }
+                },
+                this._requestMetaData(),
+            );
         });
     }
 }
