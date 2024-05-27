@@ -38,8 +38,8 @@ describe("Runtime configuration", () => {
             cy.get('#mutual-ssl-checkbox').click();
 
             // uploading the cert
-            cy.get('#certs-add-btn').click();
-            cy.get('#mui-component-select-policies').click();
+            cy.get('#certs-add-btn').click()
+            cy.get('#itest-id-apipolicies-input').parent().click()
             cy.get('#Bronze').click();
             cy.get('#certificateAlias').click().type(alias);
 

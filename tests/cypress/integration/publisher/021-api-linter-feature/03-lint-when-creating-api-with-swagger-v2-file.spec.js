@@ -36,6 +36,7 @@ describe("publisher-021-03 : Lint when creating API with swagger v2 file", () =>
 
     it("Lint when creating API with swagger v2 file", () => {
         cy.visit(`${Utils.getAppOrigin()}/`+OpenAPIPage.getUrl());
+        cy.wait(5000)
         OpenAPIPage.waitUntillLoadingComponentsExit()
         // select the option from the menu item
         OpenAPIPage.openFileSelectRadioButton().click()

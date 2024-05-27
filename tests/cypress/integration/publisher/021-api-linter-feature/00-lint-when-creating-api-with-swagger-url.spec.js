@@ -22,7 +22,7 @@ describe("publisher-021-00 : Lint when creating API with swagger URL", () => {
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
-    
+
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
     });
@@ -33,21 +33,23 @@ describe("publisher-021-00 : Lint when creating API with swagger URL", () => {
     });
 
     it("Lint when creating API with swagger URL", () => {
-        cy.visit(`${Utils.getAppOrigin()}/`+OpenAPIPage.getUrl());
+        cy.visit(`${Utils.getAppOrigin()}/` + OpenAPIPage.getUrl());
+        cy.wait(5000)
 
         // select the option from the menu item
         OpenAPIPage.openAPIURLRadioButton().click
+        cy.wait(5000)
 
         // provide the swagger url
         OpenAPIPage.openAPIURLTextBox().type('https://petstore3.swagger.io/api/v3/openapi.json')
         OpenAPIPage.waitUntilGetUrlValidatedDiv(30000)
-        
+
         // check linter results
 
         OpenAPIPage.linterResultDivBlock().should('be.visible');
         OpenAPIPage.errorsToggleButton().contains("0")
         OpenAPIPage.warningToggleButton().contains("16")
-        
+
         // Verify detail warning messages is display after clik on warning toggle button
         // since tab is not working to leave from the text box click twice
         OpenAPIPage.warningToggleButton().click
@@ -55,7 +57,7 @@ describe("publisher-021-00 : Lint when creating API with swagger URL", () => {
         OpenAPIPage.warningToggleButton().click
         cy.contains('Operation "description" must be present and non-empty string.')
 
-        
+
     });
 
     after(function () {

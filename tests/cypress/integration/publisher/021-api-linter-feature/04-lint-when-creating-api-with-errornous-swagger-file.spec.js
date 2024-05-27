@@ -22,7 +22,7 @@ describe("publisher-021-04 : Lint when creating API with errornous swagger file"
     const password = 'test123';
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
-    
+
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
     });
@@ -35,7 +35,8 @@ describe("publisher-021-04 : Lint when creating API with errornous swagger file"
     });
 
     it("Lint when creating API with errornous swagger file", () => {
-        cy.visit(`${Utils.getAppOrigin()}/`+OpenAPIPage.getUrl());
+        cy.visit(`${Utils.getAppOrigin()}/` + OpenAPIPage.getUrl());
+        cy.wait(5000)
         OpenAPIPage.waitUntillLoadingComponentsExit()
         // select the option from the menu item
         OpenAPIPage.openFileSelectRadioButton().click()
@@ -44,9 +45,9 @@ describe("publisher-021-04 : Lint when creating API with errornous swagger file"
         cy.intercept('GET', '**/linter-custom-rules').as('linter-custom-rules');
         OpenAPIPage.browseToUploadButton().then(function () {
             const filepath = `api_artifacts/errornous_petstore_open_api_3.json`
-            OpenAPIPage.fileUploadInput().attachFile(filepath)            
+            OpenAPIPage.fileUploadInput().attachFile(filepath)
         });
-        cy.wait('@linter-custom-rules',{timeout: 25000}).its('response.statusCode').should('equal', 204)
+        cy.wait('@linter-custom-rules', { timeout: 25000 }).its('response.statusCode').should('equal', 204)
 
         // check linter results
         OpenAPIPage.linterResultDivBlock().should('be.visible');

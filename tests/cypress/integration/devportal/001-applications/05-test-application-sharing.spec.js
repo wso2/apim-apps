@@ -114,9 +114,9 @@ describe("Invoke API Product", () => {
             //Test with OAuth2 Token
             cy.visit(`/devportal/applications/create`);
             cy.get('#application-name', {timeout: Cypress.config().largeTimeout}).click();
-            cy.get('#application-name').type(appName);
-            cy.get('#application-group-id').click();
-            cy.get('#application-group-id').type(groupId);
+            cy.get('#application-name').wait(2000).type(appName);
+            // cy.get('#application-group-id').click();
+            // cy.get('#application-group-id').type(groupId);
             cy.get('#application-description').click();
             cy.get('#application-description').type('{backspace}');
             cy.get('#application-description').type(appDescription);

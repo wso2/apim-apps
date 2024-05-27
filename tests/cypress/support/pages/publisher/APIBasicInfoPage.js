@@ -41,10 +41,10 @@ class APIBasicInfoPage {
         return cy.get('div[role="status"][aria-live="polite"]')
     }
     getEditDescriptionButton(){
-        return cy.get('#edit-api-thumbnail-btn + div > button')
+        return cy.get('#edit-api-thumbnail-btn + div > div > button')
     }
     getEditThumbnailButton(){
-        return cy.get('#edit-api-thumbnail-btn > button')
+        return cy.get('#edit-api-thumbnail-btn > div > button')
     }
     getThumbnailUploadButton(){
         return cy.get('#edit-api-thumbnail-upload-btn')

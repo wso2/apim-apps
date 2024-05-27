@@ -30,12 +30,12 @@ describe("Deploy as prototype", () => {
     it.only("Deploy as prototype", () => {
         const endpoint = 'https://petstore.swagger.io/v2/store/inventory';
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
-            cy.visit(`/publisher/apis/${apiId}/overview`); 
+            cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemendpoints').click();
             cy.wait(500);
-            cy.get('[data-testid="http/restendpoint-add-btn"]').click();
-            cy.get('[data-testid="prototype_endpoint-start"]').click();
+            cy.get('[data-testid="mockimplementation-add-btn"]').click();
+            cy.contains('Mock Implementation').parent().click();
 
             cy.get('[data-testid="primaryEndpoint-endpoint-text-field"]').then(() => {
                 cy.get('[data-testid="primaryEndpoint-endpoint-text-field"] input').focus().type(endpoint);

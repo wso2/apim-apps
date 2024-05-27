@@ -50,17 +50,17 @@ describe("publisher-021-10 : Lint when importing API with errounous swagger file
             const filepath = 'api_artifacts/errornous_petstore_open_api_3.json'
             APIDefinitionPage.fileUploadInput().attachFile(filepath);
         });
-        cy.wait('@linter-custom-rules',{timeout: 25000}).its('response.statusCode').should('equal', 204)
+        cy.wait('@linter-custom-rules', { timeout: 25000 }).its('response.statusCode').should('equal', 204)
         cy.wait(5000)
         cy.contains("attribute info2 is unexpected")
         cy.contains("attribute info is missing")
         APIDefinitionPage.linterResultDivBlock().should('exist');
-       // TODO : click on errors, warnings toggle buttons and verify it loads, currently there is an issue on this
+        // TODO : click on errors, warnings toggle buttons and verify it loads, currently there is an issue on this
 
     });
 
     after(function () {
-        
+
         // Test is done. Now delete the api
         cy.searchAndDeleteApi(apiName, apiVersion);
         cy.logoutFromPublisher();

@@ -107,7 +107,7 @@ export default class Utils {
         version = version || '1.0.0';
         endpoint = endpoint || 'https://lh';
         const newPayload = `{"name":"${name}","version":"${version}","context":"${context}","policies":["Unlimited"], "endpointConfig":{"endpoint_type":"http","sandbox_endpoints":{"url":"${endpoint}"},"production_endpoints":{"url":"${endpoint}"}}}`;
-        return Utils.addAPI({...data, payload: newPayload});
+        return Utils.addAPI({ ...data, payload: newPayload });
     }
 
     static publishAPI(apiId) {
@@ -128,7 +128,7 @@ export default class Utils {
         })
     }
 
-    static  addRevision(apiId) {
+    static addRevision(apiId) {
         const payload = `{"description":""}`;
 
         return new Cypress.Promise((resolve, reject) => {
@@ -151,7 +151,7 @@ export default class Utils {
         })
     }
 
-    static  deployRevision(apiId, revisionId) {
+    static deployRevision(apiId, revisionId) {
         const payload = `[{"name": "Default", "vhost": "localhost", "displayOnDevportal": true}]`;
 
         return new Cypress.Promise((resolve, reject) => {
@@ -173,7 +173,7 @@ export default class Utils {
     }
 
 
-    
+
     static deleteAPI(apiId) {
         // todo need to remove this check after `console.err(err)` -> `console.err(err)` in Endpoints.jsx
         Cypress.on('uncaught:exception', (err, runnable) => {
@@ -188,7 +188,9 @@ export default class Utils {
                         const curl = `curl -k -X DELETE \
                         -H "Content-Type: application/json" \
                         -H "Authorization: Bearer ${token}"  "${Cypress.config().baseUrl}/api/am/publisher/v4/apis/${apiId}"`;
+                        console.log(curl)
                         cy.exec(curl).then(result => {
+                            console.log(result)
                             resolve(result.stdout);
                         })
                     })

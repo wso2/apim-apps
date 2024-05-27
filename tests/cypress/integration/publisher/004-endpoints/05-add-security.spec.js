@@ -45,7 +45,7 @@ describe("Add security to the endpoint", () => {
 
             cy.wait(2000);
             cy.get('#production_endpoints-endpoint-security-icon-btn').click({force:true});
-            cy.get('#mui-component-select-key').click();
+            cy.get('#auth-type-select').parent().click();
             cy.get('#auth-type-BASIC').click();
             cy.get('#auth-userName').click();
             cy.get('#auth-userName').type(usernameLocal);

@@ -37,7 +37,7 @@ describe("publisher-004-05 : Modify failover endpoints after configuring endpoin
             cy.get('#production_endpoints').focus().type(endpoint);
 
             cy.get('#production_endpoints-endpoint-security-icon-btn').trigger('click');
-            cy.get('#mui-component-select-key').click();
+            cy.get('#auth-type-select').parent().click();
             cy.get('#auth-type-BASIC').click();
             cy.get('#auth-userName').click();
             cy.get('#auth-userName').type(usernameLocal);
@@ -52,14 +52,14 @@ describe("publisher-004-05 : Modify failover endpoints after configuring endpoin
 
             // Add production endpoint for failover
             cy.get('#panel1bh-header').click();
-            cy.get('#certificateEndpoint').click({force: true});
-            cy.get('#config-type-failover').click({force: true});
+            cy.get('#certificateEndpoint').click({ force: true });
+            cy.get('#config-type-failover').click({ force: true });
             cy.get('#production_endpoints-failover').focus().type(endpoint);
             cy.get('#production_endpoints-failover-add-btn').click();
 
             // Save
             cy.get('#endpoint-save-btn').click();
-            
+
             // Check the values
             cy.get('#itest-api-details-endpoints-head').scrollIntoView().click({ "force": true });
 
