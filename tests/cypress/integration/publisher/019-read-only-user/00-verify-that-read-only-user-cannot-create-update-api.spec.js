@@ -80,12 +80,16 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
             const pathSegments = pathName.split('/');
             const uuid = pathSegments[pathSegments.length - 2];
             cy.visit(`${Utils.getAppOrigin()}/publisher/apis/${uuid}/policies`);
+            cy.wait(5000);
+
+            cy.get("[id='post/testuri']").click()
 
             const dataTransfer = new DataTransfer();
             cy.contains('Add Header', { timeout: Cypress.config().largeTimeout }).trigger('dragstart', {
                 dataTransfer
             });
-            cy.contains('Drag and drop policies here').trigger('drop', {
+
+            cy.get("[id='post/testuri']").next().contains('Drag and drop policies here').trigger('drop', {
                 dataTransfer
             });
             cy.get('#headerName').type('Testing');
@@ -134,9 +138,9 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         cy.get('#accessControl-selector').get('[aria-disabled="true"]').should('exist');
         cy.get('#storeVisibility-selector').get('[aria-disabled="true"]').should('exist');
         cy.get('#tags').should('be.disabled');
-        cy.get('#APICategories').get('[aria-disabled="true"]').should('exist');
-        cy.get('#github').should('not.be.visible');
-        cy.get('#slack').should('not.be.visible');
+        cy.get('#APICategories-autocomplete').get('[aria-disabled="true"]').should('exist');
+        cy.get('#github').should('be.disabled');
+        cy.get('#slack').should('be.disabled');
         cy.get('input').get('[name="advertised"]').get('[value="true"').should('be.disabled');
         cy.get('input').get('[name="advertised"]').get('[value="false"]').should('be.disabled');
         cy.get('input').get('[name="defaultVersion"]').get('[value="true"').should('be.disabled');
@@ -289,8 +293,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         cy.get('[data-testid="save-api-properties-btn"]').should('be.disabled');
 
         //15. Deployments
-        cy.get('#react-root').scrollTo('bottom');
-        cy.get('#left-menu-itemdeployments').click();
+        cy.get('#left-menu-itemdeployments').scrollIntoView().click();
         cy.contains('button', 'Deploy New Revision').should('be.disabled');
         cy.contains('button', 'Restore').should('be.disabled');
         cy.contains('button', 'Delete').should('be.disabled');
@@ -301,16 +304,19 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
         cy.get('#itest-id-deleteapi-icon-button').should('not.exist');
         cy.get('#create-new-version-btn').should('not.exist');
         cy.logoutFromPublisher();
-
         // Test is done. Now delete the api
-        cy.loginToPublisher(carbonUsername, carbonPassword);
+        cy.loginToPublisher(carbonUsername, carbonPassword).wait(3000);
     });
 
     afterEach(function () {
-        cy.deleteApi(apiName, apiVersion);
+        cy.get('#searchQuery').click().type(apiName + "{enter}");
+        cy.get("#itest-id-deleteapi-icon-button").click()
+        cy.get('#itest-id-deleteconf').click()
         // delete observer user.
-        cy.visit(`${Utils.getAppOrigin()}/carbon/user/user-mgt.jsp`);
+
+        cy.visit(`/carbon/user/user-mgt.jsp`);
         cy.deleteUser(readOnlyUser);
+        cy.deleteUser(creatorPublisher);
     })
 
 });

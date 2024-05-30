@@ -25,13 +25,13 @@ import Utils from "@support/utils";
 
 
 describe("Tear Down Test", () => {
-    const {testTenant} = Utils.getUserInfo();
+    const { testTenant } = Utils.getUserInfo();
     const externalPortalDisableConfigJson = JSON.parse(JSON.stringify(tenantConfigJson));
 
-    it.only("Delete Sample API" , () => {
+    it.only("Delete Sample API", () => {
         cy.loginToPublisher(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password);
         cy.visit(`/publisher/apis`);
-        cy.contains('PizzaShackAPI').should('exist').click();
+        cy.contains('PizzaShackAPI').should('exist').trigger('mouseover').click();
         cy.get('#left-menu-itemstores').should('exist').click();
         cy.get('[data-testid="portal-checkbox-DeveloperPortal1"]').should('exist').click();
         cy.get('#stores-save-btn').should('exist').click();
@@ -41,7 +41,7 @@ describe("Tear Down Test", () => {
         cy.wait(5000);
     })
 
-    it.only("Reset Advanced Configuration" , () => {
+    it.only("Reset Advanced Configuration", () => {
         cy.updateTenantConfig(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password, testTenant, externalPortalDisableConfigJson);
     })
 

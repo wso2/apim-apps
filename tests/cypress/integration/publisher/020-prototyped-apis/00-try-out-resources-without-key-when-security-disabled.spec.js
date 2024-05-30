@@ -43,15 +43,15 @@ describe("prototype apis with security disabled", () => {
             cy.get('[data-testid="http/restendpoint-add-btn"]').click({ force: true });
 
             // Add the prod and sandbox endpoints
-            cy.get('#production-endpoint-checkbox', { timeout: Cypress.config().largeTimeout }).click();
-            cy.get('#production_endpoints', { timeout: Cypress.config().largeTimeout }).focus().type(endpoint);
-            cy.wait(1000)
+            cy.get('#production-endpoint-checkbox').click();
             cy.get('#sandbox-endpoint-checkbox').click();
+            cy.get('#production_endpoints').focus().type(endpoint);
             cy.get('#sandbox_endpoints').focus().type(endpoint);
 
-            // Save
-            cy.contains('General Endpoint Configurations').click()
-            cy.contains('Save').debug().scrollIntoView().click();
+            //Save
+            cy.get('body').click();
+            cy.get('#endpoint-save-btn').scrollIntoView();
+            cy.get('#endpoint-save-btn').click();
 
             // Check the values
             cy.get('#production_endpoints').should('have.value', endpoint);
@@ -92,7 +92,7 @@ describe("prototype apis with security disabled", () => {
             cy.get('input[placeholder="Search APIs"]').click().type(apiName + "{enter}");
             cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).contains('.api-thumb-chip-main', 'PRE-RELEASED').should('exist');
             cy.get('table > tbody > tr', { timeout: Cypress.config().largeTimeout }).get(`[area-label="Go to ${apiName}"]`).click();
-            cy.contains('a', "Try out", { timeout: Cypress.config().largeTimeout }).click();
+            cy.contains('button', "Try Out", { timeout: Cypress.config().largeTimeout }).click();
             cy.get('.opblock-summary-get > .opblock-summary-control', { timeout: Cypress.config().largeTimeout }).click();
             cy.get('.try-out__btn').click();
             cy.get('.execute').click();

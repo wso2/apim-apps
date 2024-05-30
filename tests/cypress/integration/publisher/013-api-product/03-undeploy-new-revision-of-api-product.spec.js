@@ -37,17 +37,17 @@ describe("Mock the api response and test it", () => {
             // failing the test
             return false
         });
-        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout});
+        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout}).wait(5000);
         cy.get('#open-api-file-select-radio').click();
-
+        cy.wait(5000);
         // upload the swagger
-        cy.get('#browse-to-upload-btn').then(function () {
+        cy.get('#browse-to-upload-btn').wait(5000).then(function () {
             const filepath = `api_artifacts/petstore-v3.json`
             cy.get('input[type="file"]').attachFile(filepath)
         });
 
         cy.get('#open-api-create-next-btn').click();
-
+        cy.wait(3000);
         cy.get('#itest-id-apiversion-input', {timeout: Cypress.config().largeTimeout});
         cy.document().then((doc) => {
             cy.get('#itest-id-apicontext-input').clear();
@@ -85,8 +85,8 @@ describe("Mock the api response and test it", () => {
 
                     // add all resources
                     cy.get('#add-all-resources-btn').click();
-                    cy.get('#create-api-product-btn').scrollIntoView().dblclick({ force: true });
-
+                    cy.get('#create-api-product-btn').scrollIntoView().click({ force: true });
+                    cy.wait(5000)
                     cy.url().should('contains', 'overview').then(urlProduct => {
                         const productID = /api-products\/(.*?)\/overview/.exec(urlProduct)[1];
                         cy.log("API Product ID", productID);

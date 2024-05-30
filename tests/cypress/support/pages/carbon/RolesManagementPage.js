@@ -17,32 +17,31 @@
  * under the License.
  */
 class RolesManagementPage {
-    getUrl(){
+    getUrl() {
         return "/carbon/role/role-mgt.jsp";
     }
-    getRoleNameTextBox(){
+    getRoleNameTextBox() {
         return cy.get('input[name="org.wso2.carbon.role.filter"]');
 
     }
-    getSearchRolesButton(){
+    getSearchRolesButton() {
         return cy.get('input[value="Search Roles"]')
     }
 
-    getDeleteButtonOfRole(roleName){
-        return cy.get(`[onClick="deleteUserGroup(\\'${roleName}\\')"]`)
+    getDeleteButtonOfRole(roleName) {
+        return cy.get(`[onClick="deleteUserGroup(\\'${roleName.replace('/', '%2F')}\\')"]`)
     }
 
-    getDialogYesButton(){
+    getDialogYesButton() {
         return cy.get('div.ui-dialog-buttonset > button.ui-button').first()
     }
     // there can be multiple dialog boxes if we search and delete
-    getDialogOkButton(index){
+    getDialogOkButton(index) {
         return cy.get('.ui-dialog-buttonpane button').eq(index)
     }
-    getNoMatchingRolesFoundDialogBox_MessageInfoDivSelectorOnly(){
+    getNoMatchingRolesFoundDialogBox_MessageInfoDivSelectorOnly() {
         return '#messagebox-info'
     }
-    
 
 
 }

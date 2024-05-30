@@ -16,52 +16,52 @@
  * under the License.
  */
 class ResourcesPage {
-    getUrl(apiID){
+    getUrl(apiID) {
         return `publisher/apis/${apiID}/resources`;
     }
-    getResourcePageHeader(){
+    getResourcePageHeader() {
         return cy.get('#itest-api-details-resources-head')
     }
-    getSaveRerouceButton(){
+    getSaveRerouceButton() {
         return cy.get('#resources-save-operations')
     }
-    selectAndAddNewOperation(httpVerb,uriPattern){
-            cy.get('#operation-target').type(uriPattern, {
-                parseSpecialCharSequences: false,
-              })
-            cy.get('#add-operation-selection-dropdown').click()
-        
-            switch(httpVerb) {
-                case "GET":
-                    cy.get('#add-operation-get').click()
-                  break;
-                case "POST":
-                  cy.get('#add-operation-post').click()
-                  break;
-                case "PUT":
-                  cy.get('#add-operation-put').click()
+    selectAndAddNewOperation(httpVerb, uriPattern) {
+        cy.get('#operation-target').type(uriPattern, {
+            parseSpecialCharSequences: false,
+        })
+        cy.get('#add-operation-selection-dropdown').click()
+
+        switch (httpVerb) {
+            case "GET":
+                cy.get('#add-operation-get').click()
                 break;
-                // TODO : add rest of the httpVerbs 
-            }
-            cy.get('#menu-verbs').trigger('click') // to remove this covered element
-            cy.get('#add-operation-button').click()
+            case "POST":
+                cy.get('#add-operation-post').click()
+                break;
+            case "PUT":
+                cy.get('#add-operation-put').click()
+                break;
+            // TODO : add rest of the httpVerbs 
+        }
+        cy.get('#menu-verbs').trigger('click') // to remove this covered element
+        cy.get('#add-operation-button').click()
     }
 
-    getRowOfResource(uriPattern){ // e.g. "/order"
+    getRowOfResource(uriPattern) { // e.g. "/order"
         return cy.get(`div[aria-labelledby="${uriPattern}"] > div > div > div > div`)
     }
-    getDescriptionTextAreaOfResource(resourceAlis){ // e.g. "post/order"
-        return cy.get(`div[data-testid="description-${resourceAlis}"] > div > textarea`)
+    getDescriptionTextAreaOfResource(resourceAlis) { // e.g. "post/order"
+        return cy.get(`div[data-testid="description-${resourceAlis}"] > div > textarea`).filter('[aria-invalid="false"]')
     }
-    getSummaryTextAreaOfResource(resourceAlis){ // e.g. "post/order"
-        return cy.get(`div[data-testid="summary-${resourceAlis}"] > div > textarea`)
+    getSummaryTextAreaOfResource(resourceAlis) { // e.g. "post/order"
+        return cy.get(`div[data-testid="summary-${resourceAlis}"] > div > textarea`).filter('[aria-invalid="false"]')
     }
-    selectOperationScopeOfResource(resourceAlis,scopeName){ // e.g. ("post/order","order_pizza")
-        cy.get(`div[id="${resourceAlis}-operation-scope-select"]`).click()
-        cy.get(`li[id="${resourceAlis}-operation-scope-${scopeName}"]`).click()
-        cy.get('#menu-').trigger('click') // to get back the focus , pages is coverd from this element
+    selectOperationScopeOfResource(resourceAlis, scopeName) { // e.g. ("post/order","order_pizza")
+        cy.get(`input[id="${resourceAlis}-operation-scope-autocomplete"]`).click()
+        cy.contains(`${scopeName}`).click()
+        cy.get('body').trigger('click') // to get back the focus , pages is coverd from this element
     }
-    getSaveButton(){
+    getSaveButton() {
         return cy.get('button[data-testid="custom-select-save-button"]')
     }
 }

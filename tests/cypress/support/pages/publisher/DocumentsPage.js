@@ -23,7 +23,7 @@ class DocumentsPage {
         return cy.get('#itest-api-details-documents-head')
     }
     getAddNewDocumentButton(){
-        return cy.get('#add-new-document-btn')
+        return cy.get('a[data-testid="add-document-btn"]')
     }
     getNameTextBox(){
         return cy.get('#doc-name')

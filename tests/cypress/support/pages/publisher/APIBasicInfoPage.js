@@ -16,46 +16,46 @@
  * under the License.
  */
 class APIBasicInfoPage {
-    getUrl(apiID){
+    getUrl(apiID) {
         return `publisher/apis/${apiID}/configuration`;
     }
-    getTagsTextBox(){
+    getTagsTextBox() {
         return cy.get('#tags')
     }
-    getDefaultVersionYesRadio(){
+    getDefaultVersionYesRadio() {
         return cy.get('input[name="defaultVersion"][value="true"]')
     }
-    getDefaultVersionNoRadio(){
+    getDefaultVersionNoRadio() {
         return cy.get('input[name="defaultVersion"][value="false"]')
     }
-    getThirdPartyYesRadio(){
+    getThirdPartyYesRadio() {
         return cy.get('input[name="advertised"][value="true"]')
     }
-    getThirdPartyNoRadio(){
+    getThirdPartyNoRadio() {
         return cy.get('input[name="advertised"][value="false"]')
     }
-    getSaveButton(){
+    getSaveButton() {
         return cy.get('#design-config-save-btn')
     }
-    getUpdateToolTip(){
+    getUpdateToolTip() {
         return cy.get('div[role="status"][aria-live="polite"]')
     }
-    getEditDescriptionButton(){
+    getEditDescriptionButton() {
         return cy.get('#edit-api-thumbnail-btn + div > div > button')
     }
-    getEditThumbnailButton(){
-        return cy.get('#edit-api-thumbnail-btn > div > button')
+    getEditThumbnailButton() {
+        return cy.get('#edit-api-thumbnail-btn > div > div > button')
     }
-    getThumbnailUploadButton(){
+    getThumbnailUploadButton() {
         return cy.get('#edit-api-thumbnail-upload-btn')
     }
-    getDescriptionTextArea(){
+    getDescriptionTextArea() {
         return cy.get('#itest-description-textfield')
     }
-    getUpdateContectButton(){
+    getUpdateContectButton() {
         return cy.get('div[role="dialog"] > header > div > div > div:nth-child(2) > button')
     }
-    getThumbnailFileUpload(){
+    getThumbnailFileUpload() {
         return cy.get('input[type="file"]')
     }
 }

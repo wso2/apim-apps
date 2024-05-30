@@ -422,16 +422,14 @@
   },
   "ExternalAPIStores": {
     "StoreURL": "https://localhost:9443/devportal",
-    "ExternalAPIStore": [
-      {
-        "id": "DeveloperPortal2",
-        "type": "wso2",
-        "className": "org.wso2.carbon.apimgt.impl.publishers.WSO2APIPublisher",
-        "DisplayName": "DeveloperPortal2",
-        "Endpoint": "https://localhost:9443/devportal/apis?tenant=portals.com",
-        "Username": "admin@portals.com",
-        "Password": "admin"
-      }
-    ]
+    "ExternalAPIStore": [{
+      "id": "DeveloperPortal1",
+      "type": "wso2",
+      "className": "org.wso2.carbon.apimgt.impl.publishers.WSO2APIPublisher",
+      "DisplayName": "DeveloperPortal1",
+      "Endpoint": "https://localhost:9443/devportal/apis?tenant=portals.com",
+      "Username": "admin@portals.com",
+      "Password": "admin"
+    }]
   }
 }

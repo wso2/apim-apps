@@ -334,7 +334,7 @@ Cypress.Commands.add('createResource', (ratelimitlevel, limitinglevel, httpverb,
         cy.get('#api-rate-limiting-operation-level').click();
     }
     cy.get('#add-operation-selection-dropdown').click();
-    cy.contains('li', httpverb).click();
+    cy.get('ul').contains(httpverb).click();
 
     //colapse dropdown
     cy.get('#menu-verbs').click();
@@ -823,16 +823,17 @@ Cypress.Commands.add('addNewRole', (roleName = 'newrole', domain = "PRIMARY", pe
 Cypress.Commands.add('deleteRole', (roleName) => {
 
     cy.log(`Delete role ${roleName} ...`)
-    cy.visit(`${Utils.getAppOrigin()}` + rolesManagementPage.getUrl())
+    cy.visit(`${Utils.getAppOrigin()}` + rolesManagementPage.getUrl()).then(() => {
 
-    rolesManagementPage.getRoleNameTextBox().clear().type(roleName);
-    rolesManagementPage.getSearchRolesButton().click();
-    rolesManagementPage.getDeleteButtonOfRole(roleName).click()
-    rolesManagementPage.getDialogYesButton().click();
-    cy.wait(3000)
-    rolesManagementPage.getDialogOkButton(1).click(); // ok button of "No matching users found" dialog
-    //cy.get('#messagebox-info p').contains(`User ${userNametoDelete} is deleted successfully.`).should('exist');
-    rolesManagementPage.getDialogOkButton(0).click(); // OK button of user delted successfully dialog box
+        rolesManagementPage.getRoleNameTextBox().clear().type(roleName);
+        rolesManagementPage.getSearchRolesButton().click();
+        rolesManagementPage.getDeleteButtonOfRole(roleName).click()
+        rolesManagementPage.getDialogYesButton().click();
+        cy.wait(3000)
+        rolesManagementPage.getDialogOkButton(1).click(); // ok button of "No matching users found" dialog
+        //cy.get('#messagebox-info p').contains(`User ${userNametoDelete} is deleted successfully.`).should('exist');
+        rolesManagementPage.getDialogOkButton(0).click(); // OK button of user delted successfully dialog box
+    })
 })
 
 Cypress.Commands.add('searchAndDeleteRoleIfExist', (roleNameToDelete) => {
@@ -1114,7 +1115,7 @@ Cypress.Commands.add('searchAndDeleteApi', (name, version) => {
     apisHomePage.waitUntillPublisherLoadingSpinnerExit();
     cy.wait(2000);
     cy.wait('@getApis', { timeout: Cypress.config().largeTimeout }).then(() => {
-        cy.get(`[data-testid="${cardName}"]`).get(`[data-testid="${actionCardName}"]`).within(($panel) => {
+        cy.get(`[data-testid="${cardName}"]`).find(`[data-testid="${actionCardName}"]`).within(($panel) => {
             cy.get("#itest-id-deleteapi-icon-button", { timeout: 30000 }).click();
         })
         cy.get("#itest-id-deleteconf", { timeout: 30000 }).click();

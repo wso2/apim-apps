@@ -36,19 +36,20 @@ describe("Mock the api response and test it", () => {
         },
     }, () => {
         cy.loginToPublisher(publisher, password);
-        cy.visit(`/publisher/apis/create/openapi`).wait(2000)
+        cy.visit(`/publisher/apis/create/openapi`).wait(5000)
 
-        cy.get('#open-api-file-select-radio').wait(1000).click()
+        cy.get('#open-api-file-select-radio').click()
+        cy.wait(5000)
 
         // upload the swagger
-        cy.get('#browse-to-upload-btn').wait(1000).then(function () {
+        cy.get('#browse-to-upload-btn').wait(5000).then(function () {
             const filepath = `api_artifacts/petstore-v3.json`
             cy.get('input[type="file"]').attachFile(filepath)
         });
 
         cy.get('#open-api-create-next-btn').click();
-
-        cy.get('#itest-id-apiversion-input', { timeout: 30000 });
+        cy.wait(3000)
+        cy.get('#itest-id-apiversion-input', { timeout: Cypress.config().largeTimeout });
         cy.document().then((doc) => {
             cy.get('#itest-id-apicontext-input').clear();
             cy.get('#itest-id-apicontext-input').type('petstore3');
