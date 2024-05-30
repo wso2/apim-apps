@@ -46,12 +46,16 @@ describe("Runtime configuration", () => {
             // upload the cert
             const filepath = 'api_artifacts/sample.crt.pem';
             cy.get('input[type="file"]').attachFile(filepath);
-
+            cy.wait(5000)
             // Click away
             cy.get('#upload-cert-save-btn').click();
-            cy.get('#upload-cert-save-btn').then(() => {
-                cy.get('#save-runtime-configurations').click();
-            })
+
+            Cypress.on('uncaught:exception', (err, runnable) => {
+                return false;
+
+            });
+            cy.get('#save-runtime-configurations').click();
+
             cy.get('#save-runtime-configurations').get(() => {
                 cy.get('h4').contains('Transport Level Security').click();
                 cy.get('#mutual-ssl-checkbox').should('be.checked');

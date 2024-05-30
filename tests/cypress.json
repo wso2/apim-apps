@@ -26,7 +26,6 @@
   },
   "ignoreTestFiles": [
     "**/externalDevPortals/**.spec.js",
-    "**/06-solace-broker-integration.spec.js",
-    "**/04-enable-mutual-ssl-and-upload-certificate.spec.js"
+    "**/06-solace-broker-integration.spec.js"
   ]
 }
