@@ -203,7 +203,7 @@ class SubscriptionTableData extends React.Component {
                     promisedPolicy.then((policyResponse) => {
                         const policyData = JSON.parse(policyResponse.data);
                         if (policyData.monetizationAttributes.billingType
-                             && (policyData.monetizationAttributes.billingType
+                            && (policyData.monetizationAttributes.billingType
                                 === 'DYNAMICRATE')) {
                             this.setState({ isDynamicUsagePolicy: true });
                         }
@@ -239,7 +239,7 @@ class SubscriptionTableData extends React.Component {
         return (
             <TableRow hover>
                 <TableCell>
-                    { link }
+                    {link}
                 </TableCell>
                 <TableCell>{apiInfo.lifeCycleStatus}</TableCell>
                 <TableCell>{throttlingPolicy}</TableCell>
@@ -272,41 +272,41 @@ class SubscriptionTableData extends React.Component {
                                 />
                                 {throttlingPolicy}
                                 <div>
-                                    { (status === 'BLOCKED')
+                                    {(status === 'BLOCKED')
                                         ? (
                                             <FormattedMessage
                                                 id={'Applications.Details.SubscriptionTableData.update.'
-                                                + 'throttling.policy.blocked'}
+                                                    + 'throttling.policy.blocked'}
                                                 defaultMessage={'Subscription is in BLOCKED state. '
-                                                + 'You need to unblock the subscription in order to edit the tier'}
+                                                    + 'You need to unblock the subscription in order to edit the tier'}
                                             />
                                         )
                                         : (status === 'ON_HOLD')
                                             ? (
                                                 <FormattedMessage
                                                     id={'Applications.Details.SubscriptionTableData.update.'
-                                                    + 'throttling.policy.onHold'}
+                                                        + 'throttling.policy.onHold'}
                                                     defaultMessage={'Subscription is currently ON_HOLD state.'
-                                                    + ' You need to get approval to the subscription before editing the tier'}
+                                                        + ' You need to get approval to the subscription before editing the tier'}
                                                 />
                                             )
                                             : (status === 'REJECTED')
                                                 ? (
                                                     <FormattedMessage
                                                         id={'Applications.Details.SubscriptionTableData.update.'
-                                                        + 'throttling.policy.rejected'}
+                                                            + 'throttling.policy.rejected'}
                                                         defaultMessage={'Subscription is currently REJECTED state.'
-                                                        + ' You need to get approval to the subscription before editing the tier'}
+                                                            + ' You need to get approval to the subscription before editing the tier'}
                                                     />
                                                 )
                                                 : (status === 'TIER_UPDATE_PENDING')
                                                     ? (
                                                         <FormattedMessage
                                                             id={'Applications.Details.SubscriptionTableData.update.'
-                                                            + 'throttling.policy.tierUpdatePending'}
+                                                                + 'throttling.policy.tierUpdatePending'}
                                                             defaultMessage={'Subscription is currently TIER_UPDATE_PENDING state.'
-                                                            + ' You need to get approval to the existing subscription edit request'
-                                                            + ' before editing the tier'}
+                                                                + ' You need to get approval to the existing subscription edit request'
+                                                                + ' before editing the tier'}
                                                         />
                                                     )
                                                     : (
@@ -329,15 +329,15 @@ class SubscriptionTableData extends React.Component {
                                                                             <FormattedMessage
                                                                                 defaultMessage='Business Plan'
                                                                                 id={'Applications.Details.SubscriptionTableData.'
-                                                                                + 'update.business.plan.name'}
+                                                                                    + 'update.business.plan.name'}
                                                                             />
                                                                         )}
                                                                         helperText={(
                                                                             <FormattedMessage
                                                                                 defaultMessage={'Assign a new Business plan to the '
-                                                                                + 'existing subscription'}
+                                                                                    + 'existing subscription'}
                                                                                 id={'Applications.Details.SubscriptionTableData.'
-                                                                                + 'update.throttling.policy.helper'}
+                                                                                    + 'update.throttling.policy.helper'}
                                                                             />
                                                                         )}
                                                                         margin='normal'
@@ -345,17 +345,17 @@ class SubscriptionTableData extends React.Component {
                                                                     />
                                                                 )}
                                                             />
-                                                            { (status === 'TIER_UPDATE_PENDING')
-                                                        && (
-                                                            <div>
-                                                                <FormattedMessage
-                                                                    id={'Applications.Details.SubscriptionTableData.update.'
-                                                                    + 'throttling.policy.tier.update'}
-                                                                    defaultMessage='Pending Tier Update : '
-                                                                />
-                                                                {requestedThrottlingPolicy}
-                                                            </div>
-                                                        )}
+                                                            {(status === 'TIER_UPDATE_PENDING')
+                                                                && (
+                                                                    <div>
+                                                                        <FormattedMessage
+                                                                            id={'Applications.Details.SubscriptionTableData.update.'
+                                                                                + 'throttling.policy.tier.update'}
+                                                                            defaultMessage='Pending Tier Update : '
+                                                                        />
+                                                                        {requestedThrottlingPolicy}
+                                                                    </div>
+                                                                )}
                                                         </div>
                                                     )}
                                 </div>
@@ -371,11 +371,12 @@ class SubscriptionTableData extends React.Component {
                             <Button
                                 variant='contained'
                                 disabled={(status === 'BLOCKED' || status === 'ON_HOLD' || status === 'REJECTED'
-                                || status === 'TIER_UPDATE_PENDING')}
+                                    || status === 'TIER_UPDATE_PENDING')}
                                 dense
                                 color='primary'
                                 onClick={() => this.handleSubscriptionTierUpdate(apiId,
                                     subscriptionId, selectedTier, status, throttlingPolicy)}
+                                data-testid='subscription-tier-update-button'
                             >
                                 <FormattedMessage
                                     id='Applications.Details.SubscriptionTableData.update'
@@ -438,13 +439,13 @@ class SubscriptionTableData extends React.Component {
                             </Button>
                         </DialogActions>
                     </Dialog>
-                    { isMonetizedAPI && (
+                    {isMonetizedAPI && (
                         <Invoice
                             tiers={tiers}
                             subscriptionId={subscriptionId}
                             isDynamicUsagePolicy={isDynamicUsagePolicy}
                         />
-                    ) }
+                    )}
                 </TableCell>
             </TableRow>
         );

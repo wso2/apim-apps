@@ -52,7 +52,7 @@ describe("Change the password from devportal", () => {
     cy.get("input#repeated-new-password").click();
     cy.get("input#repeated-new-password").type(newPassword);
 
-    cy.get("button").contains("Save").click();
+    cy.get("[data-testid='change-password-save-button']").debug().contains("Save").click();
 
     cy.logoutFromDevportal();
     devportalComonPage.waitUntillDevportalLoaderSpinnerExit();
