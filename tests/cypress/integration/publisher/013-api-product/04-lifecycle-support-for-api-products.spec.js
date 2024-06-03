@@ -32,16 +32,17 @@ describe("Life cycle support for API Products", () => {
             openMode: 0,
         },
     }, () => {
-        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout});
+        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout}).wait(5000);
         cy.get('#open-api-file-select-radio').click();
-
+        cy.wait(5000);
 
         // upload the swagger
-        cy.get('#browse-to-upload-btn').then(function () {
+        cy.get('#browse-to-upload-btn').wait(5000).then(function () {
             const filepath = `api_artifacts/pizzashack.json`
             cy.get('input[type="file"]').attachFile(filepath)
         });
         cy.get('#open-api-create-next-btn').click();
+        cy.wait(3000);
         cy.get('#itest-id-apiversion-input', {timeout: Cypress.config().largeTimeout});
 
         cy.document().then((doc) => {

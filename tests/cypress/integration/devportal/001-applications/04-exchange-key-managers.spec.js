@@ -35,7 +35,7 @@ describe("Developer portal smoke tests", () => {
         cy.intercept('GET', `/api/am/devportal/v3/applications/844ec54e-70d3-4f9b-9b48-25853e857fc3/oauth-keys`, {fixture:'oauthKeys.json'});
         cy.get('#SampleExternalKM').click();
         cy.get('#exchange-token').click();
-        cy.get('#responsive-dialog-title h2').should('contain','Resident Key Manager Consumer Key and Secret Not Available');
+        cy.get('#responsive-dialog-title').should('contain','Resident Key Manager Consumer Key and Secret Not Available');
         cy.visit(`/devportal/applications/844ec54e-70d3-4f9b-9b48-25853e857fc3/productionkeys/oauth`);
         cy.get('#ResidentKeyManager').click();
         cy.intercept('POST',`/api/am/devportal/v3/applications/844ec54e-70d3-4f9b-9b48-25853e857fc3/generate-keys`, {fixture:'generatedKeys.json'});
@@ -48,6 +48,6 @@ describe("Developer portal smoke tests", () => {
         cy.get('#external-idp-token').type('eyJ4NXQiOiJNell4TW1Ga09HWXdNV0kwWldObU5EY3hOR1NNFpUQTNNV0kyTkRBelpHU');
         cy.get('#curl-to-generate-access-token-btn').should('not.be.disabled');
         cy.get('#curl-to-generate-access-token-btn').click();
-        cy.get('#responsive-dialog-title h2').should('contain', 'Get CURL to Generate Access Token');
+        cy.get('#responsive-dialog-title').should('contain', 'Get CURL to Generate Access Token');
     })
 })

@@ -20,23 +20,30 @@ describe("Create api with swagger file super tenant", () => {
     const { publisher, password, tenantUser, tenant, } = Utils.getUserInfo();
 
     const createApiFromSwagger = (usernameLocal, passwordLocal) => {
+
         cy.loginToPublisher(usernameLocal, passwordLocal);
         // select the option from the menu item
         cy.visit(`/publisher/apis/create/openapi`);
+        cy.wait(5000)
         cy.get('#open-api-file-select-radio').click();
         // upload the swagger
+
         cy.get('#browse-to-upload-btn').then(function () {
+
             cy.intercept('POST', '**/apis/validate-openapi').as('validateOpenApi');
             cy.intercept('GET', '**/linter-custom-rules').as('lintRules');
             const filepath = `api_artifacts/swagger_2.0.json`
+
             cy.get('input[type="file"]').attachFile(filepath);
+
             cy.wait(['@validateOpenApi', '@lintRules'], { timeout: 30000 }).then(() => {
                 // go to the next step
                 cy.get('#open-api-create-next-btn').click();
+
                 cy.get('#itest-id-apiendpoint-input')
                     .clear()
                     .type('https://petstore.swagger.io/v2');
-    
+
                 cy.intercept('**/apis/**').as('apiGet');
                 // finish the wizard
                 cy.get('#open-api-create-btn').click();

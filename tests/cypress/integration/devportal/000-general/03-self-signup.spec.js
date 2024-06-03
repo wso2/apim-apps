@@ -21,8 +21,10 @@ function getSuperTenantEmail(username) {
     return `${username}@test.com`;
 }
 
+Cypress.config('pageLoadTimeout', 150000)
+
 describe("Self SignUp", () => {
-    const {publisher, password, carbonUsername, carbonPassword} = Utils.getUserInfo();
+    const { publisher, password, carbonUsername, carbonPassword } = Utils.getUserInfo();
     const testTenant = 'wso2.com';
     const superTenant = 'carbon.super';
     const devPortal = 'devportal';
@@ -167,7 +169,7 @@ describe("Self SignUp", () => {
 
     it.only("Test - Assign custom user roles to a super tenant user", () => {
         cy.carbonLogin(carbonUsername, carbonPassword);
-        cy.addNewRole(userRole,domain);
+        cy.addNewRole(userRole, domain);
         cy.carbonLogout();
         cy.updateTenantConfig(carbonUsername, carbonPassword, superTenant, customUserRoleAddedConfigJson);
         cy.addNewUserUsingSelfSignUp(superTenant5Username, password, firstName, lastName,
@@ -178,7 +180,7 @@ describe("Self SignUp", () => {
 
     it.only("Test - Assign custom user roles to a tenant user", () => {
         cy.carbonLogin(tenantAdminUsername, tenantAdminPassword);
-        cy.addNewRole(userRole,domain);
+        cy.addNewRole(userRole, domain);
         cy.carbonLogout();
         cy.updateTenantConfig(tenantAdminUsername, tenantAdminPassword, testTenant, customUserRoleAddedConfigJson);
         cy.addNewUserUsingSelfSignUp(Utils.getTenantUser(tenant5Username, testTenant), password, firstName, lastName,

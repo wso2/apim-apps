@@ -58,7 +58,7 @@ describe("Introduction : Create API from scratch and publish", () => {
 
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
-      });
+    });
 
     it("Add the PizzaShack API to the Publisher", () => {
         const thumbnailImagePath = `scriptData/e2e/shack-logo.png`
@@ -81,16 +81,16 @@ describe("Introduction : Create API from scratch and publish", () => {
 
         // Fill Basic Inof Page
         apiMenuPage.waitUntillPublisherLoadingSpinnerExit()
-        apiMenuPage.getPortalConfigurationsMenu().click({force: true})
-        apiMenuPage.getPortalConfigurations_BasicInforMenu().click({force: true})
+        apiMenuPage.getPortalConfigurationsMenu().click({ force: true })
+        apiMenuPage.getPortalConfigurations_BasicInforMenu().click({ force: true })
 
-        cy.location('pathname', {timeout: 60000}).should('include', '/configuration');
+        cy.location('pathname', { timeout: 60000 }).should('include', '/configuration');
         cy.wait(5000)
 
-        publisherApisPage.getApiNameVersionH1().should("have.text","PizzaShack :1.0.0")
-        publisherApisPage.getApiStateDiv().should("have.text","CREATED")
+        publisherApisPage.getApiNameVersionH1().should("have.text", "PizzaShack :1.0.0")
+        publisherApisPage.getApiStateDiv().should("have.text", "CREATED")
 
-        apiBasicInfoPage.getEditDescriptionButton().should('be.visible').should("have.text","Edit description").click({force: true})
+        apiBasicInfoPage.getEditDescriptionButton().should('be.visible').should("have.text", "Edit description").click({ force: true })
         apiBasicInfoPage.getDescriptionTextArea().type("PizzaShackAPI: Allows to manage pizza orders (create, update, retrieve orders)")
         apiBasicInfoPage.getUpdateContectButton().click()
 
@@ -99,7 +99,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         apiBasicInfoPage.getTagsTextBox().type("pizza-menu").type('{enter}')
         apiBasicInfoPage.getDefaultVersionNoRadio().click()
 
-        apiBasicInfoPage.getEditThumbnailButton().click({force: true})
+        apiBasicInfoPage.getEditThumbnailButton().click({ force: true })
         apiBasicInfoPage.getThumbnailFileUpload().attachFile(thumbnailImagePath)
         apiBasicInfoPage.getThumbnailUploadButton().click()
         cy.contains("Thumbnail uploaded successfully")
@@ -111,21 +111,21 @@ describe("Introduction : Create API from scratch and publish", () => {
         //TODO : by default all set, need to verify
 
         // Fill Resource Page
-        apiMenuPage.getAPIConfigurationsMenu().click({force: true})
-        apiMenuPage.getAPIConfigurationsMenu_ResourcesMenu().click({force: true})
+        apiMenuPage.getAPIConfigurationsMenu().click({ force: true })
+        apiMenuPage.getAPIConfigurationsMenu_ResourcesMenu().click({ force: true })
         cy.wait(5000)
 
-        resourcesPage.getResourcePageHeader().should("have.text","Resources")
-        resourcesPage.selectAndAddNewOperation("GET","/menu")
-        resourcesPage.selectAndAddNewOperation("POST","/order")
-        resourcesPage.selectAndAddNewOperation("GET","order/{orderid}")
-        resourcesPage.selectAndAddNewOperation("PUT","order/{orderid}")
+        resourcesPage.getResourcePageHeader().should("have.text", "Resources")
+        resourcesPage.selectAndAddNewOperation("GET", "/menu")
+        resourcesPage.selectAndAddNewOperation("POST", "/order")
+        resourcesPage.selectAndAddNewOperation("GET", "order/{orderid}")
+        resourcesPage.selectAndAddNewOperation("PUT", "order/{orderid}")
 
         resourcesPage.getSaveRerouceButton().click()
         cy.contains("PizzaShack API updated successfully")
 
         //Fill Local Scopes Page
-        apiMenuPage.getAPIConfigurationsMenu_LocalScopesMenu().click({force: true})
+        apiMenuPage.getAPIConfigurationsMenu_LocalScopesMenu().click({ force: true })
         cy.wait(5000)
 
         localScopesPage.getLocalScopesHeader().should("have.text", "Local Scopes")
@@ -133,27 +133,27 @@ describe("Introduction : Create API from scratch and publish", () => {
         localScopesPage.getScopeNameTextBox().type("order_pizza")
         localScopesPage.getScopeDisplayNameTextBox().type("Order Pizza")
         localScopesPage.getScopeDescriptionTextBox().type("Only users with admin role and internal/subscriber role can order")
-        localScopesPage.getRolesTextBox().type("admin").type('{enter}') 
-        localScopesPage.getRolesTextBox().type("Internal/subscriber").type('{enter}')
+        localScopesPage.getRolesTextBox().type("admin").type('{enter}').blur().wait(3000)
+        localScopesPage.getRolesTextBox().focus().type("Internal/subscriber").type('{enter}').blur()
         localScopesPage.getSaveButton().click()
         //apiBasicInfoPage.getUpdateToolTip().should("have.text","Scope added successfully")
         cy.contains("Scope added successfully")
-        
+
         // Assigning created scope to the Resource
-        apiMenuPage.getAPIConfigurationsMenu().click({force: true})
-        apiMenuPage.getAPIConfigurationsMenu_ResourcesMenu().click({force: true})
+        apiMenuPage.getAPIConfigurationsMenu().click({ force: true })
+        apiMenuPage.getAPIConfigurationsMenu_ResourcesMenu().click({ force: true })
         cy.wait(5000)
-        resourcesPage.getResourcePageHeader().should("have.text","Resources")
+        resourcesPage.getResourcePageHeader().should("have.text", "Resources")
 
         resourcesPage.getRowOfResource("/order").click()
         resourcesPage.getDescriptionTextAreaOfResource("post/order").type("Create a new Order")
         resourcesPage.getSummaryTextAreaOfResource("post/order").type("Order Pizza")
-        resourcesPage.selectOperationScopeOfResource("post/order","order_pizza")
+        resourcesPage.selectOperationScopeOfResource("post/order", "order_pizza")
         resourcesPage.getSaveButton().click()
         cy.contains("PizzaShack API updated successfully")
 
         // Fill Documentation Page
-        apiMenuPage.getAPIConfigurationsMenu_DocumentsMenu().click({force: true})
+        apiMenuPage.getAPIConfigurationsMenu_DocumentsMenu().click({ force: true })
         documentsPage.getDocumentsHeader().contains("Documents")
         documentsPage.getAddNewDocumentButton().click()
 
@@ -167,7 +167,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         documentsPage.getDocumentNameOfTableRow(0).contains(testData.PizzaShackApi.name)
 
         // Deploye the API
-        apiMenuPage.getDeploy_DeployementsMenu().click({force: true})
+        apiMenuPage.getDeploy_DeployementsMenu().click({ force: true })
         deploymentsPage.getDeployButton().click()
         cy.contains("Revision Created Successfully")
         cy.contains("Revision Deployed Successfully")
@@ -185,7 +185,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         cy.wait(5000)
 
         publisherApisPage.getApiLinkOfAPI(testData.PizzaShackApi.name).click()
-        apiMenuPage.getPublish_LifecycleMenu().click({force: true})
+        apiMenuPage.getPublish_LifecycleMenu().click({ force: true })
         cy.wait(5000)
         lifecyclePage.getLifecycleHeader().contains("Lifecycle")
         lifecyclePage.getPublishButton().click()
@@ -196,7 +196,7 @@ describe("Introduction : Create API from scratch and publish", () => {
         cy.wait(10000) //TODO : handle wait time
     })
 
-    it("Verify API available in the API Devportal" , () => {      
+    it("Verify API available in the API Devportal", () => {
         devPortalApisPage.visitAPIsPage()
         devPortalApisPage.waitUntillDevportalLoaderSpinnerExit()
         cy.wait(5000)
@@ -205,13 +205,9 @@ describe("Introduction : Create API from scratch and publish", () => {
 
     after(`Delete ${testData.PizzaShackApi.name} API from the publisher`, () => {
         cy.loginToPublisher(testUsers.adminPortalAdmin.username, testUsers.adminPortalAdmin.password);
-        publisherApisPage.waitUntillPublisherLoadingSpinnerExit()
-        publisherApisPage.visitAPIsPage()
-        publisherApisPage.waitUntillPublisherLoadingSpinnerExit()
-
-        publisherApisPage.getDeleteButtonOfAPI(`${testData.PizzaShackApi.name}${testData.PizzaShackApi.version}`).click({force: true}) // "PizzaShack1.0.0"
-        publisherApisPage.getDeleteAPIDialog_DeletButton().click()
-        cy.wait(2000)
+        cy.contains(`${testData.PizzaShackApi.name}`).should('exist').trigger('mouseover').click();
+        cy.get("#itest-id-deleteapi-icon-button").click()
+        cy.get("#itest-id-deleteconf").click()
         cy.contains(`API ${testData.PizzaShackApi.name} deleted Successfully`)
     })
 

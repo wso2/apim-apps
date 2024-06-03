@@ -109,7 +109,7 @@ describe("Depricate old versions of api before publishing", () => {
           })
             .contains("DEPRECATED")
             .should("exist");
-
+          cy.wait(5000)
           Utils.deleteAPI(apiId);
           Utils.deleteAPI(newAPIid);
         });

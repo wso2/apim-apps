@@ -21,7 +21,7 @@ import Utils from "@support/utils";
 describe("Create new API product version", () => {
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
-      });
+    });
     const { publisher, password, } = Utils.getUserInfo();
     const apiName = Utils.generateName();
     const productName = Utils.generateName();
@@ -40,31 +40,31 @@ describe("Create new API product version", () => {
         },
     }, () => {
         // create a new api
-        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout});
+        cy.visit(`/publisher/apis/create/openapi`, { timeout: Cypress.config().largeTimeout }).wait(5000);
         cy.get('#open-api-file-select-radio').click();
-
+        cy.wait(5000);
         // upload the swagger
-        cy.get('#browse-to-upload-btn').then(function () {
+        cy.get('#browse-to-upload-btn').wait(5000).then(function () {
             const filepath = `api_artifacts/petstore-v3.json`
             cy.get('input[type="file"]').attachFile(filepath)
         });
 
         cy.get('#open-api-create-next-btn').click();
-
-        cy.get('#itest-id-apiversion-input', {timeout: Cypress.config().largeTimeout});
+        cy.wait(3000);
+        cy.get('#itest-id-apiversion-input', { timeout: Cypress.config().largeTimeout });
         cy.document().then((doc) => {
             cy.get('#itest-id-apiname-input').clear().type(apiName);
             cy.get('#itest-id-apicontext-input').clear();
             cy.get('#itest-id-apicontext-input').type(apiName);
             cy.get('#itest-id-apiversion-input').click();
             const version = doc.querySelector('#itest-id-apiversion-input').value;
-            cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').click({force:true});
+            cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').click({ force: true });
 
             cy.url().should('contains', 'overview').then(url => {
                 testApiID = /apis\/(.*?)\/overview/.exec(url)[1];
                 cy.log("API ID", testApiID);
                 // validate
-                cy.get('#itest-api-name-version', {timeout: Cypress.config().largeTimeout});
+                cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
                 cy.get('#itest-api-name-version').contains(version);
 
                 // Go to api product create page
@@ -75,11 +75,11 @@ describe("Create new API product version", () => {
                 cy.get('#context').type(productName);
                 cy.get('#itest-id-apiversion-input').type(productVersion);
                 cy.get('#itest-id-apiname-input').click();
-                cy.get('body').click(0,0);
+                cy.get('body').click(0, 0);
 
                 cy.intercept('**/swagger').as('swaggerGet');
 
-                cy.get('#api-product-next-btn').should('not.have.class', 'Mui-disabled').click({force:true});
+                cy.get('#api-product-next-btn').should('not.have.class', 'Mui-disabled').click({ force: true });
 
                 cy.wait('@swaggerGet', { timeout: Cypress.config().largeTimeout }).then(() => {
                     cy.intercept('GET', '**/swagger').as('getSwagger');
@@ -90,7 +90,8 @@ describe("Create new API product version", () => {
 
                     // add all resources
                     cy.get('#add-all-resources-btn').click({ force: true });
-                    cy.get('#create-api-product-btn').scrollIntoView().dblclick({ force: true });
+                    cy.wait(5000);
+                    cy.get('#create-api-product-btn').scrollIntoView().click({ force: true });
                     cy.url().should('contains', 'overview').then(urlProduct => {
                         const productID = /api-products\/(.*?)\/overview/.exec(urlProduct)[1];
                         cy.log("API Product ID", productID);
@@ -101,8 +102,8 @@ describe("Create new API product version", () => {
                         cy.log(testApiID, productID);
                         cy.visit(`/publisher/api-products/${productID}/overview`);
                         cy.get('#create-new-version-btn').click();
-                        cy.get('#newVersion').click();
-                        cy.get('#newVersion').type(newVersion);
+
+                        cy.get('#newVersion').wait(3000).type(newVersion);
                         cy.intercept('**/api-products/**').as('apiGet');
                         cy.get('#createBtn').click();
                         cy.wait('@apiGet', { timeout: 30000 }).then(() => {

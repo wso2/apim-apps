@@ -24,10 +24,10 @@ import testData from "../../../fixtures/scriptData/e2e/ExternalDevPortalsTestDat
 const testUsers = require('../../../fixtures/testUsers.json')
 
 describe("Enable External Dev Portal", () => {
-    const {testTenant} = Utils.getUserInfo();
+    const { testTenant } = Utils.getUserInfo();
     const externalPortalEnableConfigJson = JSON.parse(JSON.stringify(tenantConfigExternalJson));
 
-    it.only("Add New Tenant" , () => {
+    it.only("Add New Tenant", () => {
         cy.carbonLogin(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password);
         cy.wait(5000);
         cy.addNewTenant(testData.tenantDomain, testData.tenantAdminPassword);
@@ -38,7 +38,7 @@ describe("Enable External Dev Portal", () => {
         cy.carbonLogout();
     })
 
-    it.only("Configure Sample API for External Dev Portal" , () => {
+    it.only("Configure Sample API for External Dev Portal", () => {
         cy.loginToPublisher(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password);
         cy.visit(`/publisher/apis`);
         cy.contains('WSO2 API-M v4.3.0');
@@ -61,20 +61,20 @@ describe("Enable External Dev Portal", () => {
         cy.get('#left-menu-itemstores').should('not.exist');
     })
 
-    it.only("Update Advanced Configuration" , () => {
+    it.only("Update Advanced Configuration", () => {
         cy.updateTenantConfig(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password, testTenant, externalPortalEnableConfigJson);
     })
 
-    it.only("Configure Sample API for External Dev Portal" , () => {
+    it.only("Configure Sample API for External Dev Portal", () => {
         cy.loginToPublisher(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password);
         cy.visit(`/publisher/apis`);
-        cy.contains('PizzaShackAPI').should('exist').click();
+        cy.contains('PizzaShackAPI').should('exist').trigger('mouseover').click();
         cy.get('#left-menu-itemstores').should('exist').click();;
         cy.get('[data-testid="portal-checkbox-DeveloperPortal1"]').should('exist').click();
         cy.get('#stores-save-btn').should('exist').click();
     })
 
-    it.only("View External Dev Portal" , () => {
+    it.only("View External Dev Portal", () => {
         cy.loginToDevportal(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password);
         cy.wait(3000);
         cy.logoutFromDevportal();
@@ -86,7 +86,7 @@ describe("Enable External Dev Portal", () => {
         cy.contains('Visit Original').should('exist').click();
     })
 
-    after("end of the script", () =>{
+    after("end of the script", () => {
         cy.log("End of the script")
     })
 

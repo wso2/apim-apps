@@ -31,7 +31,7 @@ describe("Service catalog create flow", () => {
                 while (i > 0) {
                     const random_number = Utils.getRandomDate();
                     const randomName = Utils.getRandomString();
-                    
+
                     const sampleOAS = getSampleOpenAPI();
                     const serviceMeta = getSampleServiceMeta();
 
@@ -62,18 +62,18 @@ describe("Service catalog create flow", () => {
                     //   })
 
                     cy.request({
-                        method: 'POST', 
+                        method: 'POST',
                         url: `${Cypress.config().baseUrl}/api/am/service-catalog/v1/services`,
                         headers: {
-                          'authorization': 'Bearer ' + tokenP1.value,
+                            'authorization': 'Bearer ' + tokenP1.value,
                         },
                         body: formData
-                      }).then( ({ status }) => {
+                    }).then(({ status }) => {
                         expect(status).to.eq(200)
-                      }).then( ({ body }) => {
+                    }).then(({ body }) => {
                         cy.log(body)
-                      })
-                      
+                    })
+
 
                     i -= 1;
                     debugger;
@@ -83,25 +83,4 @@ describe("Service catalog create flow", () => {
         cy.visit(`/publisher/service-catalog`);
 
     });
-
-    it("Delete all Services", () => {
-        cy.wait(3000)
-        cy.visit(`${Cypress.config().baseUrl}/publisher/service-catalog`);
-        cy.wait(3000)
-        cy.get('#itest-services-listing-total')
-            .then(
-                (countElement) => {
-                    let totalServices = parseInt(countElement.text());
-                    debugger;
-                    while (totalServices  > 0) {
-                        cy.get('#itest-service-card-delete').click();
-                        cy.get('#itest-service-card-delete-confirm').click();
-                        totalServices -= 1;
-                    }
-                    //cy.get('#itest-service-catalog-onboarding').should('be.visible')
-                }
-            )
-    });
-
-
 })

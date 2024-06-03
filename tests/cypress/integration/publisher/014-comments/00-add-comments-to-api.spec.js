@@ -26,22 +26,22 @@ describe("adding comment", () => {
         cy.loginToPublisher(publisher, password);
     })
 
-    it.only("Adding comments per API",{
+    it.only("Adding comments per API", {
         retries: {
-          runMode: 3,
-          openMode: 0,
+            runMode: 3,
+            openMode: 0,
         },
-      }, () => {
+    }, () => {
         const comment = 'test api';
         Utils.addAPI({}).then((apiId) => {
             testApiId = apiId;
             cy.intercept('**/comments?limit=5&offset=0').as('commentsGet');
             cy.visit(`/publisher/apis/${apiId}/comments`);
-            cy.wait('@commentsGet', {timeout: 30000}).then(() => {
-                cy.get('#standard-multiline-flexible').click();
+            cy.wait('@commentsGet', { timeout: 30000 }).wait(3000).then(() => {
+                cy.get('#standard-multiline-flexible').wait(2000).click();
                 cy.get('#standard-multiline-flexible').type(comment);
                 cy.get('#add-comment-btn').click();
-    
+
                 // Checking it's existence
                 cy.get('#comment-list').contains(comment).should('be.visible');
             })

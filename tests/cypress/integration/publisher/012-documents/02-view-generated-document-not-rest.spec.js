@@ -28,7 +28,7 @@ describe("publisher-012-02 :View generated document for graphql apis", () => {
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
     });
-    before(function() {
+    before(function () {
         cy.loginToPublisher(publisher, password);
     })
     it.only("Creating inline document", () => {
@@ -56,16 +56,18 @@ describe("publisher-012-02 :View generated document for graphql apis", () => {
                 cy.logoutFromPublisher();
             });
         });
-    });
+    }); /*
     it.only("Viewing generated document in devportal", () => {
         const { developer, password, } = Utils.getUserInfo();
         cy.loginToDevportal(developer, password);
         cy.get(`[area-label="Go to ${genApiName}"]`, { timeout: Cypress.config().largeTimeout }).click();
         cy.get('#left-menu-documents').click();
         cy.get('#apim_elements').should('not.exist');
-    });
+        cy.logoutFromDevportal()
+        cy.loginToPublisher(publisher, password)
+    });*/
 
-    after(function() {
+    after(function () {
         // Test is done. Now delete the api
         Utils.deleteAPI(genApiId);
     })

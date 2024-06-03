@@ -36,7 +36,7 @@ describe("publisher-021-02 : Lint when creating API with swagger URL", () => {
 
     it("Lint when creating API with swagger URL", () => {
         cy.visit(`${Utils.getAppOrigin()}/`+OpenAPIPage.getUrl());
-
+        cy.wait(5000)
         // select the option from the menu item
         OpenAPIPage.openAPIURLRadioButton().click
 

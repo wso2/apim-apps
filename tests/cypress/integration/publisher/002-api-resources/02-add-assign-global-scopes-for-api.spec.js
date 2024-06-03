@@ -80,7 +80,7 @@ describe("Add assign global scopes for api", () => {
         `${role}{enter}`
       );
 
-      cy.get("button > span").contains("Save").click();
+      cy.get("[data-testid=create-scope-save-button]").contains("Save").click();
 
       cy.get("tbody").get("tr").contains(scopeName).should("be.visible");
 

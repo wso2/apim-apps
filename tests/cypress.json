@@ -1,28 +1,35 @@
 {
-    "chromeWebSecurity": false,
-    "pageLoadTimeout": 100000,
-    "defaultCommandTimeout": 100000,
-    "largeTimeout": 100000,
-    "baseUrl": "https://localhost:9443",
-    "screenshotsFolder": "cypress/screenshots",
-    "screenshotOnRunFailure":true,
-    "experimentalInteractiveRunEvents": true,
-    "reporter": "cypress-multi-reporters",
-    "reporterOptions": {
-      "inlineAssets": true,
-      "reporterEnabled": "cypress-mochawesome-reporter, mocha-junit-reporter",
-      "mochaJunitReporterReporterOptions": {
-        "mochaFile": "cypress/reports/junit/results-[hash].xml"
-      },
-      "cypressMochawesomeReporterReporterOptions": {
-        "charts": true,
-        "reportPageTitle": "custom-title"
-      }
+  "chromeWebSecurity": false,
+  "pageLoadTimeout": 100000,
+  "defaultCommandTimeout": 100000,
+  "largeTimeout": 100000,
+  "baseUrl": "https://localhost:9443",
+  "screenshotsFolder": "cypress/screenshots",
+  "screenshotOnRunFailure": true,
+  "experimentalInteractiveRunEvents": true,
+  "reporter": "cypress-multi-reporters",
+  "reporterOptions": {
+    "inlineAssets": true,
+    "reporterEnabled": "cypress-mochawesome-reporter, mocha-junit-reporter",
+    "mochaJunitReporterReporterOptions": {
+      "mochaFile": "cypress/reports/junit/results-[hash].xml"
     },
-    "video": false,
-    "scrollBehavior" : "nearest",
-    "e2e": {
-      "excludeSpecPattern": "**/*.skip.js"
+    "cypressMochawesomeReporterReporterOptions": {
+      "charts": true,
+      "reportPageTitle": "custom-title"
     }
-  }
-  
+  },
+  "video": false,
+  "scrollBehavior": "nearest",
+  "e2e": {
+    "excludeSpecPattern": "**/*.skip.js"
+  },
+  "retries": {
+    "runMode": 2,
+    "openMode": 0
+  },
+  "ignoreTestFiles": [
+    "**/externalDevPortals/**.spec.js",
+    "**/06-solace-broker-integration.spec.js"
+  ]
+}

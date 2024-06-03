@@ -370,6 +370,7 @@ const ChangePassword = () => {
                                             variant='contained'
                                             onClick={handleSave}
                                             className={classes.passwordChangeForm}
+                                            data-testid='change-password-save-button'
                                         >
                                             <FormattedMessage
                                                 id='Settings.ChangePasswordForm.Save.Button.text'

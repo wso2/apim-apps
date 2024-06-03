@@ -23,7 +23,7 @@ describe("Mock the api response and test it", () => {
     const { publisher, password, } = Utils.getUserInfo();
     let testApiID;
     before(function () {
-        
+
     })
 
     /* 
@@ -31,23 +31,25 @@ describe("Mock the api response and test it", () => {
     */
     it("Mock the api response and test it", {
         retries: {
-          runMode: 3,
-          openMode: 0,
+            runMode: 3,
+            openMode: 0,
         },
-      }, () => {
+    }, () => {
         cy.loginToPublisher(publisher, password);
-        cy.visit(`/publisher/apis/create/openapi`);
-        cy.get('#open-api-file-select-radio').click();
+        cy.visit(`/publisher/apis/create/openapi`).wait(5000)
+
+        cy.get('#open-api-file-select-radio').click()
+        cy.wait(5000)
 
         // upload the swagger
-        cy.get('#browse-to-upload-btn').then(function () {
+        cy.get('#browse-to-upload-btn').wait(5000).then(function () {
             const filepath = `api_artifacts/petstore-v3.json`
             cy.get('input[type="file"]').attachFile(filepath)
         });
 
         cy.get('#open-api-create-next-btn').click();
-
-        cy.get('#itest-id-apiversion-input', { timeout: 30000 });
+        cy.wait(3000)
+        cy.get('#itest-id-apiversion-input', { timeout: Cypress.config().largeTimeout });
         cy.document().then((doc) => {
             cy.get('#itest-id-apicontext-input').clear();
             cy.get('#itest-id-apicontext-input').type('petstore3');
@@ -87,7 +89,7 @@ describe("Mock the api response and test it", () => {
 
                     // Deploying
                     cy.wait(1000);
-                    cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click({force:true});
+                    cy.get('#deploy-btn').should('not.have.class', 'Mui-disabled').click({ force: true });
                     cy.get('#undeploy-btn').should('not.have.class', 'Mui-disabled').should('exist');
 
                     cy.get('#itest-api-details-portal-config-acc').click();

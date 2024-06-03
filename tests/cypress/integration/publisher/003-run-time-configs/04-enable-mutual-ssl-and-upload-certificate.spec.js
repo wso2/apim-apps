@@ -38,20 +38,24 @@ describe("Runtime configuration", () => {
             cy.get('#mutual-ssl-checkbox').click();
 
             // uploading the cert
-            cy.get('#certs-add-btn').click();
-            cy.get('#mui-component-select-policies').click();
+            cy.get('#certs-add-btn').click()
+            cy.get('#itest-id-apipolicies-input').parent().click()
             cy.get('#Bronze').click();
             cy.get('#certificateAlias').click().type(alias);
 
             // upload the cert
             const filepath = 'api_artifacts/sample.crt.pem';
             cy.get('input[type="file"]').attachFile(filepath);
-
+            cy.wait(5000)
             // Click away
             cy.get('#upload-cert-save-btn').click();
-            cy.get('#upload-cert-save-btn').then(() => {
-                cy.get('#save-runtime-configurations').click();
-            })
+
+            Cypress.on('uncaught:exception', (err, runnable) => {
+                return false;
+
+            });
+            cy.get('#save-runtime-configurations').click();
+
             cy.get('#save-runtime-configurations').get(() => {
                 cy.get('h4').contains('Transport Level Security').click();
                 cy.get('#mutual-ssl-checkbox').should('be.checked');

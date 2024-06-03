@@ -26,16 +26,16 @@ describe("Add API Categories and assign via publisher portal", () => {
     beforeEach(function () {
         cy.loginToAdmin(carbonUsername, carbonPassword);
     })
-    it("Add API Categories and assign via publisher portal",{
+    it("Add API Categories and assign via publisher portal", {
         retries: {
-          runMode: 3,
-          openMode: 0,
+            runMode: 3,
+            openMode: 0,
         },
-      }, () => {
+    }, () => {
         const category = Utils.generateName();
         const categoryDescription = 'Weather related apis';
 
-        cy.get('[data-testid="API Categories"]', {timeout: Cypress.config().largeTimeout}).click();
+        cy.get('[data-testid="API Categories"]', { timeout: Cypress.config().largeTimeout }).click();
         cy.get('[data-testid="form-dialog-base-trigger-btn"]').contains('Add API Category').click();
         cy.get('input[name="name"]').type(category);
         cy.get('textarea[name="description"]').type(categoryDescription);
@@ -43,11 +43,11 @@ describe("Add API Categories and assign via publisher portal", () => {
 
         // Go to publisher
         cy.wait(500);
-        cy.visit(`/publisher/apis`);
+        cy.visit(`/publisher/apis`).wait(2000);
         Utils.addAPI({}).then((apiId) => {
             testApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/configuration`);
-            cy.get('#APICategories-autocomplete', {timeout: Cypress.config().largeTimeout}).click();
+            cy.get('#APICategories-autocomplete', { timeout: Cypress.config().largeTimeout }).click();
             cy.get('li').contains(category).click();
             cy.get('#design-config-save-btn').click();
         })
@@ -58,7 +58,7 @@ describe("Add API Categories and assign via publisher portal", () => {
             Utils.deleteAPI(testApiId).then(() => {
                 // Delete
                 cy.visit(`/admin/settings/api-categories`);
-                cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)', {timeout: Cypress.config().largeTimeout}).click();
+                cy.get('[data-testid="MuiDataTableBodyCell-4-0"] > div > div > span:nth-child(2)', { timeout: Cypress.config().largeTimeout }).click();
                 cy.get('[data-testid="form-dialog-base-save-btn"]').contains("Delete").click();
                 //cy.get('div[role="status"]', {timeout: Cypress.config().largeTimeout}).should('have.text', 'API Category deleted successfully');
             });

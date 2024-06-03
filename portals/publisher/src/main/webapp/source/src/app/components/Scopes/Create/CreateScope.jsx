@@ -615,6 +615,7 @@ class CreateScope extends React.Component {
                                             || valid.description.invalid
                                         }
                                         className={classes.saveButton}
+                                        data-testid='create-scope-save-button'
                                     >
                                         {scopeAddDisabled ? (
                                             <>

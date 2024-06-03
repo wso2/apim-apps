@@ -40,13 +40,14 @@ describe("publisher-021-05 : Lint when editing before import", () => {
         cy.createAPIByRestAPIDesignAndSearch(apiName, apiVersion);
         cy.wait(3000)
         PublisherMenu.goToAPIDefinitionByUI()
-
+        cy.wait(3000)
         APIDefinitionPage.importDefinitionButton().click()
+        cy.wait(2000)
         APIDefinitionPage.openFileSelectRadioButton().click()
-
+        cy.wait(2000)
         // upload the swagger
         cy.intercept('GET', '**/linter-custom-rules').as('linter-custom-rules');
-        APIDefinitionPage.browseToUploadButton().then(function () {
+        APIDefinitionPage.browseToUploadButton().wait(3000).then(function () {
             const filepath = 'api_artifacts/petstore_open_api_3.json'
             APIDefinitionPage.fileUploadInput().attachFile(filepath)            
         });

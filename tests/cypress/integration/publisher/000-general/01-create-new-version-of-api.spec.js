@@ -30,7 +30,7 @@ describe("Create a new version of API", () => {
         Utils.addAPI({name: apiName, version: apiVersion}).then((apiId) => {
             testApiId = apiId;
             cy.visit(`/publisher/apis/${apiId}/overview`);
-            cy.get('#create-new-version-btn').click();
+            cy.get('#create-new-version-btn').click().wait(3000);
             cy.get('#newVersion').type(newVersion);
             cy.intercept('**/apis/**').as('apiGet');
             cy.get('#createBtn').click();

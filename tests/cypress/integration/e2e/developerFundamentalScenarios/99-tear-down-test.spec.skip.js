@@ -107,7 +107,7 @@ describe("Tear down Developer Fundemental TestS cenarios", () => {
         });
     })
 
-    it("Delete Rolese", () => {
+    it("Delete Roles", () => {
         cy.carbonLogin(testUsers.carbonAdmin.username, testUsers.carbonAdmin.password);
         cy.searchAndDeleteRoleIfExist(testData.apiPublisherUserRole).then(value => {
             publisherRoleDeleteLog = value;

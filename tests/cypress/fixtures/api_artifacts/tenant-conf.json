@@ -1,7 +1,7 @@
 {
-  "EnableMonetization" : false,
-  "EnableRecommendation" : false,
-  "IsUnlimitedTierPaid" : false,
+  "EnableMonetization": false,
+  "EnableRecommendation": false,
+  "IsUnlimitedTierPaid": false,
   "ExtensionHandlerPosition": "bottom",
   "RESTAPIScopes": {
     "Scope": [
@@ -122,7 +122,7 @@
         "Roles": "admin,Internal/subscriber,Internal/devops"
       },
       {
-        "Name" : "apim:monetization_usage_publish",
+        "Name": "apim:monetization_usage_publish",
         "Roles": "admin, Internal/publisher"
       },
       {
@@ -302,6 +302,38 @@
         "Roles": "admin,Internal/creator"
       },
       {
+        "Name": "apim:keymanagers_manage",
+        "Roles": "admin"
+      },
+      {
+        "Name": "apim:api_category",
+        "Roles": "admin"
+      },
+      {
+        "Name": "apim:policies_import_export",
+        "Roles": "admin,Internal/devops"
+      },
+      {
+        "Name": "apim:admin_tier_manage",
+        "Roles": "admin"
+      },
+      {
+        "Name": "apim:admin_tier_view",
+        "Roles": "admin"
+      },
+      {
+        "Name": "apim:api_provider_change",
+        "Roles": "admin"
+      },
+      {
+        "Name": "apim:gateway_policy_manage",
+        "Roles": "admin"
+      },
+      {
+        "Name": "apim:gateway_policy_view",
+        "Roles": "admin,Internal/creator,Internal/publisher,Internal/observer"
+      },
+      {
         "Name": "apim:comment_view",
         "Roles": "admin,Internal/creator,Internal/publisher"
       },
@@ -336,52 +368,51 @@
       {
         "Name": "apim:common_operation_policy_manage",
         "Roles": "admin,Internal/creator"
-      },
-      {
-				"Name": "apim:policies_import_export",
-				"Roles": "admin,Internal/devops"
-			}
+      }
     ]
   },
-  "Meta" : {
+  "Meta": {
     "Migration": {
       "3.0.0": true
     }
   },
-  "NotificationsEnabled":"false",
-  "Notifications":[{
-    "Type":"new_api_version",
-    "Notifiers" :[{
-      "Class":"org.wso2.carbon.apimgt.impl.notification.NewAPIVersionEmailNotifier",
-      "ClaimsRetrieverImplClass":"org.wso2.carbon.apimgt.impl.token.DefaultClaimsRetriever",
-      "Title": "Version $2 of $1 Released",
-      "Template": " <html> <body> <h3 style=\"color:Black;\">We’re happy to announce the arrival of the next major version $2 of $1 API which is now available in Our API Store.</h3><a href=\"https://localhost:9443/store\">Click here to Visit WSO2 API Store</a></body></html>"
-    }]
-  }
+  "NotificationsEnabled": "false",
+  "Notifications": [
+    {
+      "Type": "new_api_version",
+      "Notifiers": [
+        {
+          "Class": "org.wso2.carbon.apimgt.impl.notification.NewAPIVersionEmailNotifier",
+          "ClaimsRetrieverImplClass": "org.wso2.carbon.apimgt.impl.token.DefaultClaimsRetriever",
+          "Title": "Version $2 of $1 Released",
+          "Template": " <html> <body> <h3 style=\"color:Black;\">We’re happy to announce the arrival of the next major version $2 of $1 API which is now available in Our API Store.</h3><a href=\"https://localhost:9443/store\">Click here to Visit WSO2 API Store</a></body></html>"
+        }
+      ]
+    }
   ],
-  "DefaultRoles" : {
-    "PublisherRole" : {
-      "CreateOnTenantLoad" : true,
-      "RoleName" : "Internal/publisher"
+  "DefaultRoles": {
+    "PublisherRole": {
+      "CreateOnTenantLoad": true,
+      "RoleName": "Internal/publisher"
     },
-    "CreatorRole" : {
-      "CreateOnTenantLoad" : true,
-      "RoleName" : "Internal/creator"
+    "CreatorRole": {
+      "CreateOnTenantLoad": true,
+      "RoleName": "Internal/creator"
     },
-    "SubscriberRole" : {
-      "CreateOnTenantLoad" : true
+    "SubscriberRole": {
+      "CreateOnTenantLoad": true
     },
-    "DevOpsRole" : {
-      "CreateOnTenantLoad" : true,
-      "RoleName" : "Internal/devops"
+    "DevOpsRole": {
+      "CreateOnTenantLoad": true,
+      "RoleName": "Internal/devops"
     },
-    "ObserverRole" : {
-      "CreateOnTenantLoad" : true,
-      "RoleName" : "Internal/observer"
+    "ObserverRole": {
+      "CreateOnTenantLoad": true,
+      "RoleName": "Internal/observer"
     },
-    "IntegrationDeveloperRole" : {
-      "CreateOnTenantLoad" : true,
-      "RoleName" : "Internal/integration_dev"
+    "IntegrationDeveloperRole": {
+      "CreateOnTenantLoad": true,
+      "RoleName": "Internal/integration_dev"
     }
   },
   "SelfSignUp": {

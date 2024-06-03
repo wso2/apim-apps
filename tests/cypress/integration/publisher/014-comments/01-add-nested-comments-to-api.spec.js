@@ -45,7 +45,7 @@ describe("add nested comments", () => {
         cy.get("#comment-list").contains(comment).should("be.visible");
 
         // Adding a reply
-        cy.get("button > span").contains("Reply").click();
+        cy.get("button").contains("Reply").click();
         cy.get("#comment-list").within(() => {
           cy.get("#standard-multiline-flexible").click();
           cy.get("#standard-multiline-flexible").type(reply);
@@ -56,11 +56,11 @@ describe("add nested comments", () => {
 
       // Deleting the comment
       cy.get("#comment-list").within(() => {
-        cy.get("button > span").contains("Delete").click();
+        cy.get("button").contains("Delete").click();
         cy.intercept("DELETE", "**/comments/**").as("deleteComment");
       });
       cy.get('div[role="dialog"]')
-        .find("button > span")
+        .find("button")
         .contains("Yes")
         .click();
       cy.wait("@deleteComment", { timeout: 30000 });

@@ -21,7 +21,7 @@ import Utils from "@support/utils";
 describe("Resource add edit operations", () => {
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
-      });
+    });
     const { publisher, password, } = Utils.getUserInfo();
     const target = '/test';
     let testApiId;
@@ -146,12 +146,12 @@ describe("Resource add edit operations", () => {
         });
     });
 
-    it.only("Add and assign scopes for API resources",{
+    it.only("Add and assign scopes for API resources", {
         retries: {
-          runMode: 3,
-          openMode: 0,
+            runMode: 3,
+            openMode: 0,
         },
-      }, () => {
+    }, () => {
         const random_number = Math.floor(Date.now() / 1000);
         const verb = 'post';
         const scopeName = 'test' + random_number;
@@ -166,12 +166,11 @@ describe("Resource add edit operations", () => {
 
             // Go to local scope page
             cy.visit(`/publisher/apis/${apiId}/scopes/create`);
-            
 
             cy.wait(3000);
             // Create a local scope
-            cy.get('input#name').click({force:true});
-            cy.get('input#name').type(scopeName, {force:true});
+            cy.get('input#name').click({ force: true });
+            cy.get('input#name').type(scopeName, { force: true });
 
             cy.get('#displayName').click();
             cy.get('#displayName').type(scopeName);
@@ -187,21 +186,21 @@ describe("Resource add edit operations", () => {
                 .get('tbody')
                 .get('tr')
                 .contains(scopeName).should('be.visible');
-
+            cy.wait(2000)
             // Go to resources page
             cy.visit(`/publisher/apis/${apiId}/resources`);
 
             // Open the operation sub section
             cy.get(`#${verb}\\${target}`).click();
-            cy.get(`#${verb}\\${target}-operation-scope-select`, { timeout: 3000 });
-            cy.get(`#${verb}\\${target}-operation-scope-select`).click();
+            cy.get(`#${verb}\\${target}-operation-scope-autocomplete`, { timeout: 3000 });
+            cy.get(`#${verb}\\${target}-operation-scope-autocomplete`).click();
             cy.get(`#${verb}\\${target}-operation-scope-${scopeName}`).click();
-            cy.get(`#${verb}\\${target}-operation-scope-${scopeName}`).type('{esc}');
+            cy.get(`#${verb}\\${target}-operation-scope-autocomplete`).type('{esc}');
             // // Save the resources
             cy.get('#resources-save-operations').click();
 
             cy.get('#resources-save-operations', { timeout: 30000 });
-            cy.get(`#${verb}\\${target}-operation-scope-select`)
+            cy.get(`#${verb}\\${target}-operation-scope-autocomplete-label`).next()
                 .contains(scopeName)
                 .should('be.visible');
 

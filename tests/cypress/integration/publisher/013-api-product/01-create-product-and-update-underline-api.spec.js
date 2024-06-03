@@ -19,7 +19,7 @@ import Utils from "@support/utils";
 describe("Mock the api response and test it", () => {
     Cypress.on('uncaught:exception', (err, runnable) => {
         return false;
-      });
+    });
     const { publisher, password, } = Utils.getUserInfo();
     const productName = Utils.generateName();
     const productVersion = '1.0.0';
@@ -35,18 +35,18 @@ describe("Mock the api response and test it", () => {
             openMode: 0,
         },
     }, () => {
-        cy.visit(`/publisher/apis/create/openapi`, {timeout: Cypress.config().largeTimeout});
-        cy.get('#open-api-file-select-radio').click();
-
+        cy.visit(`/publisher/apis/create/openapi`, { timeout: Cypress.config().largeTimeout }).wait(5000)
+        cy.get('#open-api-file-select-radio').click()
+        cy.wait(5000);
         // upload the swagger
-        cy.get('#browse-to-upload-btn').then(function () {
+        cy.get('#browse-to-upload-btn').wait(5000).then(function () {
             const filepath = `api_artifacts/petstore-v3.json`
             cy.get('input[type="file"]').attachFile(filepath)
         });
 
         cy.get('#open-api-create-next-btn').click();
-
-        cy.get('#itest-id-apiversion-input', {timeout: Cypress.config().largeTimeout});
+        cy.wait(3000);
+        cy.get('#itest-id-apiversion-input', { timeout: Cypress.config().largeTimeout });
         cy.document().then((doc) => {
             cy.get('#itest-id-apiname-input').clear().type(apiName);
             cy.get('#itest-id-apicontext-input').clear();
@@ -54,13 +54,13 @@ describe("Mock the api response and test it", () => {
             cy.get('#itest-id-apiversion-input').click();
             const version = doc.querySelector('#itest-id-apiversion-input').value;
             // finish the wizard
-            cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').click({force:true});
+            cy.get('#open-api-create-btn').should('not.have.class', 'Mui-disabled').click({ force: true });
 
             cy.url().should('contains', 'overview').then(url => {
                 testApiID = /apis\/(.*?)\/overview/.exec(url)[1];
                 cy.log("API ID", testApiID);
                 // validate
-                cy.get('#itest-api-name-version', {timeout: Cypress.config().largeTimeout});
+                cy.get('#itest-api-name-version', { timeout: Cypress.config().largeTimeout });
                 cy.get('#itest-api-name-version').contains(version);
 
                 //Get the api id;
@@ -73,11 +73,11 @@ describe("Mock the api response and test it", () => {
                 cy.get('#context').type(productName);
                 cy.get('#itest-id-apiversion-input').type(productVersion);
                 cy.get('#itest-id-apiname-input').click();
-                cy.get('body').click(0,0);
+                cy.get('body').click(0, 0);
 
                 cy.intercept('**/swagger').as('swaggerGet');
 
-                cy.get('#api-product-next-btn').should('not.have.class', 'Mui-disabled').click({force:true});
+                cy.get('#api-product-next-btn').should('not.have.class', 'Mui-disabled').click({ force: true });
 
                 cy.wait('@swaggerGet', { timeout: Cypress.config().largeTimeout }).then(() => {
                     cy.intercept('GET', '**/swagger').as('getSwagger');
@@ -88,7 +88,9 @@ describe("Mock the api response and test it", () => {
 
                     // add all resources
                     cy.get('#add-all-resources-btn').click({ force: true });
-                    cy.get('#create-api-product-btn').scrollIntoView().dblclick({ force: true });
+
+                    cy.get('#create-api-product-btn').scrollIntoView().click({ force: true });
+                    cy.wait(5000);
                     cy.url().should('contains', 'overview').then(urlProduct => {
                         const productID = /api-products\/(.*?)\/overview/.exec(urlProduct)[1];
                         cy.log("API Product ID", productID);
@@ -117,14 +119,16 @@ describe("Mock the api response and test it", () => {
                         cy.get(`#get\\${target}`).should('be.visible');
 
                         // Go to api product
-                        cy.visit(`/publisher/api-products/${productID}/resources/edit`);
+                        cy.visit(`/publisher/api-products/${productID}/resources/edit`).wait(2000);
 
                         // Add the newly created resource and save
-                        cy.get('#resource-wrapper', { timeout: Cypress.config().largeTimeout });
-                        cy.get('#resource-wrapper')
+                        cy.get('#resource-wrapper', { timeout: Cypress.config().largeTimeout }).wait(2000);
+
+                        cy.get('ul#resource-wrapper').find('li')
                             .last()
-                            .scrollIntoView()
+                            .scrollIntoView().wait(3000)
                             .click();
+
                         cy.get('#add-selected-resources').click();
                         cy.get('#save-product-resources').click();
 
