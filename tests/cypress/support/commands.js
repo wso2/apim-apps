@@ -58,7 +58,8 @@ Cypress.Commands.add('portalLogin', (username, password, portal, tenant = 'carbo
     cy.visit(`/${portal}`);
     if (portal === 'devportal') {
         cy.visit(`/devportal/apis?tenant=${tenant}`);
-        cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout }).click();
+        cy.wait(3000)
+        cy.get('#itest-devportal-sign-in', { timeout: Cypress.config().largeTimeout }).wait(3000).click();
     }
     cy.url().should('contains', `/authenticationendpoint/login.do`);
     cy.get('[data-testid=login-page-username-input]').click();

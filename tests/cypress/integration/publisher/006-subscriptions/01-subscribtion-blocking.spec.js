@@ -67,10 +67,11 @@ describe("Subscription blocking", () => {
                 cy.get('#itest-api-details-portal-config-acc', { timeout: Cypress.config().largeTimeout }).should('be.visible');
                 cy.get('#itest-api-details-portal-config-acc').click();
                 cy.get('#left-menu-itemsubscriptions').click();
-                cy.get('table tr button').contains('Block Production Only').click();
-                cy.get('table tr td').contains('PROD_ONLY_BLOCKED').should('exist');
-                cy.get('table tr button').contains('Block All').click();
-                cy.get('table tr td').contains('BLOCKED').should('exist');
+                cy.wait(3000)
+                cy.get('table tr button').wait(1000).contains('Block Production Only').click();
+                cy.get('table tr td').wait(1000).contains('PROD_ONLY_BLOCKED').should('exist');
+                cy.get('table tr button').wait(1000).contains('Block All').click();
+                cy.get('table tr td').wait(1000).contains('BLOCKED').should('exist');
                 cy.logoutFromPublisher();
             })
         });

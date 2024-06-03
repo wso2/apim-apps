@@ -39,14 +39,15 @@ describe("publisher-021-10 : Lint when importing API with errounous swagger file
         cy.createAPIByRestAPIDesignAndSearch(apiName, apiVersion);
         cy.wait(3000)
         PublisherMenu.goToAPIDefinitionByUI()
-
+        cy.wait(2000)
         APIDefinitionPage.importDefinitionButton().click()
         // select the option from the menu item
+        cy.wait(2000)
         APIDefinitionPage.openFileSelectRadioButton().click()
-
+        cy.wait(2000)
         // // provide the swagger url
         cy.intercept('GET', '**/linter-custom-rules').as('linter-custom-rules');
-        cy.get(APIDefinitionPage.browseToUploadButton()).then(function () {
+        cy.get(APIDefinitionPage.browseToUploadButton()).wait(3000).then(function () {
             const filepath = 'api_artifacts/errornous_petstore_open_api_3.json'
             APIDefinitionPage.fileUploadInput().attachFile(filepath);
         });

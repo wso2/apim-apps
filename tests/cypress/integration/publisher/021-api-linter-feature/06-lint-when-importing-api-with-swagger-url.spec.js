@@ -42,11 +42,12 @@ describe("publisher-021-06 : Lint when importing API with swagger URL", () => {
         cy.createAPIByRestAPIDesignAndSearch(apiName, apiVersion);
         cy.wait(3000)
         PublisherMenu.goToAPIDefinitionByUI()
-
+        cy.wait(2000)
         APIDefinitionPage.importDefinitionButton().click()
         // select the option from the menu item
+        cy.wait(2000)
         APIDefinitionPage.openAPIURLRadioButton().click()
-
+        cy.wait(2000)
         // // provide the swagger url
         APIDefinitionPage.openAPIURLTextBox().type('https://petstore3.swagger.io/api/v3/openapi.json')
         APIDefinitionPage.waitUntilGetUrlValidatedDiv(30000)

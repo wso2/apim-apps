@@ -41,9 +41,10 @@ describe("publisher-021-08 : Lint when importing API with swagger v2 URL", () =>
         PublisherMenu.goToAPIDefinitionByUI()
 
         APIDefinitionPage.importDefinitionButton().click()
+        cy.wait(2000)
         // select the option from the menu item
         APIDefinitionPage.openAPIURLRadioButton().click()
-
+        cy.wait(2000)
         // // provide the swagger url
         APIDefinitionPage.openAPIURLTextBox().type('https://petstore.swagger.io/v2/swagger.json')
         APIDefinitionPage.waitUntilGetUrlValidatedDiv(30000)

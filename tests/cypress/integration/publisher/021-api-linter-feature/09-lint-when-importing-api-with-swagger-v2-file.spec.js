@@ -40,14 +40,15 @@ describe("publisher-021-09 : Lint when importing API with swagger v2 file", () =
         cy.createAPIByRestAPIDesignAndSearch(apiName, apiVersion);
         cy.wait(3000)
         PublisherMenu.goToAPIDefinitionByUI()
-
+        cy.wait(2000)
         APIDefinitionPage.importDefinitionButton().click()
+        cy.wait(2000)
         // select the option from the menu item
         APIDefinitionPage.openFileSelectRadioButton().click()
-
+        cy.wait(2000)
         // // provide the swagger url
         cy.intercept('GET', '**/linter-custom-rules').as('linter-custom-rules');
-        cy.get(APIDefinitionPage.browseToUploadButton()).then(function () {
+        cy.get(APIDefinitionPage.browseToUploadButton()).wait(2000).then(function () {
             const filepath = 'api_artifacts/petstore_open_api_2.json'
             APIDefinitionPage.fileUploadInput().attachFile(filepath);
         });

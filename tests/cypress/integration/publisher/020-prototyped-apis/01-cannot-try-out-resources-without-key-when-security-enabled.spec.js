@@ -81,7 +81,8 @@ describe("prototype apis with security enabled", () => {
             cy.get('table > tbody > tr',{timeout: Cypress.config().largeTimeout}).get(`[area-label="Go to ${apiName}"]`).click();
             cy.contains('button', "Try Out", { timeout: Cypress.config().largeTimeout }).click();
             cy.get('.opblock-summary-get > .opblock-summary-control', {timeout: Cypress.config().largeTimeout}).click();
-            cy.get('.try-out__btn').click();
+            cy.wait(3000)
+            cy.get('.try-out__btn').wait(3000).click();
             cy.intercept('GET','**/Prototyped_sample2/1.0.0').as("getExecute");
             cy.get('.execute').click({force:true});
             //cy.contains('.live-responses-table .response > .response-col_status','401',  {timeout: Cypress.config().largeTimeout}).should('exist');

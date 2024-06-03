@@ -24,6 +24,10 @@
   "e2e": {
     "excludeSpecPattern": "**/*.skip.js"
   },
+  "retries": {
+    "runMode": 2,
+    "openMode": 0
+  },
   "ignoreTestFiles": [
     "**/externalDevPortals/**.spec.js",
     "**/06-solace-broker-integration.spec.js"
