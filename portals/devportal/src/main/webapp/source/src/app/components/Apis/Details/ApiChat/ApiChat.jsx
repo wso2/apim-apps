@@ -35,6 +35,7 @@ import Api from 'AppData/api';
 import { CircularProgress, Typography } from '@mui/material';
 import Utils from 'AppData/Utils';
 import AuthManager from 'AppData/AuthManager';
+import { fetchToCurl } from 'fetch-to-curl';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
@@ -461,6 +462,7 @@ const ApiChat = () => {
         };
 
         try {
+            const curlCommand = fetchToCurl(url, fetchOptions);
             const response = await fetch(url, fetchOptions);
             const contentType = response.headers[CONTENT_TYPE] || null;
 
@@ -468,10 +470,13 @@ const ApiChat = () => {
             if (contentType && contentType.includes(APPLICATION_JSON)) {
                 const data = await response.json().catch(() => ({}));
                 return {
-                    code: response.status,
-                    path: fullPath,
-                    headers: response.headers,
-                    body: data, // Return the JSON data
+                    responseObj: {
+                        code: response.status,
+                        path: fullPath,
+                        headers: response.headers,
+                        body: data, // Return the JSON data
+                    },
+                    curlCommand,
                 };
             }
 
@@ -479,40 +484,50 @@ const ApiChat = () => {
             if (contentType && contentType.includes(APPLICATION_XML)) {
                 const text = await response.text();
                 return {
-                    code: response.status,
-                    path: fullPath,
-                    headers: response.headers,
-                    body: text, // Return the XML data
+                    responseObj: {
+                        code: response.status,
+                        path: fullPath,
+                        headers: response.headers,
+                        body: text, // Return the XML data
+                    },
+                    curlCommand,
                 };
             }
 
             // If response is neither JSON nor XML
             const text = await response.text().catch(() => 'Unable to render this Content-Type');
             return {
-                code: response.status,
-                path: fullPath,
-                headers: response.headers,
-                body: text,
+                responseObj: {
+                    code: response.status,
+                    path: fullPath,
+                    headers: response.headers,
+                    body: text,
+                },
+                curlCommand,
             };
         } catch (error) {
             return {
-                code: 500,
-                path: fullPath,
-                headers: {},
-                body: 'I seem to be having trouble completing your request.'
-                    + ' This could be due to CORS restrictions or network connectivity issues.',
+                responseObj: {
+                    code: 500,
+                    path: fullPath,
+                    headers: {},
+                    body: 'I seem to be having trouble completing your request.'
+                        + ' This could be due to CORS restrictions or network connectivity issues.',
+                },
+                curlCommand: null,
             };
         }
     };
 
     const sendSubsequentRequest = async (requestId, resource) => {
-        const executionResponseForAiAgent = await invokeAPI(resource);
+        const { responseObj: executionResponseForAiAgent, curlCommand } = await invokeAPI(resource);
         setExecutionResults((prevState) => {
             return [
                 ...prevState,
                 {
                     ...executionResponseForAiAgent,
                     method: resource.method,
+                    curlCommand,
                 },
             ];
         });
@@ -741,7 +756,7 @@ const ApiChat = () => {
                             finalOutcome={finalOutcome}
                             isAgentRunning={isAgentRunning}
                             isAgentTerminating={isAgentTerminating}
-                            isExecutionErro={isExecutionError}
+                            isExecutionError={isExecutionError}
                         />
                     )}
                     {!lastQuery && (
