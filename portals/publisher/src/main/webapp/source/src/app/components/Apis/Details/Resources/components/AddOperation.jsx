@@ -95,10 +95,10 @@ function VerbElement(props) {
     const theme = useTheme();
     const backgroundColor = theme.custom.resourceChipColors[verb.toLowerCase()];
     const textColor = theme.palette.getContrastText(backgroundColor);
-    
+
     if (isButton) {
         return (
-            <Button disableFocusRipple variant='contained' className={classes.customButton} size='small' 
+            <Button disableFocusRipple variant='contained' className={classes.customButton} size='small'
                 sx={{ backgroundColor, color: textColor }}>
                 {verb}
             </Button>
@@ -116,12 +116,12 @@ function VerbElement(props) {
                         checked={checked}
                         inputProps={{
                             'aria-labelledby': verb,
-                            id : `add-operation-${verb.toLowerCase()}`,
+                            id: `add-operation-${verb.toLowerCase()}`,
                         }}
                     />
                 }
             >
-                <Chip className={classes.customMenu} size='small' label={verb} 
+                <Chip className={classes.customMenu} size='small' label={verb}
                     sx={{ backgroundColor, color: textColor }} />
             </ListItem>
         );

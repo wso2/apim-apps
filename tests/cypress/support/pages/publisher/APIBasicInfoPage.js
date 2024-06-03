@@ -44,7 +44,7 @@ class APIBasicInfoPage {
         return cy.get('#edit-api-thumbnail-btn + div > div > button')
     }
     getEditThumbnailButton() {
-        return cy.get('#edit-api-thumbnail-btn > div > div > button')
+        return cy.get('[data-testid="edit-api-thumbnail-button"]')
     }
     getThumbnailUploadButton() {
         return cy.get('#edit-api-thumbnail-upload-btn')
