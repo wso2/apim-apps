@@ -49,6 +49,7 @@
         "dataloader": "^2.1.0",
         "dayjs": "^1.11.7",
         "downshift": "^6.1.12",
+        "fetch-to-curl": "^0.6.0",
         "fs-react": "0.0.4",
         "graphiql": "^3.1.1",
         "graphiql-subscriptions-fetcher": "0.0.2",

@@ -17,7 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
@@ -36,6 +36,8 @@ import MonacoEditor from 'react-monaco-editor';
 import xmlFormat from 'xml-formatter';
 import Utils from 'AppData/Utils';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
+import IconButton from '@mui/material/IconButton';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 
 const PREFIX = 'ApiChatResponse';
 const CONTENT_TYPE: string = 'Content-Type';
@@ -153,6 +155,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
     isAgentTerminating,
     isExecutionError,
 }) => {
+    const intl = useIntl();
     const [user, setUser] = useState('You');
 
     useEffect(() => {
@@ -161,6 +164,26 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
             setUser(loggedInUser);
         }
     }, []);
+
+    const copyText = intl.formatMessage({
+        id: 'Apis.Details.ApiChat.components.ApiChatResponse.CopyToClipboard.copyText',
+        defaultMessage: 'Copy cURL to Clipboard',
+    });
+    const copiedText = intl.formatMessage({
+        id: 'Apis.Details.ApiChat.components.ApiChatResponse.CopyToClipboard.copiedText',
+        defaultMessage: 'Copied',
+    });
+
+    const [copyBtnText, setCopyBtnText] = useState(copyText);
+
+    const handleTooltipClose = () => {
+        setCopyBtnText(copyText);
+    };
+
+    const handleCurlCopyClick = (curl: string) => {
+        setCopyBtnText(copiedText);
+        navigator.clipboard.writeText(curl);
+    };
 
     /**
      * Infer the content type of the response.
@@ -282,28 +305,51 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                         <AccordionSummary
                                             expandIcon={<ExpandMoreIcon />}
                                         >
-                                            <>
-                                                {(executionResult.code >= 200 && executionResult.code < 300) ? (
-                                                    <Chip
-                                                        icon={<CheckCircleIcon color='success' />}
-                                                        label={executionResult.code}
-                                                        color='success'
-                                                        variant='outlined'
-                                                        size='small'
-                                                    />
-                                                ) : (
-                                                    <Chip
-                                                        icon={<DangerousIcon color='error' />}
-                                                        label={executionResult.code}
-                                                        color='error'
-                                                        variant='outlined'
-                                                        size='small'
-                                                    />
-                                                )}
-                                                <Typography variant='body1' ml={2} sx={{ alignContent: 'center' }}>
-                                                    {'Executed ' + executionResult.method + ' ' + executionResult.path}
-                                                </Typography>
-                                            </>
+                                            <Box display='flex' justifyContent='space-between' alignItems='center' width='100%'>
+                                                <Box display='flex' alignItems='center'>
+                                                    {(executionResult.code >= 200 && executionResult.code < 300) ? (
+                                                        <Chip
+                                                            icon={<CheckCircleIcon color='success' />}
+                                                            label={executionResult.code}
+                                                            color='success'
+                                                            variant='outlined'
+                                                            size='small'
+                                                        />
+                                                    ) : (
+                                                        <Chip
+                                                            icon={<DangerousIcon color='error' />}
+                                                            label={executionResult.code}
+                                                            color='error'
+                                                            variant='outlined'
+                                                            size='small'
+                                                        />
+                                                    )}
+                                                    <Typography variant='body1' ml={2} sx={{ alignContent: 'center' }}>
+                                                        {'Executed ' + executionResult.method + ' ' + executionResult.path}
+                                                    </Typography>
+                                                </Box>
+                                                <Box display='flex' alignItems='center'>
+                                                    {executionResult.curlCommand != null && (
+                                                        <Tooltip
+                                                            title={copyBtnText}
+                                                            onClose={handleTooltipClose}
+                                                            placement='top-end'
+                                                        >
+                                                            <IconButton
+                                                                id='request-curl-copy'
+                                                                size='small'
+                                                                onClick={(e: any) => {
+                                                                    handleCurlCopyClick(executionResult.curlCommand);
+                                                                    e.stopPropagation();
+                                                                }}
+                                                                sx={{ mr: 1 }}
+                                                            >
+                                                                <ContentCopyIcon fontSize='inherit' />
+                                                            </IconButton>
+                                                        </Tooltip>
+                                                    )}
+                                                </Box>
+                                            </Box>
                                         </AccordionSummary>
                                         <AccordionDetails>
                                             <Typography variant='body1'>
