@@ -2259,6 +2259,9 @@
   "Apis.Details.LifeCycle.LifeCycleUpdate.LifecyclePending.success": {
     "defaultMessage": "Lifecycle task deleted successfully"
   },
+  "Apis.Details.LifeCycle.LifeCycleUpdate.approve.approveStatus": {
+    "defaultMessage": "Lifecycle state change action approved successfully"
+  },
   "Apis.Details.LifeCycle.LifeCycleUpdate.error.certs": {
     "defaultMessage": "Error while retrieving certificates"
   },
@@ -3935,6 +3938,9 @@
   },
   "Apis.Listing.components.ImageGenerator.ThumbnailView.saving.btn": {
     "defaultMessage": "Saving"
+  },
+  "Apis.Listing.components.ImageGenerator.ThumbnailView.thumbnail.remove.success": {
+    "defaultMessage": "Thumbnail removed successfully"
   },
   "Apis.Listing.components.ImageGenerator.ThumbnailView.thumbnail.upload.error": {
     "defaultMessage": "Error occurred while uploading new thumbnail. Please try again."

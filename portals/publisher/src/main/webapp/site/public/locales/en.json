@@ -4789,6 +4789,12 @@
       "value": "Lifecycle task deleted successfully"
     }
   ],
+  "Apis.Details.LifeCycle.LifeCycleUpdate.approve.approveStatus": [
+    {
+      "type": 0,
+      "value": "Lifecycle state change action approved successfully"
+    }
+  ],
   "Apis.Details.LifeCycle.LifeCycleUpdate.error.certs": [
     {
       "type": 0,
@@ -8243,6 +8249,12 @@
     {
       "type": 0,
       "value": "Saving"
+    }
+  ],
+  "Apis.Listing.components.ImageGenerator.ThumbnailView.thumbnail.remove.success": [
+    {
+      "type": 0,
+      "value": "Thumbnail removed successfully"
     }
   ],
   "Apis.Listing.components.ImageGenerator.ThumbnailView.thumbnail.upload.error": [

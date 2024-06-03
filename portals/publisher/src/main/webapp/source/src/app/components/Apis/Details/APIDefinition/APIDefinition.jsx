@@ -492,7 +492,7 @@ class APIDefinition extends React.Component {
                 id: 'Apis.Details.APIDefinition.info.updating.auditapi',
                 defaultMessage: 'To reflect the changes made, you need to click Audit API',
             }));
-            const redirectUrl = '/apis/' + api.id + '/api definition';
+            const redirectUrl = '/apis/' + api.id + '/api-definition';
             history.push(redirectUrl);
         }
     }
@@ -877,7 +877,7 @@ class APIDefinition extends React.Component {
             <div>
                 <Suspense fallback={<Progress />}>
                     {isAuditApiClicked ? (
-                        <APISecurityAudit apiId={api.id} />
+                        <APISecurityAudit apiId={api.id} key={swagger}/>
                     ) : (
                         <MonacoEditor
                             language={format}
