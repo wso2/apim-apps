@@ -71,6 +71,7 @@ const Root = styled('form')(({ theme }) => ({
 class Monetization extends Component {
     constructor(props) {
         super(props);
+        this.businessPlans = React.createRef()
         this.state = {
             monetizationAttributes: [],
             monStatus: null,
@@ -153,6 +154,7 @@ class Monetization extends Component {
                         defaultMessage: 'Monetization Disabled Successfully',
                     }));
                 }
+                this.businessPlans.current.getPoliciesAndMonetization();
             }).catch((error) => {
                 console.error(error);
                 if (error.response) {
@@ -185,6 +187,7 @@ class Monetization extends Component {
                         defaultMessage: 'Monetization Disabled Successfully',
                     }));
                 }
+                this.businessPlans.current.getPoliciesAndMonetization();
             }).catch((error) => {
                 console.error(error);
                 if (error.response) {
@@ -296,7 +299,7 @@ class Monetization extends Component {
                     <Grid item xs={12}>
                         <Paper className={classes.root}>
                             <Grid item xs={12} className={classes.grid}>
-                                <BusinessPlans api={api} monStatus={monStatus} />
+                                <BusinessPlans api={api} monStatus={monStatus} ref={this.businessPlans} />
                             </Grid>
                         </Paper>
                     </Grid>
