@@ -68,7 +68,7 @@ import API from 'AppData/api';
 import { ConfirmDialog } from 'AppComponents/Shared/index';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Utils from 'AppData/Utils';
-import { parse } from '@asyncapi/parser';
+import { Parser } from '@asyncapi/parser';
 import { upperCaseString } from 'AppData/stringFormatter';
 import DisplayDevportal from './DisplayDevportal';
 import DeploymentOnbording from './DeploymentOnbording';
@@ -570,7 +570,7 @@ export default function Environments() {
             if (response.data && (typeof response.data === "string" || typeof response.data === "object")) {
                 let doc;
                 try {
-                    doc = await parse(response.data);
+                    doc = await Parser.parse(response.data);
                 } catch (err) {
                     console.warn("Async API does not found");
                     return;
