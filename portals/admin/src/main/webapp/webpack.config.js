@@ -17,7 +17,6 @@
  * under the License.
  *
  */
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
@@ -155,10 +154,6 @@ module.exports = function (env,args) {
             Config: 'AppConfig',
         },
         plugins: [
-            new MonacoWebpackPlugin({
-                languages: ['xml', 'json', 'yaml', 'sql', 'mysql'],
-                features: ['!gotoSymbol'],
-            }),
             new HtmlWebpackPlugin({
                 inject: false,
                 template: path.resolve(__dirname, 'site/public/pages/index.jsp.hbs'),
@@ -183,7 +178,6 @@ module.exports = function (env,args) {
         ],
     };
     
-    // Note: for more info about monaco plugin: https://github.com/Microsoft/monaco-editor-webpack-plugin
     if (process.env.NODE_ENV === 'development') {
         config.watch = true;
     }

@@ -17,7 +17,7 @@
  */
 
 import React, {
-    useReducer, useState, Suspense, lazy, useEffect,
+    useReducer, useState, Suspense, useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
@@ -35,7 +35,7 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Joi from '@hapi/joi';
 import { green } from '@mui/material/colors';
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "CustomPolicyAddMonacoEditor" */));
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 
 const sampleSiddhiQuery = "FROM RequestStream SELECT userId, ( userId == 'admin@carbon.super' ) "
 + "AS isEligible , str:concat('admin@carbon.super','') as throttleKey "
