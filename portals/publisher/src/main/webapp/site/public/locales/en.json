@@ -9443,6 +9443,12 @@
       "value": "Cancel"
     }
   ],
+  "Scopes.Usage.UsageView.resource.revision": [
+    {
+      "type": 0,
+      "value": "Revision"
+    }
+  ],
   "Scopes.Usage.UsageView.resource.target": [
     {
       "type": 0,
