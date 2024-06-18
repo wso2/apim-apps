@@ -29,6 +29,7 @@ const TagCloudListing = lazy(() => import('AppComponents/Apis/Listing/TagCloudLi
 const ChangePassword = lazy(() => import('AppComponents/Settings/ChangePassword/ChangePassword'));
 const Listing = lazy(() => import('AppComponents/Applications/Listing/Listing' /* webpackChunkName: "ApiListing" */));
 const Details = lazy(() => import('AppComponents/Applications/Details/index' /* webpackChunkName: "ApplicationDetails" */));
+const Notifications = lazy(() => import('AppComponents/Notifications/Notifications' /* webpackChunkName: "Notifications" */));
 
 /**
  * Handle redirection
@@ -130,6 +131,16 @@ function AppRouts(props) {
                             return <Details {...localProps} />;
                         } else if (isUserFound) {
                             return <ScopeNotFound {...localProps} />;
+                        } else {
+                            return <RedirectToLogin {...localProps} />;
+                        }
+                    }}
+                />
+                <Route
+                    path='/notifications'
+                    render={(localProps) => {
+                        if (isAuthenticated) {
+                            return <Notifications />;
                         } else {
                             return <RedirectToLogin {...localProps} />;
                         }

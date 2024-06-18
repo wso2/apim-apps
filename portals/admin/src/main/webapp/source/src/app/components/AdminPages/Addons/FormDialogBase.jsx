@@ -41,6 +41,7 @@ function FormDialogBase({
     formSaveCallback,
     dialogOpenCallback,
     triggerIconProps,
+    setToFullWidth,
 }) {
     const [open, setOpen] = React.useState(false);
     const [saving, setSaving] = useState(false);
@@ -85,7 +86,7 @@ function FormDialogBase({
                 </Button>
             )}
 
-            <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title'>
+            <Dialog open={open} onClose={handleClose} aria-labelledby='form-dialog-title' fullWidth={setToFullWidth}>
                 <DialogTitle id='form-dialog-title'>{title}</DialogTitle>
                 <DialogContent>
                     {children}
@@ -118,6 +119,7 @@ FormDialogBase.defaultProps = {
         color: 'primary',
         component: 'span',
     },
+    setToFullWidth: false,
 };
 
 FormDialogBase.propTypes = {
@@ -136,6 +138,7 @@ FormDialogBase.propTypes = {
     triggerIconProps: PropTypes.shape({}),
     formSaveCallback: PropTypes.func.isRequired,
     dialogOpenCallback: PropTypes.func,
+    setToFullWidth: PropTypes.bool,
 };
 
 export default FormDialogBase;
