@@ -27,7 +27,6 @@
     "dependencies": {
         "@emotion/react": "^11.11.3",
         "@emotion/styled": "^11.11.0",
-        "@hapi/joi": "^15.1.1",
         "@monaco-editor/react": "^4.6.0",
         "@mui/icons-material": "^5.15.4",
         "@mui/lab": "^5.0.0-alpha.160",
@@ -40,6 +39,7 @@
         "base64url": "^3.0.1",
         "dayjs": "^1.11.7",
         "fastestsmallesttextencoderdecoder": "^1.0.22",
+        "joi": "^17.13.1",
         "lodash.clonedeep": "^4.5.0",
         "lodash.isempty": "^4.4.0",
         "lodash.sortby": "^4.7.0",
