@@ -1511,7 +1511,7 @@ function AddEdit(props) {
                                             helperText={
                                                 !roleValidity ? (
                                                     <FormattedMessage
-                                                        id='Apis.Details.Scopes.Roles.Invalid'
+                                                        id='Throttling.Subscription.Roles.Invalid'
                                                         defaultMessage='A Role is invalid'
                                                     />
                                                 ) : [
