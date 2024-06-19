@@ -90,6 +90,7 @@ module.exports = function (env,args) {
                 "util": require.resolve("util/"),
                 "crypto-browserify": require.resolve('crypto-browserify'),
                 "buffer": require.resolve('buffer/'),
+                "url": require.resolve("url/"),
             },
         },
         module: {
