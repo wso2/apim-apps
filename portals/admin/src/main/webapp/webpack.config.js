@@ -21,6 +21,7 @@ const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const DeadCodePlugin = require('webpack-deadcode-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./source/dev/auth_login.js');
 
 module.exports = function (env,args) {
@@ -176,6 +177,21 @@ module.exports = function (env,args) {
                 Buffer: ['buffer', 'Buffer'],
                 process: 'process/browser',
             }),
+            new DeadCodePlugin({
+                failOnHint: !isDevelopmentBuild,
+                patterns: [
+                    'source/src/**/*.jsx',
+                    'source/src/**/*.js'
+                ],
+                exclude: [
+                    'source/src/**/*.test.js',
+                    'source/src/**/*.test.jsx',
+                    'babel.config.js',
+                    '**/*.txt',
+                    'source/src/index.js',
+                    '**/*.(stories|spec).(js|jsx)',
+                ],
+            }),
         ],
     };
     
@@ -187,14 +203,6 @@ module.exports = function (env,args) {
         const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
         config.plugins.push(new BundleAnalyzerPlugin());
     }
-    if (env && env.unused) {
-        const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 
-        config.plugins.push(new UnusedFilesWebpackPlugin({
-            failOnUnused: process.env.NODE_ENV !== 'development',
-            patterns: ['source/src/**/*.jsx', 'source/src/**/*.js'],
-            ignore: ['babel.config.js', '**/*.txt', 'source/src/index.js'],
-        }));
-    }
     return config;
 };

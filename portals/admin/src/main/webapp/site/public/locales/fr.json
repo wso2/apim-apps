@@ -143,9 +143,6 @@
   "AdminPages.Addons.InlineProgress.message": {
     "defaultMessage": "Loading..."
   },
-  "AdminPages.Addons.InputListBase.textfield.remove.label": {
-    "defaultMessage": "Remove"
-  },
   "AdminPages.Addons.ListBase.noDataError": {
     "defaultMessage": "Error while retrieving data."
   },
@@ -938,21 +935,6 @@
   "KeyManagers.Certificates.paste.label": {
     "defaultMessage": "Paste the content of the PEM file"
   },
-  "KeyManagers.ImportConfig.dialog.btn.import": {
-    "defaultMessage": "Import"
-  },
-  "KeyManagers.ImportConfig.dialog.tilte.add.new": {
-    "defaultMessage": "Import Key Manager Configuration"
-  },
-  "KeyManagers.ImportConfig.dialog.trigger.import": {
-    "defaultMessage": "Import"
-  },
-  "KeyManagers.ImportConfig.form.url": {
-    "defaultMessage": "Url"
-  },
-  "KeyManagers.ImportConfig.form.url.help": {
-    "defaultMessage": "Provide Url"
-  },
   "KeyManagers.ListKeyManagerAPIUsages.error": {
     "defaultMessage": "Unable to get Key Manager API usage details"
   },
@@ -1033,90 +1015,6 @@
   },
   "LoginDenied.title": {
     "defaultMessage": "Error 403 : Forbidden"
-  },
-  "Manage.Alerts.abnormal.backend.time.description": {
-    "defaultMessage": "This alert gets triggered if the backend time corresponding to a particular API is higher than the predefined value. These alerts could be treated as an indication of a slow backend. In technical terms, if the backend time of a particular API of a tenant lies outside the predefined value, an alert will be sent out."
-  },
-  "Manage.Alerts.abnormal.backend.time.name": {
-    "defaultMessage": "Abnormal Backend Time"
-  },
-  "Manage.Alerts.abnormal.request.access.description": {
-    "defaultMessage": "This alert is triggered if there is a change in the resource access pattern of a user of a particular application. These alerts could be treated as an indication of a suspicious activity by a user over your application."
-  },
-  "Manage.Alerts.abnormal.request.access.name": {
-    "defaultMessage": "Abnormal Resource Access"
-  },
-  "Manage.Alerts.abnormal.request.count.description": {
-    "defaultMessage": "This alert is triggered if there is a sudden spike the request count within a period of one minute by default for a particular API for an application. These alerts could be treated as an indication of a possible high traffic, suspicious activity, possible malfunction of the client application, etc."
-  },
-  "Manage.Alerts.abnormal.request.count.name": {
-    "defaultMessage": "Abnormal Request Count"
-  },
-  "Manage.Alerts.abnormal.response.time.description": {
-    "defaultMessage": "This alert gets triggered if the response time of a particular API is higher than the predefined value. These alerts could be treated as an indication of a slow WSO2 API Manager runtime or a slow backend."
-  },
-  "Manage.Alerts.abnormal.response.time.name": {
-    "defaultMessage": "Abnormal Response Time"
-  },
-  "Manage.Alerts.analytics.disabled.empty.content": {
-    "defaultMessage": "A system administrator is allowed to select one or more alert types to subscribe for, as well as specify a list of email addresses to which the alerts should be sent. {breakingLine}{breakingLine}Please enable Analytics for subscribing to Alerts"
-  },
-  "Manage.Alerts.analytics.disabled.empty.title": {
-    "defaultMessage": "Analytics disabled!"
-  },
-  "Manage.Alerts.cancel.btn": {
-    "defaultMessage": "Cancel"
-  },
-  "Manage.Alerts.confirm.btn": {
-    "defaultMessage": "Unsubscribe All"
-  },
-  "Manage.Alerts.health.availability.description": {
-    "defaultMessage": "This alert gets triggered if at least one of the two cases below are satisfied; Response time of an API greater than Threshold response time value defined for that particular API or Response status code is in between 500 and 600 (By Default)"
-  },
-  "Manage.Alerts.health.availability.name": {
-    "defaultMessage": "Health Availability"
-  },
-  "Manage.Alerts.help.link.one": {
-    "defaultMessage": "Subscribe to alerts"
-  },
-  "Manage.Alerts.loading.error.msg": {
-    "defaultMessage": "Error occurred while loading alerts"
-  },
-  "Manage.Alerts.subscribe.error.msg": {
-    "defaultMessage": "Error occurred while subscribing to alerts."
-  },
-  "Manage.Alerts.subscribe.success.msg": {
-    "defaultMessage": "Subscribed to Alerts Successfully."
-  },
-  "Manage.Alerts.subscribe.to.alerts.subheading": {
-    "defaultMessage": "Select the Alert types to subscribe/ unsubscribe and click Save."
-  },
-  "Manage.Alerts.tier.crossing.description": {
-    "defaultMessage": "This alert is triggered if at least one of the two cases below are satisfied; if a particular application gets throttled out for hitting the subscribed tier limit of that application more than 10 times (by default) within an hour (by default) or if a particular user of an application gets throttled out for hitting the subscribed tier limit of a particular API more than 10 times (by default) within a day (by default)"
-  },
-  "Manage.Alerts.tier.crossing.name": {
-    "defaultMessage": "Tier Crossing"
-  },
-  "Manage.Alerts.title": {
-    "defaultMessage": "Manage Alert Subscriptions"
-  },
-  "Manage.Alerts.unseen.source.ip.address.description": {
-    "defaultMessage": "This alert is triggered if there is either a change in the request source IP for a particular application by a user or if the request is from an IP used before a time period of 30 days (default). These alerts could be treated as an indication of a suspicious activity by a user over an application."
-  },
-  "Manage.Alerts.unseen.source.ip.address.name": {
-    "defaultMessage": "Unseen Source IP Access"
-  },
-  "Manage.Alerts.unsubscribe.confirm.dialog.heading": {
-    "defaultMessage": "Confirm unsubscription from All Alerts"
-  },
-  "Manage.Alerts.unsubscribe.confirm.dialog.message": {
-    "defaultMessage": "This will remove all the existing alert subscriptions and emails. This action cannot be undone."
-  },
-  "Manage.Alerts.unsubscribe.error.msg": {
-    "defaultMessage": "Error occurred while unsubscribing."
-  },
-  "Manage.Alerts.unsubscribe.success.msg": {
-    "defaultMessage": "Unsubscribed from all alerts successfully."
   },
   "RolePermissions.Common.AddRoleWizard.add.mapping.button": {
     "defaultMessage": "Add scope mapping"
