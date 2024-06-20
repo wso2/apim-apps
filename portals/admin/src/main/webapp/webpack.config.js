@@ -186,11 +186,11 @@ module.exports = function (env, args) {
                 filename: path.resolve(__dirname, 'site/public/pages/index.jsp'),
                 minify: false, // Make this true to get exploded, formatted index.jsp file
             }),
-            new HtmlWebpackPlugin({
+            new HtmlWebpackPlugin({ // added to support development mode
                 inject: false,
                 template: path.resolve(__dirname, 'admin/index.ejs'),
                 filename: path.resolve(__dirname, 'admin/index.html'),
-                minify: false, // Make this true to get exploded, formatted index.jsp file
+                minify: false,
             }),
             new ESLintPlugin({
                 extensions: ['js', 'ts', 'jsx'],
