@@ -125,6 +125,9 @@ class Admin extends React.Component {
      * @param {string} locale Locale name
      */
     loadLocale(locale) {
+        if (locale === 'en') {
+            return;
+        }
         // Skip loading the locale file if the language code is english,
         // Because we have used english defaultMessage in the FormattedText component
         // and en.json is generated from those default messages, Hence no point of fetching it

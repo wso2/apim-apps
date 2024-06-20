@@ -16,10 +16,10 @@
         "lint": "eslint --ignore-pattern '*.test.js' --ignore-pattern '*.test.jsx' --quiet -c .eslintrc.js --ext .jsx,.js source",
         "i18n": "extract-messages -l=en,fr -o site/public/locales/ -d en --extractFromFormatMessageCall --flat 'source/src/app/**/*.jsx'",
         "extract-i18n": "formatjs extract",
-        "i18n:en": "npm run extract-i18n -- 'source/src/app/**/*.jsx' --ignore='**/*.d.{js,ts,tsx,jsx,vue}' --out-file site/public/locales/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
-        "i18n:fr": "npm run extract-i18n -- 'source/src/app/**/*.jsx' --ignore='**/*.d.{js,ts,tsx,jsx,vue}' --out-file site/public/locales/fr.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
+        "i18n:en": "npm run extract-i18n -- 'source/src/app/**/*.jsx' --ignore='**/*.d.{js,ts,tsx,jsx}' --out-file site/public/locales/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]' --format=simple",
+        "i18n:fr": "npm run extract-i18n -- 'source/src/app/**/*.jsx' --ignore='**/*.d.{js,ts,tsx,jsx}' --out-file site/public/locales/fr.json --id-interpolation-pattern '[sha512:contenthash:base64:6]' --format=simple",
         "check-unused": "webpack --mode production --env.unused true --display errors-only",
-        "start": "webpack serve --compress --https --port 8083 --mode development "
+        "start": "webpack serve --compress --port 8083 --mode development --watch"
     },
     "repository": {
         "type": "git",
@@ -28,6 +28,7 @@
     "author": "WSO2 Org",
     "license": "Apache-2.0",
     "dependencies": {
+        "@apidevtools/swagger-parser": "^10.0.3",
         "@emotion/react": "^11.11.3",
         "@emotion/styled": "^11.11.0",
         "@monaco-editor/react": "^4.6.0",
@@ -57,7 +58,7 @@
         "react-dom": "^18.0.0",
         "react-dropzone": "^12.1.0",
         "react-hot-toast": "^2.4.0",
-        "react-intl": "v5.25.1",
+        "react-intl": "6.6.8",
         "react-router": "^5.3.4",
         "react-router-dom": "^5.3.4",
         "react-spring": "^8.0.27",

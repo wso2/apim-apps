@@ -1,2333 +1,779 @@
 {
-  "Admin.KeyManager.form.type": {
-    "defaultMessage": "Key Manager Type"
-  },
-  "Admin.KeyManager.label.ConsumerKey.Claim": {
-    "defaultMessage": "Consumer Key Claim URI"
-  },
-  "Admin.KeyManager.label.DisplayName": {
-    "defaultMessage": "Display Name"
-  },
-  "Admin.KeyManager.label.Enable.EnableOAithAppCreation": {
-    "defaultMessage": "Oauth App Creation"
-  },
-  "Admin.KeyManager.label.Enable.OutOfBandProvisioning": {
-    "defaultMessage": "Out Of Band Provisioning"
-  },
-  "Admin.KeyManager.label.Enable.TokenGen": {
-    "defaultMessage": "Token Generation"
-  },
-  "Admin.KeyManager.label.Scopes.Claim": {
-    "defaultMessage": "Scopes Claim URI"
-  },
-  "Admin.KeyManager.label.allow.exchange.token": {
-    "defaultMessage": "Token Exchange"
-  },
-  "Admin.KeyManager.label.message.allow.direct.token": {
-    "defaultMessage": "Direct Token"
-  },
-  "Admin.KeyManager.label.token.audience": {
-    "defaultMessage": "Allowed Token Audience"
-  },
-  "Admin.KeyManager.permission.type": {
-    "defaultMessage": "Key Manager Permission"
-  },
-  "Admin.Throttling.Advanced.Throttling.policy.table.header.name": {
-    "defaultMessage": "Name"
-  },
-  "Admin.Throttling.Advanced.Throttling.policy.table.header.quota": {
-    "defaultMessage": "Quota"
-  },
-  "Admin.Throttling.Advanced.Throttling.policy.table.header.quota.policy": {
-    "defaultMessage": "Quota Policy"
-  },
-  "Admin.Throttling.Advanced.Throttling.policy.table.header.unit.time": {
-    "defaultMessage": "Unit Time"
-  },
-  "Admin.Throttling.Application.AddEdit.burst.control.add.description": {
-    "defaultMessage": "Define Burst Control Limits (optional)"
-  },
-  "Admin.Throttling.Application.Throttling.Policy.add.burst.limits.details": {
-    "defaultMessage": "Burst Control (Rate Limiting)"
-  },
-  "Admin.Throttling.Application.Throttling.Policy.add.data.amount.helper.text": {
-    "defaultMessage": "Bandwidth allowed"
-  },
-  "Admin.Throttling.Application.Throttling.Policy.add.description.helper.text": {
-    "defaultMessage": "Description of the throttle policy"
-  },
-  "Admin.Throttling.Application.Throttling.Policy.add.general.details": {
-    "defaultMessage": "General Details"
-  },
-  "Admin.Throttling.Application.Throttling.Policy.add.name.helper.text": {
-    "defaultMessage": "Name of the throttle policy"
-  },
-  "Admin.Throttling.Application.Throttling.Policy.add.quota.limits.details": {
-    "defaultMessage": "Quota Limits"
-  },
-  "Admin.Throttling.Application.Throttling.Policy.add.request.count.helper.text": {
-    "defaultMessage": "Number of requests allowed"
-  },
-  "Admin.Throttling.Application.Throttling.Policy.add.time.helper.text": {
-    "defaultMessage": "Time configuration"
-  },
-  "Admin.Throttling.Application.Throttling.policy.table.header.name": {
-    "defaultMessage": "Name"
-  },
-  "Admin.Throttling.Application.Throttling.policy.table.header.quota": {
-    "defaultMessage": "Quota"
-  },
-  "Admin.Throttling.Application.Throttling.policy.table.header.unit.time": {
-    "defaultMessage": "Unit Time"
-  },
-  "Admin.Throttling.Blacklist.Throttling.Policy.add.condition.type": {
-    "defaultMessage": "Condition Type"
-  },
-  "Admin.Throttling.Blacklist.Throttling.policy.table.header.condition.status": {
-    "defaultMessage": "Condition Status"
-  },
-  "Admin.Throttling.Blacklist.Throttling.policy.table.header.condition.type": {
-    "defaultMessage": "Condition Type"
-  },
-  "Admin.Throttling.Blacklist.Throttling.policy.table.header.conditional.value": {
-    "defaultMessage": "Conditional Value"
-  },
-  "Admin.Throttling.Blacklist.policy.add.invert.condition": {
-    "defaultMessage": "Invert Condition:"
-  },
-  "Admin.Throttling.Blacklist.policy.enable.condition": {
-    "defaultMessage": "Enable Condition"
-  },
-  "Admin.Throttling.Custom.Throttling.policy.table.header.description": {
-    "defaultMessage": "Description"
-  },
-  "Admin.Throttling.Custom.Throttling.policy.table.header.key.template": {
-    "defaultMessage": "Key Template"
-  },
-  "Admin.Throttling.Custom.Throttling.policy.table.header.name": {
-    "defaultMessage": "Name"
-  },
-  "Admin.Throttling.Custom.policy.add.policy.description": {
-    "defaultMessage": "Description of the throttle policy"
-  },
-  "Admin.Throttling.Custom.policy.add.policy.name": {
-    "defaultMessage": "Name of the throttle policy"
-  },
-  "Admin.Throttling.Custom.policy.add.siddhi.query": {
-    "defaultMessage": "Siddhi Query:"
-  },
-  "Admin.Throttling.Custom.policy.add.siddhi.query.description": {
-    "defaultMessage": "The following sample query will allow 5 requests per minute for an Admin user."
-  },
-  "Admin.Throttling.Custom.policy.add.siddhi.query.key.template": {
-    "defaultMessage": "Key Template : $userId"
-  },
-  "Admin.Throttling.Subscription.Throttling.policy.table.header.name": {
-    "defaultMessage": "Name"
-  },
-  "Admin.Throttling.Subscription.Throttling.policy.table.header.quota": {
-    "defaultMessage": "Quota"
-  },
-  "Admin.Throttling.Subscription.Throttling.policy.table.header.quota.policy": {
-    "defaultMessage": "Quota Policy"
-  },
-  "Admin.Throttling.Subscription.Throttling.policy.table.header.rate.limit": {
-    "defaultMessage": "Rate Limit"
-  },
-  "Admin.Throttling.Subscription.Throttling.policy.table.header.time.unit": {
-    "defaultMessage": "Time Unit"
-  },
-  "Admin.Throttling.Subscription.Throttling.policy.table.header.unit.time": {
-    "defaultMessage": "Unit Time"
-  },
-  "AdminPages.Addons.InlineProgress.message": {
-    "defaultMessage": "Loading..."
-  },
-  "AdminPages.Addons.ListBase.noDataError": {
-    "defaultMessage": "Error while retrieving data."
-  },
-  "AdminPages.Addons.ListBase.nodata.message": {
-    "defaultMessage": "No items yet"
-  },
-  "AdminPages.Addons.ListBase.reload": {
-    "defaultMessage": "Reload"
-  },
-  "AdminPages.ApiCategories.AddEdit.form.add.successful": {
-    "defaultMessage": "API Category added successfully"
-  },
-  "AdminPages.ApiCategories.AddEdit.form.edit.successful": {
-    "defaultMessage": "API Category edited successfully"
-  },
-  "AdminPages.ApiCategories.AddEdit.form.name": {
-    "defaultMessage": "Name"
-  },
-  "AdminPages.ApiCategories.Delete.form.delete.successful": {
-    "defaultMessage": "API Category deleted successfully"
-  },
-  "AdminPages.ApiCategories.List.addButtonProps.title": {
-    "defaultMessage": "Add API Category"
-  },
-  "AdminPages.ApiCategories.List.addButtonProps.triggerButtonText": {
-    "defaultMessage": "Add API Category"
-  },
-  "AdminPages.ApiCategories.List.empty.content.apicategories": {
-    "defaultMessage": "You can use API categories to group APIs. In previous versions of WSO2 API Manager, the process of grouping APIs was carried out by using tag-wise groups. Unlike tag-wise grouping, API categories do not use a naming convention. Therefore, the admin does not need to take into consideration any naming conventions when using API category-based grouping."
-  },
-  "AdminPages.ApiCategories.List.empty.title.apicategories": {
-    "defaultMessage": "API Categories"
-  },
-  "AdminPages.ApiCategories.List.help.link.one": {
-    "defaultMessage": "API Category based Grouping"
-  },
-  "AdminPages.ApiCategories.List.search.default": {
-    "defaultMessage": "Search by API Category name"
-  },
-  "AdminPages.ApiCategories.List.title.apicategories": {
-    "defaultMessage": "API Categories"
-  },
-  "AdminPages.ApiCategories.table.header.category.description": {
-    "defaultMessage": "Description"
-  },
-  "AdminPages.ApiCategories.table.header.category.name": {
-    "defaultMessage": "Category Name"
-  },
-  "AdminPages.ApiCategories.table.header.category.number.of.apis": {
-    "defaultMessage": "Number of APIs"
-  },
-  "AdminPages.ApiSettings.EditApi.form.edit.error": {
-    "defaultMessage": "API provider should not be empty."
-  },
-  "AdminPages.ApiSettings.EditApi.form.edit.other.error": {
-    "defaultMessage": "Given Username is not valid."
-  },
-  "AdminPages.ApiSettings.EditApi.form.edit.successful": {
-    "defaultMessage": "API provider changed successfully"
-  },
-  "AdminPages.ApiSettings.EditApi.form.edit.user.notvalid": {
-    "defaultMessage": "Error while updating the provider name."
-  },
-  "AdminPages.ApplicationSettings.Edit.form.edit.successful": {
-    "defaultMessage": "Application owner changed successfully"
-  },
-  "AdminPages.ApplicationSettings.Edit.form.helperText": {
-    "defaultMessage": "Enter a new Owner. Make sure the new owner has logged into the Developer Portal at least once"
-  },
-  "AdminPages.ApplicationSettings.Edit.form.name": {
-    "defaultMessage": "Application Name"
-  },
-  "AdminPages.Gateways.Delete.form.delete.confirmation.message": {
-    "defaultMessage": "Are you sure you want to delete this Gateway Environment?"
-  },
-  "AdminPages.Gateways.Delete.form.delete.successful": {
-    "defaultMessage": "Gateway Environment deleted successfully"
-  },
-  "AdminPages.Gateways.List.addButtonProps.title": {
-    "defaultMessage": "Add Gateway Environment"
-  },
-  "AdminPages.Gateways.List.addButtonProps.triggerButtonText": {
-    "defaultMessage": "Add Gateway Environment"
-  },
-  "AdminPages.Gateways.List.empty.content.Gateways": {
-    "defaultMessage": "It is possible to create a Gateway environment with virtual hosts to access APIs. API revisions can be attached with Vhost to access it."
-  },
-  "AdminPages.Gateways.List.empty.title": {
-    "defaultMessage": "Gateway Environments"
-  },
-  "AdminPages.Gateways.List.search.default": {
-    "defaultMessage": "Search Gateway by Name, Description or Host"
-  },
-  "AdminPages.Gateways.List.title": {
-    "defaultMessage": "Gateway Environments"
-  },
-  "AdminPages.Gateways.table.header.description": {
-    "defaultMessage": "Description"
-  },
-  "AdminPages.Gateways.table.header.displayName": {
-    "defaultMessage": "Name"
-  },
-  "AdminPages.Gateways.table.header.gatewayType": {
-    "defaultMessage": "Gateway Type"
-  },
-  "AdminPages.Gateways.table.header.type": {
-    "defaultMessage": "Type"
-  },
-  "AdminPages.Gateways.table.header.vhosts": {
-    "defaultMessage": "Virtual Host(s)"
-  },
-  "AdminPages.KeyManager.Delete.form.delete.confirmation.message": {
-    "defaultMessage": "Are you sure you want to delete this KeyManager ?"
-  },
-  "AdminPages.KeyManagers.Delete.form.delete.successful": {
-    "defaultMessage": "KeyManager deleted successfully"
-  },
-  "AdminPages.KeyManagers.List.empty.content.keymanagers": {
-    "defaultMessage": "It is possible to register an OAuth Provider."
-  },
-  "AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.displayName.empty": {
-    "defaultMessage": "Display Name is Empty"
-  },
-  "AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.vhost.duplicate": {
-    "defaultMessage": "VHosts are duplicated"
-  },
-  "AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.vhost.empty": {
-    "defaultMessage": "VHost is empty"
-  },
-  "Api.Name": {
-    "defaultMessage": "API Name"
-  },
-  "Api.Provider": {
-    "defaultMessage": "Provider"
-  },
-  "Api.Version": {
-    "defaultMessage": "Version"
-  },
-  "Apis.Details.Scopes.CreateScope.roles.help": {
-    "defaultMessage": "Enter a valid role and press `Enter`."
-  },
-  "Apis.Listing.Listing.apis.search": {
-    "defaultMessage": "Search"
-  },
-  "Apis.Listing.Listing.apis.search.label": {
-    "defaultMessage": "Search by API"
-  },
-  "Apis.Listing.Listing.apis.searching": {
-    "defaultMessage": "Searching"
-  },
-  "Apis.Listing.Listing.clear.search": {
-    "defaultMessage": "Clear Search"
-  },
-  "Apis.Listing.Listing.empty.message": {
-    "defaultMessage": "No Data to Display"
-  },
-  "Apis.Listing.Listing.search.placeholder": {
-    "defaultMessage": "Api Name"
-  },
-  "Apis.Listing.apiTableHead.name": {
-    "defaultMessage": "Name"
-  },
-  "Apis.Listing.apiTableHead.provider": {
-    "defaultMessage": "Provider"
-  },
-  "Apis.Listing.apiTableHead.version": {
-    "defaultMessage": "Version"
-  },
-  "Apis.Shared.AdminRootErrorBoundary.refresh": {
-    "defaultMessage": "Refresh"
-  },
-  "Apis.Shared.AdminRootErrorBoundary.refresh.or.try.again.message": {
-    "defaultMessage": "You may refresh the page now or try again later"
-  },
-  "Apis.Shared.AdminRootErrorBoundary.something.went.wrong.while.rendering.button": {
-    "defaultMessage": "Something went wrong while rendering the"
-  },
-  "Apis.Shared.AdminRootErrorBoundary.something.went.wrong.while.rendering.heading": {
-    "defaultMessage": "Something went wrong while rendering the"
-  },
-  "Apis.Shared.AppErrorBoundary.something.went.wrong": {
-    "defaultMessage": "Something went wrong"
-  },
-  "Apis.Shared.ConfirmDialog.are.you.sure": {
-    "defaultMessage": "Are you sure?"
-  },
-  "Apis.Shared.ConfirmDialog.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "Apis.Shared.ConfirmDialog.ok": {
-    "defaultMessage": "OK"
-  },
-  "Apis.Shared.ConfirmDialog.please.confirm": {
-    "defaultMessage": "Please Confirm"
-  },
-  "Apis.Shared.RedirectToLogin.you.will.be.redirected.to": {
-    "defaultMessage": "You will be redirected to {page}"
-  },
-  "Application.Name": {
-    "defaultMessage": "Application Name"
-  },
-  "Application.Owner": {
-    "defaultMessage": "Application Owner"
-  },
-  "Application.organization": {
-    "defaultMessage": "Application Organization"
-  },
-  "Applications.Listing.ApplicationTableHead.actions": {
-    "defaultMessage": "Actions"
-  },
-  "Applications.Listing.ApplicationTableHead.name": {
-    "defaultMessage": "Name"
-  },
-  "Applications.Listing.ApplicationTableHead.owner": {
-    "defaultMessage": "Owner"
-  },
-  "Applications.Listing.Listing.applications.search": {
-    "defaultMessage": "Search"
-  },
-  "Applications.Listing.Listing.applications.search.label": {
-    "defaultMessage": "Search Application by Application Owner"
-  },
-  "Applications.Listing.Listing.applications.searching": {
-    "defaultMessage": "Searching"
-  },
-  "Applications.Listing.Listing.clear.search": {
-    "defaultMessage": "Clear Search"
-  },
-  "Applications.Listing.Listing.empty.message": {
-    "defaultMessage": "No Data to Display"
-  },
-  "Applications.Listing.Listing.search.placeholder": {
-    "defaultMessage": "Application Owner"
-  },
-  "Base.Errors.ResourceNotFound.api.list": {
-    "defaultMessage": "API List"
-  },
-  "Base.Errors.ResourceNotFound.api.product.list": {
-    "defaultMessage": "API Product List"
-  },
-  "Base.Errors.ResourceNotFound.more.links": {
-    "defaultMessage": "You may check the links below"
-  },
-  "Base.Errors.ResourceNotfound.default_body": {
-    "defaultMessage": "The page you are looking for is not available"
-  },
-  "Base.Errors.ResourceNotfound.default_tittle": {
-    "defaultMessage": "Page Not Found"
-  },
-  "Base.Footer.Footer.product_details": {
-    "defaultMessage": "WSO2 API-M v4.3.0 | © 2024 WSO2 LLC"
-  },
-  "Base.Header.avatar.Avatar.logout": {
-    "defaultMessage": "Logout"
-  },
-  "Base.RouteMenuMapping.advanced": {
-    "defaultMessage": "Advanced"
-  },
-  "Base.RouteMenuMapping.advanced.throttling.policies": {
-    "defaultMessage": "Advanced Policies"
-  },
-  "Base.RouteMenuMapping.advanced.throttling.policies.Adding": {
-    "defaultMessage": "Add Advanced Policy"
-  },
-  "Base.RouteMenuMapping.advanced.throttling.policies.Editing": {
-    "defaultMessage": "Edit Advanced Policy"
-  },
-  "Base.RouteMenuMapping.api.categories": {
-    "defaultMessage": "API Categories"
-  },
-  "Base.RouteMenuMapping.apis": {
-    "defaultMessage": "Change API Provider"
-  },
-  "Base.RouteMenuMapping.application.creation": {
-    "defaultMessage": "Application Creation"
-  },
-  "Base.RouteMenuMapping.application.deletion": {
-    "defaultMessage": "Application Deletion"
-  },
-  "Base.RouteMenuMapping.application.throttling.policies": {
-    "defaultMessage": "Application Policies"
-  },
-  "Base.RouteMenuMapping.applications": {
-    "defaultMessage": "Change Application Owner"
-  },
-  "Base.RouteMenuMapping.blacklisted.items": {
-    "defaultMessage": "Deny Policies"
-  },
-  "Base.RouteMenuMapping.custom.throttling.policies": {
-    "defaultMessage": "Custom Policies"
-  },
-  "Base.RouteMenuMapping.custom.throttling.policies.items.Adding": {
-    "defaultMessage": "Add Custom Policy"
-  },
-  "Base.RouteMenuMapping.custom.throttling.policies.items.Editing": {
-    "defaultMessage": "Edit Custom Policy"
-  },
-  "Base.RouteMenuMapping.dashboard": {
-    "defaultMessage": "Dashboard"
-  },
-  "Base.RouteMenuMapping.gateways": {
-    "defaultMessage": "Gateways"
-  },
-  "Base.RouteMenuMapping.keymanagers": {
-    "defaultMessage": "Key Managers"
-  },
-  "Base.RouteMenuMapping.keymanagers.items.Adding": {
-    "defaultMessage": "Add Key Manager"
-  },
-  "Base.RouteMenuMapping.keymanagers.items.Editing": {
-    "defaultMessage": "Edit Key Manager"
-  },
-  "Base.RouteMenuMapping.role.permissions": {
-    "defaultMessage": "Scope Assignments"
-  },
-  "Base.RouteMenuMapping.settings": {
-    "defaultMessage": "Settings"
-  },
-  "Base.RouteMenuMapping.subscription.creation": {
-    "defaultMessage": "Subscription Creation"
-  },
-  "Base.RouteMenuMapping.subscription.deletion": {
-    "defaultMessage": "Subscription Deletion"
-  },
-  "Base.RouteMenuMapping.subscription.throttling.policies": {
-    "defaultMessage": "Subscription Policies"
-  },
-  "Base.RouteMenuMapping.subscription.throttling.policies.Adding": {
-    "defaultMessage": "Add Subscription Policy"
-  },
-  "Base.RouteMenuMapping.subscription.throttling.policies.Editing": {
-    "defaultMessage": "Edit Subscription Policy"
-  },
-  "Base.RouteMenuMapping.subscription.update": {
-    "defaultMessage": "Subscription Update"
-  },
-  "Base.RouteMenuMapping.tasks": {
-    "defaultMessage": "Tasks"
-  },
-  "Base.RouteMenuMapping.tenant.theme": {
-    "defaultMessage": "Tenant Theme"
-  },
-  "Base.RouteMenuMapping.throttling.policies": {
-    "defaultMessage": "Rate Limiting Policies"
-  },
-  "Base.RouteMenuMapping.user.creation": {
-    "defaultMessage": "User Creation"
-  },
-  "Claim.Mapping.already.exists": {
-    "defaultMessage": "Claim Mapping already exists."
-  },
-  "Dashboard.apiCategories.apiCategoriesListing.card.title": {
-    "defaultMessage": "API Categories"
-  },
-  "Dashboard.apiCategories.apiCategoriesListing.card.view.all.link.text": {
-    "defaultMessage": "View All"
-  },
-  "Dashboard.apiCategories.apiCategoriesListing.no.description": {
-    "defaultMessage": "No description available"
-  },
-  "Dashboard.apiCategories.noApiCategories.card.add.new.link.text": {
-    "defaultMessage": "Add new Category"
-  },
-  "Dashboard.apiCategories.noApiCategories.card.description": {
-    "defaultMessage": "API categories allow API providers to categorize APIs that have similar attributes. When a categorized API gets published to the Developer Portal, its categories appear as clickable links to the API consumers. The API consumers can use the available API categories to quickly jump to a category of interest. {learnMoreLink}"
-  },
-  "Dashboard.apiCategories.noApiCategories.card.title": {
-    "defaultMessage": "API Category based grouping"
-  },
-  "Dashboard.rateLimiting.card.advancedPolicies.description": {
-    "defaultMessage": "Control access per API or API resource using advanced rules"
-  },
-  "Dashboard.rateLimiting.card.advancedPolicies.name": {
-    "defaultMessage": "Advanced Policies"
-  },
-  "Dashboard.rateLimiting.card.applicationPolicies.description": {
-    "defaultMessage": "Applicable per access token generated for an application"
-  },
-  "Dashboard.rateLimiting.card.applicationPolicies.name": {
-    "defaultMessage": "Application Policies"
-  },
-  "Dashboard.rateLimiting.card.customPolicies.description": {
-    "defaultMessage": "Allows system administrators to define dynamic rules for specific use cases, which are applied globally across all tenants."
-  },
-  "Dashboard.rateLimiting.card.customPolicies.name": {
-    "defaultMessage": "Custom Policies"
-  },
-  "Dashboard.rateLimiting.card.subscriptionPolicies.description": {
-    "defaultMessage": "Control access per Subscription"
-  },
-  "Dashboard.rateLimiting.card.subscriptionPolicies.name": {
-    "defaultMessage": "Subscription Policies"
-  },
-  "Dashboard.rateLimiting.card.title": {
-    "defaultMessage": "Rate Limiting"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.apiProductStateChange.name": {
-    "defaultMessage": "API Product State Change"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.apiRevisionDeployment.name": {
-    "defaultMessage": "API Revision Deployment"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.apiStateChange.name": {
-    "defaultMessage": "API State Change"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.applicationCreation.name": {
-    "defaultMessage": "Application Creation"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.applicationDeletion.name": {
-    "defaultMessage": "Application Deletion"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.applicationRegistration.name": {
-    "defaultMessage": "Application Registration"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.card.numberOfPendingTasks.postFix.plural": {
-    "defaultMessage": "Pending tasks"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.card.numberOfPendingTasks.postFix.singular": {
-    "defaultMessage": "Pending task"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.card.title": {
-    "defaultMessage": "Pending tasks"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.subscriptionCreation.name": {
-    "defaultMessage": "Subscription Creation"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.subscriptionDeletion.name": {
-    "defaultMessage": "Subscription Deletion"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.subscriptionUpdate.name": {
-    "defaultMessage": "Subscription Update"
-  },
-  "Dashboard.tasksWorkflow.compactTasks.userCreation.name": {
-    "defaultMessage": "User Creation"
-  },
-  "Dashboard.tasksWorkflow.noTasks.card.description": {
-    "defaultMessage": "Manage workflow tasks, increase productivity and enhance competitiveness by enabling developers to easily deploy business processes and models."
-  },
-  "Dashboard.tasksWorkflow.noTasks.card.title": {
-    "defaultMessage": "All the pending tasks completed"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.description.help": {
-    "defaultMessage": "Description of the Gateway Environment"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.displayName": {
-    "defaultMessage": "Display Name"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.displayName.help": {
-    "defaultMessage": "Display name of the Gateway Environment"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.environment.name.empty": {
-    "defaultMessage": "Name is Empty"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.environment.name.invalid": {
-    "defaultMessage": "Name must not contain special characters or spaces"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.info.add.successful": {
-    "defaultMessage": "Gateway Environment added successfully"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.info.edit.successful": {
-    "defaultMessage": "Gateway Environment edited successfully"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.name": {
-    "defaultMessage": "Name"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.save.button.label": {
-    "defaultMessage": "Save"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.vhost.context.invalid": {
-    "defaultMessage": "Invalid Http context"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.vhost.host.empty": {
-    "defaultMessage": "Host of Vhost is empty"
-  },
-  "GatewayEnvironments.AddEditGWEnvironment.form.vhost.host.invalid": {
-    "defaultMessage": "Invalid Host"
-  },
-  "GatewayEnvironments.AddEditVhost.host": {
-    "defaultMessage": "Host"
-  },
-  "GatewayEnvironments.AddEditVhost.httpPort": {
-    "defaultMessage": "HTTP Port"
-  },
-  "GatewayEnvironments.AddEditVhost.httpsPort": {
-    "defaultMessage": "HTTPS Port"
-  },
-  "GatewayEnvironments.AddEditVhost.wsPort": {
-    "defaultMessage": "WS Port"
-  },
-  "GatewayEnvironments.AddEditVhost.wssPort": {
-    "defaultMessage": "WSS Port"
-  },
-  "KeyManager.AddEdit.Invalid.Roles.Found": {
-    "defaultMessage": "Invalid Role(s) Found"
-  },
-  "KeyManager.AddEdit.roles.help": {
-    "defaultMessage": "Enter a valid role and press `Enter`"
-  },
-  "KeyManager.AddEditKeyManager.permissions.add.description": {
-    "defaultMessage": "Permissions for the Key Manager"
-  },
-  "KeyManager.Claim.Helper.text": {
-    "defaultMessage": "Add Claim Mappings"
-  },
-  "KeyManager.Connector.Configuration.Helper.text": {
-    "defaultMessage": "Add Key Manager Connector Configurations"
-  },
-  "KeyManager.KeyValidation.CUSTOM": {
-    "defaultMessage": "CUSTOM"
-  },
-  "KeyManager.KeyValidation.JWT": {
-    "defaultMessage": "JWT"
-  },
-  "KeyManager.KeyValidation.REFERENCE": {
-    "defaultMessage": "REFERENCE"
-  },
-  "KeyManager.KeyValidation.token.validation.type": {
-    "defaultMessage": "Type"
-  },
-  "KeyManager.add.success": {
-    "defaultMessage": "Key Manager added successfully."
-  },
-  "KeyManager.add.success.msg": {
-    "defaultMessage": "- Key Manager added successfully."
-  },
-  "KeyManager.edit.success": {
-    "defaultMessage": "- Key Manager edited successfully."
-  },
-  "KeyManager.enter.permission.allowed": {
-    "defaultMessage": "Use of this Key-Manager is \"Allowed\" for above roles."
-  },
-  "KeyManager.enter.permission.denied": {
-    "defaultMessage": "Use of this Key-Manager is \"Denied\" for above roles."
-  },
-  "KeyManager.permissions": {
-    "defaultMessage": "Permissions"
-  },
-  "KeyManagers.AddEditKeyManager.\n                                                                form.scopeManagementEndpoint": {
-    "defaultMessage": "Scope Management Endpoint"
-  },
-  "KeyManagers.AddEditKeyManager.\n                                                            form.displayRevokeEndpoint": {
-    "defaultMessage": "Display Revoke Endpoint"
-  },
-  "KeyManagers.AddEditKeyManager.External.KeyManager\n                                        .general.details.description": {
-    "defaultMessage": "Identity Provider vendor and the token usage mode"
-  },
-  "KeyManagers.AddEditKeyManager.KeyManager.type": {
-    "defaultMessage": "Key Manager Type"
-  },
-  "KeyManagers.AddEditKeyManager.advanced": {
-    "defaultMessage": "Advanced Configurations"
-  },
-  "KeyManagers.AddEditKeyManager.advanced.description": {
-    "defaultMessage": "Advanced options for the Key Manager"
-  },
-  "KeyManagers.AddEditKeyManager.api.invocation.method": {
-    "defaultMessage": "API Invocation Method"
-  },
-  "KeyManagers.AddEditKeyManager.api.no.usages": {
-    "defaultMessage": "No API usages for this key manager specifically."
-  },
-  "KeyManagers.AddEditKeyManager.application.no.usages": {
-    "defaultMessage": "No Application usages for this key manager specifically."
-  },
-  "KeyManagers.AddEditKeyManager.certificate": {
-    "defaultMessage": "Certificates"
-  },
-  "KeyManagers.AddEditKeyManager.certificate.description": {
-    "defaultMessage": "Upload or provide the certificate inline."
-  },
-  "KeyManagers.AddEditKeyManager.claim.mappings.hidden.help": {
-    "defaultMessage": "Expand to add edit claim mappings"
-  },
-  "KeyManagers.AddEditKeyManager.claim.mappings.title": {
-    "defaultMessage": "Claim Mappings"
-  },
-  "KeyManagers.AddEditKeyManager.claim.uris": {
-    "defaultMessage": "Claim URIs"
-  },
-  "KeyManagers.AddEditKeyManager.claim.uris.description": {
-    "defaultMessage": "Provide claim URIs for consumer key and scopes."
-  },
-  "KeyManagers.AddEditKeyManager.connector.configurations": {
-    "defaultMessage": "Connector Configurations"
-  },
-  "KeyManagers.AddEditKeyManager.connector.configurations.description": {
-    "defaultMessage": "Provide connection params for the selected Key Manager."
-  },
-  "KeyManagers.AddEditKeyManager.endpoints": {
-    "defaultMessage": "Key Manager Endpoints"
-  },
-  "KeyManagers.AddEditKeyManager.endpoints.description": {
-    "defaultMessage": "Configure endpoints such as client registration endpoint, the token endpoint for this Key Manager."
-  },
-  "KeyManagers.AddEditKeyManager.exchange.token.form.\n                                                token.audience.help": {
-    "defaultMessage": "The Audience of the authorization server which the access token is intended for."
-  },
-  "KeyManagers.AddEditKeyManager.form.\n                                                            clientRegistrationEndpoint": {
-    "defaultMessage": "Client Registration Endpoint"
-  },
-  "KeyManagers.AddEditKeyManager.form.\n                                                            introspectionEndpoint": {
-    "defaultMessage": "Introspection Endpoint"
-  },
-  "KeyManagers.AddEditKeyManager.form.Issuer": {
-    "defaultMessage": "Issuer"
-  },
-  "KeyManagers.AddEditKeyManager.form.add": {
-    "defaultMessage": "Add"
-  },
-  "KeyManagers.AddEditKeyManager.form.authorizeEndpoint": {
-    "defaultMessage": "Authorize Endpoint"
-  },
-  "KeyManagers.AddEditKeyManager.form.authorizeEndpoint.help": {
-    "defaultMessage": "E.g., https://localhost:9443/oauth2/userinfo"
-  },
-  "KeyManagers.AddEditKeyManager.form.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "KeyManagers.AddEditKeyManager.form.claim.help": {
-    "defaultMessage": "Type Available Grant Types and press Enter/Return to add them."
-  },
-  "KeyManagers.AddEditKeyManager.form.clientRegistrationEndpoint.help": {
-    "defaultMessage": "E.g., https://localhost:9444/client-registration/v0.17/register"
-  },
-  "KeyManagers.AddEditKeyManager.form.consumerKeyClaim.help": {
-    "defaultMessage": "Provide consumer key claim URIs."
-  },
-  "KeyManagers.AddEditKeyManager.form.description": {
-    "defaultMessage": "Description"
-  },
-  "KeyManagers.AddEditKeyManager.form.description.help": {
-    "defaultMessage": "Description of the Key Manager."
-  },
-  "KeyManagers.AddEditKeyManager.form.displayName.help": {
-    "defaultMessage": "Display Name of the Key Manager."
-  },
-  "KeyManagers.AddEditKeyManager.form.displayRevokeEndpoint": {
-    "defaultMessage": "Display Revoke Endpoint"
-  },
-  "KeyManagers.AddEditKeyManager.form.displayTokenEndpoint": {
-    "defaultMessage": "Display Token Endpoint"
-  },
-  "KeyManagers.AddEditKeyManager.form.has.errors": {
-    "defaultMessage": "One or more fields contain errors."
-  },
-  "KeyManagers.AddEditKeyManager.form.introspectionEndpoint.help": {
-    "defaultMessage": "E.g., https://localhost:9443/oauth2/introspect"
-  },
-  "KeyManagers.AddEditKeyManager.form.issuer.help": {
-    "defaultMessage": "E.g.,: https://localhost:9443/oauth2/token"
-  },
-  "KeyManagers.AddEditKeyManager.form.name": {
-    "defaultMessage": "Name"
-  },
-  "KeyManagers.AddEditKeyManager.form.name.help": {
-    "defaultMessage": "Name of the Key Manager."
-  },
-  "KeyManagers.AddEditKeyManager.form.revokeEndpoint": {
-    "defaultMessage": "Revoke Endpoint"
-  },
-  "KeyManagers.AddEditKeyManager.form.revokeEndpoint.help": {
-    "defaultMessage": "E.g., https://localhost:9443/oauth2/revoke"
-  },
-  "KeyManagers.AddEditKeyManager.form.scopeManagementEndpoint.help": {
-    "defaultMessage": "E.g, https://localhost:9443/oauth2/scope"
-  },
-  "KeyManagers.AddEditKeyManager.form.scopesClaim.help": {
-    "defaultMessage": "Provide scope claim URI."
-  },
-  "KeyManagers.AddEditKeyManager.form.token.audience.help": {
-    "defaultMessage": "The Audience of the authorization server which the access token is intended for."
-  },
-  "KeyManagers.AddEditKeyManager.form.tokenEndpoint": {
-    "defaultMessage": "Token Endpoint"
-  },
-  "KeyManagers.AddEditKeyManager.form.tokenEndpoint.help": {
-    "defaultMessage": "E.g., https://localhost:9443/oauth2/token"
-  },
-  "KeyManagers.AddEditKeyManager.form.tokentype.error": {
-    "defaultMessage": "At least one API Invocation Method should supported by the Key Manager"
-  },
-  "KeyManagers.AddEditKeyManager.form.type.help": {
-    "defaultMessage": "Select Key Manager Type"
-  },
-  "KeyManagers.AddEditKeyManager.form.update.btn": {
-    "defaultMessage": "Update"
-  },
-  "KeyManagers.AddEditKeyManager.form.userInfoEndpoint": {
-    "defaultMessage": "UserInfo Endpoint"
-  },
-  "KeyManagers.AddEditKeyManager.form.userInfoEndpoint.help": {
-    "defaultMessage": "E.g., https://localhost:9443/oauth2/userInfo"
-  },
-  "KeyManagers.AddEditKeyManager.form.wellKnownUrl": {
-    "defaultMessage": "Well-known URL"
-  },
-  "KeyManagers.AddEditKeyManager.form.wellKnownUrl.help": {
-    "defaultMessage": "Provide a well-known URL and discover the Key Manager information."
-  },
-  "KeyManagers.AddEditKeyManager.general.details": {
-    "defaultMessage": "General Details"
-  },
-  "KeyManagers.AddEditKeyManager.general.details.description": {
-    "defaultMessage": "Provide name and description of the Key Manager."
-  },
-  "KeyManagers.AddEditKeyManager.grant.types": {
-    "defaultMessage": "Grant Types"
-  },
-  "KeyManagers.AddEditKeyManager.grant.types.description": {
-    "defaultMessage": "Add the supported grant types by the Key Manager. Press enter to add each grant."
-  },
-  "KeyManagers.AddEditKeyManager.import.button.message": {
-    "defaultMessage": "Import"
-  },
-  "KeyManagers.AddEditKeyManager.importing.message": {
-    "defaultMessage": "Importing..."
-  },
-  "KeyManagers.AddEditKeyManager.is.empty.error": {
-    "defaultMessage": "is empty"
-  },
-  "KeyManagers.AddEditKeyManager.is.empty.error.key.config": {
-    "defaultMessage": "Required field is empty."
-  },
-  "KeyManagers.AddEditKeyManager.resident.endpoints.description": {
-    "defaultMessage": "Configure display endpoints such as display token endpoint, display revoke endpoint for this Key Manager."
-  },
-  "KeyManagers.AddEditKeyManager.selfvalidate": {
-    "defaultMessage": "Self validate JWT"
-  },
-  "KeyManagers.AddEditKeyManager.space.error": {
-    "defaultMessage": "Key Manager name contains white spaces."
-  },
-  "KeyManagers.AddEditKeyManager.title.edit": {
-    "defaultMessage": "Key Manager - Edit"
-  },
-  "KeyManagers.AddEditKeyManager.title.editGlobal": {
-    "defaultMessage": "Global Key Manager - Edit"
-  },
-  "KeyManagers.AddEditKeyManager.title.new": {
-    "defaultMessage": "Key Manager - Create new"
-  },
-  "KeyManagers.AddEditKeyManager.title.newGlobal": {
-    "defaultMessage": "Global Key Manager - Create new"
-  },
-  "KeyManagers.AddEditKeyManager.token.handling.options": {
-    "defaultMessage": "Token Handling Options"
-  },
-  "KeyManagers.AddEditKeyManager.token.validation.method": {
-    "defaultMessage": "Token Validation Method"
-  },
-  "KeyManagers.AddEditKeyManager.usages": {
-    "defaultMessage": "Key Manager Usage"
-  },
-  "KeyManagers.AddEditKeyManager.useIntrospect": {
-    "defaultMessage": "Use introspect"
-  },
-  "KeyManagers.AddEditTokenExchangeIDP.form.Issuer": {
-    "defaultMessage": "Issuer"
-  },
-  "KeyManagers.AddEditTokenExchangeIDP.form.issuer.help": {
-    "defaultMessage": "E.g.,: https://localhost:9443/oauth2/token"
-  },
-  "KeyManagers.AddEditTokenExchangeIDP.form.tokenEndpoint": {
-    "defaultMessage": "Token Endpoint"
-  },
-  "KeyManagers.AddEditTokenExchangeIDP.form.tokenEndpoint.help": {
-    "defaultMessage": "E.g., https://localhost:9443/oauth2/token"
-  },
-  "KeyManagers.AddEditTokenExchangeIDP.form.wellKnownUrl": {
-    "defaultMessage": "Well-known URL"
-  },
-  "KeyManagers.AddEditTokenExchangeIDP.form.wellKnownUrl.help": {
-    "defaultMessage": "Provide a well-known URL and discover the Key Manager information."
-  },
-  "KeyManagers.Certificates.browse.files.to.upload": {
-    "defaultMessage": "Browse File to Upload"
-  },
-  "KeyManagers.Certificates.drag.and.drop.message": {
-    "defaultMessage": "Drag and Drop files here {break} or {break}"
-  },
-  "KeyManagers.Certificates.file.error": {
-    "defaultMessage": "Error reading file"
-  },
-  "KeyManagers.Certificates.jwks.url": {
-    "defaultMessage": "URL"
-  },
-  "KeyManagers.Certificates.override.message": {
-    "defaultMessage": "Upload new file to override the current certificate"
-  },
-  "KeyManagers.Certificates.paste.label": {
-    "defaultMessage": "Paste the content of the PEM file"
-  },
-  "KeyManagers.ListKeyManagerAPIUsages.error": {
-    "defaultMessage": "Unable to get Key Manager API usage details"
-  },
-  "KeyManagers.ListKeyManagerApplicationUsages.error": {
-    "defaultMessage": "Unable to get Key Manager application usage details"
-  },
-  "KeyManagers.ListKeyManagerUsages.empty.content": {
-    "defaultMessage": "There are no Key Manger usages."
-  },
-  "KeyManagers.ListKeyManagerUsages.empty.title": {
-    "defaultMessage": "Key Manager Usages"
-  },
-  "KeyManagers.ListKeyManagerUsages.permission.denied.content": {
-    "defaultMessage": "You dont have enough permission to view Key Manager Usages. Please contact the site administrator."
-  },
-  "KeyManagers.ListKeyManagerUsages.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "KeyManagers.ListKeyManagers.List.title": {
-    "defaultMessage": "Key Managers"
-  },
-  "KeyManagers.ListKeyManagers.addButtonProps.triggerButtonText": {
-    "defaultMessage": "Add Key Manager"
-  },
-  "KeyManagers.ListKeyManagers.addGlobalKeyManager": {
-    "defaultMessage": "Add Global Key Manager"
-  },
-  "KeyManagers.ListKeyManagers.edit.success": {
-    "defaultMessage": "Key Manager updated successfully."
-  },
-  "KeyManagers.ListKeyManagers.empty.title": {
-    "defaultMessage": "Key Managers"
-  },
-  "KeyManagers.ListKeyManagers.table.header.label.description": {
-    "defaultMessage": "Description"
-  },
-  "KeyManagers.ListKeyManagers.table.header.label.name": {
-    "defaultMessage": "Name"
-  },
-  "KeyManagers.ListKeyManagers.table.header.label.provider": {
-    "defaultMessage": "Provider"
-  },
-  "KeyManagers.ListKeyManagers.table.header.label.tokenType": {
-    "defaultMessage": "Type"
-  },
-  "KeyManagers.ListKeyManagers.table.header.label.usage": {
-    "defaultMessage": "Usage"
-  },
-  "Keymanager.Claim.Action": {
-    "defaultMessage": "Action"
-  },
-  "Keymanager.KeyValidation.Action": {
-    "defaultMessage": "Action"
-  },
-  "Keymanager.KeyValidation.ClaimKey": {
-    "defaultMessage": "Claim Key"
-  },
-  "Keymanager.KeyValidation.ClaimValue.Regex": {
-    "defaultMessage": "Claim Value Regex"
-  },
-  "Keymanager.Local.Claim": {
-    "defaultMessage": "Local Claim"
-  },
-  "Keymanager.Local.Claim.remove": {
-    "defaultMessage": "Remove"
-  },
-  "Keymanager.Remote.Claim": {
-    "defaultMessage": "Remote Claim"
-  },
-  "LoginDenied.logout": {
-    "defaultMessage": "Logout"
-  },
-  "LoginDenied.message": {
-    "defaultMessage": "The server could not verify that you are authorized to access the requested resource."
-  },
-  "LoginDenied.retry": {
-    "defaultMessage": "Retry"
-  },
-  "LoginDenied.title": {
-    "defaultMessage": "Error 403 : Forbidden"
-  },
-  "RolePermissions.Common.AddRoleWizard.add.mapping.button": {
-    "defaultMessage": "Add scope mapping"
-  },
-  "RolePermissions.Common.AddRoleWizard.add.mapping.title": {
-    "defaultMessage": "Add new scope mapping"
-  },
-  "RolePermissions.Common.AddRoleWizard.add.role.warn.empty": {
-    "defaultMessage": "Role name can not be empty!"
-  },
-  "RolePermissions.Common.AddRoleWizard.add.scope.error": {
-    "defaultMessage": "Something went wrong while adding new scope mapping"
-  },
-  "RolePermissions.Common.DeletePermission.delete.scope.error": {
-    "defaultMessage": "Something went wrong while deleting the scope assignments"
-  },
-  "RolePermissions.ListRoles.error.retrieving.perm": {
-    "defaultMessage": "Error while retrieving permission info"
-  },
-  "RolePermissions.ListRoles.page.description": {
-    "defaultMessage": "Scope assignments are only related to internal, APIM-specific scope assignments. They are not related to role permission assignments in the Management Console."
-  },
-  "RolePermissions.ListRoles.permission.denied.content": {
-    "defaultMessage": "You do not have enough permission to view Scope Assignments. Please contact the site administrator."
-  },
-  "RolePermissions.ListRoles.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "RolePermissions.ListRoles.scope.assignment.button": {
-    "defaultMessage": "Add scope mappings"
-  },
-  "RolePermissions.ListRoles.title.role.permissions": {
-    "defaultMessage": "Scope Assignments"
-  },
-  "RolePermissions.TreeView.PermissionsSelector.scope.assignment.button": {
-    "defaultMessage": "Scope Assignments"
-  },
-  "RolePermissions.TreeView.PermissionsSelector.scope.assignment.title": {
-    "defaultMessage": "Select Scope Assignments"
-  },
-  "RolePermissions.TreeView.PermissionsSelector.update.scope.error": {
-    "defaultMessage": "Something went wrong while updating the permission"
-  },
-  "ScopeAssignments.List.search.default": {
-    "defaultMessage": "Search by Role Name"
-  },
-  "Settings.Advanced.TenantConf.edit.success": {
-    "defaultMessage": "Advanced Configuration saved successfully"
-  },
-  "Settings.Advanced.TenantConfSave.form.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "Settings.Advanced.TenantConfSave.form.save": {
-    "defaultMessage": "Save"
-  },
-  "Settings.Advanced.TenantConfSave.title.save": {
-    "defaultMessage": "Advanced Configurations"
-  },
-  "TenantTheme.Upload.Theme.browse.files.to.upload": {
-    "defaultMessage": "Browse File to Upload"
-  },
-  "TenantTheme.Upload.Theme.button.upload": {
-    "defaultMessage": "Upload"
-  },
-  "TenantTheme.Upload.Theme.download.error": {
-    "defaultMessage": "Error downloading Tenant theme ZIP file"
-  },
-  "TenantTheme.Upload.Theme.drag.and.drop.message": {
-    "defaultMessage": "Drag & Drop files here {break} or {break}"
-  },
-  "TenantTheme.Upload.Theme.help.link.one": {
-    "defaultMessage": "Tenant theming"
-  },
-  "TenantTheme.Upload.Theme.info.message": {
-    "defaultMessage": "The theme should be a zip file containing CSS and images compliant with the"
-  },
-  "TenantTheme.Upload.Theme.page.heading": {
-    "defaultMessage": "Manage Tenant Theme"
-  },
-  "TenantTheme.Upload.Theme.upload.files": {
-    "defaultMessage": "Upload/Download Theme"
-  },
-  "TenantTheme.Upload.Theme.upload.successful": {
-    "defaultMessage": "Theme uploaded successfully"
-  },
-  "TenantTheme.Upload.Theme.warning.message": {
-    "defaultMessage": "Zip file contains unsupported files. Upload only supported files."
-  },
-  "Throttling.Advanced.AddEdit.ConditionalGroups.form.description.help": {
-    "defaultMessage": "Description of this group"
-  },
-  "Throttling.Advanced.AddEdit.add.conditional.group": {
-    "defaultMessage": "Conditional groups"
-  },
-  "Throttling.Advanced.AddEdit.add.conditional.group.add": {
-    "defaultMessage": "Add Conditional Group"
-  },
-  "Throttling.Advanced.AddEdit.add.success": {
-    "defaultMessage": "Policy Added Successfully"
-  },
-  "Throttling.Advanced.AddEdit.conditional.group.description": {
-    "defaultMessage": "To add throttling limits with different parameters base on IP, Header, Query Param, and JWT Claim conditions, click Add Conditional Group."
-  },
-  "Throttling.Advanced.AddEdit.default.limits": {
-    "defaultMessage": "Default Limits"
-  },
-  "Throttling.Advanced.AddEdit.default.limits.description": {
-    "defaultMessage": "Request Count and Request Bandwidth are the two options for default limit. You can use the option according to your requirement."
-  },
-  "Throttling.Advanced.AddEdit.edit.success": {
-    "defaultMessage": "Policy Updated Successfully"
-  },
-  "Throttling.Advanced.AddEdit.empty.error": {
-    "defaultMessage": "contains white spaces."
-  },
-  "Throttling.Advanced.AddEdit.form.add.btn": {
-    "defaultMessage": "Add"
-  },
-  "Throttling.Advanced.AddEdit.form.bandwidth.allowed.help": {
-    "defaultMessage": "Bandwidth allowed"
-  },
-  "Throttling.Advanced.AddEdit.form.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "Throttling.Advanced.AddEdit.form.dataAmount.label": {
-    "defaultMessage": "Data Bandwidth"
-  },
-  "Throttling.Advanced.AddEdit.form.description": {
-    "defaultMessage": "Description"
-  },
-  "Throttling.Advanced.AddEdit.form.description.help": {
-    "defaultMessage": "Description of the throttle policy."
-  },
-  "Throttling.Advanced.AddEdit.form.has.errors": {
-    "defaultMessage": "One or more fields contain errors."
-  },
-  "Throttling.Advanced.AddEdit.form.name.help": {
-    "defaultMessage": "Name of the throttle policy."
-  },
-  "Throttling.Advanced.AddEdit.form.policyName": {
-    "defaultMessage": "Name"
-  },
-  "Throttling.Advanced.AddEdit.form.requestCount.label": {
-    "defaultMessage": "Request Count"
-  },
-  "Throttling.Advanced.AddEdit.form.timeUnit.day": {
-    "defaultMessage": "Day(s)"
-  },
-  "Throttling.Advanced.AddEdit.form.timeUnit.hour": {
-    "defaultMessage": "Hour(s)"
-  },
-  "Throttling.Advanced.AddEdit.form.timeUnit.minute": {
-    "defaultMessage": "Minute(s)"
-  },
-  "Throttling.Advanced.AddEdit.form.timeUnit.month": {
-    "defaultMessage": "Month(s)"
-  },
-  "Throttling.Advanced.AddEdit.form.unit.time.help": {
-    "defaultMessage": "Time configuration"
-  },
-  "Throttling.Advanced.AddEdit.form.unit.time.label": {
-    "defaultMessage": "Unit Time"
-  },
-  "Throttling.Advanced.AddEdit.form.update.btn": {
-    "defaultMessage": "Update"
-  },
-  "Throttling.Advanced.AddEdit.general.details": {
-    "defaultMessage": "General Details"
-  },
-  "Throttling.Advanced.AddEdit.general.details.description": {
-    "defaultMessage": "Provide name and description of the policy.The policy can be refered from the name."
-  },
-  "Throttling.Advanced.AddEdit.is.empty.error": {
-    "defaultMessage": "is empty"
-  },
-  "Throttling.Advanced.AddEdit.policy.name.too.long.error.msg": {
-    "defaultMessage": "Throttling policy name is too long"
-  },
-  "Throttling.Advanced.AddEdit.special.characters.error": {
-    "defaultMessage": "contains invalid characters."
-  },
-  "Throttling.Advanced.AddEdit.title.edit": {
-    "defaultMessage": "Advance Rate Limiting Policy - Edit"
-  },
-  "Throttling.Advanced.AddEdit.title.new": {
-    "defaultMessage": "Advanced Rate Limiting Policy - Create new"
-  },
-  "Throttling.Advanced.AddEditConditionPolicy.dialog.btn.save": {
-    "defaultMessage": "Save"
-  },
-  "Throttling.Advanced.AddEditConditionPolicy.dialog.tilte.add.new": {
-    "defaultMessage": "Add New"
-  },
-  "Throttling.Advanced.AddEditConditionPolicy.dialog.tilte.edit": {
-    "defaultMessage": "Edit"
-  },
-  "Throttling.Advanced.AddEditConditionPolicy.dialog.trigger.add": {
-    "defaultMessage": "Add"
-  },
-  "Throttling.Advanced.AddEditConditionPolicy.form.name": {
-    "defaultMessage": "Name"
-  },
-  "Throttling.Advanced.AddEditConditionPolicy.form.name.help": {
-    "defaultMessage": "Provide Name"
-  },
-  "Throttling.Advanced.AddEditConditionPolicy.form.value": {
-    "defaultMessage": "Value"
-  },
-  "Throttling.Advanced.AddEditConditionPolicy.form.value.help": {
-    "defaultMessage": "Provide Value"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.dialog.btn.save": {
-    "defaultMessage": "Save"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.dialog.tilte.add.new": {
-    "defaultMessage": "Add New IP Condition Policy"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.dialog.title.edit": {
-    "defaultMessage": "Edit IP Condition Policy"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.dialog.trigger.add": {
-    "defaultMessage": "Add"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.form.end.ip": {
-    "defaultMessage": "End IP"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.form.end.ip.help": {
-    "defaultMessage": "Provide Valid IP"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.form.specific.ip": {
-    "defaultMessage": "Specific IP"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.form.specific.ip.help": {
-    "defaultMessage": "Provide Valid IP"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.form.start.ip": {
-    "defaultMessage": "Start IP"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.form.start.ip.help": {
-    "defaultMessage": "Provide Valid IP"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.ip.condition.type": {
-    "defaultMessage": "IP Condition Type"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.ip.range": {
-    "defaultMessage": "IP Range"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.is.empty.error": {
-    "defaultMessage": "is empty"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.specific.ip": {
-    "defaultMessage": "Specific IP"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.valid.ip.address.error": {
-    "defaultMessage": "Invalid IP Addresss"
-  },
-  "Throttling.Advanced.AddEditConditionPolicyIP.valid.ip.range.error": {
-    "defaultMessage": "Invalid IP Range"
-  },
-  "Throttling.Advanced.AddEditExecution.default.limit.option": {
-    "defaultMessage": "Default Limit Option"
-  },
-  "Throttling.Advanced.ConditionalGroup.alert": {
-    "defaultMessage": "To add rate limiting with different parameters for Query Params, Header Data and JWT token claim, you must enable them in the deployment.toml file."
-  },
-  "Throttling.Advanced.ConditionalGroup.condition.policies": {
-    "defaultMessage": "Condition Policies"
-  },
-  "Throttling.Advanced.ConditionalGroup.execution.policy": {
-    "defaultMessage": "Execution Policy"
-  },
-  "Throttling.Advanced.ConditionalGroup.from": {
-    "defaultMessage": "From:"
-  },
-  "Throttling.Advanced.ConditionalGroup.header": {
-    "defaultMessage": "Header Condition Policy"
-  },
-  "Throttling.Advanced.ConditionalGroup.header.help": {
-    "defaultMessage": "This configuration is used to throttle based on Headers."
-  },
-  "Throttling.Advanced.ConditionalGroup.header.name": {
-    "defaultMessage": "Name"
-  },
-  "Throttling.Advanced.ConditionalGroup.header.value": {
-    "defaultMessage": "Value"
-  },
-  "Throttling.Advanced.ConditionalGroup.invert.condition": {
-    "defaultMessage": "Invert Condition"
-  },
-  "Throttling.Advanced.ConditionalGroup.ip": {
-    "defaultMessage": "IP Condition Policy"
-  },
-  "Throttling.Advanced.ConditionalGroup.ip.header.name": {
-    "defaultMessage": "IP Condition Type"
-  },
-  "Throttling.Advanced.ConditionalGroup.ip.header.value": {
-    "defaultMessage": "IP Address"
-  },
-  "Throttling.Advanced.ConditionalGroup.ip.help": {
-    "defaultMessage": "This configuration is used to throttle by IP address."
-  },
-  "Throttling.Advanced.ConditionalGroup.ip.iprange": {
-    "defaultMessage": "IP Range"
-  },
-  "Throttling.Advanced.ConditionalGroup.ip.specific": {
-    "defaultMessage": "Specific IP"
-  },
-  "Throttling.Advanced.ConditionalGroup.jwt": {
-    "defaultMessage": "JWT Condition Policy"
-  },
-  "Throttling.Advanced.ConditionalGroup.jwt.help": {
-    "defaultMessage": "This configuration is used to define JWT claims conditions"
-  },
-  "Throttling.Advanced.ConditionalGroup.query.param": {
-    "defaultMessage": "Query Param Condition Policy"
-  },
-  "Throttling.Advanced.ConditionalGroup.query.param.help": {
-    "defaultMessage": "This configuration is used to throttle based on query parameters."
-  },
-  "Throttling.Advanced.ConditionalGroup.to": {
-    "defaultMessage": "To:"
-  },
-  "Throttling.Advanced.ConditionalGroups.form.description": {
-    "defaultMessage": "Description"
-  },
-  "Throttling.Advanced.Delete.confirm.text": {
-    "defaultMessage": "Policy deletion might affect current subscriptions. Are you sure you want to delete this policy?"
-  },
-  "Throttling.Advanced.Delete.ip.iprange": {
-    "defaultMessage": "IP Range"
-  },
-  "Throttling.Advanced.Delete.ip.specific": {
-    "defaultMessage": "Specific IP"
-  },
-  "Throttling.Advanced.Delete.save.text": {
-    "defaultMessage": "Delete"
-  },
-  "Throttling.Advanced.Delete.success": {
-    "defaultMessage": "Policy Deleted Successfully"
-  },
-  "Throttling.Advanced.Delete.title": {
-    "defaultMessage": "Delete Policy"
-  },
-  "Throttling.Advanced.Delete.will.be.deleted": {
-    "defaultMessage": "will be deleted."
-  },
-  "Throttling.Advanced.DeleteConditionGroup.question": {
-    "defaultMessage": "Do you want to remove this condition group?"
-  },
-  "Throttling.Advanced.DeleteConditionGroup.title": {
-    "defaultMessage": "Delete Condition Group"
-  },
-  "Throttling.Advanced.List.add.new.polcy": {
-    "defaultMessage": "Add New Policy"
-  },
-  "Throttling.Advanced.List.addButtonProps.title": {
-    "defaultMessage": "Add Policy"
-  },
-  "Throttling.Advanced.List.addButtonProps.triggerButtonText": {
-    "defaultMessage": "Add Policy"
-  },
-  "Throttling.Advanced.List.empty.content": {
-    "defaultMessage": "It is possible to create a Microgateway distribution for a group of APIs. In order to group APIs, a label needs to be created and attached to the APIs that need to be in a single group."
-  },
-  "Throttling.Advanced.List.empty.title": {
-    "defaultMessage": "Advanced Throttling Policies"
-  },
-  "Throttling.Advanced.List.help.link.one": {
-    "defaultMessage": "Introducing Rate Limiting Use-Cases"
-  },
-  "Throttling.Advanced.List.help.link.two": {
-    "defaultMessage": "Adding a new advanced rate limiting policy"
-  },
-  "Throttling.Advanced.List.search.default": {
-    "defaultMessage": "Search by Advanced Policy name"
-  },
-  "Throttling.Advanced.List.title.main": {
-    "defaultMessage": "Advanced Rate Limiting Policies"
-  },
-  "Throttling.Application.AddEdit.burst.control.limit": {
-    "defaultMessage": "Number of requests for burst control"
-  },
-  "Throttling.Application.AddEdit.form.request.rate": {
-    "defaultMessage": "Request Rate"
-  },
-  "Throttling.Application.Policy..List.search.default": {
-    "defaultMessage": "Search by Application Policy name"
-  },
-  "Throttling.Application.Policy.List.addButtonProps.title": {
-    "defaultMessage": "Add Policy"
-  },
-  "Throttling.Application.Policy.List.addButtonProps.triggerButtonText": {
-    "defaultMessage": "Add Policy"
-  },
-  "Throttling.Application.Policy.List.empty.content.application.policies": {
-    "defaultMessage": "Application-level throttling policies are applicable per access token generated for an application."
-  },
-  "Throttling.Application.Policy.List.empty.title.application.policies": {
-    "defaultMessage": "Application Policies"
-  },
-  "Throttling.Application.Policy.List.help.link.one": {
-    "defaultMessage": "Create an Application Rate Limiting Policy"
-  },
-  "Throttling.Application.Policy.List.help.link.two": {
-    "defaultMessage": "Setting an Application Rate Limiting Policy"
-  },
-  "Throttling.Application.Policy.policy.add.success": {
-    "defaultMessage": "Application Rate Limiting Policy added successfully."
-  },
-  "Throttling.Application.Policy.policy.data.amount.empty": {
-    "defaultMessage": "Data Amount is Empty"
-  },
-  "Throttling.Application.Policy.policy.delete.error": {
-    "defaultMessage": "Application Rate Limiting Policy could not be deleted."
-  },
-  "Throttling.Application.Policy.policy.delete.success": {
-    "defaultMessage": "Application Rate Limiting Policy successfully deleted."
-  },
-  "Throttling.Application.Policy.policy.dialog.delete.error": {
-    "defaultMessage": "Application Rate Limiting Policy will be deleted."
-  },
-  "Throttling.Application.Policy.policy.edit.success": {
-    "defaultMessage": "Application Rate Limiting Policy edited successfully."
-  },
-  "Throttling.Application.Policy.policy.name.empty": {
-    "defaultMessage": "Name is Empty"
-  },
-  "Throttling.Application.Policy.policy.name.invalid.character": {
-    "defaultMessage": "Name contains one or more illegal characters"
-  },
-  "Throttling.Application.Policy.policy.name.space": {
-    "defaultMessage": "Name contains spaces"
-  },
-  "Throttling.Application.Policy.policy.name.too.long": {
-    "defaultMessage": "Application policy name is too long"
-  },
-  "Throttling.Application.Policy.policy.request.count.empty": {
-    "defaultMessage": "Request Count is Empty"
-  },
-  "Throttling.Application.Policy.policy.unit.time.empty": {
-    "defaultMessage": "Unit Time is Empty"
-  },
-  "Throttling.Application.Policy.policy.unit.time.negative": {
-    "defaultMessage": "Invalid Time Value"
-  },
-  "Throttling.Application.Policy.search.default": {
-    "defaultMessage": "Application Rate Limiting Policies"
-  },
-  "Throttling.Blacklist.Policy.List.addButtonProps.title": {
-    "defaultMessage": "Select Item to Deny"
-  },
-  "Throttling.Blacklist.Policy.List.addButtonProps.triggerButtonText": {
-    "defaultMessage": "Add Policy"
-  },
-  "Throttling.Blacklist.Policy.List.empty.content.blacklist.policies and abuse by": {
-    "defaultMessage": "Denying requests from malicious entities helps you to keep your servers safe"
-  },
-  "Throttling.Blacklist.Policy.List.empty.title.blacklist.policies": {
-    "defaultMessage": "Deny Policies"
-  },
-  "Throttling.Blacklist.Policy.List.help.link.one": {
-    "defaultMessage": "Denying requests"
-  },
-  "Throttling.Blacklist.Policy.List.search.default": {
-    "defaultMessage": "Search by Deny Policy name"
-  },
-  "Throttling.Blacklist.Policy.policy.add.success": {
-    "defaultMessage": "Deny Policy added successfully."
-  },
-  "Throttling.Blacklist.Policy.policy.delete.error": {
-    "defaultMessage": "Deny Policy could not be deleted."
-  },
-  "Throttling.Blacklist.Policy.policy.delete.success": {
-    "defaultMessage": "Deny Policy successfully deleted."
-  },
-  "Throttling.Blacklist.Policy.policy.dialog.delete.error": {
-    "defaultMessage": "Deny Policy will be deleted."
-  },
-  "Throttling.Blacklist.Policy.policy.endingIp.blank": {
-    "defaultMessage": "Ending Ip address field is empty."
-  },
-  "Throttling.Blacklist.Policy.policy.endingIp.invalid": {
-    "defaultMessage": "Starting Ip address entered is not valid."
-  },
-  "Throttling.Blacklist.Policy.policy.endingIp.white.spaces": {
-    "defaultMessage": "Starting Ip address field contains white spaces."
-  },
-  "Throttling.Blacklist.Policy.policy.fixedIp.blank": {
-    "defaultMessage": "Ending Ip address field is empty."
-  },
-  "Throttling.Blacklist.Policy.policy.fixedIp.invalid": {
-    "defaultMessage": "Starting Ip address entered is not valid."
-  },
-  "Throttling.Blacklist.Policy.policy.fixedIp.white.spaces": {
-    "defaultMessage": "Starting Ip address field contains white spaces."
-  },
-  "Throttling.Blacklist.Policy.policy.startingIp.blank": {
-    "defaultMessage": "Starting Ip address field is empty."
-  },
-  "Throttling.Blacklist.Policy.policy.startingIp.invalid": {
-    "defaultMessage": "Starting Ip address entered is not valid."
-  },
-  "Throttling.Blacklist.Policy.policy.startingIp.white.spaces": {
-    "defaultMessage": "Starting Ip address field contains white spaces."
-  },
-  "Throttling.Blacklist.Policy.policy.update.success": {
-    "defaultMessage": "Condition status has been updated successfully."
-  },
-  "Throttling.Blacklist.Policy.search.default": {
-    "defaultMessage": "Deny Policies"
-  },
-  "Throttling.Custom.AddEdit.form.add": {
-    "defaultMessage": "Add"
-  },
-  "Throttling.Custom.AddEdit.form.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "Throttling.Custom.AddEdit.form.edit": {
-    "defaultMessage": "Edit"
-  },
-  "Throttling.Custom.AddEdit.title.add": {
-    "defaultMessage": "Custom Rate Limiting Policy - Define Policy"
-  },
-  "Throttling.Custom.AddEdit.title.edit": {
-    "defaultMessage": "Custom Rate Limiting Policy - Edit"
-  },
-  "Throttling.Custom.List.add.new.polcy": {
-    "defaultMessage": "Define Policy"
-  },
-  "Throttling.Custom.Policy.List.addButtonProps.title": {
-    "defaultMessage": "Define Custom Policy"
-  },
-  "Throttling.Custom.Policy.List.addButtonProps.triggerButtonText": {
-    "defaultMessage": "Define Policy"
-  },
-  "Throttling.Custom.Policy.List.empty.content.custom.policies and abuse by": {
-    "defaultMessage": "Custom throttling allows system administrators to define dynamic rules for specific use cases, which are applied globally across all tenants."
-  },
-  "Throttling.Custom.Policy.List.empty.title.custom.policies": {
-    "defaultMessage": "Custom Policies"
-  },
-  "Throttling.Custom.Policy.List.help.link.one": {
-    "defaultMessage": "Custom Throttling Policy"
-  },
-  "Throttling.Custom.Policy.List.search.default": {
-    "defaultMessage": "Search by Custom Policy name"
-  },
-  "Throttling.Custom.Policy.policy.add.success": {
-    "defaultMessage": "Custom Policy added successfully."
-  },
-  "Throttling.Custom.Policy.policy.delete.error": {
-    "defaultMessage": "Custom Policy could not be deleted."
-  },
-  "Throttling.Custom.Policy.policy.delete.success": {
-    "defaultMessage": "Custom Policy successfully deleted."
-  },
-  "Throttling.Custom.Policy.policy.dialog.delete.error": {
-    "defaultMessage": "Custom Policy will be deleted."
-  },
-  "Throttling.Custom.Policy.policy.edit.success": {
-    "defaultMessage": "Custom Policy edited successfully"
-  },
-  "Throttling.Custom.Policy.policy.invalid.key.template": {
-    "defaultMessage": "Invalid Key Template"
-  },
-  "Throttling.Custom.Policy.policy.name.empty": {
-    "defaultMessage": "Name is Empty"
-  },
-  "Throttling.Custom.Policy.policy.name.invalid.character": {
-    "defaultMessage": "Name contains one or more illegal characters"
-  },
-  "Throttling.Custom.Policy.policy.name.space": {
-    "defaultMessage": "Name contains spaces"
-  },
-  "Throttling.Custom.Policy.policy.name.too.long.error.msg": {
-    "defaultMessage": "Custom policy name is too long"
-  },
-  "Throttling.Custom.Policy.search.default": {
-    "defaultMessage": "Custom Rate Limiting Policies"
-  },
-  "Throttling.Subscription.AddEdit.burst.control.add.description": {
-    "defaultMessage": "Define Burst Control Limits for the subscription policy. This is optional."
-  },
-  "Throttling.Subscription.AddEdit.burst.control.limit": {
-    "defaultMessage": "Number of requests for burst control"
-  },
-  "Throttling.Subscription.AddEdit.burst.control.limits": {
-    "defaultMessage": "Burst Control (Rate Limiting)"
-  },
-  "Throttling.Subscription.AddEdit.custom.attributes.add.description": {
-    "defaultMessage": "Define custom attributes for the subscription policy."
-  },
-  "Throttling.Subscription.AddEdit.form.add": {
-    "defaultMessage": "Save"
-  },
-  "Throttling.Subscription.AddEdit.form.cancel": {
-    "defaultMessage": "Cancel"
-  },
-  "Throttling.Subscription.AddEdit.form.dataAmount.name": {
-    "defaultMessage": "Data Bandwidth"
-  },
-  "Throttling.Subscription.AddEdit.form.description": {
-    "defaultMessage": "Description"
-  },
-  "Throttling.Subscription.AddEdit.form.description.help": {
-    "defaultMessage": "Description of the rate limiting policy"
-  },
-  "Throttling.Subscription.AddEdit.form.eventCount.count": {
-    "defaultMessage": "Event Count"
-  },
-  "Throttling.Subscription.AddEdit.form.max.complexity": {
-    "defaultMessage": "Max Complexity"
-  },
-  "Throttling.Subscription.AddEdit.form.max.depth": {
-    "defaultMessage": "Max Depth"
-  },
-  "Throttling.Subscription.AddEdit.form.max.webhooks.connections": {
-    "defaultMessage": "Max Subscriptions"
-  },
-  "Throttling.Subscription.AddEdit.form.name.help": {
-    "defaultMessage": "Name of the rate limiting policy"
-  },
-  "Throttling.Subscription.AddEdit.form.policyName": {
-    "defaultMessage": "Name"
-  },
-  "Throttling.Subscription.AddEdit.form.request.rate": {
-    "defaultMessage": "Request Rate"
-  },
-  "Throttling.Subscription.AddEdit.form.requestCount.count": {
-    "defaultMessage": "Request Count"
-  },
-  "Throttling.Subscription.AddEdit.general.details": {
-    "defaultMessage": "General Details"
-  },
-  "Throttling.Subscription.AddEdit.general.details.description": {
-    "defaultMessage": "Provide the name and description of the subscription policy."
-  },
-  "Throttling.Subscription.AddEdit.graphql.add.description": {
-    "defaultMessage": "Provide the Maximum Complexity and Maximum depth values for GraphQL APIs using this policy."
-  },
-  "Throttling.Subscription.AddEdit.permissions.add.description": {
-    "defaultMessage": "Define the permissions for the subscription policy."
-  },
-  "Throttling.Subscription.AddEdit.policy.flags.add.description": {
-    "defaultMessage": "Define the billing plan for the subscription policy. Enable stop on quota reach to block invoking an API when the defined quota is reached."
-  },
-  "Throttling.Subscription.AddEdit.quota.limits": {
-    "defaultMessage": "Quota Limits"
-  },
-  "Throttling.Subscription.AddEdit.quota.policies.add.description": {
-    "defaultMessage": "Request Count and Request Bandwidth are the two options for Quota Limit. You can use the option according to your requirement."
-  },
-  "Throttling.Subscription.AddEdit.subscription.count.add.description": {
-    "defaultMessage": "Maximum number of webhooks allowed for a Webhooks API using this policy."
-  },
-  "Throttling.Subscription.AddEdit.title.add": {
-    "defaultMessage": "Subscription Rate Limiting Policy - Create new"
-  },
-  "Throttling.Subscription.AddEdit.title.edit": {
-    "defaultMessage": "Subscription Rate Limiting Policy - Edit"
-  },
-  "Throttling.Subscription.AddEdit.unitTime": {
-    "defaultMessage": "Unit Time"
-  },
-  "Throttling.Subscription.Billing.Plan": {
-    "defaultMessage": "Billing Plan"
-  },
-  "Throttling.Subscription.Fixed.Rate": {
-    "defaultMessage": "Fixed Rate"
-  },
-  "Throttling.Subscription.GraphQL": {
-    "defaultMessage": "GraphQL"
-  },
-  "Throttling.Subscription.Policy..List.search.default": {
-    "defaultMessage": "Search by Subscription Policy name"
-  },
-  "Throttling.Subscription.Policy.Flags": {
-    "defaultMessage": "Policy Flags"
-  },
-  "Throttling.Subscription.Policy.List.addButtonProps.title": {
-    "defaultMessage": "Add Policy"
-  },
-  "Throttling.Subscription.Policy.List.empty.title.subscription.policies": {
-    "defaultMessage": "Subscription Policies"
-  },
-  "Throttling.Subscription.Policy.List.help.link.one": {
-    "defaultMessage": "Creating a Subscription Rate Limiting Policy"
-  },
-  "Throttling.Subscription.Policy.List.help.link.three": {
-    "defaultMessage": "Setting a Subscription Rate Limiting Policy as an API Subscriber"
-  },
-  "Throttling.Subscription.Policy.List.help.link.two": {
-    "defaultMessage": "Setting a Subscription Rate Limiting Policy as an API Publisher"
-  },
-  "Throttling.Subscription.Policy.policy.add.success": {
-    "defaultMessage": "Subscription Rate Limiting Policy added successfully."
-  },
-  "Throttling.Subscription.Policy.policy.data.amount.empty.error.msg": {
-    "defaultMessage": "Data Bandwidth amount is Empty"
-  },
-  "Throttling.Subscription.Policy.policy.delete.error": {
-    "defaultMessage": "Subscription Rate Limiting Policy could not be deleted."
-  },
-  "Throttling.Subscription.Policy.policy.delete.success": {
-    "defaultMessage": "Subscription Rate Limiting Policy successfully deleted."
-  },
-  "Throttling.Subscription.Policy.policy.dialog.delete.error": {
-    "defaultMessage": "Subscription Rate Limiting Policy will be deleted."
-  },
-  "Throttling.Subscription.Policy.policy.edit.success": {
-    "defaultMessage": "Subscription Rate Limiting Policy updated successfully."
-  },
-  "Throttling.Subscription.Policy.policy.event.count.empty.error.msg": {
-    "defaultMessage": "Event Count is Empty"
-  },
-  "Throttling.Subscription.Policy.policy.name.empty.error.msg": {
-    "defaultMessage": "Name is Empty"
-  },
-  "Throttling.Subscription.Policy.policy.name.invalid.character.error.msg": {
-    "defaultMessage": "Name contains one or more illegal characters"
-  },
-  "Throttling.Subscription.Policy.policy.name.space.error.msg": {
-    "defaultMessage": "Name contains spaces"
-  },
-  "Throttling.Subscription.Policy.policy.name.too.long.error.msg": {
-    "defaultMessage": "Subscription policy name is too long"
-  },
-  "Throttling.Subscription.Policy.policy.request.count.empty.error.msg": {
-    "defaultMessage": "Request Count is Empty"
-  },
-  "Throttling.Subscription.Policy.policy.unit.time.empty.error.msg": {
-    "defaultMessage": "Unit Time is Empty"
-  },
-  "Throttling.Subscription.Policy.policy.unit.time.negative.error.msg": {
-    "defaultMessage": "Invalid Time Value"
-  },
-  "Throttling.Subscription.Policy.search.default": {
-    "defaultMessage": "Subscription Rate Limiting Policies"
-  },
-  "Throttling.Subscription.Properties.Properties.show.add.property.property.name": {
-    "defaultMessage": "Name"
-  },
-  "Throttling.Subscription.Properties.property.value": {
-    "defaultMessage": "Value"
-  },
-  "Throttling.Subscription.Roles.Invalid": {
-    "defaultMessage": "A Role is invalid"
-  },
-  "Throttling.Subscription.Subscriber.Count": {
-    "defaultMessage": "Webhooks"
-  },
-  "Throttling.Subscription.attribute.delete.tooltip": {
-    "defaultMessage": "Delete"
-  },
-  "Throttling.Subscription.billing.cycle": {
-    "defaultMessage": "Billing Cycle"
-  },
-  "Throttling.Subscription.currency": {
-    "defaultMessage": "Currency"
-  },
-  "Throttling.Subscription.custom.attributes": {
-    "defaultMessage": "Custom Attributes"
-  },
-  "Throttling.Subscription.custom.attributes.add": {
-    "defaultMessage": "Add Custom Attribute"
-  },
-  "Throttling.Subscription.dynamic.usage": {
-    "defaultMessage": "Price Per Request"
-  },
-  "Throttling.Subscription.dynamic.usage.tooltip": {
-    "defaultMessage": "Price per request for the given billing cycle in the given currency"
-  },
-  "Throttling.Subscription.enter.permission.allowed": {
-    "defaultMessage": "This policy is \"Allowed\" for above roles."
-  },
-  "Throttling.Subscription.enter.permission.denied": {
-    "defaultMessage": "This policy is \"Denied\" for above roles."
-  },
-  "Throttling.Subscription.fixed.rate.tooltip": {
-    "defaultMessage": "Fixed rate for the given billing cycle"
-  },
-  "Throttling.Subscription.monetization.plan": {
-    "defaultMessage": "Monetization Plan"
-  },
-  "Throttling.Subscription.monetization.plan.tooltip": {
-    "defaultMessage": "Monetization category type"
-  },
-  "Throttling.Subscription.permissions": {
-    "defaultMessage": "Permissions"
-  },
-  "Throttling.Subscription.stop.quota.reach": {
-    "defaultMessage": "Stop On Quota Reach"
-  },
-  "Throttling.Subsription.Policy.List.empty.content.subscription.policies": {
-    "defaultMessage": "Subscription-level throttling policies are applicable per access token generated for an application."
-  },
-  "UnexpectedError.logout": {
-    "defaultMessage": "Logout"
-  },
-  "UnexpectedError.message": {
-    "defaultMessage": "Error occurred due to invalid request"
-  },
-  "UnexpectedError.title": {
-    "defaultMessage": "Internal Server Error"
-  },
-  "Workflow.APIProductStateChange.List.empty.content.apiProduct.statechange": {
-    "defaultMessage": "There are no pending workflow requests for API Product state change"
-  },
-  "Workflow.APIProductStateChange.List.empty.title.apistatechange": {
-    "defaultMessage": "API Product State Change"
-  },
-  "Workflow.APIProductStateChange.apicall.has.errors": {
-    "defaultMessage": "Unable to get workflow pending requests for API Product State Change"
-  },
-  "Workflow.APIProductStateChange.updateStatus.has.errors": {
-    "defaultMessage": "Unable to complete API Product state change approve/reject process."
-  },
-  "Workflow.APIRevisionDeployment.List.empty.content.revisiondeployments": {
-    "defaultMessage": "There are no pending workflow requests for revision deployment."
-  },
-  "Workflow.APIRevisionDeployment.List.empty.title.revisiondeployments": {
-    "defaultMessage": "Revision Deployment"
-  },
-  "Workflow.APIRevisionDeployment.apiCall.has.errors": {
-    "defaultMessage": "Unable to get workflow pending requests for Revision Deployment"
-  },
-  "Workflow.APIRevisionDeployment.help.link.one": {
-    "defaultMessage": "Create a Revision Deployment approval workflow Request"
-  },
-  "Workflow.APIRevisionDeployment.permission.denied.content": {
-    "defaultMessage": "You do not have enough permission to view Revision Deployment - Approval Tasks. Please contact the site administrator."
-  },
-  "Workflow.APIRevisionDeployment.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "Workflow.APIRevisionDeployment.search.default": {
-    "defaultMessage": "Search by Revision Id, API name, Environment or Created by"
-  },
-  "Workflow.APIRevisionDeployment.table.button.approve": {
-    "defaultMessage": "Approve"
-  },
-  "Workflow.APIRevisionDeployment.table.button.reject": {
-    "defaultMessage": "Reject"
-  },
-  "Workflow.APIRevisionDeployment.table.header.Action": {
-    "defaultMessage": "Action"
-  },
-  "Workflow.APIRevisionDeployment.table.header.apiName": {
-    "defaultMessage": "API"
-  },
-  "Workflow.APIRevisionDeployment.table.header.apiVersion": {
-    "defaultMessage": "API"
-  },
-  "Workflow.APIRevisionDeployment.table.header.description": {
-    "defaultMessage": "Description"
-  },
-  "Workflow.APIRevisionDeployment.table.header.environment": {
-    "defaultMessage": "Environment"
-  },
-  "Workflow.APIRevisionDeployment.table.header.revisionId": {
-    "defaultMessage": "Revision Id"
-  },
-  "Workflow.APIRevisionDeployment.table.header.userName": {
-    "defaultMessage": "Created by"
-  },
-  "Workflow.APIRevisionDeployment.title.revisiondeployment": {
-    "defaultMessage": "Revision Deployment - Approval Tasks"
-  },
-  "Workflow.APIRevisionDeployment.update.success": {
-    "defaultMessage": "Workflow status is updated successfully"
-  },
-  "Workflow.APIRevisionDeployment.updateStatus.has.errors": {
-    "defaultMessage": "Unable to complete revision deployment approve/reject process."
-  },
-  "Workflow.APIStateChange.List.empty.content.apistatechange": {
-    "defaultMessage": "There are no pending workflow requests for API state change."
-  },
-  "Workflow.APIStateChange.List.empty.title.apistatechange": {
-    "defaultMessage": "API State Change"
-  },
-  "Workflow.APIStateChange.apicall.has.errors": {
-    "defaultMessage": "Unable to get workflow pending requests for API State Change"
-  },
-  "Workflow.APIStateChange.table.button.approve": {
-    "defaultMessage": "Approve"
-  },
-  "Workflow.APIStateChange.table.button.reject": {
-    "defaultMessage": "Reject"
-  },
-  "Workflow.APIStateChange.table.header.Action": {
-    "defaultMessage": "Action"
-  },
-  "Workflow.APIStateChange.table.header.ApiProvider": {
-    "defaultMessage": "Created by"
-  },
-  "Workflow.APIStateChange.table.header.CurrentState": {
-    "defaultMessage": "Current State"
-  },
-  "Workflow.APIStateChange.table.header.Description": {
-    "defaultMessage": "Description"
-  },
-  "Workflow.APIStateChange.table.header.RequestState": {
-    "defaultMessage": "Request State"
-  },
-  "Workflow.APIStateChange.update.success": {
-    "defaultMessage": "Workflow status is updated successfully."
-  },
-  "Workflow.APIStateChange.updateStatus.has.errors": {
-    "defaultMessage": "Unable to complete API state change approve/reject process."
-  },
-  "Workflow.APIStatechange.help.link.one": {
-    "defaultMessage": "Create a API State change approval workflow request"
-  },
-  "Workflow.ApiProduct.StateChange.permission.denied.content": {
-    "defaultMessage": "You dont have enough permission to view API Product State Change - Approval Tasks. Please contact the site administrator."
-  },
-  "Workflow.ApiStateChange.permission.denied.content": {
-    "defaultMessage": "You dont have enough permission to view API State Change - Approval Tasks. Please contact the site administrator."
-  },
-  "Workflow.ApiStateChange.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "Workflow.ApplicationCreation.List.empty.content.applicationcreations": {
-    "defaultMessage": "There are no pending workflow requests for application creation."
-  },
-  "Workflow.ApplicationCreation.List.empty.title.applicationcreations": {
-    "defaultMessage": "Application Creation"
-  },
-  "Workflow.ApplicationCreation.apicall.has.errors": {
-    "defaultMessage": "Unable to get workflow pending requests for Application Creation"
-  },
-  "Workflow.ApplicationCreation.help.link.one": {
-    "defaultMessage": "Create a Application Creation approval workflow Request"
-  },
-  "Workflow.ApplicationCreation.permission.denied.content": {
-    "defaultMessage": "You dont have enough permission to view Application Creation - Approval Tasks. Please contact the site administrator."
-  },
-  "Workflow.ApplicationCreation.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "Workflow.ApplicationCreation.table.button.approve": {
-    "defaultMessage": "Approve"
-  },
-  "Workflow.ApplicationCreation.table.button.reject": {
-    "defaultMessage": "Reject"
-  },
-  "Workflow.ApplicationCreation.table.header.Action": {
-    "defaultMessage": "Action"
-  },
-  "Workflow.ApplicationCreation.table.header.ApplicationTier": {
-    "defaultMessage": "Throttling Policy"
-  },
-  "Workflow.ApplicationCreation.table.header.applicationName": {
-    "defaultMessage": "Application"
-  },
-  "Workflow.ApplicationCreation.table.header.description": {
-    "defaultMessage": "Description"
-  },
-  "Workflow.ApplicationCreation.table.header.userName": {
-    "defaultMessage": "Created by"
-  },
-  "Workflow.ApplicationCreation.title.applicationcreation": {
-    "defaultMessage": "Application Creation - Approval Tasks"
-  },
-  "Workflow.ApplicationCreation.update.success": {
-    "defaultMessage": "Workflow status is updated successfully"
-  },
-  "Workflow.ApplicationCreation.updateStatus.has.errors": {
-    "defaultMessage": "Unable to complete application creation approve/reject process."
-  },
-  "Workflow.ApplicationDeletion.List.empty.content.applicationdeletions": {
-    "defaultMessage": "There are no pending workflow requests for application creation."
-  },
-  "Workflow.ApplicationDeletion.List.empty.title.applicationdeletions": {
-    "defaultMessage": "Application Deletion"
-  },
-  "Workflow.ApplicationDeletion.apicall.has.errors": {
-    "defaultMessage": "Unable to get workflow pending requests for Application Deletion"
-  },
-  "Workflow.ApplicationDeletion.help.link.one": {
-    "defaultMessage": "Create a Application Creation approval workflow Request"
-  },
-  "Workflow.ApplicationDeletion.permission.denied.content": {
-    "defaultMessage": "You dont have enough permission to view Application Creation - Approval Tasks. Please contact the site administrator."
-  },
-  "Workflow.ApplicationDeletion.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "Workflow.ApplicationDeletion.table.button.approve": {
-    "defaultMessage": "Approve"
-  },
-  "Workflow.ApplicationDeletion.table.button.reject": {
-    "defaultMessage": "Reject"
-  },
-  "Workflow.ApplicationDeletion.table.header.Action": {
-    "defaultMessage": "Action"
-  },
-  "Workflow.ApplicationDeletion.table.header.ApplicationTier": {
-    "defaultMessage": "Throttling Policy"
-  },
-  "Workflow.ApplicationDeletion.table.header.applicationName": {
-    "defaultMessage": "Application"
-  },
-  "Workflow.ApplicationDeletion.table.header.description": {
-    "defaultMessage": "Description"
-  },
-  "Workflow.ApplicationDeletion.table.header.userName": {
-    "defaultMessage": "Created by"
-  },
-  "Workflow.ApplicationDeletion.title.applicationdeletion": {
-    "defaultMessage": "Application Deletion - Approval Tasks"
-  },
-  "Workflow.ApplicationDeletion.update.success": {
-    "defaultMessage": "Workflow status is updated successfully"
-  },
-  "Workflow.ApplicationDeletion.updateStatus.has.errors": {
-    "defaultMessage": "Unable to complete application creation approve/reject process."
-  },
-  "Workflow.ApplicationRegistration.List.empty.content.applicationregistrations": {
-    "defaultMessage": "There are no pending workflow requests for application registration (key generation)."
-  },
-  "Workflow.ApplicationRegistration.List.empty.title.applicationregistrations": {
-    "defaultMessage": "Application Registration"
-  },
-  "Workflow.ListUserCreation.search.default": {
-    "defaultMessage": "Search by user name or domain"
-  },
-  "Workflow.ListUserCreation.title.usercreation": {
-    "defaultMessage": "User Creation - Approval Tasks"
-  },
-  "Workflow.RegistrationCreation.apicall.has.errors": {
-    "defaultMessage": "Unable to get workflow pending requests for Registration Creation"
-  },
-  "Workflow.RegistrationCreation.link.one": {
-    "defaultMessage": "Create a application registration workflow request"
-  },
-  "Workflow.RegistrationCreation.permission.denied.content": {
-    "defaultMessage": "You dont have enough permission to view Application Registration - Approval Tasks. Please contact the site administrator."
-  },
-  "Workflow.RegistrationCreation.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "Workflow.RegistrationCreation.search.default": {
-    "defaultMessage": "Search by Application, Throttling Policy, Key type or Creator"
-  },
-  "Workflow.RegistrationCreation.table.button.approve": {
-    "defaultMessage": "Approve"
-  },
-  "Workflow.RegistrationCreation.table.button.reject": {
-    "defaultMessage": "Reject"
-  },
-  "Workflow.RegistrationCreation.table.header.Action": {
-    "defaultMessage": "Action"
-  },
-  "Workflow.RegistrationCreation.table.header.Application": {
-    "defaultMessage": "Application"
-  },
-  "Workflow.RegistrationCreation.table.header.ApplicationTier": {
-    "defaultMessage": "Throttling Policy"
-  },
-  "Workflow.RegistrationCreation.table.header.Creater": {
-    "defaultMessage": "Created by"
-  },
-  "Workflow.RegistrationCreation.table.header.Description": {
-    "defaultMessage": "Description"
-  },
-  "Workflow.RegistrationCreation.table.header.KeyType": {
-    "defaultMessage": "Key Type"
-  },
-  "Workflow.RegistrationCreation.title.registrationcreation": {
-    "defaultMessage": "Application Registration - Approval Tasks"
-  },
-  "Workflow.RegistrationCreation.update.success": {
-    "defaultMessage": "Workflow status is updated successfully"
-  },
-  "Workflow.RegistrationCreation.updateStatus.has.errors": {
-    "defaultMessage": "Unable to complete registration creation approve/reject process."
-  },
-  "Workflow.SubscriptionCreation.List.empty.content.subscriptioncreations": {
-    "defaultMessage": "There are no pending workflow requests for subscription creation."
-  },
-  "Workflow.SubscriptionCreation.List.empty.title.subscriptioncreations": {
-    "defaultMessage": "Subscription Creation"
-  },
-  "Workflow.SubscriptionCreation.apicall.has.errors": {
-    "defaultMessage": "Unable to get workflow pending requests for Subscription Creation"
-  },
-  "Workflow.SubscriptionCreation.help.link.one": {
-    "defaultMessage": "Create a subscription creation request"
-  },
-  "Workflow.SubscriptionCreation.permission.denied.content": {
-    "defaultMessage": "You dont have enough permission to view Subscription Creation - Approval Tasks. Please contact the site administrator."
-  },
-  "Workflow.SubscriptionCreation.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "Workflow.SubscriptionCreation.search.default": {
-    "defaultMessage": "Search by API, Application or Subscriber"
-  },
-  "Workflow.SubscriptionCreation.table.button.approve": {
-    "defaultMessage": "Approve"
-  },
-  "Workflow.SubscriptionCreation.table.button.reject": {
-    "defaultMessage": "Reject"
-  },
-  "Workflow.SubscriptionCreation.table.header.API": {
-    "defaultMessage": "API"
-  },
-  "Workflow.SubscriptionCreation.table.header.Action": {
-    "defaultMessage": "Action"
-  },
-  "Workflow.SubscriptionCreation.table.header.Application": {
-    "defaultMessage": "Application"
-  },
-  "Workflow.SubscriptionCreation.table.header.Description": {
-    "defaultMessage": "Description"
-  },
-  "Workflow.SubscriptionCreation.table.header.Subscriber": {
-    "defaultMessage": "Subscriber"
-  },
-  "Workflow.SubscriptionCreation.title.subscriptioncreation": {
-    "defaultMessage": "Subscription Creation - Approval Tasks"
-  },
-  "Workflow.SubscriptionCreation.title.subscriptionupdate": {
-    "defaultMessage": "Subscription Tier Update - Approval Tasks"
-  },
-  "Workflow.SubscriptionCreation.update.success": {
-    "defaultMessage": "Workflow status is updated successfully"
-  },
-  "Workflow.SubscriptionCreation.updateStatus.has.errors": {
-    "defaultMessage": "Unable to complete subscription creation approve/reject process."
-  },
-  "Workflow.SubscriptionDeletion.List.empty.content.subscriptiondeletions": {
-    "defaultMessage": "There are no pending workflow requests for subscription deletion."
-  },
-  "Workflow.SubscriptionDeletion.List.empty.title.subscriptiondeletions": {
-    "defaultMessage": "Subscription Deletion"
-  },
-  "Workflow.SubscriptionDeletion.apicall.has.errors": {
-    "defaultMessage": "Unable to get workflow pending requests for Subscription Deletion"
-  },
-  "Workflow.SubscriptionDeletion.help.link.one": {
-    "defaultMessage": "Create a subscription deletion request"
-  },
-  "Workflow.SubscriptionDeletion.permission.denied.content": {
-    "defaultMessage": "You dont have enough permission to view Subscription Deletion - Approval Tasks. Please contact the site administrator."
-  },
-  "Workflow.SubscriptionDeletion.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "Workflow.SubscriptionDeletion.search.default": {
-    "defaultMessage": "Search by API, Application or Subscriber"
-  },
-  "Workflow.SubscriptionDeletion.table.button.approve": {
-    "defaultMessage": "Approve"
-  },
-  "Workflow.SubscriptionDeletion.table.button.reject": {
-    "defaultMessage": "Reject"
-  },
-  "Workflow.SubscriptionDeletion.table.header.API": {
-    "defaultMessage": "API"
-  },
-  "Workflow.SubscriptionDeletion.table.header.Action": {
-    "defaultMessage": "Action"
-  },
-  "Workflow.SubscriptionDeletion.table.header.Application": {
-    "defaultMessage": "Application"
-  },
-  "Workflow.SubscriptionDeletion.table.header.Description": {
-    "defaultMessage": "Description"
-  },
-  "Workflow.SubscriptionDeletion.table.header.Subscriber": {
-    "defaultMessage": "Subscriber"
-  },
-  "Workflow.SubscriptionDeletion.title.subscriptiondeletion": {
-    "defaultMessage": "Subscription Deletion - Approval Tasks"
-  },
-  "Workflow.SubscriptionDeletion.update.success": {
-    "defaultMessage": "Workflow status is updated successfully"
-  },
-  "Workflow.SubscriptionUpdate.List.empty.content.subscriptionUpdates": {
-    "defaultMessage": "There are no pending workflow requests for subscription updates."
-  },
-  "Workflow.SubscriptionUpdate.List.empty.title.subscriptionUpdate": {
-    "defaultMessage": "Subscription Update"
-  },
-  "Workflow.SubscriptionUpdate.apicall.has.errors": {
-    "defaultMessage": "Unable to get workflow pending requests for Subscription Update"
-  },
-  "Workflow.SubscriptionUpdate.help.link.one": {
-    "defaultMessage": "Create a subscription update request"
-  },
-  "Workflow.SubscriptionUpdate.permission.denied.content": {
-    "defaultMessage": "You dont have enough permission to view Subscription Tier Update - Approval Tasks. Please contact the site administrator."
-  },
-  "Workflow.SubscriptionUpdate.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "Workflow.SubscriptionUpdate.search.default": {
-    "defaultMessage": "Search by API, Application or Subscriber"
-  },
-  "Workflow.SubscriptionUpdate.table.button.approve": {
-    "defaultMessage": "Approve"
-  },
-  "Workflow.SubscriptionUpdate.table.button.reject": {
-    "defaultMessage": "Reject"
-  },
-  "Workflow.SubscriptionUpdate.table.header.API": {
-    "defaultMessage": "API"
-  },
-  "Workflow.SubscriptionUpdate.table.header.Action": {
-    "defaultMessage": "Action"
-  },
-  "Workflow.SubscriptionUpdate.table.header.Application": {
-    "defaultMessage": "Application"
-  },
-  "Workflow.SubscriptionUpdate.table.header.Description": {
-    "defaultMessage": "Description"
-  },
-  "Workflow.SubscriptionUpdate.table.header.Subscriber": {
-    "defaultMessage": "Subscriber"
-  },
-  "Workflow.SubscriptionUpdate.update.success": {
-    "defaultMessage": "Workflow status is updated successfully"
-  },
-  "Workflow.SubscriptionUpdate.updateStatus.has.errors": {
-    "defaultMessage": "Unable to complete subscription update approve/reject process."
-  },
-  "Workflow.SubsriptionDeletion.updateStatus.has.errors": {
-    "defaultMessage": "Unable to complete subscription deletion approve/reject process."
-  },
-  "Workflow.UserCreation.List.empty.content.usercreations": {
-    "defaultMessage": "There are no workflow pending requests for user creation.It is possible to approve or reject workflow pending requests of user sign up. Workflow Approval Executor needs to be enabled to approve or reject the requests."
-  },
-  "Workflow.UserCreation.List.empty.title.usercreations": {
-    "defaultMessage": "User Creation"
-  },
-  "Workflow.UserCreation.apicall.has.errors": {
-    "defaultMessage": "Unable to get workflow pending requests for User Creation"
-  },
-  "Workflow.UserCreation.help.link.one": {
-    "defaultMessage": "Create a user self sign up request"
-  },
-  "Workflow.UserCreation.permission.denied.content": {
-    "defaultMessage": "You dont have enough permission to view User Creation - Approval Tasks. Please contact the site administrator."
-  },
-  "Workflow.UserCreation.permission.denied.title": {
-    "defaultMessage": "Permission Denied"
-  },
-  "Workflow.UserCreation.table.button.approve": {
-    "defaultMessage": "Approve"
-  },
-  "Workflow.UserCreation.table.button.reject": {
-    "defaultMessage": "Reject"
-  },
-  "Workflow.UserCreation.table.header.Action": {
-    "defaultMessage": "Action"
-  },
-  "Workflow.UserCreation.table.header.Description": {
-    "defaultMessage": "Description"
-  },
-  "Workflow.UserCreation.table.header.ElapsedTime": {
-    "defaultMessage": "Elapsed time"
-  },
-  "Workflow.UserCreation.table.header.TenantDomain": {
-    "defaultMessage": "Tenant Domain"
-  },
-  "Workflow.UserCreation.table.header.TenantName": {
-    "defaultMessage": "User Name"
-  },
-  "Workflow.UserCreation.update.success": {
-    "defaultMessage": "Workflow status is updated successfully"
-  },
-  "Workflow.UserCreation.updateStatus.has.errors": {
-    "defaultMessage": "Unable to complete User creation approve/reject process."
-  },
-  "Workflow.api.statechange.search.default": {
-    "defaultMessage": "Search by API, Request state, Current state or Creator"
-  },
-  "Workflow.apiProduct.statechange.search.default": {
-    "defaultMessage": "Search by API Product, Request state, Current state or Creator"
-  },
-  "Workflow.applicationcreation.search.default": {
-    "defaultMessage": "Search by Application, Throttling Policy or Creator"
-  },
-  "Workflow.applicationdeletion.search.default": {
-    "defaultMessage": "Search by Application, Throttling Policy or Creator"
-  },
-  "dsdds": {
-    "defaultMessage": "The specific combination of attributes being checked in the policy need to be defined as the key template. Allowed values are : $userId, $apiContext, $apiVersion, $resourceKey, $appTenant, $apiTenant, $appId, $clientIp, $customProperty, $customProperty.somevalue"
-  },
-  "error.list.401": {
-    "defaultMessage": "401 : Authorization Required."
-  },
-  "error.list.401.description": {
-    "defaultMessage": "The server could not verify that you are authorized to access the requested resource"
-  },
-  "error.list.403": {
-    "defaultMessage": "403 : Forbidden."
-  },
-  "error.list.403.description": {
-    "defaultMessage": "You do not have permission to access anything with that kind of request."
-  },
-  "error.list.404": {
-    "defaultMessage": "404 : The page cannot be found."
-  },
-  "error.list.404.description": {
-    "defaultMessage": "The page you are looking for might have been removed, had its name changed or is temporarily unavailable."
-  },
-  "error.list.500": {
-    "defaultMessage": "500 : The page cannot be displayed."
-  },
-  "error.list.500.description": {
-    "defaultMessage": "The server encountered an internal error or misconfiguration and was unable to complete your request."
-  }
+  "Admin.KeyManager.form.type": "Key Manager Type",
+  "Admin.KeyManager.label.ConsumerKey.Claim": "Consumer Key Claim URI",
+  "Admin.KeyManager.label.DisplayName": "Display Name",
+  "Admin.KeyManager.label.Enable.EnableOAithAppCreation": "Oauth App Creation",
+  "Admin.KeyManager.label.Enable.OutOfBandProvisioning": "Out Of Band Provisioning",
+  "Admin.KeyManager.label.Enable.TokenGen": "Token Generation",
+  "Admin.KeyManager.label.Scopes.Claim": "Scopes Claim URI",
+  "Admin.KeyManager.label.allow.exchange.token": "Token Exchange",
+  "Admin.KeyManager.label.message.allow.direct.token": "Direct Token",
+  "Admin.KeyManager.label.token.audience": "Allowed Token Audience",
+  "Admin.KeyManager.permission.type": "Key Manager Permission",
+  "Admin.Throttling.Advanced.Throttling.policy.table.header.name": "Name",
+  "Admin.Throttling.Advanced.Throttling.policy.table.header.quota": "Quota",
+  "Admin.Throttling.Advanced.Throttling.policy.table.header.quota.policy": "Quota Policy",
+  "Admin.Throttling.Advanced.Throttling.policy.table.header.unit.time": "Unit Time",
+  "Admin.Throttling.Application.AddEdit.burst.control.add.description": "Define Burst Control Limits (optional)",
+  "Admin.Throttling.Application.Throttling.Policy.add.burst.limits.details": "Burst Control (Rate Limiting)",
+  "Admin.Throttling.Application.Throttling.Policy.add.data.amount.helper.text": "Bandwidth allowed",
+  "Admin.Throttling.Application.Throttling.Policy.add.description.helper.text": "Description of the throttle policy",
+  "Admin.Throttling.Application.Throttling.Policy.add.general.details": "General Details",
+  "Admin.Throttling.Application.Throttling.Policy.add.name.helper.text": "Name of the throttle policy",
+  "Admin.Throttling.Application.Throttling.Policy.add.quota.limits.details": "Quota Limits",
+  "Admin.Throttling.Application.Throttling.Policy.add.request.count.helper.text": "Number of requests allowed",
+  "Admin.Throttling.Application.Throttling.Policy.add.time.helper.text": "Time configuration",
+  "Admin.Throttling.Application.Throttling.policy.table.header.name": "Name",
+  "Admin.Throttling.Application.Throttling.policy.table.header.quota": "Quota",
+  "Admin.Throttling.Application.Throttling.policy.table.header.unit.time": "Unit Time",
+  "Admin.Throttling.Blacklist.Throttling.Policy.add.condition.type": "Condition Type",
+  "Admin.Throttling.Blacklist.Throttling.policy.table.header.condition.status": "Condition Status",
+  "Admin.Throttling.Blacklist.Throttling.policy.table.header.condition.type": "Condition Type",
+  "Admin.Throttling.Blacklist.Throttling.policy.table.header.conditional.value": "Conditional Value",
+  "Admin.Throttling.Blacklist.policy.add.invert.condition": "Invert Condition:",
+  "Admin.Throttling.Blacklist.policy.enable.condition": "Enable Condition",
+  "Admin.Throttling.Custom.Throttling.policy.table.header.description": "Description",
+  "Admin.Throttling.Custom.Throttling.policy.table.header.key.template": "Key Template",
+  "Admin.Throttling.Custom.Throttling.policy.table.header.name": "Name",
+  "Admin.Throttling.Custom.policy.add.policy.description": "Description of the throttle policy",
+  "Admin.Throttling.Custom.policy.add.policy.name": "Name of the throttle policy",
+  "Admin.Throttling.Custom.policy.add.siddhi.query": "Siddhi Query:",
+  "Admin.Throttling.Custom.policy.add.siddhi.query.description": "The following sample query will allow 5 requests per minute for an Admin user.",
+  "Admin.Throttling.Custom.policy.add.siddhi.query.key.template": "Key Template : $userId",
+  "Admin.Throttling.Subscription.Throttling.policy.table.header.name": "Name",
+  "Admin.Throttling.Subscription.Throttling.policy.table.header.quota": "Quota",
+  "Admin.Throttling.Subscription.Throttling.policy.table.header.quota.policy": "Quota Policy",
+  "Admin.Throttling.Subscription.Throttling.policy.table.header.rate.limit": "Rate Limit",
+  "Admin.Throttling.Subscription.Throttling.policy.table.header.time.unit": "Time Unit",
+  "Admin.Throttling.Subscription.Throttling.policy.table.header.unit.time": "Unit Time",
+  "AdminPages.Addons.InlineProgress.message": "Loading...",
+  "AdminPages.Addons.ListBase.noDataError": "Error while retrieving data.",
+  "AdminPages.Addons.ListBase.nodata.message": "No items yet",
+  "AdminPages.Addons.ListBase.reload": "Reload",
+  "AdminPages.ApiCategories.AddEdit.form.add.successful": "API Category added successfully",
+  "AdminPages.ApiCategories.AddEdit.form.edit.successful": "API Category edited successfully",
+  "AdminPages.ApiCategories.AddEdit.form.name": "Name",
+  "AdminPages.ApiCategories.Delete.form.delete.successful": "API Category deleted successfully",
+  "AdminPages.ApiCategories.List.addButtonProps.title": "Add API Category",
+  "AdminPages.ApiCategories.List.addButtonProps.triggerButtonText": "Add API Category",
+  "AdminPages.ApiCategories.List.empty.content.apicategories": "You can use API categories to group APIs. In previous versions of WSO2 API Manager, the process of grouping APIs was carried out by using tag-wise groups. Unlike tag-wise grouping, API categories do not use a naming convention. Therefore, the admin does not need to take into consideration any naming conventions when using API category-based grouping.",
+  "AdminPages.ApiCategories.List.empty.title.apicategories": "API Categories",
+  "AdminPages.ApiCategories.List.help.link.one": "API Category based Grouping",
+  "AdminPages.ApiCategories.List.search.default": "Search by API Category name",
+  "AdminPages.ApiCategories.List.title.apicategories": "API Categories",
+  "AdminPages.ApiCategories.table.header.category.description": "Description",
+  "AdminPages.ApiCategories.table.header.category.name": "Category Name",
+  "AdminPages.ApiCategories.table.header.category.number.of.apis": "Number of APIs",
+  "AdminPages.ApiSettings.EditApi.form.edit.error": "API provider should not be empty.",
+  "AdminPages.ApiSettings.EditApi.form.edit.other.error": "Given Username is not valid.",
+  "AdminPages.ApiSettings.EditApi.form.edit.successful": "API provider changed successfully",
+  "AdminPages.ApiSettings.EditApi.form.edit.user.notvalid": "Error while updating the provider name.",
+  "AdminPages.ApplicationSettings.Edit.form.edit.successful": "Application owner changed successfully",
+  "AdminPages.ApplicationSettings.Edit.form.helperText": "Enter a new Owner. Make sure the new owner has logged into the Developer Portal at least once",
+  "AdminPages.ApplicationSettings.Edit.form.name": "Application Name",
+  "AdminPages.Gateways.Delete.form.delete.confirmation.message": "Are you sure you want to delete this Gateway Environment?",
+  "AdminPages.Gateways.Delete.form.delete.successful": "Gateway Environment deleted successfully",
+  "AdminPages.Gateways.List.addButtonProps.title": "Add Gateway Environment",
+  "AdminPages.Gateways.List.addButtonProps.triggerButtonText": "Add Gateway Environment",
+  "AdminPages.Gateways.List.empty.content.Gateways": "It is possible to create a Gateway environment with virtual hosts to access APIs. API revisions can be attached with Vhost to access it.",
+  "AdminPages.Gateways.List.empty.title": "Gateway Environments",
+  "AdminPages.Gateways.List.search.default": "Search Gateway by Name, Description or Host",
+  "AdminPages.Gateways.List.title": "Gateway Environments",
+  "AdminPages.Gateways.table.header.description": "Description",
+  "AdminPages.Gateways.table.header.displayName": "Name",
+  "AdminPages.Gateways.table.header.gatewayType": "Gateway Type",
+  "AdminPages.Gateways.table.header.type": "Type",
+  "AdminPages.Gateways.table.header.vhosts": "Virtual Host(s)",
+  "AdminPages.KeyManager.Delete.form.delete.confirmation.message": "Are you sure you want to delete this KeyManager ?",
+  "AdminPages.KeyManagers.Delete.form.delete.successful": "KeyManager deleted successfully",
+  "AdminPages.KeyManagers.List.empty.content.keymanagers": "It is possible to register an OAuth Provider.",
+  "AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.displayName.empty": "Display Name is Empty",
+  "AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.vhost.duplicate": "VHosts are duplicated",
+  "AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.vhost.empty": "VHost is empty",
+  "Api.Name": "API Name",
+  "Api.Provider": "Provider",
+  "Api.Version": "Version",
+  "Apis.Details.Scopes.CreateScope.roles.help": "Enter a valid role and press `Enter`.",
+  "Apis.Listing.Listing.apis.search": "Search",
+  "Apis.Listing.Listing.apis.search.label": "Search by API",
+  "Apis.Listing.Listing.apis.searching": "Searching",
+  "Apis.Listing.Listing.clear.search": "Clear Search",
+  "Apis.Listing.Listing.empty.message": "No Data to Display",
+  "Apis.Listing.Listing.search.placeholder": "Api Name",
+  "Apis.Listing.apiTableHead.name": "Name",
+  "Apis.Listing.apiTableHead.provider": "Provider",
+  "Apis.Listing.apiTableHead.version": "Version",
+  "Apis.Shared.AdminRootErrorBoundary.refresh": "Refresh",
+  "Apis.Shared.AdminRootErrorBoundary.refresh.or.try.again.message": "You may refresh the page now or try again later",
+  "Apis.Shared.AdminRootErrorBoundary.something.went.wrong.while.rendering.button": "Something went wrong while rendering the",
+  "Apis.Shared.AdminRootErrorBoundary.something.went.wrong.while.rendering.heading": "Something went wrong while rendering the",
+  "Apis.Shared.AppErrorBoundary.something.went.wrong": "Something went wrong",
+  "Apis.Shared.ConfirmDialog.are.you.sure": "Are you sure?",
+  "Apis.Shared.ConfirmDialog.cancel": "Cancel",
+  "Apis.Shared.ConfirmDialog.ok": "OK",
+  "Apis.Shared.ConfirmDialog.please.confirm": "Please Confirm",
+  "Apis.Shared.RedirectToLogin.you.will.be.redirected.to": "You will be redirected to {page}",
+  "Application.Name": "Application Name",
+  "Application.Owner": "Application Owner",
+  "Application.organization": "Application Organization",
+  "Applications.Listing.ApplicationTableHead.actions": "Actions",
+  "Applications.Listing.ApplicationTableHead.name": "Name",
+  "Applications.Listing.ApplicationTableHead.owner": "Owner",
+  "Applications.Listing.Listing.applications.search": "Search",
+  "Applications.Listing.Listing.applications.search.label": "Search Application by Application Owner",
+  "Applications.Listing.Listing.applications.searching": "Searching",
+  "Applications.Listing.Listing.clear.search": "Clear Search",
+  "Applications.Listing.Listing.empty.message": "No Data to Display",
+  "Applications.Listing.Listing.search.placeholder": "Application Owner",
+  "Base.Errors.ResourceNotFound.api.list": "API List",
+  "Base.Errors.ResourceNotFound.api.product.list": "API Product List",
+  "Base.Errors.ResourceNotFound.more.links": "You may check the links below",
+  "Base.Errors.ResourceNotfound.default_body": "The page you are looking for is not available",
+  "Base.Errors.ResourceNotfound.default_tittle": "Page Not Found",
+  "Base.Footer.Footer.product_details": "WSO2 API-M v4.3.0 | © 2024 WSO2 LLC",
+  "Base.Header.avatar.Avatar.logout": "Logout",
+  "Base.RouteMenuMapping.advanced": "Advanced",
+  "Base.RouteMenuMapping.advanced.throttling.policies": "Advanced Policies",
+  "Base.RouteMenuMapping.advanced.throttling.policies.Adding": "Add Advanced Policy",
+  "Base.RouteMenuMapping.advanced.throttling.policies.Editing": "Edit Advanced Policy",
+  "Base.RouteMenuMapping.api.categories": "API Categories",
+  "Base.RouteMenuMapping.apis": "Change API Provider",
+  "Base.RouteMenuMapping.application.creation": "Application Creation",
+  "Base.RouteMenuMapping.application.deletion": "Application Deletion",
+  "Base.RouteMenuMapping.application.throttling.policies": "Application Policies",
+  "Base.RouteMenuMapping.applications": "Change Application Owner",
+  "Base.RouteMenuMapping.blacklisted.items": "Deny Policies",
+  "Base.RouteMenuMapping.custom.throttling.policies": "Custom Policies",
+  "Base.RouteMenuMapping.custom.throttling.policies.items.Adding": "Add Custom Policy",
+  "Base.RouteMenuMapping.custom.throttling.policies.items.Editing": "Edit Custom Policy",
+  "Base.RouteMenuMapping.dashboard": "Dashboard",
+  "Base.RouteMenuMapping.gateways": "Gateways",
+  "Base.RouteMenuMapping.keymanagers": "Key Managers",
+  "Base.RouteMenuMapping.keymanagers.items.Adding": "Add Key Manager",
+  "Base.RouteMenuMapping.keymanagers.items.Editing": "Edit Key Manager",
+  "Base.RouteMenuMapping.role.permissions": "Scope Assignments",
+  "Base.RouteMenuMapping.settings": "Settings",
+  "Base.RouteMenuMapping.subscription.creation": "Subscription Creation",
+  "Base.RouteMenuMapping.subscription.deletion": "Subscription Deletion",
+  "Base.RouteMenuMapping.subscription.throttling.policies": "Subscription Policies",
+  "Base.RouteMenuMapping.subscription.throttling.policies.Adding": "Add Subscription Policy",
+  "Base.RouteMenuMapping.subscription.throttling.policies.Editing": "Edit Subscription Policy",
+  "Base.RouteMenuMapping.subscription.update": "Subscription Update",
+  "Base.RouteMenuMapping.tasks": "Tasks",
+  "Base.RouteMenuMapping.tenant.theme": "Tenant Theme",
+  "Base.RouteMenuMapping.throttling.policies": "Rate Limiting Policies",
+  "Base.RouteMenuMapping.user.creation": "User Creation",
+  "Claim.Mapping.already.exists": "Claim Mapping already exists.",
+  "Dashboard.apiCategories.apiCategoriesListing.card.title": "API Categories",
+  "Dashboard.apiCategories.apiCategoriesListing.card.view.all.link.text": "View All",
+  "Dashboard.apiCategories.apiCategoriesListing.no.description": "No description available",
+  "Dashboard.apiCategories.noApiCategories.card.add.new.link.text": "Add new Category",
+  "Dashboard.apiCategories.noApiCategories.card.description": "API categories allow API providers to categorize APIs that have similar attributes. When a categorized API gets published to the Developer Portal, its categories appear as clickable links to the API consumers. The API consumers can use the available API categories to quickly jump to a category of interest. {learnMoreLink}",
+  "Dashboard.apiCategories.noApiCategories.card.title": "API Category based grouping",
+  "Dashboard.rateLimiting.card.advancedPolicies.description": "Control access per API or API resource using advanced rules",
+  "Dashboard.rateLimiting.card.advancedPolicies.name": "Advanced Policies",
+  "Dashboard.rateLimiting.card.applicationPolicies.description": "Applicable per access token generated for an application",
+  "Dashboard.rateLimiting.card.applicationPolicies.name": "Application Policies",
+  "Dashboard.rateLimiting.card.customPolicies.description": "Allows system administrators to define dynamic rules for specific use cases, which are applied globally across all tenants.",
+  "Dashboard.rateLimiting.card.customPolicies.name": "Custom Policies",
+  "Dashboard.rateLimiting.card.subscriptionPolicies.description": "Control access per Subscription",
+  "Dashboard.rateLimiting.card.subscriptionPolicies.name": "Subscription Policies",
+  "Dashboard.rateLimiting.card.title": "Rate Limiting",
+  "Dashboard.tasksWorkflow.compactTasks.apiProductStateChange.name": "API Product State Change",
+  "Dashboard.tasksWorkflow.compactTasks.apiRevisionDeployment.name": "API Revision Deployment",
+  "Dashboard.tasksWorkflow.compactTasks.apiStateChange.name": "API State Change",
+  "Dashboard.tasksWorkflow.compactTasks.applicationCreation.name": "Application Creation",
+  "Dashboard.tasksWorkflow.compactTasks.applicationDeletion.name": "Application Deletion",
+  "Dashboard.tasksWorkflow.compactTasks.applicationRegistration.name": "Application Registration",
+  "Dashboard.tasksWorkflow.compactTasks.card.numberOfPendingTasks.postFix.plural": "Pending tasks",
+  "Dashboard.tasksWorkflow.compactTasks.card.numberOfPendingTasks.postFix.singular": "Pending task",
+  "Dashboard.tasksWorkflow.compactTasks.card.title": "Pending tasks",
+  "Dashboard.tasksWorkflow.compactTasks.subscriptionCreation.name": "Subscription Creation",
+  "Dashboard.tasksWorkflow.compactTasks.subscriptionDeletion.name": "Subscription Deletion",
+  "Dashboard.tasksWorkflow.compactTasks.subscriptionUpdate.name": "Subscription Update",
+  "Dashboard.tasksWorkflow.compactTasks.userCreation.name": "User Creation",
+  "Dashboard.tasksWorkflow.noTasks.card.description": "Manage workflow tasks, increase productivity and enhance competitiveness by enabling developers to easily deploy business processes and models.",
+  "Dashboard.tasksWorkflow.noTasks.card.title": "All the pending tasks completed",
+  "GatewayEnvironments.AddEditGWEnvironment.form.description.help": "Description of the Gateway Environment",
+  "GatewayEnvironments.AddEditGWEnvironment.form.displayName": "Display Name",
+  "GatewayEnvironments.AddEditGWEnvironment.form.displayName.help": "Display name of the Gateway Environment",
+  "GatewayEnvironments.AddEditGWEnvironment.form.environment.name.empty": "Name is Empty",
+  "GatewayEnvironments.AddEditGWEnvironment.form.environment.name.invalid": "Name must not contain special characters or spaces",
+  "GatewayEnvironments.AddEditGWEnvironment.form.info.add.successful": "Gateway Environment added successfully",
+  "GatewayEnvironments.AddEditGWEnvironment.form.info.edit.successful": "Gateway Environment edited successfully",
+  "GatewayEnvironments.AddEditGWEnvironment.form.name": "Name",
+  "GatewayEnvironments.AddEditGWEnvironment.form.save.button.label": "Save",
+  "GatewayEnvironments.AddEditGWEnvironment.form.vhost.context.invalid": "Invalid Http context",
+  "GatewayEnvironments.AddEditGWEnvironment.form.vhost.host.empty": "Host of Vhost is empty",
+  "GatewayEnvironments.AddEditGWEnvironment.form.vhost.host.invalid": "Invalid Host",
+  "GatewayEnvironments.AddEditVhost.host": "Host",
+  "GatewayEnvironments.AddEditVhost.httpPort": "HTTP Port",
+  "GatewayEnvironments.AddEditVhost.httpsPort": "HTTPS Port",
+  "GatewayEnvironments.AddEditVhost.wsPort": "WS Port",
+  "GatewayEnvironments.AddEditVhost.wssPort": "WSS Port",
+  "KeyManager.AddEdit.Invalid.Roles.Found": "Invalid Role(s) Found",
+  "KeyManager.AddEdit.roles.help": "Enter a valid role and press `Enter`",
+  "KeyManager.AddEditKeyManager.permissions.add.description": "Permissions for the Key Manager",
+  "KeyManager.Claim.Helper.text": "Add Claim Mappings",
+  "KeyManager.Connector.Configuration.Helper.text": "Add Key Manager Connector Configurations",
+  "KeyManager.KeyValidation.CUSTOM": "CUSTOM",
+  "KeyManager.KeyValidation.JWT": "JWT",
+  "KeyManager.KeyValidation.REFERENCE": "REFERENCE",
+  "KeyManager.KeyValidation.token.validation.type": "Type",
+  "KeyManager.add.success": "Key Manager added successfully.",
+  "KeyManager.add.success.msg": "- Key Manager added successfully.",
+  "KeyManager.edit.success": "- Key Manager edited successfully.",
+  "KeyManager.enter.permission.allowed": "Use of this Key-Manager is \"Allowed\" for above roles.",
+  "KeyManager.enter.permission.denied": "Use of this Key-Manager is \"Denied\" for above roles.",
+  "KeyManager.permissions": "Permissions",
+  "KeyManagers.AddEditKeyManager.\n                                                                form.scopeManagementEndpoint": "Scope Management Endpoint",
+  "KeyManagers.AddEditKeyManager.\n                                                            form.displayRevokeEndpoint": "Display Revoke Endpoint",
+  "KeyManagers.AddEditKeyManager.External.KeyManager\n                                        .general.details.description": "Identity Provider vendor and the token usage mode",
+  "KeyManagers.AddEditKeyManager.KeyManager.type": "Key Manager Type",
+  "KeyManagers.AddEditKeyManager.advanced": "Advanced Configurations",
+  "KeyManagers.AddEditKeyManager.advanced.description": "Advanced options for the Key Manager",
+  "KeyManagers.AddEditKeyManager.api.invocation.method": "API Invocation Method",
+  "KeyManagers.AddEditKeyManager.api.no.usages": "No API usages for this key manager specifically.",
+  "KeyManagers.AddEditKeyManager.application.no.usages": "No Application usages for this key manager specifically.",
+  "KeyManagers.AddEditKeyManager.certificate": "Certificates",
+  "KeyManagers.AddEditKeyManager.certificate.description": "Upload or provide the certificate inline.",
+  "KeyManagers.AddEditKeyManager.claim.mappings.hidden.help": "Expand to add edit claim mappings",
+  "KeyManagers.AddEditKeyManager.claim.mappings.title": "Claim Mappings",
+  "KeyManagers.AddEditKeyManager.claim.uris": "Claim URIs",
+  "KeyManagers.AddEditKeyManager.claim.uris.description": "Provide claim URIs for consumer key and scopes.",
+  "KeyManagers.AddEditKeyManager.connector.configurations": "Connector Configurations",
+  "KeyManagers.AddEditKeyManager.connector.configurations.description": "Provide connection params for the selected Key Manager.",
+  "KeyManagers.AddEditKeyManager.endpoints": "Key Manager Endpoints",
+  "KeyManagers.AddEditKeyManager.endpoints.description": "Configure endpoints such as client registration endpoint, the token endpoint for this Key Manager.",
+  "KeyManagers.AddEditKeyManager.exchange.token.form.\n                                                token.audience.help": "The Audience of the authorization server which the access token is intended for.",
+  "KeyManagers.AddEditKeyManager.form.\n                                                            clientRegistrationEndpoint": "Client Registration Endpoint",
+  "KeyManagers.AddEditKeyManager.form.\n                                                            introspectionEndpoint": "Introspection Endpoint",
+  "KeyManagers.AddEditKeyManager.form.Issuer": "Issuer",
+  "KeyManagers.AddEditKeyManager.form.add": "Add",
+  "KeyManagers.AddEditKeyManager.form.authorizeEndpoint": "Authorize Endpoint",
+  "KeyManagers.AddEditKeyManager.form.authorizeEndpoint.help": "E.g., https://localhost:9443/oauth2/userinfo",
+  "KeyManagers.AddEditKeyManager.form.cancel": "Cancel",
+  "KeyManagers.AddEditKeyManager.form.claim.help": "Type Available Grant Types and press Enter/Return to add them.",
+  "KeyManagers.AddEditKeyManager.form.clientRegistrationEndpoint.help": "E.g., https://localhost:9444/client-registration/v0.17/register",
+  "KeyManagers.AddEditKeyManager.form.consumerKeyClaim.help": "Provide consumer key claim URIs.",
+  "KeyManagers.AddEditKeyManager.form.description": "Description",
+  "KeyManagers.AddEditKeyManager.form.description.help": "Description of the Key Manager.",
+  "KeyManagers.AddEditKeyManager.form.displayName.help": "Display Name of the Key Manager.",
+  "KeyManagers.AddEditKeyManager.form.displayRevokeEndpoint": "Display Revoke Endpoint",
+  "KeyManagers.AddEditKeyManager.form.displayTokenEndpoint": "Display Token Endpoint",
+  "KeyManagers.AddEditKeyManager.form.has.errors": "One or more fields contain errors.",
+  "KeyManagers.AddEditKeyManager.form.introspectionEndpoint.help": "E.g., https://localhost:9443/oauth2/introspect",
+  "KeyManagers.AddEditKeyManager.form.issuer.help": "E.g.,: https://localhost:9443/oauth2/token",
+  "KeyManagers.AddEditKeyManager.form.name": "Name",
+  "KeyManagers.AddEditKeyManager.form.name.help": "Name of the Key Manager.",
+  "KeyManagers.AddEditKeyManager.form.revokeEndpoint": "Revoke Endpoint",
+  "KeyManagers.AddEditKeyManager.form.revokeEndpoint.help": "E.g., https://localhost:9443/oauth2/revoke",
+  "KeyManagers.AddEditKeyManager.form.scopeManagementEndpoint.help": "E.g, https://localhost:9443/oauth2/scope",
+  "KeyManagers.AddEditKeyManager.form.scopesClaim.help": "Provide scope claim URI.",
+  "KeyManagers.AddEditKeyManager.form.token.audience.help": "The Audience of the authorization server which the access token is intended for.",
+  "KeyManagers.AddEditKeyManager.form.tokenEndpoint": "Token Endpoint",
+  "KeyManagers.AddEditKeyManager.form.tokenEndpoint.help": "E.g., https://localhost:9443/oauth2/token",
+  "KeyManagers.AddEditKeyManager.form.tokentype.error": "At least one API Invocation Method should supported by the Key Manager",
+  "KeyManagers.AddEditKeyManager.form.type.help": "Select Key Manager Type",
+  "KeyManagers.AddEditKeyManager.form.update.btn": "Update",
+  "KeyManagers.AddEditKeyManager.form.userInfoEndpoint": "UserInfo Endpoint",
+  "KeyManagers.AddEditKeyManager.form.userInfoEndpoint.help": "E.g., https://localhost:9443/oauth2/userInfo",
+  "KeyManagers.AddEditKeyManager.form.wellKnownUrl": "Well-known URL",
+  "KeyManagers.AddEditKeyManager.form.wellKnownUrl.help": "Provide a well-known URL and discover the Key Manager information.",
+  "KeyManagers.AddEditKeyManager.general.details": "General Details",
+  "KeyManagers.AddEditKeyManager.general.details.description": "Provide name and description of the Key Manager.",
+  "KeyManagers.AddEditKeyManager.grant.types": "Grant Types",
+  "KeyManagers.AddEditKeyManager.grant.types.description": "Add the supported grant types by the Key Manager. Press enter to add each grant.",
+  "KeyManagers.AddEditKeyManager.import.button.message": "Import",
+  "KeyManagers.AddEditKeyManager.importing.message": "Importing...",
+  "KeyManagers.AddEditKeyManager.is.empty.error": "is empty",
+  "KeyManagers.AddEditKeyManager.is.empty.error.key.config": "Required field is empty.",
+  "KeyManagers.AddEditKeyManager.resident.endpoints.description": "Configure display endpoints such as display token endpoint, display revoke endpoint for this Key Manager.",
+  "KeyManagers.AddEditKeyManager.selfvalidate": "Self validate JWT",
+  "KeyManagers.AddEditKeyManager.space.error": "Key Manager name contains white spaces.",
+  "KeyManagers.AddEditKeyManager.title.edit": "Key Manager - Edit",
+  "KeyManagers.AddEditKeyManager.title.editGlobal": "Global Key Manager - Edit",
+  "KeyManagers.AddEditKeyManager.title.new": "Key Manager - Create new",
+  "KeyManagers.AddEditKeyManager.title.newGlobal": "Global Key Manager - Create new",
+  "KeyManagers.AddEditKeyManager.token.handling.options": "Token Handling Options",
+  "KeyManagers.AddEditKeyManager.token.validation.method": "Token Validation Method",
+  "KeyManagers.AddEditKeyManager.usages": "Key Manager Usage",
+  "KeyManagers.AddEditKeyManager.useIntrospect": "Use introspect",
+  "KeyManagers.AddEditTokenExchangeIDP.form.Issuer": "Issuer",
+  "KeyManagers.AddEditTokenExchangeIDP.form.issuer.help": "E.g.,: https://localhost:9443/oauth2/token",
+  "KeyManagers.AddEditTokenExchangeIDP.form.tokenEndpoint": "Token Endpoint",
+  "KeyManagers.AddEditTokenExchangeIDP.form.tokenEndpoint.help": "E.g., https://localhost:9443/oauth2/token",
+  "KeyManagers.AddEditTokenExchangeIDP.form.wellKnownUrl": "Well-known URL",
+  "KeyManagers.AddEditTokenExchangeIDP.form.wellKnownUrl.help": "Provide a well-known URL and discover the Key Manager information.",
+  "KeyManagers.Certificates.browse.files.to.upload": "Browse File to Upload",
+  "KeyManagers.Certificates.drag.and.drop.message": "Drag and Drop files here {break} or {break}",
+  "KeyManagers.Certificates.file.error": "Error reading file",
+  "KeyManagers.Certificates.jwks.url": "URL",
+  "KeyManagers.Certificates.override.message": "Upload new file to override the current certificate",
+  "KeyManagers.Certificates.paste.label": "Paste the content of the PEM file",
+  "KeyManagers.ListKeyManagerAPIUsages.error": "Unable to get Key Manager API usage details",
+  "KeyManagers.ListKeyManagerApplicationUsages.error": "Unable to get Key Manager application usage details",
+  "KeyManagers.ListKeyManagerUsages.empty.content": "There are no Key Manger usages.",
+  "KeyManagers.ListKeyManagerUsages.empty.title": "Key Manager Usages",
+  "KeyManagers.ListKeyManagerUsages.permission.denied.content": "You dont have enough permission to view Key Manager Usages. Please contact the site administrator.",
+  "KeyManagers.ListKeyManagerUsages.permission.denied.title": "Permission Denied",
+  "KeyManagers.ListKeyManagers.List.title": "Key Managers",
+  "KeyManagers.ListKeyManagers.addButtonProps.triggerButtonText": "Add Key Manager",
+  "KeyManagers.ListKeyManagers.addGlobalKeyManager": "Add Global Key Manager",
+  "KeyManagers.ListKeyManagers.edit.success": "Key Manager updated successfully.",
+  "KeyManagers.ListKeyManagers.empty.title": "Key Managers",
+  "KeyManagers.ListKeyManagers.table.header.label.description": "Description",
+  "KeyManagers.ListKeyManagers.table.header.label.name": "Name",
+  "KeyManagers.ListKeyManagers.table.header.label.provider": "Provider",
+  "KeyManagers.ListKeyManagers.table.header.label.tokenType": "Type",
+  "KeyManagers.ListKeyManagers.table.header.label.usage": "Usage",
+  "Keymanager.Claim.Action": "Action",
+  "Keymanager.KeyValidation.Action": "Action",
+  "Keymanager.KeyValidation.ClaimKey": "Claim Key",
+  "Keymanager.KeyValidation.ClaimValue.Regex": "Claim Value Regex",
+  "Keymanager.Local.Claim": "Local Claim",
+  "Keymanager.Local.Claim.remove": "Remove",
+  "Keymanager.Remote.Claim": "Remote Claim",
+  "LoginDenied.logout": "Logout",
+  "LoginDenied.message": "The server could not verify that you are authorized to access the requested resource.",
+  "LoginDenied.retry": "Retry",
+  "LoginDenied.title": "Error 403 : Forbidden",
+  "RolePermissions.Common.AddRoleWizard.add.mapping.button": "Add scope mapping",
+  "RolePermissions.Common.AddRoleWizard.add.mapping.title": "Add new scope mapping",
+  "RolePermissions.Common.AddRoleWizard.add.role.warn.empty": "Role name can not be empty!",
+  "RolePermissions.Common.AddRoleWizard.add.scope.error": "Something went wrong while adding new scope mapping",
+  "RolePermissions.Common.DeletePermission.delete.scope.error": "Something went wrong while deleting the scope assignments",
+  "RolePermissions.ListRoles.error.retrieving.perm": "Error while retrieving permission info",
+  "RolePermissions.ListRoles.page.description": "Scope assignments are only related to internal, APIM-specific scope assignments. They are not related to role permission assignments in the Management Console.",
+  "RolePermissions.ListRoles.permission.denied.content": "You do not have enough permission to view Scope Assignments. Please contact the site administrator.",
+  "RolePermissions.ListRoles.permission.denied.title": "Permission Denied",
+  "RolePermissions.ListRoles.scope.assignment.button": "Add scope mappings",
+  "RolePermissions.ListRoles.title.role.permissions": "Scope Assignments",
+  "RolePermissions.TreeView.PermissionsSelector.scope.assignment.button": "Scope Assignments",
+  "RolePermissions.TreeView.PermissionsSelector.scope.assignment.title": "Select Scope Assignments",
+  "RolePermissions.TreeView.PermissionsSelector.update.scope.error": "Something went wrong while updating the permission",
+  "ScopeAssignments.List.search.default": "Search by Role Name",
+  "Settings.Advanced.TenantConf.edit.success": "Advanced Configuration saved successfully",
+  "Settings.Advanced.TenantConfSave.form.cancel": "Cancel",
+  "Settings.Advanced.TenantConfSave.form.save": "Save",
+  "Settings.Advanced.TenantConfSave.title.save": "Advanced Configurations",
+  "TenantTheme.Upload.Theme.browse.files.to.upload": "Browse File to Upload",
+  "TenantTheme.Upload.Theme.button.upload": "Upload",
+  "TenantTheme.Upload.Theme.download.error": "Error downloading Tenant theme ZIP file",
+  "TenantTheme.Upload.Theme.drag.and.drop.message": "Drag & Drop files here {break} or {break}",
+  "TenantTheme.Upload.Theme.help.link.one": "Tenant theming",
+  "TenantTheme.Upload.Theme.info.message": "The theme should be a zip file containing CSS and images compliant with the",
+  "TenantTheme.Upload.Theme.page.heading": "Manage Tenant Theme",
+  "TenantTheme.Upload.Theme.upload.files": "Upload/Download Theme",
+  "TenantTheme.Upload.Theme.upload.successful": "Theme uploaded successfully",
+  "TenantTheme.Upload.Theme.warning.message": "Zip file contains unsupported files. Upload only supported files.",
+  "Throttling.Advanced.AddEdit.ConditionalGroups.form.description.help": "Description of this group",
+  "Throttling.Advanced.AddEdit.add.conditional.group": "Conditional groups",
+  "Throttling.Advanced.AddEdit.add.conditional.group.add": "Add Conditional Group",
+  "Throttling.Advanced.AddEdit.add.success": "Policy Added Successfully",
+  "Throttling.Advanced.AddEdit.conditional.group.description": "To add throttling limits with different parameters base on IP, Header, Query Param, and JWT Claim conditions, click Add Conditional Group.",
+  "Throttling.Advanced.AddEdit.default.limits": "Default Limits",
+  "Throttling.Advanced.AddEdit.default.limits.description": "Request Count and Request Bandwidth are the two options for default limit. You can use the option according to your requirement.",
+  "Throttling.Advanced.AddEdit.edit.success": "Policy Updated Successfully",
+  "Throttling.Advanced.AddEdit.empty.error": "contains white spaces.",
+  "Throttling.Advanced.AddEdit.form.add.btn": "Add",
+  "Throttling.Advanced.AddEdit.form.bandwidth.allowed.help": "Bandwidth allowed",
+  "Throttling.Advanced.AddEdit.form.cancel": "Cancel",
+  "Throttling.Advanced.AddEdit.form.dataAmount.label": "Data Bandwidth",
+  "Throttling.Advanced.AddEdit.form.description": "Description",
+  "Throttling.Advanced.AddEdit.form.description.help": "Description of the throttle policy.",
+  "Throttling.Advanced.AddEdit.form.has.errors": "One or more fields contain errors.",
+  "Throttling.Advanced.AddEdit.form.name.help": "Name of the throttle policy.",
+  "Throttling.Advanced.AddEdit.form.policyName": "Name",
+  "Throttling.Advanced.AddEdit.form.requestCount.label": "Request Count",
+  "Throttling.Advanced.AddEdit.form.timeUnit.day": "Day(s)",
+  "Throttling.Advanced.AddEdit.form.timeUnit.hour": "Hour(s)",
+  "Throttling.Advanced.AddEdit.form.timeUnit.minute": "Minute(s)",
+  "Throttling.Advanced.AddEdit.form.timeUnit.month": "Month(s)",
+  "Throttling.Advanced.AddEdit.form.unit.time.help": "Time configuration",
+  "Throttling.Advanced.AddEdit.form.unit.time.label": "Unit Time",
+  "Throttling.Advanced.AddEdit.form.update.btn": "Update",
+  "Throttling.Advanced.AddEdit.general.details": "General Details",
+  "Throttling.Advanced.AddEdit.general.details.description": "Provide name and description of the policy.The policy can be refered from the name.",
+  "Throttling.Advanced.AddEdit.is.empty.error": "is empty",
+  "Throttling.Advanced.AddEdit.policy.name.too.long.error.msg": "Throttling policy name is too long",
+  "Throttling.Advanced.AddEdit.special.characters.error": "contains invalid characters.",
+  "Throttling.Advanced.AddEdit.title.edit": "Advance Rate Limiting Policy - Edit",
+  "Throttling.Advanced.AddEdit.title.new": "Advanced Rate Limiting Policy - Create new",
+  "Throttling.Advanced.AddEditConditionPolicy.dialog.btn.save": "Save",
+  "Throttling.Advanced.AddEditConditionPolicy.dialog.tilte.add.new": "Add New",
+  "Throttling.Advanced.AddEditConditionPolicy.dialog.tilte.edit": "Edit",
+  "Throttling.Advanced.AddEditConditionPolicy.dialog.trigger.add": "Add",
+  "Throttling.Advanced.AddEditConditionPolicy.form.name": "Name",
+  "Throttling.Advanced.AddEditConditionPolicy.form.name.help": "Provide Name",
+  "Throttling.Advanced.AddEditConditionPolicy.form.value": "Value",
+  "Throttling.Advanced.AddEditConditionPolicy.form.value.help": "Provide Value",
+  "Throttling.Advanced.AddEditConditionPolicyIP.dialog.btn.save": "Save",
+  "Throttling.Advanced.AddEditConditionPolicyIP.dialog.tilte.add.new": "Add New IP Condition Policy",
+  "Throttling.Advanced.AddEditConditionPolicyIP.dialog.title.edit": "Edit IP Condition Policy",
+  "Throttling.Advanced.AddEditConditionPolicyIP.dialog.trigger.add": "Add",
+  "Throttling.Advanced.AddEditConditionPolicyIP.form.end.ip": "End IP",
+  "Throttling.Advanced.AddEditConditionPolicyIP.form.end.ip.help": "Provide Valid IP",
+  "Throttling.Advanced.AddEditConditionPolicyIP.form.specific.ip": "Specific IP",
+  "Throttling.Advanced.AddEditConditionPolicyIP.form.specific.ip.help": "Provide Valid IP",
+  "Throttling.Advanced.AddEditConditionPolicyIP.form.start.ip": "Start IP",
+  "Throttling.Advanced.AddEditConditionPolicyIP.form.start.ip.help": "Provide Valid IP",
+  "Throttling.Advanced.AddEditConditionPolicyIP.ip.condition.type": "IP Condition Type",
+  "Throttling.Advanced.AddEditConditionPolicyIP.ip.range": "IP Range",
+  "Throttling.Advanced.AddEditConditionPolicyIP.is.empty.error": "is empty",
+  "Throttling.Advanced.AddEditConditionPolicyIP.specific.ip": "Specific IP",
+  "Throttling.Advanced.AddEditConditionPolicyIP.valid.ip.address.error": "Invalid IP Addresss",
+  "Throttling.Advanced.AddEditConditionPolicyIP.valid.ip.range.error": "Invalid IP Range",
+  "Throttling.Advanced.AddEditExecution.default.limit.option": "Default Limit Option",
+  "Throttling.Advanced.ConditionalGroup.alert": "To add rate limiting with different parameters for Query Params, Header Data and JWT token claim, you must enable them in the deployment.toml file.",
+  "Throttling.Advanced.ConditionalGroup.condition.policies": "Condition Policies",
+  "Throttling.Advanced.ConditionalGroup.execution.policy": "Execution Policy",
+  "Throttling.Advanced.ConditionalGroup.from": "From:",
+  "Throttling.Advanced.ConditionalGroup.header": "Header Condition Policy",
+  "Throttling.Advanced.ConditionalGroup.header.help": "This configuration is used to throttle based on Headers.",
+  "Throttling.Advanced.ConditionalGroup.header.name": "Name",
+  "Throttling.Advanced.ConditionalGroup.header.value": "Value",
+  "Throttling.Advanced.ConditionalGroup.invert.condition": "Invert Condition",
+  "Throttling.Advanced.ConditionalGroup.ip": "IP Condition Policy",
+  "Throttling.Advanced.ConditionalGroup.ip.header.name": "IP Condition Type",
+  "Throttling.Advanced.ConditionalGroup.ip.header.value": "IP Address",
+  "Throttling.Advanced.ConditionalGroup.ip.help": "This configuration is used to throttle by IP address.",
+  "Throttling.Advanced.ConditionalGroup.ip.iprange": "IP Range",
+  "Throttling.Advanced.ConditionalGroup.ip.specific": "Specific IP",
+  "Throttling.Advanced.ConditionalGroup.jwt": "JWT Condition Policy",
+  "Throttling.Advanced.ConditionalGroup.jwt.help": "This configuration is used to define JWT claims conditions",
+  "Throttling.Advanced.ConditionalGroup.query.param": "Query Param Condition Policy",
+  "Throttling.Advanced.ConditionalGroup.query.param.help": "This configuration is used to throttle based on query parameters.",
+  "Throttling.Advanced.ConditionalGroup.to": "To:",
+  "Throttling.Advanced.ConditionalGroups.form.description": "Description",
+  "Throttling.Advanced.Delete.confirm.text": "Policy deletion might affect current subscriptions. Are you sure you want to delete this policy?",
+  "Throttling.Advanced.Delete.ip.iprange": "IP Range",
+  "Throttling.Advanced.Delete.ip.specific": "Specific IP",
+  "Throttling.Advanced.Delete.save.text": "Delete",
+  "Throttling.Advanced.Delete.success": "Policy Deleted Successfully",
+  "Throttling.Advanced.Delete.title": "Delete Policy",
+  "Throttling.Advanced.Delete.will.be.deleted": "will be deleted.",
+  "Throttling.Advanced.DeleteConditionGroup.question": "Do you want to remove this condition group?",
+  "Throttling.Advanced.DeleteConditionGroup.title": "Delete Condition Group",
+  "Throttling.Advanced.List.add.new.polcy": "Add New Policy",
+  "Throttling.Advanced.List.addButtonProps.title": "Add Policy",
+  "Throttling.Advanced.List.addButtonProps.triggerButtonText": "Add Policy",
+  "Throttling.Advanced.List.empty.content": "It is possible to create a Microgateway distribution for a group of APIs. In order to group APIs, a label needs to be created and attached to the APIs that need to be in a single group.",
+  "Throttling.Advanced.List.empty.title": "Advanced Throttling Policies",
+  "Throttling.Advanced.List.help.link.one": "Introducing Rate Limiting Use-Cases",
+  "Throttling.Advanced.List.help.link.two": "Adding a new advanced rate limiting policy",
+  "Throttling.Advanced.List.search.default": "Search by Advanced Policy name",
+  "Throttling.Advanced.List.title.main": "Advanced Rate Limiting Policies",
+  "Throttling.Application.AddEdit.burst.control.limit": "Number of requests for burst control",
+  "Throttling.Application.AddEdit.form.request.rate": "Request Rate",
+  "Throttling.Application.Policy..List.search.default": "Search by Application Policy name",
+  "Throttling.Application.Policy.List.addButtonProps.title": "Add Policy",
+  "Throttling.Application.Policy.List.addButtonProps.triggerButtonText": "Add Policy",
+  "Throttling.Application.Policy.List.empty.content.application.policies": "Application-level throttling policies are applicable per access token generated for an application.",
+  "Throttling.Application.Policy.List.empty.title.application.policies": "Application Policies",
+  "Throttling.Application.Policy.List.help.link.one": "Create an Application Rate Limiting Policy",
+  "Throttling.Application.Policy.List.help.link.two": "Setting an Application Rate Limiting Policy",
+  "Throttling.Application.Policy.policy.add.success": "Application Rate Limiting Policy added successfully.",
+  "Throttling.Application.Policy.policy.data.amount.empty": "Data Amount is Empty",
+  "Throttling.Application.Policy.policy.delete.error": "Application Rate Limiting Policy could not be deleted.",
+  "Throttling.Application.Policy.policy.delete.success": "Application Rate Limiting Policy successfully deleted.",
+  "Throttling.Application.Policy.policy.dialog.delete.error": "Application Rate Limiting Policy will be deleted.",
+  "Throttling.Application.Policy.policy.edit.success": "Application Rate Limiting Policy edited successfully.",
+  "Throttling.Application.Policy.policy.name.empty": "Name is Empty",
+  "Throttling.Application.Policy.policy.name.invalid.character": "Name contains one or more illegal characters",
+  "Throttling.Application.Policy.policy.name.space": "Name contains spaces",
+  "Throttling.Application.Policy.policy.name.too.long": "Application policy name is too long",
+  "Throttling.Application.Policy.policy.request.count.empty": "Request Count is Empty",
+  "Throttling.Application.Policy.policy.unit.time.empty": "Unit Time is Empty",
+  "Throttling.Application.Policy.policy.unit.time.negative": "Invalid Time Value",
+  "Throttling.Application.Policy.search.default": "Application Rate Limiting Policies",
+  "Throttling.Blacklist.Policy.List.addButtonProps.title": "Select Item to Deny",
+  "Throttling.Blacklist.Policy.List.addButtonProps.triggerButtonText": "Add Policy",
+  "Throttling.Blacklist.Policy.List.empty.content.blacklist.policies and abuse by": "Denying requests from malicious entities helps you to keep your servers safe",
+  "Throttling.Blacklist.Policy.List.empty.title.blacklist.policies": "Deny Policies",
+  "Throttling.Blacklist.Policy.List.help.link.one": "Denying requests",
+  "Throttling.Blacklist.Policy.List.search.default": "Search by Deny Policy name",
+  "Throttling.Blacklist.Policy.policy.add.success": "Deny Policy added successfully.",
+  "Throttling.Blacklist.Policy.policy.delete.error": "Deny Policy could not be deleted.",
+  "Throttling.Blacklist.Policy.policy.delete.success": "Deny Policy successfully deleted.",
+  "Throttling.Blacklist.Policy.policy.dialog.delete.error": "Deny Policy will be deleted.",
+  "Throttling.Blacklist.Policy.policy.endingIp.blank": "Ending Ip address field is empty.",
+  "Throttling.Blacklist.Policy.policy.endingIp.invalid": "Starting Ip address entered is not valid.",
+  "Throttling.Blacklist.Policy.policy.endingIp.white.spaces": "Starting Ip address field contains white spaces.",
+  "Throttling.Blacklist.Policy.policy.fixedIp.blank": "Ending Ip address field is empty.",
+  "Throttling.Blacklist.Policy.policy.fixedIp.invalid": "Starting Ip address entered is not valid.",
+  "Throttling.Blacklist.Policy.policy.fixedIp.white.spaces": "Starting Ip address field contains white spaces.",
+  "Throttling.Blacklist.Policy.policy.startingIp.blank": "Starting Ip address field is empty.",
+  "Throttling.Blacklist.Policy.policy.startingIp.invalid": "Starting Ip address entered is not valid.",
+  "Throttling.Blacklist.Policy.policy.startingIp.white.spaces": "Starting Ip address field contains white spaces.",
+  "Throttling.Blacklist.Policy.policy.update.success": "Condition status has been updated successfully.",
+  "Throttling.Blacklist.Policy.search.default": "Deny Policies",
+  "Throttling.Custom.AddEdit.form.add": "Add",
+  "Throttling.Custom.AddEdit.form.cancel": "Cancel",
+  "Throttling.Custom.AddEdit.form.edit": "Edit",
+  "Throttling.Custom.AddEdit.title.add": "Custom Rate Limiting Policy - Define Policy",
+  "Throttling.Custom.AddEdit.title.edit": "Custom Rate Limiting Policy - Edit",
+  "Throttling.Custom.List.add.new.polcy": "Define Policy",
+  "Throttling.Custom.Policy.List.addButtonProps.title": "Define Custom Policy",
+  "Throttling.Custom.Policy.List.addButtonProps.triggerButtonText": "Define Policy",
+  "Throttling.Custom.Policy.List.empty.content.custom.policies and abuse by": "Custom throttling allows system administrators to define dynamic rules for specific use cases, which are applied globally across all tenants.",
+  "Throttling.Custom.Policy.List.empty.title.custom.policies": "Custom Policies",
+  "Throttling.Custom.Policy.List.help.link.one": "Custom Throttling Policy",
+  "Throttling.Custom.Policy.List.search.default": "Search by Custom Policy name",
+  "Throttling.Custom.Policy.policy.add.success": "Custom Policy added successfully.",
+  "Throttling.Custom.Policy.policy.delete.error": "Custom Policy could not be deleted.",
+  "Throttling.Custom.Policy.policy.delete.success": "Custom Policy successfully deleted.",
+  "Throttling.Custom.Policy.policy.dialog.delete.error": "Custom Policy will be deleted.",
+  "Throttling.Custom.Policy.policy.edit.success": "Custom Policy edited successfully",
+  "Throttling.Custom.Policy.policy.invalid.key.template": "Invalid Key Template",
+  "Throttling.Custom.Policy.policy.name.empty": "Name is Empty",
+  "Throttling.Custom.Policy.policy.name.invalid.character": "Name contains one or more illegal characters",
+  "Throttling.Custom.Policy.policy.name.space": "Name contains spaces",
+  "Throttling.Custom.Policy.policy.name.too.long.error.msg": "Custom policy name is too long",
+  "Throttling.Custom.Policy.search.default": "Custom Rate Limiting Policies",
+  "Throttling.Subscription.AddEdit.burst.control.add.description": "Define Burst Control Limits for the subscription policy. This is optional.",
+  "Throttling.Subscription.AddEdit.burst.control.limit": "Number of requests for burst control",
+  "Throttling.Subscription.AddEdit.burst.control.limits": "Burst Control (Rate Limiting)",
+  "Throttling.Subscription.AddEdit.custom.attributes.add.description": "Define custom attributes for the subscription policy.",
+  "Throttling.Subscription.AddEdit.form.add": "Save",
+  "Throttling.Subscription.AddEdit.form.cancel": "Cancel",
+  "Throttling.Subscription.AddEdit.form.dataAmount.name": "Data Bandwidth",
+  "Throttling.Subscription.AddEdit.form.description": "Description",
+  "Throttling.Subscription.AddEdit.form.description.help": "Description of the rate limiting policy",
+  "Throttling.Subscription.AddEdit.form.eventCount.count": "Event Count",
+  "Throttling.Subscription.AddEdit.form.max.complexity": "Max Complexity",
+  "Throttling.Subscription.AddEdit.form.max.depth": "Max Depth",
+  "Throttling.Subscription.AddEdit.form.max.webhooks.connections": "Max Subscriptions",
+  "Throttling.Subscription.AddEdit.form.name.help": "Name of the rate limiting policy",
+  "Throttling.Subscription.AddEdit.form.policyName": "Name",
+  "Throttling.Subscription.AddEdit.form.request.rate": "Request Rate",
+  "Throttling.Subscription.AddEdit.form.requestCount.count": "Request Count",
+  "Throttling.Subscription.AddEdit.general.details": "General Details",
+  "Throttling.Subscription.AddEdit.general.details.description": "Provide the name and description of the subscription policy.",
+  "Throttling.Subscription.AddEdit.graphql.add.description": "Provide the Maximum Complexity and Maximum depth values for GraphQL APIs using this policy.",
+  "Throttling.Subscription.AddEdit.permissions.add.description": "Define the permissions for the subscription policy.",
+  "Throttling.Subscription.AddEdit.policy.flags.add.description": "Define the billing plan for the subscription policy. Enable stop on quota reach to block invoking an API when the defined quota is reached.",
+  "Throttling.Subscription.AddEdit.quota.limits": "Quota Limits",
+  "Throttling.Subscription.AddEdit.quota.policies.add.description": "Request Count and Request Bandwidth are the two options for Quota Limit. You can use the option according to your requirement.",
+  "Throttling.Subscription.AddEdit.subscription.count.add.description": "Maximum number of webhooks allowed for a Webhooks API using this policy.",
+  "Throttling.Subscription.AddEdit.title.add": "Subscription Rate Limiting Policy - Create new",
+  "Throttling.Subscription.AddEdit.title.edit": "Subscription Rate Limiting Policy - Edit",
+  "Throttling.Subscription.AddEdit.unitTime": "Unit Time",
+  "Throttling.Subscription.Billing.Plan": "Billing Plan",
+  "Throttling.Subscription.Fixed.Rate": "Fixed Rate",
+  "Throttling.Subscription.GraphQL": "GraphQL",
+  "Throttling.Subscription.Policy..List.search.default": "Search by Subscription Policy name",
+  "Throttling.Subscription.Policy.Flags": "Policy Flags",
+  "Throttling.Subscription.Policy.List.addButtonProps.title": "Add Policy",
+  "Throttling.Subscription.Policy.List.empty.title.subscription.policies": "Subscription Policies",
+  "Throttling.Subscription.Policy.List.help.link.one": "Creating a Subscription Rate Limiting Policy",
+  "Throttling.Subscription.Policy.List.help.link.three": "Setting a Subscription Rate Limiting Policy as an API Subscriber",
+  "Throttling.Subscription.Policy.List.help.link.two": "Setting a Subscription Rate Limiting Policy as an API Publisher",
+  "Throttling.Subscription.Policy.policy.add.success": "Subscription Rate Limiting Policy added successfully.",
+  "Throttling.Subscription.Policy.policy.data.amount.empty.error.msg": "Data Bandwidth amount is Empty",
+  "Throttling.Subscription.Policy.policy.delete.error": "Subscription Rate Limiting Policy could not be deleted.",
+  "Throttling.Subscription.Policy.policy.delete.success": "Subscription Rate Limiting Policy successfully deleted.",
+  "Throttling.Subscription.Policy.policy.dialog.delete.error": "Subscription Rate Limiting Policy will be deleted.",
+  "Throttling.Subscription.Policy.policy.edit.success": "Subscription Rate Limiting Policy updated successfully.",
+  "Throttling.Subscription.Policy.policy.event.count.empty.error.msg": "Event Count is Empty",
+  "Throttling.Subscription.Policy.policy.name.empty.error.msg": "Name is Empty",
+  "Throttling.Subscription.Policy.policy.name.invalid.character.error.msg": "Name contains one or more illegal characters",
+  "Throttling.Subscription.Policy.policy.name.space.error.msg": "Name contains spaces",
+  "Throttling.Subscription.Policy.policy.name.too.long.error.msg": "Subscription policy name is too long",
+  "Throttling.Subscription.Policy.policy.request.count.empty.error.msg": "Request Count is Empty",
+  "Throttling.Subscription.Policy.policy.unit.time.empty.error.msg": "Unit Time is Empty",
+  "Throttling.Subscription.Policy.policy.unit.time.negative.error.msg": "Invalid Time Value",
+  "Throttling.Subscription.Policy.search.default": "Subscription Rate Limiting Policies",
+  "Throttling.Subscription.Properties.Properties.show.add.property.property.name": "Name",
+  "Throttling.Subscription.Properties.property.value": "Value",
+  "Throttling.Subscription.Roles.Invalid": "A Role is invalid",
+  "Throttling.Subscription.Subscriber.Count": "Webhooks",
+  "Throttling.Subscription.attribute.delete.tooltip": "Delete",
+  "Throttling.Subscription.billing.cycle": "Billing Cycle",
+  "Throttling.Subscription.currency": "Currency",
+  "Throttling.Subscription.custom.attributes": "Custom Attributes",
+  "Throttling.Subscription.custom.attributes.add": "Add Custom Attribute",
+  "Throttling.Subscription.dynamic.usage": "Price Per Request",
+  "Throttling.Subscription.dynamic.usage.tooltip": "Price per request for the given billing cycle in the given currency",
+  "Throttling.Subscription.enter.permission.allowed": "This policy is \"Allowed\" for above roles.",
+  "Throttling.Subscription.enter.permission.denied": "This policy is \"Denied\" for above roles.",
+  "Throttling.Subscription.fixed.rate.tooltip": "Fixed rate for the given billing cycle",
+  "Throttling.Subscription.monetization.plan": "Monetization Plan",
+  "Throttling.Subscription.monetization.plan.tooltip": "Monetization category type",
+  "Throttling.Subscription.permissions": "Permissions",
+  "Throttling.Subscription.stop.quota.reach": "Stop On Quota Reach",
+  "Throttling.Subsription.Policy.List.empty.content.subscription.policies": "Subscription-level throttling policies are applicable per access token generated for an application.",
+  "UnexpectedError.logout": "Logout",
+  "UnexpectedError.message": "Error occurred due to invalid request",
+  "UnexpectedError.title": "Internal Server Error",
+  "Workflow.APIProductStateChange.List.empty.content.apiProduct.statechange": "There are no pending workflow requests for API Product state change",
+  "Workflow.APIProductStateChange.List.empty.title.apistatechange": "API Product State Change",
+  "Workflow.APIProductStateChange.apicall.has.errors": "Unable to get workflow pending requests for API Product State Change",
+  "Workflow.APIProductStateChange.updateStatus.has.errors": "Unable to complete API Product state change approve/reject process.",
+  "Workflow.APIRevisionDeployment.List.empty.content.revisiondeployments": "There are no pending workflow requests for revision deployment.",
+  "Workflow.APIRevisionDeployment.List.empty.title.revisiondeployments": "Revision Deployment",
+  "Workflow.APIRevisionDeployment.apiCall.has.errors": "Unable to get workflow pending requests for Revision Deployment",
+  "Workflow.APIRevisionDeployment.help.link.one": "Create a Revision Deployment approval workflow Request",
+  "Workflow.APIRevisionDeployment.permission.denied.content": "You do not have enough permission to view Revision Deployment - Approval Tasks. Please contact the site administrator.",
+  "Workflow.APIRevisionDeployment.permission.denied.title": "Permission Denied",
+  "Workflow.APIRevisionDeployment.search.default": "Search by Revision Id, API name, Environment or Created by",
+  "Workflow.APIRevisionDeployment.table.button.approve": "Approve",
+  "Workflow.APIRevisionDeployment.table.button.reject": "Reject",
+  "Workflow.APIRevisionDeployment.table.header.Action": "Action",
+  "Workflow.APIRevisionDeployment.table.header.apiName": "API",
+  "Workflow.APIRevisionDeployment.table.header.apiVersion": "API",
+  "Workflow.APIRevisionDeployment.table.header.description": "Description",
+  "Workflow.APIRevisionDeployment.table.header.environment": "Environment",
+  "Workflow.APIRevisionDeployment.table.header.revisionId": "Revision Id",
+  "Workflow.APIRevisionDeployment.table.header.userName": "Created by",
+  "Workflow.APIRevisionDeployment.title.revisiondeployment": "Revision Deployment - Approval Tasks",
+  "Workflow.APIRevisionDeployment.update.success": "Workflow status is updated successfully",
+  "Workflow.APIRevisionDeployment.updateStatus.has.errors": "Unable to complete revision deployment approve/reject process.",
+  "Workflow.APIStateChange.List.empty.content.apistatechange": "There are no pending workflow requests for API state change.",
+  "Workflow.APIStateChange.List.empty.title.apistatechange": "API State Change",
+  "Workflow.APIStateChange.apicall.has.errors": "Unable to get workflow pending requests for API State Change",
+  "Workflow.APIStateChange.table.button.approve": "Approve",
+  "Workflow.APIStateChange.table.button.reject": "Reject",
+  "Workflow.APIStateChange.table.header.Action": "Action",
+  "Workflow.APIStateChange.table.header.ApiProvider": "Created by",
+  "Workflow.APIStateChange.table.header.CurrentState": "Current State",
+  "Workflow.APIStateChange.table.header.Description": "Description",
+  "Workflow.APIStateChange.table.header.RequestState": "Request State",
+  "Workflow.APIStateChange.update.success": "Workflow status is updated successfully.",
+  "Workflow.APIStateChange.updateStatus.has.errors": "Unable to complete API state change approve/reject process.",
+  "Workflow.APIStatechange.help.link.one": "Create a API State change approval workflow request",
+  "Workflow.ApiProduct.StateChange.permission.denied.content": "You dont have enough permission to view API Product State Change - Approval Tasks. Please contact the site administrator.",
+  "Workflow.ApiStateChange.permission.denied.content": "You dont have enough permission to view API State Change - Approval Tasks. Please contact the site administrator.",
+  "Workflow.ApiStateChange.permission.denied.title": "Permission Denied",
+  "Workflow.ApplicationCreation.List.empty.content.applicationcreations": "There are no pending workflow requests for application creation.",
+  "Workflow.ApplicationCreation.List.empty.title.applicationcreations": "Application Creation",
+  "Workflow.ApplicationCreation.apicall.has.errors": "Unable to get workflow pending requests for Application Creation",
+  "Workflow.ApplicationCreation.help.link.one": "Create a Application Creation approval workflow Request",
+  "Workflow.ApplicationCreation.permission.denied.content": "You dont have enough permission to view Application Creation - Approval Tasks. Please contact the site administrator.",
+  "Workflow.ApplicationCreation.permission.denied.title": "Permission Denied",
+  "Workflow.ApplicationCreation.table.button.approve": "Approve",
+  "Workflow.ApplicationCreation.table.button.reject": "Reject",
+  "Workflow.ApplicationCreation.table.header.Action": "Action",
+  "Workflow.ApplicationCreation.table.header.ApplicationTier": "Throttling Policy",
+  "Workflow.ApplicationCreation.table.header.applicationName": "Application",
+  "Workflow.ApplicationCreation.table.header.description": "Description",
+  "Workflow.ApplicationCreation.table.header.userName": "Created by",
+  "Workflow.ApplicationCreation.title.applicationcreation": "Application Creation - Approval Tasks",
+  "Workflow.ApplicationCreation.update.success": "Workflow status is updated successfully",
+  "Workflow.ApplicationCreation.updateStatus.has.errors": "Unable to complete application creation approve/reject process.",
+  "Workflow.ApplicationDeletion.List.empty.content.applicationdeletions": "There are no pending workflow requests for application creation.",
+  "Workflow.ApplicationDeletion.List.empty.title.applicationdeletions": "Application Deletion",
+  "Workflow.ApplicationDeletion.apicall.has.errors": "Unable to get workflow pending requests for Application Deletion",
+  "Workflow.ApplicationDeletion.help.link.one": "Create a Application Creation approval workflow Request",
+  "Workflow.ApplicationDeletion.permission.denied.content": "You dont have enough permission to view Application Creation - Approval Tasks. Please contact the site administrator.",
+  "Workflow.ApplicationDeletion.permission.denied.title": "Permission Denied",
+  "Workflow.ApplicationDeletion.table.button.approve": "Approve",
+  "Workflow.ApplicationDeletion.table.button.reject": "Reject",
+  "Workflow.ApplicationDeletion.table.header.Action": "Action",
+  "Workflow.ApplicationDeletion.table.header.ApplicationTier": "Throttling Policy",
+  "Workflow.ApplicationDeletion.table.header.applicationName": "Application",
+  "Workflow.ApplicationDeletion.table.header.description": "Description",
+  "Workflow.ApplicationDeletion.table.header.userName": "Created by",
+  "Workflow.ApplicationDeletion.title.applicationdeletion": "Application Deletion - Approval Tasks",
+  "Workflow.ApplicationDeletion.update.success": "Workflow status is updated successfully",
+  "Workflow.ApplicationDeletion.updateStatus.has.errors": "Unable to complete application creation approve/reject process.",
+  "Workflow.ApplicationRegistration.List.empty.content.applicationregistrations": "There are no pending workflow requests for application registration (key generation).",
+  "Workflow.ApplicationRegistration.List.empty.title.applicationregistrations": "Application Registration",
+  "Workflow.ListUserCreation.search.default": "Search by user name or domain",
+  "Workflow.ListUserCreation.title.usercreation": "User Creation - Approval Tasks",
+  "Workflow.RegistrationCreation.apicall.has.errors": "Unable to get workflow pending requests for Registration Creation",
+  "Workflow.RegistrationCreation.link.one": "Create a application registration workflow request",
+  "Workflow.RegistrationCreation.permission.denied.content": "You dont have enough permission to view Application Registration - Approval Tasks. Please contact the site administrator.",
+  "Workflow.RegistrationCreation.permission.denied.title": "Permission Denied",
+  "Workflow.RegistrationCreation.search.default": "Search by Application, Throttling Policy, Key type or Creator",
+  "Workflow.RegistrationCreation.table.button.approve": "Approve",
+  "Workflow.RegistrationCreation.table.button.reject": "Reject",
+  "Workflow.RegistrationCreation.table.header.Action": "Action",
+  "Workflow.RegistrationCreation.table.header.Application": "Application",
+  "Workflow.RegistrationCreation.table.header.ApplicationTier": "Throttling Policy",
+  "Workflow.RegistrationCreation.table.header.Creater": "Created by",
+  "Workflow.RegistrationCreation.table.header.Description": "Description",
+  "Workflow.RegistrationCreation.table.header.KeyType": "Key Type",
+  "Workflow.RegistrationCreation.title.registrationcreation": "Application Registration - Approval Tasks",
+  "Workflow.RegistrationCreation.update.success": "Workflow status is updated successfully",
+  "Workflow.RegistrationCreation.updateStatus.has.errors": "Unable to complete registration creation approve/reject process.",
+  "Workflow.SubscriptionCreation.List.empty.content.subscriptioncreations": "There are no pending workflow requests for subscription creation.",
+  "Workflow.SubscriptionCreation.List.empty.title.subscriptioncreations": "Subscription Creation",
+  "Workflow.SubscriptionCreation.apicall.has.errors": "Unable to get workflow pending requests for Subscription Creation",
+  "Workflow.SubscriptionCreation.help.link.one": "Create a subscription creation request",
+  "Workflow.SubscriptionCreation.permission.denied.content": "You dont have enough permission to view Subscription Creation - Approval Tasks. Please contact the site administrator.",
+  "Workflow.SubscriptionCreation.permission.denied.title": "Permission Denied",
+  "Workflow.SubscriptionCreation.search.default": "Search by API, Application or Subscriber",
+  "Workflow.SubscriptionCreation.table.button.approve": "Approve",
+  "Workflow.SubscriptionCreation.table.button.reject": "Reject",
+  "Workflow.SubscriptionCreation.table.header.API": "API",
+  "Workflow.SubscriptionCreation.table.header.Action": "Action",
+  "Workflow.SubscriptionCreation.table.header.Application": "Application",
+  "Workflow.SubscriptionCreation.table.header.Description": "Description",
+  "Workflow.SubscriptionCreation.table.header.Subscriber": "Subscriber",
+  "Workflow.SubscriptionCreation.title.subscriptioncreation": "Subscription Creation - Approval Tasks",
+  "Workflow.SubscriptionCreation.title.subscriptionupdate": "Subscription Tier Update - Approval Tasks",
+  "Workflow.SubscriptionCreation.update.success": "Workflow status is updated successfully",
+  "Workflow.SubscriptionCreation.updateStatus.has.errors": "Unable to complete subscription creation approve/reject process.",
+  "Workflow.SubscriptionDeletion.List.empty.content.subscriptiondeletions": "There are no pending workflow requests for subscription deletion.",
+  "Workflow.SubscriptionDeletion.List.empty.title.subscriptiondeletions": "Subscription Deletion",
+  "Workflow.SubscriptionDeletion.apicall.has.errors": "Unable to get workflow pending requests for Subscription Deletion",
+  "Workflow.SubscriptionDeletion.help.link.one": "Create a subscription deletion request",
+  "Workflow.SubscriptionDeletion.permission.denied.content": "You dont have enough permission to view Subscription Deletion - Approval Tasks. Please contact the site administrator.",
+  "Workflow.SubscriptionDeletion.permission.denied.title": "Permission Denied",
+  "Workflow.SubscriptionDeletion.search.default": "Search by API, Application or Subscriber",
+  "Workflow.SubscriptionDeletion.table.button.approve": "Approve",
+  "Workflow.SubscriptionDeletion.table.button.reject": "Reject",
+  "Workflow.SubscriptionDeletion.table.header.API": "API",
+  "Workflow.SubscriptionDeletion.table.header.Action": "Action",
+  "Workflow.SubscriptionDeletion.table.header.Application": "Application",
+  "Workflow.SubscriptionDeletion.table.header.Description": "Description",
+  "Workflow.SubscriptionDeletion.table.header.Subscriber": "Subscriber",
+  "Workflow.SubscriptionDeletion.title.subscriptiondeletion": "Subscription Deletion - Approval Tasks",
+  "Workflow.SubscriptionDeletion.update.success": "Workflow status is updated successfully",
+  "Workflow.SubscriptionUpdate.List.empty.content.subscriptionUpdates": "There are no pending workflow requests for subscription updates.",
+  "Workflow.SubscriptionUpdate.List.empty.title.subscriptionUpdate": "Subscription Update",
+  "Workflow.SubscriptionUpdate.apicall.has.errors": "Unable to get workflow pending requests for Subscription Update",
+  "Workflow.SubscriptionUpdate.help.link.one": "Create a subscription update request",
+  "Workflow.SubscriptionUpdate.permission.denied.content": "You dont have enough permission to view Subscription Tier Update - Approval Tasks. Please contact the site administrator.",
+  "Workflow.SubscriptionUpdate.permission.denied.title": "Permission Denied",
+  "Workflow.SubscriptionUpdate.search.default": "Search by API, Application or Subscriber",
+  "Workflow.SubscriptionUpdate.table.button.approve": "Approve",
+  "Workflow.SubscriptionUpdate.table.button.reject": "Reject",
+  "Workflow.SubscriptionUpdate.table.header.API": "API",
+  "Workflow.SubscriptionUpdate.table.header.Action": "Action",
+  "Workflow.SubscriptionUpdate.table.header.Application": "Application",
+  "Workflow.SubscriptionUpdate.table.header.Description": "Description",
+  "Workflow.SubscriptionUpdate.table.header.Subscriber": "Subscriber",
+  "Workflow.SubscriptionUpdate.update.success": "Workflow status is updated successfully",
+  "Workflow.SubscriptionUpdate.updateStatus.has.errors": "Unable to complete subscription update approve/reject process.",
+  "Workflow.SubsriptionDeletion.updateStatus.has.errors": "Unable to complete subscription deletion approve/reject process.",
+  "Workflow.UserCreation.List.empty.content.usercreations": "There are no workflow pending requests for user creation.It is possible to approve or reject workflow pending requests of user sign up. Workflow Approval Executor needs to be enabled to approve or reject the requests.",
+  "Workflow.UserCreation.List.empty.title.usercreations": "User Creation",
+  "Workflow.UserCreation.apicall.has.errors": "Unable to get workflow pending requests for User Creation",
+  "Workflow.UserCreation.help.link.one": "Create a user self sign up request",
+  "Workflow.UserCreation.permission.denied.content": "You dont have enough permission to view User Creation - Approval Tasks. Please contact the site administrator.",
+  "Workflow.UserCreation.permission.denied.title": "Permission Denied",
+  "Workflow.UserCreation.table.button.approve": "Approve",
+  "Workflow.UserCreation.table.button.reject": "Reject",
+  "Workflow.UserCreation.table.header.Action": "Action",
+  "Workflow.UserCreation.table.header.Description": "Description",
+  "Workflow.UserCreation.table.header.ElapsedTime": "Elapsed time",
+  "Workflow.UserCreation.table.header.TenantDomain": "Tenant Domain",
+  "Workflow.UserCreation.table.header.TenantName": "User Name",
+  "Workflow.UserCreation.update.success": "Workflow status is updated successfully",
+  "Workflow.UserCreation.updateStatus.has.errors": "Unable to complete User creation approve/reject process.",
+  "Workflow.api.statechange.search.default": "Search by API, Request state, Current state or Creator",
+  "Workflow.apiProduct.statechange.search.default": "Search by API Product, Request state, Current state or Creator",
+  "Workflow.applicationcreation.search.default": "Search by Application, Throttling Policy or Creator",
+  "Workflow.applicationdeletion.search.default": "Search by Application, Throttling Policy or Creator",
+  "dsdds": "The specific combination of attributes being checked in the policy need to be defined as the key template. Allowed values are : $userId, $apiContext, $apiVersion, $resourceKey, $appTenant, $apiTenant, $appId, $clientIp, $customProperty, $customProperty.somevalue",
+  "error.list.401": "401 : Authorization Required.",
+  "error.list.401.description": "The server could not verify that you are authorized to access the requested resource",
+  "error.list.403": "403 : Forbidden.",
+  "error.list.403.description": "You do not have permission to access anything with that kind of request.",
+  "error.list.404": "404 : The page cannot be found.",
+  "error.list.404.description": "The page you are looking for might have been removed, had its name changed or is temporarily unavailable.",
+  "error.list.500": "500 : The page cannot be displayed.",
+  "error.list.500.description": "The server encountered an internal error or misconfiguration and was unable to complete your request."
 }

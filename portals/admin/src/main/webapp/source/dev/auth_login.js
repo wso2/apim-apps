@@ -8,7 +8,7 @@ const path = require('path');
 const agent = new https.Agent({
     rejectUnauthorized: false,
 });
-const callbackUrl = 'https://localhost:8081/admin/services/auth/callback/login';
+const callbackUrl = 'https://localhost:8083/admin/services/auth/callback/login';
 
 /**
  *
@@ -88,7 +88,9 @@ async function doDCR() {
 const clientRoutingBypass = (req) => {
     if (req.path.startsWith('/admin/site/public/images/')) {
         return req.path.split('/admin')[1];
-    } else if (req.headers.accept.indexOf('html') !== -1) {
+    } else if (req.path.startsWith('/admin/site/public/locales/')) {
+        return req.path.split('/admin')[1];
+    } else if (req.headers.accept && req.headers.accept.indexOf('html') !== -1) {
         console.log('Skipping proxy for browser request.');
         return '/admin/index.html';
     }
@@ -197,6 +199,7 @@ function devServerBefore(app) {
 
         res.redirect('/admin/');
     });
+    console.log('`Dev server before` setup completed');
 }
 module.exports.clientRoutingBypass = clientRoutingBypass;
 module.exports.devServerBefore = devServerBefore;

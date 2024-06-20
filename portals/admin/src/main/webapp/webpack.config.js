@@ -24,13 +24,13 @@ const ESLintPlugin = require('eslint-webpack-plugin');
 const DeadCodePlugin = require('webpack-deadcode-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./source/dev/auth_login.js');
 
-module.exports = function (env,args) {
+module.exports = function (env, args) {
     const isDevelopmentBuild = args.mode === 'development';
     const config = {
         entry: { index: './source/index.jsx' },
         output: {
             path: path.resolve(__dirname, 'site/public/dist'),
-            filename: isDevelopmentBuild? '[name].bundle.js'  : '[name].[contenthash].bundle.js',
+            filename: isDevelopmentBuild ? '[name].bundle.js' : '[name].[contenthash].bundle.js',
             chunkFilename: isDevelopmentBuild ? '[name].chunk.bundle.js' : '[name].[contenthash].bundle.js',
             publicPath: 'site/public/dist/',
         },
@@ -41,32 +41,55 @@ module.exports = function (env,args) {
             ignored: ['files/**/*.js', 'node_modules/**'],
         },
         devServer: {
-            open: true,
-            openPage: 'admin',
-            inline: true,
-            hotOnly: true,
+            static : ['./'],
+            server: 'https',
+            compress: true,
+            open: ['admin'],
             hot: true,
-            publicPath: '/site/public/dist/',
-            writeToDisk: false,
-            overlay: true,
-            before: devServerBefore,
-            proxy: {
-                '/services/': {
+            devMiddleware: {
+                index: false,
+                writeToDisk: false,
+                publicPath: '/site/public/dist/',
+            },
+            client: {
+                overlay: true,
+            },
+            setupMiddlewares: (middlewares, devServer) => {
+                if (!devServer) {
+                    throw new Error('webpack-dev-server:devServer is not defined');
+                }
+                devServerBefore(devServer.app);
+                return middlewares;
+            },
+            proxy: [
+                {
+                    context: ['/services'],
                     target: 'https://localhost:9443/admin',
                     secure: false,
                 },
-                '/api/am': {
+                {
+                    context: ['/api/am'],
                     target: 'https://localhost:9443',
                     secure: false,
                 },
-                '/admin/services': {
+                {
+                    context: ['/admin/services'],
                     target: 'https://localhost:9443',
                     secure: false,
                 },
-                '/admin': {
+                {
+                    context: ['/admin'],
                     bypass: clientRoutingBypass,
+                    // bypass: function (req, res, proxyOptions) {
+                    //     if (req.headers.accept.indexOf('html') !== -1) {
+                    //         console.log(req);
+                    //         console.log('Skipping proxy for browser request. [/admin/index.html]');
+                    //         return '/admin/index.html';
+                    //     }
+                    // },
+                    // target: '/admin.html',
                 },
-            },
+            ],
         },
         devtool: 'source-map', // todo: Commented out the source
         // mapping in case need to speed up the build time & reduce size
@@ -135,7 +158,8 @@ module.exports = function (env,args) {
                                 limit: 100000,
                             },
                         }
-                    ]                },
+                    ]
+                },
                 // Until https://github.com/jantimon/html-webpack-plugin/issues/1483 ~tmkb
                 // This was added to generate the index.jsp from a hbs template file including the hashed bundle file
                 {
@@ -160,6 +184,12 @@ module.exports = function (env,args) {
                 inject: false,
                 template: path.resolve(__dirname, 'site/public/pages/index.jsp.hbs'),
                 filename: path.resolve(__dirname, 'site/public/pages/index.jsp'),
+                minify: false, // Make this true to get exploded, formatted index.jsp file
+            }),
+            new HtmlWebpackPlugin({
+                inject: false,
+                template: path.resolve(__dirname, 'admin/index.ejs'),
+                filename: path.resolve(__dirname, 'admin/index.html'),
                 minify: false, // Make this true to get exploded, formatted index.jsp file
             }),
             new ESLintPlugin({
@@ -194,7 +224,7 @@ module.exports = function (env,args) {
             }),
         ],
     };
-    
+
     if (process.env.NODE_ENV === 'development') {
         config.watch = true;
     }
