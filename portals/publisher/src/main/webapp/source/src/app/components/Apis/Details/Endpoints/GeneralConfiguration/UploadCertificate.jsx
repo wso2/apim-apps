@@ -280,53 +280,55 @@ export default function UploadCertificate(props) {
             <DialogContent>
                 <Grid>
                     <div>
-                        <RadioGroup
-                            aria-label='Production Sandbox type selection'
-                            name={API_SECURITY_KEY_TYPE_PRODUCTION}
-                            value={keyType}
-                            onChange={handleOnChangekeyType}
-                            data-testid='radio-group-key-type'
-                            row
-                        >
-                            <FormControlLabel
-                                value={API_SECURITY_KEY_TYPE_PRODUCTION}
-                                control={(
-                                    <Radio
-                                        color='primary'
-                                    />
-                                )}
-                                label='Production'
-                                labelPlacement='end'
-                                data-testid='radio-production'
-                            />
-                            <FormControlLabel
-                                value={API_SECURITY_KEY_TYPE_SANDBOX}
-                                control={(
-                                    <Radio
-                                        color='primary'
-                                    />
-                                )}
-                                label='Sandbox'
-                                labelPlacement='end'
-                                data-testid='radio-sandbox'
-                            />
-                        </RadioGroup>
-                        <FormHelperText>
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.keyType'
-                                defaultMessage='Choose the key type of the certificate'
-                            />
-                        </FormHelperText>
                         {isMutualSSLEnabled && (api.gatewayType === 'wso2/synapse' ||
                         api.apiType === 'APIPRODUCT') && (
-                            <SelectPolicies
-                                multiple={false}
-                                policies={policy}
-                                helperText='Select a throttling policy for the certificate'
-                                onChange={handleOnChange}
-                                required
-                                validate={onValidate}
-                            />
+                            <>
+                                <RadioGroup
+                                    aria-label='Production Sandbox type selection'
+                                    name={API_SECURITY_KEY_TYPE_PRODUCTION}
+                                    value={keyType}
+                                    onChange={handleOnChangekeyType}
+                                    data-testid='radio-group-key-type'
+                                    row
+                                >
+                                    <FormControlLabel
+                                        value={API_SECURITY_KEY_TYPE_PRODUCTION}
+                                        control={(
+                                            <Radio
+                                                color='primary' 
+                                            />
+                                        )}
+                                        label='Production'
+                                        labelPlacement='end'
+                                        data-testid='radio-production' 
+                                    />
+                                    <FormControlLabel
+                                        value={API_SECURITY_KEY_TYPE_SANDBOX}
+                                        control={(
+                                            <Radio
+                                                color='primary' 
+                                            />
+                                        )}
+                                        label='Sandbox'
+                                        labelPlacement='end'
+                                        data-testid='radio-sandbox' 
+                                    />
+                                </RadioGroup>
+                                <FormHelperText>
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.keyType'
+                                        defaultMessage='Choose the key type of the certificate'
+                                    />
+                                </FormHelperText>
+                                <SelectPolicies
+                                    multiple={false}
+                                    policies={policy}
+                                    helperText='Select a throttling policy for the certificate'
+                                    onChange={handleOnChange}
+                                    required
+                                    validate={onValidate} 
+                                />
+                            </>
                         )}
                         {!isMutualSSLEnabled && (
                             <SelectEndpoint
