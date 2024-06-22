@@ -285,6 +285,7 @@ export default function UploadCertificate(props) {
                             name={API_SECURITY_KEY_TYPE_PRODUCTION}
                             value={keyType}
                             onChange={handleOnChangekeyType}
+                            data-testid='radio-group-key-type'
                             row
                         >
                             <FormControlLabel
@@ -296,6 +297,7 @@ export default function UploadCertificate(props) {
                                 )}
                                 label='Production'
                                 labelPlacement='end'
+                                data-testid='radio-production'
                             />
                             <FormControlLabel
                                 value={API_SECURITY_KEY_TYPE_SANDBOX}
@@ -306,6 +308,7 @@ export default function UploadCertificate(props) {
                                 )}
                                 label='Sandbox'
                                 labelPlacement='end'
+                                data-testid='radio-sandbox'
                             />
                         </RadioGroup>
                         <FormHelperText>
