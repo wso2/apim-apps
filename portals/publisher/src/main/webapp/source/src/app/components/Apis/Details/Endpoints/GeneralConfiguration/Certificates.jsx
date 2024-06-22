@@ -288,11 +288,11 @@ function Certificates(props) {
                         defaultMessage='Production'
                     />
                 </Typography>
-                <List className={classes.certificateList}>
+                <List className={classes.certificateList} data-testid='list-production-certs'>
                     {productionCertificates.length > 0 ? (
                         productionCertificates.map((cert) => {
                             return (
-                                <ListItem id='endpoint-cert-list'>
+                                <ListItem id={`production-cert-list-item-${cert.alias}`}>
                                     <ListItemAvatar>
                                         <Icon>lock</Icon>
                                     </ListItemAvatar>
@@ -343,11 +343,11 @@ function Certificates(props) {
                         defaultMessage='Sandbox'
                     />
                 </Typography>
-                <List className={classes.certificateList}>
+                <List className={classes.certificateList} data-testid='list-sandbox-certs'>
                     {sandboxCertificates.length > 0 ? (
                         sandboxCertificates.map((cert) => {
                             return (
-                                <ListItem id='endpoint-cert-list'>
+                                <ListItem id={`sandbox-cert-list-item-${cert.alias}`}>
                                     <ListItemAvatar>
                                         <Icon>lock</Icon>
                                     </ListItemAvatar>
