@@ -63,7 +63,7 @@ function ChatMessages(props) {
 
     const authTokenNotProvidedWarning = (
         <FormattedMessage
-            id='Apis.Details.ApiChat.warning.authTokenMissing'
+            id='Apis.Details.ChatMessages.warning.authTokenMissing'
             defaultMessage={'You must provide a token to start using the API Marketplace Assistant. To obtain one, '
                 + 'follow the steps provided under {marketplaceAssistantDocLink} '}
             values={{
