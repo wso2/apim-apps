@@ -134,6 +134,8 @@ const StyledGrid = styled(Grid)((
     }
 }));
 
+const infoIconStyle = { mr: 1, minWidth: 'initial'};
+
 /**
  * TODO: Generalize this component to work in Configuration page , upload mutual SSL certificates action
  * in source/src/app/components/Apis/Details/Configuration/components/APISecurity/components/TransportLevel.jsx ~tmkb
@@ -329,7 +331,7 @@ function Certificates(props) {
                                 })
                             ) : (
                                 <ListItem>
-                                    <ListItemAvatar>
+                                    <ListItemAvatar sx={infoIconStyle}>
                                         <Icon color='primary'>info</Icon>
                                     </ListItemAvatar>
                                     <ListItemText>You do not have any production type certificates uploaded
@@ -383,7 +385,7 @@ function Certificates(props) {
                                 })
                             ) : (
                                 <ListItem>
-                                    <ListItemAvatar>
+                                    <ListItemAvatar sx={infoIconStyle}>
                                         <Icon color='primary'>info</Icon>
                                     </ListItemAvatar>
                                     <ListItemText>You do not have any sandbox type certificates uploaded</ListItemText>
@@ -428,7 +430,7 @@ function Certificates(props) {
                             })
                         ) : (
                             <ListItem>
-                                <ListItemAvatar>
+                                <ListItemAvatar sx={infoIconStyle}>
                                     <Icon color='primary'>info</Icon>
                                 </ListItemAvatar>
                                 <ListItemText>You do not have any certificates uploaded</ListItemText>
