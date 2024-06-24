@@ -40,7 +40,7 @@
         "@stoplight/elements": "^8.1.0",
         "@ui5/webcomponents-icons": "^1.9.3",
         "ajv": "^8.12.0",
-        "async-mutex": "^0.4.0",
+        "async-mutex": "^0.5.0",
         "autosuggest-highlight": "^3.3.4",
         "axios": "^0.28.0",
         "base64url": "3.0.1",
