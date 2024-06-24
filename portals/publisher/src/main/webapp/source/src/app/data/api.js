@@ -2449,10 +2449,11 @@ class API extends Resource {
      *
      * @param {string} apiId API UUID
      * @param {any} certificateFile The certificate file to be uploaded.
+     * @param {string} keyType The type of the endpoint (Whether production or sandbox)
      * @param {string} tier The tier the certificate needs to be associated.
      * @param {string} alias The certificate alias.
      * */
-    static addClientCertificate(apiId, certificateFile, tier, alias) {
+    static addClientCertificate(apiId, certificateFile, keyType, tier, alias) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(
             client => {
@@ -2463,6 +2464,7 @@ class API extends Resource {
                     {
                         requestBody: {
                             certificate: certificateFile,
+                            keyType: keyType,
                             alias: alias,
                             tier: tier,
                         }

@@ -29,7 +29,8 @@ describe("Runtime configuration", () => {
 
     it.only("Enable mutual ssl and upload cert", () => {
         const random_number = Math.floor(Date.now() / 1000);
-        const alias = `alias${random_number}`;
+        const alias1 = `alias1${random_number}`;
+        const alias2 = `alias2${random_number}`;
         Utils.addAPI({ name: apiName, version: apiVersion }).then((apiId) => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
@@ -37,11 +38,12 @@ describe("Runtime configuration", () => {
             cy.get('h4').contains('Transport Level Security').click();
             cy.get('#mutual-ssl-checkbox').click();
 
-            // uploading the cert
+            // uploading the production cert
             cy.get('#certs-add-btn').click()
+            //without clicking on production key type radio button, the default should be production
             cy.get('#itest-id-apipolicies-input').parent().click()
             cy.get('#Bronze').click();
-            cy.get('#certificateAlias').click().type(alias);
+            cy.get('#certificateAlias').click().type(alias1);
 
             // upload the cert
             const filepath = 'api_artifacts/sample.crt.pem';
@@ -52,14 +54,36 @@ describe("Runtime configuration", () => {
 
             Cypress.on('uncaught:exception', (err, runnable) => {
                 return false;
-
             });
+            
+            // uploading the sandbox cert
+            cy.get('#certs-add-btn').click()
+            cy.get('[data-testid="radio-group-key-type"]').get('[data-testid="radio-sandbox"]').click();
+            cy.get('#itest-id-apipolicies-input').parent().click()
+            cy.get('#Gold').click();
+            cy.get('#certificateAlias').click().type(alias2);
+
+            // upload the cert
+            cy.get('input[type="file"]').attachFile(filepath);
+            cy.wait(5000)
+            // Click away
+            cy.get('#upload-cert-save-btn').click();
+
+            Cypress.on('uncaught:exception', (err, runnable) => {
+                return false;
+            });
+
+            cy.get('[data-testid="list-production-certs"]').get(`#production-cert-list-item-${alias1}`).contains(alias1).scrollIntoView().should('be.visible');
+            cy.get('[data-testid="list-sandbox-certs"]').get(`#sandbox-cert-list-item-${alias2}`).contains(alias2).scrollIntoView().should('be.visible');
+
+        
             cy.get('#save-runtime-configurations').click();
 
             cy.get('#save-runtime-configurations').get(() => {
                 cy.get('h4').contains('Transport Level Security').click();
                 cy.get('#mutual-ssl-checkbox').should('be.checked');
-                cy.get('#endpoint-cert-list').contains(alias).should('be.visible');
+                cy.get('[data-testid="list-production-certs"]').contains(alias1).should('be.visible');
+                cy.get('[data-testid="list-sandbox-certs"]').contains(alias2).should('be.visible');
                 // Test is done. Now delete the api
                 Utils.deleteAPI(apiId);
             })

@@ -20,6 +20,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import PropTypes from 'prop-types';
 import {
+    Box,
     Button,
     Dialog,
     DialogActions,
@@ -55,7 +56,9 @@ const classes = {
     alertWrapper: `${PREFIX}-alertWrapper`,
     warningIcon: `${PREFIX}-warningIcon`,
     deleteIcon: `${PREFIX}-deleteIcon`,
-    deleteIconDisable: `${PREFIX}-deleteIconDisable`
+    deleteIconDisable: `${PREFIX}-deleteIconDisable`,
+    productionCertificatesListTitle: `${PREFIX}-productionTitle`,
+    sandboxCertificatesListTitle: `${PREFIX}-sandboxTitle`
 };
 
 const StyledGrid = styled(Grid)((
@@ -130,6 +133,8 @@ const StyledGrid = styled(Grid)((
         color: theme.palette.disabled,
     }
 }));
+
+const infoIconStyle = { mr: 1, minWidth: 'initial'};
 
 /**
  * TODO: Generalize this component to work in Configuration page , upload mutual SSL certificates action
@@ -238,6 +243,14 @@ function Certificates(props) {
             certificateUsageDetails.count + ' other APIs. ';
     }
 
+    const productionCertificates = certificateList.filter(
+        (certificate) => certificate.keyType === 'PRODUCTION'
+    );
+    
+    const sandboxCertificates = certificateList.filter(
+        (certificate) => certificate.keyType === 'SANDBOX'
+    );
+
     useEffect(() => {
         setCertificateList(certificates);
     }, [certificates]);
@@ -270,52 +283,161 @@ function Certificates(props) {
                         <ListItemText primary='Add Certificate' />
                     </ListItem>
                 </List>
-                <List className={classes.certificateList}>
-                    {certificateList.length > 0 ? (
-                        certificateList.map((cert) => {
-                            return (
-                                <ListItem id='endpoint-cert-list'>
-                                    <ListItemAvatar>
-                                        <Icon>lock</Icon>
+                <Box my={1} />
+                {isMutualSSLEnabled ? (
+                    <>
+                        <Typography className={classes.productionCertificatesListTitle}>
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.production.certificates'
+                                defaultMessage='Production' 
+                            />
+                        </Typography>
+                        <List className={classes.certificateList} data-testid='list-production-certs'>
+                            {productionCertificates.length > 0 ? (
+                                productionCertificates.map((cert) => {
+                                    return (
+                                        <ListItem id={`production-cert-list-item-${cert.alias}`}>
+                                            <ListItemAvatar>
+                                                <Icon>lock</Icon>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={cert.alias}
+                                                secondary={cert.tier} 
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <IconButton edge='end' size='large'>
+                                                    <CertificateUsage certAlias={cert.alias} />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={(event) => showCertificateDetails(event, cert.alias)}
+                                                    size='large'>
+                                                    <Icon>info</Icon>
+                                                </IconButton>
+                                                <IconButton
+                                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                    onClick={(event) => showCertificateDeleteDialog(event, cert.alias)}
+                                                    id='delete-cert-btn'
+                                                    size='large'>
+                                                    <Icon className={isRestricted(['apim:api_create'], apiFromContext)
+                                                        ? classes.deleteIconDisable : classes.deleteIcon}
+                                                    >
+                                                        {' '}
+                                                        delete
+                                                    </Icon>
+                                                </IconButton>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    );
+                                })
+                            ) : (
+                                <ListItem>
+                                    <ListItemAvatar sx={infoIconStyle}>
+                                        <Icon color='primary'>info</Icon>
                                     </ListItemAvatar>
-                                    {isMutualSSLEnabled
-                                        ? (<ListItemText primary={cert.alias} secondary={cert.tier} />)
-                                        : <ListItemText primary={cert.alias} secondary={cert.endpoint} />}
-
-                                    <ListItemSecondaryAction>
-                                        <IconButton edge='end' size='large'>
-                                            <CertificateUsage certAlias={cert.alias}/>
-                                        </IconButton>
-                                        <IconButton
-                                            onClick={(event) => showCertificateDetails(event, cert.alias)}
-                                            size='large'>
-                                            <Icon>info</Icon>
-                                        </IconButton>
-                                        <IconButton
-                                            disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                            onClick={(event) => showCertificateDeleteDialog(event, cert.alias)}
-                                            id='delete-cert-btn'
-                                            size='large'>
-                                            <Icon className={isRestricted(['apim:api_create'], apiFromContext)
-                                                ? classes.deleteIconDisable : classes.deleteIcon}
-                                            >
-                                                {' '}
-                                                delete
-                                            </Icon>
-                                        </IconButton>
-                                    </ListItemSecondaryAction>
+                                    <ListItemText>You do not have any production type certificates uploaded
+                                    </ListItemText>
                                 </ListItem>
-                            );
-                        })
-                    ) : (
-                        <ListItem>
-                            <ListItemAvatar>
-                                <Icon color='primary'>info</Icon>
-                            </ListItemAvatar>
-                            <ListItemText>You do not have any certificates uploaded</ListItemText>
-                        </ListItem>
-                    )}
-                </List>
+                            )}
+                        </List>
+                        <Box my={2} />
+                        <Typography className={classes.sandboxCertificatesListTitle}>
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.sandbox.certificates'
+                                defaultMessage='Sandbox' 
+                            />
+                        </Typography>
+                        <List className={classes.certificateList} data-testid='list-sandbox-certs'>
+                            {sandboxCertificates.length > 0 ? (
+                                sandboxCertificates.map((cert) => {
+                                    return (
+                                        <ListItem id={`sandbox-cert-list-item-${cert.alias}`}>
+                                            <ListItemAvatar>
+                                                <Icon>lock</Icon>
+                                            </ListItemAvatar>
+                                            <ListItemText
+                                                primary={cert.alias}
+                                                secondary={cert.tier} 
+                                            />
+                                            <ListItemSecondaryAction>
+                                                <IconButton edge='end' size='large'>
+                                                    <CertificateUsage certAlias={cert.alias} />
+                                                </IconButton>
+                                                <IconButton
+                                                    onClick={(event) => showCertificateDetails(event, cert.alias)}
+                                                    size='large'>
+                                                    <Icon>info</Icon>
+                                                </IconButton>
+                                                <IconButton
+                                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                    onClick={(event) => showCertificateDeleteDialog(event, cert.alias)}
+                                                    id='delete-cert-btn'
+                                                    size='large'>
+                                                    <Icon className={isRestricted(['apim:api_create'], apiFromContext)
+                                                        ? classes.deleteIconDisable : classes.deleteIcon}
+                                                    >
+                                                        {' '}
+                                                        delete
+                                                    </Icon>
+                                                </IconButton>
+                                            </ListItemSecondaryAction>
+                                        </ListItem>
+                                    );
+                                })
+                            ) : (
+                                <ListItem>
+                                    <ListItemAvatar sx={infoIconStyle}>
+                                        <Icon color='primary'>info</Icon>
+                                    </ListItemAvatar>
+                                    <ListItemText>You do not have any sandbox type certificates uploaded</ListItemText>
+                                </ListItem>
+                            )}
+                        </List>
+                    </>
+                ): 
+                    <List className={classes.certificateList}>
+                        {certificateList.length > 0 ? (
+                            certificateList.map((cert) => {
+                                return (
+                                    <ListItem id='endpoint-cert-list'>
+                                        <ListItemAvatar>
+                                            <Icon>lock</Icon>
+                                        </ListItemAvatar>
+                                        <ListItemText primary={cert.alias} secondary={cert.endpoint} />
+                                        <ListItemSecondaryAction>
+                                            <IconButton edge='end' size='large'>
+                                                <CertificateUsage certAlias={cert.alias}/>
+                                            </IconButton>
+                                            <IconButton
+                                                onClick={(event) => showCertificateDetails(event, cert.alias)}
+                                                size='large'>
+                                                <Icon>info</Icon>
+                                            </IconButton>
+                                            <IconButton
+                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                onClick={(event) => showCertificateDeleteDialog(event, cert.alias)}
+                                                id='delete-cert-btn'
+                                                size='large'>
+                                                <Icon className={isRestricted(['apim:api_create'], apiFromContext)
+                                                    ? classes.deleteIconDisable : classes.deleteIcon}
+                                                >
+                                                    {' '}
+                                                    delete
+                                                </Icon>
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                );
+                            })
+                        ) : (
+                            <ListItem>
+                                <ListItemAvatar sx={infoIconStyle}>
+                                    <Icon color='primary'>info</Icon>
+                                </ListItemAvatar>
+                                <ListItemText>You do not have any certificates uploaded</ListItemText>
+                            </ListItem>
+                        )}
+                    </List>
+                }
             </Grid>
             <Dialog open={certificateToDelete.open}>
                 <DialogTitle>

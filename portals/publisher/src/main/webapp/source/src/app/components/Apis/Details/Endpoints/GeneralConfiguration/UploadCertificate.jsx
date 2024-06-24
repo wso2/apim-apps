@@ -31,13 +31,21 @@ import {
     Typography,
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 import Dropzone from 'react-dropzone';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import APIValidation from 'AppData/APIValidation';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import SelectEndpoint from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/SelectEndpoint';
 import SelectPolicies from '../../../Create/Components/SelectPolicies';
+import { 
+    API_SECURITY_KEY_TYPE_PRODUCTION, 
+    API_SECURITY_KEY_TYPE_SANDBOX 
+} from '../../Configuration/components/APISecurity/components/apiSecurityConstants';
 
 const PREFIX = 'UploadCertificate';
 
@@ -137,6 +145,7 @@ export default function UploadCertificate(props) {
     const [isEndpointEmpty, setIsEndpointEmpty] = useState(false);
     const [isPoliciesEmpty, setPoliciesEmpty] = useState(false);
     const [aliasValidity, setAliasValidity] = useState();
+    const [keyType, setkeyType] = useState(API_SECURITY_KEY_TYPE_PRODUCTION);
 
     const [isRejected, setIsRejected] = useState(false);
 
@@ -145,6 +154,7 @@ export default function UploadCertificate(props) {
         setAliasValidity();
         setCertificate({ name: '', content: '' });
         setAlias('');
+        setkeyType(API_SECURITY_KEY_TYPE_PRODUCTION);
         setEndpoint('');
         setPolicy('');
     };
@@ -157,6 +167,16 @@ export default function UploadCertificate(props) {
     function handleOnChange(event) {
         const { value } = event.target;
         setPolicy(value);
+    }
+
+    /**
+     * On change functionality to handle the keyType radio button
+     *
+     * @param {*} event
+     */
+    function handleOnChangekeyType(event) {
+        const { value } = event.target;
+        setkeyType(value);
     }
 
     /**
@@ -173,7 +193,7 @@ export default function UploadCertificate(props) {
     const saveCertificate = () => {
         setSaving(true);
         if (isMutualSSLEnabled) {
-            uploadCertificate(certificate.content, policy, alias)
+            uploadCertificate(certificate.content, keyType, policy, alias)
                 .then(() => {
                     closeCertificateUpload();
                     aliasList.push(alias);
@@ -262,14 +282,53 @@ export default function UploadCertificate(props) {
                     <div>
                         {isMutualSSLEnabled && (api.gatewayType === 'wso2/synapse' ||
                         api.apiType === 'APIPRODUCT') && (
-                            <SelectPolicies
-                                multiple={false}
-                                policies={policy}
-                                helperText='Select a throttling policy for the certificate'
-                                onChange={handleOnChange}
-                                required
-                                validate={onValidate}
-                            />
+                            <>
+                                <RadioGroup
+                                    aria-label='Production Sandbox type selection'
+                                    name={API_SECURITY_KEY_TYPE_PRODUCTION}
+                                    value={keyType}
+                                    onChange={handleOnChangekeyType}
+                                    data-testid='radio-group-key-type'
+                                    row
+                                >
+                                    <FormControlLabel
+                                        value={API_SECURITY_KEY_TYPE_PRODUCTION}
+                                        control={(
+                                            <Radio
+                                                color='primary' 
+                                            />
+                                        )}
+                                        label='Production'
+                                        labelPlacement='end'
+                                        data-testid='radio-production' 
+                                    />
+                                    <FormControlLabel
+                                        value={API_SECURITY_KEY_TYPE_SANDBOX}
+                                        control={(
+                                            <Radio
+                                                color='primary' 
+                                            />
+                                        )}
+                                        label='Sandbox'
+                                        labelPlacement='end'
+                                        data-testid='radio-sandbox' 
+                                    />
+                                </RadioGroup>
+                                <FormHelperText>
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.keyType'
+                                        defaultMessage='Choose the key type of the certificate'
+                                    />
+                                </FormHelperText>
+                                <SelectPolicies
+                                    multiple={false}
+                                    policies={policy}
+                                    helperText='Select a throttling policy for the certificate'
+                                    onChange={handleOnChange}
+                                    required
+                                    validate={onValidate} 
+                                />
+                            </>
                         )}
                         {!isMutualSSLEnabled && (
                             <SelectEndpoint
