@@ -80,14 +80,6 @@ module.exports = function (env, args) {
                 {
                     context: ['/admin'],
                     bypass: clientRoutingBypass,
-                    // bypass: function (req, res, proxyOptions) {
-                    //     if (req.headers.accept.indexOf('html') !== -1) {
-                    //         console.log(req);
-                    //         console.log('Skipping proxy for browser request. [/admin/index.html]');
-                    //         return '/admin/index.html';
-                    //     }
-                    // },
-                    // target: '/admin.html',
                 },
             ],
         },
