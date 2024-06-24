@@ -82,6 +82,7 @@ module.exports = function (env, argv) {
                 "crypto": require.resolve('crypto-browserify'),
                 "crypto-browserify": require.resolve('crypto-browserify'),
                 "buffer": require.resolve('buffer/'),
+                "url": require.resolve("url/"),
             },
         },
         devServer: {
