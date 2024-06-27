@@ -677,9 +677,9 @@ export default class API extends Resource {
      * Get all tags
      * @returns {promise} promise all tags of APIs
      */
-    getAllTags() {
+    getAllTags(limit = 25) {
         const promiseGet = this.client.then((client) => {
-            return client.apis.Tags.get_tags(this._requestMetaData());
+            return client.apis.Tags.get_tags({ limit }, this._requestMetaData());
         }).catch((error) => {
             console.error(error);
         });
