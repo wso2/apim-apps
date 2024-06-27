@@ -48,7 +48,7 @@ module.exports = function (env, argv) {
         watch: false,
         watchOptions: {
             poll: 1000,
-            ignored: ['files/**/*.js', 'node_modules'],
+            ignored: ['files/**/*.js', 'node_modules/**'],
         },
         devtool: 'source-map',
         resolve: {
@@ -80,7 +80,8 @@ module.exports = function (env, argv) {
         devServer: {
             static : ['./'],
             server: 'https',
-            open: 'devportal',
+            open: ['devportal'],
+            compress: true,
             hot: true,
             devMiddleware: {
                 index: false,
