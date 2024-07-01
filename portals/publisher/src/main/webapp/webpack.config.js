@@ -16,7 +16,6 @@
  * under the License.
  *
  */
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
@@ -209,20 +208,6 @@ module.exports = (env, argv) => {
             Settings: 'Settings',
         },
         plugins: [
-            new MonacoWebpackPlugin({ 
-                languages: ['xml', 'json', 'yaml', 'markdown', 'javascript'], 
-                features: [
-                    '!accessibilityHelp',
-                    '!bracketMatching',
-                    '!caretOperations',
-                    'clipboard',
-                    '!codeAction',
-                    '!codelens',
-                    '!colorDetector',
-                    '!comment',
-                    '!contextmenu',
-                    '!coreCommands',
-                ]}),
             new CleanWebpackPlugin(),
             new HtmlWebpackPlugin({
                 inject: false,

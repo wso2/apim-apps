@@ -15,9 +15,10 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { Suspense, lazy, useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import AppBar from '@mui/material/AppBar';
@@ -53,8 +54,6 @@ const StyledDialog = styled(Dialog)((
         flex: 1,
     }
 }));
-
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "PolicyEditorMonaco" */));
 
 const Transition = React.forwardRef((props, ref) => {
     return <Fade in ref={ref} {...props} />;

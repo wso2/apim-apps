@@ -47,6 +47,7 @@ import API from 'AppData/api.js';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import { withRouter } from 'react-router';
 import { isRestricted } from 'AppData/AuthManager';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 import Box from '@mui/material/Box';
 import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
 import debounce from 'lodash.debounce'; // WARNING: This is coming from mui-datatable as a transitive dependency
@@ -58,7 +59,6 @@ import { getLinterResultsFromContent } from "./Linting/Linting";
 import APILintingSummary from './Linting/APILintingSummary';
 
 const EditorDialog = lazy(() => import('./SwaggerEditorDrawer' /* webpackChunkName: "EditorDialog" */));
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 const AsyncAPIEditor = lazy(() => import('./AsyncApiEditorDrawer'));
 
 const PREFIX = 'APIDefinition';

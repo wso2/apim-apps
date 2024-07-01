@@ -17,7 +17,7 @@
  */
 
 import React, {
-    useState, Suspense, lazy, useEffect,
+    useState, Suspense, useEffect,
 } from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
@@ -31,10 +31,10 @@ import Paper from '@mui/material/Paper';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 
 import PolicyEditor from './PolicyEditor';
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "SOAPToRESTMonaco" */));
 
 /**
  *

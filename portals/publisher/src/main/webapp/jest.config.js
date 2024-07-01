@@ -18,8 +18,6 @@
 
 /**
  * Refer https://jestjs.io/docs/en/configuration for more information about jest configs
- * Added monaco-editor mapping because of this issue
- *      https://github.com/react-monaco-editor/react-monaco-editor/issues/133#issuecomment-403960502
  * - per-invocation config (globalSetup, globalTeardown)
 *  - per-worker (not existent, see Per-worker setup/teardown #8708)
 *  - per-suite (setupFiles, setupFilesAfterEnv, beforeAll, afterAll)
@@ -39,7 +37,6 @@ module.exports = {
         userCustomThemes: '<rootDir>/site/public/conf/userThemes.js',
         '^Config$': '<rootDir>/site/public/conf/settings.json',
         '^MaterialIcons$': '<rootDir>/site/public/fonts/iconfont/MaterialIcons.js',
-        '^monaco-editor$': '<rootDir>/node_modules/react-monaco-editor',
         '^nimma/legacy$': '<rootDir>/node_modules/nimma/dist/legacy/cjs/index.js',
         '^nimma/fallbacks$': '<rootDir>/node_modules/nimma/dist/legacy/cjs/fallbacks/index.js',
     },

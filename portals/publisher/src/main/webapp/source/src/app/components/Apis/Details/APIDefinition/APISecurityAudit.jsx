@@ -36,7 +36,7 @@ import MUIDataTable from 'mui-datatables';
 
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import MonacoEditor from 'react-monaco-editor';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 
 const styles = {
     rootPaper: (theme) => ({
@@ -579,7 +579,7 @@ class APISecurityAudit extends Component {
                                     theme='vs-dark'
                                     value={apiDefinition}
                                     options={editorOptions}
-                                    editorDidMount={(editor, monaco) => this.editorDidMount(editor, monaco, searchTerm)}
+                                    onMount={(editor, monaco) => this.editorDidMount(editor, monaco, searchTerm)}
                                 />
                             </TableCell>
                             <TableCell sx={styles.columnTwo}>
@@ -617,7 +617,7 @@ class APISecurityAudit extends Component {
                                     theme='vs-dark'
                                     value={apiDefinition}
                                     options={editorOptions}
-                                    editorDidMount={(editor, monaco) => this.editorDidMount(editor, monaco, searchTerm)}
+                                    onMount={(editor, monaco) => this.editorDidMount(editor, monaco, searchTerm)}
                                 />
                             </TableCell>
                             <TableCell>
