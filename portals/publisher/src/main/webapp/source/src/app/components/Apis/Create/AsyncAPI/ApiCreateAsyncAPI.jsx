@@ -38,7 +38,7 @@ import ListItemText from '@mui/material/ListItemText';
 import TextField from '@mui/material/TextField';
 
 import Chip from '@mui/material/Chip';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { upperCaseString } from 'AppData/stringFormatter';
 import ExternalEndpoint from 'AppComponents/Apis/Create/AsyncAPI/ExternalEndpoint';
 import ProvideAsyncAPI from './Steps/ProvideAsyncAPI';

@@ -24,7 +24,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import MuiAlert from 'AppComponents/Shared/MuiAlert';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import TextField from '@mui/material/TextField';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
