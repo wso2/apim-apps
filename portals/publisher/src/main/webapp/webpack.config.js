@@ -47,14 +47,6 @@ module.exports = (env, argv) => {
             publicPath: 'site/public/dist/',
             globalObject: 'this',
         },
-        resolve: {
-            extensions: [ '.ts', '.js' ],
-            fallback: {
-                fs: false,
-                "stream": require.resolve("stream-browserify"),
-                "buffer": require.resolve("buffer")
-            }
-        },
         watch: false,
         watchOptions: {
             poll: 1000,
@@ -71,45 +63,67 @@ module.exports = (env, argv) => {
          *      https://webpack.js.org/configuration/dev-server/
         */
         devServer: {
-            open: !isTestBuild,
-            openPage: 'publisher',
-            inline: true,
-            hotOnly: !isTestBuild,
-            hot: true,
-            publicPath: '/site/public/dist/',
-            writeToDisk: false,
-            overlay: true,
-            before: devServerBefore,
-            proxy: {
-                '/services/': {
+            server: 'https',
+            static: ['./'],
+            open: isTestBuild ? false : ['publisher'],
+            hot: isTestBuild ? true : 'only',
+            compress: true,
+            devMiddleware: {
+                index: false,
+                writeToDisk: false,
+                publicPath: '/site/public/dist/',
+            },
+            client: {
+                overlay: true,
+            },
+            setupMiddlewares: (middlewares, devServer) => {
+                if (!devServer) {
+                    throw new Error('webpack-dev-server:devServer is not defined');
+                }
+                devServerBefore(devServer.app);
+                return middlewares;
+            },
+            proxy: [
+                {
+                    context: ['/services'],
                     target: 'https://localhost:9443/publisher',
                     secure: false,
                 },
-                '/api/am/publisher/v4/swagger.yaml': {
+                { 
+                    context: ['/site/public/conf/portalSettings.js'],
+                    target: 'https://localhost:9443/publisher',
+                    secure: false,
+                },
+                {
+                    context: ['/api/am/publisher/v4/swagger.yaml'],
                     target: isTestBuild ? 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.publisher.v1/src/main/resources/publisher-api.yaml' : 'https://localhost:9443/api/am/publisher/v4/swagger.yaml',
                     secure: false,
                     changeOrigin: true,
                     pathRewrite: { '^/api/am/publisher/v4/swagger.yaml': '' },
                 },
-                '/api/am/service-catalog/v1/oas.yaml': {
+                {
+                    context: ['/api/am/service-catalog/v1/oas.yaml'],
                     target: isTestBuild ? 'https://raw.githubusercontent.com/wso2/carbon-apimgt/master/components/apimgt/org.wso2.carbon.apimgt.rest.api.service.catalog/src/main/resources/service-catalog-api.yaml' : 'https://localhost:8081/api/am/service-catalog/v1/oas.yaml',
                     secure: false,
                     changeOrigin: true,
                     pathRewrite: { '^/api/am/service-catalog/v1/oas.yaml': '' },
                 },
-                '/api/am': {
+                {
+                    context: ['/api/am'],
                     target: isTestBuild ? 'http://localhost:4010' : 'https://localhost:9443',
                     // pathRewrite: { '^/api/am/publisher/v4/': '' },
                     secure: false,
                 },
-                '/publisher/services': {
+                {
+                    context: ['/publisher/services'],
                     target: 'https://localhost:9443',
                     secure: false,
                 },
-                '/publisher': {
+                {
+                    context: ['/publisher'],
                     bypass: clientRoutingBypass,
                 },
-            },
+            ],
         },
         resolve: {
             alias: {
@@ -131,10 +145,11 @@ module.exports = (env, argv) => {
                 "zlib": false,
                 "http": false,
                 "https": false,
-                "stream": false,
+                "stream": require.resolve("stream-browserify"),
                 "process": false,
                 "crypto": false,
                 "crypto-browserify": require.resolve('crypto-browserify'),
+                "url": require.resolve("url/"),
             },
         },
         module: {

@@ -52,52 +52,48 @@ function getMessage(errorType, isApiName, maxLength) {
 */
 const roleSchema = Joi.extend((joi) => ({
     base: joi.string(),
-    name: 'systemRole',
-    rules: [
-        {
-            name: 'role',
+    type: 'systemRole',
+    rules: {
+        'role': {
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateSystemRole(value);
             },
         },
-    ],
+    },
 }));
 
 const scopeSchema = Joi.extend((joi) => ({
     base: joi.string(),
-    name: 'scopes',
-    rules: [
-        {
-            name: 'scope',
+    type: 'scopes',
+    rules: {
+        scope : {
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateScopeName(value);
             },
         },
-    ],
+    },
 }));
 
 const userRoleSchema = Joi.extend((joi) => ({
     base: joi.string(),
-    name: 'userRole',
-    rules: [
-        {
-            name: 'role',
+    type: 'userRole',
+    rules: {
+        'role' : {
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateUSerRole(value);
             },
         },
-    ],
+    },
 }));
 
 const apiSchema = Joi.extend((joi) => ({
     base: joi.string(),
-    name: 'api',
-    rules: [
-        {
-            name: 'isAPIParameterExist',
+    type: 'api',
+    rules: {
+        'isAPIParameterExist' : {
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const inputValue = value.trim().toLowerCase();
                 const composeQuery = '?query=' + inputValue;
@@ -107,21 +103,20 @@ const apiSchema = Joi.extend((joi) => ({
                 return API.search(composeQueryJSON);
             },
         },
-    ],
+    },
 }));
 
 const documentSchema = Joi.extend((joi) => ({
     base: joi.object(),
-    name: 'document',
-    rules: [
-        {
-            name: 'isDocumentPresent',
+    type: 'document',
+    rules: {
+        'isDocumentPresent': {
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateDocumentExists(value.id, value.name);
             },
         },
-    ],
+    },
 }));
 
 const definition = {
@@ -196,7 +191,7 @@ const definition = {
     operationTarget: Joi.string().required(),
     websubOperationTarget: Joi.string().regex(/^[^{}]*$/).required(),
     name: Joi.string().min(1).max(255),
-    email: Joi.string().email({ tlds: true }).required(),
+    email: Joi.string().email({ tlds: false }).required(),
 };
 
 export default definition;
