@@ -132,7 +132,7 @@ export default function AsyncApiConsole() {
                 if (process.env.NODE_ENV !== 'production') {
                     console.error(error);
                     Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Overview.documents.error.occurred',
+                        id: 'Apis.Details.AsyncApi.error.occurred',
                         defaultMessage: 'Error occurred while retrieving the API',
                     }));
                 }

@@ -339,7 +339,7 @@ class StarRatingBarLegacy extends React.Component {
                                             ) : (
                                                 <FormattedMessage defaultMessage=' users' id='Apis.Listing.StarRatingBar.users' />
                                             )}
-                                            {')'}
+                                            &lsquo;&#41;&rsquo;
                                         </>
                                     )}
 

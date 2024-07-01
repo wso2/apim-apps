@@ -150,7 +150,7 @@ function ListLabels() {
                     Alert.error(description);
                 } else if (response.body) {
                     Alert.error(intl.formatMessage({
-                        id: 'Workflow.ApplicationCreation.updateStatus.has.errors',
+                        id: 'Workflow.SubscriptionCreation.updateStatus.has.errors',
                         defaultMessage: 'Unable to complete subscription creation approve/reject process. ',
                     }));
                     throw (response.body.description);

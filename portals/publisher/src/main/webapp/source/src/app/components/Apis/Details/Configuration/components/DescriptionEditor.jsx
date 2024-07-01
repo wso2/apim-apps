@@ -44,6 +44,7 @@ import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import { vscDarkPlus , vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Configurations from 'Config';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 
 const PREFIX = 'DescriptionEditor';
 
@@ -95,7 +96,6 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     }
 }));
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "MDMonacoEditor" */));
 const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "MDReactMarkdown" */));
 
 function Transition(props) {
@@ -306,7 +306,7 @@ export default function DescriptionEditor(props) {
                                                 value={content}
                                                 options={{ selectOnLineNumbers: true }}
                                                 onChange={setNewContent}
-                                                editorDidMount={editorDidMount}
+                                                onMount={editorDidMount}
                                             />
                                         </Suspense>
                                     </Grid>

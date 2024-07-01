@@ -17,7 +17,7 @@
  */
 
 import React, {
-    useReducer, useState, Suspense, lazy, useEffect,
+    useReducer, useState, Suspense, useEffect,
 } from 'react';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
@@ -30,7 +30,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "TeantConfAddMonacoEditor" */));
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 
 /**
  * Reducer
@@ -152,7 +152,7 @@ function TenantConfSave() {
                                 theme='vs-dark'
                                 value={tenantConf}
                                 onChange={tenantConfOnChange}
-                                editorWillMount={editorWillMount}
+                                beforeMount={editorWillMount}
                             />
                         </Suspense>
                     </Grid>

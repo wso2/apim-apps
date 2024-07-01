@@ -9,7 +9,7 @@ const path = require('path');
 const agent = new https.Agent({
     rejectUnauthorized: false,
 });
-const callbackUrl = 'https://localhost:8082/devportal/services/auth/callback/login';
+const callbackUrl = 'https://localhost:8084/devportal/services/auth/callback/login';
 
 /**
  *
@@ -89,7 +89,9 @@ async function doDCR() {
 const clientRoutingBypass = (req, res, proxyOptions) => {
     if (req.path.startsWith('/devportal/site/public/images/')) {
         return req.path.split('/devportal')[1];
-    } else if (req.headers.accept.indexOf('html') !== -1) {
+    } else if (req.path.startsWith('/devportal/site/public/locales/')) {
+        return req.path.split('/devportal')[1];
+    } else if (req.headers.accept && req.headers.accept.indexOf('html') !== -1) {
         console.log('Skipping proxy for browser request.');
         return '/devportal/index.html';
     }

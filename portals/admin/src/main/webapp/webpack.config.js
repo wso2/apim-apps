@@ -17,20 +17,20 @@
  * under the License.
  *
  */
-const MonacoWebpackPlugin = require('monaco-editor-webpack-plugin');
 const path = require('path');
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
+const DeadCodePlugin = require('webpack-deadcode-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./source/dev/auth_login.js');
 
-module.exports = function (env,args) {
+module.exports = function (env, args) {
     const isDevelopmentBuild = args.mode === 'development';
     const config = {
         entry: { index: './source/index.jsx' },
         output: {
             path: path.resolve(__dirname, 'site/public/dist'),
-            filename: isDevelopmentBuild? '[name].bundle.js'  : '[name].[contenthash].bundle.js',
+            filename: isDevelopmentBuild ? '[name].bundle.js' : '[name].[contenthash].bundle.js',
             chunkFilename: isDevelopmentBuild ? '[name].chunk.bundle.js' : '[name].[contenthash].bundle.js',
             publicPath: 'site/public/dist/',
         },
@@ -41,32 +41,47 @@ module.exports = function (env,args) {
             ignored: ['files/**/*.js', 'node_modules/**'],
         },
         devServer: {
-            open: true,
-            openPage: 'admin',
-            inline: true,
-            hotOnly: true,
+            static : ['./'],
+            server: 'https',
+            compress: true,
+            open: ['admin'],
             hot: true,
-            publicPath: '/site/public/dist/',
-            writeToDisk: false,
-            overlay: true,
-            before: devServerBefore,
-            proxy: {
-                '/services/': {
+            devMiddleware: {
+                index: false,
+                writeToDisk: false,
+                publicPath: '/site/public/dist/',
+            },
+            client: {
+                overlay: true,
+            },
+            setupMiddlewares: (middlewares, devServer) => {
+                if (!devServer) {
+                    throw new Error('webpack-dev-server:devServer is not defined');
+                }
+                devServerBefore(devServer.app);
+                return middlewares;
+            },
+            proxy: [
+                {
+                    context: ['/services'],
                     target: 'https://localhost:9443/admin',
                     secure: false,
                 },
-                '/api/am': {
+                {
+                    context: ['/api/am'],
                     target: 'https://localhost:9443',
                     secure: false,
                 },
-                '/admin/services': {
+                {
+                    context: ['/admin/services'],
                     target: 'https://localhost:9443',
                     secure: false,
                 },
-                '/admin': {
+                {
+                    context: ['/admin'],
                     bypass: clientRoutingBypass,
                 },
-            },
+            ],
         },
         devtool: 'source-map', // todo: Commented out the source
         // mapping in case need to speed up the build time & reduce size
@@ -91,6 +106,7 @@ module.exports = function (env,args) {
                 "util": require.resolve("util/"),
                 "crypto-browserify": require.resolve('crypto-browserify'),
                 "buffer": require.resolve('buffer/'),
+                "url": require.resolve("url/"),
             },
         },
         module: {
@@ -134,7 +150,8 @@ module.exports = function (env,args) {
                                 limit: 100000,
                             },
                         }
-                    ]                },
+                    ]
+                },
                 // Until https://github.com/jantimon/html-webpack-plugin/issues/1483 ~tmkb
                 // This was added to generate the index.jsp from a hbs template file including the hashed bundle file
                 {
@@ -155,15 +172,17 @@ module.exports = function (env,args) {
             Config: 'AppConfig',
         },
         plugins: [
-            new MonacoWebpackPlugin({
-                languages: ['xml', 'json', 'yaml', 'sql', 'mysql'],
-                features: ['!gotoSymbol'],
-            }),
             new HtmlWebpackPlugin({
                 inject: false,
                 template: path.resolve(__dirname, 'site/public/pages/index.jsp.hbs'),
                 filename: path.resolve(__dirname, 'site/public/pages/index.jsp'),
                 minify: false, // Make this true to get exploded, formatted index.jsp file
+            }),
+            new HtmlWebpackPlugin({ // added to support development mode
+                inject: false,
+                template: path.resolve(__dirname, 'admin/index.ejs'),
+                filename: path.resolve(__dirname, 'admin/index.html'),
+                minify: false,
             }),
             new ESLintPlugin({
                 extensions: ['js', 'ts', 'jsx'],
@@ -180,10 +199,24 @@ module.exports = function (env,args) {
                 Buffer: ['buffer', 'Buffer'],
                 process: 'process/browser',
             }),
+            new DeadCodePlugin({
+                failOnHint: !isDevelopmentBuild,
+                patterns: [
+                    'source/src/**/*.jsx',
+                    'source/src/**/*.js'
+                ],
+                exclude: [
+                    'source/src/**/*.test.js',
+                    'source/src/**/*.test.jsx',
+                    'babel.config.js',
+                    '**/*.txt',
+                    'source/src/index.js',
+                    '**/*.(stories|spec).(js|jsx)',
+                ],
+            }),
         ],
     };
-    
-    // Note: for more info about monaco plugin: https://github.com/Microsoft/monaco-editor-webpack-plugin
+
     if (process.env.NODE_ENV === 'development') {
         config.watch = true;
     }
@@ -192,14 +225,6 @@ module.exports = function (env,args) {
         const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer');
         config.plugins.push(new BundleAnalyzerPlugin());
     }
-    if (env && env.unused) {
-        const { UnusedFilesWebpackPlugin } = require('unused-files-webpack-plugin');
 
-        config.plugins.push(new UnusedFilesWebpackPlugin({
-            failOnUnused: process.env.NODE_ENV !== 'development',
-            patterns: ['source/src/**/*.jsx', 'source/src/**/*.js'],
-            ignore: ['babel.config.js', '**/*.txt', 'source/src/index.js'],
-        }));
-    }
     return config;
 };

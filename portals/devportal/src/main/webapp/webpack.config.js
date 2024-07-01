@@ -22,6 +22,7 @@ const webpack = require('webpack');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const DeadCodePlugin = require('webpack-deadcode-plugin');
 const { clientRoutingBypass, devServerBefore } = require('./source/dev/webpack/auth_login.js');
 
 module.exports = function (env, argv) {
@@ -31,16 +32,6 @@ module.exports = function (env, argv) {
         var BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
         config.plugins.push(new BundleAnalyzerPlugin());
-
-    }
-    if (env && env.unused) {
-        var UnusedFilesWebpackPlugin = require("unused-files-webpack-plugin").UnusedFilesWebpackPlugin;
-
-        config.plugins.push(new UnusedFilesWebpackPlugin({
-            failOnUnused: process.env.NODE_ENV !== 'development',
-            patterns: ['source/src/**/*.jsx', 'source/src/**/*.js'],
-            ignore: ['babel.config.js', '**/*.txt', 'source/src/index.js'],
-        }));
 
     }
     const config = {
@@ -57,7 +48,7 @@ module.exports = function (env, argv) {
         watch: false,
         watchOptions: {
             poll: 1000,
-            ignored: ['files/**/*.js', 'node_modules'],
+            ignored: ['files/**/*.js', 'node_modules/**'],
         },
         devtool: 'source-map',
         resolve: {
@@ -82,39 +73,57 @@ module.exports = function (env, argv) {
                 "crypto": require.resolve('crypto-browserify'),
                 "crypto-browserify": require.resolve('crypto-browserify'),
                 "buffer": require.resolve('buffer/'),
+                "url": require.resolve("url/"),
+                "vm" : require.resolve("vm-browserify"),
             },
         },
         devServer: {
-            open: true,
-            openPage: 'devportal',
-            inline: true,
-            hotOnly: true,
+            static : ['./'],
+            server: 'https',
+            open: ['devportal'],
+            compress: true,
             hot: true,
-            publicPath: '/site/public/dist/',
-            writeToDisk: false,
-            overlay: true,
-            before: devServerBefore,
-            proxy: {
-                '/services/': {
+            devMiddleware: {
+                index: false,
+                writeToDisk: false,
+                publicPath: '/site/public/dist/',
+            },
+            client: {
+                overlay: true,
+            },
+            setupMiddlewares: (middlewares, devServer) => {
+                if (!devServer) {
+                    throw new Error('webpack-dev-server:devServer is not defined');
+                }
+                devServerBefore(devServer.app);
+                return middlewares;
+            },
+            proxy: [
+                {
+                    context: ['/services/'],
                     target: 'https://localhost:9443/devportal',
                     secure: false,
                 },
-                '/site/public/theme': {
-                    target: 'https://localhost:9443/devportal',
-                    secure: false,
-                },
-                '/api/am': {
+                { 
+                    context: ['/devportal/site/public/theme'],
                     target: 'https://localhost:9443',
                     secure: false,
                 },
-                '/devportal/services': {
+                {
+                    context: ['/api/am'],
                     target: 'https://localhost:9443',
                     secure: false,
                 },
-                '/devportal': {
+                {
+                    context: ['/devportal/services'],
+                    target: 'https://localhost:9443',
+                    secure: false,
+                },
+                {
+                    context: ['/devportal'],
                     bypass: clientRoutingBypass,
                 },
-            },
+            ],
         },
         module: {
             rules: [
@@ -197,7 +206,7 @@ module.exports = function (env, argv) {
         },
         plugins: [
             new CleanWebpackPlugin({
-                cleanOnceBeforeBuildPatterns: ['./js/build/*','./css/build/*'],
+                cleanOnceBeforeBuildPatterns: ['./js/build/*', './css/build/*'],
                 dangerouslyAllowCleanPatternsOutsideProject: true,
             }),
             new HtmlWebpackPlugin({
@@ -205,6 +214,12 @@ module.exports = function (env, argv) {
                 template: path.resolve(__dirname, 'site/public/pages/index.jsp.hbs'),
                 filename: path.resolve(__dirname, 'site/public/pages/index.jsp'),
                 minify: false, // Make this true to get exploded, formatted index.jsp file
+            }),
+            new HtmlWebpackPlugin({
+                inject: false,
+                template: path.resolve(__dirname, 'devportal/index.ejs'),
+                filename: path.resolve(__dirname, 'devportal/index.html'),
+                minify: false, // For Development
             }),
             new ESLintPlugin({
                 extensions: ['js', 'ts', 'jsx'],
@@ -220,6 +235,23 @@ module.exports = function (env, argv) {
             new webpack.ProvidePlugin({
                 Buffer: ['buffer', 'Buffer'],
                 process: 'process/browser',
+            }),
+            new DeadCodePlugin({
+                failOnHint: !isDevelopmentBuild,
+                patterns: [
+                    'source/src/**/*.jsx',
+                    'source/src/**/*.js'
+                ],
+                exclude: [
+                    'source/src/**/*.test.js',
+                    'source/src/**/*.test.jsx',
+                    'babel.config.js',
+                    '**/*.txt',
+                    'source/src/index.js',
+                    '**/*.(stories|spec).(js|jsx)',
+                    'source/src/app/components/Shared/ChipInput.js',
+                    'source/src/app/data/stringFormatter.js',
+                ],
             }),
         ],
     };

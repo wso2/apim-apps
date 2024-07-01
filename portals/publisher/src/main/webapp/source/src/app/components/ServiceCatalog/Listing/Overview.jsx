@@ -58,6 +58,7 @@ import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import beautify from 'xml-beautifier';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 
 const PREFIX = 'Overview';
 
@@ -208,7 +209,6 @@ dayjs.extend(relativeTime);
 // disabled because webpack magic comment for chunk name require to be in the same line
 // eslint-disable-next-line max-len
 const SwaggerUI = lazy(() => import('AppComponents/Apis/Details/APIDefinition/swaggerUI/SwaggerUI' /* webpackChunkName: "ServiceOverviewSwaggerUI" */));
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 
 /**
  * Service Catalog Overview Page

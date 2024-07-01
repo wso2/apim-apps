@@ -16,12 +16,15 @@
  * under the License.
  */
 module.exports = {
-    parser: 'babel-eslint', // Default parser throws unexpected token error while the syntax is correct
+    parser: '@babel/eslint-parser',
     parserOptions: {
         ecmaVersion: 6,
         ecmaFeatures: {
             jsx: true,
             modules: true,
+        },
+        babelOptions: {
+            presets: ['@babel/preset-react', '@babel/preset-typescript'],
         },
     },
     env: {
@@ -125,7 +128,7 @@ module.exports = {
         }],
         "react/sort-comp": [1]
     },
-    plugins: ['react', 'jest', 'prettier', 'testing-library'],
+    plugins: ['react', 'jest', 'prettier', 'testing-library', ],
     overrides: [
         {
             // 3) Now we enable eslint-plugin-testing-library rules or preset only for matching files!

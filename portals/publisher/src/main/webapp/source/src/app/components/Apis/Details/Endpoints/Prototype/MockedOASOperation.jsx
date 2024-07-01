@@ -16,7 +16,7 @@
  *  under the License.
  */
 
-import React, { lazy, Suspense, useState, useEffect } from 'react';
+import React, { Suspense, useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import {
     CircularProgress,
@@ -29,6 +29,7 @@ import {
 import { ArrowDropDown } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 
 const PREFIX = 'MockedOASOperation';
 
@@ -47,8 +48,6 @@ const StyledGrid = styled(Grid)((
         },
     };
 });
-
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "GenResourceMonaco" */));
 
 /**
  * The OAS mock impl for operation.

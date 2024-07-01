@@ -27,7 +27,7 @@ import {
 } from '@mui/material';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 
 const styles = {
     quotaHeading: {

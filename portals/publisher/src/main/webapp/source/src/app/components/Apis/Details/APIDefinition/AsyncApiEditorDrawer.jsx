@@ -15,7 +15,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { lazy } from 'react';
+import React from 'react';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
@@ -40,8 +41,6 @@ const Root = styled('div')(() => ({
         height: '100%',
     }
 }));
-
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 
 /**
  * This component hosts the AsyncAPI Editor component.

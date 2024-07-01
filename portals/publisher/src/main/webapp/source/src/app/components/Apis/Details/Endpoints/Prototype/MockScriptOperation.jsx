@@ -17,7 +17,6 @@
  */
 
 import React, {
-    lazy,
     Suspense,
     useContext,
     useState,
@@ -29,6 +28,7 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 
 const PREFIX = 'MockScriptOperation';
 
@@ -45,8 +45,6 @@ const StyledGrid = styled(Grid)(() => {
         },
     };
 });
-
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "GenResourceMonaco" */));
 
 const xMediationScriptProperty = 'x-mediation-script';
 const defaultScript = '/* mc.setProperty(\'CONTENT_TYPE\', \'application/json\');\n\t'

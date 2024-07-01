@@ -46,7 +46,7 @@ import AddCircle from '@mui/icons-material/AddCircle';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import API from 'AppData/api';
-import Joi from '@hapi/joi';
+import Joi from 'joi';
 import { MuiChipsInput } from 'mui-chips-input';
 import base64url from 'base64url';
 import Error from '@mui/icons-material/Error';
@@ -1511,7 +1511,7 @@ function AddEdit(props) {
                                             helperText={
                                                 !roleValidity ? (
                                                     <FormattedMessage
-                                                        id='Apis.Details.Scopes.Roles.Invalid'
+                                                        id='Throttling.Subscription.Roles.Invalid'
                                                         defaultMessage='A Role is invalid'
                                                     />
                                                 ) : [

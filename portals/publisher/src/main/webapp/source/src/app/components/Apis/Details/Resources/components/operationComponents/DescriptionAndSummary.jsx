@@ -40,7 +40,7 @@ export default function DescriptionAndSummary(props) {
                 <Typography variant='subtitle1'>
                     Summary
                     {' '}
-                    {'&'}
+                    &lsquo;&#38;&rsquo;
                     {' '}
                     Description
                     <Divider variant='middle' />

@@ -24,7 +24,7 @@ module.exports = {
             ],
             plugins: [
                 '@babel/plugin-syntax-dynamic-import',
-                '@babel/plugin-proposal-class-properties',
+                '@babel/plugin-transform-class-properties',
                 'dynamic-import-node',
                 '@babel/plugin-transform-private-methods',
             ],
@@ -44,9 +44,9 @@ module.exports = {
             ],
             plugins: [
                 '@babel/plugin-syntax-dynamic-import',
-                '@babel/plugin-proposal-class-properties',
-                '@babel/plugin-proposal-nullish-coalescing-operator',
-                '@babel/plugin-proposal-logical-assignment-operators',
+                '@babel/plugin-transform-class-properties',
+                '@babel/plugin-transform-nullish-coalescing-operator',
+                '@babel/plugin-transform-logical-assignment-operators',
             ],
         },
         development: {
@@ -61,9 +61,9 @@ module.exports = {
             ],
             plugins: [
                 '@babel/plugin-syntax-dynamic-import',
-                '@babel/plugin-proposal-class-properties',
-                '@babel/plugin-proposal-nullish-coalescing-operator',
-                '@babel/plugin-proposal-logical-assignment-operators',
+                '@babel/plugin-transform-class-properties',
+                '@babel/plugin-transform-nullish-coalescing-operator',
+                '@babel/plugin-transform-logical-assignment-operators',
             ],
         },
     },
