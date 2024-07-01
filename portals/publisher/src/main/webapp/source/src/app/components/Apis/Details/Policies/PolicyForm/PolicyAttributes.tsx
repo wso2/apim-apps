@@ -142,7 +142,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                         new RegExp(regex);
                     } catch(e) {
                         error = intl.formatMessage({
-                            id: 'AApis.Details.Policies.PolicyForm.PolicyAttributes.validationRegex.invalid',
+                            id: 'Apis.Details.Policies.PolicyForm.PolicyAttributes.validationRegex.invalid',
                             defaultMessage: 'Provided regular expression is invalid',
                         })
                     }

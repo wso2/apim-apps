@@ -1,10 +1,4 @@
 {
-  "AApis.Details.Policies.PolicyForm.PolicyAttributes.validationRegex.invalid": [
-    {
-      "type": 0,
-      "value": "Provided regular expression is invalid"
-    }
-  ],
   "APIs.details.endpoints.certificate.usage": [
     {
       "type": 0,
@@ -5981,6 +5975,12 @@
     {
       "type": 0,
       "value": "Policy Attributes"
+    }
+  ],
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.validationRegex.invalid": [
+    {
+      "type": 0,
+      "value": "Provided regular expression is invalid"
     }
   ],
   "Apis.Details.Policies.PolicyForm.PolicyCreateForm.policy.cancel": [

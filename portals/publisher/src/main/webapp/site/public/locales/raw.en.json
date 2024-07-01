@@ -1,7 +1,4 @@
 {
-  "AApis.Details.Policies.PolicyForm.PolicyAttributes.validationRegex.invalid": {
-    "defaultMessage": "Provided regular expression is invalid"
-  },
   "APIs.details.endpoints.certificate.usage": {
     "defaultMessage": "Usages of certificate -"
   },
@@ -2843,6 +2840,9 @@
   },
   "Apis.Details.Policies.PolicyForm.PolicyAttributes.title": {
     "defaultMessage": "Policy Attributes"
+  },
+  "Apis.Details.Policies.PolicyForm.PolicyAttributes.validationRegex.invalid": {
+    "defaultMessage": "Provided regular expression is invalid"
   },
   "Apis.Details.Policies.PolicyForm.PolicyCreateForm.policy.cancel": {
     "defaultMessage": "Cancel"
