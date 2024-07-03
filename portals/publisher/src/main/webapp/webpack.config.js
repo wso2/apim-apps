@@ -17,6 +17,7 @@
  *
  */
 const path = require('path');
+const DeadCodePlugin = require('webpack-deadcode-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const ESLintPlugin = require('eslint-webpack-plugin');
 const webpack = require('webpack');
@@ -248,6 +249,34 @@ module.exports = (env, argv) => {
             }),
             new webpack.ProvidePlugin({
                 process: 'process/browser',
+            }),
+            new DeadCodePlugin({
+                failOnHint: !isDevelopmentBuild,
+                patterns: [
+                    'source/src/**/*.jsx',
+                    'source/src/**/*.js'
+                ],
+                exclude: [
+                    'source/src/**/*.test.js',
+                    'source/src/**/*.test.jsx',
+                    'babel.config.js',
+                    '**/*.txt',
+                    'source/src/index.js',
+                    '**/*.(stories|spec).(js|jsx)',
+                    "source/src/app/webWorkers/swagger.worker.js",
+                    "source/src/app/webWorkers/swaggerWorkerInit.js",
+                    "source/src/app/components/Shared/Message.jsx",
+                    "source/src/app/components/Apis/Details/Comments/CommentReply.jsx",
+                    "source/src/app/components/Apis/Details/LifeCycle/Policies.jsx",
+                    "source/src/app/components/Apis/Details/Configuration/components/Description.jsx",
+                    "source/src/app/components/Apis/Details/Configuration/components/NewTopic.jsx",
+                    "source/src/app/components/Apis/Details/Endpoints/Prototype/MockedOASOperation.jsx",
+                    "source/src/app/components/Apis/Details/Resources/components/SpecErrors.jsx",
+                    "source/src/app/components/Apis/Listing/components/ImageGenerator/APICards/DocThumbClassic copy.jsx",
+                    "source/src/app/data/User.js",
+                    "source/src/app/components/Shared/ChipInput.js",
+                    "source/src/app/data/ScopeValidation.jsx",
+                ],
             }),
         ],
         stats: {
