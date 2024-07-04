@@ -23,6 +23,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
+import Alert from 'AppComponents/Shared/Alert';
 
 /**
  * Render delete dialog box.
@@ -49,12 +50,13 @@ function Delete(props) {
                 );
             })
             .catch(() => {
-                return (
+                Alert.error(
                     <FormattedMessage
                         id='Throttling.Custom.Policy.policy.delete.error'
                         defaultMessage='Custom Policy could not be deleted.'
-                    />
+                    />,
                 );
+                return false;
             });
 
         return (promiseAPICall);

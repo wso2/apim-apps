@@ -61,7 +61,9 @@ function FormDialogBase({
         } else if (savedPromise) {
             setSaving(true);
             savedPromise.then((data) => {
-                Alert.success(data);
+                if (data) {
+                    Alert.success(data);
+                }
             }).catch((e) => {
                 Alert.error(e);
             }).finally(() => {
