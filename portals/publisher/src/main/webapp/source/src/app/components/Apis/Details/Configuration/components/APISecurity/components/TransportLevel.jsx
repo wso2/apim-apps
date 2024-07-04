@@ -45,6 +45,8 @@ import {
     DEFAULT_API_SECURITY_OAUTH2,
     API_SECURITY_BASIC_AUTH,
     API_SECURITY_API_KEY,
+    API_SECURITY_KEY_TYPE_PRODUCTION,
+    API_SECURITY_KEY_TYPE_SANDBOX
 } from './apiSecurityConstants';
 
 const PREFIX = 'TransportLevel';
@@ -96,7 +98,8 @@ function TransportLevel(props) {
     } = props;
     const isMutualSSLEnabled = securityScheme.includes(API_SECURITY_MUTUAL_SSL);
     const [apiFromContext] = useAPI();
-    const [clientCertificates, setClientCertificates] = useState([]);
+    const [productionClientCertificates, setProductionClientCertificates] = useState([]);
+    const [sandboxClientCertificates, setSandboxClientCertificates] = useState([]);
 
 
     /**
@@ -115,14 +118,24 @@ function TransportLevel(props) {
                     id: 'Apis.Details.Configuration.components.APISecurity.TranportLevel.certificate.add.success',
                     defaultMessage: 'Certificate added successfully',
                 }));
-                const tmpCertificates = [...clientCertificates];
-                tmpCertificates.push({
-                    apiId: resp.obj.apiId,
-                    alias: resp.obj.alias,
-                    tier: resp.obj.tier,
-                    keyType: resp.obj.keyType,
-                });
-                setClientCertificates(tmpCertificates);
+                if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+                    const tmpSandboxCertificates = [...sandboxClientCertificates];
+                    tmpSandboxCertificates.push({
+                        apiId: resp.obj.apiId,
+                        alias: resp.obj.alias,
+                        tier: resp.obj.tier,
+                    });
+                    setSandboxClientCertificates(tmpSandboxCertificates);
+
+                } else {
+                    const tmpProductionCertificates = [...productionClientCertificates];
+                    tmpProductionCertificates.push({
+                        apiId: resp.obj.apiId,
+                        alias: resp.obj.alias,
+                        tier: resp.obj.tier,
+                    });
+                    setProductionClientCertificates(tmpProductionCertificates);
+                }
             }
         }).catch((error) => {
             if (error.response) {
@@ -139,19 +152,32 @@ function TransportLevel(props) {
     /**
      * Method to delete the selected certificate.
      *
+     * @param {string} keyType The key type of the certificate to be deleted.
      * @param {string} alias The alias of the certificate to be deleted.
      * */
-    const deleteClientCertificate = (alias) => {
-        return API.deleteClientCertificate(alias, id).then((resp) => {
-            setClientCertificates(() => {
-                if (resp.status === 200) {
-                    return clientCertificates.filter((cert) => {
-                        return cert.alias !== alias;
-                    });
-                } else {
-                    return -1;
-                }
-            });
+    const deleteClientCertificate = (keyType, alias) => {
+        return API.deleteClientCertificate(keyType, alias, id).then((resp) => {
+            if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+                setSandboxClientCertificates(() => {
+                    if (resp.status === 200) {
+                        return sandboxClientCertificates.filter((cert) => {
+                            return cert.alias !== alias;
+                        });
+                    } else {
+                        return -1;
+                    }
+                });
+            } else {
+                setProductionClientCertificates(() => {
+                    if (resp.status === 200) {
+                        return productionClientCertificates.filter((cert) => {
+                            return cert.alias !== alias;
+                        });
+                    } else {
+                        return -1;
+                    }
+                });
+            }
             Alert.info(intl.formatMessage({
                 id: 'Apis.Details.Configuration.components.APISecurity.TranportLevel.certificate.delete.success',
                 defaultMessage: 'Certificate Deleted Successfully',
@@ -184,12 +210,20 @@ function TransportLevel(props) {
 
     // Get the client certificates from backend.
     useEffect(() => {
-        API.getAllClientCertificates(id).then((resp) => {
-            const { certificates } = resp.obj;
-            setClientCertificates(certificates);
+        API.getAllClientCertificatesOfGivenKeyType(API_SECURITY_KEY_TYPE_PRODUCTION, id).then((resp) => {
+            const { certificates: productionCertificates } = resp.obj;
+            setProductionClientCertificates(productionCertificates);
         }).catch((err) => {
             console.error(err);
-            setClientCertificates([]);
+            setProductionClientCertificates([]);
+        });
+
+        API.getAllClientCertificatesOfGivenKeyType(API_SECURITY_KEY_TYPE_SANDBOX, id).then((resp) => {
+            const { certificates: sandboxCertificates } = resp.obj;
+            setSandboxClientCertificates(sandboxCertificates);
+        }).catch((err) => {
+            console.error(err);
+            setSandboxClientCertificates([]);
         });
     }, []);
 
@@ -308,7 +342,8 @@ function TransportLevel(props) {
                             // endpoints page ~tmkb
                             <Certificates
                                 isMutualSSLEnabled={isMutualSSLEnabled}
-                                certificates={clientCertificates}
+                                productionCertificates={productionClientCertificates}
+                                sandboxCertificates={sandboxClientCertificates}
                                 uploadCertificate={saveClientCertificate}
                                 deleteCertificate={deleteClientCertificate}
                                 apiId={id}

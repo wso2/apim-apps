@@ -41,6 +41,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import UploadCertificate from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/UploadCertificate';
 import CertificateUsage from "AppComponents/Apis/Details/Endpoints/GeneralConfiguration/CertificateUsage.tsx";
 import API from '../../../../../data/api';
+import { API_SECURITY_KEY_TYPE_PRODUCTION, API_SECURITY_KEY_TYPE_SANDBOX }
+from '../../Configuration/components/APISecurity/components/apiSecurityConstants';
 
 const PREFIX = 'Certificates';
 
@@ -145,11 +147,14 @@ const infoIconStyle = { mr: 1, minWidth: 'initial'};
  */
 function Certificates(props) {
     const {
-        api, certificates, uploadCertificate, deleteCertificate, isMutualSSLEnabled, apiId, endpoints, aliasList,
+        api, certificates, productionCertificates, sandboxCertificates, uploadCertificate, deleteCertificate,
+        isMutualSSLEnabled, apiId, endpoints, aliasList, productionAliasList, sandboxAliasList,
     } = props;
     const [certificateList, setCertificateList] = useState([]);
+    const [productionCertificatesList, setProductionCertificateList] = useState([]);
+    const [sandboxCertificatesList, setSandboxCertificateList] = useState([]);
     const [openCertificateDetails, setOpenCertificateDetails] = useState({ open: false, anchor: null, details: {} });
-    const [certificateToDelete, setCertificateToDelete] = useState({ open: false, alias: '' });
+    const [certificateToDelete, setCertificateToDelete] = useState({ open: false, keyType: '', alias: '' });
     const [certificateUsageDetails, setCertificateUsageDetails] = useState({ count: 0, apiList: [] });
     const [isDeleting, setDeleting] = useState(false);
     const [uploadCertificateOpen, setUploadCertificateOpen] = useState(false);
@@ -163,49 +168,75 @@ function Certificates(props) {
      * @param {string} certAlias  The alias of the certificate which information is required.
      * */
     const showCertificateDetails = (event, certAlias) => {
-        if (!isMutualSSLEnabled) {
-            API.getCertificateStatus(certAlias)
-                .then((response) => {
-                    setOpenCertificateDetails({
-                        details: response.body,
-                        open: true,
-                        alias: certAlias,
-                        anchor: event.currentTarget,
-                    });
-                })
-                .catch((err) => {
-                    console.error(err);
+        API.getCertificateStatus(certAlias)
+            .then((response) => {
+                setOpenCertificateDetails({
+                    details: response.body,
+                    open: true,
+                    alias: certAlias,
+                    anchor: event.currentTarget,
                 });
-        } else {
-            API.getClientCertificateStatus(certAlias, apiId)
-                .then((response) => {
-                    setOpenCertificateDetails({
-                        details: response.body,
-                        open: true,
-                        alias: certAlias,
-                        anchor: event.currentTarget,
-                    });
-                })
-                .catch((error) => {
-                    console.error(error);
-                });
-        }
+            })
+            .catch((err) => {
+                console.error(err);
+            });
     };
 
     /**
-     * Delete certificate represented by the alias.
+     * Show the selected client certificate details in a popover.
      *
+     * @param {any} event The button click event.
+     * @param {string} keyType The key type of the certificate.
+     * @param {string} certAlias  The alias of the certificate which information is required.
+     * */
+    const showClientCertificateDetails = (event, keyType, certAlias) => {
+        API.getClientCertificateStatus(keyType, certAlias, apiId)
+            .then((response) => {
+                setOpenCertificateDetails({
+                    details: response.body,
+                    open: true,
+                    alias: certAlias,
+                    anchor: event.currentTarget,
+                });
+            })
+            .catch((error) => {
+                console.error(error);
+            });
+    };
+
+    /**
+     * Delete certificate represented by the key type and alias.
+     *
+     * @param {string} certificateKeyType The key type of the certificate that is needed to be deleted.
      * @param {string} certificateAlias The alias of the certificate that is needed to be deleted.
      * */
-    const deleteCertificateByAlias = (certificateAlias) => {
+    const deleteCertificateByAlias = (certificateKeyType, certificateAlias) => {
         setDeleting(true);
-        deleteCertificate(certificateAlias)
+        const deletePromise = certificateKeyType
+            ? deleteCertificate(certificateKeyType, certificateAlias)
+            : deleteCertificate(certificateAlias);
+
+        deletePromise
             .then(() => { 
-                setCertificateToDelete({ open: false, alias: '' })
+                setCertificateToDelete({ open: false, keyType: '', alias: '' })
                 // Remove certificateAlias from aliasList.
-                const index = aliasList.indexOf(certificateAlias);
-                if (index > -1) {
-                    aliasList.splice(index, 1);
+                if (isMutualSSLEnabled) {
+                    if (certificateKeyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+                        const index = sandboxAliasList.indexOf(certificateAlias);
+                        if (index > -1) {
+                            sandboxAliasList.splice(index, 1);
+                        }
+                    } else {
+                        const index = productionAliasList.indexOf(certificateAlias);
+                        if (index > -1) {
+                            productionAliasList.splice(index, 1);
+                        }
+                    }
+                } else {
+                    const index = aliasList.indexOf(certificateAlias);
+                    if (index > -1) {
+                        aliasList.splice(index, 1);
+                    }
                 }
             })
             .finally(() => setDeleting(false));
@@ -233,27 +264,35 @@ function Certificates(props) {
      * @param {string} certAlias  The alias of the certificate which information is required.
      * */
     const showCertificateDeleteDialog = async (event, certAlias) => {
-        setCertificateToDelete({ open: false, alias: '' });
+        setCertificateToDelete({ open: false, keyType: '', alias: '' });
         await getCertificateUsage(certAlias);
-        setCertificateToDelete({ open: true, alias: certAlias });
+        setCertificateToDelete({ open: true, keyType: '', alias: certAlias });
     };
+
+    /**
+     * Show client certificate deletion dialog box.
+     *
+     * @param {any} event The button click event.
+     * @param {string} certKeyType The key type of the certificate.
+     * @param {string} certAlias  The alias of the certificate which information is required.
+     * */
+    const showClientCertificateDeleteDialog = async (event, certKeyType, certAlias) => {
+        setCertificateToDelete({ open: false, keyType: '', alias: '' });
+        setCertificateToDelete({ open: true, keyType: certKeyType, alias: certAlias });
+    };
+
 
     const getWarningMessage = () => {
         return certificateToDelete.alias + ' is used by ' +
             certificateUsageDetails.count + ' other APIs. ';
     }
 
-    const productionCertificates = certificateList.filter(
-        (certificate) => certificate.keyType === 'PRODUCTION'
-    );
-    
-    const sandboxCertificates = certificateList.filter(
-        (certificate) => certificate.keyType === 'SANDBOX'
-    );
 
     useEffect(() => {
         setCertificateList(certificates);
-    }, [certificates]);
+        setProductionCertificateList(productionCertificates);
+        setSandboxCertificateList(sandboxCertificates);
+    }, [certificates, productionCertificates, sandboxCertificates]);
 
     return (
         <StyledGrid container direction='column'>
@@ -293,8 +332,8 @@ function Certificates(props) {
                             />
                         </Typography>
                         <List className={classes.certificateList} data-testid='list-production-certs'>
-                            {productionCertificates.length > 0 ? (
-                                productionCertificates.map((cert) => {
+                            {productionCertificatesList?.length > 0 ? (
+                                productionCertificatesList.map((cert) => {
                                     return (
                                         <ListItem id={`production-cert-list-item-${cert.alias}`}>
                                             <ListItemAvatar>
@@ -305,17 +344,16 @@ function Certificates(props) {
                                                 secondary={cert.tier} 
                                             />
                                             <ListItemSecondaryAction>
-                                                <IconButton edge='end' size='large'>
-                                                    <CertificateUsage certAlias={cert.alias} />
-                                                </IconButton>
                                                 <IconButton
-                                                    onClick={(event) => showCertificateDetails(event, cert.alias)}
+                                                    onClick={(event) => showClientCertificateDetails(event,
+                                                        API_SECURITY_KEY_TYPE_PRODUCTION, cert.alias)}
                                                     size='large'>
                                                     <Icon>info</Icon>
                                                 </IconButton>
                                                 <IconButton
                                                     disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                    onClick={(event) => showCertificateDeleteDialog(event, cert.alias)}
+                                                    onClick={(event) => showClientCertificateDeleteDialog(event,
+                                                        API_SECURITY_KEY_TYPE_PRODUCTION, cert.alias)}
                                                     id='delete-cert-btn'
                                                     size='large'>
                                                     <Icon className={isRestricted(['apim:api_create'], apiFromContext)
@@ -347,8 +385,8 @@ function Certificates(props) {
                             />
                         </Typography>
                         <List className={classes.certificateList} data-testid='list-sandbox-certs'>
-                            {sandboxCertificates.length > 0 ? (
-                                sandboxCertificates.map((cert) => {
+                            {sandboxCertificatesList?.length > 0 ? (
+                                sandboxCertificatesList.map((cert) => {
                                     return (
                                         <ListItem id={`sandbox-cert-list-item-${cert.alias}`}>
                                             <ListItemAvatar>
@@ -359,17 +397,16 @@ function Certificates(props) {
                                                 secondary={cert.tier} 
                                             />
                                             <ListItemSecondaryAction>
-                                                <IconButton edge='end' size='large'>
-                                                    <CertificateUsage certAlias={cert.alias} />
-                                                </IconButton>
                                                 <IconButton
-                                                    onClick={(event) => showCertificateDetails(event, cert.alias)}
+                                                    onClick={(event) => showClientCertificateDetails(event,
+                                                        API_SECURITY_KEY_TYPE_SANDBOX, cert.alias)}
                                                     size='large'>
                                                     <Icon>info</Icon>
                                                 </IconButton>
                                                 <IconButton
                                                     disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                    onClick={(event) => showCertificateDeleteDialog(event, cert.alias)}
+                                                    onClick={(event) => showClientCertificateDeleteDialog(event,
+                                                        API_SECURITY_KEY_TYPE_SANDBOX, cert.alias)}
                                                     id='delete-cert-btn'
                                                     size='large'>
                                                     <Icon className={isRestricted(['apim:api_create'], apiFromContext)
@@ -463,7 +500,9 @@ function Certificates(props) {
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        onClick={() => deleteCertificateByAlias(certificateToDelete.alias)}
+                        onClick={() => 
+                            deleteCertificateByAlias(certificateToDelete.keyType, certificateToDelete.alias)
+                        }
                         variant='contained'
                         color='primary'
                         disabled={isDeleting}
@@ -477,7 +516,7 @@ function Certificates(props) {
                         {isDeleting && <CircularProgress size={24} />}
 
                     </Button>
-                    <Button onClick={() => setCertificateToDelete({ open: false, alias: '' })}>
+                    <Button onClick={() => setCertificateToDelete({ open: false, keyType: '', alias: '' })}>
                         <FormattedMessage
                             id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.delete.cancel.button'
                             defaultMessage='Cancel'
@@ -531,6 +570,8 @@ function Certificates(props) {
                 setUploadCertificateOpen={setUploadCertificateOpen}
                 uploadCertificateOpen={uploadCertificateOpen}
                 aliasList={aliasList}
+                productionAliasList={productionAliasList}
+                sandboxAliasList={sandboxAliasList}
                 api={api}
             />
         </StyledGrid>
@@ -540,6 +581,12 @@ function Certificates(props) {
 Certificates.defaultProps = {
     isMutualSSLEnabled: false,
     apiId: '',
+    certificates: [],
+    productionCertificates: [],
+    sandboxCertificates: [],
+    aliasList: [],
+    productionAliasList: [],
+    sandboxAliasList: [],
 };
 
 Certificates.propTypes = {
@@ -547,13 +594,17 @@ Certificates.propTypes = {
         fileinput: PropTypes.shape({}),
         button: PropTypes.shape({}),
     }).isRequired,
-    certificates: PropTypes.shape({}).isRequired,
+    certificates: PropTypes.shape({}),
+    productionCertificates: PropTypes.shape({}),
+    sandboxCertificates: PropTypes.shape({}),
     uploadCertificate: PropTypes.func.isRequired,
     deleteCertificate: PropTypes.func.isRequired,
     apiId: PropTypes.string,
     api: PropTypes.shape({}).isRequired,
     isMutualSSLEnabled: PropTypes.bool,
     endpoints: PropTypes.shape([]).isRequired,
-    aliasList: PropTypes.shape([]).isRequired,
+    aliasList: PropTypes.shape([]),
+    productionAliasList: PropTypes.shape([]),
+    sandboxAliasList: PropTypes.shape([]),
 };
 export default injectIntl((Certificates));

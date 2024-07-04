@@ -135,6 +135,8 @@ export default function UploadCertificate(props) {
         uploadCertificateOpen,
         setUploadCertificateOpen,
         aliasList,
+        productionAliasList,
+        sandboxAliasList,
         api,
     } = props;
     const [alias, setAlias] = useState('');
@@ -157,6 +159,21 @@ export default function UploadCertificate(props) {
         setkeyType(API_SECURITY_KEY_TYPE_PRODUCTION);
         setEndpoint('');
         setPolicy('');
+    };
+
+    const isAliasIncluded = () => {
+        if (isMutualSSLEnabled) {
+            if (keyType === API_SECURITY_KEY_TYPE_SANDBOX && sandboxAliasList) {
+                return sandboxAliasList.includes(alias);
+            }
+            if (keyType === API_SECURITY_KEY_TYPE_PRODUCTION && productionAliasList) {
+                return productionAliasList.includes(alias);
+            } 
+        }
+        if (aliasList) {
+            return aliasList.includes(alias);
+        }    
+        return false;
     };
 
     /**
@@ -196,7 +213,11 @@ export default function UploadCertificate(props) {
             uploadCertificate(certificate.content, keyType, policy, alias)
                 .then(() => {
                     closeCertificateUpload();
-                    aliasList.push(alias);
+                    if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+                        sandboxAliasList.push(alias);
+                    } else {
+                        productionAliasList.push(alias);
+                    }
                 })
                 .finally(() => setSaving(false));
         } else {
@@ -249,20 +270,30 @@ export default function UploadCertificate(props) {
     const getHelperText = () => {
         if (aliasValidity && !aliasValidity.isValid) {
             return (aliasValidity.message);
-        } else if (aliasList && aliasList.includes(alias)) {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.alias.exist.error'
-                    defaultMessage='Alias already exists'
-                />
-            );
         } else {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.alias.default.message'
-                    defaultMessage='Alias for the Certificate'
-                />
-            );
+            let aliasListToCompare = aliasList;
+            if (isMutualSSLEnabled) {
+                if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+                    aliasListToCompare = productionAliasList;
+                } else {
+                    aliasListToCompare = sandboxAliasList;
+                }
+            }
+            if (aliasListToCompare && aliasListToCompare.includes(alias)) {
+                return (
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.alias.exist.error'
+                        defaultMessage='Alias already exists'
+                    />
+                );
+            } else {
+                return (
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.alias.default.message'
+                        defaultMessage='Alias for the Certificate'
+                    />
+                );
+            }
         }
     };
 
@@ -355,7 +386,7 @@ export default function UploadCertificate(props) {
                             margin='normal'
                             variant='outlined'
                             error={
-                                (aliasValidity && !aliasValidity.isValid) || (aliasList && aliasList.includes(alias))
+                                (aliasValidity && !aliasValidity.isValid) || isAliasIncluded()
                             }
                             helperText={getHelperText()}
                             fullWidth
@@ -457,7 +488,9 @@ export default function UploadCertificate(props) {
                             || (!isMutualSSLEnabled && endpoint === '')
                             || certificate.name === ''
                             || (isMutualSSLEnabled && isPoliciesEmpty)
-                            || isSaving || (aliasList && aliasList.includes(alias)) || isRejected
+                            || isSaving
+                            || isAliasIncluded()
+                            || isRejected
                     }
                 >
                     <FormattedMessage
@@ -474,6 +507,9 @@ export default function UploadCertificate(props) {
 UploadCertificate.defaultProps = {
     isMutualSSLEnabled: false,
     endpoints: [],
+    aliasList: [],
+    productionAliasList: [],
+    sandboxAliasList: [],
 };
 
 UploadCertificate.propTypes = {
@@ -484,5 +520,7 @@ UploadCertificate.propTypes = {
     setUploadCertificateOpen: PropTypes.func.isRequired,
     uploadCertificateOpen: PropTypes.bool.isRequired,
     endpoints: PropTypes.shape([]),
-    aliasList: PropTypes.shape([]).isRequired,
+    aliasList: PropTypes.shape([]),
+    productionAliasList: PropTypes.shape([]),
+    sandboxAliasList: PropTypes.shape([]),
 };
