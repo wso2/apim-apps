@@ -110,6 +110,14 @@ export default function UsageViewResource(props) {
                                             />
                                         </Typography>
                                     </TableCell>
+                                    <TableCell>
+                                        <Typography className={classes.heading}>
+                                            <FormattedMessage
+                                                id='Scopes.Usage.UsageView.resource.revision'
+                                                defaultMessage='Revision'
+                                            />
+                                        </Typography>
+                                    </TableCell>
                                 </TableRow>
                             </TableHead>
                             {usedResourceList.map((resource) => (
@@ -125,6 +133,13 @@ export default function UsageViewResource(props) {
                                         <Typography className={classes.normalText}>
                                             <Typography>
                                                 {resource.verb}
+                                            </Typography>
+                                        </Typography>
+                                    </TableCell>
+                                    <TableCell>
+                                        <Typography className={classes.normalText}>
+                                            <Typography>
+                                                {resource.revisionID}
                                             </Typography>
                                         </Typography>
                                     </TableCell>
