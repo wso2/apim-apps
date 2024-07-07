@@ -32,7 +32,7 @@ import { Progress } from 'AppComponents/Shared';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import { Link as RouterLink } from 'react-router-dom';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
-import Joi from 'joi';
+import Joi from '@hapi/joi';
 import { green } from '@mui/material/colors';
 
 import { Editor as MonacoEditor } from '@monaco-editor/react';

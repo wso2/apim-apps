@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import Joi from 'joi';
+import Joi from '@hapi/joi';
 
 const definition = {
     number: Joi.number().integer(),

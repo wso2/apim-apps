@@ -21,7 +21,7 @@ import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';
 import Settings from 'Settings';
-import Joi from 'joi';
+import Joi from '@hapi/joi';
 import { Box, Grid } from '@mui/material';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';

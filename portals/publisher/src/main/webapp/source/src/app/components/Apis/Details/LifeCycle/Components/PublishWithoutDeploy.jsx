@@ -37,7 +37,7 @@ import Divider from '@mui/material/Divider';
 import { Link as RouterLink } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import Alert from 'AppComponents/Shared/Alert';
-import Joi from 'joi';
+import Joi from '@hapi/joi';
 import Collapse from '@mui/material/Collapse';
 
 const PREFIX = 'PublishWithoutDeploy';

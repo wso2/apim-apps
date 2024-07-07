@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import Joi from 'joi';
+import Joi from '@hapi/joi';
 import API from 'AppData/api';
 import queryString from 'query-string';
 
@@ -52,48 +52,52 @@ function getMessage(errorType, isApiName, maxLength) {
 */
 const roleSchema = Joi.extend((joi) => ({
     base: joi.string(),
-    type: 'systemRole',
-    rules: {
-        'role': {
+    name: 'systemRole',
+    rules: [
+        {
+            name: 'role',
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateSystemRole(value);
             },
         },
-    },
+    ],
 }));
 
 const scopeSchema = Joi.extend((joi) => ({
     base: joi.string(),
-    type: 'scopes',
-    rules: {
-        scope : {
+    name: 'scopes',
+    rules: [
+        {
+            name: 'scope',
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateScopeName(value);
             },
         },
-    },
+    ],
 }));
 
 const userRoleSchema = Joi.extend((joi) => ({
     base: joi.string(),
-    type: 'userRole',
-    rules: {
-        'role' : {
+    name: 'userRole',
+    rules: [
+        {
+            name: 'role',
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateUSerRole(value);
             },
         },
-    },
+    ],
 }));
 
 const apiSchema = Joi.extend((joi) => ({
     base: joi.string(),
-    type: 'api',
-    rules: {
-        'isAPIParameterExist' : {
+    name: 'api',
+    rules: [
+        {
+            name: 'isAPIParameterExist',
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const inputValue = value.trim().toLowerCase();
                 const composeQuery = '?query=' + inputValue;
@@ -103,20 +107,21 @@ const apiSchema = Joi.extend((joi) => ({
                 return API.search(composeQueryJSON);
             },
         },
-    },
+    ],
 }));
 
 const documentSchema = Joi.extend((joi) => ({
     base: joi.object(),
-    type: 'document',
-    rules: {
-        'isDocumentPresent': {
+    name: 'document',
+    rules: [
+        {
+            name: 'isDocumentPresent',
             validate(params, value, state, options) { // eslint-disable-line no-unused-vars
                 const api = new API();
                 return api.validateDocumentExists(value.id, value.name);
             },
         },
-    },
+    ],
 }));
 
 const definition = {

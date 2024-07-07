@@ -33,7 +33,7 @@ import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import API from 'AppData/api';
-import Joi from 'joi';
+import Joi from '@hapi/joi';
 
 /**
  *
