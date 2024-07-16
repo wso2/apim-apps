@@ -41,8 +41,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import UploadCertificate from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/UploadCertificate';
 import CertificateUsage from "AppComponents/Apis/Details/Endpoints/GeneralConfiguration/CertificateUsage.tsx";
 import API from '../../../../../data/api';
-import { API_SECURITY_KEY_TYPE_PRODUCTION, API_SECURITY_KEY_TYPE_SANDBOX }
-from '../../Configuration/components/APISecurity/components/apiSecurityConstants';
+import { API_SECURITY_KEY_TYPE_PRODUCTION, API_SECURITY_KEY_TYPE_SANDBOX } 
+    from '../../Configuration/components/APISecurity/components/apiSecurityConstants';
 
 const PREFIX = 'Certificates';
 

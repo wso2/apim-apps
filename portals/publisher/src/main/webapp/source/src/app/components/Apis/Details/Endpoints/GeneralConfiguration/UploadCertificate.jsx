@@ -147,7 +147,7 @@ export default function UploadCertificate(props) {
     const [isEndpointEmpty, setIsEndpointEmpty] = useState(false);
     const [isPoliciesEmpty, setPoliciesEmpty] = useState(false);
     const [aliasValidity, setAliasValidity] = useState();
-    const [keyType, setkeyType] = useState(API_SECURITY_KEY_TYPE_PRODUCTION);
+    const [keyType, setKeyType] = useState(API_SECURITY_KEY_TYPE_PRODUCTION);
 
     const [isRejected, setIsRejected] = useState(false);
 
@@ -156,7 +156,7 @@ export default function UploadCertificate(props) {
         setAliasValidity();
         setCertificate({ name: '', content: '' });
         setAlias('');
-        setkeyType(API_SECURITY_KEY_TYPE_PRODUCTION);
+        setKeyType(API_SECURITY_KEY_TYPE_PRODUCTION);
         setEndpoint('');
         setPolicy('');
     };
@@ -193,7 +193,7 @@ export default function UploadCertificate(props) {
      */
     function handleOnChangekeyType(event) {
         const { value } = event.target;
-        setkeyType(value);
+        setKeyType(value);
     }
 
     /**

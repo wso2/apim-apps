@@ -31,7 +31,7 @@ import APIProduct from 'AppData/APIProduct';
 import LifeCycleUpdate from './LifeCycleUpdate';
 import LifeCycleHistory from './LifeCycleHistory';
 import { API_SECURITY_KEY_TYPE_PRODUCTION, API_SECURITY_KEY_TYPE_SANDBOX }
-from '../Configuration/components/APISecurity/components/apiSecurityConstants';
+    from '../Configuration/components/APISecurity/components/apiSecurityConstants';
 
 const PREFIX = 'LifeCycle';
 
