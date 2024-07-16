@@ -60,10 +60,6 @@ function Onboarding() {
         const inlineContent = getSampleOpenAPI();
         try {
             await ServiceCatalog.addService(serviceMetadata, inlineContent);
-            Alert.info(intl.formatMessage({
-                id: 'ServiceCatalog.Listing.Onboarding.add.sample.success',
-                defaultMessage: 'Sample Service added successfully!',
-            }));
         } catch (error) {
             setDeployStatus({ inprogress: false, completed: false, error });
             console.error(error);
@@ -73,6 +69,10 @@ function Onboarding() {
             }));
         }
         setDeployStatus({ inprogress: false, completed: true, error: false });
+        Alert.info(intl.formatMessage({
+            id: 'ServiceCatalog.Listing.Onboarding.add.sample.success',
+            defaultMessage: 'Sample Service added successfully!',
+        }));
     };
     if (deployStatus.completed && !deployStatus.error) {
         const url = '/service-catalog';
