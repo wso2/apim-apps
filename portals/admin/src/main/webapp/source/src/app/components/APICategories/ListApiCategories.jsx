@@ -32,6 +32,7 @@ import Configurations from 'Config';
 import Delete from 'AppComponents/APICategories/DeleteAPICategory';
 import AddEdit from 'AppComponents/APICategories/AddEditAPICategory';
 import EditIcon from '@mui/icons-material/Edit';
+import { Box } from '@mui/material';
 
 /**
  * API call to get api category list
@@ -48,7 +49,22 @@ function apiCall() {
             throw error;
         });
 }
-
+const TruncatedNameCell = ({ children }) => {
+    return (
+        <Box sx={{ maxWidth: '200px' }}>
+            <Typography
+                noWrap
+                sx={{
+                    overflow: 'hidden',
+                    textOverflow: 'ellipsis',
+                    whiteSpace: 'nowrap',
+                }}
+            >
+                {children}
+            </Typography>
+        </Box>
+    );
+};
 /**
  * Render a list
  * @returns {JSX} Header AppBar components.
@@ -66,6 +82,9 @@ export default function ListApiCategories() {
             options: {
                 filter: true,
                 sort: true,
+                customBodyRender: (data) => {
+                    return <TruncatedNameCell>{data}</TruncatedNameCell>;
+                },
             },
         },
         {
