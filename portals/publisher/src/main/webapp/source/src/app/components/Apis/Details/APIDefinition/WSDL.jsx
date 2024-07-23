@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense } from 'react';
 import { styled } from '@mui/material/styles';
 import AppContext from 'AppComponents/Shared/AppContext';
 import PropTypes from 'prop-types';
@@ -24,6 +24,7 @@ import Button from '@mui/material/Button';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 import Typography from '@mui/material/Typography';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import API from 'AppData/api.js';
@@ -95,8 +96,6 @@ const Root = styled('div')((
         color: theme.palette.warning.light,
     }
 }));
-
-const MonacoEditor = lazy(() => import('react-monaco-editor' /* webpackChunkName: "APIDefMonacoEditor" */));
 
 /**
  * This component holds the functionality of viewing the WSDL content of an api. The view is a

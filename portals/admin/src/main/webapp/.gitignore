@@ -1,6 +1,7 @@
 site/public/dist/
 # index.jsp is now ignored because it's generated from webpack at the build time
 site/public/pages/index.jsp
+admin/index.html
 .vscode
 coverage
 node_modules

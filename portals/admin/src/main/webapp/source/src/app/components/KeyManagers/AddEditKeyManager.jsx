@@ -1832,7 +1832,7 @@ function AddEditKeyManager(props) {
                                                         helperText={
                                                             !roleValidity ? (
                                                                 <FormattedMessage
-                                                                    id='Apis.Details.Scopes.Roles.Invalid'
+                                                                    id='KeyManager.AddEdit.Invalid.Roles.Found'
                                                                     defaultMessage='Invalid Role(s) Found'
                                                                 />
                                                             ) : [
@@ -1854,7 +1854,7 @@ function AddEditKeyManager(props) {
                                                                 ),
                                                                 ' ',
                                                                 <FormattedMessage
-                                                                    id='Apis.Details.Scopes.CreateScope.roles.help'
+                                                                    id='KeyManager.AddEdit.roles.help'
                                                                     defaultMessage='Enter a valid role and press
                                                                     `Enter`'
                                                                 />,

@@ -24,7 +24,7 @@ WSO2 API Manager apps consists of several loosely coupled modules.
 Setup build environment
 ==================================
 
-1. Install NodeJS 16.x or later LTS version from [https://nodejs.org/en/download/](https://nodejs.org/en/download/).
+1. Install NodeJS 22.x or later LTS version from [https://nodejs.org/en/download/](https://nodejs.org/en/download/).
  > **_Note :-_** 
    >  
    > You may use [nvm](https://github.com/nvm-sh/nvm) tool to manage NodeJS on your development environment

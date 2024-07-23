@@ -502,7 +502,7 @@ class Credentials extends React.Component {
                                                 <FormattedMessage
                                                     id={'Apis.Details.Credentials.'
                                                     + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
-                                                    defaultMessage='Subscription &amp; Key Generation Wizard'
+                                                    defaultMessage='Subscription & Key Generation Wizard'
                                                 />
                                             </Button>
                                         </div>
@@ -663,7 +663,7 @@ class Credentials extends React.Component {
                                                     <FormattedMessage
                                                         id={'Apis.Details.Credentials.'
                                                         + 'SubscibeButtonPanel.subscribe.wizard.with.new.app'}
-                                                        defaultMessage='Subscription &amp; Key Generation Wizard'
+                                                        defaultMessage='Subscription & Key Generation Wizard'
                                                     />
                                                 </Button>
                                             </Link>

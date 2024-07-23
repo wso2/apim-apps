@@ -28,10 +28,10 @@ module.exports = {
             ],
             plugins: [
                 '@babel/plugin-syntax-dynamic-import',
-                '@babel/plugin-proposal-class-properties',
+                '@babel/plugin-transform-class-properties',
                 'dynamic-import-node',
                 'babel-plugin-styled-components',
-                '@babel/plugin-proposal-nullish-coalescing-operator',
+                '@babel/plugin-transform-nullish-coalescing-operator',
                 '@babel/plugin-transform-for-of',
                 "@babel/plugin-transform-private-methods",
             ],
@@ -52,10 +52,10 @@ module.exports = {
                 '@babel/preset-react',
             ],
             plugins: [
-                '@babel/plugin-proposal-class-properties',
+                '@babel/plugin-transform-class-properties',
                 '@babel/plugin-syntax-dynamic-import',
                 '@babel/plugin-transform-spread',
-                '@babel/plugin-proposal-object-rest-spread',
+                '@babel/plugin-transform-object-rest-spread',
                 '@babel/plugin-transform-classes',
             ],
         },
@@ -70,10 +70,10 @@ module.exports = {
                 '@babel/preset-react',
             ],
             plugins: [
-                '@babel/plugin-proposal-class-properties',
+                '@babel/plugin-transform-class-properties',
                 '@babel/plugin-syntax-dynamic-import',
                 ['@babel/plugin-transform-spread'],
-                '@babel/plugin-proposal-object-rest-spread',
+                '@babel/plugin-transform-object-rest-spread',
                 ['formatjs',
                     {
                         idInterpolationPattern: '[sha512:contenthash:base64:6]',
