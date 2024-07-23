@@ -52,6 +52,13 @@ const Root = styled('div')((
         alignItems: 'center',
         display: 'flex',
     },
+
+    '& .tag-cloud-tag': {
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        display: 'inline-block',
+        maxWidth: '-webkit-fill-available',
+    },
 }));
 
 /**

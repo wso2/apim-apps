@@ -194,7 +194,7 @@ function ListBase(props) {
                     },
                     setCellProps: () => {
                         return {
-                            style: { width: 200 },
+                            style: { width: 150 },
                         };
                     },
                 },
