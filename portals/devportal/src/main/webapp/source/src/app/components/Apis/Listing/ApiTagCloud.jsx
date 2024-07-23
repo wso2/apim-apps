@@ -30,7 +30,6 @@ const PREFIX = 'ApiTagCloud';
 const classes = {
     clickablePointer: `${PREFIX}-clickablePointer`,
     filterTitle: `${PREFIX}-filterTitle`,
-    tagCloudTag: 'tag-cloud-tag',
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
@@ -54,7 +53,7 @@ const Root = styled('div')((
         display: 'flex',
     },
 
-    [`& .${classes.tagCloudTag}`]: {
+    '& .tag-cloud-tag': {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         display: 'inline-block',
