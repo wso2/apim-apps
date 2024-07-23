@@ -113,7 +113,7 @@ function WebhookSubscriptionUI(props) {
             </AccordionSummary>
             <AccordionDetails>
                 <Grid container direction='column' wrap='nowrap' spacing={3}>
-                    <Grid item xs={6}>
+                    <Grid item xs={6} marginBottom={2}>
                         <RadioGroup aria-label='mode' name='mode' value={state.mode} row onChange={handleChange}>
                             <FormControlLabel
                                 value='subscribe'
@@ -133,7 +133,7 @@ function WebhookSubscriptionUI(props) {
                             />
                         </RadioGroup>
                     </Grid>
-                    <Grid item xs={6}>
+                    <Grid item xs={6} marginBottom={2}>
                         <TextField
                             variant='outlined'
                             size='small'
@@ -182,7 +182,7 @@ function WebhookSubscriptionUI(props) {
                     </Grid>
                     {state.mode === 'subscribe' && (
                         <>
-                            <Grid item xs={6}>
+                            <Grid item xs={6} marginBottom={2}>
                                 <TextField
                                     variant='outlined'
                                     size='small'
@@ -227,7 +227,7 @@ function WebhookSubscriptionUI(props) {
                                     }}
                                 />
                             </Grid>
-                            <Grid item xs={6}>
+                            <Grid item xs={6} marginBottom={2}>
                                 <TextField
                                     variant='outlined'
                                     size='small'

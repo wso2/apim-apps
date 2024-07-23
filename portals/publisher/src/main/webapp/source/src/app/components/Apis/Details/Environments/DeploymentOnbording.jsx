@@ -335,6 +335,12 @@ export default function DeploymentOnboarding(props) {
                                                     >
                                                         <Box height='100%'>
                                                             <CardHeader
+                                                                sx={{
+                                                                    width: 'inherit',
+                                                                    "& .MuiCardHeader-content": {
+                                                                        overflow: "hidden"
+                                                                    }
+                                                                }}
                                                                 action={(
                                                                     <Checkbox
                                                                         id={row.name.split(' ').join('')}
@@ -350,9 +356,20 @@ export default function DeploymentOnboarding(props) {
                                                                     />
                                                                 )}
                                                                 title={(
-                                                                    <Typography variant='subtitle2'>
-                                                                        {row.displayName}
-                                                                    </Typography>
+                                                                    <Tooltip
+                                                                        title={(
+                                                                            <>
+                                                                                <Typography color='inherit'>
+                                                                                    {row.displayName}
+                                                                                </Typography>
+                                                                            </>
+                                                                        )}
+                                                                        placement='bottom'
+                                                                    >
+                                                                        <Typography noWrap variant='subtitle2'>
+                                                                            {row.displayName}
+                                                                        </Typography>
+                                                                    </Tooltip>
                                                                 )}
                                                                 subheader={(
                                                                     <Typography

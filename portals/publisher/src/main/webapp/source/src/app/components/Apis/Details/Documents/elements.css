@@ -102,7 +102,7 @@
 #apim_elements textarea {
     color: inherit;
     line-height: inherit;
-    padding: 0
+    padding: 8px;
 }
 
 #apim_elements code,
@@ -12821,4 +12821,8 @@
 .sl-elements .Model .JsonSchemaViewer .sl-markdown-viewer p {
     font-size: 12px;
     line-height: 1.5em
+}
+
+.sl-flex.sl-flex-col.sl-w-full.sl-p-4 {
+    width: inherit;
 }

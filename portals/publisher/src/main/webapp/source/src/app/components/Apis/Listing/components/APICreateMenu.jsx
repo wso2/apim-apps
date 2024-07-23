@@ -122,6 +122,7 @@ const APICreateMenu = () => {
                                 justify='space-around'
                                 alignItems='flex-start'
                                 spacing={2}
+                                mt={1}
                             >
                                 <RestAPIMenu isCreateMenu icon={restApiIcon} />
                                 <SoapAPIMenu isCreateMenu icon={soapApiIcon} />
