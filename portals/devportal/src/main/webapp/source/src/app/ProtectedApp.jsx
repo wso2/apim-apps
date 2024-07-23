@@ -267,7 +267,10 @@ class ProtectedApp extends Component {
                             height='0%'
                         />
                     )}
-                    <AppRouts isAuthenticated={isAuthenticated} isUserFound={isUserFound} />
+                    <AppRouts
+                        isAuthenticated={isAuthenticated}
+                        isUserFound={isUserFound}
+                    />
                 </>
             );
         }
@@ -279,17 +282,19 @@ class ProtectedApp extends Component {
          */
         return (
             <Base>
-                {clientId
-                    && (
-                        <iframe
-                            title='iframeOP'
-                            id='iframeOP'
-                            src={checkSessionURL}
-                            width='0%'
-                            height='0%'
-                        />
-                    )}
-                <AppRouts isAuthenticated={isAuthenticated} isUserFound={isUserFound} />
+                {clientId && (
+                    <iframe
+                        title='iframeOP'
+                        id='iframeOP'
+                        src={checkSessionURL}
+                        width='0%'
+                        height='0%'
+                    />
+                )}
+                <AppRouts
+                    isAuthenticated={isAuthenticated}
+                    isUserFound={isUserFound}
+                />
             </Base>
         );
     }
