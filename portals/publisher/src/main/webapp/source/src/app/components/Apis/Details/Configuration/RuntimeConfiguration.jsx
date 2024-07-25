@@ -51,6 +51,7 @@ import {
     API_SECURITY_MUTUAL_SSL_MANDATORY,
     API_SECURITY_MUTUAL_SSL_OPTIONAL,
     API_SECURITY_MUTUAL_SSL,
+    ALL_AUDIENCES_ALLOWED,
 } from './components/APISecurity/components/apiSecurityConstants';
 import WebSubConfiguration from './components/WebSubConfiguration';
 
@@ -190,6 +191,7 @@ function copyAPIConfig(api) {
             accessControlAllowHeaders: [...api.corsConfiguration.accessControlAllowHeaders],
             accessControlAllowMethods: [...api.corsConfiguration.accessControlAllowMethods],
         },
+        audiences: [...(api.audiences || [ALL_AUDIENCES_ALLOWED])],
     };
     if (api.advertiseInfo) {
         apiConfigJson.advertiseInfo = {
@@ -354,6 +356,14 @@ export default function RuntimeConfiguration() {
                 } else {
                     nextState.corsConfiguration[action] = event.checked === false ? [] : event.value;
                 }
+                return nextState;
+            case 'audienceValidationEnabled':
+                if (value === false) {
+                    nextState.audiences = [ALL_AUDIENCES_ALLOWED];
+                } 
+                return nextState;
+            case 'audienceAllowed':
+                nextState.audiences = value;
                 return nextState;
             case 'keymanagers':
                 nextState.keyManagers = value;
