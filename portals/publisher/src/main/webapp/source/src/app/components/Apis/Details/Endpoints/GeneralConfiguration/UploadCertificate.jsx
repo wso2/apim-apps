@@ -31,13 +31,21 @@ import {
     Typography,
 } from '@mui/material';
 import { FormattedMessage } from 'react-intl';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import FormHelperText from '@mui/material/FormHelperText';
 import Dropzone from 'react-dropzone';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import APIValidation from 'AppData/APIValidation';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
 import SelectEndpoint from 'AppComponents/Apis/Details/Endpoints/GeneralConfiguration/SelectEndpoint';
 import SelectPolicies from '../../../Create/Components/SelectPolicies';
+import { 
+    API_SECURITY_KEY_TYPE_PRODUCTION, 
+    API_SECURITY_KEY_TYPE_SANDBOX 
+} from '../../Configuration/components/APISecurity/components/apiSecurityConstants';
 
 const PREFIX = 'UploadCertificate';
 
@@ -127,6 +135,8 @@ export default function UploadCertificate(props) {
         uploadCertificateOpen,
         setUploadCertificateOpen,
         aliasList,
+        productionAliasList,
+        sandboxAliasList,
         api,
     } = props;
     const [alias, setAlias] = useState('');
@@ -137,6 +147,7 @@ export default function UploadCertificate(props) {
     const [isEndpointEmpty, setIsEndpointEmpty] = useState(false);
     const [isPoliciesEmpty, setPoliciesEmpty] = useState(false);
     const [aliasValidity, setAliasValidity] = useState();
+    const [keyType, setKeyType] = useState(API_SECURITY_KEY_TYPE_PRODUCTION);
 
     const [isRejected, setIsRejected] = useState(false);
 
@@ -145,8 +156,24 @@ export default function UploadCertificate(props) {
         setAliasValidity();
         setCertificate({ name: '', content: '' });
         setAlias('');
+        setKeyType(API_SECURITY_KEY_TYPE_PRODUCTION);
         setEndpoint('');
         setPolicy('');
+    };
+
+    const isAliasIncluded = () => {
+        if (isMutualSSLEnabled) {
+            if (keyType === API_SECURITY_KEY_TYPE_SANDBOX && sandboxAliasList) {
+                return sandboxAliasList.includes(alias);
+            }
+            if (keyType === API_SECURITY_KEY_TYPE_PRODUCTION && productionAliasList) {
+                return productionAliasList.includes(alias);
+            } 
+        }
+        if (aliasList) {
+            return aliasList.includes(alias);
+        }    
+        return false;
     };
 
     /**
@@ -157,6 +184,16 @@ export default function UploadCertificate(props) {
     function handleOnChange(event) {
         const { value } = event.target;
         setPolicy(value);
+    }
+
+    /**
+     * On change functionality to handle the keyType radio button
+     *
+     * @param {*} event
+     */
+    function handleOnChangekeyType(event) {
+        const { value } = event.target;
+        setKeyType(value);
     }
 
     /**
@@ -173,10 +210,14 @@ export default function UploadCertificate(props) {
     const saveCertificate = () => {
         setSaving(true);
         if (isMutualSSLEnabled) {
-            uploadCertificate(certificate.content, policy, alias)
+            uploadCertificate(certificate.content, keyType, policy, alias)
                 .then(() => {
                     closeCertificateUpload();
-                    aliasList.push(alias);
+                    if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+                        sandboxAliasList.push(alias);
+                    } else {
+                        productionAliasList.push(alias);
+                    }
                 })
                 .finally(() => setSaving(false));
         } else {
@@ -229,20 +270,30 @@ export default function UploadCertificate(props) {
     const getHelperText = () => {
         if (aliasValidity && !aliasValidity.isValid) {
             return (aliasValidity.message);
-        } else if (aliasList && aliasList.includes(alias)) {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.alias.exist.error'
-                    defaultMessage='Alias already exists'
-                />
-            );
         } else {
-            return (
-                <FormattedMessage
-                    id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.alias.default.message'
-                    defaultMessage='Alias for the Certificate'
-                />
-            );
+            let aliasListToCompare = aliasList;
+            if (isMutualSSLEnabled) {
+                if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+                    aliasListToCompare = productionAliasList;
+                } else {
+                    aliasListToCompare = sandboxAliasList;
+                }
+            }
+            if (aliasListToCompare && aliasListToCompare.includes(alias)) {
+                return (
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.alias.exist.error'
+                        defaultMessage='Alias already exists'
+                    />
+                );
+            } else {
+                return (
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.alias.default.message'
+                        defaultMessage='Alias for the Certificate'
+                    />
+                );
+            }
         }
     };
 
@@ -262,14 +313,53 @@ export default function UploadCertificate(props) {
                     <div>
                         {isMutualSSLEnabled && (api.gatewayType === 'wso2/synapse' ||
                         api.apiType === 'APIPRODUCT') && (
-                            <SelectPolicies
-                                multiple={false}
-                                policies={policy}
-                                helperText='Select a throttling policy for the certificate'
-                                onChange={handleOnChange}
-                                required
-                                validate={onValidate}
-                            />
+                            <>
+                                <RadioGroup
+                                    aria-label='Production Sandbox type selection'
+                                    name={API_SECURITY_KEY_TYPE_PRODUCTION}
+                                    value={keyType}
+                                    onChange={handleOnChangekeyType}
+                                    data-testid='radio-group-key-type'
+                                    row
+                                >
+                                    <FormControlLabel
+                                        value={API_SECURITY_KEY_TYPE_PRODUCTION}
+                                        control={(
+                                            <Radio
+                                                color='primary' 
+                                            />
+                                        )}
+                                        label='Production'
+                                        labelPlacement='end'
+                                        data-testid='radio-production' 
+                                    />
+                                    <FormControlLabel
+                                        value={API_SECURITY_KEY_TYPE_SANDBOX}
+                                        control={(
+                                            <Radio
+                                                color='primary' 
+                                            />
+                                        )}
+                                        label='Sandbox'
+                                        labelPlacement='end'
+                                        data-testid='radio-sandbox' 
+                                    />
+                                </RadioGroup>
+                                <FormHelperText>
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.GeneralConfiguration.UploadCertificate.keyType'
+                                        defaultMessage='Choose the key type of the certificate'
+                                    />
+                                </FormHelperText>
+                                <SelectPolicies
+                                    multiple={false}
+                                    policies={policy}
+                                    helperText='Select a throttling policy for the certificate'
+                                    onChange={handleOnChange}
+                                    required
+                                    validate={onValidate} 
+                                />
+                            </>
                         )}
                         {!isMutualSSLEnabled && (
                             <SelectEndpoint
@@ -296,7 +386,7 @@ export default function UploadCertificate(props) {
                             margin='normal'
                             variant='outlined'
                             error={
-                                (aliasValidity && !aliasValidity.isValid) || (aliasList && aliasList.includes(alias))
+                                (aliasValidity && !aliasValidity.isValid) || isAliasIncluded()
                             }
                             helperText={getHelperText()}
                             fullWidth
@@ -398,7 +488,9 @@ export default function UploadCertificate(props) {
                             || (!isMutualSSLEnabled && endpoint === '')
                             || certificate.name === ''
                             || (isMutualSSLEnabled && isPoliciesEmpty)
-                            || isSaving || (aliasList && aliasList.includes(alias)) || isRejected
+                            || isSaving
+                            || isAliasIncluded()
+                            || isRejected
                     }
                 >
                     <FormattedMessage
@@ -415,6 +507,9 @@ export default function UploadCertificate(props) {
 UploadCertificate.defaultProps = {
     isMutualSSLEnabled: false,
     endpoints: [],
+    aliasList: [],
+    productionAliasList: [],
+    sandboxAliasList: [],
 };
 
 UploadCertificate.propTypes = {
@@ -425,5 +520,7 @@ UploadCertificate.propTypes = {
     setUploadCertificateOpen: PropTypes.func.isRequired,
     uploadCertificateOpen: PropTypes.bool.isRequired,
     endpoints: PropTypes.shape([]),
-    aliasList: PropTypes.shape([]).isRequired,
+    aliasList: PropTypes.shape([]),
+    productionAliasList: PropTypes.shape([]),
+    sandboxAliasList: PropTypes.shape([]),
 };

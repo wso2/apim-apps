@@ -30,6 +30,8 @@ import Alert from 'AppComponents/Shared/Alert';
 import APIProduct from 'AppData/APIProduct';
 import LifeCycleUpdate from './LifeCycleUpdate';
 import LifeCycleHistory from './LifeCycleHistory';
+import { API_SECURITY_KEY_TYPE_PRODUCTION, API_SECURITY_KEY_TYPE_SANDBOX }
+    from '../Configuration/components/APISecurity/components/apiSecurityConstants';
 
 const PREFIX = 'LifeCycle';
 
@@ -94,23 +96,31 @@ class LifeCycle extends Component {
      */
     componentDidMount() {
         const { api: { id } } = this.props;
-        const promisedClientCerts = Api.getAllClientCertificates(id);
+        // certList is only used to check whether there are any certs, at LifeCycleUpdate.jsx.
+        // Hence combining both prod and sand lists here.
+        const promisedProductionClientCerts =
+            Api.getAllClientCertificatesOfGivenKeyType(API_SECURITY_KEY_TYPE_PRODUCTION, id);
+        const promisedSandboxClientCerts =
+            Api.getAllClientCertificatesOfGivenKeyType(API_SECURITY_KEY_TYPE_SANDBOX, id);
         const { intl } = this.props;
-        promisedClientCerts.then((certList) => {
-            const clientCerts = certList.body;
-            this.setState({
-                certList: [...clientCerts.certificates],
+
+        Promise.all([promisedProductionClientCerts, promisedSandboxClientCerts])
+            .then(([resultProduction, resultSandbox]) => {
+                const productionClientCerts = resultProduction.body;
+                const sandboxClientCerts = resultSandbox.body;
+                this.setState({
+                    certList: [...productionClientCerts.certificates, ...sandboxClientCerts.certificates],
+                });
+                this.updateData();
+            }).catch((error) => {
+                if (process.env.NODE_ENV !== 'production') {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.LifeCycle.LifeCycleUpdate.error.certs',
+                        defaultMessage: 'Error while retrieving certificates',
+                    }));
+                    console.error(error);
+                }
             });
-            this.updateData();
-        }).catch((error) => {
-            if (process.env.NODE_ENV !== 'production') {
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.LifeCycle.LifeCycleUpdate.error.certs',
-                    defaultMessage: 'Error while retrieving certificates',
-                }));
-                console.error(error);
-            }
-        });
     }
 
     handleChangeCheckList = (index) => (event, checked) => {

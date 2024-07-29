@@ -2449,16 +2449,18 @@ class API extends Resource {
      *
      * @param {string} apiId API UUID
      * @param {any} certificateFile The certificate file to be uploaded.
+     * @param {string} keyType The type of the endpoint (Whether production or sandbox)
      * @param {string} tier The tier the certificate needs to be associated.
      * @param {string} alias The certificate alias.
      * */
-    static addClientCertificate(apiId, certificateFile, tier, alias) {
+    static addClientCertificate(apiId, certificateFile, keyType, tier, alias) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(
             client => {
-                return client.apis['Client Certificates'].addAPIClientCertificate(
+                return client.apis['Client Certificates'].addAPIClientCertificateOfGivenKeyType(
                     {
-                        apiId,
+                        keyType: keyType,
+                        apiId: apiId,
                     },
                     {
                         requestBody: {
@@ -2479,13 +2481,17 @@ class API extends Resource {
      * Get all certificates for a particular API.
      *
      * @param apiId api id of the api to which the certificate is added
+     * @param keyType of the certificates
      */
-    static getAllClientCertificates(apiId) {
+    static getAllClientCertificatesOfGivenKeyType(keyType, apiId) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(
             client => {
-                return client.apis['Client Certificates'].getAPIClientCertificates(
-                    { apiId: apiId },
+                return client.apis['Client Certificates'].getAPIClientCertificatesByKeyType(
+                    {
+                    keyType: keyType,
+                    apiId: apiId
+                    },
                     this._requestMetaData(),
                 );
             },
@@ -2496,15 +2502,17 @@ class API extends Resource {
     }
 
     /**
-     * Get the status of the client certificate which matches the given alias.
+     * Get the status of the client certificate which matches the given alias and key type.
      *
+     * @param {string} keyType The key type of the certificate which the information required.
      * @param {string} alias The alias of the certificate which the information required.
      * @param apiId api id of the api of which the certificate is retrieved.
      * */
-    static getClientCertificateStatus(alias, apiId) {
+    static getClientCertificateStatus(keyType, alias, apiId) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
-            return client.apis['Client Certificates'].getAPIClientCertificateByAlias({
+            return client.apis['Client Certificates'].getAPIClientCertificateByKeyTypeAndAlias({
+                keyType,
                 alias,
                 apiId,
             });
@@ -2512,15 +2520,17 @@ class API extends Resource {
     }
 
     /**
-     * Delete the endpoint certificate which represented by the given alias.
+     * Delete the client certificate which represented by the given alias.
      *
+     * @param {string} keyType The key type of the certificate.
      * @param {string} alias The alias of the certificate.
      * @param apiId api id of the api of which the certificate is deleted.
      * */
-    static deleteClientCertificate(alias, apiId) {
+    static deleteClientCertificate(keyType, alias, apiId) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
-            return client.apis['Client Certificates'].deleteAPIClientCertificateByAlias({
+            return client.apis['Client Certificates'].deleteAPIClientCertificateByKeyTypeAndAlias({
+                keyType,
                 alias,
                 apiId,
             });
