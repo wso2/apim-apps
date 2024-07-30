@@ -40,6 +40,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import Configurations from 'Config';
 import { QueryClientProviderX } from 'AppData/hooks/ReactQueryX';
 import Scopes from 'AppComponents/Scopes/Scopes';
+import Subscription from 'AppComponents/Subscription/Subscription';
 import CommonPolicies from 'AppComponents/CommonPolicies/CommonPolicies';
 import GlobalPolicies from 'AppComponents/GlobalPolicies/GlobalPolicies';
 import merge from 'lodash/merge';
@@ -221,6 +222,7 @@ export default class Protected extends Component {
                                         <Route path='/apis' component={DeferredAPIs} />
                                         <Route path='/api-products' component={DeferredAPIs} />
                                         <Route path='/scopes' component={Scopes} />
+                                        <Route path='/subscription' component={Subscription} />
                                         <Route path='/policies' component={CommonPolicies} />
                                         <Route path='/global-policies' component={GlobalPolicies} />
                                         <Route path='/service-catalog' component={ServiceCatalogRouting} />
