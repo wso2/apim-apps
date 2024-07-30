@@ -191,7 +191,7 @@ function GlobalNavLinks(props) {
                         </a>
                     </>
                 )}
-                {(!isRestricted(['apim:api_manage', 'apim:api_publish'])) && ( 
+                {(!isRestricted(['apim:subscription_approval_view', 'apim:subscription_approval_manage'])) && ( 
                     <div>
                         <GlobalNavLink
                             to='/subscription/creation'
