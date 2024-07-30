@@ -350,7 +350,7 @@ function ListLabels() {
                                 >
                                     <CheckIcon />
                                     <FormattedMessage
-                                        id='Task.SubscriptionCreation.table.button.approve'
+                                        id='Workflow.SubscriptionCreation.table.button.approve'
                                         defaultMessage='Approve'
                                     />
                                     {(isUpdating && buttonValue === 'APPROVED') && <CircularProgress size={15} /> }
@@ -368,19 +368,18 @@ function ListLabels() {
                                         id='Task.SubscriptionCreation.table.button.reject'
                                         defaultMessage='Reject'
                                     />
-                                    {(isUpdating && buttonValue === 'REJECTED') && <CircularProgress size={15} />}
                                 </Button>
                                 <Dialog open={openMenu}>
                                     <DialogTitle>
                                         <FormattedMessage
-                                            id='Apis.Details.components.DeleteApiButton.title'
+                                            id='Workflow.SubscriptionCreation.Reject.Title'
                                             defaultMessage='Reject'
                                         />
                                     </DialogTitle>
                                     <DialogContent>
                                         <DialogContentText>
                                             <FormattedMessage
-                                                id='Tasks.Subscription.Reject.text.description'
+                                                id='Workflow.SubscriptionCreation.Reject.text.description'
                                                 defaultMessage='Are you sure, you want to reject this subscription ?'
                                             />
                                         </DialogContentText>
@@ -388,7 +387,7 @@ function ListLabels() {
                                     <DialogActions>
                                         <Button dense onClick={() => handleRequestClose()}>
                                             <FormattedMessage
-                                                id='Tasks.Subscription.Reject.button.cancel'
+                                                id='Workflow.SubscriptionCreation.Reject.button.cancel'
                                                 defaultMessage='Cancel'
                                             />
                                         </Button>
@@ -397,9 +396,11 @@ function ListLabels() {
                                             onClick={() => updateStatus(referenceId, 'REJECTED')}
                                         >
                                             <FormattedMessage
-                                                id='Tasks.Subscription.Reject.button.delete'
+                                                id='Workflow.SubscriptionCreation.Reject.button.delete'
                                                 defaultMessage='Reject'
                                             />
+                                            {(isUpdating && buttonValue === 'REJECTED') &&
+                                            <CircularProgress size={15} />}
                                         </Button>
                                     </DialogActions>
                                 </Dialog>
@@ -415,7 +416,7 @@ function ListLabels() {
     const addButtonOverride = null;
     const noDataMessage = (
         <FormattedMessage
-            id='SubscriptionAproval.Addons.ListBase.nodata.message'
+            id='Workflow.SubscriptionCreation.ListBase.nodata.message'
             defaultMessage='No items yet'
         />
     );
@@ -448,33 +449,41 @@ function ListLabels() {
     };
     if (data && data.length === 0) {
         return (
-            <ContentBase
-                {...pageProps}
-                pageStyle='small'
-            >
-                <Card>
-                    <CardContent>
-                        <Typography gutterBottom variant='h5' component='h2'>
-                            <FormattedMessage
-                                id='Workflow.SubscriptionCreation.List.empty.title.subscriptioncreations'
-                                defaultMessage='Subscription Creation'
-                            />
-                        </Typography>
-                        <Typography variant='body2' color='textSecondary' component='p'>
-                            <FormattedMessage
-                                id='Workflow.SubscriptionCreation.List.empty.content.subscriptioncreations'
-                                defaultMessage='There are no pending workflow requests for subscription creation.'
-                            />
-                        </Typography>
-                    </CardContent>
-                    <CardActions>
-                        {addButtonOverride || (
-                            // eslint-disable-next-line react/no-unknown-property
-                            <span updateList={fetchData} {...addButtonProps} />
-                        )}
-                    </CardActions>
-                </Card>
-            </ContentBase>
+            <StyledBox display='flex' alignItems='stretch' flexDirection='row' className={classes.main}>
+                <Box className={classes.LeftMenu}>  
+                    <LeftMenu/>
+                </Box>
+                <Box className={classes.content}>
+                    <ContentBase
+                        {...pageProps}
+                        pageStyle='small'
+                    >
+                        <Card>
+                            <CardContent>
+                                <Typography gutterBottom variant='h5' component='h2'>
+                                    <FormattedMessage
+                                        id='Workflow.SubscriptionCreation.List.empty.title.subscriptioncreations'
+                                        defaultMessage='Subscription Creation'
+                                    />
+                                </Typography>
+                                <Typography variant='body2' color='textSecondary' component='p'>
+                                    <FormattedMessage
+                                        id='Workflow.SubscriptionCreation.List.empty.content.subscriptioncreations'
+                                        defaultMessage='There are no pending workflow requests
+                                         for subscription creation.'
+                                    />
+                                </Typography>
+                            </CardContent>
+                            <CardActions>
+                                {addButtonOverride || (
+                                // eslint-disable-next-line react/no-unknown-property
+                                    <span updateList={fetchData} {...addButtonProps} />
+                                )}
+                            </CardActions>
+                        </Card>
+                    </ContentBase>
+                </Box>
+            </StyledBox>
         );
     }
     if (!hasListPermission) {

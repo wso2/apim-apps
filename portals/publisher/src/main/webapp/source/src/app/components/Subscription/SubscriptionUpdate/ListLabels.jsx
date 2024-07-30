@@ -380,7 +380,8 @@ function ListLabels() {
                                         <DialogContentText>
                                             <FormattedMessage
                                                 id='Workflow.SubscriptionUpdate.Reject.text.description'
-                                                defaultMessage='Are you sure, you want to reject this subscription update?'
+                                                defaultMessage='Are you sure, 
+                                                you want to reject this subscription update?'
                                             />
                                         </DialogContentText>
                                     </DialogContent>
@@ -449,33 +450,40 @@ function ListLabels() {
     };
     if (data && data.length === 0) {
         return (
-            <ContentBase
-                {...pageProps}
-                pageStyle='small'
-            >
-                <Card>
-                    <CardContent>
-                        <Typography gutterBottom variant='h5' component='h2'>
-                            <FormattedMessage
-                                id='Workflow.SubscriptionCreation.List.empty.title.subscriptionupdate'
-                                defaultMessage='Subscription update'
-                            />
-                        </Typography>
-                        <Typography variant='body2' color='textSecondary' component='p'>
-                            <FormattedMessage
-                                id='Workflow.SubscriptionCreation.List.empty.content.subscriptioncreations'
-                                defaultMessage='There are no pending workflow requests for subscription update'
-                            />
-                        </Typography>
-                    </CardContent>
-                    <CardActions>
-                        {addButtonOverride || (
-                            // eslint-disable-next-line react/no-unknown-property
-                            <span updateList={fetchData} {...addButtonProps} />
-                        )}
-                    </CardActions>
-                </Card>
-            </ContentBase>
+            <StyledBox display='flex' alignItems='stretch' flexDirection='row' className={classes.main}>
+                <Box className={classes.LeftMenu}>  
+                    <LeftMenu/>
+                </Box>
+                <Box className={classes.content}>
+                    <ContentBase
+                        {...pageProps}
+                        pageStyle='small'
+                    >
+                        <Card>
+                            <CardContent>
+                                <Typography gutterBottom variant='h5' component='h2'>
+                                    <FormattedMessage
+                                        id='Workflow.SubscriptionCreation.List.empty.title.subscriptionupdate'
+                                        defaultMessage='Subscription update'
+                                    />
+                                </Typography>
+                                <Typography variant='body2' color='textSecondary' component='p'>
+                                    <FormattedMessage
+                                        id='Workflow.SubscriptionCreation.List.empty.content.subscriptioncreations'
+                                        defaultMessage='There are no pending workflow requests for subscription update'
+                                    />
+                                </Typography>
+                            </CardContent>
+                            <CardActions>
+                                {addButtonOverride || (
+                                // eslint-disable-next-line react/no-unknown-property
+                                    <span updateList={fetchData} {...addButtonProps} />
+                                )}
+                            </CardActions>
+                        </Card>
+                    </ContentBase>
+                </Box>
+            </StyledBox>
         );
     }
     if (!hasListPermission) {
