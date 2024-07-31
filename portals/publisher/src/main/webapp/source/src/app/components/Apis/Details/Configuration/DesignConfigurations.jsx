@@ -196,6 +196,7 @@ function copyAPIConfig(api) {
         visibility: api.visibility,
         isDefaultVersion: api.isDefaultVersion || isDefaultVersion,
         enableSchemaValidation: api.enableSchemaValidation,
+        disableSubscriptionValidation: api.disableSubscriptionValidation,
         accessControlRoles: [...api.accessControlRoles],
         visibleRoles: [...api.visibleRoles],
         tags: [...api.tags],
@@ -247,6 +248,7 @@ function configReducer(state, configAction) {
         case 'responseCachingEnabled':
         case 'cacheTimeout':
         case 'enableSchemaValidation':
+        case 'disableSubscriptionValidation':
         case 'maxTps':
         case 'categories':
         case 'tags':
@@ -263,7 +265,6 @@ function configReducer(state, configAction) {
         case 'visibleRoles':
             return { ...copyAPIConfig(state), [action]: value };
         case 'github_repo':
-        case 'disable_sub_validation':
         case 'slack_url': {
             const targetProperty = nextState.additionalProperties.find((property) => property.name === action);
             const updatedProperty = {
@@ -322,10 +323,9 @@ export default function DesignConfigurations() {
     const [overview, setOverview] = useState('');
     const [overviewDocument, setOverviewDocument] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
-    const [slackURLProperty, githubURLProperty, disableSubscriptionValidation] = useMemo(() => [
+    const [slackURLProperty, githubURLProperty] = useMemo(() => [
         apiConfig.additionalProperties.find((prop) => prop.name === 'slack_url'),
         apiConfig.additionalProperties.find((prop) => prop.name === 'github_repo'),
-        apiConfig.additionalProperties.find((prop) => prop.name === 'disable_sub_validation'),
     ],
     [apiConfig.additionalProperties]);
     const invalidTagsExist = apiConfig.tags.find((tag) => {
@@ -622,8 +622,6 @@ export default function DesignConfigurations() {
                                     <Box py={1}>
                                         <SubscriptionValidation
                                             api={apiConfig}
-                                            disableSubscriptionValidation={disableSubscriptionValidation && 
-                                                disableSubscriptionValidation.value}
                                             configDispatcher={configDispatcher}
                                         />
                                     </Box>

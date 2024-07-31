@@ -40,43 +40,42 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 
 const SubscriptionValidation = (props) => {
-    const { 
-        disableSubscriptionValidation,
+    const {
         configDispatcher,
         api: {
             lifeCycleStatus,
+            disableSubscriptionValidation
         },
     } = props;
     const [apiFromContext] = useAPI();
     const [isOpen, setIsOpen] = useState(false);
-    const [originalSelection] = useState(disableSubscriptionValidation === 'true');
-    const [selectedOption, setSelectedOption] = useState(disableSubscriptionValidation === 'true');
-    const { revisions} = useRevisionContext();
+    const [selectedOption, setSelectedOption] = useState(disableSubscriptionValidation);
+    const { allRevisions } = useRevisionContext();
 
     const isDeployed = useMemo(() => {
-        if (revisions) {
-            for (let i = 0; i < revisions.length; i++) {
-                if (revisions[i].deploymentInfo.length > 0) {
+        if (allRevisions) {
+            for (let i = 0; i < allRevisions.length; i++) {
+                if (allRevisions[i].deploymentInfo.length > 0) {
                     return true;
                 }
             }
         }
         return false;
-    }, [revisions]);
+    }, [allRevisions]);
 
     const handleChange = (event) => {
         const val = event.target.value === 'true';
-        if (val && !originalSelection) {
+        if (val) {
             setIsOpen(true);
         } else {
             setSelectedOption(val);
-            configDispatcher({ action: 'disable_sub_validation', value: val });   
+            configDispatcher({ action: 'disableSubscriptionValidation', value: val });   
         }
     };
 
     const handleDialogYes = () => {
         setSelectedOption(true);
-        configDispatcher({ action: 'disable_sub_validation', value: true });
+        configDispatcher({ action: 'disableSubscriptionValidation', value: true });
         setIsOpen(false);
     };
 
@@ -87,7 +86,7 @@ const SubscriptionValidation = (props) => {
 
     const handleSelectionDisable = () => {
         // The selection should be disabled for the following scenarios
-        return isDeployed || lifeCycleStatus === 'PUBLISHED' || originalSelection;
+        return isDeployed || lifeCycleStatus === 'PUBLISHED';
     };
 
     return (
@@ -221,7 +220,6 @@ const SubscriptionValidation = (props) => {
 };
 
 SubscriptionValidation.propTypes = {
-    disableSubscriptionValidation: PropTypes.bool.isRequired,
     configDispatcher: PropTypes.func.isRequired,
 };
 
