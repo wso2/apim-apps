@@ -41,6 +41,36 @@
       "value": "Error occurred while adding the policy mapping"
     }
   ],
+  "AdminPages.Addons.InlineProgress.message": [
+    {
+      "type": 0,
+      "value": "Loading..."
+    }
+  ],
+  "AdminPages.Addons.InputListBase.textfield.remove.label": [
+    {
+      "type": 0,
+      "value": "Remove"
+    }
+  ],
+  "AdminPages.Addons.ListBase.noDataError": [
+    {
+      "type": 0,
+      "value": "Error while retrieving data."
+    }
+  ],
+  "AdminPages.Addons.ListBase.nodata.message": [
+    {
+      "type": 0,
+      "value": "No items yet"
+    }
+  ],
+  "AdminPages.Addons.ListBase.reload": [
+    {
+      "type": 0,
+      "value": "Reload"
+    }
+  ],
   "Api.category.dropdown.tooltip": [
     {
       "type": 0,
@@ -8567,6 +8597,18 @@
       "value": "Services"
     }
   ],
+  "Base.Header.navbar.GlobalNavBar.SubscriptionCreation": [
+    {
+      "type": 0,
+      "value": "Subscripton Creation"
+    }
+  ],
+  "Base.Header.navbar.GlobalNavBar.SubscriptionUpdate": [
+    {
+      "type": 0,
+      "value": "Subscripton Update"
+    }
+  ],
   "Base.Header.navbar.GlobalNavBar.analytics": [
     {
       "type": 0,
@@ -9951,6 +9993,18 @@
       "value": "Version"
     }
   ],
+  "SubscriptionApproval.Addons.ListBase.reload": [
+    {
+      "type": 0,
+      "value": "Reload"
+    }
+  ],
+  "SubscriptionAproval.Addons.ListBase.nodata.message": [
+    {
+      "type": 0,
+      "value": "No items yet"
+    }
+  ],
   "Undeploy": [
     {
       "type": 0,
@@ -9973,6 +10027,102 @@
     {
       "type": 0,
       "value": "Internal Server Error"
+    }
+  ],
+  "Workflow.ApplicationCreation.updateStatus.has.errors": [
+    {
+      "type": 0,
+      "value": "Unable to complete subscription creation approve/reject process."
+    }
+  ],
+  "Workflow.SubscriptionCreation.List.empty.content.subscriptioncreations": [
+    {
+      "type": 0,
+      "value": "There are no pending workflow requests for subscription creation."
+    }
+  ],
+  "Workflow.SubscriptionCreation.List.empty.title.subscriptioncreations": [
+    {
+      "type": 0,
+      "value": "Subscription Creation"
+    }
+  ],
+  "Workflow.SubscriptionCreation.apicall.has.errors": [
+    {
+      "type": 0,
+      "value": "Unable to get workflow pending requests for Subscription Creation"
+    }
+  ],
+  "Workflow.SubscriptionCreation.help.link.one": [
+    {
+      "type": 0,
+      "value": "Create a subscription creation request"
+    }
+  ],
+  "Workflow.SubscriptionCreation.permission.denied.content": [
+    {
+      "type": 0,
+      "value": "You dont have enough permission to view Subscription Creation - Approval Tasks. Please contact the site administrator."
+    }
+  ],
+  "Workflow.SubscriptionCreation.permission.denied.title": [
+    {
+      "type": 0,
+      "value": "Permission Denied"
+    }
+  ],
+  "Workflow.SubscriptionCreation.search.default": [
+    {
+      "type": 0,
+      "value": "Search by API, Application or Subscriber"
+    }
+  ],
+  "Workflow.SubscriptionCreation.table.header.API": [
+    {
+      "type": 0,
+      "value": "API"
+    }
+  ],
+  "Workflow.SubscriptionCreation.table.header.Action": [
+    {
+      "type": 0,
+      "value": "Action"
+    }
+  ],
+  "Workflow.SubscriptionCreation.table.header.Application": [
+    {
+      "type": 0,
+      "value": "Application"
+    }
+  ],
+  "Workflow.SubscriptionCreation.table.header.Description": [
+    {
+      "type": 0,
+      "value": "Description"
+    }
+  ],
+  "Workflow.SubscriptionCreation.table.header.Subscriber": [
+    {
+      "type": 0,
+      "value": "Subscriber"
+    }
+  ],
+  "Workflow.SubscriptionCreation.table.header.Tier": [
+    {
+      "type": 0,
+      "value": "Tier"
+    }
+  ],
+  "Workflow.SubscriptionCreation.title.subscriptioncreation": [
+    {
+      "type": 0,
+      "value": "Subscription Creation - Approval Tasks"
+    }
+  ],
+  "Workflow.SubscriptionCreation.update.success": [
+    {
+      "type": 0,
+      "value": "Workflow status is updated successfully"
     }
   ],
   "api.console.security.heading": [
