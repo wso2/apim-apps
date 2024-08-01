@@ -23,6 +23,7 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import { FormattedMessage, useIntl } from 'react-intl';
 import API from 'AppData/api';
+import Alert from 'AppComponents/Shared/Alert';
 
 /**
  * Render delete dialog box.
@@ -50,10 +51,13 @@ function Delete(props) {
                 );
             })
             .catch(() => {
-                throw intl.formatMessage({
-                    id: 'Throttling.Application.Policy.policy.delete.error',
-                    defaultMessage: 'Application Rate Limiting Policy could not be deleted.',
-                });
+                Alert.error(
+                    <FormattedMessage
+                        id='Throttling.Application.Policy.policy.delete.error'
+                        defaultMessage='Application Rate Limiting Policy could not be deleted.'
+                    />,
+                );
+                return false;
             });
 
         return (promiseAPICall);
