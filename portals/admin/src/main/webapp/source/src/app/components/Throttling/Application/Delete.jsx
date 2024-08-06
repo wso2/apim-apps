@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import DialogContentText from '@mui/material/DialogContentText';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 
@@ -32,7 +32,6 @@ import Alert from 'AppComponents/Shared/Alert';
  */
 function Delete(props) {
     const restApi = new API();
-    const intl = useIntl();
     const {
         dataRow, updateList,
     } = props;
