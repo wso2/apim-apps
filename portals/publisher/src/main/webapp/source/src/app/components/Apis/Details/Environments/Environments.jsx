@@ -2159,6 +2159,12 @@ export default function Environments() {
                                             >
                                                 <Box height='100%'>
                                                     <CardHeader
+                                                        sx={{
+                                                            width: 'inherit',
+                                                            "& .MuiCardHeader-content": {
+                                                                overflow: "hidden"
+                                                            }
+                                                        }}
                                                         action={
                                                             <>
                                                                 {allEnvRevision && allEnvRevision.some(o1 => {
@@ -2196,9 +2202,20 @@ export default function Environments() {
                                                                 }
                                                             </>}
                                                         title={(
-                                                            <Typography variant='subtitle2'>
-                                                                {row.displayName}
-                                                            </Typography>
+                                                            <Tooltip
+                                                                title={(
+                                                                    <>
+                                                                        <Typography color='inherit'>
+                                                                            {row.displayName}
+                                                                        </Typography>
+                                                                    </>
+                                                                )}
+                                                                placement='bottom'
+                                                            >
+                                                                <Typography noWrap variant='subtitle2'>
+                                                                    {row.displayName}
+                                                                </Typography>
+                                                            </Tooltip>
                                                         )}
                                                         subheader={(
                                                             <Typography
