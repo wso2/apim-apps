@@ -396,7 +396,12 @@ function ConditionalGroup(props) {
 
                     <Box marginBottom={2}>
                         <Alert severity='warning'>
-                            <AlertTitle>Warning</AlertTitle>
+                            <AlertTitle>
+                                <FormattedMessage
+                                    id='Throttling.Advanced.ConditionalGroup.alert.title'
+                                    defaultMessage='Warning'
+                                />
+                            </AlertTitle>
                             <FormattedMessage
                                 id='Throttling.Advanced.ConditionalGroup.alert'
                                 defaultMessage='To add rate limiting with different

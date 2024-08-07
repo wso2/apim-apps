@@ -232,7 +232,7 @@ function Navigator(props) {
                 </ListItem>
 
                 {routeMenuMapping.map(({
-                    id, children, icon: parentIcon, path: parentPath, active: parentActive,
+                    id, displayText, children, icon: parentIcon, path: parentPath, active: parentActive,
                 }) => (
                     <>
                         {!children && (
@@ -260,7 +260,7 @@ function Navigator(props) {
                                                 primary: classes.itemPrimary,
                                             }}
                                         >
-                                            {id}
+                                            {displayText}
                                         </ListItemText>
                                     </ListItem>
                                 </List>
@@ -271,6 +271,7 @@ function Navigator(props) {
                                 <NavigatorChildren
                                     navChildren={children}
                                     navId={id}
+                                    navText={displayText}
                                     classes={classes}
                                     role='listitem'
                                 />

@@ -37,7 +37,7 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
 function NavigatorChildren(props) {
     const { isSuperTenant } = useAppContext();
     const [open, setOpen] = React.useState(true);
-    const { navChildren, navId, classes } = props;
+    const { navChildren, navText, classes } = props;
     const handleClick = () => {
         setOpen(!open);
     };
@@ -58,14 +58,14 @@ function NavigatorChildren(props) {
                         primary: classes.categoryHeaderPrimary,
                     }}
                 >
-                    {navId}
+                    {navText}
                 </ListItemText>
                 {open ? <ExpandLess /> : <ExpandMore />}
 
             </ListItem>
             <Collapse in={open} timeout='auto' unmountOnExit>
                 {navigationChildren && navigationChildren.map(({
-                    id: childId, icon, path, active,
+                    id: childId, displayText, icon, path, active,
                 }) => (
                     <Link
                         component={RouterLink}
@@ -86,7 +86,7 @@ function NavigatorChildren(props) {
                                     primary: classes.itemPrimary,
                                 }}
                             >
-                                {childId}
+                                {displayText}
                             </ListItemText>
                         </ListItem>
                     </Link>
@@ -101,6 +101,7 @@ Navigator.NavigatorChildren = {
     classes: PropTypes.shape({}).isRequired,
     navChildren: PropTypes.arrayOf(JSON).isRequired,
     navId: PropTypes.number.isRequired,
+    displayText: PropTypes.string.isRequired,
 };
 
 export default NavigatorChildren;
