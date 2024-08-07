@@ -82,11 +82,15 @@ export default function PermissionsSelector(props) {
             .then(() => {
                 Alert.info(
                     <span>
-                        Update permissions for
-                        {' '}
-                        <b>{role}</b>
-                        {' '}
-                        successfully
+                        {intl.formatMessage(
+                            {
+                                id: 'RolePermissions.TreeView.PermissionsSelector.update.scope.success',
+                                defaultMessage: 'Update permissions for {role} successfully',
+                            },
+                            {
+                                role: <b>{role}</b>,
+                            },
+                        )}
                     </span>,
                 );
                 setOpen(false);
@@ -146,7 +150,14 @@ export default function PermissionsSelector(props) {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} variant='outlined'>Cancel</Button>
+                    <Button onClick={handleClose} variant='outlined'>
+                        <Button onClick={handleClose}>
+                            <FormattedMessage
+                                id='RolePermissions.TreeView.PermissionsSelector.scope.assignment.cancel.btn'
+                                defaultMessage='Cancel'
+                            />
+                        </Button>
+                    </Button>
                     <Button
                         size='small'
                         variant='contained'
@@ -155,7 +166,10 @@ export default function PermissionsSelector(props) {
                         disabled={isSaving}
                     >
                         {isSaving && <CircularProgress size={16} />}
-                        Save
+                        <FormattedMessage
+                            id='RolePermissions.TreeView.PermissionsSelector.scope.assignment.save.btn'
+                            defaultMessage='Save'
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>
