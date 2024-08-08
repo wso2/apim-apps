@@ -443,6 +443,56 @@ export default function CustomIcon(props) {
                 </g>
             </svg>
         );
+    }  else if (icon === 'subscriptioncreation') {
+        return (
+            <svg
+                width={width}
+                height={height}
+                viewBox='0 0 18 18'
+                version='1.1'
+                aria-hidden='true'
+                xmlns='http://www.w3.org/2000/svg'
+            >
+                <title>Global Policies</title>
+                <g id='File-Icon' stroke={strokeColor} strokeWidth='1' fill='none' fillRule='evenodd'>
+                    <g
+                        id='file-with-documents'
+                        transform='translate(-665.000000, -1898.000000)'
+                    >
+                        <g id='Icon/File' transform='translate(665.000000, 1898.000000)'>
+                            <path d='M19 4H5c-1.1 0-1.99.9-1.99 2L3 18c0 1.1.89 2 1.99 
+                                2H19c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm-7.5 10.5l-2.5-2.5 1.41-1.41L12 
+                                10.67l3.09-3.09 1.41 1.41-4.5 4.5z'/>
+                        </g>
+                    </g>
+                </g>
+            </svg>
+        );
+    }
+    else if (icon === 'subscriptionupdate') {
+        return (
+            <svg
+                width={width}
+                height={height}
+                viewBox='0 0 18 18'
+                version='1.1'
+                aria-hidden='true'
+                xmlns='http://www.w3.org/2000/svg'
+            >
+                <title>Global Policies</title>
+                <g id='File-Icon' stroke={strokeColor} strokeWidth='1' fill='none' fillRule='evenodd'>
+                    <g
+                        id='file-with-documents'
+                        transform='translate(-665.000000, -1898.000000)'
+                    >
+                        <g id='Icon/File' transform='translate(665.000000, 1898.000000)'>
+                            <rect x='3' y='3' width='18' height='18' rx='2' ry='2' />
+                            <path d='M12 8v6M9 11l3-3 3 3' />
+                        </g>
+                    </g>
+                </g>
+            </svg>
+        );
     }
     return null;
 }
