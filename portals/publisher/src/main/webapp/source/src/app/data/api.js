@@ -424,7 +424,7 @@ class API extends Resource {
      * */
     validateAPIParameter(query) {
         return this.client.then(client => {
-            return client.apis.Validation.validateAPI({ query: query })
+            return client.apis['Validation'].validateAPI({ query: query })
                 .then(resp => {
                     return resp.ok;
                 })
