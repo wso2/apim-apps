@@ -169,6 +169,20 @@ function GlobalNavLinks(props) {
                             )}
                     </div>
                 )}
+                {(!isRestricted(['apim:subscription_approval_view', 'apim:subscription_approval_manage'])) && (
+                    <div>
+                        <GlobalNavLink
+                            to='/subscription/creation'
+                            type='subscriptioncreation'
+                            title='Tasks'
+                            active={selected === 'subscriptioncreation'}
+                        >
+                            <FormattedMessage
+                                id='Base.Header.navbar.GlobalNavBar.Tasks'
+                                defaultMessage='Tasks'
+                            />
+                        </GlobalNavLink>
+                    </div>)}
                 {analyticsMenuEnabled && (
                     <>
                         <Divider />
@@ -191,20 +205,6 @@ function GlobalNavLinks(props) {
                         </a>
                     </>
                 )}
-                {(!isRestricted(['apim:subscription_approval_view', 'apim:subscription_approval_manage'])) && ( 
-                    <div>
-                        <GlobalNavLink
-                            to='/subscription/creation'
-                            type='subscriptioncreation'
-                            title='Tasks'
-                            active={selected === 'subscriptioncreation'}
-                        >
-                            <FormattedMessage
-                                id='Base.Header.navbar.GlobalNavBar.Tasks'
-                                defaultMessage='Tasks'
-                            />
-                        </GlobalNavLink>
-                    </div>)}
             </List>
         </StyledBox>
     );
