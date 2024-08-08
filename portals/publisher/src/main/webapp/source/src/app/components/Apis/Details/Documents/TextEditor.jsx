@@ -64,6 +64,8 @@ const StyledDialog = styled(Dialog)({
     },
     [`& .${classes.splitWrapper}`]: {
         padding: 0,
+        height: 'calc(100vh - 64px)',
+        overflow: 'hidden',
     },
     [`& .${classes.docName}`]: {
         alignItems: 'center',
@@ -193,6 +195,7 @@ function TextEditor(props) {
                         editorState={editorState}
                         wrapperClassName='draftjs-wrapper'
                         editorClassName='draftjs-editor'
+                        editorStyle={{ height: 'calc(100vh - 128px)', overflowY: 'auto' }}
                         onEditorStateChange={onEditorStateChange}
                     />
                 </div>
