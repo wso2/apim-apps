@@ -101,7 +101,7 @@ Navigator.NavigatorChildren = {
     classes: PropTypes.shape({}).isRequired,
     navChildren: PropTypes.arrayOf(JSON).isRequired,
     navId: PropTypes.number.isRequired,
-    displayText: PropTypes.string.isRequired,
+    navText: PropTypes.string.isRequired,
 };
 
 export default NavigatorChildren;
