@@ -182,6 +182,9 @@ class APICardView extends React.Component {
                 && listLocal[i].isSubscriptionAvailable)) {
                 listLocal[i].throttlingPolicies = null;
             }
+            if (listLocal[i].disableSubscriptionValidation) {
+                listLocal[i].throttlingPolicies = 'NotRequired';
+            }
         }
         return listLocal;
         // return unsubscribedAPIList;
@@ -260,6 +263,12 @@ class APICardView extends React.Component {
                                 return (intl.formatMessage({
                                     id: 'Apis.Listing.APICardView.already.subscribed',
                                     defaultMessage: 'Subscribed',
+                                }));
+                            }
+                            if (policies === 'NotRequired') {
+                                return (intl.formatMessage({
+                                    id: 'Apis.Listing.APICardView.not.required',
+                                    defaultMessage: 'Subscription Not Required',
                                 }));
                             }
                             return (

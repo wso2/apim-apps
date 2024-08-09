@@ -421,6 +421,7 @@ class Credentials extends React.Component {
          && !api.securityScheme.includes('api_key');
         const isSetAllorResidentKeyManagers = (api.keyManagers && api.keyManagers.includes('all'))
             || (api.keyManagers && api.keyManagers.includes('Resident Key Manager'));
+        const isSubValidationDisabled = api.disableSubscriptionValidation;
         const renderCredentialInfo = () => {
             if (isOnlyMutualSSL || isOnlyBasicAuth) {
                 return (
@@ -430,6 +431,18 @@ class Credentials extends React.Component {
                                 id='Apis.Details.Creadentials.credetials.mutualssl'
                                 defaultMessage={'Subscription is not required for Mutual SSL APIs'
                                         + ' or APIs with only Basic Authentication.'}
+                            />
+                        </Typography>
+                    </InlineMessage>
+                );
+            } else if (isSubValidationDisabled) {
+                return (
+                    <InlineMessage type='info' className={classes.dialogContainer}>
+                        <Typography component='p'>
+                            <FormattedMessage
+                                id='Apis.Details.Creadentials.credetials.sub.validation.disabled'
+                                defaultMessage={'Subscriptions are not required for this API.'
+                                + ' Anyone with a valid token will be able to consume this API without a subscription.'}
                             />
                         </Typography>
                     </InlineMessage>
@@ -497,7 +510,7 @@ class Credentials extends React.Component {
                                                     : `/apis/${api.id}/credentials/wizard`}
                                                 component={RouterLink}
                                                 disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
-                                                    || isOnlyBasicAuth || !isSetAllorResidentKeyManagers}
+                                                    || isOnlyBasicAuth || !isSetAllorResidentKeyManagers || isSubValidationDisabled}
                                             >
                                                 <FormattedMessage
                                                     id={'Apis.Details.Credentials.'
@@ -640,10 +653,10 @@ class Credentials extends React.Component {
                                         component='div'
                                         className={classes.titleSub}
                                     >
-                                        {applicationsAvailable.length > 0 && (
+                                        {applicationsAvailable.length > 0 && !isSubValidationDisabled && (
                                             <Link
                                                 to={(isOnlyMutualSSL || isOnlyBasicAuth
-                                                    || !isSetAllorResidentKeyManagers) ? null
+                                                    || !isSetAllorResidentKeyManagers || isSubValidationDisabled) ? null
                                                     : `/apis/${api.id}/credentials/wizard`}
                                                 style={!api.isSubscriptionAvailable
                                                     ? { pointerEvents: 'none' } : null}
@@ -655,7 +668,8 @@ class Credentials extends React.Component {
                                                     color='secondary'
                                                     disabled={!api.isSubscriptionAvailable || isOnlyMutualSSL
                                                     || isOnlyBasicAuth
-                                                    || !isSetAllorResidentKeyManagers}
+                                                    || !isSetAllorResidentKeyManagers
+                                                    || isSubValidationDisabled}
                                                     size='small'
                                                     id='start-key-gen-wizard-btn'
                                                 >
