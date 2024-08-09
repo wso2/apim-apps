@@ -16,7 +16,7 @@
  * under the License.
  */
 import React, { useState } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
@@ -56,11 +56,15 @@ export default function DeletePermission(props) {
             .then(() => {
                 Alert.info(
                     <span>
-                        Scope Assignments
-                        {' '}
-                        <b>{role}</b>
-                        {' '}
-                        deleted successfully
+                        {intl.formatMessage(
+                            {
+                                id: 'RolePermissions.ListRoles.scope.assignment.delete.scope.success',
+                                defaultMessage: 'Scope Assignments {role} deleted successfully',
+                            },
+                            {
+                                role: <b>{role}</b>,
+                            },
+                        )}
                     </span>,
                 );
                 handleClose();
@@ -84,7 +88,10 @@ export default function DeletePermission(props) {
                 variant='outlined'
                 data-testid={role + '-delete-btn'}
             >
-                Delete
+                <FormattedMessage
+                    id='RolePermissions.ListRoles.scope.assignment.delete.button'
+                    defaultMessage='Delete'
+                />
             </Button>
             <Dialog
                 fullWidth
@@ -98,23 +105,37 @@ export default function DeletePermission(props) {
                 aria-labelledby='delete-confirmation'
             >
                 <DialogTitle id='delete-confirmation'>
-                    Delete scope assignments of
-                    {' '}
-                    <Typography display='inline' variant='subtitle2'>{role}</Typography>
-                    {' '}
-                    ?
+                    {intl.formatMessage(
+                        {
+                            id: 'RolePermissions.ListRoles.scope.assignment.delete.dialog.title',
+                            defaultMessage: 'Delete scope assignments of {role} ?',
+                        },
+                        {
+                            role: <Typography display='inline' variant='subtitle2'>{role}</Typography>,
+                        },
+                    )}
                 </DialogTitle>
                 <DialogContent dividers>
                     <Box mt={2} mb={2} ml={1}>
-                        Are you sure you want to delete scope assignments for
-                        {' '}
-                        <b>{role}</b>
-                        {' '}
-                        ?
+                        {intl.formatMessage(
+                            {
+                                id: 'RolePermissions.ListRoles.scope.assignment.delete.dialog.content',
+                                defaultMessage: 'Are you sure you want to delete scope assignments for '
+                                    + '{role} ?',
+                            },
+                            {
+                                role: <b>{role}</b>,
+                            },
+                        )}
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} variant='outlined'>Cancel</Button>
+                    <Button onClick={handleClose} variant='outlined'>
+                        <FormattedMessage
+                            id='RolePermissions.ListRoles.scope.assignment.cancel.button'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
                     <Button
                         size='small'
                         variant='contained'
@@ -124,7 +145,10 @@ export default function DeletePermission(props) {
                         disabled={isDeleting}
                     >
                         {isDeleting && <CircularProgress size={16} />}
-                        Delete
+                        <FormattedMessage
+                            id='RolePermissions.ListRoles.scope.assignment.delete.button'
+                            defaultMessage='Delete'
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>

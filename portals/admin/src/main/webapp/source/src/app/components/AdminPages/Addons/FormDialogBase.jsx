@@ -26,6 +26,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import IconButton from '@mui/material/IconButton';
 import CircularProgress from '@mui/material/CircularProgress';
 import Alert from 'AppComponents/Shared/Alert';
+import { FormattedMessage } from 'react-intl';
 
 /**
  * Render base for dialogs.
@@ -94,7 +95,10 @@ function FormDialogBase({
                 </DialogContent>
                 <DialogActions>
                     <Button onClick={handleClose}>
-                        Cancel
+                        <FormattedMessage
+                            id='Form.Dialog.Base.cancel.btn'
+                            defaultMessage='Cancel'
+                        />
                     </Button>
                     <Button
                         onClick={saveTriggerd}

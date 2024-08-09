@@ -223,7 +223,10 @@ export default function ListApplications() {
                             rowsPerPage={rowsPerPage}
                             editComponentProps={{
                                 icon: <EditIcon aria-label='edit-application-settings' />,
-                                title: 'Change Application Owner',
+                                title: intl.formatMessage({
+                                    id: 'Applications.Listing.Listing.applications.list.title',
+                                    defaultMessage: 'Change Application Owner',
+                                }),
                                 applicationList,
                             }}
                             EditComponent={EditApplication}
@@ -236,7 +239,26 @@ export default function ListApplications() {
                                     count={totalApps}
                                     rowsPerPage={rowsPerPage}
                                     rowsPerPageOptions={[5, 10, 15]}
-                                    labelRowsPerPage='Show'
+                                    labelDisplayedRows={({ from, to, count }) => {
+                                        if (count !== -1) {
+                                            return intl.formatMessage({
+                                                id: 'Applications.Listing.Listing.applications.list.rows.range.label',
+                                                defaultMessage: '{from}-{to} of {count}',
+                                            },
+                                            {
+                                                from, to, count,
+                                            });
+                                        }
+                                        return intl.formatMessage({
+                                            id: 'Applications.Listing.Listing.applications.list.rows.more.than.label',
+                                            defaultMessage: 'more than {to}',
+                                        },
+                                        { to });
+                                    }}
+                                    labelRowsPerPage={intl.formatMessage({
+                                        id: 'Applications.Listing.Listing.applications.list.rows.show.label',
+                                        defaultMessage: 'Show',
+                                    })}
                                     page={page}
                                     backIconButtonProps={{
                                         'aria-label': 'Previous Page',

@@ -19,7 +19,7 @@
 import React from 'react';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContentText from '@mui/material/DialogContentText';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
@@ -31,6 +31,7 @@ import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
  */
 function Delete({ updateList, dataRow }) {
     const { id } = dataRow;
+    const intl = useIntl();
 
     const formSaveCallback = () => {
         const restApi = new API();
@@ -38,10 +39,10 @@ function Delete({ updateList, dataRow }) {
             .deleteGatewayEnvironment(id)
             .then(() => {
                 return (
-                    <FormattedMessage
-                        id='AdminPages.Gateways.Delete.form.delete.successful'
-                        defaultMessage='Gateway Environment deleted successfully'
-                    />
+                    intl.formatMessage({
+                        id: 'AdminPages.Gateways.Delete.form.delete.successful',
+                        defaultMessage: 'Gateway Environment deleted successfully',
+                    })
                 );
             })
             .catch((error) => {
@@ -54,8 +55,14 @@ function Delete({ updateList, dataRow }) {
 
     return (
         <FormDialogBase
-            title='Delete Gateway Environment?'
-            saveButtonText='Delete'
+            title={intl.formatMessage({
+                id: 'AdminPages.Gateways.Delete.form.delete.confirmation.message.title',
+                defaultMessage: 'Delete Gateway Environment?',
+            })}
+            saveButtonText={intl.formatMessage({
+                id: 'AdminPages.Gateways.Delete.form.delete.confirmation.delete.btn',
+                defaultMessage: 'Delete',
+            })}
             icon={<DeleteForeverIcon />}
             triggerIconProps={{ disabled: dataRow && dataRow.isReadOnly }}
             formSaveCallback={formSaveCallback}

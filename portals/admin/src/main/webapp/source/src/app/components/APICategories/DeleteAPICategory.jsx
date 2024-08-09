@@ -19,7 +19,7 @@
 import React from 'react';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContentText from '@mui/material/DialogContentText';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
@@ -32,6 +32,7 @@ import Alert from 'AppComponents/Shared/Alert';
  */
 function Delete({ updateList, dataRow }) {
     const { id, noOfApis } = dataRow;
+    const intl = useIntl();
     const getValidationErrors = () => {
         let errorText = '';
         if (noOfApis > 0) {
@@ -68,12 +69,23 @@ function Delete({ updateList, dataRow }) {
 
     return (
         <FormDialogBase
-            title='Delete API category?'
-            saveButtonText='Delete'
+            title={intl.formatMessage({
+                id: 'AdminPages.ApiCategories.Delete.form.delete.title',
+                defaultMessage: 'Delete API category?',
+            })}
+            saveButtonText={intl.formatMessage({
+                id: 'AdminPages.ApiCategories.Delete.form.delete.btn',
+                defaultMessage: 'Delete',
+            })}
             icon={<DeleteForeverIcon />}
             formSaveCallback={formSaveCallback}
         >
-            <DialogContentText>Are you sure you want to delete this API Category?</DialogContentText>
+            <DialogContentText>
+                <FormattedMessage
+                    id='AdminPages.ApiCategories.Delete.form.delete.content'
+                    defaultMessage='Are you sure you want to delete this API Category?'
+                />
+            </DialogContentText>
         </FormDialogBase>
     );
 }

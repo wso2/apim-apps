@@ -133,12 +133,22 @@ function AddEditExecution(props) {
                     <FormControlLabel
                         value='REQUESTCOUNTLIMIT'
                         control={<Radio />}
-                        label='Request Count'
+                        label={(
+                            <FormattedMessage
+                                id='Throttling.Advanced.AddEditExecution.default.limit.option.request.count.label'
+                                defaultMessage='Request Count'
+                            />
+                        )}
                     />
                     <FormControlLabel
                         value='BANDWIDTHLIMIT'
                         control={<Radio />}
-                        label='Request Bandwidth'
+                        label={(
+                            <FormattedMessage
+                                id='Throttling.Advanced.AddEditExecution.default.limit.option.request.bandwith.label'
+                                defaultMessage='Request Bandwidth'
+                            />
+                        )}
                     />
                 </RadioGroup>
             </Box>
@@ -159,7 +169,10 @@ function AddEditExecution(props) {
                         type='number'
                         error={hasErrors('requestCount', requestCount.requestCount, validating)}
                         helperText={hasErrors('requestCount', requestCount.requestCount, validating)
-                || 'Number of requests allowed'}
+                            || intl.formatMessage({
+                                id: 'Throttling.Advanced.AddEdit.form.request.count.allowed.help',
+                                defaultMessage: 'Number of requests allowed',
+                            })}
                         variant='outlined'
                     />
                 )}

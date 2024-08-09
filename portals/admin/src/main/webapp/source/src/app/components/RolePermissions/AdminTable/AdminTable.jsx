@@ -20,7 +20,7 @@ import React from 'react';
 import Table from '@mui/material/Table';
 import TableContainer from '@mui/material/TableContainer';
 import TablePagination from '@mui/material/TablePagination';
-
+import { useIntl } from 'react-intl';
 import { TableContextProvider } from './AdminTableContext';
 
 /**
@@ -33,7 +33,7 @@ export default function AdminTable(props) {
     const {
         children, multiSelect, rowsPerPageOptions, dataIDs,
     } = props;
-
+    const intl = useIntl();
     const [order, setOrder] = React.useState('asc');
     const [orderBy, setOrderBy] = React.useState('role');
     const [selected, setSelected] = React.useState([]);
@@ -96,6 +96,24 @@ export default function AdminTable(props) {
                         page={page}
                         onPageChange={handleChangePage}
                         onRowsPerPageChange={handleChangeRowsPerPage}
+                        labelDisplayedRows={({ from, to, count }) => {
+                            if (count !== -1) {
+                                return intl.formatMessage({
+                                    id: 'Role.permissions.Role.Permissions.Admin.Table.displayed.rows.range.label',
+                                    defaultMessage: '{from}-{to} of {count}',
+                                },
+                                { from, to, count });
+                            }
+                            return intl.formatMessage({
+                                id: 'Role.permissions.Role.Permissions.Admin.Table.displayed.rows.more.than.label',
+                                defaultMessage: 'more than {to}',
+                            },
+                            { to });
+                        }}
+                        labelRowsPerPage={intl.formatMessage({
+                            id: 'Role.permissions.Role.Permissions.Admin.Table.row.per.page.label',
+                            defaultMessage: 'Rows per page:',
+                        })}
                     />
                 </TableContainer>
 

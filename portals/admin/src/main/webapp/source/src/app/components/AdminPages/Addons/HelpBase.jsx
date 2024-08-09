@@ -22,7 +22,7 @@ import Popover from '@mui/material/Popover';
 import HelpIcon from '@mui/icons-material/Help';
 import Tooltip from '@mui/material/Tooltip';
 import IconButton from '@mui/material/IconButton';
-
+import { useIntl } from 'react-intl';
 /**
  * Render base for help links on top right corner of the page.
  * @returns {JSX} Header AppBar components.
@@ -37,13 +37,13 @@ function HelpBase({ children }) {
     const handleClose = () => {
         setAnchorEl(null);
     };
-
+    const intl = useIntl();
     const open = Boolean(anchorEl);
     const id = open ? 'simple-popover' : undefined;
 
     return (
         <div>
-            <Tooltip title='Help'>
+            <Tooltip title={intl.formatMessage({ id: 'Admin.Addons.Help.Base.title', defaultMessage: 'Help' })}>
                 <IconButton color='inherit' onClick={handleClick} size='large'>
                     <HelpIcon />
                 </IconButton>

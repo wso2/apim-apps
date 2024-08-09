@@ -383,12 +383,18 @@ function ConditionalGroup(props) {
                     </div>
                     {!expanded && (
                         <Typography className={classes.secondaryHeading}>
-                            Expand to edit
+                            <FormattedMessage
+                                id='Throttling.Advanced.ConditionalGroup.expand.label'
+                                defaultMessage='Expand to edit'
+                            />
                         </Typography>
                     )}
                     {expanded && (
                         <Typography className={classes.secondaryHeading}>
-                            Hide group
+                            <FormattedMessage
+                                id='Throttling.Advanced.ConditionalGroup.hide.label'
+                                defaultMessage='Hide group'
+                            />
                         </Typography>
                     )}
                 </AccordionSummary>
@@ -396,7 +402,12 @@ function ConditionalGroup(props) {
 
                     <Box marginBottom={2}>
                         <Alert severity='warning'>
-                            <AlertTitle>Warning</AlertTitle>
+                            <AlertTitle>
+                                <FormattedMessage
+                                    id='Throttling.Advanced.ConditionalGroup.alert.title'
+                                    defaultMessage='Warning'
+                                />
+                            </AlertTitle>
                             <FormattedMessage
                                 id='Throttling.Advanced.ConditionalGroup.alert'
                                 defaultMessage='To add rate limiting with different

@@ -247,7 +247,26 @@ export default function ListApis() {
                                     count={totalApps}
                                     rowsPerPage={rowsPerPage}
                                     rowsPerPageOptions={[5, 10, 15]}
-                                    labelRowsPerPage='Show'
+                                    labelDisplayedRows={({ from, to, count }) => {
+                                        if (count !== -1) {
+                                            return intl.formatMessage({
+                                                id: 'Applications.Listing.apis.list.rows.range.label',
+                                                defaultMessage: '{from}-{to} of {count}',
+                                            },
+                                            {
+                                                from, to, count,
+                                            });
+                                        }
+                                        return intl.formatMessage({
+                                            id: 'Applications.Listing.apis.list.rows.more.than.label',
+                                            defaultMessage: 'more than {to}',
+                                        },
+                                        { to });
+                                    }}
+                                    labelRowsPerPage={intl.formatMessage({
+                                        id: 'Applications.Listing.apis.list.rows.show.label',
+                                        defaultMessage: 'Show',
+                                    })}
                                     page={page}
                                     backIconButtonProps={{
                                         'aria-label': 'Previous Page',

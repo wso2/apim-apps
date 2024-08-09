@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import DialogContentText from '@mui/material/DialogContentText';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 
@@ -35,6 +35,7 @@ function Delete(props) {
     const {
         dataRow, updateList,
     } = props;
+    const intl = useIntl();
 
     const formSaveCallback = () => {
         const policyId = dataRow[6];
@@ -43,18 +44,18 @@ function Delete(props) {
             .then(() => {
                 updateList();
                 return (
-                    <FormattedMessage
-                        id='Throttling.Subscription.Policy.policy.delete.success'
-                        defaultMessage='Subscription Rate Limiting Policy successfully deleted.'
-                    />
+                    intl.formatMessage({
+                        id: 'Throttling.Subscription.Policy.policy.delete.success',
+                        defaultMessage: 'Subscription Rate Limiting Policy successfully deleted.',
+                    })
                 );
             })
             .catch(() => {
                 Alert.error(
-                    <FormattedMessage
-                        id='Throttling.Subscription.Policy.policy.delete.error'
-                        defaultMessage='Subscription Rate Limiting Policy could not be deleted.'
-                    />,
+                    intl.formatMessage({
+                        id: 'Throttling.Subscription.Policy.policy.delete.error',
+                        defaultMessage: 'Subscription Rate Limiting Policy could not be deleted.',
+                    }),
                 );
                 return false;
             });
@@ -64,8 +65,14 @@ function Delete(props) {
 
     return (
         <FormDialogBase
-            title='Delete Subscription Policy?'
-            saveButtonText='Delete'
+            title={intl.formatMessage({
+                id: 'Throttling.Subscription.Policy.policy.delete.title',
+                defaultMessage: 'Delete Subscription Policy?',
+            })}
+            saveButtonText={intl.formatMessage({
+                id: 'Throttling.Subscription.Policy.policy.delete.btn',
+                defaultMessage: 'Delete',
+            })}
             icon={<DeleteForeverIcon aria-label='delete-subscription-policies' />}
             formSaveCallback={formSaveCallback}
         >

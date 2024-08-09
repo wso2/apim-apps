@@ -266,6 +266,34 @@ function ListKeyManagerUsages(props) {
         viewColumns: false,
         customToolbar: false,
         responsive: 'stacked',
+        textLabels: {
+            toolbar: {
+                search: intl.formatMessage({
+                    id: 'Mui.data.table.search.icon.label',
+                    defaultMessage: 'Search',
+                }),
+                filterTable: intl.formatMessage({
+                    id: 'Mui.data.table.filter.icon.label',
+                    defaultMessage: 'Filter Table',
+                }),
+            },
+            body: {
+                noMatch: intl.formatMessage({
+                    id: 'Mui.data.table.search.no.records.found',
+                    defaultMessage: 'Sorry, no matching records found',
+                }),
+            },
+            pagination: {
+                rowsPerPage: intl.formatMessage({
+                    id: 'Mui.data.table.pagination.rows.per.page',
+                    defaultMessage: 'Rows per page:',
+                }),
+                displayRows: intl.formatMessage({
+                    id: 'Mui.data.table.pagination.display.rows',
+                    defaultMessage: 'of',
+                }),
+            },
+        },
     };
     if (data && data.length === 0) {
         return (
@@ -339,8 +367,22 @@ function ListKeyManagerUsages(props) {
             <TabContext value={value}>
                 <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
                     <TabList onChange={handleChange} aria-label='key manager usage tabs'>
-                        <Tab label='API Usages' value='1' sx={{ fontSize: '0.9rem' }} />
-                        <Tab label='Application Usages' value='2' sx={{ fontSize: '0.9rem' }} />
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'KeyManagers.ListKeyManagerUsages.tab.API.usages',
+                                defaultMessage: 'API Usages',
+                            })}
+                            value='1'
+                            sx={{ fontSize: '0.9rem' }}
+                        />
+                        <Tab
+                            label={intl.formatMessage({
+                                id: 'KeyManagers.ListKeyManagerUsages.tab.Application.usages',
+                                defaultMessage: 'Application Usages',
+                            })}
+                            value='2'
+                            sx={{ fontSize: '0.9rem' }}
+                        />
                     </TabList>
                 </Box>
                 <TabPanel value='1'>
@@ -359,9 +401,19 @@ function ListKeyManagerUsages(props) {
                                                 <Box pl={2}>
                                                     <Typography variant='h8' gutterBottom>
                                                         {data.apiCount === 1
-                                                            ? '1 API is using this key manager specifically.'
-                                                            : data.apiCount
-                                                            + ' APIs are using this key manager specifically.'}
+                                                            ? intl.formatMessage({
+                                                                id: 'KeyManagers.ListKeyManagerUsages.API.usages'
+                                                                    + '.count.one',
+                                                                defaultMessage: '1 API is using this key manager'
+                                                                    + ' specifically.',
+                                                            })
+                                                            : intl.formatMessage({
+                                                                id: 'KeyManagers.ListKeyManagerUsages.API.usages'
+                                                                    + '.count.multiple',
+                                                                defaultMessage: '{count} APIs are using this key'
+                                                                    + ' manager specifically',
+                                                            },
+                                                            { count: data.apiCount })}
                                                     </Typography>
                                                 </Box>
                                             </Grid>
@@ -419,10 +471,20 @@ function ListKeyManagerUsages(props) {
                                             <Grid item xs={12}>
                                                 <Box pl={2}>
                                                     <Typography variant='h8' gutterBottom>
-                                                        {appData.applicationCount === 1 ? '1 Application is using this '
-                                                + 'key manager specifically.'
-                                                            : appData.applicationCount + ' Applications are using this '
-                                                + 'key manager specifically.'}
+                                                        {appData.applicationCount === 1
+                                                            ? intl.formatMessage({
+                                                                id: 'KeyManagers.ListKeyManagerUsages.Application'
+                                                                    + '.usages.count.one',
+                                                                defaultMessage: '1 Application is using this key '
+                                                                    + 'manager specifically.',
+                                                            })
+                                                            : intl.formatMessage({
+                                                                id: 'KeyManagers.ListKeyManagerUsages.Application'
+                                                                    + '.usages.count.multiple',
+                                                                defaultMessage: '{count} Applications are using this'
+                                                                    + ' key manager specifically',
+                                                            },
+                                                            { count: appData.applicationCount })}
                                                     </Typography>
                                                 </Box>
                                             </Grid>

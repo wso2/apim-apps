@@ -21,7 +21,7 @@ import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
@@ -49,6 +49,7 @@ function reducer(state, { field, value }) {
  */
 function Edit(props) {
     const restApi = new API();
+    const intl = useIntl();
     const {
         updateList, dataRow, icon, triggerButtonText, title, applicationList,
     } = props;
@@ -71,7 +72,10 @@ function Edit(props) {
     };
 
     const validateOwner = () => {
-        let validationError = 'Something went wrong when validating user';
+        let validationError = intl.formatMessage({
+            id: 'Applications.Listing.Listing.applications.edit.error.default',
+            defaultMessage: 'Something went wrong when validating user',
+        });
 
         const applicationsWithSameName = applicationList.filter(
             (app) => app.name === name && app.owner === owner,
@@ -79,7 +83,11 @@ function Edit(props) {
 
         const promiseValidation = new Promise((resolve, reject) => {
             if (applicationsWithSameName.length > 0) {
-                validationError = `${owner} already has an application with name: ${name}`;
+                validationError = intl.formatMessage({
+                    id: 'Applications.Listing.Listing.applications.edit.error.already.exist',
+                    defaultMessage: '{owner} already has an application with name: {name}',
+                },
+                { owner, name });
                 reject(validationError);
             }
             const basicScope = 'apim:subscribe';
@@ -92,7 +100,11 @@ function Edit(props) {
                     // This api returns 404 when the $owner is not found.
                     // error codes: 901502, 901500 for user not found and scope not found
                     if (response?.body?.code === 901502 || response?.body?.code === 901500) {
-                        validationError = `${owner} is not a valid Subscriber`;
+                        validationError = intl.formatMessage({
+                            id: 'Applications.Listing.Listing.applications.edit.error.owner.invalid',
+                            defaultMessage: '{owner} is not a valid Subscriber',
+                        },
+                        { owner });
                     }
                 }).finally(() => {
                     if (validationError) {
@@ -109,19 +121,26 @@ function Edit(props) {
             return restApi.updateApplicationOwner(dataRow.applicationId, owner)
                 .then(() => {
                     return (
-                        <FormattedMessage
-                            id='AdminPages.ApplicationSettings.Edit.form.edit.successful'
-                            defaultMessage='Application owner changed successfully'
-                        />
+                        intl.formatMessage({
+                            id: 'AdminPages.ApplicationSettings.Edit.form.edit.successful',
+                            defaultMessage: 'Application owner changed successfully',
+                        })
                     );
                 })
                 .catch((error) => {
                     const { response } = error;
                     if (response?.body?.code === 500) {
-                        const notValidSubscriber = 'Error while updating ownership to ' + owner;
+                        const notValidSubscriber = intl.formatMessage({
+                            id: 'Applications.Listing.Listing.applications.edit.error.subscriber.invalid',
+                            defaultMessage: 'Error while updating ownership to {owner}',
+                        },
+                        { owner });
                         throw notValidSubscriber;
                     } else {
-                        const updateError = 'Something went wrong when updating owner';
+                        const updateError = intl.formatMessage({
+                            id: 'Applications.Listing.Listing.applications.edit.error.unknown',
+                            defaultMessage: 'Something went wrong when updating owner',
+                        });
                         throw updateError;
                     }
                 })
@@ -139,7 +158,10 @@ function Edit(props) {
     return (
         <FormDialogBase
             title={title}
-            saveButtonText='Save'
+            saveButtonText={intl.formatMessage({
+                id: 'Applications.Listing.Listing.applications.edit.save.btn',
+                defaultMessage: 'Save',
+            })}
             icon={icon}
             triggerButtonText={triggerButtonText}
             formSaveCallback={formSaveCallback}
@@ -168,7 +190,10 @@ function Edit(props) {
                 name='owner'
                 value={owner}
                 onChange={onChange}
-                label='Owner'
+                label={intl.formatMessage({
+                    id: 'Applications.Listing.Listing.applications.edit.owner.label',
+                    defaultMessage: 'Owner',
+                })}
                 fullWidth
                 helperText={(
                     <FormattedMessage
