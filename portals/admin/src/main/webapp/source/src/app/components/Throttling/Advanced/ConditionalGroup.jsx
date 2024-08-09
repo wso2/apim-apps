@@ -383,12 +383,18 @@ function ConditionalGroup(props) {
                     </div>
                     {!expanded && (
                         <Typography className={classes.secondaryHeading}>
-                            Expand to edit
+                            <FormattedMessage
+                                id='Throttling.Advanced.ConditionalGroup.expand.label'
+                                defaultMessage='Expand to edit'
+                            />
                         </Typography>
                     )}
                     {expanded && (
                         <Typography className={classes.secondaryHeading}>
-                            Hide group
+                            <FormattedMessage
+                                id='Throttling.Advanced.ConditionalGroup.hide.label'
+                                defaultMessage='Hide group'
+                            />
                         </Typography>
                     )}
                 </AccordionSummary>

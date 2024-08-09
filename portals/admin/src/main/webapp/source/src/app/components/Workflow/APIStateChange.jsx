@@ -213,15 +213,13 @@ function ListLabels(props) {
             </HelpBase>),
 
         pageStyle: 'half',
-        title: intl.formatMessage(
-            isAPIProduct ? {
-                id: 'Workflow.APIProductStateChange.title.apistatechange',
-                defaultMessage: 'API Product State Change - Approval Tasks',
-            } : {
-                id: 'Workflow.APIStateChange.title.apistatechange',
-                defaultMessage: 'API State Change - Approval Tasks',
-            },
-        ),
+        title: isAPIProduct ? intl.formatMessage({
+            id: 'Workflow.APIProductStateChange.title.apistatechange',
+            defaultMessage: 'API Product State Change - Approval Tasks',
+        }) : intl.formatMessage({
+            id: 'Workflow.APIStateChange.title.apistatechange',
+            defaultMessage: 'API State Change - Approval Tasks',
+        }),
     };
 
     const [searchText, setSearchText] = useState('');

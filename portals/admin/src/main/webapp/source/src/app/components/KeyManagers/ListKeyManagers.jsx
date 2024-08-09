@@ -379,9 +379,15 @@ export default function ListKeyManagers() {
                             const artifactId = tableMeta.rowData[6];
                             let tooltipTitle = '';
                             if (dataRow.isGlobal && !isSuperAdmin) {
-                                tooltipTitle = 'Global Key Manager only can be deleted by the super admin user';
+                                tooltipTitle = intl.formatMessage({
+                                    id: 'KeyManagers.ListKeyManagers.table.global.delete.tooltip',
+                                    defaultMessage: 'Global Key Manager only can be deleted by the super admin user',
+                                });
                             } else if (dataRow.isUsed) {
-                                tooltipTitle = 'Key manager is used by an API or an Application';
+                                tooltipTitle = intl.formatMessage({
+                                    id: 'KeyManagers.ListKeyManagers.table.is.used.delete.tooltip',
+                                    defaultMessage: 'Key manager is used by an API or an Application',
+                                });
                             }
                             return (
                                 <div data-testid={`${itemName}-actions`}>
@@ -415,9 +421,15 @@ export default function ListKeyManagers() {
                     }
                     let tooltipTitle = '';
                     if (dataRow.isGlobal && !isSuperAdmin) {
-                        tooltipTitle = 'Global Key Manager only can be deleted by the super admin user';
+                        tooltipTitle = intl.formatMessage({
+                            id: 'KeyManagers.ListKeyManagers.table.global.delete.tooltip',
+                            defaultMessage: 'Global Key Manager only can be deleted by the super admin user',
+                        });
                     } else if (dataRow.isUsed) {
-                        tooltipTitle = 'Key manager is used by an API or an Application';
+                        tooltipTitle = intl.formatMessage({
+                            id: 'KeyManagers.ListKeyManagers.table.is.used.delete.tooltip',
+                            defaultMessage: 'Key manager is used by an API or an Application',
+                        });
                     }
                     return (
                         <div data-testid={`${itemName}-actions`}>
@@ -748,7 +760,10 @@ export default function ListKeyManagers() {
                         fullWidth
                     >
                         <DialogTitle>
-                            Key Manager Usages -
+                            <FormattedMessage
+                                id='AdminPages.KeyManagers.Usages.dialog.title'
+                                defaultMessage='Key Manager Usages -'
+                            />
                             {' '}
                             {selectedKMName}
                         </DialogTitle>
@@ -756,7 +771,12 @@ export default function ListKeyManagers() {
                             <ListKeyManagerUsages id={selectedArtifactId} />
                         </DialogContent>
                         <DialogActions>
-                            <Button onClick={closeDialog}>Close</Button>
+                            <Button onClick={closeDialog}>
+                                <FormattedMessage
+                                    id='AdminPages.KeyManagers.Usages.dialog.close.btn'
+                                    defaultMessage='Close'
+                                />
+                            </Button>
                         </DialogActions>
                     </Dialog>
                 </div>
