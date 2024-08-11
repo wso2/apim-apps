@@ -25,6 +25,7 @@ import {
 import IconButton from '@mui/material/IconButton';
 import SendIcon from '@mui/icons-material/Send';
 import InputAdornment from '@mui/material/InputAdornment';
+import { useIntl } from 'react-intl';
 
 /**
  * Renders Chat Input view..
@@ -36,7 +37,7 @@ function ChatInput(props) {
     const [content, setContent] = useState('');
     const [notificationOpen, setNotificationOpen] = useState(false);
     const QUERY_CHARACTER_LIMIT = 500;
-
+    const intl = useIntl();
     const { settings: { marketplaceAssistantEnabled, aiAuthTokenProvided } } = useSettingsContext();
 
     const handleChange = (e) => {
@@ -74,7 +75,10 @@ function ChatInput(props) {
     return (
         <div>
             <TextField
-                placeholder='Type a message...'
+                placeholder={intl.formatMessage({
+                    id: 'Apis.Chat.ChatInput.placeholder',
+                    defaultMessage: 'Type a message...',
+                })}
                 value={content}
                 onChange={handleChange}
                 onKeyDown={handleKeyDown}

@@ -25,7 +25,7 @@ import NavigateNextIcon from '@mui/icons-material/NavigateNext';
 import Box from '@mui/material/Box';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 const PREFIX = 'Breadcrumb';
 
@@ -152,7 +152,12 @@ export default function Breadcrumb(props) {
                         {api.name}
                     </MUILink>
                     {(selected.route === 'api-console' || selected.route === 'api-chat') && (
-                        <Typography color='textPrimary'>Try Out</Typography>
+                        <Typography color='textPrimary'>
+                            <FormattedMessage
+                                id='Apis.Details.Breadcrumb.route.try.out'
+                                defaultMessage='Try Out'
+                            />
+                        </Typography>
                     )}
                     { (selected.route === 'documents' && document) && (
                         <MUILink

@@ -232,8 +232,39 @@ const Root = styled('div')((
  */
 function DocList(props) {
     const {
-        documentList, apiId, selectedDoc, setbreadcrumbDocument,
+        documentList, apiId, selectedDoc, setbreadcrumbDocument, intl,
     } = props;
+    const documentTypes = {
+        HOWTO: intl.formatMessage({
+            id: 'Apis.Details.Documents.Documentation.type.how.to',
+            defaultMessage: 'HOWTO',
+        }),
+        SAMPLES: intl.formatMessage({
+            id: 'Apis.Details.Documents.Documentation.type.samples',
+            defaultMessage: 'Samples',
+        }),
+        PUBLIC_FORUM: intl.formatMessage({
+            id: 'Apis.Details.Documents.Documentation.type.public.forum',
+            defaultMessage: 'PUBLIC_FORUM',
+        }),
+        SUPPORT_FORUM: intl.formatMessage({
+            id: 'Apis.Details.Documents.Documentation.type.support.forum',
+            defaultMessage: 'SUPPORT_FORUM',
+        }),
+        API_MESSAGE_FORMAT: intl.formatMessage({
+            id: 'Apis.Details.Documents.Documentation.type.api.msg.format',
+            defaultMessage: 'API_MESSAGE_FORMAT',
+        }),
+        SWAGGER_DOC: intl.formatMessage({
+            id: 'Apis.Details.Documents.Documentation.type.swagger.doc',
+            defaultMessage: 'SWAGGER_DOC',
+        }),
+        OTHER: intl.formatMessage({
+            id: 'Apis.Details.Documents.Documentation.type.other',
+            defaultMessage: 'Other',
+        }),
+    };
+
     const [viewDocument, setViewDocument] = useState(selectedDoc);
     useEffect(() => {
         setbreadcrumbDocument(viewDocument.name);
@@ -259,14 +290,23 @@ function DocList(props) {
                     id='document-autocomplete'
                     className={classes.autocomplete}
                     options={documentList.sort((a, b) => -b.type.localeCompare(a.type))}
-                    groupBy={(document) => document.type}
+                    groupBy={(document) => {
+                        if (document.type in documentTypes) {
+                            return documentTypes[document.type];
+                        } else {
+                            return document.type;
+                        }
+                    }}
                     getOptionLabel={(document) => document.name}
                     disableClearable
                     renderInput={(params) => (
                         <TextField
                             {...params}
                             className={classes.autocompleteText}
-                            label='Select Documents'
+                            label={intl.formatMessage({
+                                id: 'Apis.Details.Documents.Documentation.select.label',
+                                defaultMessage: 'Select Documents',
+                            })}
                             margin='normal'
                             variant='outlined'
                         />

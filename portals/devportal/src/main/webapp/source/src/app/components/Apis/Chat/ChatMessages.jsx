@@ -19,7 +19,7 @@
 import React, { useRef, useEffect } from 'react';
 import { PropTypes } from 'prop-types';
 import { Box, Typography } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useSettingsContext } from 'AppComponents/Shared/SettingsContext';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Alert from '@mui/material/Alert';
@@ -38,11 +38,14 @@ function ChatMessages(props) {
     const {
         messages, loading, onSend, user,
     } = props;
-
+    const intl = useIntl();
     const { settings: { aiAuthTokenProvided } } = useSettingsContext();
     const messagesEndRef = useRef(null);
 
-    const subjectLine = 'API Marketplace Assistant is an early feature and can make mistakes. Verify its outputs.';
+    const subjectLine = intl.formatMessage({
+        id: 'Apis.Chat.Chat.Messages.subject.line',
+        defaultMessage: 'API Marketplace Assistant is an early feature and can make mistakes. Verify its outputs.',
+    });
 
     const style = {
         width: '26px',
