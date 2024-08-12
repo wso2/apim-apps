@@ -175,18 +175,27 @@ function AdditionalHeaders(props) {
                     <div className={classes.heading}>
                         {!expanded && (
                             <Typography variant='caption'>
-                                Add additional headers
+                                <FormattedMessage
+                                    id='GraphQL.Devportal.Tryout.Addtional.headers.title.text'
+                                    defaultMessage='Add additional headers'
+                                />
                             </Typography>
                         )}
                     </div>
                     {!expanded && (
                         <Typography className={classes.secondaryHeading}>
-                            Expand to edit
+                            <FormattedMessage
+                                id='GraphQL.Devportal.Tryout.Addtional.headers.expand.group'
+                                defaultMessage='Expand to edit'
+                            />
                         </Typography>
                     )}
                     {expanded && (
                         <Typography className={classes.secondaryHeading}>
-                            Hide group
+                            <FormattedMessage
+                                id='GraphQL.Devportal.Tryout.Addtional.headers.hide.group'
+                                defaultMessage='Hide group'
+                            />
                         </Typography>
                     )}
                 </AccordionSummary>
@@ -241,7 +250,7 @@ function AdditionalHeaders(props) {
                                                     {item.name}
                                                 </TableCell>
                                                 <TableCell component='td' scope='row'>
-                                                    {item.value }
+                                                    {item.value}
                                                 </TableCell>
                                                 <TableCell width={100} className={classes.actionColumn}>
                                                     <Box display='flex'>

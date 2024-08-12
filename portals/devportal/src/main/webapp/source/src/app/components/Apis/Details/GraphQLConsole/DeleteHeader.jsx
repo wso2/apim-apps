@@ -18,11 +18,10 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContentText from '@mui/material/DialogContentText';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FormDialogBase from 'AppComponents/Apis/Details/GraphQLConsole/FormDialogBase';
-
 /**
  * Render delete dialog box.
  * @param {JSON} props component props.
@@ -35,10 +34,18 @@ function DeleteHeader({ item, callBack }) {
             setOpen(false);
         };
     };
+    const intl = useIntl();
+
     return (
         <FormDialogBase
-            title='Delete Additional Header'
-            saveButtonText='Delete'
+            title={intl.formatMessage({
+                id: 'Apis.Details.Graphql.console.delete.title',
+                defaultMessage: 'Delete Additional Header',
+            })}
+            saveButtonText={intl.formatMessage({
+                id: 'Apis.Details.Graphql.console.delete.btn',
+                defaultMessage: 'Delete',
+            })}
             icon={<DeleteIcon />}
             formSaveCallback={formSaveCallback}
         >

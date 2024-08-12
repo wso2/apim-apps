@@ -19,7 +19,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Box, IconButton, Typography } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import 'react-resizable/css/styles.css';
 import FullscreenIcon from '@mui/icons-material/Fullscreen';
 import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
@@ -66,6 +66,7 @@ function Header(props) {
     const {
         toggleChatbot, toggleFullScreen, isClicked, handleReset,
     } = props;
+    const intl = useIntl();
     return (
         <Root>
             <Box
@@ -88,7 +89,15 @@ function Header(props) {
                             <FullscreenIcon fontSize='large' />
                         )}
                     </IconButton>
-                    <Tooltip title='Reset Chat' placement='right'>
+                    <Tooltip
+                        title={
+                            intl.formatMessage({
+                                id: 'Apis.Chat.Header.reset.chat.btn.tooltip',
+                                defaultMessage: 'Reset Chat',
+                            })
+                        }
+                        placement='right'
+                    >
                         <IconButton
                             onClick={handleReset}
                             style={{
