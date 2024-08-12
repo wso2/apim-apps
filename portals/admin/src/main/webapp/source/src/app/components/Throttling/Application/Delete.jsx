@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 import DialogContentText from '@mui/material/DialogContentText';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 
@@ -32,6 +32,7 @@ import Alert from 'AppComponents/Shared/Alert';
  */
 function Delete(props) {
     const restApi = new API();
+    const intl = useIntl();
     const {
         dataRow, updateList,
     } = props;
@@ -43,18 +44,18 @@ function Delete(props) {
             .then(() => {
                 updateList();
                 return (
-                    <FormattedMessage
-                        id='Throttling.Application.Policy.policy.delete.success'
-                        defaultMessage='Application Rate Limiting Policy successfully deleted.'
-                    />
+                    intl.formatMessage({
+                        id: 'Throttling.Application.Policy.policy.delete.success',
+                        defaultMessage: 'Application Rate Limiting Policy successfully deleted.',
+                    })
                 );
             })
             .catch(() => {
                 Alert.error(
-                    <FormattedMessage
-                        id='Throttling.Application.Policy.policy.delete.error'
-                        defaultMessage='Application Rate Limiting Policy could not be deleted.'
-                    />,
+                    intl.formatMessage({
+                        id: 'Throttling.Application.Policy.policy.delete.error',
+                        defaultMessage: 'Application Rate Limiting Policy could not be deleted.',
+                    }),
                 );
                 return false;
             });
@@ -64,8 +65,14 @@ function Delete(props) {
 
     return (
         <FormDialogBase
-            title='Delete Application Policy?'
-            saveButtonText='Delete'
+            title={intl.formatMessage({
+                id: 'Throttling.Application.Policy.policy.dialog.delete.title',
+                defaultMessage: 'Delete Application Policy?',
+            })}
+            saveButtonText={intl.formatMessage({
+                id: 'Throttling.Application.Policy.policy.dialog.delete.btn',
+                defaultMessage: 'Delete',
+            })}
             icon={<DeleteForeverIcon aria-label='delete-application-policies' />}
             formSaveCallback={formSaveCallback}
         >

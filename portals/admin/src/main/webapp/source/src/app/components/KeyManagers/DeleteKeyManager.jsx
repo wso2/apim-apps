@@ -19,7 +19,7 @@
 import React from 'react';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContentText from '@mui/material/DialogContentText';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
@@ -34,7 +34,7 @@ function Delete({ updateList, dataRow, isDisabled }) {
     const { id, type, isGlobal } = dataRow;
     const { isSuperTenant, user: { _scopes } } = useAppContext();
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
-
+    const intl = useIntl();
     const formSaveCallback = () => {
         // todo: don't create a new promise
         const promiseAPICall = new Promise((resolve, reject) => {
@@ -61,8 +61,14 @@ function Delete({ updateList, dataRow, isDisabled }) {
 
     return (
         <FormDialogBase
-            title='Delete KeyManager ?'
-            saveButtonText='Delete'
+            title={intl.formatMessage({
+                id: 'AdminPages.KeyManagers.Delete.form.delete.dialog.title',
+                defaultMessage: 'Delete KeyManager ?',
+            })}
+            saveButtonText={intl.formatMessage({
+                id: 'AdminPages.KeyManagers.Delete.form.delete.dialog.btn',
+                defaultMessage: 'Delete',
+            })}
             icon={<DeleteForeverIcon aria-label='key-manager-delete-icon' />}
             formSaveCallback={formSaveCallback}
             triggerIconProps={{

@@ -339,17 +339,17 @@ function AddEditGWEnvironment(props) {
         return promiseAPICall.then(() => {
             if (dataRow) {
                 return (
-                    <FormattedMessage
-                        id='GatewayEnvironments.AddEditGWEnvironment.form.info.edit.successful'
-                        defaultMessage='Gateway Environment edited successfully'
-                    />
+                    intl.formatMessage({
+                        id: 'GatewayEnvironments.AddEditGWEnvironment.form.info.edit.successful',
+                        defaultMessage: 'Gateway Environment edited successfully',
+                    })
                 );
             } else {
                 return (
-                    <FormattedMessage
-                        id='GatewayEnvironments.AddEditGWEnvironment.form.info.add.successful'
-                        defaultMessage='Gateway Environment added successfully'
-                    />
+                    intl.formatMessage({
+                        id: 'GatewayEnvironments.AddEditGWEnvironment.form.info.add.successful',
+                        defaultMessage: 'Gateway Environment added successfully',
+                    })
                 );
             }
         }).catch((error) => {
@@ -429,7 +429,12 @@ function AddEditGWEnvironment(props) {
                     )}
                     fullWidth
                     error={hasErrors('name', name)}
-                    helperText={hasErrors('name', name) || 'Name of the Gateway Environment'}
+                    helperText={hasErrors('name', name) || (
+                        <FormattedMessage
+                            id='GatewayEnvironments.AddEditGWEnvironment.form.name.help'
+                            defaultMessage='Name of the Gateway Environment'
+                        />
+                    )}
                     variant='outlined'
                     disabled={editMode}
                 />
@@ -461,7 +466,12 @@ function AddEditGWEnvironment(props) {
                     name='description'
                     value={description}
                     onChange={onChange}
-                    label='Description'
+                    label={(
+                        <FormattedMessage
+                            id='GatewayEnvironments.AddEditGWEnvironment.form.description.label'
+                            defaultMessage='Description'
+                        />
+                    )}
                     fullWidth
                     multiline
                     helperText={(
@@ -474,7 +484,13 @@ function AddEditGWEnvironment(props) {
                 />
                 {gatewayTypes && gatewayTypes.length > 1 && (
                     <FormControl component='fieldset'>
-                        <FormLabel style={{ marginTop: '10px' }}>Select Gateway type</FormLabel>
+                        <FormLabel style={{ marginTop: '10px' }}>
+                            <FormattedMessage
+                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
+                                    + 'gateway.type.label'}
+                                defaultMessage='Select Gateway type'
+                            />
+                        </FormLabel>
                         <RadioGroup
                             row
                             aria-label='gateway-type'
@@ -490,10 +506,20 @@ function AddEditGWEnvironment(props) {
                                 disabled={editMode}
                                 label={(
                                     <div>
-                                        <span>Regular Gateway</span>
+                                        <span>
+                                            <FormattedMessage
+                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
+                                                    + 'gateway.type.regular'}
+                                                defaultMessage='Regular Gateway'
+                                            />
+                                        </span>
                                         <Typography variant='body2' color='textSecondary'>
-                                            API gateway embedded in APIM runtime.
-                                            Connect directly to an existing APIManager.
+                                            <FormattedMessage
+                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
+                                                    + 'gateway.type.regular.description'}
+                                                defaultMessage={'API gateway embedded in APIM runtime.'
+                                                    + ' Connect directly to an existing APIManager.'}
+                                            />
                                         </Typography>
                                     </div>
                                 )}
@@ -507,11 +533,27 @@ function AddEditGWEnvironment(props) {
                                 disabled={editMode}
                                 label={(
                                     <div>
-                                        <span>APK Gateway</span>
-                                        <StyledLabel>New</StyledLabel>
+                                        <span>
+                                            <FormattedMessage
+                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
+                                                        + 'gateway.type.apk'}
+                                                defaultMessage='APK Gateway'
+                                            />
+                                        </span>
+                                        <StyledLabel>
+                                            <FormattedMessage
+                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
+                                                    + 'gateway.type.apk.new.label'}
+                                                defaultMessage='New'
+                                            />
+                                        </StyledLabel>
                                         <Typography variant='body2' color='textSecondary'>
-                                            Fast API gateway running on kubernetes designed to manage
-                                            and secure APIs.
+                                            <FormattedMessage
+                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
+                                                    + 'gateway.type.apk.description'}
+                                                defaultMessage={'Fast API gateway running on kubernetes '
+                                                    + 'designed to manage and secure APIs.'}
+                                            />
                                         </Typography>
                                     </div>
                                 )}
@@ -526,21 +568,51 @@ function AddEditGWEnvironment(props) {
                     margin='dense'
                     style={{ marginTop: '10px', marginBottom: '10px' }}
                 >
-                    <InputLabel id='demo-simple-select-label'>Type</InputLabel>
+                    <InputLabel id='demo-simple-select-label'>
+                        <FormattedMessage
+                            id='GatewayEnvironments.AddEditGWEnvironment.form.type.label'
+                            defaultMessage='Type'
+                        />
+                    </InputLabel>
                     <Select
                         labelId='demo-simple-select-label'
                         id='demo-simple-select'
                         value={type}
                         name='type'
-                        label='Type'
+                        label={(
+                            <FormattedMessage
+                                id='GatewayEnvironments.AddEditGWEnvironment.form.type.label'
+                                defaultMessage='Type'
+                            />
+                        )}
                         onChange={onChange}
                         disabled={editMode}
                     >
-                        <MenuItem value='hybrid'>Hybrid</MenuItem>
-                        <MenuItem value='production'>Production</MenuItem>
-                        <MenuItem value='sandbox'>Sandbox</MenuItem>
+                        <MenuItem value='hybrid'>
+                            <FormattedMessage
+                                id='GatewayEnvironments.AddEditGWEnvironment.form.type.hybrid.option'
+                                defaultMessage='Hybrid'
+                            />
+                        </MenuItem>
+                        <MenuItem value='production'>
+                            <FormattedMessage
+                                id='GatewayEnvironments.AddEditGWEnvironment.form.type.prod.option'
+                                defaultMessage='Production'
+                            />
+                        </MenuItem>
+                        <MenuItem value='sandbox'>
+                            <FormattedMessage
+                                id='GatewayEnvironments.AddEditGWEnvironment.form.type.sandbox.option'
+                                defaultMessage='Sandbox'
+                            />
+                        </MenuItem>
                     </Select>
-                    <FormHelperText>Supported Key Type of the Gateway Environment</FormHelperText>
+                    <FormHelperText>
+                        <FormattedMessage
+                            id='GatewayEnvironments.AddEditGWEnvironment.form.type.helper.text'
+                            defaultMessage='Supported Key Type of the Gateway Environment'
+                        />
+                    </FormHelperText>
                 </FormControl>
                 <AddEditVhost
                     initialVhosts={vhosts}

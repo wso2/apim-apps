@@ -107,7 +107,10 @@ export default function AddRoleWizard(props) {
             const permissionsValidationConditions = Object.values(permissionsValidation);
             if (!permissionsValidationConditions.length
                 || !permissionsValidationConditions.reduce((acc, cu) => acc || cu)) {
-                Alert.warning('You need to select at least one permission!');
+                Alert.warning(intl.formatMessage({
+                    id: 'RolePermissions.Common.AddRoleWizard.add.scope.error.empty.permission',
+                    defaultMessage: 'You need to select at least one permission!',
+                }));
                 setIsSaving(false);
                 return;
             }
@@ -115,9 +118,15 @@ export default function AddRoleWizard(props) {
                 .then(() => {
                     Alert.info(
                         <span>
-                            Added scope mapping for
-                            <b>{` ${newRole} `}</b>
-                            successfully
+                            {intl.formatMessage(
+                                {
+                                    id: 'RolePermissions.Common.AddRoleWizard.add.scope.success',
+                                    defaultMessage: 'Added scope mapping for {newRole} successfully',
+                                },
+                                {
+                                    newRole: <b>{` ${newRole} `}</b>,
+                                },
+                            )}
                         </span>,
                     );
                     onClose();
@@ -134,7 +143,10 @@ export default function AddRoleWizard(props) {
                 .finally(() => setIsSaving(false));
         } else {
             if (!mappedRole) {
-                Alert.warning("Mapped role selection can't be empty!");
+                Alert.warning(intl.formatMessage({
+                    id: 'RolePermissions.Common.AddRoleWizard.add.scope.error.role.empty',
+                    defaultMessage: 'Mapped role selection can\'t be empty!',
+                }));
                 setIsSaving(false);
                 return;
             }
@@ -151,14 +163,24 @@ export default function AddRoleWizard(props) {
                 setRoleAliases(response.body);
                 Alert.info(
                     <span>
-                        Add new alias for
-                        <b>{` ${newRole} `}</b>
-                        successfully
+                        {intl.formatMessage(
+                            {
+                                id: 'RolePermissions.Common.AddRoleWizard.add.scope.error.add.role'
+                                    + '.alias.success',
+                                defaultMessage: 'Add new alias for {newRole} successfully',
+                            },
+                            {
+                                newRole: <b>{` ${newRole} `}</b>,
+                            },
+                        )}
                     </span>,
                 );
                 onClose();
             }).catch((error) => {
-                Alert.error('Something went wrong while adding new role alias');
+                Alert.error(intl.formatMessage({
+                    id: 'RolePermissions.Common.AddRoleWizard.add.scope.error.add.role.alias',
+                    defaultMessage: 'Something went wrong while adding new role alias',
+                }));
                 console.error(error);
             }).finally(() => setIsSaving(false));
         }
@@ -190,7 +212,17 @@ export default function AddRoleWizard(props) {
                             sx={{ mt: 1, mr: 1 }}
                             disabled={isSaving}
                         >
-                            {activeStep === 0 ? 'Cancel' : 'Back'}
+                            {activeStep === 0 ? (
+                                <FormattedMessage
+                                    id='RolePermissions.Common.AddRoleWizard.add.dialog.cancel'
+                                    defaultMessage='Cancel'
+                                />
+                            ) : (
+                                <FormattedMessage
+                                    id='RolePermissions.Common.AddRoleWizard.add.dialog.back'
+                                    defaultMessage='Back'
+                                />
+                            )}
                         </Button>
                         <Button
                             variant='contained'
@@ -203,9 +235,15 @@ export default function AddRoleWizard(props) {
                             {activeStep === 1 ? (
                                 <>
                                     {isSaving && <CircularProgress size={16} />}
-                                    Save
+                                    {intl.formatMessage({
+                                        id: 'RolePermissions.Common.AddRoleWizard.add.provide.role.save.btn',
+                                        defaultMessage: 'Save',
+                                    })}
                                 </>
-                            ) : 'Next'}
+                            ) : intl.formatMessage({
+                                id: 'RolePermissions.Common.AddRoleWizard.add.provide.role.next.btn',
+                                defaultMessage: 'Next',
+                            })}
                         </Button>
                     </div>
                 </div>
@@ -213,7 +251,16 @@ export default function AddRoleWizard(props) {
         >
             <div style={{ width: '100%' }}>
                 <Stepper activeStep={activeStep} orientation='vertical'>
-                    {['Provide role name', 'Select permissions'].map((label, index) => (
+                    {[
+                        intl.formatMessage({
+                            id: 'RolePermissions.Common.AddRoleWizard.add.provide.role.text',
+                            defaultMessage: 'Provide role name',
+                        }),
+                        intl.formatMessage({
+                            id: 'RolePermissions.Common.AddRoleWizard.add.provide.select.permissions',
+                            defaultMessage: 'Select permissions',
+                        }),
+                    ].map((label, index) => (
                         <Step key={label}>
                             <StepLabel>{label}</StepLabel>
                             <StepContent>
@@ -228,11 +275,17 @@ export default function AddRoleWizard(props) {
                                                 fullWidth
                                                 autoFocus
                                                 size='small'
-                                                label='Role Name'
+                                                label={intl.formatMessage({
+                                                    id: 'RolePermissions.Common.AddRoleWizard.add.type.role.label',
+                                                    defaultMessage: 'Role Name',
+                                                })}
                                                 helperText={
                                                     validation.role
-                                                    || 'Type existing user role, '
-                                                    + ' If not create a new role from carbon console first'
+                                                    || intl.formatMessage({
+                                                        id: 'RolePermissions.Common.AddRoleWizard.add.type.role',
+                                                        defaultMessage: 'Type existing user role, '
+                                                            + ' If not create a new role from carbon console first',
+                                                    })
                                                 }
                                                 variant='outlined'
                                                 onChange={({ target: { value } }) => {

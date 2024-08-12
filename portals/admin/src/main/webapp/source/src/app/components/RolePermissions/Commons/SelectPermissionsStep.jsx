@@ -23,7 +23,7 @@ import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Autocomplete from '@mui/material/Autocomplete';
-
+import { useIntl, FormattedMessage } from 'react-intl';
 import PermissionTree from '../TreeView/PermissionTree';
 
 /**
@@ -39,6 +39,7 @@ export default function SelectPermissionsStep(props) {
     } = props;
 
     const { ROLE_ALIAS, SELECT_PERMISSIONS } = SelectPermissionsStep.CONST;
+    const intl = useIntl();
 
     return (
         <FormControl variant='standard' style={{ width: '100%' }} component='fieldset'>
@@ -51,7 +52,10 @@ export default function SelectPermissionsStep(props) {
                 <FormControlLabel
                     value={ROLE_ALIAS}
                     control={<Radio color='primary' />}
-                    label='Role alias'
+                    label={intl.formatMessage({
+                        id: 'RolePermissions.Common.AddRoleWizard.add.role.alias.label',
+                        defaultMessage: 'Role alias',
+                    })}
                 />
                 <Box width={400} display='inline' pl={7} pt={2} pb={2}>
                     <Autocomplete
@@ -71,25 +75,31 @@ export default function SelectPermissionsStep(props) {
                                 {...params}
                                 helperText={(
                                     <>
-                                        Role
-                                        {' '}
-                                        <Box
-                                            pl={0.5}
-                                            pr={0.5}
-                                            display='inline'
-                                            fontWeight='fontWeightBold'
-                                            color='warning.main'
-                                        >
-                                            {role}
-
-                                        </Box>
-                                        {' '}
-                                        will be mapped to the selected role
+                                        <FormattedMessage
+                                            id='RolePermissions.Common.AddRoleWizard.selected.role'
+                                            defaultMessage='Role {role_value} will be mapped to the selected role'
+                                            values={{
+                                                role_value: (
+                                                    <Box
+                                                        pl={0.5}
+                                                        pr={0.5}
+                                                        display='inline'
+                                                        fontWeight='fontWeightBold'
+                                                        color='warning.main'
+                                                    >
+                                                        {role}
+                                                    </Box>
+                                                ),
+                                            }}
+                                        />
                                     </>
                                 )}
                                 id='outlined-basic'
                                 size='small'
-                                label='Mapping role'
+                                label={intl.formatMessage({
+                                    id: 'RolePermissions.Common.AddRoleWizard.add.role.mapping.label',
+                                    defaultMessage: 'Mapping role',
+                                })}
                                 variant='outlined'
                                 inputProps={{
                                     ...params.inputProps,
@@ -102,7 +112,10 @@ export default function SelectPermissionsStep(props) {
                 <FormControlLabel
                     value={SELECT_PERMISSIONS}
                     control={<Radio color='primary' />}
-                    label='Custom scope assignments'
+                    label={intl.formatMessage({
+                        id: 'RolePermissions.Common.AddRoleWizard.add.role.custom.scope.assignments',
+                        defaultMessage: 'Custom scope assignments',
+                    })}
                 />
                 <Box pl={7} pt={2}>
                     <PermissionTree
