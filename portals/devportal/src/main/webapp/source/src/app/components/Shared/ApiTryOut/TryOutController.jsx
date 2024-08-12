@@ -387,7 +387,8 @@ function TryOutController(props) {
                     keyType = selectedKeyType;
                 }
             }
-            Application.get(selectedApplication)
+            if (selectedApplication.length !== 0) {
+                Application.get(selectedApplication)
                 .then((application) => {
                     return application.getKeys(keyType || 'PRODUCTION');
                 })
@@ -408,6 +409,7 @@ function TryOutController(props) {
                     }
                     setKeys(appKeys);
                 });
+            }
         }
     }
 
@@ -648,9 +650,9 @@ function TryOutController(props) {
 
             <Grid xs={12} md={12} item>
                 <Box display='block'>
-                    {user && subscriptions
+                    {user && ((subscriptions
                         && subscriptions.length > 0 && securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
-                        && (!api.advertiseInfo || !api.advertiseInfo.advertised)
+                        && (!api.advertiseInfo || !api.advertiseInfo.advertised)) && !api.disableSubscriptionValidation)
                         && (
                             <SelectAppPanel
                                 subscriptions={subscriptions}
@@ -662,7 +664,8 @@ function TryOutController(props) {
                             />
                         )}
                     {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST'
-                        && (!api.advertiseInfo || !api.advertiseInfo.advertised) ? (
+                        && (!api.advertiseInfo || !api.advertiseInfo.advertised) 
+                        && !api.disableSubscriptionValidation ? (
                             <Grid x={8} md={6} className={classes.tokenType} item>
                                 <Box mb={1} alignItems='center'>
                                     <Typography variant='body1'>
@@ -680,7 +683,7 @@ function TryOutController(props) {
                             </Grid>
                         ) : (
                             (!ksGenerated && securitySchemeType === 'OAUTH') && (!api.advertiseInfo
-                                || !api.advertiseInfo.advertised) && (
+                                || !api.advertiseInfo.advertised) && !api.disableSubscriptionValidation &&  (
                                 <Grid x={8} md={6} className={classes.tokenType} item>
                                     <Box mb={1} alignItems='center'>
                                         <Typography variant='body1'>
