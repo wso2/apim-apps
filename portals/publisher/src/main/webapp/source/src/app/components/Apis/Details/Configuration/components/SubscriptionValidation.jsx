@@ -176,9 +176,8 @@ const SubscriptionValidation = (props) => {
                                 id='Apis.Details.Configuration.Configuration.subValidationDisabled.dialog.description'
                                 defaultMessage={
                                     'Disabling subscription validation will allow anyone with a valid token'
-                                    + ' to consume this API without a subscription. This is an irreversible'
-                                    + ' action. You can only enable subscription validation by creating a'
-                                    + ' new version of the API. Are you sure you want to proceed?'
+                                    + ' to consume this API without a subscription. Please note that you can'
+                                    + ' only enable/disable this while the API is unpublished.'
                                 }
                             />
                         </Typography>
