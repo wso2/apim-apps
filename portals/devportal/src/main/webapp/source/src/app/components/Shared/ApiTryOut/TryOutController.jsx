@@ -387,7 +387,7 @@ function TryOutController(props) {
                     keyType = selectedKeyType;
                 }
             }
-            if (selectedApplication.length !== 0) {
+            if (selectedApplication && selectedApplication.length !== 0) {
                 Application.get(selectedApplication)
                 .then((application) => {
                     return application.getKeys(keyType || 'PRODUCTION');
