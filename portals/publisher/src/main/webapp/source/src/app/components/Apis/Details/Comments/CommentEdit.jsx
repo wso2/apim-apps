@@ -25,7 +25,7 @@ import Select from '@mui/material/Select';
 import Grid from '@mui/material/Grid';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
-
+import { injectIntl } from 'react-intl';
 const PREFIX = 'CommentEdit';
 
 const classes = {
@@ -192,7 +192,7 @@ class CommentEdit extends React.Component {
      * @memberof CommentEdit
      */
     render() {
-        const {  theme } = this.props;
+        const {  theme, intl } = this.props;
         const { category, commentText, currentLength } = this.state;
         return (
             <Root>
@@ -248,7 +248,7 @@ CommentEdit.propTypes = {
     theme: PropTypes.shape({}).isRequired,
 };
 
-export default ((props) => {
+export default injectIntl((props) => {
     const theme = useTheme();
     return <CommentEdit {...props} theme={theme} />;
 });
