@@ -241,7 +241,16 @@ export default function DefaultAPIForm(props) {
                             .name?.toLowerCase()) {
                             updateValidity({
                                 ...validity,
-                                name: { details: [{ message: 'Name ' + value + ' already exists' }] },
+                                name: {
+                                    details:
+                                        [{
+                                            message: <FormattedMessage
+                                                id='Apis.Create.Components.DefaultAPIForm.validation.error.name.exists'
+                                                defaultMessage='Name {value} already exists'
+                                                values={{ value }}
+                                            />,
+                                        }],
+                                },
                             });
                         } else {
                             updateValidity({ ...validity, name: nameValidity });
@@ -266,7 +275,17 @@ export default function DefaultAPIForm(props) {
                                 updateValidity({
                                     ...validity,
                                     // eslint-disable-next-line max-len
-                                    context: { details: [{ message: '{version} cannot exist as a substring in a path param' }] },
+                                    context: {
+                                        details:
+                                            [{
+                                                message: <FormattedMessage
+                                                    id={'Apis.Create.Components.DefaultAPIForm.validation.error.'
+                                                        + 'version.exists.as.a.substring.in.path.param'}
+                                                    defaultMessage={'{version} cannot exist as a substring in a '
+                                                        + 'path param'}
+                                                />,
+                                            }]
+                                    },
                                 });
                             } else if (param.includes('{') || param.includes('}')) {
                                 contextValidity = APIValidation.apiContextWithoutKeyWords.required()
@@ -274,7 +293,15 @@ export default function DefaultAPIForm(props) {
                                 updateValidity({
                                     ...validity,
                                     // eslint-disable-next-line max-len
-                                    context: { details: [{ message: '{ or } cannot exist as a substring in a path param' }] },
+                                    context: {
+                                        details: [{
+                                            message: <FormattedMessage
+                                                id={'Apis.Create.Components.DefaultAPIForm.validation.error.curly.'
+                                                    + 'braces.cannot.be.in.path.param'}
+                                                defaultMessage='{ or } cannot exist as a substring in a path param'
+                                            />,
+                                        }]
+                                    },
                                 });
                             }
                         }
@@ -293,7 +320,15 @@ export default function DefaultAPIForm(props) {
                                 updateValidity({
                                     ...validity,
                                     // eslint-disable-next-line max-len
-                                    context: { details: [{ message: 'Parentheses should be balanced in API context' }] },
+                                    context: {
+                                        details: [{
+                                            message: <FormattedMessage
+                                                id={'Apis.Create.Components.DefaultAPIForm.validation.error.'
+                                                    + 'unbalanced.parantheses'}
+                                                defaultMessage='Parentheses should be balanced in API context'
+                                            />,
+                                        }]
+                                    },
                                 });
                             }
                         }
@@ -302,7 +337,15 @@ export default function DefaultAPIForm(props) {
                             updateValidity({
                                 ...validity,
                                 // eslint-disable-next-line max-len
-                                context: { details: [{ message: 'Parentheses should be balanced in API context' }] },
+                                context: {
+                                    details: [{
+                                        message: <FormattedMessage
+                                            id={'Apis.Create.Components.DefaultAPIForm.validation.error.'
+                                                + 'unbalanced.parantheses'}
+                                            defaultMessage='Parentheses should be balanced in API context'
+                                        />,
+                                    }]
+                                },
                             });
                         }
                     }
@@ -318,7 +361,16 @@ export default function DefaultAPIForm(props) {
                             } else if (count > 0 && checkContext(value, result.body.list)) {
                                 updateValidity({
                                     ...validity,
-                                    context: { details: [{ message: apiContext + ' dynamic context already exists' }] },
+                                    context: {
+                                        details: [{
+                                            message: <FormattedMessage
+                                                id={'Apis.Create.Components.DefaultAPIForm.validation.error.dynamic'
+                                                    + '.context.exists'}
+                                                defaultMessage='{apiContext} dynamic context already exists'
+                                                values={{ apiContext }}
+                                            />,
+                                        }]
+                                    },
                                 });
                             } else {
                                 updateValidity({ ...validity, context: contextValidity, version: null });
@@ -452,7 +504,14 @@ export default function DefaultAPIForm(props) {
                                                 );
                                             }))
                                         // eslint-disable-next-line max-len
-                                        || `API will be exposed in ${actualContext(api, isWebSocket)} context at the gateway`
+                                        || (
+                                            <FormattedMessage
+                                                id='Apis.Create.Components.DefaultAPIForm.api.actual.context.helper'
+                                                defaultMessage={'API will be exposed in {actualContext}'
+                                                    + ' context at the gateway'}
+                                                values={{ actualContext: actualContext(api, isWebSocket) }}
+                                            />
+                                        )
                                     }
                                     classes={{ root: classes.helperTextContext }}
                                     margin='normal'
@@ -527,7 +586,15 @@ export default function DefaultAPIForm(props) {
                                                     </div>
                                                 );
                                             }))
-                                        || `API Product will be exposed in ${actualContext(api)} context at the gateway`
+                                        || (
+                                            <FormattedMessage
+                                                id={'Apis.Create.Components.DefaultAPIForm.api.product.'
+                                                    + 'actual.context.helper'}
+                                                defaultMessage={'API Product will be exposed in {actualContext}'
+                                                    + 'context at the gateway'}
+                                                values={{ actualContext: actualContext(api) }}
+                                            />
+                                        )
                                     }
                                     margin='normal'
                                     variant='outlined'
@@ -572,7 +639,12 @@ export default function DefaultAPIForm(props) {
                     <TextField
                         fullWidth
                         id='itest-id-apiendpoint-input'
-                        label='Endpoint'
+                        label={(
+                            <FormattedMessage
+                                id='Apis.Create.Components.DefaultAPIForm.api.endpoint'
+                                defaultMessage='Endpoint'
+                            />
+                        )}
                         name='endpoint'
                         value={api.endpoint}
                         onChange={onChange}
@@ -630,7 +702,10 @@ export default function DefaultAPIForm(props) {
                     <Grid container spacing={2}>
                         <FormControl component='fieldset'>
                             <FormLabel sx={{ marginLeft: '15px', marginTop: '20px' }}>
-                                Select Gateway type
+                                <FormattedMessage
+                                    id='Apis.Create.Components.DefaultAPIForm.select.gateway.type'
+                                    defaultMessage='Select Gateway type'
+                                />
                             </FormLabel>
                             <RadioGroup
                                 row
@@ -646,10 +721,20 @@ export default function DefaultAPIForm(props) {
                                         control={<Radio />}
                                         label={(
                                             <div>
-                                                <span>Regular Gateway</span>
+                                                <span>
+                                                    <FormattedMessage
+                                                        id={'Apis.Create.Components.DefaultAPIForm.'
+                                                            + 'regular.gateway.type'}
+                                                        defaultMessage='Regular Gateway'
+                                                    />
+                                                </span>
                                                 <Typography variant='body2' color='textSecondary'>
-                                                    API gateway embedded in APIM runtime.
-                                                    Connect directly APIManager.
+                                                    <FormattedMessage
+                                                        id={'Apis.Create.Components.DefaultAPIForm.'
+                                                            + 'regular.gateway.type.text'}
+                                                        defaultMessage={'API gateway embedded in APIM '
+                                                            + 'runtime. Connect directly APIManager.'}
+                                                    />
                                                 </Typography>
                                             </div>
                                         )}
@@ -663,11 +748,21 @@ export default function DefaultAPIForm(props) {
                                         control={<Radio />}
                                         label={(
                                             <div>
-                                                <span>APK Gateway</span>
-                                                <span className={`${classes.label} ${classes.newLabel}`}>New</span> 
+                                                <span>
+                                                    <FormattedMessage
+                                                        id={'Apis.Create.Components.DefaultAPIForm.'
+                                                            + 'apk.gateway.type'}
+                                                        defaultMessage='APK Gateway'
+                                                    />
+                                                </span>
+                                                <span className={`${classes.label} ${classes.newLabel}`}>New</span>
                                                 <Typography variant='body2' color='textSecondary'>
-                                                    Fast API gateway running on kubernetes designed to manage
-                                                    and secure APIs.
+                                                    <FormattedMessage
+                                                        id={'Apis.Create.Components.DefaultAPIForm.'
+                                                            + 'apk.gateway.type.text'}
+                                                        defaultMessage={'Fast API gateway running on kubernetes'
+                                                            + ' designed to manage and secure APIs.'}
+                                                    />
                                                 </Typography>
                                             </div>
                                         )}
@@ -675,8 +770,11 @@ export default function DefaultAPIForm(props) {
                                     />
                                 </Grid>
                             </RadioGroup>
-                            <FormHelperText sx={{ marginLeft: '15px'}}>
-                                Select the gateway type where your API will run.
+                            <FormHelperText sx={{ marginLeft: '15px' }}><FormattedMessage
+                                id={'Apis.Create.Components.DefaultAPIForm.'
+                                    + 'select.gateway.type.helper.text'}
+                                defaultMessage='Select the gateway type where your API will run.'
+                            />
                             </FormHelperText>
                         </FormControl>
                     </Grid>
@@ -688,7 +786,10 @@ export default function DefaultAPIForm(props) {
                     <Typography variant='caption' display='block' gutterBottom>
                         <sup style={{ color: 'red' }}>*</sup>
                         {' '}
-                        Mandatory fields
+                        <FormattedMessage
+                            id='Apis.Create.Components.DefaultAPIForm.mandatory.fields'
+                            defaultMessage='Mandatory fields'
+                        />
                     </Typography>
                 </Grid>
             </Grid>
