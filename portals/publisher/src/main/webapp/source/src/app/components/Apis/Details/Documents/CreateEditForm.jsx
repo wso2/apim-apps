@@ -299,6 +299,7 @@ class CreateEditForm extends React.Component {
 
     validate(field=null, value=null) {
         let invalidUrl = false;
+        const { intl } = this.props;
         if (field === 'url') {
             invalidUrl = value ? APIValidation.url.validate(value).error : false;
             this.setState({ invalidUrl });
@@ -321,7 +322,10 @@ class CreateEditForm extends React.Component {
                             if (error.status === 404) {
                                 this.setState({ nameNotDuplicate: true });
                             } else {
-                                Alert.error('Error when validating document name');
+                                Alert.error(intl.formatMessage({
+                                    id:'Apis.Details.Documents.Create.Edit.validate.doc.name.error',
+                                    defaultMessage:'Error when validating document name'
+                                }));
                             }
                         });
                 } else {
@@ -912,4 +916,4 @@ const ForwardedCreateEditForm = forwardRef((props, ref) => {
     return <CreateEditForm ref={childRef} {...props} />;
 });
 
-export default ForwardedCreateEditForm;
+export default injectIntl(ForwardedCreateEditForm);
