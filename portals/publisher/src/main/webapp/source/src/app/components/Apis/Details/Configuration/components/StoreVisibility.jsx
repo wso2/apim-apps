@@ -21,7 +21,7 @@ import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
@@ -73,6 +73,7 @@ export default function StoreVisibility(props) {
     const [apiFromContext] = useAPI();
 
     const restApi = new API();
+    const intl = useIntl();
     const [tenants, setTenants] = useState([]);
     useEffect(() => {
         restApi.getTenantsByState(CONSTS.TENANT_STATE_ACTIVE)
@@ -106,7 +107,15 @@ export default function StoreVisibility(props) {
                 setRoleValidity(false);
                 setInvalidRoles([...invalidRoles, role]);
             } else {
-                Alert.error('Error when validating role: ' + role);
+                Alert.error(intl.formatMessage(
+                    {
+                        id: 'Apis.Details.Configuration.Components.validate.role.error',
+                        defaultMessage: 'Error when validating role: {role}',
+                    },
+                    {
+                        role,
+                    },
+                ));
                 console.error('Error when validating roles ' + error);
             }
         });
@@ -253,7 +262,10 @@ export default function StoreVisibility(props) {
                         disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
                         value={api.visibleRoles.concat(invalidRoles)}
                         alwaysShowPlaceholder={false}
-                        placeholder='Enter roles and press Enter'
+                        placeholder={intl.formatMessage({
+                            id: 'Apis.Details.Scopes.visibility.CreateScope.roles.placeholder',
+                            defaultMessage: 'Enter roles and press Enter',
+                        })}
                         blurBehavior='clear'
                         InputProps={{
                             endAdornment: !roleValidity && (
