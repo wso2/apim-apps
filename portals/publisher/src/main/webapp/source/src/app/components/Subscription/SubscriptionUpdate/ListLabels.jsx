@@ -200,7 +200,7 @@ function ListLabels() {
                     Alert.error(description);
                 } else if (response.body) {
                     Alert.error(intl.formatMessage({
-                        id: 'Workflow.ApplicationCreation.updateStatus.has.errors',
+                        id: 'Workflow.subscriptionupdate.updateStatus.has.errors',
                         defaultMessage: 'Unable to complete subscription update approve/reject process. ',
                     }));
                     throw (response.body.description);
@@ -463,13 +463,13 @@ function ListLabels() {
                             <CardContent>
                                 <Typography gutterBottom variant='h5' component='h2'>
                                     <FormattedMessage
-                                        id='Workflow.SubscriptionCreation.List.empty.title.subscriptionupdate'
+                                        id='Workflow.SubscriptionUpdate.List.empty.title.subscriptionupdate'
                                         defaultMessage='Subscription update'
                                     />
                                 </Typography>
                                 <Typography variant='body2' color='textSecondary' component='p'>
                                     <FormattedMessage
-                                        id='Workflow.SubscriptionCreation.List.empty.content.subscriptioncreations'
+                                        id='Workflow.SubscriptionUpdate.List.empty.content.subscriptionupdate'
                                         defaultMessage='There are no pending workflow requests for subscription update'
                                     />
                                 </Typography>
