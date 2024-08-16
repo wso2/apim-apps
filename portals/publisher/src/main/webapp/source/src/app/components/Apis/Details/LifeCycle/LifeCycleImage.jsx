@@ -24,6 +24,7 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
+import { FormattedMessage } from 'react-intl';
 
 const PREFIX = 'LifeCycleImage';
 
@@ -138,7 +139,10 @@ class LifeCycleImage extends React.Component {
                             fill='#2b2b2b'
                         >
                             <tspan y='6.362' x='61' id='tspan6731'>
-                                PRE-RELEASED
+                                <FormattedMessage
+                                    id='Apis.Details.LifeCycle.State.Status.PRE_RELEASED'
+                                    defaultMessage='PRE-RELEASED'
+                                />
                             </tspan>
                         </text>
                         <path
@@ -160,7 +164,10 @@ class LifeCycleImage extends React.Component {
                             wordSpacing='0'
                         >
                             <tspan y='125.476' x='207' id='tspan6526'>
-                                PUBLISHED
+                                <FormattedMessage
+                                    id='Apis.Details.LifeCycle.State.Status.PUBLISHED'
+                                    defaultMessage='PUBLISHED'
+                                />
                             </tspan>
                         </text>
                         <path
@@ -181,7 +188,10 @@ class LifeCycleImage extends React.Component {
                             wordSpacing='0'
                         >
                             <tspan y='282.362' x='68' id='tspan6522'>
-                                CREATED
+                                <FormattedMessage
+                                    id='Apis.Details.LifeCycle.State.Status.CREATED'
+                                    defaultMessage='CREATED'
+                                />
                             </tspan>
                         </text>
                         <path
@@ -203,7 +213,10 @@ class LifeCycleImage extends React.Component {
                             wordSpacing='0'
                         >
                             <tspan y='125.476' x='397.858' id='tspan6538'>
-                                DEPRECATED
+                                <FormattedMessage
+                                    id='Apis.Details.LifeCycle.State.Status.DEPRECATED'
+                                    defaultMessage='DEPRECATED'
+                                />
                             </tspan>
                         </text>
                         <path
@@ -226,7 +239,10 @@ class LifeCycleImage extends React.Component {
                             wordSpacing='0'
                         >
                             <tspan y='282.362' x='386.858' id='tspan6534'>
-                                BLOCKED
+                                <FormattedMessage
+                                    id='Apis.Details.LifeCycle.State.Status.BLOCKED'
+                                    defaultMessage='BLOCKED'
+                                />
                             </tspan>
                         </text>
                         <path
@@ -247,7 +263,10 @@ class LifeCycleImage extends React.Component {
                             wordSpacing='0'
                         >
                             <tspan y='125.483' x='627.485' id='tspan6542'>
-                                RETIRED
+                                <FormattedMessage
+                                    id='Apis.Details.LifeCycle.State.Status.RETIRED'
+                                    defaultMessage='RETIRED'
+                                />
                             </tspan>
                         </text>
                         <path

@@ -253,7 +253,12 @@ class Monetization extends Component {
                                     color='primary'
                                 />
                             )}
-                            label='Enable Monetization'
+                            label={(
+                                <FormattedMessage
+                                    id='Apis.Details.Monetization.Index.monetization.enable.label'
+                                    defaultMessage='Enable Monetization'
+                                />
+                            )}
                         />
                     </Grid>
                     <Grid item xs={12}>
