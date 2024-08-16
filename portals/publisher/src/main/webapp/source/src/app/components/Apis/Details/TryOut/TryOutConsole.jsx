@@ -111,7 +111,7 @@ const tasksReducer = (state, action) => {
 const TryOutConsole = () => {
 
     const [api] = useAPI();
-    const [apiKey, setAPIKey] = useState('');
+    const [apiKey, setAPIKey] = useState(null);
     const [deployments, setDeployments] = useState([]);
     const [selectedDeployment, setSelectedDeployment] = useState();
     const [oasDefinition, setOasDefinition] = useState();
@@ -283,7 +283,7 @@ const TryOutConsole = () => {
         const currentSelection = deployments.find((deployment) => deployment.name === selectedGWEnvironment);
         setSelectedDeployment(currentSelection);
     };
-    const decodedJWT = useMemo(() => Utils.decodeJWT(apiKey), [apiKey]);
+    const decodedJWT = useMemo(() => Utils.decodeJWT(apiKey || ''), [apiKey]);
     const isAPIRetired = api.lifeCycleStatus === 'RETIRED';
 
     const accessTokenProvider = () => {
@@ -291,7 +291,7 @@ const TryOutConsole = () => {
             return advAuthHeaderValue;
         }
         return apiKey;
-    };
+    }; 
 
     const getAuthorizationHeader = () => {
         if (isAdvertised) {
@@ -326,6 +326,9 @@ const TryOutConsole = () => {
                                                 defaultMessage='Internal API Key'
                                             />
                                         )}
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
                                         type='password'
                                         value={apiKey}
                                         helperText={decodedJWT ? (
@@ -455,7 +458,7 @@ const TryOutConsole = () => {
                         advertiseInfo={api.advertiseInfo}
                     />
                 )}
-                {updatedOasDefinition ? (
+                {updatedOasDefinition && apiKey !== null ? (
                     <Suspense
                         fallback={(
                             <CircularProgress />
