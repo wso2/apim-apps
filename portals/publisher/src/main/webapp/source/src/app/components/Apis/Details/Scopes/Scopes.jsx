@@ -261,6 +261,18 @@ class Scopes extends React.Component {
             download: false,
             viewColumns: false,
             customToolbar: false,
+            textLabels: {
+                pagination: {
+                    rowsPerPage: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.rows.per.page',
+                        defaultMessage: 'Rows per page:',
+                    }),
+                    displayRows: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.display.rows',
+                        defaultMessage: 'of',
+                    }),
+                },
+            },
         };
 
         const scopesList = api.scopes.filter((apiScope) => {

@@ -27,7 +27,7 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import CONSTS from 'AppData/Constants';
 import Progress from 'AppComponents/Shared/Progress';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
 import SubscriptionsTable from './SubscriptionsTable';
@@ -65,6 +65,7 @@ const Root = styled('div')((
 function Subscriptions(props) {
 
     const [api] = useAPI();
+    const intl = useIntl();
     const { updateAPI } = props;
     const restApi = new API();
     const [tenants, setTenants] = useState(null);
@@ -88,13 +89,19 @@ function Subscriptions(props) {
         };
         updateAPI(newApi)
             .then(() => {
-                Alert.info('Subscription configurations updated successfully');
+                Alert.info(intl.formatMessage({
+                    id: 'Apis.Details.Subscriptions.Subscriptions.update.success',
+                    defaultMessage: 'Subscription configurations updated successfully',
+                }));
             })
             .catch((error) => {
                 if (error.response) {
                     Alert.error(error.response.body.description);
                 } else {
-                    Alert.error('Error occurred while updating subscription configurations');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Subscriptions.Subscriptions.update.error',
+                        defaultMessage: 'Error occurred while updating subscription configurations',
+                    }));
                 }
             }).finally(() => {
                 setUpdateInProgress(false);
