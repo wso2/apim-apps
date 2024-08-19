@@ -39,6 +39,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import KeyManager from 'AppComponents/Apis/Details/Configuration/components/KeyManager';
+import Audience from 'AppComponents/Apis/Details/Configuration/components/Audience';
 import API from 'AppData/api';
 
 import {
@@ -103,6 +104,7 @@ export default function ApplicationLevel(props) {
         haveMultiLevelSecurity, securityScheme, configDispatcher, api,
     } = props;
     const [apiFromContext] = useAPI();
+    const [oauth2Enabled, setOauth2Enabled] = useState(securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2));
     const intl = useIntl();
     let mandatoryValue = null;
     let hasResourceWithSecurity;
@@ -191,10 +193,13 @@ export default function ApplicationLevel(props) {
                                     <Checkbox
                                         disabled={isRestricted(['apim:api_create'], apiFromContext)}
                                         checked={securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2)}
-                                        onChange={({ target: { checked, value } }) => configDispatcher({
-                                            action: 'securityScheme',
-                                            event: { checked, value },
-                                        })}
+                                        onChange={({ target: { checked, value } }) => {
+                                            setOauth2Enabled(checked);
+                                            configDispatcher({
+                                                action: 'securityScheme',
+                                                event: { checked, value },
+                                            });
+                                        }}
                                         value={DEFAULT_API_SECURITY_OAUTH2}
                                         color='primary'
                                     />
@@ -303,7 +308,13 @@ export default function ApplicationLevel(props) {
                                 />
                             </FormHelperText>
                         </FormControl>
-                        {(apiFromContext.apiType === API.CONSTS.API) && (
+                        {oauth2Enabled && (
+                            <Audience
+                                api={api}
+                                configDispatcher={configDispatcher}
+                            />
+                        )}
+                        {(apiFromContext.apiType === API.CONSTS.API) && oauth2Enabled && (
                             <KeyManager
                                 api={api}
                                 configDispatcher={configDispatcher}

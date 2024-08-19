@@ -21,7 +21,7 @@ import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import Alert from 'AppComponents/Shared/Alert';
 
@@ -53,7 +53,7 @@ function AddEdit(props) {
     const {
         updateList, dataRow, icon, triggerButtonText, title,
     } = props;
-
+    const intl = useIntl();
     const [initialState, setInitialState] = useState({
         description: '',
     });
@@ -80,20 +80,35 @@ function AddEdit(props) {
                     break;
                 }
                 if (value === '') {
-                    error = 'Name is Empty';
+                    error = intl.formatMessage({
+                        id: 'AdminPages.ApiCategories.AddEdit.form.error.name.empty',
+                        defaultMessage: 'Name is Empty',
+                    });
                 } else if (value.length > 255) {
-                    error = 'API Category name is too long';
+                    error = intl.formatMessage({
+                        id: 'AdminPages.ApiCategories.AddEdit.form.error.name.too.long',
+                        defaultMessage: 'API Category name is too long',
+                    });
                 } else if (/\s/.test(value)) {
-                    error = 'Name contains spaces';
+                    error = intl.formatMessage({
+                        id: 'AdminPages.ApiCategories.AddEdit.form.error.name.has.spaces',
+                        defaultMessage: 'Name contains spaces',
+                    });
                 } else if (/[!@#$%^&*(),?"{}[\]|<>\t\n]/i.test(value)) {
-                    error = 'Name field contains special characters';
+                    error = intl.formatMessage({
+                        id: 'AdminPages.ApiCategories.AddEdit.form.error.name.has.special.chars',
+                        defaultMessage: 'Name field contains special characters',
+                    });
                 } else {
                     error = false;
                 }
                 break;
             case 'description':
                 if (value && value.length > 1024) {
-                    error = 'API Category description is too long';
+                    error = intl.formatMessage({
+                        id: 'AdminPages.ApiCategories.AddEdit.form.error.description.too.long',
+                        defaultMessage: 'API Category description is too long',
+                    });
                 }
                 break;
             default:
@@ -142,17 +157,17 @@ function AddEdit(props) {
             .then(() => {
                 if (dataRow) {
                     return (
-                        <FormattedMessage
-                            id='AdminPages.ApiCategories.AddEdit.form.edit.successful'
-                            defaultMessage='API Category edited successfully'
-                        />
+                        intl.formatMessage({
+                            id: 'AdminPages.ApiCategories.AddEdit.form.edit.successful',
+                            defaultMessage: 'API Category edited successfully',
+                        })
                     );
                 } else {
                     return (
-                        <FormattedMessage
-                            id='AdminPages.ApiCategories.AddEdit.form.add.successful'
-                            defaultMessage='API Category added successfully'
-                        />
+                        intl.formatMessage({
+                            id: 'AdminPages.ApiCategories.AddEdit.form.add.successful',
+                            defaultMessage: 'API Category added successfully',
+                        })
                     );
                 }
             })
@@ -176,7 +191,10 @@ function AddEdit(props) {
     return (
         <FormDialogBase
             title={title}
-            saveButtonText='Save'
+            saveButtonText={intl.formatMessage({
+                id: 'AdminPages.ApiCategories.AddEdit.form.save.btn',
+                defaultMessage: 'Save',
+            })}
             icon={icon}
             triggerButtonText={triggerButtonText}
             formSaveCallback={formSaveCallback}
@@ -196,7 +214,11 @@ function AddEdit(props) {
                 )}
                 fullWidth
                 error={hasErrors('name', name)}
-                helperText={hasErrors('name', name) || 'Name of the API category'}
+                helperText={hasErrors('name', name)
+                    || intl.formatMessage({
+                        id: 'AdminPages.ApiCategories.AddEdit.form.name.helper.text',
+                        defaultMessage: 'Name of the API category',
+                    })}
                 variant='outlined'
                 disabled={editMode}
             />
@@ -205,11 +227,18 @@ function AddEdit(props) {
                 name='description'
                 value={description}
                 onChange={onChange}
-                label='Description'
+                label={intl.formatMessage({
+                    id: 'AdminPages.ApiCategories.AddEdit.form.description',
+                    defaultMessage: 'Description',
+                })}
                 fullWidth
                 multiline
                 error={hasErrors('description', description)}
-                helperText={hasErrors('description', description) || 'Description of the API category'}
+                helperText={hasErrors('description', description)
+                    || intl.formatMessage({
+                        id: 'AdminPages.ApiCategories.AddEdit.form.description.helper.text',
+                        defaultMessage: 'Description of the API category',
+                    })}
                 variant='outlined'
             />
         </FormDialogBase>

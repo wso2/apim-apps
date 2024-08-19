@@ -23,18 +23,26 @@ import APICategoriesCard from 'AppComponents/AdminPages/Dashboard/APICategoriesC
 import RateLimitingCard from 'AppComponents/AdminPages/Dashboard/RateLimitingCard';
 import TasksWorkflowCard from 'AppComponents/AdminPages/Dashboard/TasksWorkflowCard';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
-
+import { useIntl } from 'react-intl';
 /**
  * Render progress inside a container centering in the container.
  * @returns {JSX} Loading animation.
  */
 export default function Dashboard() {
     const { user: { _scopes } } = useAppContext();
+    const intl = useIntl();
     const hasWorkflowViewPermission = _scopes.includes('apim:api_workflow_view');
     const hasPolicyViewPermission = _scopes.includes('apim:admin_tier_view');
     const hasAPICategoryViewPermission = _scopes.includes('apim:api_category');
     return (
-        <ContentBase width='full' title='Dashboard' pageStyle='paperLess'>
+        <ContentBase
+            width='full'
+            title={intl.formatMessage({
+                id: 'Dashboard.header.title',
+                defaultMessage: 'Dashboard',
+            })}
+            pageStyle='paperLess'
+        >
             <Grid container spacing={3} justifyContent='center'>
                 {hasPolicyViewPermission && (
                     <Grid item xs={11} md={6}>

@@ -22,6 +22,7 @@ import Fab from '@mui/material/Fab';
 import ChatIcon from '@mui/icons-material/Chat';
 import CloseIcon from '@mui/icons-material/Close';
 import Tooltip from '@mui/material/Tooltip';
+import { useIntl } from 'react-intl';
 
 /**
  * Renders Chat Icon view..
@@ -31,6 +32,7 @@ import Tooltip from '@mui/material/Tooltip';
 function ChatBotIcon(props) {
     const { toggleChatbot, handleDisableChatbot, chatbotDisabled } = props;
     const [showCloseButton, setShowCloseButton] = useState(false);
+    const intl = useIntl();
 
     const handleMouseEnter = () => {
         setShowCloseButton(true);
@@ -53,7 +55,13 @@ function ChatBotIcon(props) {
                 onMouseLeave={handleMouseLeave}
             >
                 {chatbotDisabled ? null : (
-                    <Tooltip title='Open Chat' placement='left'>
+                    <Tooltip
+                        title={intl.formatMessage({
+                            id: 'Apis.Chat.ChatIcon.tooltip.label',
+                            defaultMessage: 'Open Chat',
+                        })}
+                        placement='left'
+                    >
                         <Fab color='primary' aria-label='chat' onClick={toggleChatbot} style={{ boxShadow: 'none' }}>
                             <ChatIcon />
                         </Fab>
@@ -61,7 +69,10 @@ function ChatBotIcon(props) {
                 )}
                 {showCloseButton && (
                     <Tooltip
-                        title='Disable chat'
+                        title={intl.formatMessage({
+                            id: 'Apis.Chat.ChatIcon.disable.chat.label',
+                            defaultMessage: 'Disable chat',
+                        })}
                         placement='left'
                     >
                         <Fab

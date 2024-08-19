@@ -215,10 +215,10 @@ function UploadTheme() {
             .then(() => {
                 setIsUploadUnsuccessful(false);
                 Alert.success(
-                    <FormattedMessage
-                        id='TenantTheme.Upload.Theme.upload.successful'
-                        defaultMessage='Theme uploaded successfully'
-                    />,
+                    intl.formatMessage({
+                        id: 'TenantTheme.Upload.Theme.upload.successful',
+                        defaultMessage: 'Theme uploaded successfully',
+                    }),
                 );
                 setThemeFile([]);
             })
@@ -296,7 +296,11 @@ function UploadTheme() {
         + 'develop/customizations/customizing-the-developer-portal/overriding-developer-portal-theme/#tenant-theming'}
                                 underline='hover'
                             >
-                                API Manager theme format
+                                {' '}
+                                <FormattedMessage
+                                    id='TenantTheme.Upload.Theme.info.message.link'
+                                    defaultMessage='API Manager theme format'
+                                />
                             </Link>
                         </Typography>
                     </Grid>

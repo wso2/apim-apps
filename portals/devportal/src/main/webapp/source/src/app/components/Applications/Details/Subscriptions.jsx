@@ -351,8 +351,11 @@ class Subscriptions extends React.Component {
                     return;
                 }
                 if (response.body.status === 'TIER_UPDATE_PENDING') {
-                    Alert.info('Your subscription update request has been submitted and is now awaiting '
-                    + 'approval.');
+                    Alert.info(intl.formatMessage({
+                        defaultMessage: 'Your subscription update request has been submitted and is now awaiting '
+                            + 'approval.',
+                        id: 'subscription.tierPending',
+                    }));
                 } else {
                     Alert.info(intl.formatMessage({
                         defaultMessage: 'Business Plan updated successfully!',

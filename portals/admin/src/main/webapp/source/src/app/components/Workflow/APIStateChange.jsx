@@ -213,15 +213,13 @@ function ListLabels(props) {
             </HelpBase>),
 
         pageStyle: 'half',
-        title: intl.formatMessage(
-            isAPIProduct ? {
-                id: 'Workflow.APIProductStateChange.title.apistatechange',
-                defaultMessage: 'API Product State Change - Approval Tasks',
-            } : {
-                id: 'Workflow.APIStateChange.title.apistatechange',
-                defaultMessage: 'API State Change - Approval Tasks',
-            },
-        ),
+        title: isAPIProduct ? intl.formatMessage({
+            id: 'Workflow.APIProductStateChange.title.apistatechange',
+            defaultMessage: 'API Product State Change - Approval Tasks',
+        }) : intl.formatMessage({
+            id: 'Workflow.APIStateChange.title.apistatechange',
+            defaultMessage: 'API State Change - Approval Tasks',
+        }),
     };
 
     const [searchText, setSearchText] = useState('');
@@ -396,6 +394,24 @@ function ListLabels(props) {
         customToolbar: null,
         responsive: 'vertical',
         searchText,
+        textLabels: {
+            body: {
+                noMatch: intl.formatMessage({
+                    id: 'Mui.data.table.search.no.records.found',
+                    defaultMessage: 'Sorry, no matching records found',
+                }),
+            },
+            pagination: {
+                rowsPerPage: intl.formatMessage({
+                    id: 'Mui.data.table.pagination.rows.per.page',
+                    defaultMessage: 'Rows per page:',
+                }),
+                displayRows: intl.formatMessage({
+                    id: 'Mui.data.table.pagination.display.rows',
+                    defaultMessage: 'of',
+                }),
+            },
+        },
     };
     /* eslint-disable react/jsx-props-no-spreading */
     if (data && data.length === 0) {

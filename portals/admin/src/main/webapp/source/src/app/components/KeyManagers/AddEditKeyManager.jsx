@@ -748,8 +748,8 @@ function AddEditKeyManager(props) {
                                     id='AddEditKeyManager.External.KeyManager.description.container'
                                 >
                                     <FormattedMessage
-                                        id='KeyManagers.AddEditKeyManager.External.KeyManager
-                                        .general.details.description'
+                                        id={'KeyManagers.AddEditKeyManager.External.KeyManager'
+                                            + '.general.details.description'}
                                         defaultMessage='Identity Provider vendor and the  token usage mode'
                                     />
                                 </Typography>
@@ -1013,8 +1013,8 @@ function AddEditKeyManager(props) {
                                                 label={(
                                                     <span>
                                                         <FormattedMessage
-                                                            id='KeyManagers.AddEditKeyManager.form.
-                                                            clientRegistrationEndpoint'
+                                                            id={'KeyManagers.AddEditKeyManager.form.'
+                                                                + 'clientRegistrationEndpoint'}
                                                             defaultMessage='Client Registration Endpoint'
                                                         />
                                                         <StyledSpan>*</StyledSpan>
@@ -1042,8 +1042,8 @@ function AddEditKeyManager(props) {
                                                 label={(
                                                     <span>
                                                         <FormattedMessage
-                                                            id='KeyManagers.AddEditKeyManager.form.
-                                                            introspectionEndpoint'
+                                                            id={'KeyManagers.AddEditKeyManager.form.'
+                                                                + 'introspectionEndpoint'}
                                                             defaultMessage='Introspection Endpoint'
                                                         />
                                                         <StyledSpan>*</StyledSpan>
@@ -1139,8 +1139,8 @@ function AddEditKeyManager(props) {
                                                 label={(
                                                     <span>
                                                         <FormattedMessage
-                                                            id='KeyManagers.AddEditKeyManager.
-                                                            form.displayRevokeEndpoint'
+                                                            id={'KeyManagers.AddEditKeyManager.'
+                                                                + 'form.displayRevokeEndpoint'}
                                                             defaultMessage='Display Revoke Endpoint'
                                                         />
                                                     </span>
@@ -1202,8 +1202,8 @@ function AddEditKeyManager(props) {
                                                 label={(
                                                     <span>
                                                         <FormattedMessage
-                                                            id='KeyManagers.AddEditKeyManager.
-                                                                form.scopeManagementEndpoint'
+                                                            id={'KeyManagers.AddEditKeyManager.'
+                                                                + 'form.scopeManagementEndpoint'}
                                                             defaultMessage='Scope Management Endpoint'
                                                         />
                                                         <StyledSpan>*</StyledSpan>
@@ -1360,8 +1360,8 @@ function AddEditKeyManager(props) {
                                         value={alias}
                                         helperText={(
                                             <FormattedMessage
-                                                id='KeyManagers.AddEditKeyManager.exchange.token.form.
-                                                token.audience.help'
+                                                id={'KeyManagers.AddEditKeyManager.exchange.token.form.'
+                                                    + 'token.audience.help'}
                                                 defaultMessage='The Audience of the authorization server which
                                                 the access token is intended for.'
                                             />
@@ -1617,7 +1617,10 @@ function AddEditKeyManager(props) {
                                             );
                                             dispatch({ field: 'availableGrantTypes', value: filteredGrantTypes });
                                         }}
-                                        placeholder='Type Grant Types and press Enter'
+                                        placeholder={intl.formatMessage({
+                                            id: 'KeyManagers.AddEditKeyManager.form.claim.placeholder',
+                                            defaultMessage: 'Type Grant Types and press Enter',
+                                        })}
                                         helperText={(
                                             <div style={{ position: 'absolute', marginTop: '10px' }}>
                                                 {intl.formatMessage({

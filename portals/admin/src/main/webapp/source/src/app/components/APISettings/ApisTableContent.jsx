@@ -212,7 +212,12 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                             <StyledDiv sx={styles.tableActionBtnContainer}>
                                 <TextField
                                     id='standard-basic'
-                                    label='Provider Name'
+                                    label={(
+                                        <FormattedMessage
+                                            id='AdminPages.ApiSettings.EditApi.form.edit.provider.label'
+                                            defaultMessage='Provider Name'
+                                        />
+                                    )}
                                     variant='standard'
                                     size='small'
                                     defaultValue={api.provider}

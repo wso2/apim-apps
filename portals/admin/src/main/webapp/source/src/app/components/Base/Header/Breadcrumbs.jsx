@@ -38,19 +38,31 @@ function getPageDetails(routeMenuMapping, currentPath, pageDetails = []) {
             if (typeof routeDetail.children !== 'undefined') {
                 const result = getPageDetails(routeDetail.children, currentPath, pageDetails);
                 if (result !== '') {
-                    result.unshift({ id: routeDetail.id, path: routeDetail.path });
+                    result.unshift({
+                        id: routeDetail.id,
+                        displayText: routeDetail.displayText,
+                        path: routeDetail.path,
+                    });
                     return result;
                 }
             } else if (typeof routeDetail.addEditPageDetails !== 'undefined') {
                 const result = getPageDetails(routeDetail.addEditPageDetails, currentPath, pageDetails);
                 if (result !== '') {
-                    result.unshift({ id: routeDetail.id, path: routeDetail.path });
+                    result.unshift({
+                        id: routeDetail.id,
+                        displayText: routeDetail.displayText,
+                        path: routeDetail.path,
+                    });
                     return result;
                 }
             }
 
             if (routeDetail.path && currentPath.match(routeDetail.path)) {
-                return [{ id: routeDetail.id, path: currentPath }];
+                return [{
+                    id: routeDetail.id,
+                    displayText: routeDetail.displayText,
+                    path: currentPath,
+                }];
             }
         }
     }
@@ -79,12 +91,12 @@ function Breadcrumbs(props) {
                         key={page.id}
                         underline='hover'
                     >
-                        {page.id}
+                        {page.displayText}
                     </Link>,
                 );
             } else {
                 breadcrumbElements.push(
-                    <Typography color='textPrimary' key={page.id}>{page.id}</Typography>,
+                    <Typography color='textPrimary' key={page.id}>{page.displayText}</Typography>,
                 );
             }
         });
