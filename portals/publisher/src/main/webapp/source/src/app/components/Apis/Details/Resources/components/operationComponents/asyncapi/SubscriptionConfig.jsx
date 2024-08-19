@@ -20,7 +20,7 @@ import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 import TextField from '@mui/material/TextField';
 import MenuItem from '@mui/material/MenuItem';
@@ -71,6 +71,7 @@ function SubscriptionConfig(props) {
     const [isExpanded, setIsExpanded] = useState(false);
 
     const [enabled, setEnabled] = useState(!!websubSubscriptionConfiguration.enable);
+    const intl = useIntl();
 
     /**
      *
@@ -111,7 +112,10 @@ function SubscriptionConfig(props) {
                 <Grid item md={12} xs={12}>
                     <Box ml={1}>
                         <Typography variant='subtitle1' gutterBottom>
-                            Subscription Configuration
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.Subscription.configuration'
+                                defaultMessage='Subscription Configuration'
+                            />
                         </Typography>
                     </Box>
                 </Grid>
@@ -135,7 +139,10 @@ function SubscriptionConfig(props) {
                                         color='primary'
                                     />
                                 )}
-                                label='Enable'
+                                label={intl.formatMessage({
+                                    id: 'Apis.Details.Configuration.components.Subscription.enable.switch',
+                                    defaultMessage: 'Enable',
+                                })}
                                 labelPlacement='start'
                             />
                         </FormControl>
@@ -156,7 +163,10 @@ function SubscriptionConfig(props) {
                                 </>
                             )}
                             value={websubSubscriptionConfiguration.signingAlgorithm}
-                            helperText='Select an algorithm to sign the message'
+                            helperText={intl.formatMessage({
+                                id: 'Apis.Details.Configuration.components.Subscription.algorithm.helper.text',
+                                defaultMessage: 'Select an algorithm to sign the message',
+                            })}
                             name='secret'
                             margin='normal'
                             variant='outlined'
@@ -189,7 +199,10 @@ function SubscriptionConfig(props) {
                                 </>
                             )}
                             value={websubSubscriptionConfiguration.signatureHeader}
-                            helperText='Set the HTTP header use by the provider to send the signature'
+                            helperText={intl.formatMessage({
+                                id: 'Apis.Details.Configuration.components.Subscription.http.header.helper.text',
+                                defaultMessage: 'Set the HTTP header use by the provider to send the signature',
+                            })}
                             name='secret'
                             margin='normal'
                             variant='outlined'
@@ -216,7 +229,10 @@ function SubscriptionConfig(props) {
                                         </>
                                     )}
                                     value={websubSubscriptionConfiguration.secret}
-                                    helperText='Use the above secret key while registering at the provider'
+                                    helperText={intl.formatMessage({
+                                        id: 'Apis.Details.Configuration.components.Subscription.secret.helper.text',
+                                        defaultMessage: 'Use the above secret key while registering at the provider',
+                                    })}
                                     name='secret'
                                     margin='normal'
                                     variant='outlined'
@@ -233,7 +249,10 @@ function SubscriptionConfig(props) {
                                     })}
                                     style={{ marginLeft: 10, marginTop: 25 }}
                                 >
-                                    Generate
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.components.Subscription.secret.generate.btn'
+                                        defaultMessage='Generate'
+                                    />
                                 </Button>
                             </Grid>
                         </Grid>
