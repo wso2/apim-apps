@@ -70,7 +70,12 @@ function SampleAPI() {
                 disabled={AuthManager.isNotPublisher()}
                 id='itest-id-create-api-product'
                 to='/api-products/create'
-                name='API Product'
+                name={(
+                    <FormattedMessage
+                        id='Apis.Listing.SampleAPIProduct.onboarding.menu.card.name'
+                        defaultMessage='API Product'
+                    />
+                )}
                 iconName={apiproductAddIcon}
             />
         </Onboarding>

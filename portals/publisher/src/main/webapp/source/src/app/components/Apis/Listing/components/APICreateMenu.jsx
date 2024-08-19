@@ -23,7 +23,7 @@ import { useTheme } from '@mui/material';
 import Box from '@mui/material/Box';
 import Divider from '@mui/material/Divider';
 import Grid from '@mui/material/Grid';
-
+import { FormattedMessage } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';
 import RestAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/RestAPIMenu';
 import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';
@@ -150,7 +150,7 @@ const APICreateMenu = () => {
                         }
                     
                 >
-                    Create API
+                    <FormattedMessage id='Apis.Listing.Components.Create.API' defaultMessage='Create API' />
                 </MenuButton>
             </Root>
         )

@@ -160,6 +160,27 @@ const APIDetailsTopMenu = (props) => {
         lifecycleState = api.lifeCycleStatus === 'PROTOTYPED' ? 'PRE-RELEASED' : api.lifeCycleStatus;
         isVisibleInStore = ['PROTOTYPED', 'PUBLISHED'].includes(api.lifeCycleStatus);
     }
+    const ApiLifeCycleStates = {
+        CREATED: intl.formatMessage({
+            id: 'Apis.Details.LifeCycle.State.Status.CREATED', defaultMessage: 'CREATED',
+        }),
+        PUBLISHED: intl.formatMessage({
+            id: 'Apis.Details.LifeCycle.State.Status.PUBLISHED', defaultMessage: 'PUBLISHED',
+        }),
+        DEPRECATED: intl.formatMessage({
+            id: 'Apis.Details.LifeCycle.State.Status.DEPRECATED', defaultMessage: 'DEPRECATED',
+        }),
+        RETIRED: intl.formatMessage({
+            id: 'Apis.Details.LifeCycle.State.Status.RETIRED', defaultMessage: 'RETIRED',
+        }),
+        BLOCKED: intl.formatMessage({
+            id: 'Apis.Details.LifeCycle.State.Status.BLOCKED', defaultMessage: 'BLOCKED',
+        }),
+        PROTOTYPED: intl.formatMessage({
+            id: 'Apis.Details.LifeCycle.State.Status.PROTOTYPED', defaultMessage: 'PROTOTYPED',
+        }),
+    };
+
     /**
          * The component for advanced endpoint configurations.
          * @param {string} name The name of the
@@ -256,7 +277,8 @@ const APIDetailsTopMenu = (props) => {
                 <VerticalDivider height={70} />
                 <div className={classes.infoItem}>
                     <Typography data-testid='itest-api-state' component='div' variant='subtitle1'>
-                        {lifecycleState}
+                        {lifecycleState in ApiLifeCycleStates
+                            ? ApiLifeCycleStates[lifecycleState] : lifecycleState}
                     </Typography>
                     <Typography variant='caption' align='left'>
                         <FormattedMessage
