@@ -175,7 +175,10 @@ function GlobalNavLinks(props) {
                                     id='global-policies'
                                     to='/global-policies'
                                     type='global-policies'
-                                    title='Global Policies'
+                                    title={intl.formatMessage({
+                                        id: 'Base.Header.navbar.GlobalNavBar.title.global.Policies',
+                                        defaultMessage: 'Global Policies',
+                                    })}
                                     active={selected === 'global-policies'}
                                 >
                                     <FormattedMessage id='Base.Header.navbar.GlobalNavBar.global.policies' 
@@ -189,7 +192,10 @@ function GlobalNavLinks(props) {
                         <GlobalNavLink
                             to='/subscription/creation'
                             type='subscriptioncreation'
-                            title='Tasks'
+                            title={intl.formatMessage({
+                                id: 'Base.Header.navbar.GlobalNavBar.title.global.Tasks',
+                                defaultMessage: 'Tasks',
+                            })}
                             active={selected === 'subscriptioncreation'}
                         >
                             <FormattedMessage

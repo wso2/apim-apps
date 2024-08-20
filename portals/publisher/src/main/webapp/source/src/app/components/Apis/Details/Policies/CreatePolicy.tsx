@@ -179,7 +179,10 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                 >
                     <Link to={CONSTS.PATH_TEMPLATES.COMMON_POLICIES}>
                         <Typography className={classes.link} variant='caption'>
-                            Want to create a common policy that will be visible to all APIs instead?
+                            <FormattedMessage
+                                id='Apis.Details.Policies.CreatePolicy.create.new.policy.link'
+                                defaultMessage='Want to create a common policy that will be visible to all APIs instead?'
+                            />
                             <LaunchIcon
                                 style={{ marginLeft: '2px' }}
                                 fontSize='small'

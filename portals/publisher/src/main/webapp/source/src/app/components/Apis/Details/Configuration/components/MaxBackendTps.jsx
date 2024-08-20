@@ -112,7 +112,12 @@ export default function MaxBackendTps(props) {
                     </AccordionSummary>
                     <AccordionDetails className={classes.expansionPanelDetails}>
                         <FormControl component='fieldset'>
-                            <FormLabel component='legend'>Maximum Throughput</FormLabel>
+                            <FormLabel component='legend'>
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.Components.MaxBackendTps.maximum.throughput.field'
+                                    defaultMessage='Maximum Throughput'
+                                />
+                            </FormLabel>
                             <RadioGroup
                                 aria-label='change-max-TPS'
                                 value={api.maxTps === null ? 'unlimited' : 'specify'}

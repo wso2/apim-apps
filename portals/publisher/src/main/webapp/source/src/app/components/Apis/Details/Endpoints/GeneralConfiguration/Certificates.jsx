@@ -376,7 +376,11 @@ function Certificates(props) {
                                     <ListItemAvatar sx={infoIconStyle}>
                                         <Icon color='primary'>info</Icon>
                                     </ListItemAvatar>
-                                    <ListItemText>You do not have any production type certificates uploaded
+                                    <ListItemText>
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.GeneralConfiguration.no.production.certifcates'
+                                            defaultMessage='You do not have any production type certificates uploaded'
+                                        />
                                     </ListItemText>
                                 </ListItem>
                             )}
@@ -429,7 +433,12 @@ function Certificates(props) {
                                     <ListItemAvatar sx={infoIconStyle}>
                                         <Icon color='primary'>info</Icon>
                                     </ListItemAvatar>
-                                    <ListItemText>You do not have any sandbox type certificates uploaded</ListItemText>
+                                    <ListItemText>
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.GeneralConfiguration.no.sandbox.certifcates'
+                                            defaultMessage='You do not have any sandbox type certificates uploaded'
+                                        />
+                                    </ListItemText>
                                 </ListItem>
                             )}
                         </List>

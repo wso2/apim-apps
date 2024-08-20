@@ -176,8 +176,8 @@ const APIDetailsTopMenu = (props) => {
         BLOCKED: intl.formatMessage({
             id: 'Apis.Details.LifeCycle.State.Status.BLOCKED', defaultMessage: 'BLOCKED',
         }),
-        PROTOTYPED: intl.formatMessage({
-            id: 'Apis.Details.LifeCycle.State.Status.PROTOTYPED', defaultMessage: 'PROTOTYPED',
+        'PRE-RELEASED': intl.formatMessage({
+            id: 'Apis.Details.LifeCycle.State.Status.PRE-RELEASED', defaultMessage: 'PRE-RELEASED',
         }),
     };
 

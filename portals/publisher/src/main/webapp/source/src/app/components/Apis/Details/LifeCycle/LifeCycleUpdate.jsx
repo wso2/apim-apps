@@ -355,9 +355,9 @@ class LifeCycleUpdate extends Component {
                 id: 'Apis.Details.LifeCycle.LifeCycleUpdate.State.Publish',
                 defaultMessage: 'Publish',
             }),
-            Prototype: intl.formatMessage({
-                id: 'Apis.Details.LifeCycle.LifeCycleUpdate.State.Prototype',
-                defaultMessage: 'Prototype',
+            'Pre-Release': intl.formatMessage({
+                id: 'Apis.Details.LifeCycle.LifeCycleUpdate.State.Pre-Release',
+                defaultMessage: 'Pre-Release',
             }),
             'Re-Publish': intl.formatMessage({
                 id: 'Apis.Details.LifeCycle.LifeCycleUpdate.State.Re.Publish',

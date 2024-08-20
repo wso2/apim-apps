@@ -25,7 +25,8 @@ import Select from '@mui/material/Select';
 import Grid from '@mui/material/Grid';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
-import { injectIntl } from 'react-intl';
+import { injectIntl } from 'react-intl'; 
+
 const PREFIX = 'CommentEdit';
 
 const classes = {
@@ -120,7 +121,7 @@ class CommentEdit extends React.Component {
      */
     handleClickUpdateComment() {
         const {
-            api, comment, allComments, toggleShowEdit, commentsUpdate,
+            api, comment, allComments, toggleShowEdit, commentsUpdate, intl,
         } = this.props;
         const { category, commentText } = this.state;
         const Api = new API();
@@ -151,11 +152,17 @@ class CommentEdit extends React.Component {
                     if (error.response) {
                         Alert.error(error.response.body.message);
                     } else {
-                        Alert.error('Something went wrong while adding the comment');
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.Comments.CommentEdit.error',
+                            defaultMessage: 'Something went wrong while adding the comment'
+                        }))
                     }
                 });
         } else {
-            Alert.error('You cannot enter a blank comment');
+            Alert.error(intl.formatMessage({
+                id: 'Apis.Details.Comments.CommentEdit.is.blank',
+                defaultMessage: 'You cannot enter a blank comment'
+            }))
         }
     }
 
@@ -209,7 +216,10 @@ class CommentEdit extends React.Component {
                     multiline
                     className={classes.textField}
                     margin='normal'
-                    placeholder='Write a comment'
+                    placeholder={intl.formatMessage({
+                        id: 'Apis.Details.Comments.CommentEdit.write.placeholder',
+                        defaultMessage: 'Write a comment',
+                    })}
                     inputProps={{ maxLength: theme.custom.maxCommentLength }}
                     value={commentText}
                     onChange={this.inputChange}
