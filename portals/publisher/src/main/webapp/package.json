@@ -19,7 +19,7 @@
         "i18n": "formatjs extract 'source/src/app/**/*.{jsx,tsx}' --throws --out-file site/public/locales/raw.en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]'",
         "extract-i18n": "formatjs extract",
         "i18n:compile": "formatjs compile site/public/locales/raw.en.json --ast --out-file site/public/locales/en.json",
-        "i18n:en": "npm run extract-i18n -- 'source/src/app/**/*.jsx' --ignore='**/*.d.{js,ts,tsx,jsx}' --out-file site/public/locales/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]' --format=simple",
+        "i18n:en": "npm run extract-i18n -- 'source/src/app/**/*.{jsx,tsx}' --ignore='**/*.d.{js,ts,tsx,jsx}' --out-file site/public/locales/en.json --id-interpolation-pattern '[sha512:contenthash:base64:6]' --format=simple",
         "start": "webpack serve --compress --port 8081 --mode development",
         "start:mocked": "concurrently npm:mocked 'WSO2_UI_MOCKED=true webpack serve --compress --port 8081 --mode production --progress'",
         "mocked": "multi-mock-oas"
