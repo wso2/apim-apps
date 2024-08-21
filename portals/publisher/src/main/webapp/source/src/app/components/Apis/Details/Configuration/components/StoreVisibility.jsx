@@ -67,9 +67,13 @@ const Root = styled('div')((
 export default function StoreVisibility(props) {
     const [roleValidity, setRoleValidity] = useState(true);
     const [roleExists, setRoleExists] = useState(true);
+    const [orgValidity, setOrgValidity] = useState(true);
+    const [orgExists, setOrgExists] = useState(true);
     const { api, configDispatcher, setIsDisabled } = props;
     const [invalidRoles, setInvalidRoles] = useState([]);
+    const [invalidOrgs, setInvalidOrgs] = useState([]);
     const isRestrictedByRoles = api.visibility === 'RESTRICTED';
+    const isRestrictedByOrgs = api.visibility === 'RESTRICTED_BY_ORG';
     const [apiFromContext] = useAPI();
 
     const restApi = new API();
@@ -89,6 +93,14 @@ export default function StoreVisibility(props) {
             setRoleExists(true);
         }
     }, [invalidRoles]);
+    useEffect(() => {
+        if (invalidOrgs.length === 0) {
+            setOrgValidity(true);
+        }
+        if (api.visibility === 'RESTRICTED_BY_ORG' && api.visibleOrganizations.length !== 0) {
+            setOrgExists(true);
+        }
+    }, [invalidOrgs]);
     useEffect(() => {
         setIsDisabled(!roleValidity || !roleExists);
     }, [roleValidity, roleExists])
@@ -127,6 +139,30 @@ export default function StoreVisibility(props) {
         });
     };
 
+    const handleOrgAddition = (orgs) => {
+        setOrgExists(true);
+        setOrgValidity(true);
+        configDispatcher({
+            action: 'visibleOrganizations',
+            value: [...api.visibleOrganizations, orgs],
+        });
+        console.log(orgs);
+    };
+    const handleOrgDeletion = (org) => {
+        if (invalidOrgs.includes(org)) {
+            setInvalidOrgs(invalidOrgs.filter((existingOrgs) => existingOrgs !== org));
+        }
+        if (api.visibility === 'RESTRICTED_BY_ORG' && api.visibleOrganizations.length > 1) {
+            setOrgExists(true);
+        } else {
+            setOrgExists(false);
+        }
+        configDispatcher({
+            action: 'visibleOrganizations',
+            value: api.visibleOrganizations.filter((existingOrgs) => existingOrgs !== org),
+        });
+    };
+
     const handleChangeVisibility = (event) => {
         if (event.target.value === 'PUBLIC') {
             setRoleValidity(true);
@@ -135,6 +171,9 @@ export default function StoreVisibility(props) {
         }
         if (event.target.value === 'RESTRICTED' && api.visibleRoles.length === 0) {
             setRoleValidity(false);
+        }
+        if (event.target.value === 'RESTRICTED_BY_ORG' && api.visibleRoles.length === 0) {
+            setOrgValidity(false);
         }
         configDispatcher({ action: 'visibility', value: event.target.value });
     }
@@ -180,6 +219,12 @@ export default function StoreVisibility(props) {
                         <FormattedMessage
                             id='Apis.Details.Configuration.components.storeVisibility.dropdown.restrict'
                             defaultMessage='Restrict by role(s)'
+                        />
+                    </MenuItem>
+                    <MenuItem value='RESTRICTED_BY_ORG' id='visibility-restricted-by-orgs'>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.storeVisibility.dropdown.restrict'
+                            defaultMessage='Restrict by organization(s)'
                         />
                     </MenuItem>
                     {tenants !== 0
@@ -287,6 +332,63 @@ export default function StoreVisibility(props) {
                                 }}
                                 style={{
                                     backgroundColor: invalidRoles.includes(value) ? red[300] : null,
+                                    margin: '0 8px 12px 0',
+                                    float: 'left',
+                                }}
+                            />
+                        )}
+                    />
+                </Box>
+            )}
+            {isRestrictedByOrgs && (
+                <Box py={2} style={{ marginTop: -10, marginBottom: 10 }}>
+                    <ChipInput
+                        data-testid='visibility-select-role'
+                        fullWidth
+                        variant='outlined'
+                        label={(
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.storeVisibility.orgs'
+                                defaultMessage='Organizations'
+                            />
+                        )}
+                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                        value={api.visibleOrganizations.concat(invalidOrgs)}
+                        alwaysShowPlaceholder={false}
+                        placeholder='Enter organization and press Enter'
+                        blurBehavior='clear'
+                        InputProps={{
+                            endAdornment: !orgValidity && (
+                                <InputAdornment position='end'>
+                                    <Error color='error' style={{ paddingBottom: 8 }} />
+                                </InputAdornment>
+                            ),
+                        }}
+                        onAdd={handleOrgAddition}
+                        error={!orgValidity || !orgExists}
+                        helperText={
+                            orgValidity ? (
+                                <FormattedMessage
+                                    id='Apis.Details.Scopes.visibility.CreateScope.orgs.help'
+                                    defaultMessage='Enter valid organization and press enter'
+                                />
+                            ) : (
+                                <FormattedMessage
+                                    id='Apis.Details.Scopes.Orgs.Invalid'
+                                    defaultMessage='Organization is invalid'
+                                />
+                            )
+                        }
+                        chipRenderer={({ value }, key) => (
+                            <Chip
+                                key={key}
+                                size='small'
+                                label={value}
+                                onDelete={() => {
+                                    handleOrgDeletion(value);
+                                }}
+                                style={{
+                                    backgroundColor: invalidOrgs.includes(value) ? red[300] : null,
                                     margin: '0 8px 12px 0',
                                     float: 'left',
                                 }}
