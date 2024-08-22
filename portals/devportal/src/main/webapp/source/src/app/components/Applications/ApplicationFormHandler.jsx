@@ -72,6 +72,7 @@ class ApplicationFormHandler extends React.Component {
                 tokenType: 'JWT',
                 groups: null,
                 attributes: {},
+                visibility: '',
             },
             isNameValid: true,
             throttlingPolicyList: [],
@@ -136,6 +137,7 @@ class ApplicationFormHandler extends React.Component {
                 newRequest.groups = application.groups;
                 newRequest.tokenType = application.tokenType;
                 newRequest.attributes = application.attributes;
+                newRequest.visibility = application.visibility;
                 this.setState({
                     isEdit: true,
                     applicationRequest: newRequest,
