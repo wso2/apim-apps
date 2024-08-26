@@ -22,7 +22,7 @@ import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import { Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -88,7 +88,7 @@ const StyledAccordion = styled(Accordion)((
  */
 export default function APILevelRateLimitingPolicies(props) {
     const [apiFromContext] = useAPI();
-
+    const intl = useIntl();
     const {
         configDispatcher,
         api: { apiThrottlingPolicy },
@@ -153,7 +153,10 @@ export default function APILevelRateLimitingPolicies(props) {
                                 select
                                 value={apiThrottlingPolicy}
                                 onChange={handleChange}
-                                label='Rate limiting policies'
+                                label={intl.formatMessage({
+                                    id: 'Apis.Details.Rate.Limiting.rate.limiting.policies',
+                                    defaultMessage: 'Rate limiting policies',
+                                })}
                                 margin='dense'
                                 variant='outlined'
                                 style={{ display: 'flex', minWidth: 180 }}

@@ -34,7 +34,7 @@ import Radio from '@mui/material/Radio';
 import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import TextField from '@mui/material/TextField';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 
 const PREFIX = 'MaxBackendTps';
@@ -82,7 +82,7 @@ const Root = styled('div')((
  */
 export default function MaxBackendTps(props) {
     const { api, configDispatcher } = props;
-
+    const intl = useIntl();
 
     return (
         (<Root>
@@ -112,7 +112,12 @@ export default function MaxBackendTps(props) {
                     </AccordionSummary>
                     <AccordionDetails className={classes.expansionPanelDetails}>
                         <FormControl component='fieldset'>
-                            <FormLabel component='legend'>Maximum Throughput</FormLabel>
+                            <FormLabel component='legend'>
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.Components.MaxBackendTps.maximum.throughput.field'
+                                    defaultMessage='Maximum Throughput'
+                                />
+                            </FormLabel>
                             <RadioGroup
                                 aria-label='change-max-TPS'
                                 value={api.maxTps === null ? 'unlimited' : 'specify'}
@@ -134,7 +139,11 @@ export default function MaxBackendTps(props) {
                                             disabled={isRestricted(['apim:api_create'], api)}
                                         />
                                     )}
-                                    label='Unlimited'
+                                    label={intl.formatMessage({
+                                        id: 'Apis.Details.Configuration.components.MaxBackendTps.max.'
+                                            + 'throughput.unlimited',
+                                        defaultMessage: 'Unlimited',
+                                    })}
                                     labelPlacement='end'
 
                                 />
@@ -146,7 +155,11 @@ export default function MaxBackendTps(props) {
                                             disabled={isRestricted(['apim:api_create'], api)}
                                         />
                                     )}
-                                    label='Specify'
+                                    label={intl.formatMessage({
+                                        id: 'Apis.Details.Configuration.components.MaxBackendTps.max.'
+                                            + 'throughput.specify',
+                                        defaultMessage: 'Specify',
+                                    })}
                                     labelPlacement='end'
                                     disabled={isRestricted(['apim:api_create'], api)}
                                 />
@@ -155,7 +168,11 @@ export default function MaxBackendTps(props) {
                         <Collapse in={api.maxTps !== null}>
                             <Grid item xs={12} style={{ marginBottom: 10, position: 'relative' }}>
                                 <TextField
-                                    label='Max Production TPS'
+                                    label={intl.formatMessage({
+                                        id: 'Apis.Details.Configuration.components.MaxBackendTps.max.'
+                                            + 'throughput.specify.max.prod.tps',
+                                        defaultMessage: 'Max Production TPS',
+                                    })}
                                     margin='normal'
                                     variant='outlined'
                                     onChange={(event) => {
@@ -173,7 +190,11 @@ export default function MaxBackendTps(props) {
                             </Grid>
                             <Grid item xs={12} style={{ marginBottom: 10, position: 'relative' }}>
                                 <TextField
-                                    label='Max Sandbox TPS'
+                                    label={intl.formatMessage({
+                                        id: 'Apis.Details.Configuration.components.MaxBackendTps.max.'
+                                            + 'throughput.specify.max.sandbox.tps',
+                                        defaultMessage: 'Max Sandbox TPS',
+                                    })}
                                     margin='normal'
                                     variant='outlined'
                                     onChange={(event) => {

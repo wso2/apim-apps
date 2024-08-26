@@ -223,6 +223,7 @@ class CreateScope extends React.Component {
      */
     handleRoleAddition(role) {
         const { validRoles, invalidRoles } = this.state;
+        const { intl } = this.props;
         const promise = APIValidation.role.validate(base64url.encode(role));
         promise
             .then(() => {
@@ -238,7 +239,15 @@ class CreateScope extends React.Component {
                         invalidRoles: [...invalidRoles, role],
                     });
                 } else {
-                    Alert.error('Error when validating role: ' + role);
+                    Alert.error(intl.formatMessage(
+                        {
+                            id: 'Apis.Details.Scopes.Create.Scope.validate.role.error',
+                            defaultMessage: 'Error when validating role: {role}',
+                        },
+                        {
+                            role,
+                        },
+                    ));
                     console.error('Error when validating role ' + error);
                 }
             });
@@ -309,7 +318,10 @@ class CreateScope extends React.Component {
         // length validation
         if (!(value && value.length > 0)) {
             valid[id].invalid = true;
-            valid[id].error = 'Scope name cannot be empty';
+            valid[id].error = intl.formatMessage({
+                id: 'Scopes.Create.Scope.name.empty',
+                defaultMessage: 'Scope name cannot be empty'
+            });
         }
         if (!valid[id].invalid && !(value && value.length <= 60)) {
             valid[id].invalid = true;
@@ -321,7 +333,10 @@ class CreateScope extends React.Component {
 
         if (!valid[id].invalid && /\s/.test(value)) {
             valid[id].invalid = true;
-            valid[id].error = 'Scope name cannot have spaces';
+            valid[id].error = intl.formatMessage({
+                id: 'Scopes.Create.Scope.name.have.spaces',
+                defaultMessage: 'Scope name cannot have spaces',
+            });
         }
 
         const exist = scopes.find((scopeEntry) => {
@@ -329,18 +344,27 @@ class CreateScope extends React.Component {
         });
         if (!valid[id].invalid && exist) {
             valid[id].invalid = true;
-            valid[id].error = 'Scope name already exist';
+            valid[id].error = intl.formatMessage({
+                id: 'Scopes.Create.Scope.name.already.exist',
+                defaultMessage: 'Scope name already exist'
+            });
         }
         if (!valid[id].invalid && /[!@#$%^&*(),?"{}[\]|<>\t\n]|(^apim:)/i.test(value)) {
             valid[id].invalid = true;
-            valid[id].error = 'Field contains special characters';
+            valid[id].error = intl.formatMessage({
+                id: 'Scopes.Create.Scope.name.has.special.characters',
+                defaultMessage: 'Field contains special characters',
+            });
         }
         if (!valid[id].invalid) {
             const promise = APIValidation.scope.validate(base64url.encode(value));
             promise
                 .then(() => {
                     valid[id].invalid = true;
-                    valid[id].error = 'Scope name is already used by another API';
+                    valid[id].error = intl.formatMessage({
+                        id: 'Scopes.Create.Scope.name.already.used',
+                        defaultMessage: 'Scope name is already used by another API',
+                    });
                     this.setState({
                         valid,
                     });
@@ -353,7 +377,15 @@ class CreateScope extends React.Component {
                             valid,
                         });
                     } else {
-                        Alert.error('Error when validating scope: ' + value);
+                        Alert.error(intl.formatMessage(
+                            {
+                                id: 'Apis.Details.Scopes.Create.Scope.validate.scope.error',
+                                defaultMessage: 'Error when validating scope: {value}',
+                            },
+                            {
+                                scope: value,
+                            },
+                        ));
                         console.error('Error when validating scope ' + error);
                     }
                 });
@@ -425,7 +457,7 @@ class CreateScope extends React.Component {
      * @returns {JSX} rendered component.
      */
     render() {
-        const {  api } = this.props;
+        const {  api, intl } = this.props;
         const urlPrefix = api.apiType === Api.CONSTS.APIProduct ? 'api-products' : 'apis';
         const url = `/${urlPrefix}/${api.id}/scopes`;
         const {
@@ -466,8 +498,14 @@ class CreateScope extends React.Component {
                                 <FormControl margin='normal'>
                                     <TextField
                                         id='name'
-                                        label='Name'
-                                        placeholder='Scope Name'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.Create.CreateScope.label.name',
+                                            defaultMessage: 'Name',
+                                        })}
+                                        placeholder={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.Create.CreateScope.placholder.name',
+                                            defaultMessage: 'Scope Name',
+                                        })}
                                         error={this.state.valid.name.invalid}
                                         helperText={
                                             this.state.valid.name.invalid ? (
@@ -492,8 +530,14 @@ class CreateScope extends React.Component {
                                 <FormControl margin='normal'>
                                     <TextField
                                         id='displayName'
-                                        label='Display Name'
-                                        placeholder='Scope Display Name'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.Create.CreateScope.label.display.name',
+                                            defaultMessage: 'Display Name',
+                                        })}
+                                        placeholder={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.Create.CreateScope.placeholder.display.name',
+                                            defaultMessage: 'Scope Display Name',
+                                        })}
                                         error={this.state.valid.displayName.invalid}
                                         helperText={
                                             this.state.valid.displayName.invalid ? (
@@ -518,9 +562,16 @@ class CreateScope extends React.Component {
                                 <FormControl margin='normal' classes={{ root: classes.descriptionForm }}>
                                     <TextField
                                         id='description'
-                                        label='Description'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.CreateScope.description.about.the.scope.label',
+                                            defaultMessage: 'Description',
+                                        })}
                                         variant='outlined'
-                                        placeholder='Short description about the scope'
+                                        placeholder={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.CreateScope.description.about.the.scope.'
+                                                + 'placeholder',
+                                            defaultMessage: 'Short description about the scope',
+                                        })}
                                         error={this.state.valid.description.invalid}
                                         helperText={
                                             this.state.valid.description.invalid ? (
@@ -543,7 +594,10 @@ class CreateScope extends React.Component {
                                 </FormControl>
                                 <FormControl margin='normal'>
                                     <ChipInput
-                                        label='Roles'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.Create.CreateScope.roles.label',
+                                            defaultMessage: 'Roles',
+                                        })}
                                         fullWidth
                                         id='roles-input'
                                         InputLabelProps={{
@@ -552,7 +606,10 @@ class CreateScope extends React.Component {
                                         variant='outlined'
                                         value={validRoles.concat(invalidRoles)}
                                         alwaysShowPlaceholder={false}
-                                        placeholder='Enter roles and press Enter'
+                                        placeholder={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.Create.CreateScope.roles.placeholder',
+                                            defaultMessage: 'Enter roles and press Enter',
+                                        })}
                                         blurBehavior='clear'
                                         InputProps={{
                                             endAdornment: !roleValidity && (

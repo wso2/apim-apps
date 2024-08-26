@@ -308,10 +308,16 @@ class Comment extends React.Component {
                     if (onDeleteComment) {
                         onDeleteComment(commentIdOfCommentToDelete);
                     }
-                    Alert.info('Comment has been successfully deleted');
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.Comments.Comment.delete.success',
+                        defaultMessage: 'Comment has been successfully deleted',
+                    }));
                 } else {
                     this.handleDeleteReply(parentCommentIdOfCommentToDelete, commentIdOfCommentToDelete);
-                    Alert.info('Reply comment has been successfully deleted');
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.Comments.reply.delete.success',
+                        defaultMessage: 'Reply comment has been successfully deleted',
+                    }));
                 }
             })
             .catch((error) => {
@@ -431,7 +437,7 @@ class Comment extends React.Component {
      * @memberof Comment
      */
     render() {
-        const { comments, api, allComments, isOverview } = this.props;
+        const { comments, api, allComments, isOverview, intl} = this.props;
 
         const { editIndex, openDialog, replyId } = this.state;
         return (
@@ -597,10 +603,22 @@ class Comment extends React.Component {
                 </div>
                 <ConfirmDialog
                     key='key-dialog'
-                    labelCancel='Cancel'
-                    title='Confirm Delete'
-                    message='Are you sure you want to delete this comment?'
-                    labelOk='Yes'
+                    labelCancel={intl.formatMessage({
+                        id: 'Apis.Details.Comments.Comment.delete.confirm.cancel.label',
+                        defaultMessage: 'Cancel',
+                    })}
+                    title={intl.formatMessage({
+                        id: 'Apis.Details.Comments.Comment.delete.confirm.title',
+                        defaultMessage: 'Confirm Delete',
+                    })}
+                    message={intl.formatMessage({
+                        id: 'Apis.Details.Comments.Comment.delete.confirm',
+                        defaultMessage: 'Are you sure you want to delete this comment?',
+                    })}
+                    labelOk={intl.formatMessage({
+                        id: 'Apis.Details.Comments.Comment.delete.confirm.yes.label',
+                        defaultMessage: 'Yes',
+                    })}
                     callback={this.handleConfirmDialog}
                     open={openDialog}
                 />

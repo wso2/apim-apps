@@ -23,7 +23,7 @@ import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import MenuItem from '@mui/material/MenuItem';
 import { isRestricted } from 'AppData/AuthManager';
 import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: Do not COPY and use this component.
@@ -68,7 +68,7 @@ export default function AccessControl(props) {
     const { api, configDispatcher, setIsDisabled } = props;
     const isNone = api.accessControl === 'NONE';
     const [apiFromContext] = useAPI();
-
+    const intl = useIntl();
 
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [otherValidSystemRoles, setOtherValidSystemRoles] = useState([]);
@@ -104,7 +104,15 @@ export default function AccessControl(props) {
                     });
                     setOtherValidSystemRoles([...otherValidSystemRoles, role]);
                 } else {
-                    Alert.error('Error when validating role: ' + role);
+                    Alert.error(intl.formatMessage(
+                        {
+                            id: 'Apis.Details.Configuration.Components.validate.role.error',
+                            defaultMessage: 'Error when validating role: {role}',
+                        },
+                        {
+                            role,
+                        },
+                    ));
                     console.error('Error when validating user roles ' + error);
                 }
             });
@@ -113,7 +121,15 @@ export default function AccessControl(props) {
                 setRoleValidity(false);
                 setInvalidRoles([...invalidRoles, role]);
             } else {
-                Alert.error('Error when validating role: ' + role);
+                Alert.error(intl.formatMessage(
+                    {
+                        id: 'Apis.Details.Configuration.Components.validate.role.error',
+                        defaultMessage: 'Error when validating role: {role}',
+                    },
+                    {
+                        role,
+                    },
+                ));
                 console.error('Error when validating roles ' + error);
             }
         });
@@ -227,8 +243,8 @@ export default function AccessControl(props) {
                                 </strong>
                                 {'  '}
                                 <FormattedMessage
-                                    id='Apis.Details.Configuration.components.AccessControl.tooltip.restrict.
-                                    desc'
+                                    id={'Apis.Details.Configuration.components.AccessControl.tooltip.restrict'
+                                        + '.desc'}
                                     defaultMessage={'The API can be viewed and modified only by specific'
                                     + ' publishers and creators with the roles that you specify'}
                                 />

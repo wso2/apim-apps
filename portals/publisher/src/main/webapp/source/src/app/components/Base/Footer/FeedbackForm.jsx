@@ -30,7 +30,7 @@ import FeedbackIcon from '@mui/icons-material/Feedback';
 import Tooltip from '@mui/material/Tooltip';
 import Grid from '@mui/material/Grid';
 import CircularProgress from '@mui/material/CircularProgress';
-
+import { FormattedMessage, useIntl } from 'react-intl';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import IconButton from '@mui/material/IconButton';
 import MoodIcon from '@mui/icons-material/Mood';
@@ -48,7 +48,7 @@ import Configurations from 'Config';
 export default function FeedbackForm() {
     const [open, setOpen] = useState(false);
     const [isSending, setIsSending] = useState(false);
-
+    const intl = useIntl();
     /**
      *
      *
@@ -98,7 +98,10 @@ export default function FeedbackForm() {
             body: JSON.stringify(data),
         });
         response.finally(() => {
-            Alert.info('Thank you for the feedback.');
+            Alert.info(intl.formatMessage({
+                id: 'App.Components.Footer.Feedback.response.msg',
+                defaultMessage: 'Thank you for the feedback.',
+            }));
             setIsSending(false);
             onClose();
         });
@@ -117,7 +120,12 @@ export default function FeedbackForm() {
             fullScreen={fullScreen}
             aria-labelledby='feedback-form-title'
         >
-            <DialogTitle>Send feedback</DialogTitle>
+            <DialogTitle>
+                <FormattedMessage
+                    id='App.Components.Footer.Feedback.response.msg.dialog.title'
+                    defaultMessage='Send feedback'
+                />
+            </DialogTitle>
             <DialogContent>
                 <Grid container spacing={3} direction='row' justifyContent='flex-start' alignItems='flex-start'>
                     <Grid item md={12}>
@@ -152,7 +160,12 @@ export default function FeedbackForm() {
                         </ButtonGroup>
                     </Grid>
                     <Grid item xs={12}>
-                        <DialogContentText>Type your message below</DialogContentText>
+                        <DialogContentText>
+                            <FormattedMessage
+                                id='App.Components.Footer.Feedback.response.msg.dialog.feedback.type'
+                                defaultMessage='Type your message below'
+                            />
+                        </DialogContentText>
                     </Grid>
                     <Grid item xs={12}>
                         <TextField
@@ -160,9 +173,15 @@ export default function FeedbackForm() {
                             onChange={({ target: { value } }) => feedbackDispatcher(
                                 { type: 'message', data: value },
                             )}
-                            label='Message'
+                            label={intl.formatMessage({
+                                id: 'App.Components.Footer.Feedback.response.msg.dialog.feedback.text',
+                                defaultMessage: 'Message',
+                            })}
                             variant='outlined'
-                            placeholder='Describe your issue or share your ideas'
+                            placeholder={intl.formatMessage({
+                                id: 'App.Components.Footer.Feedback.response.msg.dialog.feedback.description',
+                                defaultMessage: 'Describe your issue or share your ideas',
+                            })}
                             multiline
                             autoFocus
                             maxRows='10'
@@ -174,14 +193,20 @@ export default function FeedbackForm() {
             </DialogContent>
             <DialogActions>
                 <Button disabled={isSending} onClick={onClose}>
-                    CANCEL
+                    <FormattedMessage
+                        id='App.Components.Footer.Feedback.response.msg.dialog.cancel.btn'
+                        defaultMessage='CANCEL'
+                    />
                 </Button>
                 <Button
                     disabled={isSending || !(feedback.score || feedback.message)}
                     onClick={handleSubmit}
                     color='primary'
                 >
-                    SEND
+                    <FormattedMessage
+                        id='App.Components.Footer.Feedback.response.msg.dialog.send.btn'
+                        defaultMessage='SEND'
+                    />
                     {isSending && <CircularProgress size={24} />}
                 </Button>
             </DialogActions>

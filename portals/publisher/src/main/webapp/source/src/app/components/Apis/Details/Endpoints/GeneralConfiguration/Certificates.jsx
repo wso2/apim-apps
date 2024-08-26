@@ -148,7 +148,7 @@ const infoIconStyle = { mr: 1, minWidth: 'initial'};
 function Certificates(props) {
     const {
         api, certificates, productionCertificates, sandboxCertificates, uploadCertificate, deleteCertificate,
-        isMutualSSLEnabled, apiId, endpoints, aliasList, productionAliasList, sandboxAliasList,
+        isMutualSSLEnabled, apiId, endpoints, aliasList, productionAliasList, sandboxAliasList, intl
     } = props;
     const [certificateList, setCertificateList] = useState([]);
     const [productionCertificatesList, setProductionCertificateList] = useState([]);
@@ -319,7 +319,11 @@ function Certificates(props) {
                                 <Icon>add</Icon>
                             </IconButton>
                         </ListItemAvatar>
-                        <ListItemText primary='Add Certificate' />
+                        <ListItemText primary={intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.GeneralConfiguration.Certificates.certificates.AddCertificate',
+                            defaultMessage: 'Add Certificate',
+                        })}
+                        />
                     </ListItem>
                 </List>
                 <Box my={1} />
@@ -372,7 +376,11 @@ function Certificates(props) {
                                     <ListItemAvatar sx={infoIconStyle}>
                                         <Icon color='primary'>info</Icon>
                                     </ListItemAvatar>
-                                    <ListItemText>You do not have any production type certificates uploaded
+                                    <ListItemText>
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.GeneralConfiguration.no.production.certifcates'
+                                            defaultMessage='You do not have any production type certificates uploaded'
+                                        />
                                     </ListItemText>
                                 </ListItem>
                             )}
@@ -425,7 +433,12 @@ function Certificates(props) {
                                     <ListItemAvatar sx={infoIconStyle}>
                                         <Icon color='primary'>info</Icon>
                                     </ListItemAvatar>
-                                    <ListItemText>You do not have any sandbox type certificates uploaded</ListItemText>
+                                    <ListItemText>
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.GeneralConfiguration.no.sandbox.certifcates'
+                                            defaultMessage='You do not have any sandbox type certificates uploaded'
+                                        />
+                                    </ListItemText>
                                 </ListItem>
                             )}
                         </List>
@@ -470,7 +483,13 @@ function Certificates(props) {
                                 <ListItemAvatar sx={infoIconStyle}>
                                     <Icon color='primary'>info</Icon>
                                 </ListItemAvatar>
-                                <ListItemText>You do not have any certificates uploaded</ListItemText>
+                                <ListItemText>
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.GeneralConfiguration.'
+                                            + 'Certificates.NoCertificatesUploaded'}
+                                        defaultMessage='You do not have any certificates uploaded'
+                                    />
+                                </ListItemText>
                             </ListItem>
                         )}
                     </List>

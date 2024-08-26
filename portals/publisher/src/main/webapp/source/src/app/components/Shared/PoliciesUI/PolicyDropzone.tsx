@@ -23,6 +23,7 @@ import green from '@mui/material/colors/green';
 import red from '@mui/material/colors/red';
 import clsx from 'clsx';
 import type { AttachedPolicy, Policy, PolicySpec } from './Types';
+import { FormattedMessage } from 'react-intl';
 
 const PREFIX = 'PolicyDropzoneShared';
 
@@ -127,7 +128,12 @@ const PolicyDropzoneShared: FC<PolicyDropzoneSharedProps> = ({
                     })}
                 >
                     {currentPolicyList.length === 0 ? (
-                        <Typography>Drag and drop policies here</Typography>
+                        <Typography>
+                            <FormattedMessage
+                                id='App.Components.Policies.Drop.Zone.text.label'
+                                defaultMessage='Drag and drop policies here'
+                            />
+                        </Typography>
                     ) : (
                         <AttachedPolicyList
                             currentPolicyList={currentPolicyList}

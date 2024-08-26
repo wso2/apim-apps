@@ -190,14 +190,25 @@ export default function ApiCreateGraphQL(props) {
             .importGraphQL(apiData)
             .then((response) => {
                 const uuid = response.obj.id;
-                Alert.info(`${name} API created successfully`);
+                Alert.info(intl.formatMessage(
+                    {
+                        id: 'Apis.Create.GraphQL.ApiCreateGraphQL.created.success',
+                        defaultMessage: '{name} API created successfully',
+                    },
+                    {
+                        name,
+                    },
+                ));
                 history.push(`/apis/${uuid}/overview`);
             })
             .catch((error) => {
                 if (error.response) {
                     Alert.error(error.response.body.description);
                 } else {
-                    Alert.error('Something went wrong while adding the API');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Create.GraphQL.ApiCreateGraphQL.created.error',
+                        defaultMessage: 'Something went wrong while adding the API',
+                    }));
                 }
                 console.error(error);
             })

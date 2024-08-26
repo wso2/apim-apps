@@ -27,7 +27,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import CodeIcon from '@mui/icons-material/Code';
 import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
 import ResourcesIcon from '@mui/icons-material/VerticalSplit';
-import { injectIntl, defineMessages } from 'react-intl';
+import { injectIntl, defineMessages , FormattedMessage} from 'react-intl';
 import {
     Redirect, Route, Switch, Link, matchPath,
 } from 'react-router-dom';
@@ -533,6 +533,7 @@ class Details extends Component {
      */
     getRevision() {
         const { api } = this.state;
+        const { intl } = this.props;
         const restApi = new API();
         const restApiProduct = new APIProduct();
         let isAPIProduct = false;
@@ -554,7 +555,10 @@ class Details extends Component {
                 this.setState({ allRevisions: result.body.list });
             })
             .catch(() => {
-                Alert.error('Something went wrong while getting the revisions!');
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Index.get.revisions.error',
+                    defaultMessage: 'Something went wrong while getting the revisions!',
+                }));
             });
     }
 
@@ -563,6 +567,7 @@ class Details extends Component {
      */
     getDeployedEnv() {
         const { api } = this.state;
+        const { intl } = this.props;
         const restApi = new API();
         const restApiProduct = new APIProduct();
         let isAPIProduct = false;
@@ -582,7 +587,10 @@ class Details extends Component {
                 this.setState({ allEnvRevision: result.body.list });
             })
             .catch(() => {
-                Alert.error('Something went wrong while getting the revisions!');
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Index.get.revisions.error',
+                    defaultMessage: 'Something went wrong while getting the revisions!',
+                }));
             });
     }
 
@@ -615,6 +623,7 @@ class Details extends Component {
      */
     updateAPI(_updatedProperties = {}) {
         const { api } = this.state;
+        const { intl } = this.props;
         let isAPIProduct = false;
         if (api.apiType === API.CONSTS.APIProduct) {
             isAPIProduct = true;
@@ -638,11 +647,23 @@ class Details extends Component {
         return promisedUpdate
             .then((updatedAPI) => {
                 if (isAPIProduct) {
-                    Alert.info(`${updatedAPI.name} API Product updated successfully`);
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.index.api.product.update.success',
+                        defaultMessage: '{updatedAPIName} API Product updated successfully',
+                    },
+                    {
+                        updatedAPIName: updatedAPI.name,
+                    }));
                     this.setState({ api: updatedAPI });
                     return updatedAPI;
                 } else {
-                    Alert.info(`${updatedAPI.name} API updated successfully`);
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.index.api.update.success',
+                        defaultMessage: '{updatedAPIName} API updated successfully',
+                    },
+                    {
+                        updatedAPIName: updatedAPI.name,
+                    }));
                     this.setState({ api: updatedAPI });
                     return updatedAPI;
                 }
@@ -650,7 +671,13 @@ class Details extends Component {
             .catch((error) => {
                 // TODO: Should log and handle the error case by the original callee ~tmkb
                 console.error(error);
-                Alert.error(`Something went wrong while updating the ${api.name} API!!`);
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.index.api.product.update.error',
+                    defaultMessage: 'Something went wrong while updating the {apiName} API!!',
+                },
+                {
+                    apiName: api.name,
+                }));
                 // Kinda force render,Resting API object to old one
                 this.setState({ api });
                 throw error;
@@ -757,7 +784,7 @@ class Details extends Component {
                                 id='left-menu-overview'
                             />
                             <Typography className={classes.headingText}>
-                                Develop
+                                <FormattedMessage id='Apis.Details.index.develop.title' defaultMessage='Develop' />
                             </Typography>
                             <DevelopSectionMenu
                                 pathPrefix={pathPrefix}
@@ -769,7 +796,12 @@ class Details extends Component {
                             <Divider />
                             {!isAPIProduct && (
                                 <>
-                                    <Typography className={classes.headingText}>Deploy</Typography>
+                                    <Typography className={classes.headingText}>
+                                        <FormattedMessage
+                                            id='Apis.Details.index.deploy.title'
+                                            defaultMessage='Deploy'
+                                        />
+                                    </Typography>
                                     <LeftMenuItem
                                         text={intl.formatMessage({
                                             id: 'Apis.Details.index.environments',
@@ -784,7 +816,12 @@ class Details extends Component {
                             )}
                             {isAPIProduct && (
                                 <>
-                                    <Typography className={classes.headingText}>Deploy</Typography>
+                                    <Typography className={classes.headingText}>
+                                        <FormattedMessage
+                                            id='Apis.Details.index.deploy.title'
+                                            defaultMessage='Deploy'
+                                        />
+                                    </Typography>
                                     <LeftMenuItem
                                         text={intl.formatMessage({
                                             id: 'Apis.Details.index.environments',
@@ -801,7 +838,12 @@ class Details extends Component {
                                 && !isAsyncAPI)) && (
                                 <div>
                                     <Divider />
-                                    <Typography className={classes.headingText}>Test</Typography>
+                                    <Typography className={classes.headingText}>
+                                        <FormattedMessage
+                                            id='Apis.Details.index.test.title'
+                                            defaultMessage='Test'
+                                        />
+                                    </Typography>
                                     <LeftMenuItem
                                         route='test-console'
                                         text={intl.formatMessage({
@@ -817,7 +859,12 @@ class Details extends Component {
                             {!isRestricted(['apim:api_publish'], api) && (
                                 <div>
                                     <Divider />
-                                    <Typography className={classes.headingText}>Publish</Typography>
+                                    <Typography className={classes.headingText}>
+                                        <FormattedMessage
+                                            id='Apis.Details.index.publish.title'
+                                            defaultMessage='Publish'
+                                        />
+                                    </Typography>
                                     <LeftMenuItem
                                         text={intl.formatMessage({
                                             id: 'Apis.Details.index.lifecycle',

@@ -220,7 +220,10 @@ class SchemaValidation extends React.Component {
                             onClick={() => this.setIsOpen(false)}
                             id='schema-validation-yes-btn'
                         >
-                            Yes
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.SchemaValidation.btn.yes'
+                                defaultMessage='Yes'
+                            />
                         </Button>
                         <Button
                             onClick={() => {
@@ -232,7 +235,10 @@ class SchemaValidation extends React.Component {
                             }}
                             color='primary'
                         >
-                            No
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.SchemaValidation.btn.no'
+                                defaultMessage='No'
+                            />
                         </Button>
                     </DialogActions>
                 </Dialog>

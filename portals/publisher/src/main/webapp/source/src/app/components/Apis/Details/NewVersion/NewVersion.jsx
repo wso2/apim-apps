@@ -141,7 +141,7 @@ class CreateNewVersion extends React.Component {
     }
 
     componentDidMount() {
-        const { api } = this.props;
+        const { api, intl} = this.props;
         if (api.serviceInfo !== undefined) {
             if (api.serviceInfo !== null) {
                 const promisedServices = ServiceCatalog.getServiceByName(api.serviceInfo);
@@ -150,7 +150,10 @@ class CreateNewVersion extends React.Component {
                     this.setState({ versionList: array });
                 }).catch((error) => {
                     console.error(error);
-                    Alert.error('Error while loading services version');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.NewVersion.loading.services.error',
+                        defaultMessage: 'Error while loading services version',
+                    }));
                 });
             }
         }
@@ -274,7 +277,7 @@ class CreateNewVersion extends React.Component {
      * @returns {*} CreateNewVersion component
      */
     render() {
-        const {  api } = this.props;
+        const {  api, intl } = this.props;
         const {
             isDefaultVersion, newVersion, redirectToReferrer, apiId, valid, serviceVersion, versionList,
         } = this.state;
@@ -284,13 +287,26 @@ class CreateNewVersion extends React.Component {
 
         let helperText = '';
         if (valid.version.empty) {
-            helperText = 'This field cannot be empty';
+            helperText = intl.formatMessage({
+                id: 'Apis.Details.NewVersion.NewVersion.helper.field.is.empty',
+                defaultMessage: 'This field cannot be empty'
+            });
         } else if (valid.version.alreadyExists) {
-            helperText = 'An API with version "' + newVersion + '" already exists.';
+            helperText = intl.formatMessage({
+                id: 'Apis.Details.NewVersion.NewVersion.helper.version.exists',
+                defaultMessage: 'An API with version {newVersion} already exists.',
+            },
+            { newVersion });
         } else if (valid.version.hasSpecialChars) {
-            helperText = 'API Version should not contain special characters';
+            helperText = intl.formatMessage({
+                id: 'Apis.Details.NewVersion.NewVersion.helper.version.is.invalid',
+                defaultMessage: 'API Version should not contain special characters',
+            });
         } else if (valid.version.MaxLengthExceeds) {
-            helperText = 'API version exceeds maximum length of 30 characters';
+            helperText = intl.formatMessage({
+                id: 'Apis.Details.NewVersion.NewVersion.helper.version.is.too.long',
+                defaultMessage: 'API version exceeds maximum length of 30 characters',
+            });
         }
 
         return (
@@ -328,7 +344,10 @@ class CreateNewVersion extends React.Component {
                                         }
                                         type='text'
                                         name='newVersion'
-                                        placeholder='Eg: 2.0.0'
+                                        placeholder={intl.formatMessage({
+                                            id: 'Apis.Details.NewVersion.NewVersion.new.version.placeholder',
+                                            defaultMessage: 'Eg: 2.0.0',
+                                        }) }
                                         value={newVersion}
                                         variant='outlined'
                                         onChange={this.handleVersionChange()}

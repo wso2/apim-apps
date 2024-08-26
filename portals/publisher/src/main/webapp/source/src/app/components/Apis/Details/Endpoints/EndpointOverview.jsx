@@ -1155,7 +1155,19 @@ function EndpointOverview(props) {
                                                                             : (
                                                                                 <GenericEndpoint
                                                                                     autoFocus
-                                                                                    name='Sandbox Endpoint'
+                                                                                    name={(
+                                                                                        <FormattedMessage
+                                                                                            id={'Apis.Details.'
+                                                                                                + 'Endpoints.'
+                                                                                                + 'EndpointOverview.'
+                                                                                                + 'sandbox.'
+                                                                                                + 'endpoint.sandbox.'
+                                                                                                + 'header'}
+                                                                                            defaultMessage={
+                                                                                                'Sandbox '
+                                                                                                + 'Endpoint'}
+                                                                                        />
+                                                                                    )}
                                                                                     className={classes.
                                                                                         defaultEndpointWrapper}
                                                                                     endpointURL={getEndpoints

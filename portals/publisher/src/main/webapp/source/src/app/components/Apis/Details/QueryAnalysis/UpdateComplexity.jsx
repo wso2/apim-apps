@@ -18,7 +18,7 @@
 
 import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Table from '@mui/material/Table';
@@ -61,7 +61,7 @@ export default function UpdateComplexity(props) {
     const {
         setList, typelist, list,
     } = props;
-
+    const intl = useIntl();
     /**
      * Filter the information by Types.
      */
@@ -77,8 +77,14 @@ export default function UpdateComplexity(props) {
                     <div className={classes.searchWrapper}>
                         <TextField
                             id='outlined-full-width'
-                            label='Type'
-                            placeholder='Search By Types'
+                            label={intl.formatMessage({
+                                id: 'Apis.Details.QueryAnalysis.UpdateComplexity.type.label',
+                                defaultMessage: 'Type',
+                            })}
+                            placeholder={intl.formatMessage({
+                                id: 'Apis.Details.QueryAnalysis.UpdateComplexity.type.placeholder',
+                                defaultMessage: 'Search By Types',
+                            })}
                             onChange={(e) => setFilterByKeyWord(e, typelist)}
                             fullWidth
                             variant='outlined'
@@ -142,10 +148,22 @@ export default function UpdateComplexity(props) {
                                                     <Table>
                                                         <TableRow>
                                                             <TableCell>
-                                                                <b>Field</b>
+                                                                <b>
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.QueryAnalysis.'
+                                                                            + 'UpdateComplexity.table.field'}
+                                                                        defaultMessage='Field'
+                                                                    />
+                                                                </b>
                                                             </TableCell>
                                                             <TableCell>
-                                                                <b>ComplexityValue</b>
+                                                                <b>
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.QueryAnalysis.'
+                                                                            + 'UpdateComplexity.table.complexity.value'}
+                                                                        defaultMessage='ComplexityValue'
+                                                                    />
+                                                                </b>
                                                             </TableCell>
                                                         </TableRow>
                                                         {list.map((respond, index) => ((respond.type === typename.type)

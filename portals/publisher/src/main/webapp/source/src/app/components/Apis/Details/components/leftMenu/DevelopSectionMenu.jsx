@@ -41,7 +41,7 @@ import MonetizationIcon from '@mui/icons-material/LocalAtm';
 import { isRestricted } from 'AppData/AuthManager';
 import { PROPERTIES as UserProperties } from 'AppData/User';
 import { useUser } from 'AppComponents/Shared/AppContext';
-import { useIntl } from 'react-intl';
+import { useIntl, FormattedMessage } from 'react-intl';
 
 const PREFIX = 'DevelopSectionMenu';
 
@@ -146,7 +146,10 @@ export default function DevelopSectionMenu(props) {
                     expandIcon={<ExpandMoreIcon className={classes.expandIconColor} />}
                 >
                     <Typography className={classes.leftLInkText}>
-                        Portal Configurations
+                        <FormattedMessage
+                            id='Apis.Details.index.design.portal.configs.title'
+                            defaultMessage='Portal Configurations'
+                        />
                     </Typography>
                 </AccordianSummary>
                 <AccordionDetails>
@@ -232,11 +235,17 @@ export default function DevelopSectionMenu(props) {
                     <Typography 
                         className={classes.leftLInkText} 
                         data-testid='itest-api-config'>
-                        API Configurations
+                        <FormattedMessage
+                            id='Apis.Details.index.design.api.configs.title'
+                            defaultMessage='API Configurations'
+                        />
                     </Typography>
                     <Tooltip
-                        title={'If you make any changes to the API configuration, you need to redeploy'
-                            + ' the API to see updates in the API Gateway.'}
+                        title={intl.formatMessage({
+                            id: 'Apis.Details.index.design.api.configs.title.tooltip',
+                            defaultMessage: 'If you make any changes to the API configuration, you need to redeploy'
+                                + ' the API to see updates in the API Gateway.',
+                        })}
                         placement='bottom'
                     >
                         <IconButton color='primary' size='small' aria-label='delete' sx={{ p: '3px' }}>

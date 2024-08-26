@@ -219,14 +219,20 @@ export default function ApiProductCreateWrapper(props) {
         const promisedCreatedAPIProduct = newAPIProduct
             .saveProduct(apiData)
             .then((apiProduct) => {
-                Alert.info('API Product created successfully');
+                Alert.info(intl.formatMessage({
+                    id: 'Apis.Create.APIProduct.APIProductCreateWrapper.created.success',
+                    defaultMessage: 'API Product created successfully',
+                }));
                 return apiProduct;
             })
             .catch((error) => {
                 if (error.response) {
                     Alert.error(error.response.body.description);
                 } else {
-                    Alert.error('Something went wrong while adding the API Product');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.APIProductCreateWrapper.error.errorMessage.create.api.product',
+                        defaultMessage: 'Something went wrong while adding the API Product',
+                    }));
                 }
             })
             .finally(() => setCreating(false));
@@ -244,7 +250,10 @@ export default function ApiProductCreateWrapper(props) {
         createAPIProduct()
             .then((apiProduct) => {
                 setIsRevisioning(true);
-                Alert.info('API Product created successfully');
+                Alert.info(intl.formatMessage({
+                    id: 'Apis.Create.APIProduct.APIProductCreateWrapper.created.success',
+                    defaultMessage: 'API Product created successfully',
+                }));
                 const body = {
                     description: 'Initial Revision',
                 };
@@ -252,7 +261,10 @@ export default function ApiProductCreateWrapper(props) {
                     .then((api1) => {
                         setIsRevisioning(false);
                         const revisionId = api1.body.id;
-                        Alert.info('API Revision created successfully');
+                        Alert.info(intl.formatMessage({
+                            id: 'Apis.Create.APIProduct.APIProductCreateWrapper.revision.created.success',
+                            defaultMessage: 'API Revision created successfully',
+                        }));
                         const envList = settings.environment.map((env) => env.name);
                         const body1 = [];
                         const getFirstVhost = (envName) => {
@@ -279,7 +291,10 @@ export default function ApiProductCreateWrapper(props) {
                         setIsDeploying(true);
                         newAPIProduct.deployProductRevision(apiProduct.id, revisionId, body1)
                             .then(() => {
-                                Alert.info('API Product Revision Deployed Successfully');
+                                Alert.info(intl.formatMessage({
+                                    id: 'Apis.Create.APIProduct.APIProductCreateWrapper.revision.deployed.success',
+                                    defaultMessage: 'API Revision Deployed Successfully',
+                                }));
                                 setIsDeploying(false);
                                 setIsPublishing(true);
                                 newAPIProduct.updateLcState(apiProduct.id, 'Publish')
@@ -331,7 +346,10 @@ export default function ApiProductCreateWrapper(props) {
                 if (error.response) {
                     Alert.error(error.response.body.description);
                 } else {
-                    Alert.error('Something went wrong while adding the API Product');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.APIProductCreateWrapper.error.errorMessage.create.api.product',
+                        defaultMessage: 'Something went wrong while adding the API Product',
+                    }))
                 }
             })
             .finally(() => setCreating(false));
@@ -458,15 +476,44 @@ export default function ApiProductCreateWrapper(props) {
                                     }
                                     onClick={createAndPublishAPIProduct}
                                 >
-                                    {(!isPublishing && !isRevisioning && !isDeploying) && 'Create & Publish'}
+                                    {(!isPublishing && !isRevisioning && !isDeploying) &&
+                                        <FormattedMessage
+                                            id='Apis.Create.APIProduct.APIProductCreateWrapper.create.and.publish.btn'
+                                            defaultMessage='Create & Publish'
+                                        />
+                                    }
                                     {(isPublishing || isRevisioning || isDeploying)
                                     && <CircularProgress size={24} />}
-                                    {isCreating && isPublishing && 'Creating API Product. . .'}
-                                    {!isCreating && isRevisioning && !isDeploying && 'Creating Revision . . .'}
+                                    {isCreating && isPublishing &&
+                                        <FormattedMessage
+                                            id='Apis.Create.APIProduct.APIProductCreateWrapper.create.status'
+                                            defaultMessage='Creating API Product. . .'
+                                        />
+                                    }
+                                    {!isCreating && isRevisioning && !isDeploying &&
+                                        <FormattedMessage
+                                            id={'Apis.Create.APIProduct.APIProductCreateWrapper.create.'
+                                                + 'revision.status'}
+                                            defaultMessage='Creating Revision . . .'
+                                        />
+                                    }
                                     {!isCreating && isPublishing
-                                    && !isRevisioning && !isDeploying && 'Publishing API Product. . .'}
+                                    && !isRevisioning && !isDeploying &&
+                                        <FormattedMessage
+                                            id={'Apis.Create.APIProduct.APIProductCreateWrapper.create.'
+                                                + 'publish.status'}
+                                            defaultMessage='Publishing API Product. . .'
+                                        />
+                                    }
                                     {!isCreating && isPublishing
-                                    && !isRevisioning && isDeploying && 'Deploying Revision . . .'}
+                                    && !isRevisioning && isDeploying &&
+                                        <FormattedMessage
+                                            id={'Apis.Create.APIProduct.APIProductCreateWrapper.create.'
+                                                + 'deploy.revision.status'}
+                                            defaultMessage='Deploying Revision . . .'
+                                        />
+
+                                    }
                                 </Button>
                             )}
                         </Grid>

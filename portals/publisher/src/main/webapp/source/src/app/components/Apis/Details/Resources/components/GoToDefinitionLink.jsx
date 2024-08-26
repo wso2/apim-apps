@@ -22,6 +22,7 @@ import Box from '@mui/material/Box';
 import LaunchIcon from '@mui/icons-material/Launch';
 import { Link } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
+import { useIntl } from 'react-intl';
 
 const PREFIX = 'GoToDefinitionLink';
 
@@ -50,12 +51,17 @@ const StyledBox = styled(Box)((
  */
 export default function GoToDefinitionLink(props) {
     const { api, message } = props;
-
+    const intl = useIntl();
+    
     return (
         <StyledBox m={1}>
             <Link to={`/apis/${api.id}/api-definition`}>
                 <Typography className={classes.link} variant='caption'>
-                    {message}
+                    {message
+                        || intl.formatMessage({
+                            id: 'Apis.Details.Resources.Components.Go.To.Definition',
+                            defaultMessage: 'Edit API Definition',
+                        })}
                     <LaunchIcon style={{ marginLeft: '2px' }} fontSize='small' />
                 </Typography>
             </Link>
@@ -63,7 +69,7 @@ export default function GoToDefinitionLink(props) {
     );
 }
 GoToDefinitionLink.defaultProps = {
-    message: 'Edit API Definition',
+    message: undefined,
 };
 GoToDefinitionLink.propTypes = {
     api: PropTypes.shape({ id: PropTypes.string }).isRequired,

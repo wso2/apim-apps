@@ -22,6 +22,7 @@ import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import Typography from '@mui/material/Typography';
 import { getVersion } from 'AppComponents/Apis/Details/Resources/operationUtils';
+import { FormattedMessage } from 'react-intl';
 import AddParameter from './AddParameter';
 import ListParameters from './ListParameters';
 
@@ -41,7 +42,7 @@ export default function Parameters(props) {
         <>
             <Grid item xs={12} md={12}>
                 <Typography variant='subtitle1'>
-                    Parameters
+                    <FormattedMessage id='Apis.Details.Resources.Operation.Parameters' defaultMessage='Parameters' />
                     <Divider variant='middle' />
                 </Typography>
             </Grid>

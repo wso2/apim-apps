@@ -67,7 +67,10 @@ export default function APIProductOperations() {
         <Grid container spacing={4}>
             <Grid item md={12}>
                 <Typography variant='h4' gutterBottom>
-                    Product Resources
+                    <FormattedMessage
+                        id='Apis.Details.Resources.Resources.edit.resources.title'
+                        defaultMessage='Product Resources'
+                    />
                 </Typography>
                 <Box component='div' display='inline'>
                     <Link to={'/api-products/' + api.id + '/resources/edit'}>
@@ -104,7 +107,10 @@ export default function APIProductOperations() {
                             size='small'
                             color='primary'
                         >
-                            Save
+                            <FormattedMessage
+                                id='Apis.Details.Resources.Resources.resources.save.button'
+                                defaultMessage='Save'
+                            />
                             {isSaving && <CircularProgress size={24} />}
                         </Button>
                         <Box display='inline' ml={1}>
@@ -113,7 +119,10 @@ export default function APIProductOperations() {
                                 variant='outlined'
                                 onClick={() => setApiThrottlingPolicy(api.apiThrottlingPolicy)}
                             >
-                                Reset
+                                <FormattedMessage
+                                    id='Apis.Details.Resources.Resources.resources.reset.button'
+                                    defaultMessage='Reset'
+                                />
                             </Button>
                         </Box>
                     </Box>

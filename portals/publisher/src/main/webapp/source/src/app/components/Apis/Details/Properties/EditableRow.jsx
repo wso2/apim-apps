@@ -143,8 +143,7 @@ function EditableRow(props) {
                         onKeyDown={handleKeyDown}
                         helperText={validateEmpty(newKey) ? ''
                             : iff(isKeyword(newKey), intl.formatMessage({
-                                id: `Apis.Details.Properties.Properties.
-                                show.add.property.invalid.error`,
+                                id: 'Apis.Details.Properties.Properties.show.add.property.invalid.error',
                                 defaultMessage: 'Invalid property name',
                             }), '')}
                         error={validateEmpty(newKey) || isKeyword(newKey)}
@@ -186,7 +185,7 @@ function EditableRow(props) {
                                 />
                             )}
                             label={intl.formatMessage({
-                                id: 'Apis.Details.Properties.Properties.editable.show.in.devporal',
+                                id: 'Apis.Details.Properties.Properties.editable.show.in.devportal',
                                 defaultMessage: 'Show in devportal',
                             })}
                             classes={{ root: classes.checkBoxStyles, colorPrimary: classes.colorPrimary }}
