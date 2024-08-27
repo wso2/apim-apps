@@ -16,8 +16,8 @@
  * under the License.
  */
 
-import React, { useMemo, useState } from 'react';
-import PropTypes from 'prop-types';
+import React, { useState } from 'react';
+// import PropTypes from 'prop-types';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -27,6 +27,7 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import FormControl from '@mui/material/FormControl';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import Checkbox from '@mui/material/Checkbox';
 import FormLabel from '@mui/material/FormLabel';
 import Grid from '@mui/material/Grid';
 import HelpOutline from '@mui/icons-material/HelpOutline';
@@ -37,11 +38,12 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
+// import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 
 const SubscriptionValidation = (props) => {
     const {
-        configDispatcher,
+        // configDispatcher,
+        handleSubValidationDisable,
         api: {
             lifeCycleStatus,
             disableSubscriptionValidation
@@ -50,49 +52,70 @@ const SubscriptionValidation = (props) => {
     const [apiFromContext] = useAPI();
     const [isOpen, setIsOpen] = useState(false);
     const [selectedOption, setSelectedOption] = useState(disableSubscriptionValidation);
-    const { allRevisions } = useRevisionContext();
+    // const { allRevisions } = useRevisionContext();
 
-    const isDeployed = useMemo(() => {
-        if (allRevisions) {
-            for (let i = 0; i < allRevisions.length; i++) {
-                if (allRevisions[i].deploymentInfo.length > 0) {
-                    return true;
-                }
-            }
-        }
-        return false;
-    }, [allRevisions]);
+    // const isDeployed = useMemo(() => {
+    //     if (allRevisions) {
+    //         for (let i = 0; i < allRevisions.length; i++) {
+    //             if (allRevisions[i].deploymentInfo.length > 0) {
+    //                 return true;
+    //             }
+    //         }
+    //     }
+    //     return false;
+    // }, [allRevisions]);
 
     const handleChange = (event) => {
-        const val = event.target.value === 'true';
+        const val = event.target.checked;
         if (val) {
             setIsOpen(true);
         } else {
             setSelectedOption(val);
-            configDispatcher({ action: 'disableSubscriptionValidation', value: val });   
+            // configDispatcher({ action: 'disableSubscriptionValidation', value: val });   
         }
     };
 
-    const handleDialogYes = () => {
+    const handleCheckDialogYes = () => {
         setSelectedOption(true);
-        configDispatcher({ action: 'disableSubscriptionValidation', value: true });
+        handleSubValidationDisable(true);
+        // configDispatcher({ action: 'disableSubscriptionValidation', value: true });
         setIsOpen(false);
     };
 
-    const handleDialogNo = () => {
+    const handleCheckDialogNo = () => {
         setSelectedOption(false);
         setIsOpen(false);
     };
 
     const handleSelectionDisable = () => {
         // The selection should be disabled for the following scenarios
-        return isDeployed || lifeCycleStatus === 'PUBLISHED';
+        return lifeCycleStatus === 'PUBLISHED';
     };
 
     return (
         <Grid container spacing={1} alignItems='flex-start' xs={11}>
             <Grid item>
                 <Box>
+                    <FormControl component='fieldset' style={{ display: 'flex' }}>
+                        <FormControlLabel
+                            disabled={isRestricted(['apim:api_create'], apiFromContext) || handleSelectionDisable()}
+                            control={
+                                <Checkbox 
+                                    checked={selectedOption || false}
+                                    onChange={handleChange}
+                                    inputProps={{ 'aria-label': 'controlled' }}
+                                />
+                            } 
+                            label={
+                                <FormLabel component='legend'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.Configuration.subValidationDisabled.label'
+                                        defaultMessage='Disable Subscription Validation'
+                                    />
+                                </FormLabel>
+                            } 
+                        />
+                    </FormControl>
                     <FormControl component='fieldset' style={{ display: 'flex' }}>
                         <FormLabel component='legend'>
                             <FormattedMessage
@@ -197,7 +220,7 @@ const SubscriptionValidation = (props) => {
                         color='primary'
                         variant='contained'
                         onClick={() => {
-                            handleDialogYes();
+                            handleCheckDialogYes();
 
                         }}
                         id='disable-sub-validation-yes-btn'
@@ -206,7 +229,7 @@ const SubscriptionValidation = (props) => {
                     </Button>
                     <Button
                         onClick={() => {
-                            handleDialogNo();
+                            handleCheckDialogNo();
                         }}
                         color='primary'
                     >
@@ -218,8 +241,8 @@ const SubscriptionValidation = (props) => {
     );
 };
 
-SubscriptionValidation.propTypes = {
-    configDispatcher: PropTypes.func.isRequired,
-};
+// SubscriptionValidation.propTypes = {
+//     // configDispatcher: PropTypes.func.isRequired,
+// };
 
 export default React.memo(SubscriptionValidation);

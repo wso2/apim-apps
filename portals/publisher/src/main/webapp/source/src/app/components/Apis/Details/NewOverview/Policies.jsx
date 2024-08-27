@@ -44,15 +44,17 @@ function Policies(props) {
             <Grid item xs={12} md={6} lg={8}>
                 {/* Throttling Policies */}
                 <Typography component='p' variant='body1'>
-                    {api.policies
-                    && api.policies.length !== 0
-                    && api.policies.map((item, index) => (
-                        <span>
-                            {item}
-                            {api.policies.length !== index + 1 && ', '}
-                            {' '}
-                        </span>
-                    ))}
+                    {api.policies && api.policies.length > 0 ? (
+                        api.policies.map((item, index) => (
+                            <span>
+                                {item}
+                                {api.policies.length !== index + 1 && ', '}
+                                {' '}
+                            </span>
+                        ))
+                    ) : (
+                        <span>-</span>
+                    )}
                 </Typography>
             </Grid>
         </>

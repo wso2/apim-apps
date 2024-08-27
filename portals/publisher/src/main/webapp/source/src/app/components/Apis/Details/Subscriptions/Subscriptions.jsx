@@ -33,6 +33,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import SubscriptionsTable from './SubscriptionsTable';
 import SubscriptionPoliciesManage from './SubscriptionPoliciesManage';
 import SubscriptionAvailability from './SubscriptionAvailability';
+import SubscriptionValidation from '../Configuration/components/SubscriptionValidation';
 
 const PREFIX = 'Subscriptions';
 
@@ -73,6 +74,7 @@ function Subscriptions(props) {
     const [tenantList, setTenantList] = useState(api.subscriptionAvailableTenants);
     const [subscriptions, setSubscriptions] = useState(null);
     const [updateInProgress, setUpdateInProgress] = useState(false);
+    const [subValidationDisabled, setSubValidationDisabled] = useState(api.disableSubscriptionValidation);
     const { settings } = useAppContext();
 
     /**
@@ -85,6 +87,7 @@ function Subscriptions(props) {
             policies,
             subscriptionAvailability,
             subscriptionAvailableTenants: tenantList,
+            disableSubscriptionValidation: subValidationDisabled,
         };
         updateAPI(newApi)
             .then(() => {
@@ -99,6 +102,11 @@ function Subscriptions(props) {
             }).finally(() => {
                 setUpdateInProgress(false);
             });
+    }
+
+    function handleSubValidationDisable(value) {
+        console.log('handleSubValidationDisable: ' + value);
+        setSubValidationDisabled(value);
     }
 
     useEffect(() => {
@@ -124,13 +132,17 @@ function Subscriptions(props) {
     }
     return (
         (<Root>
+            <SubscriptionValidation
+                api={api}
+                handleSubValidationDisable={handleSubValidationDisable}
+            />           
             {(api.gatewayVendor === 'wso2') &&
             (api.gatewayType === 'wso2/synapse' ||
-            api.apiType === API.CONSTS.APIProduct)
+            api.apiType === API.CONSTS.APIProduct) && !api.disableSubscriptionValidation
             && (<SubscriptionPoliciesManage api={api} policies={policies} setPolices={setPolices} />)}
             {tenants !== 0 && settings.crossTenantSubscriptionEnabled && 
             (api.gatewayType === 'wso2/synapse' ||
-            api.apiType === API.CONSTS.APIProduct) && (
+            api.apiType === API.CONSTS.APIProduct) && !api.disableSubscriptionValidation && (
                 <SubscriptionAvailability
                     api={api}
                     availability={availability}
@@ -178,7 +190,7 @@ function Subscriptions(props) {
                     </Grid>
                 </Grid>
             )}
-            <SubscriptionsTable api={api} />
+            {!api.disableSubscriptionValidation &&  <SubscriptionsTable api={api} />}
         </Root>)
     );
 }

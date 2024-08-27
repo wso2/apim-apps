@@ -186,17 +186,18 @@ export default function CustomizedStepper() {
     }
     let activeStep = 0;
     if (api && (api.type === 'WEBSUB' || isEndpointAvailable)
-        && (isTierAvailable || isMutualSslOnly) && !deploymentsAvailable) {
+        && (isTierAvailable || isMutualSslOnly || api.disableSubscriptionValidation) && !deploymentsAvailable) {
         activeStep = 1;
     } else if ((api && !isEndpointAvailable && api.type !== 'WEBSUB')
-        || (api && !isMutualSslOnly && !isTierAvailable)) {
+        || (api && !isMutualSslOnly && !isTierAvailable && !api.disableSubscriptionValidation)) {
         activeStep = 0;
-    } else if (api && (isEndpointAvailable || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
+    } else if (api && (isEndpointAvailable || api.type === 'WEBSUB') 
+        && (isTierAvailable || isMutualSslOnly || api.disableSubscriptionValidation)
         && deploymentsAvailable && (!isPublished && lifecycleState !== 'PROTOTYPED')) {
         activeStep = steps.length - 1;
     } else if ((isPublished || lifecycleState === 'PROTOTYPED') && api
         && (isEndpointAvailable || api.type === 'WEBSUB' || isPrototypedAvailable)
-        && (isTierAvailable || isMutualSslOnly) && deploymentsAvailable) {
+        && (isTierAvailable || isMutualSslOnly || api.disableSubscriptionValidation) && deploymentsAvailable) {
         activeStep = steps.length;
     }
 
@@ -391,7 +392,7 @@ export default function CustomizedStepper() {
                                 data-testid='publish-state-button'
                                 onClick={() => updateLCStateOfAPI(api.id, 'Publish')}
                                 disabled={((api.type !== 'WEBSUB' && !isEndpointAvailable)
-                                    || (!isMutualSslOnly && !isTierAvailable))
+                                    || (!isMutualSslOnly && !api.disableSubscriptionValidation && !isTierAvailable))
                                     || !deploymentsAvailable
                                     || api.isRevision || AuthManager.isNotPublisher()
                                     || api.workflowStatus === 'CREATED'}
@@ -417,10 +418,9 @@ export default function CustomizedStepper() {
     }
     const isTestLinkDisabled = lifecycleState === 'RETIERD' || !deploymentsAvailable
     || (!api.isAPIProduct() && !isEndpointAvailable)
-    || (!isMutualSslOnly && !isTierAvailable)
+    || (!isMutualSslOnly && !api.disableSubscriptionValidation && !isTierAvailable)
     || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT');
     const isDeployLinkDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || (!isMutualSslOnly && !isTierAvailable)
     || api.workflowStatus === 'CREATED' || lifecycleState === 'RETIRED');
     let deployLinkToolTipTitle = '';
     if (lifecycleState === 'RETIRED') {
@@ -501,50 +501,6 @@ export default function CustomizedStepper() {
                                                                         id='Apis.Details.Overview.
                                                                         CustomizedStepper.Endpoint'
                                                                         defaultMessage=' Endpoint'
-                                                                    />
-                                                                </Typography>
-                                                                <Box ml={1}>
-                                                                    <LinkIcon
-                                                                        color='primary'
-                                                                        fontSize='small'
-                                                                    />
-                                                                </Box>
-                                                            </Link>
-                                                        </Grid>
-                                                    </Box>
-                                                </Grid>
-                                            </Box>
-                                        )}
-                                        {(api.gatewayVendor === 'wso2') && (
-                                            <Box ml={6}>
-                                                <Grid
-                                                    container
-                                                    direction='row'
-                                                    justifyContent='center'
-                                                    style={{ marginLeft: '2px' }}
-                                                >
-                                                    <Grid item>
-                                                        {isTierAvailable ? (
-                                                            <CheckIcon className={classes.iconTrue} />
-                                                        ) : (
-                                                            <CloseIcon className={classes.iconFalse} />
-                                                        )}
-                                                    </Grid>
-                                                    <Box ml={1}>
-                                                        <Grid item>
-                                                            <Link
-                                                                underline='none'
-                                                                component={RouterLink}
-                                                                className={classes.pageLinks}
-                                                                to={api.isAPIProduct()
-                                                                    ? '/api-products/' + api.id + '/subscriptions'
-                                                                    : '/apis/' + api.id + '/subscriptions'}
-                                                            >
-                                                                <Typography variant='h6'>
-                                                                    <FormattedMessage
-                                                                        id={'Apis.Details.Overview.CustomizedStepper' +
-                                                                            '.Tier'}
-                                                                        defaultMessage=' Business Plan'
                                                                     />
                                                                 </Typography>
                                                                 <Box ml={1}>
@@ -654,9 +610,56 @@ export default function CustomizedStepper() {
                                     </Tooltip>
                                 )}
                                 {label === 'Publish' && (
-                                    <>
-                                        {finalLifecycleState(lifecycleState)}
-                                    </>
+                                    <div>
+                                        {(api.gatewayVendor === 'wso2') && !api.disableSubscriptionValidation && (
+                                            <Box ml={6} mb={1}>
+                                                <Grid
+                                                    container
+                                                    direction='row'
+                                                    justifyContent='center'
+                                                    alignItems='center'
+                                                    style={{ marginLeft: '2px' }}
+                                                >
+                                                    <Grid item>
+                                                        {isTierAvailable ? (
+                                                            <CheckIcon className={classes.iconTrue} />
+                                                        ) : (
+                                                            <CloseIcon className={classes.iconFalse} />
+                                                        )}
+                                                    </Grid>
+                                                    <Box ml={1}>
+                                                        <Grid item>
+                                                            <Link
+                                                                underline='none'
+                                                                component={RouterLink}
+                                                                className={classes.pageLinks}
+                                                                to={api.isAPIProduct()
+                                                                    ? '/api-products/' + api.id + '/subscriptions'
+                                                                    : '/apis/' + api.id + '/subscriptions'}
+                                                            >
+                                                                <Typography variant='h6'>
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Overview.CustomizedStepper' +
+                                                                            '.Tier'}
+                                                                        defaultMessage=' Business Plan'
+                                                                    />
+                                                                </Typography>
+                                                                <Box ml={1}>
+                                                                    <LinkIcon
+                                                                        color='primary'
+                                                                        fontSize='small'
+                                                                    />
+                                                                </Box>
+                                                            </Link>
+                                                        </Grid>
+                                                    </Box>
+                                                </Grid>
+                                            </Box>
+                                        )}
+                                        <>
+                                            {finalLifecycleState(lifecycleState)}
+                                        </>
+                                    </div>
                                 )}
                             </StepLabel>
                         </Step>

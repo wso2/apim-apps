@@ -496,7 +496,7 @@ export default function Environments() {
     const isTierAvailable = api.policies.length !== 0;
 
     const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || (!isMutualSslOnly && !isTierAvailable)
+    || (!isMutualSslOnly && !api.disableSubscriptionValidation && !isTierAvailable)
     || api.workflowStatus === 'CREATED');
     const history = useHistory();
     const { data: settings, isLoading } = usePublisherSettings();

@@ -378,6 +378,43 @@ function Configuration(props) {
                             </Grid>
                         </>
                     )}
+                    <Grid item xs={12} md={6} lg={4}>
+                        <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                            <FormattedMessage
+                                id='Apis.Details.NewOverview.MetaData.subvalidation'
+                                defaultMessage='Subscription Validation'
+                            />
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={8}>
+                        <Typography component='p' variant='body1'>
+                            {api.disableSubscriptionValidation ? 
+                                <Typography
+                                    component='p'
+                                    variant='body1'
+                                    style={{ color: 'black', opacity: 1 }}
+                                    className={parentClasses.notConfigured}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.NewOverview.MetaData.subvalidation.disabled'
+                                        defaultMessage='Disabled'
+                                    />
+                                </Typography>
+                                : 
+                                <Typography
+                                    component='p'
+                                    variant='body1'
+                                    style={{ color: 'black', opacity: 1 }}
+                                    className={parentClasses.notConfigured}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.NewOverview.MetaData.subvalidation.enabled'
+                                        defaultMessage='Enabled'
+                                    />
+                                </Typography>
+                            } 
+                        </Typography>
+                    </Grid>
                 </Grid>
             </Box>
         </>
