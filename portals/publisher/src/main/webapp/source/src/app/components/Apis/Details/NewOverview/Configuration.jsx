@@ -26,6 +26,7 @@ import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import Box from '@mui/material/Box';
 import API from 'AppData/api';
+import CONSTS from 'AppData/Constants';
 import { capitalizeFirstLetter, upperCaseString, lowerCaseString } from 'AppData/stringFormatter';
 import APIContext from '../components/ApiContext';
 import Policies from './Policies';
@@ -45,6 +46,8 @@ const HUMAN_READABLE_SCHEMES = {
 function Configuration(props) {
     const { parentClasses } = props;
     const { api } = useContext(APIContext);
+    const isSubValidationDisabled = api.policies 
+    && api.policies.length === 1 && api.policies[0] === CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN;
 
     return (
         <>
@@ -280,7 +283,12 @@ function Configuration(props) {
                     </Grid>
                     <Grid item xs={12} md={6} lg={4}>
                         {/* Visibility */}
-                        <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                        <Typography 
+                            component='p' 
+                            variant='subtitle2' 
+                            className={parentClasses.subtitle}
+                            style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}
+                        >
                             <FormattedMessage
                                 id='Apis.Details.NewOverview.MetaData.visibility.store'
                                 defaultMessage='Visibility on Developer Portal'
@@ -378,6 +386,66 @@ function Configuration(props) {
                             </Grid>
                         </>
                     )}
+                    <Grid item xs={12} md={6} lg={4}>
+                        <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
+                            <FormattedMessage
+                                id='Apis.Details.NewOverview.MetaData.subvalidation'
+                                defaultMessage='Subscription Validation'
+                            />
+                            <Tooltip
+                                interactive
+                                placement='top'
+                                aria-label='helper text for subscription validation'
+                                classes={{
+                                    tooltip: parentClasses.htmlTooltip,
+                                }}
+                                title={(
+                                    <>
+                                        <FormattedMessage
+                                            id='Apis.Details.NewOverview.MetaData.subscription.validation.tooltip'
+                                            defaultMessage={
+                                                'If subscription validation is disabled, API consumption does not'
+                                                +' require subscriptions'
+                                            }
+                                        />
+                                    </>
+                                )}
+                            >
+                                <Button className={parentClasses.helpButton}>
+                                    <HelpOutline className={parentClasses.helpIcon} />
+                                </Button>
+                            </Tooltip> 
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={6} lg={8}>
+                        <Typography component='p' variant='body1'>
+                            {isSubValidationDisabled ? 
+                                <Typography
+                                    component='p'
+                                    variant='body1'
+                                    style={{ color: 'black', opacity: 1 }}
+                                    className={parentClasses.notConfigured}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.NewOverview.MetaData.subvalidation.disabled'
+                                        defaultMessage='Disabled'
+                                    />
+                                </Typography>
+                                : 
+                                <Typography
+                                    component='p'
+                                    variant='body1'
+                                    style={{ color: 'black', opacity: 1 }}
+                                    className={parentClasses.notConfigured}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.NewOverview.MetaData.subvalidation.enabled'
+                                        defaultMessage='Enabled'
+                                    />
+                                </Typography>
+                            }
+                        </Typography>
+                    </Grid>
                 </Grid>
             </Box>
         </>

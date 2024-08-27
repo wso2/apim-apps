@@ -57,7 +57,8 @@ const CONSTS = {
     PATH_TEMPLATES: {
         COMMON_POLICIES: '/policies',
         COMMON_POLICY_CREATE: '/policies/create',
-    }
+    },
+    DEFAULT_SUBSCRIPTIONLESS_PLAN: 'Default_Subscriptionless',
 };
 
 export default CONSTS;
