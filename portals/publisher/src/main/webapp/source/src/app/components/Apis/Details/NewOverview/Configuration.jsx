@@ -47,7 +47,7 @@ function Configuration(props) {
     const { parentClasses } = props;
     const { api } = useContext(APIContext);
     const isSubValidationDisabled = api.policies 
-    && api.policies.length === 1 && api.policies[0] === CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN;
+    && api.policies.length === 1 && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
 
     return (
         <>

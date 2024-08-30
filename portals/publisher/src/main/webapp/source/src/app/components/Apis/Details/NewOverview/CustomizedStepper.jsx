@@ -173,7 +173,7 @@ export default function CustomizedStepper() {
     const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
     && securityScheme.includes('mutualssl_mandatory');
     const isSubValidationDisabled = api.policies 
-    && api.policies.length === 1 && api.policies[0] === CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN;
+    && api.policies.length === 1 && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
     let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
     const intl = useIntl();
     // TODO: tmkasun need to handle is loading

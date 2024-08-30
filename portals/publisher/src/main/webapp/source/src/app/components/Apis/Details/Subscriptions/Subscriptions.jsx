@@ -84,7 +84,7 @@ function Subscriptions(props) {
     const [isOpen, setIsOpen] = useState(false);
     const { settings } = useAppContext();
     const isSubValidationDisabled = api.policies && api.policies.length === 1 
-    && api.policies[0] === CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN;
+    && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
 
     /**
      * Save subscription information (policies, subscriptionAvailability, subscriptionAvailableTenants)
@@ -132,7 +132,8 @@ function Subscriptions(props) {
     }, []);
 
     const handleSubscriptionSave = () => {
-        if (!isSubValidationDisabled && policies.length === 1 && policies[0] === CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) {
+        if (!isSubValidationDisabled 
+            && policies.length === 1 && policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)) {
             setIsOpen(true);
         } else {
             saveAPI();

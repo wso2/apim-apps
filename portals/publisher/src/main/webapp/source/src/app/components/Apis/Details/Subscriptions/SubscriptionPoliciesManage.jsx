@@ -74,6 +74,7 @@ class SubscriptionPoliciesManage extends Component {
         this.state = {
             subscriptionPolicies: {},
             isMutualSslOnly: false,
+            isAsyncAPI: false,
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -81,6 +82,7 @@ class SubscriptionPoliciesManage extends Component {
     componentDidMount() {
         const { api } = this.props;
         const isAsyncAPI = (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC');
+        this.setState( {isAsyncAPI});
         const securityScheme = [...api.securityScheme];
         const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
         && securityScheme.includes('mutualssl_mandatory');
@@ -113,14 +115,18 @@ class SubscriptionPoliciesManage extends Component {
     handleChange(event) {
         const { name, checked } = event.target;
         const { setPolices, policies } = this.props;
-        const { isMutualSslOnly } = this.state;
+        const { isMutualSslOnly, isAsyncAPI } = this.state;
         let newSelectedPolicies = [...policies];
         if (checked) {
             newSelectedPolicies.push(name);
         } else {
             newSelectedPolicies = policies.filter((policy) => policy !== name);
             if (!isMutualSslOnly && newSelectedPolicies.length === 0) {
-                newSelectedPolicies.push(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+                if (!isAsyncAPI) {
+                    newSelectedPolicies.push(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+                } else {
+                    newSelectedPolicies.push(CONSTS.DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN);
+                }
             }
         }
         setPolices(newSelectedPolicies);
@@ -177,7 +183,7 @@ class SubscriptionPoliciesManage extends Component {
                     <FormControl className={classes.formControl}>
                         <FormGroup>
                             { subscriptionPolicies && Object.entries(subscriptionPolicies).map((value) => {
-                                if (value[1].displayName === CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) {
+                                if (value[1].displayName.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)) {
                                     return null; // Skip rendering for "Default"
                                 }
                                 return (

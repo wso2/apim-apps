@@ -33,7 +33,7 @@ import CONSTS from 'AppData/Constants';
 function Policies(props) {
     const { parentClasses, api } = props;
     const isSubValidationDisabled = api.policies 
-    && api.policies.length === 1 && api.policies[0] === CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN;
+    && api.policies.length === 1 && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
     return (
         <>
             <Grid item xs={12} md={6} lg={4}>
@@ -51,7 +51,7 @@ function Policies(props) {
                         (() => {
                             // Filter out "Default_Subscriptionless" if there's more than one policy
                             const filteredPolicies = api.policies.filter((policy) => 
-                                policy !== CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+                                !policy.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
                             
                             // Check if the only policy is "Default_Subscriptionless"
                             if (isSubValidationDisabled) {
