@@ -916,4 +916,4 @@ const ForwardedCreateEditForm = forwardRef((props, ref) => {
     return <CreateEditForm ref={childRef} {...props} />;
 });
 
-export default injectIntl(ForwardedCreateEditForm);
+export default injectIntl(ForwardedCreateEditForm,{ forwardRef: true });
