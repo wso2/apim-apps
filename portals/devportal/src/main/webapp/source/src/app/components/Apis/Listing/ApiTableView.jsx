@@ -44,6 +44,7 @@ import { useTheme } from '@mui/material';
 import ImageGenerator from './APICards/ImageGenerator';
 import ApiThumb from './ApiThumb';
 import DocThumb from './APICards/DocThumb';
+import DefinitionThumb from './APICards/DefThumb';
 import { ApiContext } from '../Details/ApiContext';
 import NoApi from './NoApi';
 
@@ -378,6 +379,25 @@ class ApiTableViewLegacy extends React.Component {
                                             </span>
                                         </Link>
                                     );
+                                } else if (artifact.type === 'DEFINITION') {
+                                    return (
+                                        <Link
+                                            to={'/apis/' + apiId + '/overview'}
+                                            className={classes.apiNameLink}
+                                        >
+                                            <Icon>code</Icon>
+
+                                            <span>
+                                                {' '}
+                                                <FormattedMessage
+                                                    id='Apis.Listing.TableView.TableView.def.flag'
+                                                    defaultMessage='[Def] '
+                                                />
+                                                {' '}
+                                                {apiName}
+                                            </span>
+                                        </Link>
+                                    );
                                 }
                                 const strokeColor = theme.palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund);
                                 return (
@@ -486,7 +506,7 @@ class ApiTableViewLegacy extends React.Component {
                         if (tableMeta.rowData) {
                             const artifact = tableViewObj.state.data[tableMeta.rowIndex];
                             if (artifact) {
-                                if (artifact.type !== 'DOC') {
+                                if (artifact.type !== 'DOC' && artifact.type !== 'DEFINITION') {
                                     const apiId = tableMeta.rowData[0];
                                     const avgRating = tableMeta.rowData[8];
                                     return (
@@ -579,6 +599,8 @@ class ApiTableViewLegacy extends React.Component {
                 if (artifact) {
                     if (artifact.type === 'DOC') {
                         return <tr key={rowIndex}><td><DocThumb doc={artifact} /></td></tr>;
+                    } else if (artifact.type === 'DEFINITION') {
+                        return <tr key={rowIndex}><td><DefinitionThumb def={artifact} /></td></tr>;
                     } else {
                         return (
                             <tr key={rowIndex}>

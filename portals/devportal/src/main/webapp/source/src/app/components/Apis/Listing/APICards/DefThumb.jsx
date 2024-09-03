@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2024, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -28,7 +28,7 @@ import CardMedia from '@mui/material/CardMedia';
 import { FormattedMessage } from 'react-intl';
 import ImageGenerator from './ImageGenerator';
 
-const PREFIX = 'DocThumbLegacy';
+const PREFIX = 'DefinitionThumb';
 
 const classes = {
     root: `${PREFIX}-root`,
@@ -49,6 +49,8 @@ const StyledCard = styled(Card)(({ theme }) => ({
         minHeight: 330,
         margin: theme.spacing(2),
         cursor: 'pointer',
+        display: 'flex',
+        flexDirection: 'column',
         transition: 'background-color 0.3s ease',
         '&:hover': {
             backgroundColor: theme.palette.grey[300],
@@ -58,6 +60,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
         height: 200,
     },
     [`& .${classes.content}`]: {
+        flexGrow: 1,
         paddingBottom: theme.spacing(1),
     },
     [`& .${classes.actions}`]: {
@@ -66,9 +69,10 @@ const StyledCard = styled(Card)(({ theme }) => ({
         padding: theme.spacing(1),
     },
     [`& .${classes.header}`]: {
-        whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
     },
     [`& .${classes.info}`]: {
         display: 'flex',
@@ -87,7 +91,7 @@ const StyledCard = styled(Card)(({ theme }) => ({
     },
 }));
 
-const DocThumbLegacy = ({ doc }) => {
+const DefinitionThumb = ({ def }) => {
     const [state] = useState({
         category: null,
         selectedIcon: null,
@@ -98,13 +102,13 @@ const DocThumbLegacy = ({ doc }) => {
 
     const theme = useTheme();
     const history = useHistory();
-    const detailsLink = `/apis/${doc.apiUUID}/documents/${doc.id}/details`;
+    const detailsLink = `/apis/${def.apiUUID}/overview`;
+    const {
+        name, apiName, apiVersion,
+    } = def;
     const {
         category, selectedIcon, color, backgroundIndex,
     } = state;
-    const {
-        name, sourceType, apiName, apiVersion,
-    } = doc;
 
     useEffect(() => {
         return () => {
@@ -124,19 +128,19 @@ const DocThumbLegacy = ({ doc }) => {
                 <CardMedia
                     className={classes.media}
                     image={theme.custom.thumbnail.defaultApiImage}
-                    title='Document Image'
+                    title='API Definition Image'
                 />
             ) : (
                 <ImageGenerator
                     width={theme.custom.thumbnail.width}
                     height={140}
-                    api={doc}
+                    api={def}
                     fixedIcon={{
                         key: selectedIcon,
                         color,
                         backgroundIndex,
                         category,
-                        doc,
+                        def,
                     }}
                 />
             )}
@@ -149,10 +153,6 @@ const DocThumbLegacy = ({ doc }) => {
                 >
                     {name}
                 </Typography>
-                <Typography variant='caption'>
-                    <FormattedMessage defaultMessage='Source Type: ' id='Apis.Listing.DocThumb.sourceType' />
-                    {sourceType}
-                </Typography>
                 <div className={classes.info}>
                     <Typography variant='subtitle1' className={classes.apiName}>
                         {apiName}
@@ -163,10 +163,10 @@ const DocThumbLegacy = ({ doc }) => {
                 </div>
                 <div className={classes.info}>
                     <Typography className={classes.subtitle}>
-                        <FormattedMessage defaultMessage='API Name' id='Apis.Listing.DocThumb.apiName' />
+                        <FormattedMessage defaultMessage='API Name' id='Apis.Listing.DefThumb.apiName' />
                     </Typography>
                     <Typography className={classes.subtitle} style={{ textAlign: 'right' }}>
-                        <FormattedMessage defaultMessage='API Version' id='Apis.Listing.DocThumb.apiVersion' />
+                        <FormattedMessage defaultMessage='API Version' id='Apis.Listing.DefThumb.apiVersion' />
                     </Typography>
                 </div>
             </CardContent>
@@ -174,15 +174,17 @@ const DocThumbLegacy = ({ doc }) => {
     );
 };
 
-DocThumbLegacy.propTypes = {
-    doc: PropTypes.shape({
+DefinitionThumb.propTypes = {
+    def: PropTypes.shape({
+        id: PropTypes.string,
         name: PropTypes.string,
-        sourceType: PropTypes.string,
         apiName: PropTypes.string,
         apiVersion: PropTypes.string,
-        id: PropTypes.string,
+        apiContext: PropTypes.string,
         apiUUID: PropTypes.string,
+        apiProvider: PropTypes.string,
+        apiType: PropTypes.string,
     }).isRequired,
 };
 
-export default DocThumbLegacy;
+export default DefinitionThumb;

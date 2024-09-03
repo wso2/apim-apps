@@ -182,6 +182,13 @@ const DefaultConfigurations = {
                     sub: 0xe2fff7ff,
                 },
             },
+            definition: {
+                icon: 'code',
+                backgrounds: {
+                    prime: 0xff8c00ff,
+                    sub: 0xffd580ff,
+                },
+            },
         },
         noApiImage: '/site/public/images/nodata.svg',
         landingPage: {
