@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2024, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -25,14 +25,10 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
-import TextFieldsIcon from '@mui/icons-material/TextFields';
 import LetterGenerator from 'AppComponents/Apis/Listing/components/ImageGenerator/LetterGenerator';
 import Configurations from 'Config';
-import DescriptionTwoToneIcon from '@mui/icons-material/DescriptionTwoTone';
-import LinkIcon from '@mui/icons-material/Link';
-import PictureAsPdfIcon from '@mui/icons-material/PictureAsPdf';
 
-const PREFIX = 'DocThumb';
+const PREFIX = 'DefThumb';
 
 const classes = {
     card: `${PREFIX}-card`,
@@ -52,9 +48,11 @@ const StyledLink = styled(Link)((
 
     [`& .${classes.thumbHeader}`]: {
         maxWidth: theme.spacing(16),
-        whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
+        overflowWrap: 'break-word', 
     },
     
     [`& .${classes.defaultCardContent}`]: {
@@ -71,19 +69,15 @@ const StyledLink = styled(Link)((
 }));
 
 
-const DocThumb = (props) => {
-    const { doc } = props;
+const DefThumb = (props) => {
+    const { def } = props;
     const [isHover, setIsHover] = useState(false);
     const toggleMouseOver = () => setIsHover(!isHover);
+    const linkTo = def.associatedType === 'API'
+        ? `/apis/${def.apiUUID}/api-definition`
+        : `/api-products/${def.apiUUID}/api-definition`;
 
     let thumbIcon;
-    let PrefixIcon = TextFieldsIcon;
-    if (doc.sourceType === 'FILE') {
-        PrefixIcon = PictureAsPdfIcon;
-        thumbIcon = DescriptionTwoToneIcon;
-    } else if (doc.sourceType === 'URL') {
-        PrefixIcon = LinkIcon;
-    }
     let configValue;
     const { tileDisplayInfo } = Configurations.apis;
     if (tileDisplayInfo.showBusinessDetails === true && tileDisplayInfo.showTechnicalDetails === true) {
@@ -103,7 +97,7 @@ const DocThumb = (props) => {
         <StyledLink
             underline='none'
             component={RouterLink}
-            to={'/apis/' + doc.apiUUID + '/documents/' + doc.id + '/details'}
+            to={linkTo}
             aria-hidden='true'
         >
             <Card
@@ -119,10 +113,9 @@ const DocThumb = (props) => {
                     component={LetterGenerator}
                     height={140}
                     title='Thumbnail'
-                    artifact={{ name: 'Doc' }}
+                    artifact={{ name: 'Def' }}
                     charLength={3}
                     ThumbIcon={thumbIcon}
-                    bgColor={false}
                 />
                 <CardContent className={cardContentClassName}>
                     <Grid
@@ -133,35 +126,31 @@ const DocThumb = (props) => {
                     >
                         <Grid item>
                             <Box display='flex' alignItems='center' flexDirection='row' fontFamily='fontFamily'>
-                                <Box display='flex'>
-                                    <PrefixIcon color='primary' />
-                                </Box>
                                 <Box
                                     className={classes.thumbHeader}
                                     color='text.primary'
                                     fontSize='h4.fontSize'
                                     ml={1}
                                 >
-                                    {doc.name}
+                                    {def.name}
                                 </Box>
                             </Box>
                         </Grid>
                         <Grid item>
                             <Box mt={3} fontFamily='fontFamily'>
                                 <Box color='primary.main'>
-                                    {doc.associatedType}
+                                    {def.associatedType}
                                 </Box>
                                 <Box color='text.primary' fontSize='h6.fontSize'>
-                                    {doc.apiName}
+                                    {def.apiName}
                                 </Box>
                                 <Box color='text.secondary' fontSize='body1.fontSize'>
                                     Version:
                                     {' '}
-                                    {doc.apiVersion}
+                                    {def.apiVersion}
                                 </Box>
                             </Box>
                         </Grid>
-
                     </Grid>
                 </CardContent>
             </Card>
@@ -169,13 +158,12 @@ const DocThumb = (props) => {
     );
 };
 
-DocThumb.propTypes = {
-    doc: PropTypes.shape({
+DefThumb.propTypes = {
+    def: PropTypes.shape({
         id: PropTypes.string,
         name: PropTypes.string,
-        sourceType: PropTypes.string.isRequired,
         apiName: PropTypes.string.isRequired,
         apiVersion: PropTypes.string.isRequired,
     }).isRequired,
 };
-export default DocThumb;
+export default DefThumb;
