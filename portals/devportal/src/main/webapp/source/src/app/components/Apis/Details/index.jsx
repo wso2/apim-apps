@@ -488,6 +488,8 @@ class DetailsLegacy extends React.Component {
         const pageUrl = new URL(window.location);
         const isWidget = pageUrl.searchParams.get('widget');
         const isAsyncApi = this.isAsyncAPI(api);
+        const isSubValidationDisabled = api && api.tiers && api.tiers.length === 1
+            && api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
 
         return api ? (
             <Root>
@@ -537,7 +539,7 @@ class DetailsLegacy extends React.Component {
                                 open={open}
                                 id='left-menu-overview'
                             />
-                            {user && showCredentials && (
+                            {user && showCredentials && !isSubValidationDisabled && (
                                 <>
 
                                     <LeftMenuItem

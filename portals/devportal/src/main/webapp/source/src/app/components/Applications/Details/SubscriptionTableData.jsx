@@ -21,6 +21,7 @@ import { Link } from 'react-router-dom';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import Icon from '@mui/material/Icon';
+import Box from '@mui/material/Box';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
@@ -29,11 +30,14 @@ import Dialog from '@mui/material/Dialog';
 import Slide from '@mui/material/Slide';
 import Button from '@mui/material/Button';
 import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
 import Autocomplete from '@mui/material/Autocomplete';
+import HelpOutline from '@mui/icons-material/HelpOutline';
 import { FormattedMessage } from 'react-intl';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
+import CONSTANTS from 'AppData/Constants';
 import Subscription from 'AppData/Subscription';
 import { mdiOpenInNew } from '@mdi/js';
 import { Icon as MDIcon } from '@mdi/react';
@@ -242,7 +246,50 @@ class SubscriptionTableData extends React.Component {
                     {link}
                 </TableCell>
                 <TableCell>{apiInfo.lifeCycleStatus}</TableCell>
-                <TableCell>{throttlingPolicy}</TableCell>
+                {throttlingPolicy.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) ? (
+                    <TableCell>
+                        {throttlingPolicy}
+                        {' '}
+                        <Tooltip
+                            placement='bottom'
+                            interactive
+                            aria-label='helper text for default subscription policy'
+                            title={(
+                                <>
+                                    <FormattedMessage
+                                        id='Applications.Details.SubscriptionTableData.policy.default.tooltip'
+                                        defaultMessage='This is the default subscription policy used when
+                                         subscription validation was disabled.'
+                                    />
+                                </>
+                            )}
+                            sx={{
+                                backgroundColor: '#f5f5f9',
+                                color: 'rgba(0, 0, 0, 0.87)',
+                                maxWidth: 220,
+                                fontSize: '12px',
+                                border: '1px solid #dadde9',
+                            }}
+                        >
+                            <Box
+                                component='span'
+                                sx={{
+                                    display: 'inline-flex',
+                                    verticalAlign: 'middle',
+                                    fontSize: '16px',
+                                }}
+                            >
+                                <HelpOutline
+                                    sx={{
+                                        fontSize: 'inherit',
+                                    }}
+                                />
+                            </Box>
+                        </Tooltip>
+                    </TableCell>
+                ) : (
+                    <TableCell>{throttlingPolicy}</TableCell>
+                )}
                 <TableCell>{status}</TableCell>
                 <TableCell>
                     <Button
