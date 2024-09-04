@@ -41,6 +41,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import Alert from 'AppComponents/Shared/Alert';
 import APIList from 'AppComponents/Apis/Listing/APICardView';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
+import CONSTANTS from 'AppData/Constants';
 import Subscription from 'AppData/Subscription';
 import Api from 'AppData/api';
 import { app } from 'Settings';
@@ -206,7 +207,9 @@ class Subscriptions extends React.Component {
             isAuthorize: true,
             openDialog: false,
             searchText: '',
+            pseudoSubscriptions: false,
         };
+        this.checkSubValidationDisabled = this.checkSubValidationDisabled.bind(this);
         this.handleSubscriptionDelete = this.handleSubscriptionDelete.bind(this);
         this.handleSubscriptionUpdate = this.handleSubscriptionUpdate.bind(this);
         this.updateSubscriptions = this.updateSubscriptions.bind(this);
@@ -235,6 +238,27 @@ class Subscriptions extends React.Component {
 
     /**
      *
+     * Check if the subscription validation is disabled
+     * @param {*} subList Subscriptions list reponse object
+     * @returns
+     */
+    checkSubValidationDisabled(subList) {
+        if (subList !== null && subList.length > 0) {
+            const pseudoList = subList.filter((sub) => (sub.apiInfo.throttlingPolicies
+                && sub.apiInfo.throttlingPolicies.length === 1
+                && sub.apiInfo.throttlingPolicies[0].includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)));
+            if (pseudoList.length === subList.length) {
+                this.setState({ pseudoSubscriptions: true });
+            } else {
+                this.setState({ pseudoSubscriptions: false });
+            }
+            return;
+        }
+        this.setState({ pseudoSubscriptions: false });
+    }
+
+    /**
+     *
      * Update subscriptions list of Application
      * @param {*} applicationId application id
      * @memberof Subscriptions
@@ -246,6 +270,7 @@ class Subscriptions extends React.Component {
         promisedSubscriptions
             .then((response) => {
                 this.setState({ subscriptions: response.body.list });
+                this.checkSubValidationDisabled(response.body.list);
             })
             .catch((error) => {
                 const { status } = error;
@@ -303,6 +328,7 @@ class Subscriptions extends React.Component {
                     }
                 }
                 this.setState({ subscriptions });
+                this.checkSubValidationDisabled(subscriptions);
                 this.props.getApplication();
             })
             .catch((error) => {
@@ -523,7 +549,7 @@ class Subscriptions extends React.Component {
                     </Box>
                     <Grid container sx='tab-grid' spacing={2}>
                         <Grid item xs={12} xl={11}>
-                            {(subscriptions && subscriptions.length === 0)
+                            {((subscriptions && subscriptions.length === 0) || this.state.pseudoSubscriptions)
                                 ? (
                                     <Box sx={(theme) => ({
                                         margin: theme.spacing(2),

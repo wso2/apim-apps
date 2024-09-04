@@ -179,7 +179,7 @@ function Subscriptions(props) {
             )}
             {tenants !== 0 && settings.crossTenantSubscriptionEnabled && 
             (api.gatewayType === 'wso2/synapse' ||
-            api.apiType === API.CONSTS.APIProduct) && (
+            api.apiType === API.CONSTS.APIProduct) && !isSubValidationDisabled && (
                 <SubscriptionAvailability
                     api={api}
                     availability={availability}
@@ -227,7 +227,7 @@ function Subscriptions(props) {
                     </Grid>
                 </Grid>
             )}
-            <SubscriptionsTable api={api} />
+            { !isSubValidationDisabled && (<SubscriptionsTable api={api} />) }
             <Dialog
                 open={isOpen}
                 onClose={() => setIsOpen(false)}

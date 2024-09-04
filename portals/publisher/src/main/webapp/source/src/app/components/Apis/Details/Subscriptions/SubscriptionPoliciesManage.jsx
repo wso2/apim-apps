@@ -75,6 +75,7 @@ class SubscriptionPoliciesManage extends Component {
             subscriptionPolicies: {},
             isMutualSslOnly: false,
             isAsyncAPI: false,
+            isApiKeyEnabled: false,
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -87,6 +88,8 @@ class SubscriptionPoliciesManage extends Component {
         const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
         && securityScheme.includes('mutualssl_mandatory');
         this.setState({ isMutualSslOnly });
+        const isApiKeyEnabled = securityScheme.includes('api_key');
+        this.setState({ isApiKeyEnabled });
         const limit = Configurations.app.subscriptionPolicyLimit;
         let policyPromise;
         if (isAsyncAPI) {
@@ -115,13 +118,13 @@ class SubscriptionPoliciesManage extends Component {
     handleChange(event) {
         const { name, checked } = event.target;
         const { setPolices, policies } = this.props;
-        const { isMutualSslOnly, isAsyncAPI } = this.state;
+        const { isMutualSslOnly, isAsyncAPI, isApiKeyEnabled } = this.state;
         let newSelectedPolicies = [...policies];
         if (checked) {
             newSelectedPolicies.push(name);
         } else {
             newSelectedPolicies = policies.filter((policy) => policy !== name);
-            if (!isMutualSslOnly && newSelectedPolicies.length === 0) {
+            if (!isMutualSslOnly && !isApiKeyEnabled && newSelectedPolicies.length === 0) {
                 if (!isAsyncAPI) {
                     newSelectedPolicies.push(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
                 } else {
