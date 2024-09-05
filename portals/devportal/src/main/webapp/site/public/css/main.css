@@ -485,6 +485,9 @@ a {
 /* Styles to support rendering for markdown tables */
 .markdown-content-wrapper {
   padding-left: 20px;
+  flex-grow: 0;
+  max-width: 50%;
+  flex-basis: 50%;
 }
 .markdown-content-wrapper table{
   border-collapse: collapse;
