@@ -29,8 +29,8 @@ const CONSTS = {
         ASYNC: 'ASYNC',
         GRAPHQL: 'GRAPHQL',
     },
-    DEFAULT_SUBSCRIPTIONLESS_PLAN: 'Default_Subscriptionless',
-    DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'Async_Default_Subscriptionless',
+    DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
+    DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
 };
 
 export default CONSTS;

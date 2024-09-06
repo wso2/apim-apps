@@ -58,8 +58,8 @@ const CONSTS = {
         COMMON_POLICIES: '/policies',
         COMMON_POLICY_CREATE: '/policies/create',
     },
-    DEFAULT_SUBSCRIPTIONLESS_PLAN: 'Default_Subscriptionless',
-    DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'Async_Default_Subscriptionless',
+    DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
+    DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
 };
 
 export default CONSTS;
