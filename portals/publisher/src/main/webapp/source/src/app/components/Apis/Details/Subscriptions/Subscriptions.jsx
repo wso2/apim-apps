@@ -164,7 +164,14 @@ function Subscriptions(props) {
             {(api.gatewayVendor === 'wso2') &&
             (api.gatewayType === 'wso2/synapse' ||
             api.apiType === API.CONSTS.APIProduct)
-            && (<SubscriptionPoliciesManage api={api} policies={policies} setPolices={setPolices} />)}
+            && (
+                <SubscriptionPoliciesManage
+                    api={api}
+                    policies={policies}
+                    setPolices={setPolices}
+                    subValidationDisablingAllowed={settings.allowSubscriptionValidationDisabling}
+                />
+            )}
             {isSubValidationDisabled && (
                 <Box mb={2} mt={2}>
                     <MUIAlert severity='warning'>

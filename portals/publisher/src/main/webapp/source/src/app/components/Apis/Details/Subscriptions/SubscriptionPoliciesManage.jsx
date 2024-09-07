@@ -117,14 +117,15 @@ class SubscriptionPoliciesManage extends Component {
      */
     handleChange(event) {
         const { name, checked } = event.target;
-        const { setPolices, policies } = this.props;
+        const { setPolices, policies, subValidationDisablingAllowed } = this.props;
         const { isMutualSslOnly, isAsyncAPI, isApiKeyEnabled } = this.state;
         let newSelectedPolicies = [...policies];
         if (checked) {
             newSelectedPolicies.push(name);
         } else {
             newSelectedPolicies = policies.filter((policy) => policy !== name);
-            if (!isMutualSslOnly && !isApiKeyEnabled && newSelectedPolicies.length === 0) {
+            if (subValidationDisablingAllowed
+                    && !isMutualSslOnly && !isApiKeyEnabled && newSelectedPolicies.length === 0) {
                 if (!isAsyncAPI) {
                     newSelectedPolicies.push(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
                 } else {

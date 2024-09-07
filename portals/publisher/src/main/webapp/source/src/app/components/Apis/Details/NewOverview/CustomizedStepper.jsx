@@ -189,7 +189,7 @@ export default function CustomizedStepper() {
     }
     let activeStep = 0;
     if (api && (api.type === 'WEBSUB' || isEndpointAvailable)
-        && (isTierAvailable || isMutualSslOnly) && !deploymentsAvailable) {
+        && !deploymentsAvailable) {
         activeStep = 1;
     } else if ((api && !isEndpointAvailable && api.type !== 'WEBSUB')
         || (api && !isMutualSslOnly && !isTierAvailable)) {
@@ -429,7 +429,6 @@ export default function CustomizedStepper() {
     || (!isMutualSslOnly && !isTierAvailable)
     || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT');
     const isDeployLinkDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || (!isMutualSslOnly && !isTierAvailable)
     || api.workflowStatus === 'CREATED' || lifecycleState === 'RETIRED');
     let deployLinkToolTipTitle = '';
     if (lifecycleState === 'RETIRED') {

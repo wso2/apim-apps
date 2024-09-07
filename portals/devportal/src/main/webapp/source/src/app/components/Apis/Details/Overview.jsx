@@ -550,7 +550,7 @@ function Overview() {
                                         <Typography component='p'>
                                             <FormattedMessage
                                                 id='Apis.Details.Overview.subscriptions.not.required.content'
-                                                defaultMessage='Provider has disabled subscription validation for this API.
+                                                defaultMessage='Subscriptions are not required for this API.
                                                     You can consume this without subscribing to it.'
                                             />
                                         </Typography>

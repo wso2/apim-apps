@@ -286,7 +286,7 @@
   "Apis.Details.Overview.select.env.error": "Error Selecting Environment",
   "Apis.Details.Overview.source": "Source",
   "Apis.Details.Overview.subscriptions.not.required": "No subscriptions required",
-  "Apis.Details.Overview.subscriptions.not.required.content": "Provider has disabled subscription validation for this API. You can consume this without subscribing to it.",
+  "Apis.Details.Overview.subscriptions.not.required.content": "Subscriptions are not required for this API. You can consume this without subscribing to it.",
   "Apis.Details.Overview.subscriptions.title": "Subscriptions",
   "Apis.Details.Overview.tags.title": "Tags",
   "Apis.Details.PubTopic.copied": "Copied",
