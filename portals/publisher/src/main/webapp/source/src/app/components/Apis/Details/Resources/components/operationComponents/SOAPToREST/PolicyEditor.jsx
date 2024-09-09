@@ -29,6 +29,7 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
 import Grid from '@mui/material/Grid';
 import Banner from 'AppComponents/Shared/Banner';
+import { FormattedMessage, useIntl } from 'react-intl';
 import CloseConfirmation from './CloseConfirmation';
 
 const PREFIX = 'PolicyEditor';
@@ -68,6 +69,7 @@ const Transition = React.forwardRef((props, ref) => {
 export default function PolicyEditor(props) {
 
     const [api] = useAPI();
+    const intl = useIntl();
     const {
         open,
         onClose,
@@ -117,7 +119,10 @@ export default function PolicyEditor(props) {
         setSaving(true);
         api.updateResourcePolicy(selectedPolicy)
             .then((response) => {
-                Alert.success('Resource policy updated successfully');
+                Alert.success(intl.formatMessage({
+                    id: 'Apis.Details.Resources.Policy.update.success',
+                    defaultMessage: 'Resource policy updated successfully',
+                }));
                 resourcePoliciesDispatcher({ action: 'update', data: { value: response.body, direction } });
                 onClose();
             })
@@ -127,7 +132,11 @@ export default function PolicyEditor(props) {
                     setPageError(error.response.body);
                 } else {
                     // TODO add i18n ~tmkb
-                    const message = error.message || 'Something went wrong while updating resource policy!';
+                    const message = error.message
+                        || intl.formatMessage({
+                            id: 'Apis.Details.Resources.Policy.update.error',
+                            defaultMessage: 'Something went wrong while updating resource policy!',
+                        });
                     Alert.error(message);
                     setPageError(message);
                 }
@@ -149,13 +158,19 @@ export default function PolicyEditor(props) {
                                 className={classes.title}
                                 onClick={save}
                             >
-                                save & close
+                                <FormattedMessage
+                                    id='Apis.Details.Resources.Policy.Dialog.save.and.close.btn'
+                                    defaultMessage='save & close'
+                                />
                                 {saving && <CircularProgress size={18} />}
                             </Button>
                         </Grid>
                         <Grid item>
                             <Button color='inherit' className={classes.title} onClick={confirmAndClose}>
-                                close
+                                <FormattedMessage
+                                    id='Apis.Details.Resources.Policy.Dialog.close.editor.btn'
+                                    defaultMessage='close'
+                                />
                             </Button>
                         </Grid>
                     </Grid>

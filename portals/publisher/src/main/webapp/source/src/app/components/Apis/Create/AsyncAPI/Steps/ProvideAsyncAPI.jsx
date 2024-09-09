@@ -25,7 +25,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
 import CheckIcon from '@mui/icons-material/Check';
@@ -82,7 +82,7 @@ export default function ProvideAsyncAPI(props) {
     const [isValidating, setIsValidating] = useState(false);
     const [validationErrors, setValidationErrors] = useState([]);
     const [gatewayVendor, setGatewayVendor] = useState('wso2');
-
+    const intl = useIntl();
     /**
      *
      *
@@ -108,12 +108,28 @@ export default function ProvideAsyncAPI(props) {
                     setValidity({ ...isValid, file: null });
                 } else {
                     // eslint-disable-next-line max-len
-                    setValidity({ ...isValid, file: { message: 'AsyncAPI content validation failed! ' } });
+                    setValidity({
+                        ...isValid, file: {
+                            message: intl.formatMessage({
+                                id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.content.'
+                                    + 'validation.failed',
+                                defaultMessage: 'AsyncAPI content validation failed! ',
+                            })
+                        }
+                    });
                     setValidationErrors(errors);
                 }
             })
             .catch((error) => {
-                setValidity({ ...isValid, file: { message: 'AsyncAPI content validation failed!' } });
+                setValidity({
+                    ...isValid, file: {
+                        message: intl.formatMessage({
+                            id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.content.'
+                                + 'validation.failed',
+                            defaultMessage: 'AsyncAPI content validation failed! ',
+                        })
+                    }
+                });
                 console.error(error);
             })
             .finally(() => {
@@ -145,7 +161,15 @@ export default function ProvideAsyncAPI(props) {
                     inputsDispatcher({ action: 'preSetAPI', value: info });
                     setValidity({ ...isValid, url: null });
                 } else {
-                    setValidity({ ...isValid, url: { message: 'AsyncAPI content validation failed!' } });
+                    setValidity({
+                        ...isValid, url: {
+                            message: intl.formatMessage({
+                                id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.content.'
+                                    + 'validation.failed',
+                                defaultMessage: 'AsyncAPI content validation failed! ',
+                            })
+                        }
+                    });
                     setValidationErrors(errors);
                 }
                 onValidate(isValidURL);
@@ -223,13 +247,19 @@ export default function ProvideAsyncAPI(props) {
                                 data-testid='input-asyncapi-url'
                                 value={ProvideAsyncAPI.INPUT_TYPES.URL}
                                 control={<Radio color='primary' />}
-                                label='AsyncAPI URL'
+                                label={intl.formatMessage({
+                                    id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.url.label',
+                                    defaultMessage: 'AsyncAPI URL',
+                                })}
                             />
                             <FormControlLabel
                                 data-testid='input-asyncapi-file'
                                 value={ProvideAsyncAPI.INPUT_TYPES.FILE}
                                 control={<Radio color='primary' />}
-                                label='AsyncAPI File'
+                                label={intl.formatMessage({
+                                    id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.file.label',
+                                    defaultMessage: 'AsyncAPI File',
+                                })}
                             />
                         </RadioGroup>
                     </FormControl>
@@ -312,8 +342,14 @@ export default function ProvideAsyncAPI(props) {
                         <TextField
                             autoFocus
                             id='outlined-full-width'
-                            label='AsyncAPI URL'
-                            placeholder='Enter AsyncAPI URL'
+                            label={intl.formatMessage({
+                                id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.url.label',
+                                defaultMessage: 'AsyncAPI URL',
+                            })}
+                            placeholder={intl.formatMessage({
+                                id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.Input.url.text.placeholder',
+                                defaultMessage: 'Enter AsyncAPI URL',
+                            })}
                             fullWidth
                             margin='normal'
                             variant='outlined'
@@ -329,7 +365,13 @@ export default function ProvideAsyncAPI(props) {
                                 endAdornment: urlStateEndAdornment,
                             }}
                             // 'Give the URL of AsyncAPI endpoint'
-                            helperText={(isValid.url && isValid.url.message) || 'Click away to validate the URL'}
+                            helperText={(isValid.url && isValid.url.message)
+                                || (
+                                    <FormattedMessage
+                                        id='Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.url.helper.text'
+                                        defaultMessage='Click away to validate the URL'
+                                    />
+                                )}
                             error={isInvalidURL}
                         />
                     )}
@@ -338,7 +380,10 @@ export default function ProvideAsyncAPI(props) {
                     <Grid item xs={10} md={11}>
                         <Chip
                             data-testid='solace-api-label'
-                            label='Identified as Solace Event Portal API'
+                            label={intl.formatMessage({
+                                id: 'Apis.Create.AsyncAPI.Steps.ProvideAsyncAPI.solace.api.label',
+                                defaultMessage: 'Identified as Solace Event Portal API',
+                            })}
                             icon={<CheckCircleSharpIcon style={{ color: 'green' }} />}
                             variant='outlined'
                             style={{ color: 'green' }}

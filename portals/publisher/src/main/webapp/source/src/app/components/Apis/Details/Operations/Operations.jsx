@@ -350,7 +350,7 @@ class Operations extends React.Component {
      * @inheritdoc
      */
     render() {
-        const { api, resourceNotFoundMessage } = this.props;
+        const { api, resourceNotFoundMessage, intl} = this.props;
         const {
             operations, apiPolicies, apiThrottlingPolicy, isSaving,
             filterKeyWord, notFound, sharedScopes, enableReadOnly,
@@ -386,8 +386,16 @@ class Operations extends React.Component {
                                 <TextField
                                     id='outlined-full-width'
                                     disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                    label='Operation'
-                                    placeholder='Filter Operations'
+                                    label={(
+                                        <FormattedMessage
+                                            id='Apis.Details.Operations.filter.label'
+                                            defaultMessage='Operation'
+                                        />
+                                    )}
+                                    placeholder={intl.formatMessage({
+                                        id: 'Apis.Details.Operations.filter.placeholder',
+                                        defaultMessage: 'Filter Operations',
+                                    })}
                                     onChange={(e) => this.setFilterByKeyWord(e, api.operations)}
                                     fullWidth
                                     variant='outlined'

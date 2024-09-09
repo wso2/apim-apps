@@ -916,6 +916,18 @@ const Listing: React.FC = () => {
         expandableRows: !isRestricted(['apim:gateway_policy_manage']),
         expandableRowsHeader: false,
         expandableRowsOnClick: false,
+        textLabels: {
+            pagination: {
+                rowsPerPage: intl.formatMessage({
+                    id: 'Mui.data.table.pagination.rows.per.page',
+                    defaultMessage: 'Rows per page:',
+                }),
+                displayRows: intl.formatMessage({
+                    id: 'Mui.data.table.pagination.display.rows',
+                    defaultMessage: 'of',
+                }),
+            },
+        },
         renderExpandableRow: (rowData, rowMeta) => {
             /**
              * Expandable area where you can deploy and undeploy.

@@ -25,7 +25,7 @@ import {
     IconButton, Icon,
 } from '@mui/material';
 import PropTypes from 'prop-types';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import TextField from '@mui/material/TextField';
 import Autocomplete from 'AppComponents/Shared/Autocomplete';
 import { isRestricted } from 'AppData/AuthManager';
@@ -87,7 +87,8 @@ function ServiceEndpoint(props) {
         endpointURL,
         editService
     } = props;
-    
+    const intl = useIntl();
+
     const [selectedServiceUrl, setSelectedServiceUrl] = useState();
     const defaultService = api.serviceInfo ? {serviceKey: api.serviceInfo.key, serviceUrl: endpointURL}
         : {serviceKey: '',serviceUrl: '' }
@@ -126,7 +127,11 @@ function ServiceEndpoint(props) {
                                 disabled
                                 className={classes.textField}
                                 value={!endpointURL ? selectedServiceUrl: endpointURL}
-                                placeholder='Select a service from the service list'
+                                placeholder={intl.formatMessage({
+                                    id: 'Apis.Details.Endpoints.'
+                                            + 'GenericEndpoint.config.service.placeholder',
+                                    defaultMessage: 'Select a service from the service list',
+                                })}
                                 variant='outlined'
                                 margin='normal'
                                 InputProps={{

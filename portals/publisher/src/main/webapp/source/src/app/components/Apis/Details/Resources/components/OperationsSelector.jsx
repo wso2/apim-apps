@@ -30,6 +30,7 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import LockIcon from '@mui/icons-material//Lock';
 import LockOpenIcon from '@mui/icons-material/LockOpen';
 import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone';
+import { useIntl } from 'react-intl';
 /**
  *
  *
@@ -41,7 +42,7 @@ export default function OperationsSelector(props) {
         selectedOperations, setSelectedOperation, operations, enableSecurity, disableSecurity,
     } = props;
     const [apiFromContext] = useAPI();
-
+    const intl = useIntl();
     // TODO: Following logic introduce a limitation in showing `indeterminate` icon state if user
     // select all -> unchecked one operation -> recheck same operation again ~tmkb
     const isIndeterminate = !isEmpty(selectedOperations);
@@ -74,7 +75,10 @@ export default function OperationsSelector(props) {
                     { (operationWithSecurityCount === 0)
                     && (
                         <Tooltip
-                            title='Enable security for all'
+                            title={intl.formatMessage({
+                                id: 'Apis.Details.Resources.Components.Operations.title.enable.security.all',
+                                defaultMessage: 'Enable security for all',
+                            })}
                         >
                             <div>
                                 <IconButton
@@ -91,7 +95,10 @@ export default function OperationsSelector(props) {
                     { (operationWithSecurityCount === operationCount)
                     && (
                         <Tooltip
-                            title='Disable security for all'
+                            title={intl.formatMessage({
+                                id: 'Apis.Details.Resources.Components.Operations.title.disable.security.all',
+                                defaultMessage: 'Disable security for all',
+                            })}
                         >
                             <div>
                                 <IconButton
@@ -108,7 +115,10 @@ export default function OperationsSelector(props) {
                     { (operationWithSecurityCount !== 0 && operationWithSecurityCount !== operationCount)
                     && (
                         <Tooltip
-                            title='Enable security for all'
+                            title={intl.formatMessage({
+                                id: 'Apis.Details.Resources.Components.Operations.title.enable.security.all',
+                                defaultMessage: 'Enable security for all',
+                            })}
                         >
                             <div>
                                 <IconButton
@@ -122,7 +132,16 @@ export default function OperationsSelector(props) {
                             </div>
                         </Tooltip>
                     )}
-                    <Tooltip title={isIndeterminate ? 'Clear selections' : 'Mark all for delete'}>
+                    <Tooltip title={isIndeterminate
+                        ? intl.formatMessage({
+                            id: 'Apis.Details.Resources.Components.Operations.tooltip.clear.selections',
+                            defaultMessage: 'Clear selections',
+                        })
+                        : intl.formatMessage({
+                            id: 'Apis.Details.Resources.Components.Operations.tooltip.delete.selections',
+                            defaultMessage: 'Mark all for delete',
+                        })}
+                    >
                         <div>
                             <IconButton
                                 disabled={isRestricted(['apim:api_create'], apiFromContext)}

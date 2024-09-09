@@ -148,7 +148,7 @@ class Comments extends Component {
      * @memberof Comments
      */
     componentDidMount() {
-        const { api, theme } = this.props;
+        const { api, theme, intl } = this.props;
         this.setState({ apiId: api.id });
         const limit = theme.custom.commentsLimit;
         const offset = 0;
@@ -168,7 +168,10 @@ class Comments extends Component {
                 if (error.response) {
                     Alert.error(error.response.body.message);
                 } else {
-                    Alert.error('Something went wrong while retrieving comments');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Comments.retrieve.error',
+                        defaultMessage: 'Something went wrong while retrieving comments',
+                    }));
                 }
             });
     }

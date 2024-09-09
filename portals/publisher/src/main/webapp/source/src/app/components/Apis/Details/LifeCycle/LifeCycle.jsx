@@ -23,7 +23,7 @@ import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
@@ -281,4 +281,4 @@ LifeCycle.propTypes = {
 
 LifeCycle.contextType = ApiContext;
 
-export default (LifeCycle);
+export default injectIntl(LifeCycle);

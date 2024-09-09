@@ -24,7 +24,7 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import Select from '@mui/material/Select';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import Alert from 'AppComponents/Shared/Alert';
 
@@ -87,7 +87,10 @@ class Policies extends Component {
                 this.setState({
                     loading: false,
                 });
-                Alert.info('Lifecycle state updated successfully');
+                Alert.info(intl.formatMessage({
+                    id: 'Apis.Details.LifeCycle.Policies.update.success',
+                    defaultMessage: 'Lifecycle state updated successfully',
+                }));
             });
         });
     }
@@ -171,4 +174,4 @@ Policies.propTypes = {
     policies: PropTypes.shape({}).isRequired,
 };
 
-export default (Policies);
+export default injectIntl(Policies);

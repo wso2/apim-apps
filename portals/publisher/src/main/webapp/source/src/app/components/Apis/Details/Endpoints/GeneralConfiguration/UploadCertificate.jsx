@@ -30,7 +30,7 @@ import {
     TextField,
     Typography,
 } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import Dropzone from 'react-dropzone';
@@ -150,6 +150,7 @@ export default function UploadCertificate(props) {
     const [keyType, setKeyType] = useState(API_SECURITY_KEY_TYPE_PRODUCTION);
 
     const [isRejected, setIsRejected] = useState(false);
+    const intl = useIntl();
 
     const closeCertificateUpload = () => {
         setUploadCertificateOpen(false);
@@ -354,7 +355,11 @@ export default function UploadCertificate(props) {
                                 <SelectPolicies
                                     multiple={false}
                                     policies={policy}
-                                    helperText='Select a throttling policy for the certificate'
+                                    helperText={intl.formatMessage({
+                                        id: 'Apis.Details.Endpoints.GeneralConfiguration.'
+                                            + 'UploadCertificate.uploadCertificate.throttle.policy',
+                                        defaultMessage: 'Select a throttling policy for the certificate',
+                                    })}
                                     onChange={handleOnChange}
                                     required
                                     validate={onValidate} 
@@ -380,7 +385,11 @@ export default function UploadCertificate(props) {
                                 />
                             )}
                             value={alias}
-                            placeholder='My Alias'
+                            placeholder={intl.formatMessage({
+                                id: 'Apis.Details.Endpoints.GeneralConfiguration.'
+                                    + 'UploadCertificate.uploadCertificate.alias.placeholder',
+                                defaultMessage: 'My Alias',
+                            })}
                             onChange={(event) => setAlias(event.target.value)}
                             onBlur={() => handleAliasOnBlur()}
                             margin='normal'

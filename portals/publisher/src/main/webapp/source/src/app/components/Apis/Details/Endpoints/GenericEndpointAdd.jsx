@@ -73,7 +73,8 @@ function GenericEndpointAdd(props) {
     const {
         addEndpoint,
         endpointType,
-        category
+        category,
+        intl,
     } = props;
     const [serviceUrl, setServiceUrl] = useState('');
     const { api } = useContext(APIContext);
@@ -102,7 +103,10 @@ function GenericEndpointAdd(props) {
                 onChange={(event) => setServiceUrl(event.target.value)}
                 variant='outlined'
                 margin='normal'
-                placeholder='Enter the Endpoint URL and press + button'
+                placeholder={intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.GenericEndpoint.service.url.input.placeholder',
+                    defaultMessage: 'Enter the Endpoint URL and press + button',
+                })}
                 InputProps={{
                     id: category + '-' + endpointType,
                     endAdornment: (

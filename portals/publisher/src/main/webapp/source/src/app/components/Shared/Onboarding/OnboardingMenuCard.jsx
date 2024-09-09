@@ -7,6 +7,7 @@ import Grid from '@mui/material/Grid';
 import Configurations from 'Config';
 import { Link as RouterLink } from 'react-router-dom';
 import Link from '@mui/material/Link';
+import { FormattedMessage } from 'react-intl';
 
 const PREFIX = 'RestAPIMenu';
 
@@ -129,11 +130,12 @@ const RestAPIMenu = (props) => {
                             {disabled && (
                                 <Box>
                                     <Typography variant='body2' color='primary'>
-                                        *You are not authorized to create or update
-                                        {' '}
-                                        {name.toLowerCase()}
-                                        {' '}
-                                        due to insufficient permissions
+                                        <FormattedMessage
+                                            id='app.components.Shared.onboarding.insufficient.permissions'
+                                            defaultMessage={'*You are not authorized to create or update'
+                                                + ' {name} due to insufficient permissions'}
+                                            values={{ name: name.toLowerCase() }}
+                                        />
                                     </Typography>
                                 </Box>
                             )}

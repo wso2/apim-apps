@@ -24,7 +24,7 @@ import Grid from '@mui/material/Grid';
 import Tooltip from '@mui/material/Tooltip';
 import Checkbox from '@mui/material/Checkbox';
 import HelpOutline from '@mui/icons-material/HelpOutline';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import { AccordionSummary, AccordionDetails } from '@mui/material';
@@ -89,6 +89,7 @@ export default function CORSConfiguration(props) {
         configDispatcher,
         api: { corsConfiguration },
     } = props;
+    const intl = useIntl();
     const isCorsEnabled = corsConfiguration.corsConfigurationEnabled;
     const isAllowAllOrigins = corsConfiguration.accessControlAllowOrigins[0] === '*'
         && corsConfiguration.accessControlAllowOrigins.length === 1;
@@ -149,8 +150,8 @@ export default function CORSConfiguration(props) {
                                 <Grid item md={12}>
                                     <Typography variant='subtitle1'>
                                         <FormattedMessage
-                                            id='Apis.Details.Configuration.components.CORSConfiguration.allow.
-                                                    origins'
+                                            id={'Apis.Details.Configuration.components.CORSConfiguration.allow.'
+                                                + 'origins'}
                                             defaultMessage='Access Control Allow Origins'
                                         />
                                     </Typography>
@@ -172,7 +173,11 @@ export default function CORSConfiguration(props) {
                                                         color='primary'
                                                     />
                                                 )}
-                                                label='Allow All Origins'
+                                                label={intl.formatMessage({
+                                                    id: 'Apis.Details.Configuration.components.CORSConfiguration.'
+                                                        + 'allow.all.origins',
+                                                    defaultMessage: 'Allow All Origins',
+                                                })}
                                             />
                                         </Grid>
                                         {!isAllowAllOrigins && (
@@ -224,8 +229,8 @@ export default function CORSConfiguration(props) {
                                 <Grid item md={12}>
                                     <Typography variant='subtitle1'>
                                         <FormattedMessage
-                                            id='Apis.Details.Configuration.components.CORSConfiguration.allow.
-                                                    headers'
+                                            id={'Apis.Details.Configuration.components.CORSConfiguration.allow.'
+                                                    + 'headers'}
                                             defaultMessage='Access Control Allow Headers'
                                         />
                                     </Typography>
@@ -268,8 +273,8 @@ export default function CORSConfiguration(props) {
                                 <Grid item md={12}>
                                     <Typography variant='subtitle1'>
                                         <FormattedMessage
-                                            id='Apis.Details.Configuration.components.CORSConfiguration.allow.
-                                                    methods'
+                                            id={'Apis.Details.Configuration.components.CORSConfiguration.allow.'
+                                                    + 'methods'}
                                             defaultMessage='Access Control Allow Methods'
                                         />
                                     </Typography>

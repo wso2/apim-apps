@@ -21,7 +21,7 @@ import { styled } from '@mui/material/styles';
 import { List, IconButton , Theme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import ListItem from '@mui/material/ListItem';
 import ListItemAvatar from '@mui/material/ListItemAvatar';
 import ListItemSecondaryAction from '@mui/material/ListItemSecondaryAction';
@@ -107,7 +107,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
     const handleDrop = (policyDefinition: any) => {
         setPolicyDefinitionFile(policyDefinition);
     };
-
+    const intl = useIntl();
     const renderPolicyFileDropzone = () => {
         return (
             <Dropzone
@@ -164,7 +164,10 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
                         />
                         <sup className={classes.mandatoryStar}>*</sup>
                         <Tooltip
-                            title={'This only supports .j2 and .xml file uploads'}
+                            title={intl.formatMessage({
+                                id: 'Apis.Details.Policies.PolicyForm.UploadPolicyDropzone.file.tooltip',
+                                defaultMessage: 'This only supports .j2 and .xml file uploads'
+                            })}
                             placement='right'
                         >
                             <IconButton aria-label='policy-file-upload-helper-text' size='large'>

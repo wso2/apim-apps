@@ -21,7 +21,7 @@ import { styled, Theme } from '@mui/material/styles';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import Icon from '@mui/material/Icon';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { Link, useHistory } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
@@ -62,7 +62,7 @@ const CreatePolicy: React.FC = () => {
     const [synapsePolicyDefinitionFile, setSynapsePolicyDefinitionFile] = useState<any[]>([]);
     const [ccPolicyDefinitionFile, setCcPolicyDefinitionFile] = useState<any[]>([]);
     const [saving, setSaving] = useState(false);
-
+    const intl = useIntl();
     const addCommonPolicy = (
         policySpecContent: CreatePolicySpec,
         synapsePolicyDefinition: any,
@@ -76,7 +76,10 @@ const CreatePolicy: React.FC = () => {
         );
         promisedCommonPolicyAdd
             .then(() => {
-                Alert.info('Policy created successfully!');
+                Alert.info(intl.formatMessage({
+                    id:'App.Components.Common.Policies.Create.Policy.success',
+                    defaultMessage:'Policy created successfully!',
+                }));
                 setSynapsePolicyDefinitionFile([]);
                 setCcPolicyDefinitionFile([]);
                 history.push(CONSTS.PATH_TEMPLATES.COMMON_POLICIES);

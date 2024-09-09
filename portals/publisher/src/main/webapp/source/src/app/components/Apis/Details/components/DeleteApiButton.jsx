@@ -14,7 +14,7 @@ import API from 'AppData/api';
 import { resourceMethod, resourcePath, ScopeValidation } from 'AppData/ScopeValidation';
 import Alert from 'AppComponents/Shared/Alert';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import classNames from 'classnames';
 import { isRestricted } from 'AppData/AuthManager';
 
@@ -142,17 +142,26 @@ class DeleteApiButton extends React.Component {
      */
     handleApiDelete() {
         const {
-            api: { id, name }, setLoading, updateData, isAPIProduct, history,
+            api: { id, name }, setLoading, updateData, isAPIProduct, history, intl,
         } = this.props;
         if (isAPIProduct) {
             const promisedDelete = API.deleteProduct(id);
             promisedDelete
                 .then((response) => {
                     if (response.status !== 200) {
-                        Alert.info('Something went wrong while deleting the API Product!');
+                        Alert.info(intl.formatMessage({
+                            id: 'Apis.Details.components.api.product.delete.error',
+                            defaultMessage: 'Something went wrong while deleting the API Product!',
+                        }));
                         return;
                     }
-                    Alert.info(`API Product ${name} deleted Successfully`);
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.components.api.product.delete.success',
+                        defaultMessage: 'API Product {name} deleted Successfully',
+                    },
+                    {
+                        name,
+                    }));
                     if (updateData) {
                         updateData(id);
                         setLoading(false);
@@ -164,7 +173,10 @@ class DeleteApiButton extends React.Component {
                     if (error.status === 409) {
                         Alert.error('[ ' + name + ' ] : ' + error.response.body.description);
                     } else {
-                        Alert.error('Something went wrong while deleting the API Product!');
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.components.api.product.delete.error',
+                            defaultMessage: 'Something went wrong while deleting the API Product!',
+                        }));
                     }
                     setLoading(false);
                 });
@@ -173,10 +185,19 @@ class DeleteApiButton extends React.Component {
             promisedDelete
                 .then((response) => {
                     if (response.status !== 200) {
-                        Alert.info('Something went wrong while deleting the API!');
+                        Alert.info(intl.formatMessage({
+                            id: 'Apis.Details.components.api.delete.error',
+                            defaultMessage: 'Something went wrong while deleting the API!',
+                        }));
                         return;
                     }
-                    Alert.info(`API ${name} deleted Successfully`);
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.components.api.delete.success',
+                        defaultMessage: 'API {name} deleted Successfully',
+                    },
+                    {
+                        name,
+                    }));
                     if (updateData) {
                         updateData(id);
                         setLoading(false);
@@ -188,7 +209,10 @@ class DeleteApiButton extends React.Component {
                     if (error.status === 409) {
                         Alert.error('[ ' + name + ' ] : ' + error.response.body.description);
                     } else {
-                        Alert.error('Something went wrong while deleting the API!');
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.components.api.delete.error',
+                            defaultMessage: 'Something went wrong while deleting the API!',
+                        }));
                     }
                     setLoading(false);
                 });
@@ -307,4 +331,4 @@ DeleteApiButton.propTypes = {
     setLoading: PropTypes.func,
 };
 
-export default withRouter((DeleteApiButton));
+export default withRouter(injectIntl(DeleteApiButton));

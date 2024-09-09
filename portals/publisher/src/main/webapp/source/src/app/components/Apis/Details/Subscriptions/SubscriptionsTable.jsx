@@ -757,7 +757,7 @@ class SubscriptionsTable extends Component {
         const {
             subscriptions, rowsPerPage, emptyColumnHeight, subscriberClaims,
         } = this.state;
-        const {  api } = this.props;
+        const {  api, intl } = this.props;
         if (!subscriptions) {
             return (
                 <Grid container direction='row' justifyContent='center' alignItems='center'>
@@ -1042,6 +1042,18 @@ class SubscriptionsTable extends Component {
             selectableRows: 'none',
             rowsPerPageOptions: [5, 10, 25, 50, 100],
             rowsPerPage,
+            textLabels: {
+                pagination: {
+                    rowsPerPage: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.rows.per.page',
+                        defaultMessage: 'Rows per page:',
+                    }),
+                    displayRows: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.display.rows',
+                        defaultMessage: 'of',
+                    }),
+                },
+            },
         };
         const subMails = {};
         const emails = subscriberClaims && Object.entries(subscriberClaims).map(([, v]) => {
@@ -1089,7 +1101,10 @@ class SubscriptionsTable extends Component {
                                         disabled={!names}
                                         variant='outlined'
                                     >
-                                        Contact Subscribers
+                                        <FormattedMessage
+                                            id='Apis.Details.Subscriptions.SubscriptionsTable.contact.subscribers'
+                                            defaultMessage='Contact Subscribers'
+                                        />
                                     </Button>
                                 </span>
                             </Tip>

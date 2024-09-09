@@ -136,18 +136,39 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                             className={classes.flowTabs}
                         >
                             <Tab
-                                label={<span className={classes.flowTab}>Request</span>}
+                                label={
+                                    <span className={classes.flowTab}>
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.PolicyList.add.request.tab'
+                                            defaultMessage='Request'
+                                        />
+                                    </span>
+                                }
                                 id='request-tab'
                                 aria-controls='request-tabpanel'
                             />
                             <Tab
-                                label={<span className={classes.flowTab}>Response</span>}
+                                label={
+                                    <span className={classes.flowTab}>
+                                        <FormattedMessage
+                                            id='Apis.Details.Policies.PolicyList.add.response.tab'
+                                            defaultMessage='Response'
+                                        />
+                                    </span>
+                                }
                                 id='response-tab'
                                 aria-controls='response-tabpanel'
                             />
                             {!isChoreoConnectEnabled && (
                                 <Tab
-                                    label={<span className={classes.flowTab}>Fault</span>}
+                                    label={
+                                        <span className={classes.flowTab}>
+                                            <FormattedMessage
+                                                id='Apis.Details.Policies.PolicyList.add.fault.tab'
+                                                defaultMessage='Fault'
+                                            />
+                                        </span>
+                                    }
                                     id='fault-tab'
                                     aria-controls='fault-tabpanel'
                                 />)

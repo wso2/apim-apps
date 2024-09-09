@@ -97,7 +97,11 @@ export default function OperationGovernance(props) {
                                 color='primary'
                             />
                         )}
-                        label='Security'
+                        label={intl.formatMessage({
+                            id: 'Apis.Details.Topics.components.operationComponents.OperationGovernance.'
+                                + 'security.switch',
+                            defaultMessage: 'Security',
+                        })}
                         labelPlacement='start'
                     />
                 </FormControl>
@@ -248,7 +252,11 @@ export default function OperationGovernance(props) {
                         id={verb + target + '-operation-scope-autocomplete'}
                         options={[...filteredApiScopes, ...sharedScopes]}
                         groupBy={(option) => option.shared ? 'Shared Scopes' : 'API Scopes'}
-                        noOptionsText='No scopes available'
+                        noOptionsText={intl.formatMessage({
+                            id: 'Apis.Details.Topics.components.operationComponents.OperationGovernance.'
+                                + 'no.scopes.available',
+                            defaultMessage: 'No scopes available',
+                        })}
                         disableCloseOnSelect
                         value={operationScopes.map((scope) => ({ scope: { name: scope } }))}
                         getOptionLabel={(option) => option.scope.name}
@@ -286,7 +294,11 @@ export default function OperationGovernance(props) {
                                         + 'OperationGovernance.operation.scope.label.notAvailable',
                                     defaultMessage: 'No scope available',
                                 })}
-                                placeholder='Search scopes'
+                                placeholder={intl.formatMessage({
+                                    id: 'Apis.Details.Topics.components.operationComponents.OperationGovernance.'
+                                        + 'search.scopes.placeholder',
+                                    defaultMessage: 'Search scopes',
+                                })}
                                 helperText={(
                                     <FormattedMessage
                                         id={'Apis.Details.Resources.components.operationComponents.'

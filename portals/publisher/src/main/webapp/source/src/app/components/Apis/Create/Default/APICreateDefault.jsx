@@ -222,7 +222,10 @@ function APICreateDefault(props) {
             promisedCreatedAPI = newAPIProduct
                 .saveProduct(apiData)
                 .then((apiProduct) => {
-                    Alert.info('API Product created successfully');
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Create.Default.APICreateDefault.api.product.created.success',
+                        defaultMessage: 'API Product created successfully',
+                    }));
                     history.push(`/api-products/${apiProduct.id}/overview`);
                     return apiProduct;
                 })
@@ -232,7 +235,10 @@ function APICreateDefault(props) {
                         setPageError(error.response.body);
                         return error.response.body.description;
                     } else {
-                        const message = 'Something went wrong while adding the API Product';
+                        const message = intl.formatMessage({
+                            id: 'Apis.Create.Default.APICreateDefault.api.product.created.error',
+                            defaultMessage: 'Something went wrong while adding the API Product',
+                        });
                         setPageError(message);
                         // TODO add i18n ~tmkb
                         return message;
@@ -244,7 +250,10 @@ function APICreateDefault(props) {
                 .save();
             Alert.loading(promisedCreatedAPI, {
                 loading: 'Creating API...',
-                success: 'API created successfully',
+                success: intl.formatMessage({
+                    id: 'Apis.Create.Default.APICreateDefault.api.created.success',
+                    defaultMessage: 'API created successfully',
+                }),
                 error: (error) => {
                     console.error(error);
                     setIsPublishing(false); // We don't publish if something when wrong
@@ -252,7 +261,10 @@ function APICreateDefault(props) {
                         setPageError(error.response.body);
                         return error.response.body.description;
                     } else {
-                        const message = 'Something went wrong while adding the API';
+                        const message = intl.formatMessage({
+                            id: 'Apis.Create.Default.APICreateDefault.api.created.error',
+                            defaultMessage: 'Something went wrong while adding the API',
+                        });
                         setPageError(message);
                         return message;
                     }
@@ -275,7 +287,10 @@ function APICreateDefault(props) {
             };
             const promisedAPIRevision = restApi.createRevision(api.id, body);
             Alert.loading(promisedAPIRevision, {
-                success: 'API revision created successfully',
+                success: intl.formatMessage({
+                    id: 'Apis.Create.Default.APICreateDefault.api.revision.created.success',
+                    defaultMessage: 'API Revision created successfully',
+                }),
                 error: (error) => {
                     console.error(error);
                     if (error.response) {
@@ -344,7 +359,10 @@ function APICreateDefault(props) {
                 const promisedDeployment = restApi.deployRevision(api.id, revisionId, body1);
                 Alert.loading(promisedDeployment, {
                     loading: 'Deploying API...',
-                    success: 'API deployed successfully',
+                    success: intl.formatMessage({
+                        id: 'Apis.Create.Default.APICreateDefault.api.revision.deployed.success',
+                        defaultMessage: 'API Revision Deployed Successfully',
+                    }),
                     error: (error) => {
                         console.error(error);
                         if (error.response) {
@@ -529,7 +547,10 @@ function APICreateDefault(props) {
                                 disabled={isAPICreateDisabled || !apiInputs.isFormValid}
                                 onClick={createAPIOnly}
                             >
-                                Create
+                                <FormattedMessage
+                                    id='Apis.Create.Default.APICreateDefault.create.btn'
+                                    defaultMessage='Create'
+                                />
                                 {' '}
                                 {isCreating && !isPublishButtonClicked && <CircularProgress size={24} />}
                             </Button>
@@ -544,14 +565,43 @@ function APICreateDefault(props) {
                                         || isAPICreateDisabled || !apiInputs.isFormValid}
                                     onClick={createAndPublish}
                                 >
-                                    {(!isPublishing && !isRevisioning && !isDeploying) && 'Create & Publish'}
+                                    {(!isPublishing && !isRevisioning && !isDeploying)
+                                        && (
+                                            <FormattedMessage
+                                                id='Apis.Create.Default.APICreateDefault.create.publish.btn'
+                                                defaultMessage='Create & Publish'
+                                            />
+                                        )}
                                     {(isPublishing || isRevisioning || isDeploying) && <CircularProgress size={24} />}
-                                    {isCreating && isPublishing && 'Creating API . . .'}
-                                    {!isCreating && isRevisioning && !isDeploying && 'Creating Revision . . .'}
+                                    {isCreating && isPublishing &&
+                                        <FormattedMessage
+                                            id='Apis.Create.Default.APICreateDefault.create.publish.btn.creating.status'
+                                            defaultMessage='Creating API . . .'
+                                        />
+                                    }
+                                    {!isCreating && isRevisioning && !isDeploying &&
+                                        <FormattedMessage
+                                            id={'Apis.Create.Default.APICreateDefault.create.publish.btn.creating.'
+                                                + 'revision.status'}
+                                            defaultMessage='Creating Revision . . .'
+                                        />
+                                    }
                                     {!isCreating && isPublishing
-                                        && !isRevisioning && !isDeploying && 'Publishing API . . .'}
+                                        && !isRevisioning && !isDeploying &&
+                                        <FormattedMessage
+                                            id={'Apis.Create.Default.APICreateDefault.create.publish.btn.creating.'
+                                                + 'publishing.status'}
+                                            defaultMessage='Publishing API . . .'
+                                        />
+                                    }
                                     {!isCreating && isPublishing
-                                        && !isRevisioning && isDeploying && 'Deploying Revision . . .'}
+                                        && !isRevisioning && isDeploying &&
+                                        <FormattedMessage
+                                            id={'Apis.Create.Default.APICreateDefault.create.publish.btn.creating.'
+                                                + 'deploying.revision.status'}
+                                            defaultMessage='Deploying Revision . . .'
+                                        />
+                                    }
                                 </Button>
                             </Grid>
                         )}

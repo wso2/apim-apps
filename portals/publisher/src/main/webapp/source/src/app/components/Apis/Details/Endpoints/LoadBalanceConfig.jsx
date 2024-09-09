@@ -79,6 +79,7 @@ function LoadBalanceConfig(props) {
         failOver,
         handleLBConfigChange,
         closeLBConfigDialog,
+        intl,
     } = props;
     const [lbConfig, setLbConfigObject] = useState(defaultTemplateObj);
     const [algoClassNameError, setAlgoClassNameError] = useState(false);
@@ -161,7 +162,10 @@ function LoadBalanceConfig(props) {
                     )}
                     value={lbConfig.algoCombo}
                     onChange={handleAlgorithmChange}
-                    helperText='Please select the Loadbalance Algorithm.'
+                    helperText={intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.LoadBalanceConfig.algorithm.helper.text',
+                        defaultMessage: 'Please select the Loadbalance Algorithm.',
+                    })}
                     margin='normal'
                     disabled={isRestricted(['apim:api_create'], api)}
                 >
@@ -186,7 +190,10 @@ function LoadBalanceConfig(props) {
                             value={lbConfig.algoClassName}
                             onChange={(event) => handleFieldChange(event, 'algoClassName')}
                             onBlur={() => setAlgoClassNameError(lbConfig.algoClassName === '')}
-                            helperText='Enter the class name of the loadbalance algorithm'
+                            helperText={intl.formatMessage({
+                                id: 'Apis.Details.Endpoints.LoadBalanceConfig.class.name.for.algorithm.helper.text',
+                                defaultMessage: 'Enter the class name of the loadbalance algorithm',
+                            })}
                             disabled={isRestricted(['apim:api_create'], api)}
                             margin='normal'
                         />
@@ -202,7 +209,10 @@ function LoadBalanceConfig(props) {
                     )}
                     value={lbConfig.sessionManagement}
                     onChange={(event) => handleFieldChange(event, 'sessionManagement')}
-                    helperText='Please select the Session Management mechanism.'
+                    helperText={intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.LoadBalanceConfig.session.management.helper.text',
+                        defaultMessage: 'Please select the Session Management mechanism.',
+                    })}
                     margin='normal'
                     disabled={isRestricted(['apim:api_create'], api)}
                 >

@@ -19,6 +19,7 @@
 import React, {
     useReducer, useEffect, useState, useCallback,
 } from 'react';
+import { useIntl } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import Paper from '@mui/material/Paper';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -64,6 +65,7 @@ export default function Topics(props) {
     const isAsyncAPI = api.type === 'WEBSUB' || api.type === 'WS' || api.type === 'SSE';
     const [markedOperations, setSelectedOperation] = useState({});
 
+    const intl = useIntl();
     /**
      *
      * @param {*} spec
@@ -191,7 +193,13 @@ export default function Topics(props) {
                 for (let currentVerb of data.verbs) {
                     currentVerb = verbMap[currentVerb];
                     if (addedOperations[data.target][currentVerb]) {
-                        const message = `Operation already exist with ${data.target} and ${currentVerb}`;
+                        const message = intl.formatMessage(
+                            {
+                                id: 'Apis.Details.Configuration.Topic.already.opreation.verb.exist.error',
+                                defaultMessage: 'Operation already exist with {data_target} and {current_Verb}',
+                            },
+                            { data_target: data.target, current_Verb: currentVerb },
+                        );
                         Alert.warning(message);
                         console.warn(message);
                         alreadyExistCount++;
@@ -200,7 +208,10 @@ export default function Topics(props) {
                     }
                 }
                 if (alreadyExistCount === data.verbs.length) {
-                    Alert.error('Operation(s) already exist!');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Configuration.Topic.already.exist.error',
+                        defaultMessage: 'Operation(s) already exist!',
+                    }));
                     return currentOperations;
                 }
                 return addedOperations;
@@ -352,7 +363,10 @@ export default function Topics(props) {
                 if (error.response) {
                     setPageError(error.response.body);
                 } else {
-                    Alert.error('Error while updating the definition');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Configuration.Topic.update.definition.error',
+                        defaultMessage: 'Error while updating the definition',
+                    }));
                 }
             });
     }
@@ -417,7 +431,10 @@ export default function Topics(props) {
             return updateAPI({ websubSubscriptionConfiguration })
                 .catch((error) => {
                     console.error(error);
-                    Alert.error('Error while updating the API');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Configuration.Topic.update.api.error',
+                        defaultMessage: 'Error while updating the API',
+                    }));
                 })
                 .then(() => updateAsyncAPIDefinition({ ...asyncAPISpec, channels: copyOfOperations }));
         } else {

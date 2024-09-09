@@ -137,7 +137,7 @@ class CommentAdd extends React.Component {
      * * */
     handleClickAddComment() {
         const {
-            api: { id: apiId }, replyTo, handleShowReply, addComment, addReply,
+            api: { id: apiId }, replyTo, handleShowReply, addComment, addReply, intl
         } = this.props;
         const { content } = this.state;
         const comment = {
@@ -162,11 +162,17 @@ class CommentAdd extends React.Component {
                     if (error.response) {
                         Alert.error(error.response.body.message);
                     } else {
-                        Alert.error('Something went wrong while adding the comment');
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.Comments.Comment.Add.error',
+                            defaultMessage: 'Something went wrong while adding the comment',
+                        }));
                     }
                 });
         } else {
-            Alert.error('You cannot enter a blank comment');
+            Alert.error(intl.formatMessage({
+                id: 'Apis.Details.Comments.Comment.Add.blank.error',
+                defaultMessage: 'You cannot enter a blank comment',
+            }));
         }
         this.setState({ currentLength: 0 });
         if (replyTo !== null) {

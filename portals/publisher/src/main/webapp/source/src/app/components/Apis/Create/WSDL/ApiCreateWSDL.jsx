@@ -156,14 +156,20 @@ export default function ApiCreateWSDL(props) {
         }
         promisedWSDLImport
             .then((api) => {
-                Alert.info('API created successfully');
+                Alert.info(intl.formatMessage({
+                    id: 'Apis.Create.WSDL.ApiCreateWSDL.create.success',
+                    defaultMessage: 'API created successfully',
+                }));
                 history.push(`/apis/${api.id}/overview`);
             })
             .catch((error) => {
                 if (error.response) {
                     Alert.error(error.response.body.description);
                 } else {
-                    Alert.error('Something went wrong while adding the API');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Create.WSDL.ApiCreateWSDL.create.error',
+                        defaultMessage: 'Something went wrong while adding the API',
+                    }));
                 }
                 console.error(error);
             })
@@ -215,11 +221,21 @@ export default function ApiCreateWSDL(props) {
             <Box sx={{ mb: 2 }}>
                 <Stepper alternativeLabel activeStep={wizardStep}>
                     <Step>
-                        <StepLabel>Provide WSDL</StepLabel>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='Apis.Create.WSDL.ApiCreateWSDL.step.label.provide.wsdl'
+                                defaultMessage='Provide WSDL'
+                            />
+                        </StepLabel>
                     </Step>
 
                     <Step>
-                        <StepLabel>Create API</StepLabel>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='Apis.Create.WSDL.ApiCreateWSDL.step.label.create.api'
+                                defaultMessage='Create API'
+                            />
+                        </StepLabel>
                     </Step>
                 </Stepper>
             </Box>
@@ -260,7 +276,10 @@ export default function ApiCreateWSDL(props) {
                                     () => setWizardStep((step) => step - 1)
                                 }
                                 >
-                                    Back
+                                    <FormattedMessage
+                                        id='Apis.Create.WSDL.ApiCreateWSDL.step.label.create.api.back.btn'
+                                        defaultMessage='Back'
+                                    />
                                 </Button>
                             )}
                         </Grid>
@@ -272,7 +291,10 @@ export default function ApiCreateWSDL(props) {
                                     color='primary'
                                     disabled={!apiInputs.isFormValid}
                                 >
-                                    Next
+                                    <FormattedMessage
+                                        id='Apis.Create.WSDL.ApiCreateWSDL.step.label.create.api.next.btn'
+                                        defaultMessage='Next'
+                                    />
                                 </Button>
                             )}
                             {wizardStep === 1 && (
@@ -282,7 +304,10 @@ export default function ApiCreateWSDL(props) {
                                     disabled={!apiInputs.isFormValid || isCreating}
                                     onClick={createAPI}
                                 >
-                                    Create
+                                    <FormattedMessage
+                                        id='Apis.Create.WSDL.ApiCreateWSDL.step.label.create.api.create.btn'
+                                        defaultMessage='Create'
+                                    />
                                     {' '}
                                     {isCreating && <CircularProgress size={24} />}
                                 </Button>
