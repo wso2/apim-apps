@@ -27,7 +27,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import InputAdornment from '@mui/material/InputAdornment';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import FormControl from '@mui/material/FormControl';
 import { ACTIONS } from './PolicyCreateForm';
 
@@ -75,7 +75,7 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
     isViewMode,
 }) => {
 
-
+    const intl = useIntl();
     // Validates whether atleast one flow (i.e. request, response or fault) is selected
     // True if none of the flows are selected.
     const applicableFlowsError = applicableFlows.length === 0;
@@ -293,7 +293,10 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                                 onChange={handleChange}
                                             />
                                         }
-                                        label='Request'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Policies.PolicyForm.GeneralDetails.form.flow.type.request',
+                                            defaultMessage: 'Request',
+                                        })}
                                         data-testid='request-flow'
                                     />
                                     <FormControlLabel
@@ -307,7 +310,10 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                                 onChange={handleChange}
                                             />
                                         }
-                                        label='Response'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Policies.PolicyForm.GeneralDetails.form.flow.type.response',
+                                            defaultMessage: 'Response',
+                                        })}
                                         data-testid='response-flow'
                                     />
                                     <FormControlLabel
@@ -322,7 +328,10 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                                 onChange={handleChange}
                                             />
                                         }
-                                        label='Fault'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Policies.PolicyForm.GeneralDetails.form.flow.type.fault',
+                                            defaultMessage: 'Fault',
+                                        })}
                                         data-testid='fault-flow'
                                     />
                                 </FormGroup>

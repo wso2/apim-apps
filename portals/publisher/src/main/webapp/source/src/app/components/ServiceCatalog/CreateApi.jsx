@@ -589,8 +589,14 @@ function CreateApi(props) {
                                                         </div>
                                                     );
                                                 }))
-                                            || `API will be exposed in ${actualContext({ context, version })}`
-                                            + ' context at the gateway'
+                                                || (
+                                                    <FormattedMessage
+                                                        id='ServiceCatalog.CreateApi.api.actual.context.helper'
+                                                        defaultMessage={'API will be exposed in {actualContext} '
+                                                            + 'context at the gateway'}
+                                                        values={{ actualContext: actualContext({ context, version }) }}
+                                                    />
+                                                )
                                         }
                                         InputProps={{
                                             id: 'itest-id-apicontext-input',

@@ -31,7 +31,7 @@ import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import CONSTS from 'AppData/Constants';
 import Alert from 'AppComponents/Shared/Alert';
@@ -332,6 +332,7 @@ export default function DesignConfigurations() {
     const invalidTagsExist = apiConfig.tags.find((tag) => {
         return (/([~!@#;%^&*+=|\\<>"'/,])/.test(tag)) || (tag.length > 30);
     });
+    const intl = useIntl();
     const handleChange = (event) => {
         const type = event.target.value;
         if (type === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {
@@ -435,7 +436,10 @@ export default function DesignConfigurations() {
                 }
                 const { status } = error;
                 if (status === 404) {
-                    Alert.error('Error occurred');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Configuration.Design.Configurations.error.occured',
+                        defaultMessage: 'Error occurred',
+                    }));
                 }
             });
     }, []);
@@ -451,7 +455,10 @@ export default function DesignConfigurations() {
                 if (error.response) {
                     Alert.error(error.response.body.description);
                 } else {
-                    Alert.error('Error occurred while updating design configurations');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Configuration.Design.Configurations.error.updating',
+                        defaultMessage: 'Error occurred while updating design configurations',
+                    }));
                 }
             });
         if (descriptionType === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {

@@ -22,6 +22,7 @@ import Grid from '@mui/material/Grid';
 import Divider from '@mui/material/Divider';
 import TextField from '@mui/material/TextField';
 import Typography from '@mui/material/Typography';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 /**
  *
@@ -34,15 +35,22 @@ export default function DescriptionAndSummary(props) {
     const {
         operation, operationsDispatcher, disableUpdate, target, verb,
     } = props;
+    const intl = useIntl();
     return (
         <>
             <Grid item xs={12} md={12}>
                 <Typography variant='subtitle1'>
-                    Summary
+                    <FormattedMessage
+                        id='Apis.Details.Resources.Operation.Components.Summary.title'
+                        defaultMessage='Summary'
+                    />
                     {' '}
                     &lsquo;&#38;&rsquo;
                     {' '}
-                    Description
+                    <FormattedMessage
+                        id='Apis.Details.Resources.Operation.Components.Description.title'
+                        defaultMessage='Description'
+                    />
                     <Divider variant='middle' />
                 </Typography>
             </Grid>
@@ -51,7 +59,10 @@ export default function DescriptionAndSummary(props) {
                 <TextField
                     margin='dense'
                     fullWidth
-                    label='Description'
+                    label={intl.formatMessage({
+                        id: 'Apis.Details.Resources.Operation.Components.Description',
+                        defaultMessage: 'Description',
+                    })}
                     multiline
                     disabled={disableUpdate}
                     rows='4'
@@ -67,7 +78,10 @@ export default function DescriptionAndSummary(props) {
             </Grid>
             <Grid item md={5}>
                 <TextField
-                    label='Summary'
+                    label={intl.formatMessage({
+                        id: 'Apis.Details.Resources.Operation.Components.Summary',
+                        defaultMessage: 'Summary',
+                    })}
                     margin='dense'
                     variant='outlined'
                     fullWidth

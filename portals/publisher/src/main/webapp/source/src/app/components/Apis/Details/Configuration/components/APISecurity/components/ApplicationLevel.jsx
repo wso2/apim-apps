@@ -35,7 +35,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormHelperText from '@mui/material/FormHelperText';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import KeyManager from 'AppComponents/Apis/Details/Configuration/components/KeyManager';
@@ -105,6 +105,7 @@ export default function ApplicationLevel(props) {
     } = props;
     const [apiFromContext] = useAPI();
     const [oauth2Enabled, setOauth2Enabled] = useState(securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2));
+    const intl = useIntl();
     let mandatoryValue = null;
     let hasResourceWithSecurity;
     if (apiFromContext.apiType === API.CONSTS.APIProduct) {
@@ -160,8 +161,8 @@ export default function ApplicationLevel(props) {
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography className={classes.subHeading} variant='h6' component='h4'>
                             <FormattedMessage
-                                id='Apis.Details.Configuration.Components.APISecurity.Components.
-                                    ApplicationLevel.http'
+                                id={'Apis.Details.Configuration.Components.APISecurity.Components.'
+                                        + 'ApplicationLevel.http'}
                                 defaultMessage='Application Level Security'
                             />
                             <Tooltip
@@ -203,7 +204,11 @@ export default function ApplicationLevel(props) {
                                         color='primary'
                                     />
                                 )}
-                                label='OAuth2'
+                                label={intl.formatMessage({
+                                    id: 'Apis.Details.Configuration.Components.APISecurity.Components.'
+                                        + 'ApplicationLevel.security.scheme.oauth2',
+                                    defaultMessage: 'OAuth2',
+                                })}
                             />
                             {(apiFromContext.gatewayType === 'wso2/synapse' ||
                                 apiFromContext.apiType === API.CONSTS.APIProduct) && (
@@ -221,7 +226,11 @@ export default function ApplicationLevel(props) {
                                             id='api-security-basic-auth-checkbox'
                                         />
                                     )}
-                                    label='Basic'
+                                    label={intl.formatMessage({
+                                        id: 'Apis.Details.Configuration.Components.APISecurity.Components.'
+                                            + 'ApplicationLevel.security.scheme.basic',
+                                        defaultMessage: 'Basic',
+                                    })}
                                 />
                             )}
                             <FormControlLabel
@@ -238,7 +247,11 @@ export default function ApplicationLevel(props) {
                                         id='api-security-api-key-checkbox'
                                     />
                                 )}
-                                label='Api Key'
+                                label={intl.formatMessage({
+                                    id: 'Apis.Details.Configuration.Components.APISecurity.Components.'
+                                        + 'ApplicationLevel.security.scheme.api.key',
+                                    defaultMessage: 'Api Key',
+                                })}
                             />
                         </FormGroup>
                         <FormControl className={classes.bottomSpace} component='fieldset'>
@@ -264,7 +277,11 @@ export default function ApplicationLevel(props) {
                                             color='primary'
                                         />
                                     )}
-                                    label='Mandatory'
+                                    label={intl.formatMessage({
+                                        id: 'Apis.Details.Configuration.Components.APISecurity.Components.'
+                                            + 'ApplicationLevel.security.scheme.mandatory',
+                                        defaultMessage: 'Mandatory',
+                                    })}
                                     labelPlacement='end'
                                 />
                                 <FormControlLabel
@@ -276,7 +293,11 @@ export default function ApplicationLevel(props) {
                                             color='primary'
                                         />
                                     )}
-                                    label='Optional'
+                                    label={intl.formatMessage({
+                                        id: 'Apis.Details.Configuration.Components.APISecurity.Components.'
+                                            + 'ApplicationLevel.security.scheme.optional',
+                                        defaultMessage: 'Optional',
+                                    })}
                                     labelPlacement='end'
                                 />
                             </RadioGroup>

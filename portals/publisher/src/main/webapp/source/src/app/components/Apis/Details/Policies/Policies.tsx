@@ -540,7 +540,10 @@ const Policies: React.FC = () => {
                                     <Tab
                                         label={
                                             <span className={classes.flowTab}>
-                                                API Level Policies
+                                                <FormattedMessage
+                                                    id='Apis.Details.Policies.tab.api.level'
+                                                    defaultMessage='API Level Policies'
+                                                />
                                             </span>
                                         }
                                         id='api-level-policies-tab'
@@ -549,7 +552,10 @@ const Policies: React.FC = () => {
                                     <Tab
                                         label={
                                             <span className={classes.flowTab}>
-                                                Operation Level Policies
+                                                <FormattedMessage
+                                                    id='Apis.Details.Policies.tab.operation.level'
+                                                    defaultMessage='Operation Level Policies'
+                                                />
                                             </span>
                                         }
                                         id='operation-level-policies-tab'

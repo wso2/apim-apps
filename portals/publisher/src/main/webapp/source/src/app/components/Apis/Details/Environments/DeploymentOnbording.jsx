@@ -297,7 +297,10 @@ export default function DeploymentOnboarding(props) {
                             <Grid item xs={2} />
                             <Grid item xs={8} className={classes.textAlign}>
                                 <Typography variant='h6' className={classes.textDeploy}>
-                                    Deploy the API
+                                    <FormattedMessage
+                                        id='Apis.Details.Environments.deploy.text'
+                                        defaultMessage='Deploy the API'
+                                    />
                                 </Typography>
                             </Grid>
                             <Grid item xs={2} />
@@ -307,7 +310,10 @@ export default function DeploymentOnboarding(props) {
                                 <Grid item xs={2} />
                                 <Grid item xs={8} className={classes.textAlign}>
                                     <Typography variant='h6' className={classes.textDescription}>
-                                        Deploy API to the Gateway Environment
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.deploy.env.text'
+                                            defaultMessage='Deploy API to the Gateway Environment'
+                                        />
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={2} />
@@ -317,7 +323,10 @@ export default function DeploymentOnboarding(props) {
                             <Paper fullWidth className={classes.root}>
                                 <Box p={5}>
                                     <Typography className={classes.textRevision}>
-                                        API Gateways
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.deploy.api.gateways.text'
+                                            defaultMessage='API Gateways'
+                                        />
                                     </Typography>
                                     <Box mt={4}>
                                         <Grid
@@ -405,8 +414,8 @@ export default function DeploymentOnboarding(props) {
                                                                                 disabled={row.vhosts.length === 1}
                                                                                 label={(
                                                                                     <FormattedMessage
-                                                                                        id='Apis.Details.Environments
-                                                                                        .deploy.vhost'
+                                                                                        id={'Apis.Details.Environments'
+                                                                                            + '.deploy.vhost'}
                                                                                         defaultMessage='VHost'
                                                                                     />
                                                                                 )}
@@ -462,10 +471,17 @@ export default function DeploymentOnboarding(props) {
                                             onClick={handleDescriptionOpen}
                                             id='add-description-btn'
                                         >
-                                            Add a description
+                                            <FormattedMessage
+                                                id='Apis.Details.Environments.Environments.revision.description.add'
+                                                defaultMessage='Add a description'
+                                            />
                                         </Button>
                                         <Typography display='inline' className={classes.textOptional}>
-                                            (optional)
+                                            <FormattedMessage
+                                                id={'Apis.Details.Environments.Environments.revision.description.'
+                                                    + 'add.optional.text'}
+                                                defaultMessage='(optional)'
+                                            />
                                         </Typography>
                                         <br />
                                         {descriptionOpen && (
@@ -475,12 +491,18 @@ export default function DeploymentOnboarding(props) {
                                                     name='description'
                                                     margin='dense'
                                                     variant='outlined'
-                                                    label='Description'
+                                                    label={(
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Environments.Environments.revision.'
+                                                                + 'description.label'}
+                                                            defaultMessage='Description'
+                                                        />
+                                                    )}
                                                     inputProps={{ maxLength: maxCommentLength }}
                                                     helperText={(
                                                         <FormattedMessage
-                                                            id='Apis.Details.Environments.Environments.revision
-                                                            .description.deploy'
+                                                            id={'Apis.Details.Environments.Environments.revision.'
+                                                                + 'description.deploy.helper'}
                                                             defaultMessage='Add a description to the revision'
                                                         />
                                                     )}

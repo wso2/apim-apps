@@ -335,7 +335,12 @@ const TryOutConsole = () => {
                                             <Box color='success.main'>
                                                 {`Expires ${dayjs.unix(decodedJWT.payload.exp).fromNow()}`}
                                             </Box>
-                                        ) : 'Generate or provide an internal API Key'}
+                                        ) : (
+                                            <FormattedMessage
+                                                id='Apis.Details.TryOutConsole.token.helper'
+                                                defaultMessage='Generate or provide an internal API Key'
+                                            />
+                                        )}
                                         margin='normal'
                                         variant='outlined'
                                         name='internal'

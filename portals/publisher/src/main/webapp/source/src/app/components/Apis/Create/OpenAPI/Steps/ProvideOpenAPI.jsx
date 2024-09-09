@@ -25,7 +25,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import InputAdornment from '@mui/material/InputAdornment';
 import CheckIcon from '@mui/icons-material/Check';
@@ -86,6 +86,8 @@ export default function ProvideOpenAPI(props) {
     const [isValidating, setIsValidating] = useState(false);
     const [isLinting, setIsLinting] = useState(false);
     
+    const intl = useIntl();
+
     function lint(content) {
         // Validate and linting
         setIsLinting(true);
@@ -140,7 +142,10 @@ export default function ProvideOpenAPI(props) {
                     setValidity({ ...isValid, url: null });
                     setValidationErrors([]);
                 } else {
-                    setValidity({ ...isValid, url: { message: 'OpenAPI content validation failed!' } });
+                    setValidity({ ...isValid, url: { message: intl.formatMessage({
+                        id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
+                        defaultMessage: 'OpenAPI content validation failed!'
+                    }) } });
                     setValidationErrors(errors);
                 }
                 onValidate(isValidURL);
@@ -178,12 +183,26 @@ export default function ProvideOpenAPI(props) {
                     inputsDispatcher({ action: 'preSetAPI', value: info });
                     setValidity({ ...isValid, file: null });
                 } else {
-                    setValidity({ ...isValid, file: { message: 'OpenAPI content validation failed!' } });
+                    setValidity({
+                        ...isValid, file: {
+                            message: intl.formatMessage({
+                                id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
+                                defaultMessage: 'OpenAPI content validation failed!'
+                            })
+                        }
+                    });
                     setValidationErrors(errors);
                 }
             })
             .catch((error) => {
-                setValidity({ ...isValid, file: { message: 'OpenAPI content validation failed!' } });
+                setValidity({
+                    ...isValid, file: {
+                        message: intl.formatMessage({
+                            id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
+                            defaultMessage: 'OpenAPI content validation failed!'
+                        })
+                    }
+                });
                 console.error(error);
             })
             .finally(() => {
@@ -287,14 +306,20 @@ export default function ProvideOpenAPI(props) {
                                 disabled={isLinting || isValidating}
                                 value={ProvideOpenAPI.INPUT_TYPES.URL}
                                 control={<Radio color='primary' />}
-                                label='OpenAPI URL'
+                                label={intl.formatMessage({
+                                    id: 'Apis.Create.OpenAPI.create.api.form.url.label',
+                                    defaultMessage: 'OpenAPI URL',
+                                })}
                                 id='open-api-url-select-radio'
                             />
                             <FormControlLabel
                                 disabled={isLinting || isValidating}
                                 value={ProvideOpenAPI.INPUT_TYPES.FILE}
                                 control={<Radio color='primary' />}
-                                label='OpenAPI File/Archive'
+                                label={intl.formatMessage({
+                                    id: 'Apis.Create.OpenAPI.create.api.form.file.label',
+                                    defaultMessage: 'OpenAPI File/Archive',
+                                })}
                                 aria-label='OpenAPI File/Archive'
                                 id='open-api-file-select-radio'
                             />
@@ -359,8 +384,14 @@ export default function ProvideOpenAPI(props) {
                         <TextField
                             autoFocus
                             id='outlined-full-width'
-                            label='OpenAPI URL'
-                            placeholder='Enter OpenAPI URL'
+                            label={intl.formatMessage({
+                                id: 'Apis.Create.OpenAPI.create.api.url.label',
+                                defaultMessage: 'OpenAPI URL',
+                            })}
+                            placeholder={intl.formatMessage({
+                                id: 'Apis.Create.OpenAPI.create.api.url.placeholder',
+                                defaultMessage: 'Enter OpenAPI URL',
+                            })}
                             fullWidth
                             margin='normal'
                             variant='outlined'
@@ -376,7 +407,13 @@ export default function ProvideOpenAPI(props) {
                                 endAdornment: urlStateEndAdornment,
                             }}
                             // 'Give the URL of OpenAPI endpoint'
-                            helperText={(isValid.url && isValid.url.message) || 'Click away to validate the URL'}
+                            helperText={(isValid.url && isValid.url.message)
+                                || (
+                                    <FormattedMessage
+                                        id='Apis.Create.OpenAPI.create.api.url.helper.text'
+                                        defaultMessage='Click away to validate the URL'
+                                    />
+                                )}
                             error={isInvalidURL}
                             data-testid='swagger-url-endpoint'
                         />

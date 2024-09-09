@@ -425,8 +425,7 @@ function Properties(props) {
             additionalPropertiesCopy.forEach((property) => {
                 if (property.name === fieldKey) {
                     Alert.warning(intl.formatMessage({
-                        id: `Apis.Details.Properties.Properties.
-                            property.name.exists`,
+                        id: 'Apis.Details.Properties.Properties.property.name.exists',
                         defaultMessage: 'Property name already exists',
                     }));
                     valid = false;
@@ -438,8 +437,7 @@ function Properties(props) {
             additionalPropertiesCopy.forEach((property) => {
                 if (property.name === fieldKey) {
                     Alert.warning(intl.formatMessage({
-                        id: `Apis.Details.Properties.Properties.
-                                property.name.exists`,
+                        id: 'Apis.Details.Properties.Properties.property.name.exists',
                         defaultMessage: 'Property name already exists',
                     }));
                     valid = false;
@@ -448,16 +446,13 @@ function Properties(props) {
             return valid;
         } else if (validateEmpty(fieldKey) || validateEmpty(fieldValue)) {
             Alert.warning(intl.formatMessage({
-                id: `Apis.Details.Properties.Properties.
-                    property.name.empty.error`,
+                id: 'Apis.Details.Properties.Properties.property.name.empty.error',
                 defaultMessage: 'Property name/value can not be empty',
             }));
             return false;
         } else if (isKeyword(fieldKey)) {
             Alert.warning(intl.formatMessage({
-                id:
-                `Apis.Details.Properties.Properties.
-                    property.name.keyword.error`,
+                id:'Apis.Details.Properties.Properties.property.name.keyword.error',
                 defaultMessage:
                 'Property name can not be a system reserved keyword',
             }));
@@ -465,8 +460,7 @@ function Properties(props) {
         } else if (hasWhiteSpace(fieldKey)) {
             Alert.warning(intl.formatMessage({
                 id:
-                    `Apis.Details.Properties.Properties.
-                    property.name.has.whitespaces`,
+                    `Apis.Details.Properties.Properties.property.name.has.whitespaces`,
                 defaultMessage:
                     'Property name can not have any whitespaces in it',
             }));
@@ -490,8 +484,7 @@ function Properties(props) {
         const { newKey, newValue, display } = newRow;
         if (oldKey === newKey && oldValue === newValue && isDisplayInStore === display) {
             Alert.warning(intl.formatMessage({
-                id: `Apis.Details.Properties.Properties.
-                    no.changes.to.save`,
+                id: 'Apis.Details.Properties.Properties.no.changes.to.save',
                 defaultMessage: 'No changes to save',
             }));
             return false;
@@ -743,8 +736,8 @@ function Properties(props) {
                                 ? (
                                     <Typography component='p' className={classes.content}>
                                         <FormattedMessage
-                                            id='Apis.Details.Properties.Properties.APIProduct.
-                                            add.new.property.message.content'
+                                            id={'Apis.Details.Properties.Properties.APIProduct.'
+                                                + 'add.new.property.message.content'}
                                             defaultMessage={
                                                 'Add specific custom properties to your '
                                         + 'API here.'
@@ -796,8 +789,8 @@ function Properties(props) {
                                             required={property.Required}
                                             id='custom-property-value'
                                             label={intl.formatMessage({
-                                                id: `Apis.Details.Properties.Properties.
-                                                                            show.add.property.custom.property.name`,
+                                                id: 'Apis.Details.Properties.Properties.'
+                                                        + 'show.add.property.custom.property.name',
                                                 defaultMessage: '{message}',
                                             },
                                             { message: property.Name }
@@ -813,7 +806,10 @@ function Properties(props) {
                                             helperText={property.Required &&
                                                 validateEmpty(customPropertyValue.find((data) =>
                                                     data.name === property.Name)?.value)
-                                                ? 'Mandatory fields cannot be empty' : property.Description
+                                                ? intl.formatMessage({
+                                                    id: 'Apis.Details.Properties.Properties.is.mandatory',
+                                                    defaultMessage:'Mandatory fields cannot be empty',
+                                                }) : property.Description
                                             }
                                             error={property.Required &&
                                                 validateEmpty(customPropertyValue.find((data) =>
@@ -838,8 +834,7 @@ function Properties(props) {
                                                     />
                                                 )}
                                                 label={intl.formatMessage({
-                                                    id: `Apis.Details.Properties.
-                                                    Properties.editable.show.in.devporal`,
+                                                    id: `Apis.Details.Properties.Properties.editable.show.in.devporal`,
                                                     defaultMessage: 'Show in devportal',
                                                 })}
                                                 className={classes.checkBoxStyles}
@@ -874,7 +869,10 @@ function Properties(props) {
                                             </TableCell>
                                             <TableCell>
                                                 <Typography variant='srOnly'>
-                                                    Action
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Properties.Properties.add.new.property.action'
+                                                        defaultMessage='Action'
+                                                    />
                                                 </Typography>
                                             </TableCell>
                                         </TableRow>
@@ -889,8 +887,8 @@ function Properties(props) {
                                                             required
                                                             id='property-name'
                                                             label={intl.formatMessage({
-                                                                id: `Apis.Details.Properties.Properties.
-                                                            show.add.property.property.name`,
+                                                                id: 'Apis.Details.Properties.Properties.show.add.'
+                                                                    + 'property.property.name',
                                                                 defaultMessage: 'Name',
                                                             })}
                                                             margin='dense'
@@ -902,8 +900,8 @@ function Properties(props) {
                                                             helperText={validateEmpty(propertyKey) ? ''
                                                                 : iff((isKeyword(propertyKey)
                                                                     || hasWhiteSpace(propertyKey)), intl.formatMessage({
-                                                                    id: `Apis.Details.Properties.Properties.
-                                                                    show.add.property.invalid.error`,
+                                                                    id: 'Apis.Details.Properties.Properties.'
+                                                                        + 'show.add.property.invalid.error',
                                                                     defaultMessage: 'Invalid property name',
                                                                 }), '')}
                                                             error={validateEmpty(propertyKey) || isKeyword(propertyKey)
@@ -947,8 +945,8 @@ function Properties(props) {
                                                                 />
                                                             )}
                                                             label={intl.formatMessage({
-                                                                id: `Apis.Details.Properties.
-                                                            Properties.editable.show.in.devporal`,
+                                                                id: 'Apis.Details.Properties.'
+                                                                    + 'Properties.editable.show.in.devporal',
                                                                 defaultMessage: 'Show in devportal',
                                                             })}
                                                             className={classes.checkBoxStyles}

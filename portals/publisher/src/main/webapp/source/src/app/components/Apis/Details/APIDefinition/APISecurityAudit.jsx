@@ -396,7 +396,7 @@ class APISecurityAudit extends Component {
      */
     render() {
         const {
-            report, overallScore, numErrors, externalApiId, loading, apiDefinition,
+            report, overallScore, numErrors, externalApiId, loading, apiDefinition, intl
         } = this.state;
 
         const reportObject = JSON.parse(report);
@@ -646,6 +646,18 @@ class APISecurityAudit extends Component {
                     );
                 }
             },
+            textLabels: {
+                pagination: {
+                    rowsPerPage: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.rows.per.page',
+                        defaultMessage: 'Rows per page:',
+                    }),
+                    displayRows: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.display.rows',
+                        defaultMessage: 'of',
+                    }),
+                },
+            },
         };
         return (
             <div>
@@ -699,8 +711,7 @@ class APISecurityAudit extends Component {
                                                     sx={styles.circularProgressBarScore}
                                                 >
                                                     <FormattedMessage
-                                                        id='Apis.Details.APIDefinition.AuditApi
-                                                                    .OverallScoreProgress'
+                                                        id='Apis.Details.APIDefinition.AuditApi.OverallScoreProgress'
                                                         defaultMessage='{overallScore}'
                                                         values={{
                                                             overallScore: (
@@ -923,7 +934,11 @@ class APISecurityAudit extends Component {
                                                         <StyledEngineProvider injectFirst>
                                                             <ThemeProvider theme={this.getMuiTheme()}>
                                                                 <MUIDataTable
-                                                                    title='Semantic Errors'
+                                                                    title={intl.formatMessage({
+                                                                        id: 'Apis.Details.APIDefinition.AuditApi'
+                                                                            + '.table.semantic.errors',
+                                                                        defaultMessage: 'Semantic Errors',
+                                                                    })}
                                                                     data={this.getRowData(
                                                                         reportObject.semanticErrors.issues,
                                                                         'OpenAPI Format Requirements',
@@ -946,7 +961,11 @@ class APISecurityAudit extends Component {
                                                         <StyledEngineProvider injectFirst>
                                                             <ThemeProvider theme={this.getErrorMuiTheme()}>
                                                                 <MUIDataTable
-                                                                    title='Structural Errors'
+                                                                    title={intl.formatMessage({
+                                                                        id: 'Apis.Details.APIDefinition.AuditApi'
+                                                                            + '.table.structural.errors',
+                                                                        defaultMessage: 'Structural Errors',
+                                                                    })}
                                                                     data={this.getRowData(
                                                                         reportObject.validationErrors.issues,
                                                                         'OpenAPI Format Requirements',
@@ -969,7 +988,11 @@ class APISecurityAudit extends Component {
                                                         <StyledEngineProvider injectFirst>
                                                             <ThemeProvider theme={this.getErrorMuiTheme()}>
                                                                 <MUIDataTable
-                                                                    title='Best Practices Issues'
+                                                                    title={intl.formatMessage({
+                                                                        id: 'Apis.Details.APIDefinition.'
+                                                                            + 'AuditApi.table.best.practices',
+                                                                        defaultMessage: 'Best Practices Issues',
+                                                                    })}
                                                                     data={this.getRowData(
                                                                         reportObject.warnings.issues,
                                                                         'OpenAPI Format Requirements',
@@ -1110,7 +1133,11 @@ class APISecurityAudit extends Component {
                                                         <StyledEngineProvider injectFirst>
                                                             <ThemeProvider theme={this.getMuiTheme()}>
                                                                 <MUIDataTable
-                                                                    title='Issues'
+                                                                    title={intl.formatMessage({
+                                                                        id: 'Apis.Details.APIDefinition.'
+                                                                            + 'AuditApi.table.issues',
+                                                                        defaultMessage: 'Issues',
+                                                                    })}
                                                                     data={this.getRowData(
                                                                         reportObject.security.issues,
                                                                         'Security',
@@ -1239,7 +1266,11 @@ class APISecurityAudit extends Component {
                                                         <StyledEngineProvider injectFirst>
                                                             <ThemeProvider theme={this.getMuiTheme()}>
                                                                 <MUIDataTable
-                                                                    title='Issues'
+                                                                    title={intl.formatMessage({
+                                                                        id: 'Apis.Details.APIDefinition.AuditApi.'
+                                                                            + 'table.issues',
+                                                                        defaultMessage: 'Issues',
+                                                                    })}
                                                                     data={this.getRowData(
                                                                         reportObject.data.issues,
                                                                         'Data Validation',

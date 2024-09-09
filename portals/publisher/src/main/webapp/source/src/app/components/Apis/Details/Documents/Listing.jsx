@@ -246,7 +246,7 @@ class Listing extends React.Component {
 
 
     render() {
-        const {  api, isAPIProduct } = this.props;
+        const {  api, isAPIProduct, intl } = this.props;
         const { docs, showAddDocs, docsToDelete } = this.state;
         const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
         const url = `/${urlPrefix}/${api.id}/documents/create`;
@@ -262,6 +262,18 @@ class Listing extends React.Component {
             onRowsDelete: (rowData, rowMeta, that = this) => {
                 that.setState({ docsToDelete: rowData });
                 return false;
+            },
+            textLabels: {
+                pagination: {
+                    rowsPerPage: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.rows.per.page',
+                        defaultMessage: 'Rows per page:',
+                    }),
+                    displayRows: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.display.rows',
+                        defaultMessage: 'of',
+                    }),
+                },
             },
         };
         const columns = [

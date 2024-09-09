@@ -120,8 +120,18 @@ function APICategories(props) {
                                 />
                             )
                             }
-                            placeholder='Search API categories'
-                            helperText='Select API Categories for the API'
+                            placeholder={(
+                                <FormattedMessage
+                                    id='Apis.Details.Configurations.api.categories.placeholder.text'
+                                    defaultMessage='Search API categories'
+                                />
+                            )}
+                            helperText={(
+                                <FormattedMessage
+                                    id='Apis.Details.Configurations.api.categories.helper.text'
+                                    defaultMessage='Select API Categories for the API'
+                                />
+                            )}
                             margin='normal'
                             variant='outlined'
                             id='APICategories'

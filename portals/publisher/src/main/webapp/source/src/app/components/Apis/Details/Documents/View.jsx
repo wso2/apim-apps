@@ -34,6 +34,9 @@ import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
+import remarkGfm from 'remark-gfm';
+import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Utils from 'AppData/Utils';
 import Configuration from 'Config';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
@@ -145,6 +148,8 @@ function View(props) {
     const [isFileAvailable, setIsFileAvailable] = useState(true);
     const restAPI = isAPIProduct ? new APIProduct() : new API();
     
+    const syntaxHighlighterDarkTheme = false;
+
     useEffect(() => {
         const docPromise = restAPI.getDocument(api.id, documentId);
         docPromise
@@ -280,9 +285,35 @@ function View(props) {
 
                 <Paper className={classes.paper}>
                     {doc.sourceType === 'MARKDOWN' && (
-                        <Suspense fallback={<CircularProgress />}>
-                            <ReactMarkdown escapeHtml>{code}</ReactMarkdown>
-                        </Suspense>
+                        <div className='markdown-content-wrapper'>
+                            <Suspense fallback={<CircularProgress />}>
+                                <ReactMarkdown
+                                    skipHtml={true}
+                                    children={code}
+                                    remarkPlugins={[remarkGfm]}
+                                    components={{
+                                        code({
+                                            node, inline, className, children, ...propsInner
+                                        }) {
+                                            const match = /language-(\w+)/.exec(className || '');
+                                            return !inline && match ? (
+                                                <SyntaxHighlighter
+                                                    children={String(children).replace(/\n$/, '')}
+                                                    style={syntaxHighlighterDarkTheme ? vscDarkPlus : vs}
+                                                    language={match[1]}
+                                                    PreTag='div'
+                                                    {...propsInner}
+                                                />
+                                            ) : (
+                                                <code className={className} {...propsInner}>
+                                                    {children}
+                                                </code>
+                                            );
+                                        },
+                                    }}
+                                />
+                            </Suspense>
+                        </div>
                     )}
                     {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
                     {doc.sourceType === 'URL' && (

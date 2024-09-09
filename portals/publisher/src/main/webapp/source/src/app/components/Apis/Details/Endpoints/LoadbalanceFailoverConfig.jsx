@@ -119,11 +119,6 @@ const Root = styled('div')((
     }
 }));
 
-const endpointTypes = [
-    { key: 'none', value: 'None' },
-    { key: 'failover', value: 'Failover' },
-    { key: 'load_balance', value: 'Load Balanced' },
-];
 
 /**
  * The component which holds the load balance and failover configuration.
@@ -139,12 +134,37 @@ function LoadbalanceFailoverConfig(props) {
         toggleESConfig,
         globalEpType,
         handleEndpointCategorySelect,
+        intl,
     } = props;
     const { api } = useContext(APIContext);
     const [isConfigExpanded, setConfigExpand] = useState(false);
     const [endpointType, setEndpointType] = useState(props);
     const [isLBConfigOpen, setLBConfigOpen] = useState(false);
 
+    const endpointTypes = [
+        {
+            key: 'none',
+            value: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.LoadbalanceFailoverConfig.types.none',
+                defaultMessage: 'None',
+            }),
+        },
+        {
+            key: 'failover',
+            value: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.LoadbalanceFailoverConfig.types.failover',
+                defaultMessage: 'Failover',
+            }),
+        },
+        {
+            key: 'load_balance',
+            value: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.LoadbalanceFailoverConfig.types.load.balanced',
+                defaultMessage: 'Load Balanced',
+            }),
+        },
+    ];
+    
     useEffect(() => {
         const epType = epConfig.endpoint_type;
         if (epType === 'http' || epType === 'address') {
@@ -291,7 +311,10 @@ function LoadbalanceFailoverConfig(props) {
                                             />
                                         )}
                                         value={endpointType}
-                                        placeholder='Endpoint'
+                                        placeholder={intl.formatMessage({
+                                            id: 'Apis.Details.Endpoints.LoadbalanceFailoverConfig.endpoint.placeholder',
+                                            defaultMessage: 'Endpoint',
+                                        })}
                                         onChange={handleEndpointTypeSelect}
                                         margin='normal'
                                         variant='outlined'

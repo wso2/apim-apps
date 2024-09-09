@@ -421,6 +421,24 @@ class TableView extends React.Component {
                         id: 'Apis.Listing.ApiTableView.items.per.page',
                         defaultMessage: 'Items per page',
                     }),
+                    displayRows: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.display.rows',
+                        defaultMessage: 'of',
+                    }),
+                },
+                toolbar: {
+                    downloadCsv: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.display.tool.download.csv',
+                        defaultMessage: 'Download CSV',
+                    }),
+                    print: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.display.tool.print',
+                        defaultMessage: 'Print',
+                    }),
+                    viewColumns: intl.formatMessage({
+                        id: 'Mui.data.table.pagination.display.tool.view.columns',
+                        defaultMessage: '"View Columns"',
+                    }),
                 },
             },
         };

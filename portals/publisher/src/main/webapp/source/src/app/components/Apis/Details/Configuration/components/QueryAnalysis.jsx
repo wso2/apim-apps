@@ -243,7 +243,12 @@ export default function GraphQLQueryAnalysis(props) {
                         </Typography>
                         <Typography className={classes.heading}>
 
-                            <span>update complexity</span>
+                            <span>
+                                <FormattedMessage
+                                    id='Apis.Details.Configurartion.components.QueryAnalysis.update.complexity'
+                                    defaultMessage='update complexity'
+                                />
+                            </span>
 
                         </Typography>
                         <Button

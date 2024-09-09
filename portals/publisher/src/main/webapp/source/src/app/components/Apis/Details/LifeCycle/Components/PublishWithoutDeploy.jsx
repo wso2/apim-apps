@@ -26,7 +26,7 @@ import MuiDialogActions from '@mui/material/DialogActions';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import Typography from '@mui/material/Typography';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContentText from '@mui/material/DialogContentText';
 import LinkIcon from '@mui/icons-material/Link';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
@@ -99,6 +99,7 @@ export default function PublishWithoutDeploy(props) {
     const {
         api, handleClick, open, handleClose,
     } = props;
+    const intl = useIntl();
 
     let isExternalEndpointAvailable = false;
     let availableExternalEndpoint = '';
@@ -171,13 +172,19 @@ export default function PublishWithoutDeploy(props) {
             const promisedUpdate = api.update(updatedAPI);
             promisedUpdate
                 .then(() => {
-                    Alert.info('API updated successfully');
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.LifeCycle.components.api.update.success', 
+                        defaultMessage:'API updated successfully'
+                    }));
                 })
                 .catch((error) => {
                     if (error.response) {
                         Alert.error(error.response.body.description);
                     } else {
-                        const message = 'Something went wrong while updating the API';
+                        const message = intl.formatMessage({
+                            id: 'Apis.Details.LifeCycle.components.api.update.error', 
+                            defaultMessage:'Something went wrong while updating the API'
+                        });
                         Alert.error(message);
                     }
                     console.error(error);

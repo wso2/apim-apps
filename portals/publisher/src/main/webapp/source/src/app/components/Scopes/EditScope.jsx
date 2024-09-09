@@ -238,6 +238,7 @@ class EditScope extends React.Component {
      */
     handleRoleAddition(role) {
         const { validRoles, invalidRoles } = this.state;
+        const { intl } = this.props;
         const promise = APIValidation.role.validate(base64url.encode(role));
         promise
             .then(() => {
@@ -253,7 +254,15 @@ class EditScope extends React.Component {
                         invalidRoles: [...invalidRoles, role],
                     });
                 } else {
-                    Alert.error('Error when validating role: ' + role);
+                    Alert.error(intl.formatMessage(
+                        {
+                            id: 'Apis.Details.Scopes.Edit.Scope.validate.role.error',
+                            defaultMessage: 'Error when validating role: {role}',
+                        },
+                        {
+                            role,
+                        },
+                    ));
                     console.error('Error when validating role ' + error);
                 }
             });
@@ -353,16 +362,22 @@ class EditScope extends React.Component {
      */
     validateScopeDisplayName(id, value) {
         const { valid, sharedScope } = this.state;
-
+        const { intl } = this.props;
         sharedScope[id] = value;
         valid[id].invalid = !(value && value.length > 0);
         if (valid[id].invalid) {
-            valid[id].error = 'Scope display name cannot be empty';
+            valid[id].error = intl.formatMessage({
+                id: 'Scopes.Create.Scope.display.name.empty',
+                defaultMessage: 'Scope display name cannot be empty',
+            });
         }
 
         if (!valid[id].invalid && /[!@#$%^&*(),?"{}[\]|<>\t\n]|(^apim:)/i.test(value)) {
             valid[id].invalid = true;
-            valid[id].error = 'Field contains special characters';
+            valid[id].error = intl.formatMessage({
+                id: 'Scopes.Create.Scope.name.has.special.characters',
+                defaultMessage: 'Field contains special characters',
+            });
         }
         if (!valid[id].invalid) {
             valid[id].error = '';
@@ -384,6 +399,7 @@ class EditScope extends React.Component {
         const {
             sharedScope, roleValidity, validRoles, invalidRoles, valid,
         } = this.state;
+        const { intl } = this.props;
         const url = '/scopes';
         if (!sharedScope) {
             return <Progress />;
@@ -421,7 +437,10 @@ class EditScope extends React.Component {
                                 <FormControl margin='normal'>
                                     <TextField
                                         id='name'
-                                        label='Name'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.EditScope.name.label',
+                                            defaultMessage: 'Name',
+                                        })}
                                         fullWidth
                                         margin='normal'
                                         variant='outlined'
@@ -436,11 +455,17 @@ class EditScope extends React.Component {
                                 <FormControl margin='normal'>
                                     <TextField
                                         id='displayName'
-                                        label='Display Name'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.EditScope.display.name.label',
+                                            defaultMessage: 'Display Name',
+                                        })}
                                         fullWidth
                                         margin='normal'
                                         variant='outlined'
-                                        placeholder='Scope Display Name'
+                                        placeholder={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.EditScope.display.name.placeholder',
+                                            defaultMessage: 'Scope Display Name',
+                                        })}
                                         error={valid.displayName.invalid}
                                         helperText={valid.displayName.invalid ? (
                                             valid.displayName.error
@@ -460,9 +485,16 @@ class EditScope extends React.Component {
                                 <FormControl margin='normal'>
                                     <TextField
                                         id='description'
-                                        label='Description'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.EditScope.description.about.the.scope.label',
+                                            defaultMessage: 'Description',
+                                        })}
                                         variant='outlined'
-                                        placeholder='Short description about the scope'
+                                        placeholder={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.EditScope.short.description.'
+                                            + 'about.the.scope.placeholder',
+                                            defaultMessage: 'Short description about the scope',
+                                        })}
                                         helperText={(
                                             <FormattedMessage
                                                 id='Scopes.EditScope.short.description.about.the.scope'
@@ -480,14 +512,20 @@ class EditScope extends React.Component {
                                 </FormControl>
                                 <FormControl margin='normal'>
                                     <ChipInput
-                                        label='Roles'
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.EditScope.roles.label',
+                                            defaultMessage: 'Roles',
+                                        })}
                                         InputLabelProps={{
                                             shrink: true,
                                         }}
                                         variant='outlined'
                                         value={validRoles.concat(invalidRoles)}
                                         alwaysShowPlaceholder={false}
-                                        placeholder='Enter roles and press Enter'
+                                        placeholder={intl.formatMessage({
+                                            id: 'Apis.Details.Scopes.EditScope.roles.placeholder',
+                                            defaultMessage: 'Enter roles and press Enter',
+                                        })}
                                         blurBehavior='clear'
                                         InputProps={{
                                             endAdornment: !roleValidity && (

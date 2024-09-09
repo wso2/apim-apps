@@ -238,11 +238,17 @@ export default function CustomizedStepper() {
                         if (error.response) {
                             Alert.error(error.response.body.description);
                         } else {
-                            Alert.error('Something went wrong while updating the API');
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.LifeCycle.Policies.update.error',
+                                defaultMessage: 'Something went wrong while updating the API',
+                            }));
                         }
                         console.error(error);
                     });
-                Alert.info('Lifecycle state updated successfully');
+                Alert.info(intl.formatMessage({
+                    id: 'Apis.Details.LifeCycle.Policies.update.success',
+                    defaultMessage: 'Lifecycle state updated successfully',
+                }));
             })
             .finally(() => setUpdating(false))
             .catch((errorResponse) => {
@@ -498,8 +504,8 @@ export default function CustomizedStepper() {
                                                             >
                                                                 <Typography variant='h6'>
                                                                     <FormattedMessage
-                                                                        id='Apis.Details.Overview.
-                                                                        CustomizedStepper.Endpoint'
+                                                                        id={'Apis.Details.Overview.'
+                                                                            + 'CustomizedStepper.Endpoint'}
                                                                         defaultMessage=' Endpoint'
                                                                     />
                                                                 </Typography>
@@ -613,8 +619,10 @@ export default function CustomizedStepper() {
                                 )}
                                 {label === 'Test' && (
                                     <Tooltip
-                                        title={lifecycleState === 'RETIRED' ? 'Cannot use test option while API'
-                                            + ' is in retired state' : ''}
+                                        title={lifecycleState === 'RETIRED' ? intl.formatMessage({
+                                            id: 'Apis.Details.Overview.CustomizedStepper.ToolTip.cannot.test',
+                                            defaultMessage: 'Cannot use test option while API is in retired state',
+                                        }) : ''}
                                         placement='bottom'
                                     >
                                         <Grid
