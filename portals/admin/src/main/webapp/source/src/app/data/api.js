@@ -1079,6 +1079,16 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Retrieve transaction count
+     */
+    getTransactionCount(params) {
+        return this.client.then((client) => {
+            return client.apis['Transaction Records'].get_transaction_count(
+                params, this._requestMetaData(),
+            );
+        });
+    }
 }
 
 API.CONSTS = {
