@@ -72,7 +72,7 @@ const Root = styled('form')((
 
 const ApplicationCreate = (props) => {
 
-    const [isSwitchOn, setSwitchOn] = useState(applicationRequest?.visibility === 'SHARED_WITH_ORG');
+    const [isSwitchOn, setSwitchOn] = useState(false);
 
     /**
      * This method is used to handle the updating of create application
