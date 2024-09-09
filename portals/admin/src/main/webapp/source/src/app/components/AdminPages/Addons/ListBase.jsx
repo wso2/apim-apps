@@ -38,6 +38,9 @@ import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import Alert from '@mui/material/Alert';
+import {
+    Table, TableHead, TableBody, TableRow, TableCell,
+} from '@mui/material';
 
 /**
  * Render a list
@@ -54,6 +57,7 @@ function ListBase(props) {
         },
         noDataMessage,
         addedActions,
+        enableCollapsable,
     } = props;
 
     const [searchText, setSearchText] = useState('');
@@ -150,9 +154,15 @@ function ListBase(props) {
                         if (editComponentProps && editComponentProps.routeTo) {
                             if (typeof tableMeta.rowData === 'object') {
                                 const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
+                                const isAI = tableMeta.rowData[1] === 'AI API Quota';
                                 return (
                                     <div data-testid={`${itemName}-actions`}>
-                                        <RouterLink to={editComponentProps.routeTo + artifactId}>
+                                        <RouterLink
+                                            to={{
+                                                pathname: editComponentProps.routeTo + artifactId,
+                                                state: { isAI },
+                                            }}
+                                        >
                                             <IconButton color='primary' component='span' size='large'>
                                                 <EditIcon aria-label={`edit-policies+${artifactId}`} />
                                             </IconButton>
@@ -233,6 +243,79 @@ function ListBase(props) {
                     defaultMessage: 'of',
                 }),
             },
+        },
+        expandableRows: enableCollapsable,
+        renderExpandableRow: (rowData) => {
+            if (!enableCollapsable) return null;
+
+            const isAIQuota = rowData[1] === 'AI API Quota';
+            return (
+                <TableRow>
+                    <TableCell colSpan={1} />
+                    <TableCell colSpan={rowData.length}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    {isAIQuota ? (
+                                        <>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                <strong>Request Count</strong>
+                                            </TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                <strong>Total Token Count</strong>
+                                            </TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                <strong>Prompt Token Count</strong>
+                                            </TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                <strong>Completion Token Count</strong>
+                                            </TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                <strong>Unit Time</strong>
+                                            </TableCell>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                <strong>Quota</strong>
+                                            </TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                <strong>Unit Time</strong>
+                                            </TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                <strong>Rate Limit</strong>
+                                            </TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                <strong>Time Unit</strong>
+                                            </TableCell>
+                                        </>
+                                    )}
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                <TableRow>
+                                    {isAIQuota ? (
+                                        <>
+                                            <TableCell sx={{ borderBottom: 'none' }}>{rowData[2]}</TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>{rowData[6]}</TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>{rowData[7]}</TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>{rowData[8]}</TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>{rowData[3]}</TableCell>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <TableCell sx={{ borderBottom: 'none' }}>{rowData[2]}</TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>{rowData[3]}</TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>{rowData[4]}</TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>{rowData[5]}</TableCell>
+                                        </>
+                                    )}
+                                </TableRow>
+                            </TableBody>
+                        </Table>
+                    </TableCell>
+                </TableRow>
+            );
         },
     };
 
@@ -392,6 +475,7 @@ ListBase.defaultProps = {
     DeleteComponent: null,
     editComponentProps: {},
     columProps: null,
+    enableCollapsable: false,
 };
 ListBase.propTypes = {
     EditComponent: PropTypes.element,
@@ -418,5 +502,6 @@ ListBase.propTypes = {
     noDataMessage: PropTypes.element,
     addButtonOverride: PropTypes.element,
     addedActions: PropTypes.shape([]),
+    enableCollapsable: PropTypes.bool,
 };
 export default ListBase;
