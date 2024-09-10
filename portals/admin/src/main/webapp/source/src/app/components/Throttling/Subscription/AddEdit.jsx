@@ -351,27 +351,6 @@ function AddEdit(props) {
                 }) : '';
                 setValidationError({ requestCount: error });
                 break;
-            // case 'totalTokenCount':
-            //     error = value === '' ? intl.formatMessage({
-            //         id: 'Throttling.Subscription.Policy.policy.total.token.count.empty.error.msg',
-            //         defaultMessage: 'Total Token Count is Empty',
-            //     }) : '';
-            //     setValidationError({ totalTokenCount: error });
-            //     break;
-            // case 'promoptTokenCount':
-            //     error = value === '' ? intl.formatMessage({
-            //         id: 'Throttling.Subscription.Policy.policy.prompt.token.count.empty.error.msg',
-            //         defaultMessage: 'Prompt Token Count is Empty',
-            //     }) : '';
-            //     setValidationError({ promptTokenCount: error });
-            //     break;
-            // case 'completionTokenCount':
-            //     error = value === '' ? intl.formatMessage({
-            //         id: 'Throttling.Subscription.Policy.policy.completion.token.count.empty.error.msg',
-            //         defaultMessage: 'Completion Token Count is Empty',
-            //     }) : '';
-            //     setValidationError({ completionTokenCount: error });
-            //     break;
             case 'eventCount':
                 error = value === '' ? intl.formatMessage({
                     id: 'Throttling.Subscription.Policy.policy.event.count.empty.error.msg',
