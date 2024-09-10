@@ -33,7 +33,7 @@ import API from 'AppData/api';
 import EditIcon from '@mui/icons-material/Edit';
 import { Link as RouterLink } from 'react-router-dom';
 import {
-    Button, Menu, MenuItem,
+    Button, Menu, MenuItem, Table, TableHead, TableBody, TableRow, TableCell,
 } from '@mui/material';
 import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
@@ -409,6 +409,77 @@ export default function ListSubscriptionThrottlingPolicies() {
         });
     }
 
+    const renderExpandableRow = (rowData) => {
+        const isAIQuota = rowData[1] === 'AI API Quota';
+        return (
+            <TableRow>
+                <TableCell colSpan={1} />
+                <TableCell colSpan={rowData.length}>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                {isAIQuota ? (
+                                    <>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Request Count</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Total Token Count</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Prompt Token Count</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Completion Token Count</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Unit Time</strong>
+                                        </TableCell>
+                                    </>
+                                ) : (
+                                    <>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Quota</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Unit Time</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Rate Limit</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Time Unit</strong>
+                                        </TableCell>
+                                    </>
+                                )}
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            <TableRow>
+                                {isAIQuota ? (
+                                    <>
+                                        <TableCell sx={{ borderBottom: 'none' }}>{rowData[2]}</TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>{rowData[6]}</TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>{rowData[7]}</TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>{rowData[8]}</TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>{rowData[3]}</TableCell>
+                                    </>
+                                ) : (
+                                    <>
+                                        <TableCell sx={{ borderBottom: 'none' }}>{rowData[2]}</TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>{rowData[3]}</TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>{rowData[4]}</TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>{rowData[5]}</TableCell>
+                                    </>
+                                )}
+                            </TableRow>
+                        </TableBody>
+                    </Table>
+                </TableCell>
+            </TableRow>
+        );
+    };
+
     return (
         <ListBase
             columProps={columProps}
@@ -424,6 +495,7 @@ export default function ListSubscriptionThrottlingPolicies() {
             }}
             DeleteComponent={Delete}
             enableCollapsable={enableCollapsable}
+            renderExpandableRow={renderExpandableRow}
         />
     );
 }
