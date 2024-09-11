@@ -122,6 +122,10 @@ class SubscriptionPoliciesManage extends Component {
         let newSelectedPolicies = [...policies];
         if (checked) {
             newSelectedPolicies.push(name);
+            if (newSelectedPolicies.length > 1) {
+                newSelectedPolicies = newSelectedPolicies.filter((policy) =>
+                    !policy.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
+            }
         } else {
             newSelectedPolicies = policies.filter((policy) => policy !== name);
             if (subValidationDisablingAllowed

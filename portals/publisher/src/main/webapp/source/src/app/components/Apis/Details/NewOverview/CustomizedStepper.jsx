@@ -622,7 +622,7 @@ export default function CustomizedStepper() {
                                 {label === 'Publish' && (
                                     <div>
                                         {(api.gatewayVendor === 'wso2') && !isSubValidationDisabled && (
-                                            <Box ml={6} mb={1}>
+                                            <Box ml={1} mb={1}>
                                                 <Grid
                                                     container
                                                     direction='row'
