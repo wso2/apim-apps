@@ -197,6 +197,11 @@ function createEndpointConfig(endpointType) {
             tmpEndpointConfig.amznRoleSessionName = '';
             tmpEndpointConfig.amznRoleRegion = '';
             break;
+        case 'custom_backend':
+            tmpEndpointConfig.endpoint_type = 'custom_backend';
+            tmpEndpointConfig.production = { sequence_id: '', sequence_name: '', key_type: 'production' };
+            tmpEndpointConfig.sandbox = { sequence_id: '', sequence_name: '', key_type: 'sandbox' };
+            break;
         default:
             tmpEndpointConfig.endpoint_type = 'default';
             tmpEndpointConfig.production_endpoints = { url: 'default' };

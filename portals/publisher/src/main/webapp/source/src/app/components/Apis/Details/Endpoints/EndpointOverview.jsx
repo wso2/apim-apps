@@ -294,11 +294,14 @@ function EndpointOverview(props) {
             supportedEndpointTypes = [
                 { key: 'address', value: 'HTTP/SOAP Endpoint' },
                 { key: 'default', value: 'Dynamic Endpoints' },
+                { key: 'custom_backend', value: 'Custom Backend' },
             ];
         } else if (type === 'SSE') {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
                 { key: 'service', value: 'Service Endpoint' },
+                { key: 'custom_backend', value: 'Custom Backend' },
+                { key: 'custom_backend', value: 'Custom Backend' },
             ];
         } else if (apiObject.gatewayType === 'wso2/apk') {
             supportedEndpointTypes = [
@@ -312,6 +315,7 @@ function EndpointOverview(props) {
                 { key: 'default', value: 'Dynamic Endpoints' },
                 { key: 'INLINE', value: 'Mock Implementation' },
                 { key: 'awslambda', value: 'AWS Lambda' },
+                { key: 'custom_backend', value: 'Custom Backend' },
             ];
         }
         if(apiObject.gatewayType !== 'wso2/apk' && type === 'HTTP' ) {
