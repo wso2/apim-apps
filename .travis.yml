@@ -1,0 +1,16 @@
+language: node_js
+sudo: true
+# In below install command , we switch to Node v8.16.0 version since we need npm v5.7 or above to run `npm ci`
+install:
+  - if [ -z "${SHELLCHECK-}" ]; then nvm install v14.15.5; fi
+
+# Using -q Quiet output which only show errors, to overcome TravisCI log limit issue
+script: mvn clean install -DskipTests -Dmaven.test.skip=true -q -B -V | grep -v DEBUG; test ${PIPESTATUS[0]} -eq 0;
+
+cache:
+  directories:
+   - $HOME/.m2
+   - /home/travis/build/wso2/apim-apps/portals/node_modules
+   - /home/travis/build/wso2/apim-apps/portals/publisher/node_modules
+   - /home/travis/build/wso2/apim-apps/portals/admin/node_modules
+   - /home/travis/build/wso2/apim-apps/portals/devportal/node_modules

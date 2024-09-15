@@ -1,0 +1,7 @@
+# Update to any of the packages Adding/Removing/Updating will require approval from one of the code owners
+# This is done to make sure we don't accidentally add vulnerable, deprecated or libraries with invalid license support
+
+package-lock.json @tmkasun
+portals/publisher/package-lock.json @tmkasun
+portals/devportal/package-lock.json @tmkasun
+portals/admin/package-lock.json @tmkasun
