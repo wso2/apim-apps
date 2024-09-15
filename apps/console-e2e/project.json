@@ -1,0 +1,9 @@
+{
+  "name": "console-e2e",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "apps/console-e2e/src",
+  "tags": [],
+  "implicitDependencies": ["console"],
+  "// targets": "to see all targets run: nx show project console-e2e --web",
+  "targets": {}
+}
