@@ -17,11 +17,13 @@
  * under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { isRestricted } from 'AppData/AuthManager';
 import CircularProgress from '@mui/material/CircularProgress';
 import InsertDriveFileIcon from '@mui/icons-material/InsertDriveFile';
 import { styled } from '@mui/material/styles';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import TextSnippetIcon from '@mui/icons-material/TextSnippet';
 import {
     Box,
     Button,
@@ -30,7 +32,6 @@ import {
     DialogContent,
     DialogTitle,
     Grid,
-    Icon,
     IconButton,
     List,
     ListItem,
@@ -39,6 +40,7 @@ import {
     ListItemText,
     Typography,
 } from '@mui/material';
+import Icon from '@mui/material/Icon';
 import PropTypes from 'prop-types';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import { FormattedMessage, injectIntl } from 'react-intl';
@@ -50,6 +52,7 @@ import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import Dropzone from 'react-dropzone';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import API from 'AppData/api';
 
 const PREFIX = 'CustomBackend';
 
@@ -120,6 +123,14 @@ const StyledDialog = styled(Dialog)((
         fontWeight: 600,
         marginTop: theme.spacing(1),
     },
+    [`& .${classes.uploadSequenceBackendDialogHeader}`]: {
+        fontWeight: '600',
+    },
+    [`& .${classes.alertWrapper}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
 }));
 
 const infoIconStyle = { mr: 1, minWidth: 'initial'};
@@ -145,8 +156,11 @@ const dropzoneStyles = {
 export default function CustomBackend(props) {
     const {
         api,
-        intl
+        intl,
+        endpointValidation,
     } = props;
+
+    const restAPI = new API();
 
     const [customBackend, setCustomBackend] = useState({ name: '', content: {} });
     const [isSaving, setSaving] = useState(false);
@@ -156,12 +170,68 @@ export default function CustomBackend(props) {
     const [productionBackendList, setProductionBackendList] = useState([]);
     const [apiFromContext] = useAPI();
     const [uploadCustomBackendOpen, setUploadCustomBackendOpen] = useState(false);
+    const [sequenceBackendToDelete, setSequenceBackendToDelete] = useState({ open: false, keyType: '', name: '' });
+    const [isDeleting, setDeleting] = useState(false);
     
     const closeCustomBackendUpload = () => {
         setUploadCustomBackendOpen(false);
         setCustomBackend({ name: '', content: '' });
         setKeyType(API_SECURITY_KEY_TYPE_PRODUCTION);
     };
+
+    useEffect(() => {
+        restAPI.getSequenceBackends(api.id)
+            .then((result) => {
+                const allSequenceBackends = result.body.list;
+                setProductionBackendList(allSequenceBackends.filter((backend) => backend.sequenceType === API_SECURITY_KEY_TYPE_PRODUCTION));
+                setSandBoxBackendList(allSequenceBackends.filter((backend) => backend.sequenceType === API_SECURITY_KEY_TYPE_SANDBOX));
+            })
+            .catch(() => {
+                setApiCategoriesList([]);
+            })
+            .finally(() => {
+                if(sandBoxBackendList.length > 0 || productionBackendList.length > 0) {
+                    endpointValidation({ isValid: true, message: '' });
+                }
+            });
+    }, []);
+
+    /**
+     * Show certificate deletion dialog box.
+     *
+     * @param {any} event The button click event.
+     * @param {string} certAlias  The alias of the certificate which information is required.
+     * */
+    const showSequenceBackendDeleteDialog = async (event, keyType, name) => {
+        setSequenceBackendToDelete({ open: true, keyType: keyType, name: name });
+    };
+
+    const downloadCustomBackend = (keyType) => {
+        console.log("Downloading");
+        restAPI.getSequenceBackendContentByAPIID(keyType, api.id).then((resp) => {
+            console.log('Custom backend downloaded successfully' + resp);
+        });
+    };
+
+    const deleteSequenceBackendByKey = (keyType) => {
+        setDeleting(true);
+        restAPI.deleteSequenceBackend(keyType, api.id).then((resp) => {
+            console.log('Custom backend deleted successfully' + resp);
+        }).finally(() => {
+            setDeleting(false);
+            setSequenceBackendToDelete({ open: false, keyType: '', name: '' });
+            if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+                setSandBoxBackendList([]);
+            } else {
+                setProductionBackendList([]);
+            }
+            if(sandBoxBackendList.length > 0 || productionBackendList.length > 0) {
+                endpointValidation({ isValid: true, message: '' });
+            }
+        });
+    }
+
+
 
     /**
      * On change functionality to handle the keyType radio button
@@ -181,20 +251,19 @@ export default function CustomBackend(props) {
         setSaving(true);
         setUploadCustomBackendOpen(false);
         if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
-            sandBoxBackendList.push({"name": customBackend.name, "content": customBackend.content});
+            sandBoxBackendList.push({"sequenceName": customBackend.name, "content": customBackend.content});
         } else {
-            productionBackendList.push({"name": customBackend.name, "content": customBackend.content});
+            productionBackendList.push({"sequenceName": customBackend.name, "content": customBackend.content});
         }
-        // uploadCustomBackend(customBackend.content, keyType)
-        // .then(() => {
-        //     closeCustomBackendUpload();
-        //     if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
-        //         sandBoxBackendList.push(customBackend);
-        //     } else {
-        //         productionBackendList.push(customBackend);
-        //     }
-        // })
-        // .finally(() => setSaving(false));
+        restAPI.uploadCustomBackend(customBackend.content, keyType, api.id).then((resp) => {
+            console.log('Custom backend uploaded successfully' + resp);
+        }).finally(() => {
+            setSaving(false);
+            setCustomBackend({ name: '', content: '' });
+            if(sandBoxBackendList.length > 0 || productionBackendList.length > 0) {
+                endpointValidation({ isValid: true, message: '' });
+            }
+        });
     };
 
     /**
@@ -261,18 +330,27 @@ export default function CustomBackend(props) {
                             {productionBackendList?.length > 0 ? (
                                 productionBackendList.map((backend) => {
                                     return (
-                                        <ListItem id={`production-backend-list-item-${backend.name}`}>
+                                        <ListItem id={`production-backend-list-item-${backend.sequenceName}`}>
                                             <ListItemAvatar>
-                                                <Icon>lock</Icon>
+                                                <TextSnippetIcon />
                                             </ListItemAvatar>
                                             <ListItemText
-                                                primary={backend.name}
+                                                primary={backend.sequenceName}
                                             />
                                             <ListItemSecondaryAction>
                                                 <IconButton
                                                     disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                    onClick={(event) => showClientCertificateDeleteDialog(event,
-                                                        API_SECURITY_KEY_TYPE_PRODUCTION, backend.name)}
+                                                    onClick={() => downloadCustomBackend(API_SECURITY_KEY_TYPE_SANDBOX)}  
+                                                    id='download-backend-btn'
+                                                >
+                                                    <CloudDownloadIcon className={isRestricted(['apim:api_create'], apiFromContext)
+                                                        ? classes.deleteIconDisable : classes.deleteIcon} />
+                                                </IconButton>
+                                                
+                                                <IconButton
+                                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                    onClick={(event) => showSequenceBackendDeleteDialog(event,
+                                                        API_SECURITY_KEY_TYPE_PRODUCTION, backend.sequenceName)}
                                                     id='delete-backend-btn'
                                                     size='large'>
                                                     <Icon className={isRestricted(['apim:api_create'], apiFromContext)
@@ -311,22 +389,27 @@ export default function CustomBackend(props) {
                             {sandBoxBackendList?.length > 0 ? (
                                 sandBoxBackendList.map((backend) => {
                                     return (
-                                        <ListItem id={`sandbox-backend-list-item-${backend.name}`}>
+                                        <ListItem id={`sandbox-backend-list-item-${backend.sequenceName}`}>
                                             <ListItemAvatar>
-                                                <Icon>lock</Icon>
+                                                <TextSnippetIcon />
                                             </ListItemAvatar>
                                             <ListItemText
-                                                primary={backend.name}
+                                                primary={backend.sequenceName}
                                             />
                                             <ListItemSecondaryAction>
-                                                <IconButton>
-                                                    <Icon>file</Icon>
+                                                <IconButton
+                                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                    onClick={() => downloadCustomBackend(API_SECURITY_KEY_TYPE_SANDBOX)}  
+                                                    id='download-backend-btn'                                           
+                                                >
+                                                    <CloudDownloadIcon className={isRestricted(['apim:api_create'], apiFromContext)
+                                                            ? classes.deleteIconDisable : classes.deleteIcon} />
                                                 </IconButton>
                                                 <IconButton
                                                     disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                    onClick={(event) => showClientCertificateDeleteDialog(event,
-                                                        API_SECURITY_KEY_TYPE_SANDBOX, backend.name)}
-                                                    id='delete-cert-btn'
+                                                    onClick={(event) => showSequenceBackendDeleteDialog(event,
+                                                        API_SECURITY_KEY_TYPE_SANDBOX, backend.sequenceName)}
+                                                    id='delete-backend-btn'
                                                     size='large'>
                                                     <Icon className={isRestricted(['apim:api_create'], apiFromContext)
                                                         ? classes.deleteIconDisable : classes.deleteIcon}
@@ -367,7 +450,7 @@ export default function CustomBackend(props) {
                 <DialogContent>
                     <Grid>
                         <div>
-                            { api.gatewayType === 'wso2/synapse' && (
+                            { api.gatewayType === 'wso2/synapse' && (sandBoxBackendList.length === 0 || productionBackendList.length === 0) && (
                                 <>
                                     <RadioGroup
                                         aria-label='Production Sandbox type selection'
@@ -379,6 +462,7 @@ export default function CustomBackend(props) {
                                     >
                                         <FormControlLabel
                                             value={API_SECURITY_KEY_TYPE_PRODUCTION}
+                                            disabled={productionBackendList.length > 0}
                                             control={(
                                                 <Radio
                                                     color='primary' 
@@ -390,6 +474,7 @@ export default function CustomBackend(props) {
                                         />
                                         <FormControlLabel
                                             value={API_SECURITY_KEY_TYPE_SANDBOX}
+                                            disabled={sandBoxBackendList.length > 0}
                                             control={(
                                                 <Radio
                                                     color='primary' 
@@ -500,6 +585,53 @@ export default function CustomBackend(props) {
                     </Button>
                 </DialogActions>
             </StyledDialog>
+            <Dialog open={sequenceBackendToDelete.open}>
+                <DialogTitle>
+                    <Typography className={classes.uploadSequenceBackendDialogHeader}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.SequenceBackend.deleteCustomBackend'
+                            defaultMessage='Delete with caution!'
+                        />
+                    </Typography>
+                </DialogTitle>
+                <DialogContent className={classes.alertWrapper}>
+                    <div id='warning-message'>
+                        <Typography>
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.confirm.certificate.delete'
+                                defaultMessage='Are you sure you want to delete '
+                            />
+                            {' '}
+                            { sequenceBackendToDelete.name + '?'}
+                        </Typography>
+                    </div>
+                </DialogContent>
+                <DialogActions>
+                    <Button
+                        onClick={() => 
+                            deleteSequenceBackendByKey(sequenceBackendToDelete.keyType)
+                        }
+                        variant='contained'
+                        color='primary'
+                        disabled={isDeleting}
+                        autoFocus
+                        id='delete-backend-confirm-btn'
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.SequenceBackend.delete.ok.button'
+                            defaultMessage='OK'
+                        />
+                        {isDeleting && <CircularProgress size={24} />}
+
+                    </Button>
+                    <Button onClick={() => setSequenceBackendToDelete({ open: false, keyType: '', alias: '' })}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.SequenceBackend.delete.cancel.button'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </StyledGrid>
     );
 }

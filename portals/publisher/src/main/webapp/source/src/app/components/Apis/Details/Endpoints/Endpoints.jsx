@@ -445,16 +445,14 @@ function Endpoints(props) {
                     }),
                 }
             }
-        } else if (endpointType === 'custom_backend') {
-            if (!endpointConfig.production && !endpointConfig.sandbox) {
-                return {
-                    isValid: false,
-                    message: intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.CustomBackend.missing.backend.error',
-                        defaultMessage: 'Either one of Production or Sandbox Endpoints should be added.',
-                    }),
-                };
-            }
+        } else if (endpointType === 'sequence_backend') {
+            return {
+                isValid: false,
+                message: intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.SequenceBackend.missing.backend.error',
+                    defaultMessage: 'Either one of Production or Sandbox Endpoints should be added.',
+                }),
+            };
         } else if (endpointType === 'load_balance') {
             /**
              * Checklist:
@@ -603,6 +601,7 @@ function Endpoints(props) {
                                         onChangeAPI={apiDispatcher}
                                         endpointsDispatcher={apiDispatcher}
                                         saveAndRedirect={saveAndRedirect}
+                                        endpointValidity={setAPIEndpointsValid}
                                     />
                                 </Grid>
                             </Grid>
