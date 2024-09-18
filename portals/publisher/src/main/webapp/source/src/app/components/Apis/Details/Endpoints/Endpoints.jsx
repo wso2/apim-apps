@@ -293,6 +293,10 @@ function Endpoints(props) {
         }
     };
 
+    const validateSequenceBackend = (isValid) => {
+        setAPIEndpointsValid({ isValid, message: '' });
+    }
+
     /**
      * Validate the provided endpoint config object.
      *
@@ -447,7 +451,7 @@ function Endpoints(props) {
             }
         } else if (endpointType === 'sequence_backend') {
             return {
-                isValid: false,
+                isValid: endpointValidity.isValid,
                 message: intl.formatMessage({
                     id: 'Apis.Details.Endpoints.SequenceBackend.missing.backend.error',
                     defaultMessage: 'Either one of Production or Sandbox Endpoints should be added.',
@@ -601,7 +605,7 @@ function Endpoints(props) {
                                         onChangeAPI={apiDispatcher}
                                         endpointsDispatcher={apiDispatcher}
                                         saveAndRedirect={saveAndRedirect}
-                                        endpointValidity={setAPIEndpointsValid}
+                                        validateSequenceBackend={validateSequenceBackend}
                                     />
                                 </Grid>
                             </Grid>

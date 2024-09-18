@@ -53,6 +53,8 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Dropzone from 'react-dropzone';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
+import Alert from 'AppComponents/Shared/Alert';
+import Utils from 'AppData/Utils';
 
 const PREFIX = 'CustomBackend';
 
@@ -161,6 +163,7 @@ export default function CustomBackend(props) {
     } = props;
 
     const restAPI = new API();
+    let backenCount = 0;
 
     const [customBackend, setCustomBackend] = useState({ name: '', content: {} });
     const [isSaving, setSaving] = useState(false);
@@ -180,19 +183,19 @@ export default function CustomBackend(props) {
     };
 
     useEffect(() => {
+        endpointValidation(false);
         restAPI.getSequenceBackends(api.id)
             .then((result) => {
                 const allSequenceBackends = result.body.list;
                 setProductionBackendList(allSequenceBackends.filter((backend) => backend.sequenceType === API_SECURITY_KEY_TYPE_PRODUCTION));
                 setSandBoxBackendList(allSequenceBackends.filter((backend) => backend.sequenceType === API_SECURITY_KEY_TYPE_SANDBOX));
+                if (result.body.count > 0) {
+                    backenCount = result.body.count;
+                    endpointValidation(true);
+                }
             })
             .catch(() => {
                 setApiCategoriesList([]);
-            })
-            .finally(() => {
-                if(sandBoxBackendList.length > 0 || productionBackendList.length > 0) {
-                    endpointValidation({ isValid: true, message: '' });
-                }
             });
     }, []);
 
@@ -208,15 +211,20 @@ export default function CustomBackend(props) {
 
     const downloadCustomBackend = (keyType) => {
         console.log("Downloading");
-        restAPI.getSequenceBackendContentByAPIID(keyType, api.id).then((resp) => {
+        restAPI.getSequenceBackendContentByAPIID(api.id, keyType).then((resp) => {
+            Utils.forceDownload(resp);
             console.log('Custom backend downloaded successfully' + resp);
+        })
+        .catch((error) => {
+            console.log(error);
         });
     };
 
     const deleteSequenceBackendByKey = (keyType) => {
+        backenCount = backenCount - 1;
         setDeleting(true);
         restAPI.deleteSequenceBackend(keyType, api.id).then((resp) => {
-            console.log('Custom backend deleted successfully' + resp);
+            console.log('Custom backend deleted successfully');
         }).finally(() => {
             setDeleting(false);
             setSequenceBackendToDelete({ open: false, keyType: '', name: '' });
@@ -225,8 +233,8 @@ export default function CustomBackend(props) {
             } else {
                 setProductionBackendList([]);
             }
-            if(sandBoxBackendList.length > 0 || productionBackendList.length > 0) {
-                endpointValidation({ isValid: true, message: '' });
+            if(backenCount == 0) {
+                endpointValidation(false);
             }
         });
     }
@@ -250,6 +258,7 @@ export default function CustomBackend(props) {
     const saveCustomBackend = () => {
         setSaving(true);
         setUploadCustomBackendOpen(false);
+        backenCount = backenCount + 1;
         if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
             sandBoxBackendList.push({"sequenceName": customBackend.name, "content": customBackend.content});
         } else {
@@ -260,8 +269,9 @@ export default function CustomBackend(props) {
         }).finally(() => {
             setSaving(false);
             setCustomBackend({ name: '', content: '' });
-            if(sandBoxBackendList.length > 0 || productionBackendList.length > 0) {
-                endpointValidation({ isValid: true, message: '' });
+            console.log("Count: " + backenCount);
+            if(backenCount > 0) {
+                endpointValidation(true);
             }
         });
     };
@@ -651,4 +661,5 @@ CustomBackend.propTypes = {
     type: PropTypes.string.isRequired,
     uploadCustomBackendOpen: PropTypes.bool.isRequired,
     setUploadCustomBackendOpen: PropTypes.func.isRequired,
+    endpointValidation: PropTypes.func.isRequired,
 };
