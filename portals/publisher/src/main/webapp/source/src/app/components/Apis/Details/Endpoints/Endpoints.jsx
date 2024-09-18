@@ -101,6 +101,9 @@ function Endpoints(props) {
     const [swagger, setSwagger] = useState(defaultSwagger);
     const [endpointValidity, setAPIEndpointsValid] = useState({ isValid: true, message: '' });
     const [isUpdating, setUpdating] = useState(false);
+    const [sandBoxBackendList, setSandBoxBackendList] = useState([]);
+    const [productionBackendList, setProductionBackendList] = useState([]);
+    const [isValidSequenceBackend, setIsValidSequenceBackend] = useState(false);
 
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
@@ -292,10 +295,6 @@ function Endpoints(props) {
                 }));
         }
     };
-
-    const validateSequenceBackend = (isValid) => {
-        setAPIEndpointsValid({ isValid, message: '' });
-    }
 
     /**
      * Validate the provided endpoint config object.
@@ -605,7 +604,12 @@ function Endpoints(props) {
                                         onChangeAPI={apiDispatcher}
                                         endpointsDispatcher={apiDispatcher}
                                         saveAndRedirect={saveAndRedirect}
-                                        validateSequenceBackend={validateSequenceBackend}
+                                        sandBoxBackendList={sandBoxBackendList}
+                                        setSandBoxBackendList={setSandBoxBackendList}
+                                        productionBackendList={productionBackendList}
+                                        setProductionBackendList={setProductionBackendList}
+                                        isValidSequenceBackend={isValidSequenceBackend}
+                                        setIsValidSequenceBackend={setIsValidSequenceBackend}
                                     />
                                 </Grid>
                             </Grid>
@@ -628,7 +632,7 @@ function Endpoints(props) {
                                 className={classes.buttonSection}
                             >
                                 <Grid item>
-                                    {api.isRevision || !endpointValidity.isValid
+                                    {api.isRevision || !endpointValidity.isValid || !isValidSequenceBackend
                                         || (settings && settings.portalConfigurationOnlyModeEnabled)
                                         || isRestricted(['apim:api_create'], api) ? (
                                             <Button
@@ -650,6 +654,7 @@ function Endpoints(props) {
                                                 handleSaveAndDeploy={handleSaveAndDeploy}
                                                 isUpdating={isUpdating}
                                                 id='endpoint-save-btn'
+                                                isValidSequenceBackend={isValidSequenceBackend}
                                             />
                                         )}
                                 </Grid>

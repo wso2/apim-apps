@@ -159,7 +159,12 @@ export default function CustomBackend(props) {
     const {
         api,
         intl,
-        endpointValidation,
+        sandBoxBackendList,
+        productionBackendList,
+        setSandBoxBackendList,
+        setProductionBackendList,
+        isValidSequenceBackend,
+        setIsValidSequenceBackend,
     } = props;
 
     const restAPI = new API();
@@ -169,8 +174,6 @@ export default function CustomBackend(props) {
     const [isSaving, setSaving] = useState(false);
     const [keyType, setKeyType] = useState(API_SECURITY_KEY_TYPE_PRODUCTION);
     const [isRejected, setIsRejected] = useState(false);
-    const [sandBoxBackendList, setSandBoxBackendList] = useState([]);
-    const [productionBackendList, setProductionBackendList] = useState([]);
     const [apiFromContext] = useAPI();
     const [uploadCustomBackendOpen, setUploadCustomBackendOpen] = useState(false);
     const [sequenceBackendToDelete, setSequenceBackendToDelete] = useState({ open: false, keyType: '', name: '' });
@@ -183,19 +186,20 @@ export default function CustomBackend(props) {
     };
 
     useEffect(() => {
-        endpointValidation(false);
+        setIsValidSequenceBackend(false);
         restAPI.getSequenceBackends(api.id)
             .then((result) => {
+                console.log(result);
                 const allSequenceBackends = result.body.list;
                 setProductionBackendList(allSequenceBackends.filter((backend) => backend.sequenceType === API_SECURITY_KEY_TYPE_PRODUCTION));
                 setSandBoxBackendList(allSequenceBackends.filter((backend) => backend.sequenceType === API_SECURITY_KEY_TYPE_SANDBOX));
+
                 if (result.body.count > 0) {
-                    backenCount = result.body.count;
-                    endpointValidation(true);
+                    setIsValidSequenceBackend(true);
                 }
             })
             .catch(() => {
-                setApiCategoriesList([]);
+                console.error('Error while fetching sequence backends');
             });
     }, []);
 
@@ -221,7 +225,6 @@ export default function CustomBackend(props) {
     };
 
     const deleteSequenceBackendByKey = (keyType) => {
-        backenCount = backenCount - 1;
         setDeleting(true);
         restAPI.deleteSequenceBackend(keyType, api.id).then((resp) => {
             console.log('Custom backend deleted successfully');
@@ -230,11 +233,14 @@ export default function CustomBackend(props) {
             setSequenceBackendToDelete({ open: false, keyType: '', name: '' });
             if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
                 setSandBoxBackendList([]);
+                if (productionBackendList.length === 0) {
+                    setIsValidSequenceBackend(false);
+                }
             } else {
                 setProductionBackendList([]);
-            }
-            if(backenCount == 0) {
-                endpointValidation(false);
+                if (sandBoxBackendList.length === 0) {
+                    setIsValidSequenceBackend(false);
+                }
             }
         });
     }
@@ -269,9 +275,8 @@ export default function CustomBackend(props) {
         }).finally(() => {
             setSaving(false);
             setCustomBackend({ name: '', content: '' });
-            console.log("Count: " + backenCount);
-            if(backenCount > 0) {
-                endpointValidation(true);
+            if (sandBoxBackendList.length > 0 || productionBackendList.length > 0) {
+                setIsValidSequenceBackend(true);
             }
         });
     };
@@ -350,7 +355,7 @@ export default function CustomBackend(props) {
                                             <ListItemSecondaryAction>
                                                 <IconButton
                                                     disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                    onClick={() => downloadCustomBackend(API_SECURITY_KEY_TYPE_SANDBOX)}  
+                                                    onClick={() => downloadCustomBackend(API_SECURITY_KEY_TYPE_PRODUCTION)}  
                                                     id='download-backend-btn'
                                                 >
                                                     <CloudDownloadIcon className={isRestricted(['apim:api_create'], apiFromContext)
@@ -656,10 +661,13 @@ CustomBackend.propTypes = {
     api: PropTypes.shape({
         id: PropTypes.string,
     }).isRequired,
-    productionBackendList: PropTypes.shape({}),
-    sandBoxBackendList: PropTypes.shape({}),
+    productionBackendList: PropTypes.shape([]),
+    sandBoxBackendList: PropTypes.shape([]),
+    setSandBoxBackendList: PropTypes.func.isRequired,
+    setProductionBackendList: PropTypes.func.isRequired,
     type: PropTypes.string.isRequired,
     uploadCustomBackendOpen: PropTypes.bool.isRequired,
     setUploadCustomBackendOpen: PropTypes.func.isRequired,
-    endpointValidation: PropTypes.func.isRequired,
+    isValidSequenceBackend: PropTypes.bool.isRequired,
+    setIsValidSequenceBackend: PropTypes.func.isRequired,
 };

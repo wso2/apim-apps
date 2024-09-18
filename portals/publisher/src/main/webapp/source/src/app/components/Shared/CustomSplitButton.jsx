@@ -21,7 +21,7 @@ import MenuList from '@mui/material/MenuList';
 export default function CustomSplitButton(props) {
     const [open, setOpen] = React.useState(false);
     const {
-        advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating, api, id,
+        advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating, api, id, isValidSequenceBackend
     } = props;
     const intl = useIntl();
     const options = [
@@ -92,12 +92,12 @@ export default function CustomSplitButton(props) {
                         color='primary'
                         ref={anchorRef}
                         aria-label='split button'
-                        disabled={isUpdating}
+                        disabled={isUpdating || !isValidSequenceBackend}
                         style={{ width: '200px' }}
                     >
                         <Button
                             onClick={(event) => handleClick(event, selectedIndex)}
-                            disabled={isUpdating}
+                            disabled={isUpdating || !isValidSequenceBackend}
                             data-testid = 'custom-select-save-button'
                             style={{ width: '200px' }}
                             id={id}
@@ -156,4 +156,5 @@ CustomSplitButton.propTypes = {
     handleSave: PropTypes.shape({}).isRequired,
     handleSaveAndDeploy: PropTypes.shape({}).isRequired,
     isUpdating: PropTypes.bool.isRequired,
+    isValidSequenceBackend: PropTypes.bool.isRequired,
 };

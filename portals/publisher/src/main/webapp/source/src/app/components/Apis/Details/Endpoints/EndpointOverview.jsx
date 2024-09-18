@@ -376,6 +376,10 @@ function EndpointOverview(props) {
         return '';
     };
 
+    const updateEndpointConfig = (type) => {
+
+    }
+
     const handleOnChangeEndpointCategoryChange = (category) => {
         let endpointConfigCopy = cloneDeep(endpointConfig);
         if (category === 'prod') {
