@@ -10,8 +10,8 @@
     "scripts": {
         "test:ci": "echo To be implemented",
         "test:coverage": "jest --coverage",
-        "build:prod": "rm -R site/public/dist/; npm run i18n:en && npm run i18n:fr && NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
-        "build:dev": "NODE_ENV=development; npm run i18n:en && rimraf site/public/dist/ && webpack --mode development --watch",
+        "build:prod": "rimraf site/public/dist/ && npm run i18n:en && npm run i18n:fr && NODE_ENV=production NODE_OPTIONS=--max_old_space_size=4096 webpack --mode production --stats=errors-only",
+        "build:dev": "NODE_ENV=development && npm run i18n:en && rimraf site/public/dist/ && webpack --mode development --watch",
         "analysis": "NODE_ENV=analysis NODE_OPTIONS=--max_old_space_size=8172 webpack --mode production --progress",
         "lint": "eslint --ignore-pattern '*.test.js' --ignore-pattern '*.test.jsx' --quiet -c .eslintrc.js --ext .jsx,.js source",
         "i18n": "extract-messages -l=en,fr -o site/public/locales/ -d en --extractFromFormatMessageCall --flat 'source/src/app/**/*.jsx'",
