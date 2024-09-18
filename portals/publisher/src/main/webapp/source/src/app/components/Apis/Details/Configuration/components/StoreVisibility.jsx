@@ -73,7 +73,6 @@ export default function StoreVisibility(props) {
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [invalidOrgs, setInvalidOrgs] = useState([]);
     const isRestrictedByRoles = api.visibility === 'RESTRICTED';
-    const isRestrictedByOrgs = api.visibility === 'RESTRICTED_BY_ORG';
     const [apiFromContext] = useAPI();
 
     const restApi = new API();
@@ -230,12 +229,6 @@ export default function StoreVisibility(props) {
                             defaultMessage='Restrict by role(s)'
                         />
                     </MenuItem>
-                    <MenuItem value='RESTRICTED_BY_ORG' id='visibility-restricted-by-orgs'>
-                        <FormattedMessage
-                            id='Apis.Details.Configuration.components.storeVisibility.dropdown.restrict'
-                            defaultMessage='Restrict by organization(s)'
-                        />
-                    </MenuItem>
                     {tenants !== 0
                         && (
                             <MenuItem value='PRIVATE'>
@@ -352,63 +345,61 @@ export default function StoreVisibility(props) {
                     />
                 </Box>
             )}
-            {isRestrictedByOrgs && (
-                <Box py={2} style={{ marginTop: -10, marginBottom: 10 }}>
-                    <ChipInput
-                        data-testid='visibility-select-role'
-                        fullWidth
-                        variant='outlined'
-                        label={(
+            <Box py={2} style={{ marginTop: -10, marginBottom: 10 }}>
+                <ChipInput
+                    data-testid='visibility-select-role'
+                    fullWidth
+                    variant='outlined'
+                    label={(
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.storeVisibility.orgs'
+                            defaultMessage='Developer Portal Organization Visibility'
+                        />
+                    )}
+                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                    value={api.visibleOrganizations.concat(invalidOrgs)}
+                    alwaysShowPlaceholder={false}
+                    placeholder='Enter organization and press Enter'
+                    blurBehavior='clear'
+                    InputProps={{
+                        endAdornment: !orgValidity && (
+                            <InputAdornment position='end'>
+                                <Error color='error' style={{ paddingBottom: 8 }} />
+                            </InputAdornment>
+                        ),
+                    }}
+                    onAdd={handleOrgAddition}
+                    error={!orgValidity || !orgExists}
+                    helperText={
+                        orgValidity ? (
                             <FormattedMessage
-                                id='Apis.Details.Configuration.components.storeVisibility.orgs'
-                                defaultMessage='Organizations'
+                                id='Apis.Details.Scopes.visibility.CreateScope.orgs.help'
+                                defaultMessage='Enter valid organization and press enter'
                             />
-                        )}
-                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
-                        value={api.visibleOrganizations.concat(invalidOrgs)}
-                        alwaysShowPlaceholder={false}
-                        placeholder='Enter organization and press Enter'
-                        blurBehavior='clear'
-                        InputProps={{
-                            endAdornment: !orgValidity && (
-                                <InputAdornment position='end'>
-                                    <Error color='error' style={{ paddingBottom: 8 }} />
-                                </InputAdornment>
-                            ),
-                        }}
-                        onAdd={handleOrgAddition}
-                        error={!orgValidity || !orgExists}
-                        helperText={
-                            orgValidity ? (
-                                <FormattedMessage
-                                    id='Apis.Details.Scopes.visibility.CreateScope.orgs.help'
-                                    defaultMessage='Enter valid organization and press enter'
-                                />
-                            ) : (
-                                <FormattedMessage
-                                    id='Apis.Details.Scopes.Orgs.Invalid'
-                                    defaultMessage='Organization is invalid'
-                                />
-                            )
-                        }
-                        chipRenderer={({ value }, key) => (
-                            <Chip
-                                key={key}
-                                size='small'
-                                label={value}
-                                onDelete={() => {
-                                    handleOrgDeletion(value);
-                                }}
-                                style={{
-                                    backgroundColor: invalidOrgs.includes(value) ? red[300] : null,
-                                    margin: '0 8px 12px 0',
-                                    float: 'left',
-                                }}
+                        ) : (
+                            <FormattedMessage
+                                id='Apis.Details.Scopes.Orgs.Invalid'
+                                defaultMessage='Organization is invalid'
                             />
-                        )}
-                    />
-                </Box>
-            )}
+                        )
+                    }
+                    chipRenderer={({ value }, key) => (
+                        <Chip
+                            key={key}
+                            size='small'
+                            label={value}
+                            onDelete={() => {
+                                handleOrgDeletion(value);
+                            }}
+                            style={{
+                                backgroundColor: invalidOrgs.includes(value) ? red[300] : null,
+                                margin: '0 8px 12px 0',
+                                float: 'left',
+                            }}
+                        />
+                    )}
+                />
+            </Box>
         </Root>)
     );
 }
