@@ -30,6 +30,7 @@ import Paper from '@mui/material/Paper';
 import API from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
 import Configurations from 'Config';
+import CONSTS from 'AppData/Constants';
 
 const PREFIX = 'SubscriptionPoliciesManage';
 
@@ -72,6 +73,9 @@ class SubscriptionPoliciesManage extends Component {
         super(props);
         this.state = {
             subscriptionPolicies: {},
+            isMutualSslOnly: false,
+            isAsyncAPI: false,
+            isApiKeyEnabled: false,
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -79,6 +83,13 @@ class SubscriptionPoliciesManage extends Component {
     componentDidMount() {
         const { api } = this.props;
         const isAsyncAPI = (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC');
+        this.setState( {isAsyncAPI});
+        const securityScheme = [...api.securityScheme];
+        const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
+        && securityScheme.includes('mutualssl_mandatory');
+        this.setState({ isMutualSslOnly });
+        const isApiKeyEnabled = securityScheme.includes('api_key');
+        this.setState({ isApiKeyEnabled });
         const limit = Configurations.app.subscriptionPolicyLimit;
         let policyPromise;
         if (isAsyncAPI) {
@@ -106,12 +117,25 @@ class SubscriptionPoliciesManage extends Component {
      */
     handleChange(event) {
         const { name, checked } = event.target;
-        const { setPolices, policies } = this.props;
+        const { setPolices, policies, subValidationDisablingAllowed } = this.props;
+        const { isMutualSslOnly, isAsyncAPI, isApiKeyEnabled } = this.state;
         let newSelectedPolicies = [...policies];
         if (checked) {
             newSelectedPolicies.push(name);
+            if (newSelectedPolicies.length > 1) {
+                newSelectedPolicies = newSelectedPolicies.filter((policy) =>
+                    !policy.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
+            }
         } else {
             newSelectedPolicies = policies.filter((policy) => policy !== name);
+            if (subValidationDisablingAllowed
+                    && !isMutualSslOnly && !isApiKeyEnabled && newSelectedPolicies.length === 0) {
+                if (!isAsyncAPI) {
+                    newSelectedPolicies.push(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+                } else {
+                    newSelectedPolicies.push(CONSTS.DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN);
+                }
+            }
         }
         setPolices(newSelectedPolicies);
     }
@@ -166,22 +190,27 @@ class SubscriptionPoliciesManage extends Component {
                 <Paper className={classes.subscriptionPoliciesPaper}>
                     <FormControl className={classes.formControl}>
                         <FormGroup>
-                            { subscriptionPolicies && Object.entries(subscriptionPolicies).map((value) => (
-                                <FormControlLabel
-                                    data-testid={'policy-checkbox-' + value[1].displayName.toLowerCase()}
-                                    key={value[1].displayName}
-                                    control={(
-                                        <Checkbox
-                                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'], api)}
-                                            color='primary'
-                                            checked={policies.includes(value[1].displayName)}
-                                            onChange={(e) => this.handleChange(e)}
-                                            name={value[1].displayName}
-                                        />
-                                    )}
-                                    label={value[1].displayName + ' : ' + value[1].description}
-                                />
-                            ))}
+                            { subscriptionPolicies && Object.entries(subscriptionPolicies).map((value) => {
+                                if (value[1].displayName.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)) {
+                                    return null; // Skip rendering for "Default"
+                                }
+                                return (
+                                    <FormControlLabel
+                                        data-testid={'policy-checkbox-' + value[1].displayName.toLowerCase()}
+                                        key={value[1].displayName}
+                                        control={(
+                                            <Checkbox
+                                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'], api)}
+                                                color='primary'
+                                                checked={policies.includes(value[1].displayName)}
+                                                onChange={(e) => this.handleChange(e)}
+                                                name={value[1].displayName}
+                                            />
+                                        )}
+                                        label={value[1].displayName + ' : ' + value[1].description}
+                                    />
+                                );
+                            })}
                             { migratedCase && (
                                 <Box display='flex' flexDirection='column'>
                                     <Box className={classes.migrateMessage}>

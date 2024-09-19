@@ -30,6 +30,7 @@ import Link from '@mui/material/Link';
 import Configurations from 'Config';
 import Delete from 'AppComponents/Throttling/Subscription/Delete';
 import API from 'AppData/api';
+import CONSTS from 'AppData/Constants';
 import EditIcon from '@mui/icons-material/Edit';
 import { Link as RouterLink } from 'react-router-dom';
 import Button from '@mui/material/Button';
@@ -290,6 +291,7 @@ export default function ListSubscriptionThrottlingPolicies() {
             });
 
             subscriptionThrottlingvalues = subscriptionPolicies
+                .filter((policy) => !policy.policyName.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN))
                 .map(Object.values);
             return (subscriptionThrottlingvalues);
         }).catch((error) => {

@@ -52,7 +52,7 @@ function MetaData(props) {
                 ) : (
                     <FormattedMessage
                         id='Apis.Details.NewOverview.MetaData.context:'
-                        defaultMessage='Context:'
+                        defaultMessage='Context'
                     />
                 )}
             </Typography>
