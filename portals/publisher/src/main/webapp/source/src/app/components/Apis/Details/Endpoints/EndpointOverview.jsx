@@ -288,6 +288,10 @@ function EndpointOverview(props) {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
             ];
+        } else if (type === 'http' && api.aiConfiguration) {
+            supportedEndpointTypes = [
+                { key: 'http', value: 'HTTP/REST Endpoint' },
+            ]
         } else {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
@@ -727,7 +731,22 @@ function EndpointOverview(props) {
                                 value={endpointType.key === 'MOCKED_OAS' ? 'INLINE' : endpointType.key}
                                 onChange={handleEndpointTypeSelect}
                             >
-                                {supportedEnpointTypes.map((endpoint) => {
+                                {!api.aiConfiguration && supportedEnpointTypes.map((endpoint) => {
+                                    return (
+                                        <FormControlLabel
+                                            value={endpoint.key}
+                                            control={(
+                                                <Radio
+                                                    disabled={(isRestricted(['apim:api_create'], api))}
+                                                    color='primary'
+                                                    id={endpoint.key}
+                                                />
+                                            )}
+                                            label={endpoint.value}
+                                        />
+                                    );
+                                })}
+                                {api.aiConfiguration && supportedEnpointTypes.map((endpoint) => {
                                     return (
                                         <FormControlLabel
                                             value={endpoint.key}

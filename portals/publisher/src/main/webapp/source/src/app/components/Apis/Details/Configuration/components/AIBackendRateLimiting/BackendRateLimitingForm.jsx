@@ -25,6 +25,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import CommonRateLimitingForm from './CommonRateLimitingForm';
+import RequestCountRateLimit from './RequestCountRateLimit';
 
 /**
  * Backend Rate Limiting for AI APIs
@@ -136,6 +137,11 @@ export default function BackendRateLimitingForm(props) {
                             placeholder: 'Max Total Token Count',
                             tooltip: 'Max Total Token Count as an Integer value',
                         }}
+                    />
+                    <RequestCountRateLimit
+                        api={api}
+                        configDispatcher={configDispatcher}
+                        isProduction={isProduction}
                     />
                 </AccordionDetails>
             </WrappedExpansionPanel>

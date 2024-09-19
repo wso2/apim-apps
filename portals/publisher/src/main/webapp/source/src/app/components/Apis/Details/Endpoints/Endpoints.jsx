@@ -506,7 +506,7 @@ function Endpoints(props) {
             api.getSwagger(apiObject.id).then((resp) => {
                 setSwagger(resp.obj);
             }).catch((err) => {
-                console.err(err);
+                console.error(err);
             });
         }
     }, []);
