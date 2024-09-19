@@ -28,6 +28,7 @@ import ApiCreateGraphQL from './GraphQL/ApiCreateGraphQL';
 import ApiCreateWebSocket from './WebSocket/ApiCreateWebSocket';
 import APICreateStreamingAPI from './StreamingAPI/APICreateStreamingAPI';
 import APICreateAsyncAPI from './AsyncAPI/ApiCreateAsyncAPI';
+import ApiCreateAIAPI from './AIAPI/APICreateAIAPI';
 
 const PREFIX = 'APICreateRoutes';
 
@@ -86,6 +87,8 @@ function APICreateRoutes() {
                 <Route path='/apis/create/ws' component={ApiCreateWebSocket} />
                 <Route path='/apis/create/streamingapi/:apiType' component={APICreateStreamingAPI} />
                 <Route path='/apis/create/asyncapi' component={APICreateAsyncAPI} />
+                <Route path='/apis/create/ai-api' component={WithSomeValue(ApiCreateAIAPI,
+                    { multiGateway: gateway })}/>
                 <Route component={ResourceNotFound} />
             </Switch>
         </Root>

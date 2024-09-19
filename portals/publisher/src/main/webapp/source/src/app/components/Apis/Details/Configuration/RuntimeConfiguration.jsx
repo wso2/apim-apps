@@ -54,6 +54,7 @@ import {
     ALL_AUDIENCES_ALLOWED,
 } from './components/APISecurity/components/apiSecurityConstants';
 import WebSubConfiguration from './components/WebSubConfiguration';
+import BackendRateLimiting from './components/AIBackendRateLimiting/BackendRateLimiting';
 
 const PREFIX = 'RuntimeConfiguration';
 
@@ -202,6 +203,15 @@ function copyAPIConfig(api) {
             apiOwner: api.advertiseInfo.apiOwner,
             vendor: api.advertiseInfo.vendor,
         }
+    }
+    if (api.aiConfiguration) {
+        apiConfigJson.aiConfiguration = {
+            ...api.aiConfiguration,
+            throttlingConfiguration: api.aiConfiguration.throttlingConfiguration ?
+                { ...api.aiConfiguration.throttlingConfiguration } : null,
+            endpointConfiguration: api.aiConfiguration.endpointConfiguration ?
+                { ...api.aiConfiguration.endpointConfiguration } : null,
+        };
     }
     return apiConfigJson;
 }
@@ -378,6 +388,9 @@ export default function RuntimeConfiguration() {
             case 'saveButtonDisabled':
                 setSaveButtonDisabled(value);
                 return state;
+            case 'aiConfiguration':
+                nextState.aiConfiguration = value;
+                return nextState;
             default:
                 return state;
         }
@@ -632,7 +645,13 @@ export default function RuntimeConfiguration() {
                                         style={{ height: 'calc(100% - 75px)' }}
                                         elevation={0}
                                     >
-                                        {!api.isAPIProduct() && (
+                                        {api.aiConfiguration && (
+                                            <BackendRateLimiting
+                                                api={apiConfig}
+                                                configDispatcher={configDispatcher}
+                                            />
+                                        )}
+                                        {!api.aiConfiguration && !api.isAPIProduct() && (
                                             <>
                                                 {(!isAsyncAPI && api.gatewayType !== 'wso2/apk') && (
                                                     <MaxBackendTps
@@ -645,7 +664,7 @@ export default function RuntimeConfiguration() {
                                                 )}
                                             </>
                                         )}
-                                        {api.isAPIProduct() && (
+                                        {!api.aiConfiguration && api.isAPIProduct() && (
                                             <Box alignItems='center' justifyContent='center' className={classes.info}>
                                                 <Typography variant='body1'>
                                                     <FormattedMessage
