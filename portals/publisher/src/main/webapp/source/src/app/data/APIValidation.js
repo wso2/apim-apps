@@ -198,7 +198,7 @@ const definition = {
     websubOperationTarget: Joi.string().regex(/^[^{}]*$/).required(),
     name: Joi.string().min(1).max(255),
     email: Joi.string().email({ tlds: false }).required(),
-    isReqNumber: Joi.number().required(),
+    isNumber: Joi.number(),
 };
 
 export default definition;

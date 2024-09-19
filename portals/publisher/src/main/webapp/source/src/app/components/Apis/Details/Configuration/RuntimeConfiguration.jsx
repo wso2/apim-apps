@@ -388,9 +388,20 @@ export default function RuntimeConfiguration() {
             case 'saveButtonDisabled':
                 setSaveButtonDisabled(value);
                 return state;
-            case 'aiConfiguration':
+            case 'aiConfiguration': {
                 nextState.aiConfiguration = value;
+                const { throttlingConfiguration } = nextState.aiConfiguration;
+                if (throttlingConfiguration) {
+                    throttlingConfiguration.isTokenBasedThrottlingEnabled = !!(
+                        throttlingConfiguration.productionMaxPromptTokenCount ||
+                        throttlingConfiguration.productionMaxCompletionTokenCount ||
+                        throttlingConfiguration.productionMaxTotalTokenCount ||
+                        throttlingConfiguration.sandboxMaxPromptTokenCount ||
+                        throttlingConfiguration.sandboxMaxCompletionTokenCount ||
+                        throttlingConfiguration.sandboxMaxTotalTokenCount)
+                }
                 return nextState;
+            }
             default:
                 return state;
         }

@@ -32,6 +32,8 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { API_SECURITY_API_KEY }
+    from 'AppComponents/Apis/Details/Configuration/components/APISecurity/components/apiSecurityConstants';
 import ProvideAIOpenAPI from './Steps/ProvideAIOpenAPI';
 
 
@@ -143,6 +145,7 @@ export default function ApiCreateAIAPI(props) {
                 llmProviderName,
                 llmProviderApiVersion,
             },
+            securityScheme: [API_SECURITY_API_KEY]
         };
         if (endpoint) {
             additionalProperties.endpointConfig = {

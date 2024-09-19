@@ -19,10 +19,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 
-import { Switch, Typography } from '@mui/material';
-
-import { isRestricted } from 'AppData/AuthManager';
-import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import BackendRateLimitingForm from './BackendRateLimitingForm';
 
 // import { useIntl } from 'react-intl';
@@ -36,43 +32,9 @@ import BackendRateLimitingForm from './BackendRateLimitingForm';
  */
 export default function BackendRateLimiting(props) {
     const { api, configDispatcher } = props;
-    const [apiFromContext] = useAPI();
-    // const intl = useIntl();
-
-    function handleOnChangeTokenBasedSwitch({ target: { checked } }) {
-        let throttlingConfiguration = {};
-        if (api.aiConfiguration && api.aiConfiguration.throttlingConfiguration) {
-            throttlingConfiguration = api.aiConfiguration.throttlingConfiguration;
-        }
-        const dispatchValue = {
-            ...api.aiConfiguration,
-            throttlingConfiguration: {
-                ...throttlingConfiguration,
-                isTokenBasedThrottlingEnabled: checked
-            }
-        }
-        configDispatcher({
-            action: 'aiConfiguration',
-            value: dispatchValue,
-        })
-    }
 
     return (
         <>
-            <Grid item xs={12} sx={{ mb: 2, ml:1 }}>
-                <Typography variant='h6' component='h4'>
-                    Token Based Throttling
-                    <Switch
-                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                        checked={api.aiConfiguration.throttlingConfiguration.isTokenBasedThrottlingEnabled}
-                        onChange={handleOnChangeTokenBasedSwitch}
-                        color='primary'
-                        inputProps={{
-                            'aria-label': 'is Token Based Throttling Enabled',
-                        }}
-                    />
-                </Typography>
-            </Grid>
             <Grid item xs={12} sx={{mb:2}}>
                 <BackendRateLimitingForm
                     api={api}

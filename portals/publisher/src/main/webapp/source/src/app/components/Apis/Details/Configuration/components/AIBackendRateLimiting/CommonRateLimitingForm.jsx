@@ -45,8 +45,8 @@ export default function CommonRateLimitingForm(props) {
     function validateValue(value) {
         const validity = commonFormProps.validator ?
             commonFormProps.validator.validate(value, { abortEarly: false }).error
-            : APIValidation.isReqNumber.validate(value, { abortEarly: false }).error;
-        if (validity === null) {
+            : APIValidation.isNumber.validate(value, { abortEarly: false }).error;
+        if (validity === null || !value) {
             setIsValueValid(true);
             configDispatcher({ action: 'saveButtonDisabled', value: false });
         } else {
