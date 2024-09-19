@@ -37,12 +37,13 @@ export default function RequestCountRateLimitUnit(props) {
     }
 
     if (!maxTpsUnitValue) {
-        maxTpsUnitValue = timeUnitEnum.MINUTE;
+        maxTpsUnitValue = timeUnitEnum.SECOND;
     }
 
     return (
         <>
             <TextField
+                label='Time Unit'
                 id='time-unit-selector'
                 value={maxTpsUnitValue}
                 select
