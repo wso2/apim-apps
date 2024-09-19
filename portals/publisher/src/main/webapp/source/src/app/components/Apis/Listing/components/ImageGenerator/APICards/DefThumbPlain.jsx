@@ -1,3 +1,20 @@
+/*
+ * Copyright (c) 2024, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import Icon from '@mui/material/Icon';
@@ -8,7 +25,7 @@ import Box from '@mui/material/Box';
 import { Link } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
-const PREFIX = 'DocThumbPlain';
+const PREFIX = 'DefThumbPlain';
 
 const classes = {
     root: `${PREFIX}-root`,
@@ -50,12 +67,13 @@ const StyledCard = styled(Card)((
     [`& .${classes.thumbHeader}`]: {
         width: '150px',
         color: '#444',
-        whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         cursor: 'pointer',
         margin: 0,
-        'padding-left': '5px',
+        whiteSpace: 'normal',
+        wordBreak: 'break-word',
+        overflowWrap: 'break-word', 
     },
 
     [`& .${classes.contextBox}`]: {
@@ -80,14 +98,17 @@ const StyledCard = styled(Card)((
  * @param {JSON} props required pros.
  * @returns {JSX} Thumbnail rendered output.
  */
-function DocThumbPlain(props) {
+function DefThumbPlain(props) {
 
-    const { doc } = props;
+    const { def } = props;
+    const linkTo = def.associatedType === 'API'
+        ? `/apis/${def.apiUUID}/api-definition`
+        : `/api-products/${def.apiUUID}/api-definition`;
     return (
         <StyledCard className={classes.root} variant='outlined'>
             <CardContent>
                 <Box>
-                    <Link to={'/apis/' + doc.apiUUID + '/documents/' + doc.id + '/details'} aria-hidden='true'>
+                    <Link to={linkTo} aria-hidden='true'>
                         <Box display='flex'>
                             <Box>
                                 <Icon className={classes.icon} style={{ fontSize: 40 + 'px', color: '#ccc' }}>
@@ -97,10 +118,10 @@ function DocThumbPlain(props) {
                             <Typography
                                 variant='h5'
                                 gutterBottom
-                                title={doc.name}
+                                title={def.name}
                                 className={classes.thumbHeader}
                             >
-                                {doc.name}
+                                {def.name}
                             </Typography>
                         </Box>
 
@@ -108,7 +129,7 @@ function DocThumbPlain(props) {
                 </Box>
                 <Box mt={2}>
                     <Typography variant='subtitle1' className={classes.contextBox}>
-                        {doc.apiName}
+                        {def.apiName}
                     </Typography>
                     <Typography
                         variant='caption'
@@ -118,24 +139,15 @@ function DocThumbPlain(props) {
                         Component='div'
                     >
                         <FormattedMessage
-                            id='Apis.Listing.components.ImageGenerator.DocThumb.apiName'
+                            id='Apis.Listing.components.ImageGenerator.DefThumb.apiName'
                             defaultMessage='API Name'
                         />
                     </Typography>
                 </Box>
                 <Box display='flex' mt={2}>
-                    <Box flex={1}>
-                        <Typography variant='subtitle1'>{doc.sourceType}</Typography>
-                        <Typography variant='caption' gutterBottom align='left' className={classes.caption}>
-                            <FormattedMessage
-                                id='Apis.Listing.components.ImageGenerator.DocThumb.sourceType'
-                                defaultMessage='Source Type:'
-                            />
-                        </Typography>
-                    </Box>
                     <Box>
                         <Typography variant='subtitle1' align='right' className={classes.contextBox}>
-                            {doc.apiVersion}
+                            {def.apiVersion}
                         </Typography>
                         <Typography
                             variant='caption'
@@ -145,7 +157,7 @@ function DocThumbPlain(props) {
                             Component='div'
                         >
                             <FormattedMessage
-                                id='Apis.Listing.components.ImageGenerator.DocThumb.apiVersion'
+                                id='Apis.Listing.components.ImageGenerator.DefThumb.apiVersion'
                                 defaultMessage='API Version'
                             />
                         </Typography>
@@ -158,4 +170,4 @@ function DocThumbPlain(props) {
     );
 }
 
-export default DocThumbPlain;
+export default DefThumbPlain;
