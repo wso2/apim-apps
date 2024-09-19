@@ -104,6 +104,7 @@ function Endpoints(props) {
     const [sandBoxBackendList, setSandBoxBackendList] = useState([]);
     const [productionBackendList, setProductionBackendList] = useState([]);
     const [isValidSequenceBackend, setIsValidSequenceBackend] = useState(false);
+    const [isCustomBackendSelected, setIsCustomBackendSelected] = useState(false);
 
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
@@ -610,6 +611,8 @@ function Endpoints(props) {
                                         setProductionBackendList={setProductionBackendList}
                                         isValidSequenceBackend={isValidSequenceBackend}
                                         setIsValidSequenceBackend={setIsValidSequenceBackend}
+                                        isCustomBackendSelected={isCustomBackendSelected} 
+                                        setIsCustomBackendSelected={setIsCustomBackendSelected}
                                     />
                                 </Grid>
                             </Grid>
@@ -655,6 +658,7 @@ function Endpoints(props) {
                                                 isUpdating={isUpdating}
                                                 id='endpoint-save-btn'
                                                 isValidSequenceBackend={isValidSequenceBackend}
+                                                isCustomBackendSelected
                                             />
                                         )}
                                 </Grid>

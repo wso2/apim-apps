@@ -225,24 +225,37 @@ export default function CustomBackend(props) {
     };
 
     const deleteSequenceBackendByKey = (keyType) => {
-        setDeleting(true);
-        restAPI.deleteSequenceBackend(keyType, api.id).then((resp) => {
-            console.log('Custom backend deleted successfully');
-        }).finally(() => {
-            setDeleting(false);
-            setSequenceBackendToDelete({ open: false, keyType: '', name: '' });
-            if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
-                setSandBoxBackendList([]);
-                if (productionBackendList.length === 0) {
-                    setIsValidSequenceBackend(false);
-                }
-            } else {
-                setProductionBackendList([]);
-                if (sandBoxBackendList.length === 0) {
-                    setIsValidSequenceBackend(false);
-                }
+        let allowDelete = false;
+        if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+            if (productionBackendList.length > 0) {
+                allowDelete = true;
             }
-        });
+        } else {
+            if (sandBoxBackendList.length > 0) {
+                allowDelete = true;
+            }
+        }
+
+        if (allowDelete) {
+            setDeleting(true);
+            restAPI.deleteSequenceBackend(keyType, api.id).then((resp) => {
+                console.log('Custom backend deleted successfully');
+            }).finally(() => {
+                setDeleting(false);
+                setSequenceBackendToDelete({ open: false, keyType: '', name: '' });
+                if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+                    setSandBoxBackendList([]);
+                    if (productionBackendList.length === 0) {
+                        setIsValidSequenceBackend(false);
+                    }
+                } else {
+                    setProductionBackendList([]);
+                    if (sandBoxBackendList.length === 0) {
+                        setIsValidSequenceBackend(false);
+                    }
+                }
+            });
+        }
     }
 
 
