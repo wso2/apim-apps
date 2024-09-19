@@ -1,0 +1,123 @@
+/*
+ * Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
+import Grid from '@mui/material/Grid';
+import TextField from '@mui/material/TextField';
+import Tooltip from '@mui/material/Tooltip';
+import HelpOutline from '@mui/icons-material/HelpOutline';
+import { isRestricted } from 'AppData/AuthManager';
+import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import APIValidation from 'AppData/APIValidation';
+
+/**
+ *
+ *
+ * @export
+ * @param {*} props
+ * @returns
+ */
+
+export default function CommonRateLimitingForm(props) {
+    const { api, configDispatcher, commonFormProps } = props;
+    const [apiFromContext] = useAPI();
+    const [isValueValid, setIsValueValid] = useState(true);
+
+    const currentValue = api.aiConfiguration.throttlingConfiguration ?
+        api.aiConfiguration.throttlingConfiguration[commonFormProps.key] : -1;
+
+    function validateValue(value) {
+        const validity = commonFormProps.validator ?
+            commonFormProps.validator.validate(value, { abortEarly: false }).error
+            : APIValidation.isReqNumber.validate(value, { abortEarly: false }).error;
+        if (validity === null) {
+            setIsValueValid(true);
+            configDispatcher({ action: 'saveButtonDisabled', value: false });
+        } else {
+            setIsValueValid(false);
+            configDispatcher({ action: 'saveButtonDisabled', value: true });
+        }
+    }
+
+    function handleOnChange({ target: { value } }) {
+        validateValue(value);
+        let throttlingConfiguration = {};
+        if (api.aiConfiguration && api.aiConfiguration.throttlingConfiguration) {
+            throttlingConfiguration = api.aiConfiguration.throttlingConfiguration;
+        }
+        const dispatchValue = {
+            ...api.aiConfiguration,
+            throttlingConfiguration: {
+                ...throttlingConfiguration,
+                [commonFormProps.key]: value
+            }
+        }
+        configDispatcher({
+            action: 'aiConfiguration',
+            value: dispatchValue
+        })
+    }
+
+    return (
+        <Grid container spacing={1} alignItems='center'>
+            <Grid item xs={11}>
+                <TextField
+                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                    id='outlined-name'
+                    label={commonFormProps.label}
+                    value={currentValue}
+                    error={!isValueValid}
+                    helperText={commonFormProps.helperText}
+                    placeholder={commonFormProps.placeholder}
+                    InputProps={{
+                        id: `itest-id-rate-limit-label-${commonFormProps.key}`,
+                        // onBlur: handleOnChange,
+                    }}
+                    margin='normal'
+                    variant='outlined'
+                    onChange={handleOnChange} // eslint-disable-line
+                    style={{ display: 'flex' }}
+                />
+            </Grid>
+            {commonFormProps.tooltip && (<Grid item xs={1}>
+                <Tooltip
+                    title={commonFormProps.tooltip}
+                    aria-label={commonFormProps.label}
+                    placement='right-end'
+                    interactive
+                >
+                    <HelpOutline />
+                </Tooltip>
+            </Grid>)}
+        </Grid>
+    );
+}
+
+CommonRateLimitingForm.propTypes = {
+    api: PropTypes.shape({}).isRequired,
+    configDispatcher: PropTypes.func.isRequired,
+    commonFormProps: PropTypes.shape({
+        key: PropTypes.string,
+        label: PropTypes.string,
+        helperText: PropTypes.string,
+        placeholder: PropTypes.string,
+        tooltip: PropTypes.string,
+        validator: PropTypes.func,
+    }).isRequired,
+};
