@@ -76,7 +76,7 @@ const Root = styled('div')(({ theme }: { theme: Theme }) => ({
     }
 }));
 
-interface PolicyDropzoneSharedProps {
+interface PolicyDropzoneSharedBaseProps {
     policyDisplayStartDirection: string;
     currentPolicyList: AttachedPolicy[];
     setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
@@ -93,76 +93,134 @@ interface PolicyDropzoneSharedProps {
     PolicyConfiguringDrawer: any;
 }
 
-const PolicyDropzoneShared: FC<PolicyDropzoneSharedProps> = ({
-    policyDisplayStartDirection,
-    currentPolicyList,
-    setCurrentPolicyList,
-    currentFlow,
-    target,
-    verb,
-    allPolicies,
-    isAPILevelPolicy,
-    drop,
-    canDrop,
-    droppedPolicy,
-    setDroppedPolicy,
-    AttachedPolicyList,
-    PolicyConfiguringDrawer
-}) => {
+// Option 1: `listOriginatedFromCommonPolicies` and `isApiRevision` are provided
+interface PolicyDropzoneWithCommonProps extends PolicyDropzoneSharedBaseProps {
+    listOriginatedFromCommonPolicies: string[];
+    isApiRevision: boolean;
+}
 
-    return (
-        (<Root>
-            <Grid container>
-                <div
-                    ref={drop}
-                    className={clsx({
-                        [classes.dropzoneDiv]: true,
-                        [classes.acceptDrop]: canDrop,
-                        [classes.alignCenter]: currentPolicyList.length === 0,
-                        [classes.alignLeft]:
-                            currentPolicyList.length !== 0 &&
-                            policyDisplayStartDirection === 'left',
-                        [classes.alignRight]:
-                            currentPolicyList.length !== 0 &&
-                            policyDisplayStartDirection === 'right',
-                    })}
-                >
-                    {currentPolicyList.length === 0 ? (
-                        <Typography>
-                            <FormattedMessage
-                                id='App.Components.Policies.Drop.Zone.text.label'
-                                defaultMessage='Drag and drop policies here'
+// Option 2: Neither `listOriginatedFromCommonPolicies` nor `isApiRevision` are provided
+interface PolicyDropzoneWithoutCommonProps extends PolicyDropzoneSharedBaseProps {
+    listOriginatedFromCommonPolicies?: undefined;
+    isApiRevision?: undefined;
+}
+
+// Combine the two using a union type
+type PolicyDropzoneSharedProps = PolicyDropzoneWithCommonProps | PolicyDropzoneWithoutCommonProps;
+
+const PolicyDropzoneShared: FC<PolicyDropzoneSharedProps> = (props) => {
+    if ('listOriginatedFromCommonPolicies' in props) {
+        // Props were passed, use `listOriginatedFromCommonPolicies` and `isApiRevision`
+        return (
+            (<Root>
+                <Grid container>
+                    <div
+                        ref={props.drop}
+                        className={clsx({
+                            [classes.dropzoneDiv]: true,
+                            [classes.acceptDrop]: props.canDrop,
+                            [classes.alignCenter]: props.currentPolicyList.length === 0,
+                            [classes.alignLeft]:
+                                props.currentPolicyList.length !== 0 &&
+                                props.policyDisplayStartDirection === 'left',
+                            [classes.alignRight]:
+                                props.currentPolicyList.length !== 0 &&
+                                props.policyDisplayStartDirection === 'right',
+                        })}
+                    >
+                        {props.currentPolicyList.length === 0 ? (
+                            <Typography>
+                                <FormattedMessage
+                                    id='App.Components.Policies.Drop.Zone.text.label'
+                                    defaultMessage='Drag and drop policies here'
+                                />
+                            </Typography>
+                        ) : (
+                            <props.AttachedPolicyList
+                                currentPolicyList={props.currentPolicyList}
+                                setCurrentPolicyList={props.setCurrentPolicyList}
+                                policyDisplayStartDirection={
+                                    props.policyDisplayStartDirection
+                                }
+                                currentFlow={props.currentFlow}
+                                target={props.target}
+                                verb={props.verb}
+                                allPolicies={props.allPolicies}
+                                isAPILevelPolicy={props.isAPILevelPolicy}
+                                listOriginatedFromCommonPolicies={props.listOriginatedFromCommonPolicies}
+                                isApiRevision={props.isApiRevision}
                             />
-                        </Typography>
-                    ) : (
-                        <AttachedPolicyList
-                            currentPolicyList={currentPolicyList}
-                            setCurrentPolicyList={setCurrentPolicyList}
-                            policyDisplayStartDirection={
-                                policyDisplayStartDirection
-                            }
-                            currentFlow={currentFlow}
-                            target={target}
-                            verb={verb}
-                            allPolicies={allPolicies}
-                            isAPILevelPolicy={isAPILevelPolicy}
-                        />
-                    )}
-                </div>
-            </Grid>
-            {droppedPolicy && (
-                <PolicyConfiguringDrawer
-                    policyObj={droppedPolicy}
-                    setDroppedPolicy={setDroppedPolicy}
-                    currentFlow={currentFlow}
-                    target={target}
-                    verb={verb}
-                    allPolicies={allPolicies}
-                    isAPILevelPolicy={isAPILevelPolicy}
-                />
-            )}
-        </Root>)
-    );
+                        )}
+                    </div>
+                </Grid>
+                {props.droppedPolicy && (
+                    <props.PolicyConfiguringDrawer
+                        policyObj={props.droppedPolicy}
+                        setDroppedPolicy={props.setDroppedPolicy}
+                        currentFlow={props.currentFlow}
+                        target={props.target}
+                        verb={props.verb}
+                        allPolicies={props.allPolicies}
+                        isAPILevelPolicy={props.isAPILevelPolicy}
+                    />
+                )}
+            </Root>)
+        );
+    } else {
+        return (
+            (<Root>
+                <Grid container>
+                    <div
+                        ref={props.drop}
+                        className={clsx({
+                            [classes.dropzoneDiv]: true,
+                            [classes.acceptDrop]: props.canDrop,
+                            [classes.alignCenter]: props.currentPolicyList.length === 0,
+                            [classes.alignLeft]:
+                                props.currentPolicyList.length !== 0 &&
+                                props.policyDisplayStartDirection === 'left',
+                            [classes.alignRight]:
+                                props.currentPolicyList.length !== 0 &&
+                                props.policyDisplayStartDirection === 'right',
+                        })}
+                    >
+                        {props.currentPolicyList.length === 0 ? (
+                            <Typography>
+                                <FormattedMessage
+                                    id='App.Components.Policies.Drop.Zone.text.label'
+                                    defaultMessage='Drag and drop policies here'
+                                />
+                            </Typography>
+                        ) : (
+                            <props.AttachedPolicyList
+                                currentPolicyList={props.currentPolicyList}
+                                setCurrentPolicyList={props.setCurrentPolicyList}
+                                policyDisplayStartDirection={
+                                    props.policyDisplayStartDirection
+                                }
+                                currentFlow={props.currentFlow}
+                                target={props.target}
+                                verb={props.verb}
+                                allPolicies={props.allPolicies}
+                                isAPILevelPolicy={props.isAPILevelPolicy}
+                            />
+                        )}
+                    </div>
+                </Grid>
+                {props.droppedPolicy && (
+                    <props.PolicyConfiguringDrawer
+                        policyObj={props.droppedPolicy}
+                        setDroppedPolicy={props.setDroppedPolicy}
+                        currentFlow={props.currentFlow}
+                        target={props.target}
+                        verb={props.verb}
+                        allPolicies={props.allPolicies}
+                        isAPILevelPolicy={props.isAPILevelPolicy}
+                    />
+                )}
+            </Root>)
+        );
+    }
 }
 
 export default PolicyDropzoneShared;

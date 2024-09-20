@@ -24,6 +24,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import Utils from 'AppData/Utils';
@@ -44,7 +45,7 @@ const Root = styled('div')(() => ({
     }
 }));
 
-interface AttachedPolicyCardSharedProps {
+interface AttachedPolicyCardSharedBaseProps {
     policyObj: AttachedPolicy;
     currentFlow: string;
     verb: string;
@@ -59,28 +60,30 @@ interface AttachedPolicyCardSharedProps {
     PolicyConfigurationEditDrawer: any;
 }
 
+// Option 1: `listOriginatedFromCommonPolicies` and `isApiRevision` are provided
+interface AttachedPolicyCardWithCommonProps extends AttachedPolicyCardSharedBaseProps {
+    listOriginatedFromCommonPolicies: string[];
+    isApiRevision: boolean;
+}
+
+// Option 2: Neither `listOriginatedFromCommonPolicies` nor `isApiRevision` are provided
+interface AttachedPolicyCardWithoutCommonProps extends AttachedPolicyCardSharedBaseProps {
+    listOriginatedFromCommonPolicies?: undefined;
+    isApiRevision?: undefined;
+}
+
+// Combine the two using a union type
+type AttachedPolicyCardSharedProps = AttachedPolicyCardWithCommonProps | AttachedPolicyCardWithoutCommonProps;
+
 /**
  * Renders a single sortable policy card.
  * @param {any} AttachedPolicyCardProps Input props from parent components.
  * @returns {TSX} Sortable attached policy card UI.
  */
-const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
-    policyObj,
-    currentFlow,
-    verb,
-    target,
-    allPolicies,
-    isAPILevelPolicy,
-    drawerOpen,
-    handleDrawerOpen,
-    handlePolicyDownload,
-    handleDelete,
-    setDrawerOpen,
-    PolicyConfigurationEditDrawer
-}) => {
+const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = (props) => {
 
-    const policyColor = Utils.stringToColor(policyObj.displayName);
-    const policyBackgroundColor = drawerOpen
+    const policyColor = Utils.stringToColor(props.policyObj.displayName);
+    const policyBackgroundColor = props.drawerOpen
         ? `rgba(${Utils.hexToRGB(policyColor)}, 0.2)`
         : 'rgba(0, 0, 0, 0)';
     const {
@@ -90,7 +93,7 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
         transform,
         transition,
         isDragging,
-    } = useSortable({ id: policyObj.uniqueKey.toString() });
+    } = useSortable({ id: props.policyObj.uniqueKey.toString() });
     
     const style: CSSProperties = {
         transform: CSS.Transform.toString(transform),
@@ -106,70 +109,153 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
         backgroundColor: policyBackgroundColor,
         opacity: isDragging ? 0.5 : 1,
     };
-    return (
-        (<Root>
-            <div
-                ref={setNodeRef}
-                style={style}
-                {...attributes}
-                {...listeners}
-                onClick={handleDrawerOpen}
-                onKeyDown={handleDrawerOpen}
-            >
-                <Tooltip
-                    key={policyObj.id}
-                    title={`${policyObj.displayName} : ${policyObj.version}`}
-                    placement='top'
+
+    if ('listOriginatedFromCommonPolicies' in props) {
+        // Props were passed, use `listOriginatedFromCommonPolicies` and `isApiRevision`
+        let policyType =   "Common Policy";
+        if (props.isApiRevision) {
+            policyType = "API Policy";
+        } else if (props.policyObj.isAPISpecific) {
+            if (props.listOriginatedFromCommonPolicies && props.listOriginatedFromCommonPolicies.includes(props.policyObj.id)) {
+                policyType = "Common Policy";
+            } else {
+                policyType = "API Policy";
+            }
+        }
+        return (
+            (<Root>
+                <div
+                    ref={setNodeRef}
+                    style={style}
+                    {...attributes}
+                    {...listeners}
+                    onClick={props.handleDrawerOpen}
+                    onKeyDown={props.handleDrawerOpen}
                 >
-                    <Avatar
-                        style={{
-                            margin: '0.2em',
-                            backgroundColor: policyColor,
-                        }}
+                    <Tooltip
+                        key={props.policyObj.id}
+                        title={
+                            <Typography style={{ whiteSpace: 'pre-line' }} variant='caption'>
+                                {`*${policyType}\n${props.policyObj.displayName} : ${props.policyObj.version}`}
+                            </Typography>
+                        }
+                        placement='top'
                     >
-                        {Utils.stringAvatar(
-                            policyObj.displayName.toUpperCase(),
-                        )}
-                    </Avatar>
-                </Tooltip>
-                <Box className={classes.actionsBox}>
-                    <IconButton
-                        key={`${policyObj.id}-download`}
-                        aria-label='Download policy'
-                        size='small'
-                        onClick={handlePolicyDownload}
-                        disableFocusRipple
-                        disableRipple
-                        disabled={policyObj.id === ''} // Disabling policy download for migrated policy
+                        <Avatar
+                            style={{
+                                margin: '0.2em',
+                                backgroundColor: policyColor,
+                            }}
+                        >
+                            {Utils.stringAvatar(
+                                props.policyObj.displayName.toUpperCase(),
+                            )}
+                        </Avatar>
+                    </Tooltip>
+                    <Box className={classes.actionsBox}>
+                        <IconButton
+                            key={`${props.policyObj.id}-download`}
+                            aria-label='Download policy'
+                            size='small'
+                            onClick={props.handlePolicyDownload}
+                            disableFocusRipple
+                            disableRipple
+                            disabled={props.policyObj.id === ''} // Disabling policy download for migrated policy
+                        >
+                            <CloudDownloadIcon />
+                        </IconButton>
+                        <IconButton
+                            key={`${props.policyObj.id}-delete`}
+                            aria-label='delete attached policy'
+                            size='small'
+                            onClick={props.handleDelete}
+                            disableFocusRipple
+                            disableRipple
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
+                </div>
+                {props.drawerOpen && (
+                    <props.PolicyConfigurationEditDrawer
+                        policyObj={props.policyObj}
+                        drawerOpen={props.drawerOpen}
+                        setDrawerOpen={props.setDrawerOpen}
+                        currentFlow={props.currentFlow}
+                        target={props.target}
+                        verb={props.verb}
+                        allPolicies={props.allPolicies}
+                        isAPILevelPolicy={props.isAPILevelPolicy}
+                    />
+                )}
+            </Root>)
+        );
+    } else {
+        return (
+            (<Root>
+                <div
+                    ref={setNodeRef}
+                    style={style}
+                    {...attributes}
+                    {...listeners}
+                    onClick={props.handleDrawerOpen}
+                    onKeyDown={props.handleDrawerOpen}
+                >
+                    <Tooltip
+                        key={props.policyObj.id}
+                        title={`${props.policyObj.displayName} : ${props.policyObj.version}`}
+                        placement='top'
                     >
-                        <CloudDownloadIcon />
-                    </IconButton>
-                    <IconButton
-                        key={`${policyObj.id}-delete`}
-                        aria-label='delete attached policy'
-                        size='small'
-                        onClick={handleDelete}
-                        disableFocusRipple
-                        disableRipple
-                    >
-                        <DeleteIcon />
-                    </IconButton>
-                </Box>
-            </div>
-            {drawerOpen && (
-                <PolicyConfigurationEditDrawer
-                    policyObj={policyObj}
-                    drawerOpen={drawerOpen}
-                    setDrawerOpen={setDrawerOpen}
-                    currentFlow={currentFlow}
-                    target={target}
-                    verb={verb}
-                    allPolicies={allPolicies}
-                    isAPILevelPolicy={isAPILevelPolicy}
-                />
-            )}
-        </Root>)
-    );
+                        <Avatar
+                            style={{
+                                margin: '0.2em',
+                                backgroundColor: policyColor,
+                            }}
+                        >
+                            {Utils.stringAvatar(
+                                props.policyObj.displayName.toUpperCase(),
+                            )}
+                        </Avatar>
+                    </Tooltip>
+                    <Box className={classes.actionsBox}>
+                        <IconButton
+                            key={`${props.policyObj.id}-download`}
+                            aria-label='Download policy'
+                            size='small'
+                            onClick={props.handlePolicyDownload}
+                            disableFocusRipple
+                            disableRipple
+                            disabled={props.policyObj.id === ''} // Disabling policy download for migrated policy
+                        >
+                            <CloudDownloadIcon />
+                        </IconButton>
+                        <IconButton
+                            key={`${props.policyObj.id}-delete`}
+                            aria-label='delete attached policy'
+                            size='small'
+                            onClick={props.handleDelete}
+                            disableFocusRipple
+                            disableRipple
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
+                </div>
+                {props.drawerOpen && (
+                    <props.PolicyConfigurationEditDrawer
+                        policyObj={props.policyObj}
+                        drawerOpen={props.drawerOpen}
+                        setDrawerOpen={props.setDrawerOpen}
+                        currentFlow={props.currentFlow}
+                        target={props.target}
+                        verb={props.verb}
+                        allPolicies={props.allPolicies}
+                        isAPILevelPolicy={props.isAPILevelPolicy}
+                    />
+                )}
+            </Root>)
+        );
+    }
 }
 
 export default AttachedPolicyCardShared;

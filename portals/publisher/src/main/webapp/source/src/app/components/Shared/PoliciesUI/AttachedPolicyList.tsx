@@ -28,7 +28,7 @@ import {
 } from '@dnd-kit/sortable';
 import type { AttachedPolicy, PolicySpec } from './Types';
 
-interface AttachedPolicyListSharedProps {
+interface AttachedPolicyListSharedBaseProps {
     currentPolicyList: AttachedPolicy[];
     setCurrentPolicyList: React.Dispatch<React.SetStateAction<AttachedPolicy[]>>;
     currentFlow: string;
@@ -42,47 +42,83 @@ interface AttachedPolicyListSharedProps {
     AttachedPolicyCard: any;
 }
 
-const AttachedPolicyListShared: FC<AttachedPolicyListSharedProps> = ({
-    currentPolicyList,
-    setCurrentPolicyList,
-    currentFlow,
-    target,
-    verb,
-    allPolicies,
-    isAPILevelPolicy,
-    sensors,
-    handleDragEnd,
-    policyListToDisplay,
-    AttachedPolicyCard,
-}) => {
-    return (
-        <>
-            <DndContext
-                sensors={sensors}
-                collisionDetection={closestCenter}
-                onDragEnd={handleDragEnd}
-            >
-                <SortableContext
-                    items={currentPolicyList.map((item) => item.uniqueKey)}
-                    strategy={horizontalListSortingStrategy}
+// Option 1: `listOriginatedFromCommonPolicies` and `isApiRevision` are provided
+interface AttachedPolicyListWithCommonProps extends AttachedPolicyListSharedBaseProps {
+    listOriginatedFromCommonPolicies: string[];
+    isApiRevision: boolean;
+}
+
+// Option 2: Neither `listOriginatedFromCommonPolicies` nor `isApiRevision` are provided
+interface AttachedPolicyListWithoutCommonProps extends AttachedPolicyListSharedBaseProps {
+    listOriginatedFromCommonPolicies?: undefined;
+    isApiRevision?: undefined;
+}
+
+// Combine the two using a union type
+type AttachedPolicyListSharedProps = AttachedPolicyListWithCommonProps | AttachedPolicyListWithoutCommonProps;
+
+const AttachedPolicyListShared: FC<AttachedPolicyListSharedProps> = (props) => {
+    if ('listOriginatedFromCommonPolicies' in props) {
+        return (
+            <>
+                <DndContext
+                    sensors={props.sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={props.handleDragEnd}
                 >
-                    {policyListToDisplay.map((policy: AttachedPolicy) => (
-                        <AttachedPolicyCard
-                            key={policy.uniqueKey}
-                            policyObj={policy}
-                            currentPolicyList={currentPolicyList}
-                            setCurrentPolicyList={setCurrentPolicyList}
-                            currentFlow={currentFlow}
-                            target={target}
-                            verb={verb}
-                            allPolicies={allPolicies}
-                            isAPILevelPolicy={isAPILevelPolicy}
-                        />
-                    ))}
-                </SortableContext>
-            </DndContext>
-        </>
-    );
+                    <SortableContext
+                        items={props.currentPolicyList.map((item) => item.uniqueKey)}
+                        strategy={horizontalListSortingStrategy}
+                    >
+                        {props.policyListToDisplay.map((policy: AttachedPolicy) => (
+                            <props.AttachedPolicyCard
+                                key={policy.uniqueKey}
+                                policyObj={policy}
+                                currentPolicyList={props.currentPolicyList}
+                                setCurrentPolicyList={props.setCurrentPolicyList}
+                                currentFlow={props.currentFlow}
+                                target={props.target}
+                                verb={props.verb}
+                                allPolicies={props.allPolicies}
+                                isAPILevelPolicy={props.isAPILevelPolicy}
+                                listOriginatedFromCommonPolicies={props.listOriginatedFromCommonPolicies}
+                                isApiRevision={props.isApiRevision}
+                            />
+                        ))}
+                    </SortableContext>
+                </DndContext>
+            </>
+        );
+    } else {
+        return (
+            <>
+                <DndContext
+                    sensors={props.sensors}
+                    collisionDetection={closestCenter}
+                    onDragEnd={props.handleDragEnd}
+                >
+                    <SortableContext
+                        items={props.currentPolicyList.map((item) => item.uniqueKey)}
+                        strategy={horizontalListSortingStrategy}
+                    >
+                        {props.policyListToDisplay.map((policy: AttachedPolicy) => (
+                            <props.AttachedPolicyCard
+                                key={policy.uniqueKey}
+                                policyObj={policy}
+                                currentPolicyList={props.currentPolicyList}
+                                setCurrentPolicyList={props.setCurrentPolicyList}
+                                currentFlow={props.currentFlow}
+                                target={props.target}
+                                verb={props.verb}
+                                allPolicies={props.allPolicies}
+                                isAPILevelPolicy={props.isAPILevelPolicy}
+                            />
+                        ))}
+                    </SortableContext>
+                </DndContext>
+            </>
+        );
+    }
 };
 
 export default AttachedPolicyListShared;

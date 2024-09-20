@@ -68,7 +68,8 @@ const StyledPaper = styled(Paper)(({ theme }: { theme: Theme }) => ({
 }));
 
 interface PolicyListPorps {
-    policyList: Policy[];
+    apiPolicyList: Policy[];
+    commonPolicyList: Policy[];
     fetchPolicies: () => void;
     isChoreoConnectEnabled: boolean;
 }
@@ -78,7 +79,7 @@ interface PolicyListPorps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} List of policies local to the API segment.
  */
-const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoConnectEnabled}) => {
+const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetchPolicies, isChoreoConnectEnabled}) => {
 
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [dialogOpen, setDialogOpen] = React.useState(false);
@@ -176,7 +177,16 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                         </Tabs>
                         <Box height='55vh' pt={1} overflow='scroll'>
                             <TabPanel
-                                policyList={policyList.filter(
+                                commonPolicyList={commonPolicyList.filter(
+                                    (policy) =>
+                                        policy.applicableFlows.includes(
+                                            'request',
+                                        ) &&
+                                        policy.supportedGateways.includes(
+                                            gatewayType,
+                                        ),
+                                )}
+                                apiPolicyList={apiPolicyList.filter(
                                     (policy) =>
                                         policy.applicableFlows.includes(
                                             'request',
@@ -190,7 +200,16 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                                 fetchPolicies={fetchPolicies}
                             />
                             <TabPanel
-                                policyList={policyList.filter(
+                                commonPolicyList={commonPolicyList.filter(
+                                    (policy) =>
+                                        policy.applicableFlows.includes(
+                                            'response',
+                                        ) &&
+                                        policy.supportedGateways.includes(
+                                            gatewayType,
+                                        ),
+                                )}
+                                apiPolicyList={apiPolicyList.filter(
                                     (policy) =>
                                         policy.applicableFlows.includes(
                                             'response',
@@ -205,8 +224,23 @@ const PolicyList: FC<PolicyListPorps> = ({policyList, fetchPolicies, isChoreoCon
                             />
                             {!isChoreoConnectEnabled && (
                                 <TabPanel
-                                    policyList={policyList.filter((policy) =>
-                                        policy.applicableFlows.includes('fault'),
+                                    commonPolicyList={commonPolicyList.filter(
+                                        (policy) =>
+                                            policy.applicableFlows.includes(
+                                                'fault',
+                                            ) &&
+                                            policy.supportedGateways.includes(
+                                                gatewayType,
+                                            ),
+                                    )}
+                                    apiPolicyList={apiPolicyList.filter(
+                                        (policy) =>
+                                            policy.applicableFlows.includes(
+                                                'fault',
+                                            ) &&
+                                            policy.supportedGateways.includes(
+                                                gatewayType,
+                                            ),
                                     )}
                                     index={2}
                                     selectedTab={selectedTab}
