@@ -88,7 +88,7 @@ export default function AIAPIDefinition(props) {
                     >
                         <FormattedMessage
                             id='AiVendors.OpenAPI.override.message'
-                            defaultMessage='Upload new file to override the current openapi'
+                            defaultMessage='Upload new file to override the current OpenAPI'
                         />
                     </Typography>
                 </Box>
