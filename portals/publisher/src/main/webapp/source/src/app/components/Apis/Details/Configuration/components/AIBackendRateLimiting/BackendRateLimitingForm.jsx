@@ -26,6 +26,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import WrappedExpansionPanel from 'AppComponents/Shared/WrappedExpansionPanel';
 import CommonRateLimitingForm from './CommonRateLimitingForm';
 import RequestCountRateLimit from './RequestCountRateLimit';
+import RequestCountRateLimitUnit from './RequestCountRateLimitUnit';
 
 /**
  * Backend Rate Limiting for AI APIs
@@ -105,6 +106,11 @@ export default function BackendRateLimitingForm(props) {
                     </Typography>
                 </AccordionSummary>
                 <AccordionDetails className={classes.expansionPanelDetails}>
+                    <RequestCountRateLimitUnit
+                        api={api}
+                        configDispatcher={configDispatcher}
+                        isProduction={isProduction}
+                    />
                     <CommonRateLimitingForm
                         api={api}
                         configDispatcher={configDispatcher}

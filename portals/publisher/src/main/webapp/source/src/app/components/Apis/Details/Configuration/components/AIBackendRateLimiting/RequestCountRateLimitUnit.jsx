@@ -66,8 +66,8 @@ export default function RequestCountRateLimitUnit(props) {
                         value,
                     });
                 }}
-                margin='none'
-                variant='standard'
+                margin='normal'
+                variant='outlined'
                 sx={{
                     '& .MuiInputBase-root': {
                         '&:before': { borderBottom: 'none' }, // Remove underline
