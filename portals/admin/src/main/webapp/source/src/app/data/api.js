@@ -1084,7 +1084,7 @@ class API extends Resource {
      */
     getAiVendorsList() {
         return this.client.then((client) => {
-            return client.apis['LLMProviders'].getLlmProviders(
+            return client.apis['LLMProviders'].getLLMProviders(
                 this._requestMetaData(),
             );
         });
@@ -1097,7 +1097,7 @@ class API extends Resource {
      */
    aiVendorGet(aiVendorId) {
         return this.client.then((client) => {
-            return client.apis['LLMProvider'].getLlmProvider(
+            return client.apis['LLMProvider'].getLLMProvider(
                 { llmProviderId: aiVendorId },
                 this._requestMetaData(),
             );
@@ -1111,7 +1111,7 @@ class API extends Resource {
      */
     deleteAiVendor(aiVendorId) {
         return this.client.then((client) => {
-            return client.apis['LLMProvider'].deleteLlmProvider(
+            return client.apis['LLMProvider'].deleteLLMProvider(
                 { llmProviderId: aiVendorId },
                 this._requestMetaData(),
             );
@@ -1126,7 +1126,7 @@ class API extends Resource {
             const payload = {
                 'Content-Type': 'multipart/form-data',
             };
-            return client.apis['LLMProviders'].addLlmProvider(
+            return client.apis['LLMProviders'].addLLMProvider(
                 payload,
                 { requestBody: aiVendorBody },
                 this._requestMetaData(),
@@ -1135,7 +1135,7 @@ class API extends Resource {
     }
 
     /**
-     * Update an Key Manager
+     * Update an AI Vendor
      */
     updateAiVendor(aiVendorId, aiVendorBody) {
         return this.client.then((client) => {
@@ -1143,7 +1143,7 @@ class API extends Resource {
                 llmProviderId: aiVendorId,
                 'Content-Type': 'multipart/form-data',
             };
-            return client.apis['LLMProvider'].updateLlmProvider(
+            return client.apis['LLMProvider'].updateLLMProvider(
                 payload,
                 { requestBody: {
                     ...aiVendorBody,

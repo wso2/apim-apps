@@ -13,7 +13,6 @@ import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import Grid from '@mui/material/Grid';
 import Select from '@mui/material/Select';
-import { MuiChipsInput } from 'mui-chips-input';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
@@ -62,8 +61,8 @@ function reducer(state, newValue) {
                     )),
                 },
             };
-        case 'additionalHeaders':
-        case 'additionalQueryParameters':
+        case 'authHeader':
+        case 'authQueryParameter':
         case 'connectorType':
             return {
                 ...state,
@@ -87,7 +86,9 @@ export default function AddEditAiVendor(props) {
     const intl = useIntl();
     const [saving, setSaving] = useState(false);
     const { match: { params: { id } }, history } = props;
-    const inputSource = ['payload', 'header', 'queryParams'];
+    const inputSources = ['payload', 'header', 'queryParams'];
+    const [authSource, setAuthSource] = useState('authHeader');
+    const authSources = ['authHeader', 'authQueryParameter'];
     const [validating, setValidating] = useState(false);
     const [file, setFile] = useState(null);
     const [initialState] = useState({
@@ -118,8 +119,8 @@ export default function AddEditAiVendor(props) {
                 },
             ],
             connectorType: '',
-            additionalHeaders: [],
-            additionalQueryParameters: [],
+            authQueryParameter: '',
+            authHeader: '',
         },
         apiDefinition: '',
     });
@@ -148,6 +149,12 @@ export default function AddEditAiVendor(props) {
                         configurations: JSON.parse(aiVendorBody.configurations),
                         apiDefinition: aiVendorBody.apiDefinition || '',
                     };
+
+                    if (newState.configurations.authQueryParameter) {
+                        setAuthSource('authQueryParameter');
+                    } else {
+                        setAuthSource('authHeader');
+                    }
 
                     dispatch({ field: 'all', value: newState });
 
@@ -242,14 +249,28 @@ export default function AddEditAiVendor(props) {
         setSaving(true);
 
         try {
+            let updatedConfigurations = {
+                metadata: state.configurations.metadata,
+                connectorType: state.configurations.connectorType,
+            };
+            if (state.configurations[authSource]) {
+                updatedConfigurations = {
+                    ...updatedConfigurations,
+                    [authSource]: state.configurations[authSource],
+                };
+            }
+            const newState = {
+                ...state,
+                configurations: updatedConfigurations,
+            };
             if (id) {
-                await new API().updateAiVendor(id, { ...state, apiDefinition: file });
+                await new API().updateAiVendor(id, { ...newState, apiDefinition: file });
                 Alert.success(`${state.name} ${intl.formatMessage({
                     id: 'AiVendor.edit.success',
                     defaultMessage: ' - AI Vendor edited successfully.',
                 })}`);
             } else {
-                await new API().addAiVendor({ ...state, apiDefinition: file });
+                await new API().addAiVendor({ ...newState, apiDefinition: file });
                 Alert.success(`${state.name} ${intl.formatMessage({
                     id: 'AiVendor.add.success.msg',
                     defaultMessage: ' - AI Vendor added successfully.',
@@ -460,7 +481,7 @@ export default function AddEditAiVendor(props) {
                                                 variant='outlined'
                                                 id={`Admin.AiVendor.form.llm.${metadata.attributeName}.select`}
                                                 name='inputSource'
-                                                value={metadata.inputSource || inputSource[0]}
+                                                value={metadata.inputSource || inputSources[0]}
                                                 onChange={(e) => dispatch({
                                                     field: `${metadata.attributeName}`,
                                                     value: {
@@ -469,7 +490,7 @@ export default function AddEditAiVendor(props) {
                                                 })}
                                                 data-testid={`ai-vendor-llm-${metadata.attributeName}-select`}
                                             >
-                                                {inputSource
+                                                {inputSources
                                                     .map((modelSource) => (
                                                         <MenuItem key={modelSource} value={modelSource}>
                                                             {modelSource}
@@ -554,130 +575,90 @@ export default function AddEditAiVendor(props) {
                             />
                         </Box>
                     </Grid>
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={3}>
-                        <Typography
-                            color='inherit'
-                            variant='subtitle2'
-                            component='div'
-                            id='AiVendors.AddEditAiVendor.headers.header'
-                        >
-                            <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.headers'
-                                defaultMessage='Additional Headers'
-                            />
-                        </Typography>
-                        <Typography
-                            color='inherit'
-                            variant='caption'
-                            component='p'
-                            id='AiVendors.AddEditAiVendor.headers.body'
-                        >
-                            <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.headers.description'
-                                defaultMessage={'Add additional headers'
-                                    + '. Press enter to add each header.'}
-                            />
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
-                            <MuiChipsInput
-                                variant='outlined'
-                                fullWidth
-                                value={state.configurations.additionalHeaders}
-                                onAddChip={(header) => {
-                                    state.configurations.additionalHeaders.push(header);
-                                }}
-                                onDeleteChip={(headerToDelete) => {
-                                    const filteredHeaders = state.configurations.additionalHeaders.filter(
-                                        (header) => header !== headerToDelete,
-                                    );
-                                    dispatch({ field: 'additionalHeaders', value: filteredHeaders });
-                                }}
-                                placeholder={intl.formatMessage({
-                                    id: 'AiVendors.AddEditAiVendor.form.headers.placeholder',
-                                    defaultMessage: 'Type headers and press Enter',
-                                })}
-                                helperText={(
-                                    <div style={{ position: 'absolute', marginTop: '10px' }}>
-                                        {intl.formatMessage({
-                                            id: 'AiVendors.AddEditAiVendor.form.header.help',
-                                            defaultMessage: 'Type Additional Headers and '
-                                                + 'press Enter/Return to add them.',
-                                        })}
-                                    </div>
-                                )}
-                            />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={3}>
-                        <Typography
-                            color='inherit'
-                            variant='subtitle2'
-                            component='div'
-                            id='AiVendors.AddEditAiVendor.queryParameters.header'
-                        >
-                            <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.queryParameters'
-                                defaultMessage='Additional Query Parameters'
-                            />
-                        </Typography>
-                        <Typography
-                            color='inherit'
-                            variant='caption'
-                            component='p'
-                            id='AiVendors.AddEditAiVendor.queryParameters.body'
-                        >
-                            <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.queryParameters.description'
-                                defaultMessage={'Add additional query parameters'
-                                    + '. Press enter to add each header.'}
-                            />
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
-                            <MuiChipsInput
-                                variant='outlined'
-                                fullWidth
-                                value={state.configurations.additionalQueryParameters}
-                                onAddChip={(queryParameter) => {
-                                    state.configurations.additionalQueryParameters.push(queryParameter);
-                                }}
-                                onDeleteChip={(queryParameterToDelete) => {
-                                    const filteredQueryParameters = state
-                                        .configurations
-                                        .additionalQueryParameters.filter(
-                                            (queryParameter) => queryParameter !== queryParameterToDelete,
-                                        );
-                                    dispatch({ field: 'additionalQueryParameters', value: filteredQueryParameters });
-                                }}
-                                placeholder={intl.formatMessage({
-                                    id: 'AiVendors.AddEditAiVendor.form.queryParameters.placeholder',
-                                    defaultMessage: 'Type query parameters and press Enter',
-                                })}
-                                helperText={(
-                                    <div style={{ position: 'absolute', marginTop: '10px' }}>
-                                        {intl.formatMessage({
-                                            id: 'AiVendors.AddEditAiVendor.form.queryParameters.help',
-                                            defaultMessage: 'Type Additional Query Parameters and '
-                                                + 'press Enter/Return to add them.',
-                                        })}
-                                    </div>
-                                )}
-                            />
-                        </Box>
-                    </Grid>
+                    <>
+                        <Grid item xs={12}>
+                            <Box marginTop={2} marginBottom={2}>
+                                <StyledHr />
+                            </Box>
+                        </Grid>
+
+                        <Grid item xs={12} md={12} lg={3}>
+                            <Typography
+                                color='inherit'
+                                variant='subtitle2'
+                                component='div'
+                                id='llm-auth-configurations'
+                            >
+                                <FormattedMessage
+                                    id='AiVendors.AddEditAiVendor.AiVendor.configurations.llm.auth'
+                                    defaultMessage='LLM Provider Auth Configurations'
+                                />
+                            </Typography>
+                            <Typography
+                                color='inherit'
+                                variant='caption'
+                                component='p'
+                                id='AddEditAiVendor.External.AiVendor.configurations.llm.auth.container'
+                            >
+                                <FormattedMessage
+                                    id={'AiVendors.AddEditAiVendor.AiVendor'
+                                        + '.general.details.description.llm.auth'}
+                                    defaultMessage='Configure to add LLM provider authorization'
+                                />
+                            </Typography>
+                        </Grid>
+                        <Grid item xs={12} md={12} lg={9}>
+                            <>
+                                <Box component='div' m={1}>
+                                    <FormControl
+                                        variant='outlined'
+                                        fullWidth
+                                    >
+                                        <Select
+                                            variant='outlined'
+                                            id='Admin.AiVendor.form.llm.auth.select'
+                                            name='authSource'
+                                            value={authSource}
+                                            onChange={(e) => setAuthSource(e.target.value)}
+                                            data-testid='ai-vendor-llm-auth-select'
+                                        >
+                                            {authSources
+                                                .map((modelAuth) => (
+                                                    <MenuItem key={modelAuth} value={modelAuth}>
+                                                        {modelAuth}
+                                                    </MenuItem>
+                                                ))}
+                                        </Select>
+                                        <TextField
+                                            id='Admin.AiVendor.form.llm.auth.select.input'
+                                            margin='dense'
+                                            name='model.auth.attributeIdentifier'
+                                            label={(
+                                                <span>
+                                                    <FormattedMessage
+                                                        id={
+                                                            'Admin.AiVendor.form.llm.'
+                                                            + 'auth.select.input.message'
+                                                        }
+                                                        defaultMessage='Authorization key'
+                                                    />
+                                                </span>
+                                            )}
+                                            fullWidth
+                                            variant='outlined'
+                                            value={authSource === 'authHeader'
+                                                ? state.configurations.authHeader ?? ''
+                                                : state.configurations.authQueryParameter ?? ''}
+                                            onChange={(e) => dispatch({
+                                                field: authSource,
+                                                value: e.target.value,
+                                            })}
+                                        />
+                                    </FormControl>
+                                </Box>
+                            </>
+                        </Grid>
+                    </>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
                             <StyledHr />
