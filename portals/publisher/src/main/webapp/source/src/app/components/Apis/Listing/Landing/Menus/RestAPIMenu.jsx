@@ -97,6 +97,24 @@ const RestAPIMenu = (props) => {
                     defaultMessage='Import Open API'
                 />
             </LandingMenuItem>
+
+            <LandingMenuItem
+                dense={dense}
+                id='itest-id-landing-create-ai-api'
+                linkTo='/apis/create/ai-api'
+                helperText={(
+                    <FormattedMessage
+                        id='Apis.Listing.SampleAPI.SampleAPI.ai.api.import.content'
+                        defaultMessage='Create AI APIs by importing AI vendor APIs'
+                    />
+                )}
+            >
+                <FormattedMessage
+                    id='Apis.Listing.SampleAPI.SampleAPI.ai.api.create.title'
+                    defaultMessage='Create AI API'
+                />
+            </LandingMenuItem>
+
             {(!isCreateMenu || (isCreateMenu && alwaysShowDeploySampleButton)) && showSampleDeploy &&
                 !apkGatewayType && (
                 <>

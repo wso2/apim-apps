@@ -234,6 +234,9 @@ function DocList(props) {
     const {
         documentList, apiId, selectedDoc, setbreadcrumbDocument, intl,
     } = props;
+
+    const documentTypeOrder = ['HOWTO', 'SAMPLES', 'PUBLIC_FORUM', 'SUPPORT_FORUM', 'OTHER'];
+
     const documentTypes = {
         HOWTO: intl.formatMessage({
             id: 'Apis.Details.Documents.Documentation.type.how.to',
@@ -241,7 +244,7 @@ function DocList(props) {
         }),
         SAMPLES: intl.formatMessage({
             id: 'Apis.Details.Documents.Documentation.type.samples',
-            defaultMessage: 'Samples',
+            defaultMessage: 'SAMPLES',
         }),
         PUBLIC_FORUM: intl.formatMessage({
             id: 'Apis.Details.Documents.Documentation.type.public.forum',
@@ -261,7 +264,7 @@ function DocList(props) {
         }),
         OTHER: intl.formatMessage({
             id: 'Apis.Details.Documents.Documentation.type.other',
-            defaultMessage: 'Other',
+            defaultMessage: 'OTHER',
         }),
     };
 
@@ -289,7 +292,13 @@ function DocList(props) {
                     value={selectedDoc}
                     id='document-autocomplete'
                     className={classes.autocomplete}
-                    options={documentList.sort((a, b) => -b.type.localeCompare(a.type))}
+                    options={documentList.sort((a, b) => {
+                        const getOrder = (type) => {
+                            const order = documentTypeOrder.indexOf(type);
+                            return order === -1 ? -1 : order;
+                        };
+                        return getOrder(a.type) - getOrder(b.type);
+                    })}
                     groupBy={(document) => {
                         if (document.type in documentTypes) {
                             return documentTypes[document.type];

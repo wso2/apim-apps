@@ -302,6 +302,19 @@ const APIDetailsTopMenu = (props) => {
                     </MUIAlert>
                 )}
                 <div className={classes.dateWrapper} />
+                {(api.aiConfiguration) && (
+                    <MUIAlert
+                        data-testid='itest-ai-api-label'
+                        variant='outlined'
+                        severity='info'
+                        icon={false}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.components.APIDetailsTopMenu.ai.api.label'
+                            defaultMessage='AI API'
+                        />
+                    </MUIAlert>
+                )}
                 {(api.advertiseInfo && api.advertiseInfo.advertised) && (
                     <MUIAlert
                         data-testid='itest-third-party-api-label'
