@@ -16,41 +16,57 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, InputAdornment, TextField } from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 import { useIntl } from 'react-intl';
 
 import { isRestricted } from 'AppData/AuthManager';
-import RequestCountRateLimitUnit from './RequestCountRateLimitUnit';
+import APIValidation from 'AppData/APIValidation';
 
 
 export default function RequestCountRateLimit(props) {
 
     const { api, configDispatcher, isProduction } = props;
     const intl = useIntl();
+
     let maxTpsValue;
     if (api.maxTps) {
         maxTpsValue = isProduction ? api.maxTps.production : api.maxTps.sandbox;
     } else {
         maxTpsValue = '';
     }
+    const [inputValue, setInputValue] = useState(maxTpsValue);
+    const [isValueValid, setIsValueValid] = useState(true);
+
+    function validateValue(value) {
+        const validity = APIValidation.isNumber.validate(value, { abortEarly: false }).error;
+        if (validity === null || !value) {
+            setIsValueValid(true);
+            configDispatcher({ action: 'saveButtonDisabled', value: false });
+        } else {
+            setIsValueValid(false);
+            configDispatcher({ action: 'saveButtonDisabled', value: true });
+        }
+    }
 
     return (<>
         <Grid item xs={12} style={{ marginBottom: 10, position: 'relative' }}>
             <TextField
-                label={isProduction ? intl.formatMessage({
+                label={intl.formatMessage({
                     id: 'Apis.Details.Configuration.components.MaxBackendTps.max.'
-                        + 'throughput.specify.max.prod.tps',
-                    defaultMessage: 'Max Production TPS',
-                }) : intl.formatMessage({
-                    id: 'Apis.Details.Configuration.components.MaxBackendTps.max.'
-                        + 'throughput.specify.max.sandbox.tps',
-                    defaultMessage: 'Max Sandbox TPS',
+                        + 'throughput.specify.max.request.count',
+                    defaultMessage: 'Max Request Count',
                 })}
                 margin='normal'
                 variant='outlined'
+                type='number'
+                error={!isValueValid}
                 onChange={(event) => {
+                    setInputValue(event.target.value);
+                }}
+                onBlur={(event) => {
+                    validateValue(event.target.value);
                     const value = isProduction ?
                         { ...api.maxTps, production: event.target.value } :
                         { ...api.maxTps, sandbox: event.target.value };
@@ -59,17 +75,9 @@ export default function RequestCountRateLimit(props) {
                         value,
                     });
                 }}
-                value={api.maxTps !== null ? maxTpsValue : ''}
+                value={inputValue}
                 disabled={isRestricted(['apim:api_create'], api)}
-                InputProps={{
-                    endAdornment: <InputAdornment position='end'>
-                        <RequestCountRateLimitUnit
-                            api={api}
-                            configDispatcher={configDispatcher}
-                            isProduction={isProduction}
-                        />
-                    </InputAdornment>,
-                }}
+                style={{display: 'flex'}}
             />
         </Grid>
     </>);

@@ -39,8 +39,8 @@ export default function CommonRateLimitingForm(props) {
     const [apiFromContext] = useAPI();
     const [isValueValid, setIsValueValid] = useState(true);
 
-    const currentValue = api.aiConfiguration.throttlingConfiguration ?
-        api.aiConfiguration.throttlingConfiguration[commonFormProps.key] : -1;
+    const [inputValue, setInputValue] = useState(api.aiConfiguration.throttlingConfiguration ?
+        api.aiConfiguration.throttlingConfiguration[commonFormProps.key] : '');
 
     function validateValue(value) {
         const validity = commonFormProps.validator ?
@@ -81,7 +81,7 @@ export default function CommonRateLimitingForm(props) {
                     disabled={isRestricted(['apim:api_create'], apiFromContext)}
                     id='outlined-name'
                     label={commonFormProps.label}
-                    value={currentValue}
+                    value={inputValue}
                     error={!isValueValid}
                     helperText={commonFormProps.helperText}
                     placeholder={commonFormProps.placeholder}
@@ -91,7 +91,9 @@ export default function CommonRateLimitingForm(props) {
                     }}
                     margin='normal'
                     variant='outlined'
-                    onChange={handleOnChange} // eslint-disable-line
+                    type='number'
+                    onChange={(event) => { setInputValue(event.target.value); }}
+                    onBlur={handleOnChange}
                     style={{ display: 'flex' }}
                 />
             </Grid>
