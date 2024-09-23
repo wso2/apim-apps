@@ -49,6 +49,9 @@ const CONSTS = {
         clientId: null,
         clientSecret: null, // same as above password case
         customParameters: {},
+        connectionTimeoutDuration: -1,
+        connectionRequestTimeoutDuration: -1,
+        socketTimeoutDuration: -1,
     },
     GATEWAY_TYPE: {
         synapse: 'Synapse',
