@@ -249,7 +249,7 @@ function GenericEndpoint(props) {
                                                 </Icon>
                                             </Tooltip>
                                         </IconButton>
-                                        <IconButton
+                                        {!api.aiConfiguration && (<IconButton
                                             className={classes.iconButton}
                                             aria-label='Security'
                                             onClick={() => setESConfigOpen(type, esCategory)}
@@ -270,7 +270,7 @@ function GenericEndpoint(props) {
                                                     security
                                                 </Icon>
                                             </Tooltip>
-                                        </IconButton>
+                                        </IconButton>)}
                                     </>
                                 )}
                             {(index > 0) ? <Divider className={classes.divider} /> : <div />}
