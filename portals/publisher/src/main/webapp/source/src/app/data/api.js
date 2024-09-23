@@ -3323,6 +3323,37 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Get the LLM provider API definition by name and version
+     *
+     * @param {String} name
+     * @param {String} apiVersion
+     */
+    static getLLMProviderAPIDefinition(name, apiVersion) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProviderApiDefinition(
+                { name, apiVersion },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the LLM provider API Endpoint Configuration by name and version
+     * 
+     * @param {String} name
+     * @param {String} apiVersion
+     */
+    static getLLMProviderEndpointConfiguration(name, apiVersion) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProviderEndpointConfiguration(
+                { name, apiVersion },
+                this._requestMetaData(),
+            );
+        });
+    }
 
 }
 

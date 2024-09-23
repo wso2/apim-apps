@@ -31,6 +31,7 @@ import GraphqlAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/GraphqlAPIM
 import StreamingAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/StreamingAPIMenu';
 import ServiceCatalogMenu from 'AppComponents/Apis/Listing/Landing/Menus/ServiceCatalogMenu';
 import MenuButton from 'AppComponents/Shared/MenuButton';
+import AIAPIMenu from '../Landing/Menus/AIAPIMenu';
 
 const PREFIX = 'APICreateMenu';
 
@@ -128,7 +129,8 @@ const APICreateMenu = () => {
                                 <SoapAPIMenu isCreateMenu icon={soapApiIcon} />
                                 <GraphqlAPIMenu isCreateMenu icon={graphqlIcon} />
                                 <StreamingAPIMenu isCreateMenu icon={streamingApiIcon} />
-                                <Box display={{ xs: 'none', md: 'block' }} mx={2}>
+                                <AIAPIMenu isCreateMenu icon={restApiIcon} />
+                                <Box display={{ xs: 'none', md: 'block' }}>
                                     <Divider className={classes.dividerCls} orientation='vertical' 
                                         variant='inset' />
                                 </Box>
@@ -145,6 +147,7 @@ const APICreateMenu = () => {
                             >
                                 <RestAPIMenu isCreateMenu icon={restApiIcon} />
                                 <GraphqlAPIMenu isCreateMenu icon={graphqlIcon} />
+                                <AIAPIMenu isCreateMenu icon={restApiIcon} />
                             </Grid>
                         )
                         }

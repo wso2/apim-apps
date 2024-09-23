@@ -228,7 +228,6 @@ export default function ApiCreateAIAPI(props) {
                     {wizardStep === 0 && (
                         <ProvideAIOpenAPI
                             onValidate={handleOnValidate}
-                            apiInputs={apiInputs}
                             inputsDispatcher={inputsDispatcher}
                         />
                     )}

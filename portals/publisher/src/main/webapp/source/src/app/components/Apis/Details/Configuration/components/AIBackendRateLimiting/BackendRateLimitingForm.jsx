@@ -75,7 +75,7 @@ export default function BackendRateLimitingForm(props) {
         }
     }));
 
-    const titleText = (isProduction ? '[Production] ' : '[Sandbox] ') + intl.formatMessage({
+    const titleText = (isProduction ? 'Production ' : 'Sandbox ') + intl.formatMessage({
         id: 'Apis.Details.Configuration.Components.AI.BE.Rate.Limiting.prod',
         defaultMessage: 'Backend Rate Limiting'
     });

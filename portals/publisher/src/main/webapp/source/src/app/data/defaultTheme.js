@@ -247,6 +247,7 @@ export default {
         landingPage: {
             icons: {
                 graphqlIcon: '/site/public/images/landing-icons/graphqlapi.svg',
+                aiApiIcon: '/site/public/images/landing-icons/ai_logo_temp.jpg',
                 restApiIcon: '/site/public/images/landing-icons/restapi.svg',
                 soapApiIcon: '/site/public/images/landing-icons/soapapi.svg',
                 streamingApiIcon: '/site/public/images/landing-icons/streamingapi.svg',

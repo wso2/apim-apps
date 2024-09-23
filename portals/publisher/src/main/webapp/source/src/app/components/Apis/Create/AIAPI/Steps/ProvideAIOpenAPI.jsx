@@ -25,12 +25,6 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Autocomplete } from '@mui/material';
-import YAML from 'js-yaml';
-
-import {
-    getLinterResultsFromContent
-} from "../../../Details/APIDefinition/Linting/Linting";
-import ValidationResults from '../../OpenAPI/Steps/ValidationResults';
 
 const PREFIX = 'ProvideAIOpenAPI';
 
@@ -57,18 +51,10 @@ const Root = styled('div')((
  * @returns {React.Component} @inheritdoc
  */
 export default function ProvideAIOpenAPI(props) {
-    const { apiInputs, inputsDispatcher, onValidate, onLinterLineSelect } = props;
-    const { inputValue } = apiInputs;
-
-    // If valid value is `null`,that means valid, else an error object will be there
-    const [isValid, setValidity] = useState({});
-    const [validationErrors, setValidationErrors] = useState([]);
-    const [isValidating, setIsValidating] = useState(false);
+    const { inputsDispatcher, onValidate } = props;
 
     const [llmProviders, setLLMProviders] = useState(null);
-    // If valid value is `null`,that means valid, else an error object will be there
-    const [linterResults, setLinterResults] = useState([]);
-    const [isLinting, setIsLinting] = useState(false);
+
     const [selectedProvider, setSelectedProvider] = useState(null);
     const [selectedModel, setSelectedModel] = useState(null);
 
@@ -87,100 +73,30 @@ export default function ProvideAIOpenAPI(props) {
         return uniqueProviders;
     }
 
-    function lint(content) {
-        // Validate and linting
-        setIsLinting(true);
-        getLinterResultsFromContent(content).then((results) => {
-            if (results) {
-                setLinterResults(results);
-            } else {
-                setLinterResults([]);
-            }
-        }).finally(() => { setIsLinting(false); });
-    }
+    function handleGetLLMProviderAPIDefinitionResponse(response, newSelectedModel) {
+        const apiDefinition = response.text;
 
-    function hasJSONStructure(definition) {
-        if (typeof definition !== 'string') return false;
-        try {
-            const result = JSON.parse(definition);
-            return result && typeof result === 'object';
-        } catch (err) {
-            console.log("API definition is in not in JSON format");
-            return false;
-        }
-    }
-
-    function onReceivingAPIdefinition(apiDefinition) {
-        setIsValidating(true);
-        let validFile = null;
-        API.validateOpenAPIByInlineDefinition(apiDefinition)
-            .then((response) => {
-                const {
-                    body: { isValid: isValidFile, info, errors },
-                } = response;
-                if (isValidFile) {
-                    validFile = apiDefinition;
-                    inputsDispatcher({ action: 'preSetAPI', value: info });
-                    setValidity({ ...isValid, file: null });
-                } else {
-                    setValidity({
-                        ...isValid, file: {
-                            message: intl.formatMessage({
-                                id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
-                                defaultMessage: 'OpenAPI content validation failed!'
-                            })
-                        }
-                    });
-                    setValidationErrors(errors);
-                }
-            })
-            .catch((error) => {
-                setValidity({
-                    ...isValid, file: {
-                        message: intl.formatMessage({
-                            id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
-                            defaultMessage: 'OpenAPI content validation failed!'
-                        })
-                    }
-                });
-                console.error(error);
-            })
-            .finally(() => {
-                setIsValidating(false); // Stop the loading animation
-                onValidate(validFile !== null); // If there is a valid file then validation has passed
-                // If the given file is valid , we set it as the inputValue else set `null`
+        API.validateOpenAPIByInlineDefinition(apiDefinition).then((res) => {
+            if (res.body.isValid) {
+                inputsDispatcher({ action: 'llmProviderName', value: newSelectedModel.name });
+                inputsDispatcher({ action: 'llmProviderApiVersion', value: newSelectedModel.apiVersion });
                 inputsDispatcher({ action: 'inputValue', value: apiDefinition });
-            });
-        inputsDispatcher({ action: 'importingContent', value: apiDefinition });
-    }
-
-    function handleGetLLMProviderByIdResponse(response) {
-        const {
-            body: {
-                name,
-                apiVersion,
-                apiDefinition,
-            },
-        } = response;
-        let formattedContent;
-        if (hasJSONStructure(apiDefinition)) {
-            formattedContent = JSON.stringify(JSON.parse(apiDefinition), null, 2);
-        } else {
-            formattedContent = JSON.stringify(YAML.load(apiDefinition), null, 2);
-        }
-        lint(formattedContent);
-        inputsDispatcher({ action: 'llmProviderName', value: name });
-        inputsDispatcher({ action: 'llmProviderApiVersion', value: apiVersion });
-        onReceivingAPIdefinition(formattedContent);
-        onValidate(apiDefinition !== null);
-    }
+                inputsDispatcher({ action: 'preSetAPI', value: res.body.info });
+            } else {
+                throw new Error('Invalid OpenAPI definition');
+            }
+            onValidate(res.body.isValid);
+        }).catch((error) => {
+            console.error(error);
+            inputsDispatcher({ action: 'inputValue', value: null });
+            inputsDispatcher({ action: 'isFormValid', value: false });
+            onValidate(false);
+        });
+    };
 
 
     function reset() {
         setSelectedModel(null);
-        setIsLinting(false);
-        setLinterResults([]);
-        setValidationErrors([]);
         inputsDispatcher({ action: 'importingContent', value: null });
         inputsDispatcher({ action: 'inputValue', value: null });
         inputsDispatcher({ action: 'isFormValid', value: false });
@@ -267,11 +183,12 @@ export default function ProvideAIOpenAPI(props) {
                                 onChange={(e, newValue) => {
                                     setSelectedModel(newValue);
                                     if (newValue) {
-                                        API.getLLMProviderById(newValue.id).then((response) => {
-                                            handleGetLLMProviderByIdResponse(response);
-                                        }).catch((error) => {
-                                            console.error(error);
-                                        });
+                                        API.getLLMProviderAPIDefinition(newValue.name, newValue.apiVersion)
+                                            .then((response) => {
+                                                handleGetLLMProviderAPIDefinitionResponse(response, newValue);
+                                            }).catch((error) => {
+                                                console.error(error);
+                                            });
                                     }
                                 }}
                                 renderOption={(options, option) => (
@@ -313,14 +230,6 @@ export default function ProvideAIOpenAPI(props) {
                         </FormLabel>
                     </FormControl>
                 </Grid>
-                <ValidationResults
-                    inputValue={inputValue}
-                    isValidating={isValidating}
-                    isLinting={isLinting}
-                    validationErrors={validationErrors}
-                    linterResults={linterResults}
-                    onLinterLineSelect={onLinterLineSelect}
-                />
                 <Grid item xs={2} md={5} />
             </Grid>)}
             {!llmProviders && (
@@ -342,10 +251,6 @@ ProvideAIOpenAPI.defaultProps = {
 };
 
 ProvideAIOpenAPI.propTypes = {
-    apiInputs: PropTypes.shape({
-        type: PropTypes.string,
-        inputValue: PropTypes.string,
-    }).isRequired,
     inputsDispatcher: PropTypes.func.isRequired,
     onValidate: PropTypes.func,
 };
