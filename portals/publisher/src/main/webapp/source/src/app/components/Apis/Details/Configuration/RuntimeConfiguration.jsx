@@ -391,16 +391,30 @@ export default function RuntimeConfiguration() {
                 return state;
             case 'maxTps': {
                 nextState.maxTps = value;
-                const { tokenBasedThrottlingConfiguration } = nextState.maxTps;
-                if (tokenBasedThrottlingConfiguration) {
-                    tokenBasedThrottlingConfiguration.isTokenBasedThrottlingEnabled = !!(
-                        tokenBasedThrottlingConfiguration.productionMaxPromptTokenCount ||
-                        tokenBasedThrottlingConfiguration.productionMaxCompletionTokenCount ||
-                        tokenBasedThrottlingConfiguration.productionMaxTotalTokenCount ||
-                        tokenBasedThrottlingConfiguration.sandboxMaxPromptTokenCount ||
-                        tokenBasedThrottlingConfiguration.sandboxMaxCompletionTokenCount ||
-                        tokenBasedThrottlingConfiguration.sandboxMaxTotalTokenCount
-                    );
+                if (nextState.maxTps){
+                    if (!nextState.maxTps.productionTimeUnit) {
+                        nextState.maxTps.productionTimeUnit = 'SECOND';
+                    }
+                    if (!nextState.maxTps.sandboxTimeUnit) {
+                        nextState.maxTps.sandboxTimeUnit = 'SECOND';
+                    }
+                    if (!nextState.maxTps.production) {
+                        nextState.maxTps.production = '';
+                    }
+                    if (!nextState.maxTps.sandbox) {
+                        nextState.maxTps.sandbox = '';
+                    }
+                    const { tokenBasedThrottlingConfiguration } = nextState.maxTps;
+                    if (tokenBasedThrottlingConfiguration) {
+                        tokenBasedThrottlingConfiguration.isTokenBasedThrottlingEnabled = !!(
+                            tokenBasedThrottlingConfiguration.productionMaxPromptTokenCount ||
+                            tokenBasedThrottlingConfiguration.productionMaxCompletionTokenCount ||
+                            tokenBasedThrottlingConfiguration.productionMaxTotalTokenCount ||
+                            tokenBasedThrottlingConfiguration.sandboxMaxPromptTokenCount ||
+                            tokenBasedThrottlingConfiguration.sandboxMaxCompletionTokenCount ||
+                            tokenBasedThrottlingConfiguration.sandboxMaxTotalTokenCount
+                        );
+                    }
                 }
                 return nextState;
             }
@@ -672,6 +686,10 @@ export default function RuntimeConfiguration() {
                                                         configDispatcher={configDispatcher}
                                                     />
                                                 )}
+                                            </>
+                                        )}
+                                        {!api.isAPIProduct() && (
+                                            <>
                                                 { !isWebSub && (
                                                     <Endpoints api={api} />
                                                 )}

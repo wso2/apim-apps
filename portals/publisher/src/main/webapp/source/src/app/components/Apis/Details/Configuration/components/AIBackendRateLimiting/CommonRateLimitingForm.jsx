@@ -97,6 +97,7 @@ export default function CommonRateLimitingForm(props) {
                     type='number'
                     onChange={(event) => { setInputValue(event.target.value); }}
                     onBlur={handleOnChange}
+                    sx={{ my: 1 }}
                     style={{ display: 'flex' }}
                 />
             </Grid>
