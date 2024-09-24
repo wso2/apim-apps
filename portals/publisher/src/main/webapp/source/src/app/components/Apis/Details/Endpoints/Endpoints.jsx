@@ -333,10 +333,20 @@ function Endpoints(props) {
                                 message: intl.formatMessage({
                                     id: 'Apis.Details.Endpoints.Endpoints.missing.security.oauth.client.error',
                                     defaultMessage: 'Endpoint Security Token URL'
-                                            + '/API Key/API Secret should not be empty',
+                                        + '/API Key/API Secret should not be empty',
                                 }),
                             };
                         }
+                    }
+                } else if (production.type === 'APIKEY') {
+                    if (production.apiKeyValue === null || production.apiKeyValue === null) {
+                        return {
+                            isValid: false,
+                            message: intl.formatMessage({
+                                id: 'Apis.Details.Endpoints.Endpoints.missing.security.apikey.error',
+                                defaultMessage: 'Endpoint Security API Key should not be empty',
+                            }),
+                        };
                     }
                 } else if (production.username === '' || production.password === null) {
                     return {
@@ -381,6 +391,16 @@ function Endpoints(props) {
                                 }),
                             };
                         }
+                    }
+                } else if (sandbox.type === 'APIKEY') {
+                    if (sandbox.apiKeyValue === null || sandbox.apiKeyValue === null) {
+                        return {
+                            isValid: false,
+                            message: intl.formatMessage({
+                                id: 'Apis.Details.Endpoints.Endpoints.missing.security.apikey.error',
+                                defaultMessage: 'Endpoint Security API Key should not be empty',
+                            }),
+                        };
                     }
                 } else if (sandbox.username === '' || sandbox.password === null) {
                     return {
