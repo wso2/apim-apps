@@ -41,7 +41,7 @@ export default function AIEndpointAuth(props) {
     return (
         <>
             <Typography
-                sx={{ m: 2 }}
+                sx={{ mx: 2 }}
             >
                 {isHeaderParameter ? (
                     <FormattedMessage
@@ -62,7 +62,7 @@ export default function AIEndpointAuth(props) {
                     defaultMessage='API Key Identifier'
                 />}
                 id={'api-key-id-' + (isProduction ? '-production' : '-sandbox')}
-                sx={{ width: '48%', mr: 2 }}
+                sx={{ width: '49%', mr: 2 }}
                 value={apiKeyIdentifier}
                 placeholder={apiKeyIdentifier}
                 variant='outlined'
@@ -76,7 +76,7 @@ export default function AIEndpointAuth(props) {
                     defaultMessage='API Key'
                 />}
                 id={'api-key-value' + (isProduction ? '-production' : '-sandbox')}
-                sx={{ width: '48%' }}
+                sx={{ width: '49%' }}
                 value={apiKeyValue}
                 placeholder={intl.formatMessage({
                     id: 'Apis.Details.Endpoints.Security.api.key.value.placeholder',
