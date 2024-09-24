@@ -35,6 +35,7 @@ import TopMenu from 'AppComponents/Apis/Listing/components/TopMenu';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import SampleAPIProduct from 'AppComponents/Apis/Listing/SampleAPI/SampleAPIProduct';
 import Alert from 'AppComponents/Shared/Alert';
+import DefThumb from '../components/ImageGenerator/DefThumb';
 
 const PREFIX = 'TableView';
 
@@ -349,6 +350,23 @@ class TableView extends React.Component {
                                             <span>{apiName}</span>
                                         </Link>
                                     );
+                                } else if (artifact.type === 'DEFINITION') {
+                                    const linkTo = artifact.associatedType === 'API'
+                                        ? `/apis/${artifact.apiUUID}/api-definition`
+                                        : `/api-products/${artifact.apiUUID}/api-definition`;
+                                    return (
+                                        <Link
+                                            to={linkTo}
+                                            className={classes.apiNameLink}
+                                        >
+                                            <Icon>code</Icon>
+                                            <FormattedMessage
+                                                id='Apis.Listing.TableView.TableView.def.flag'
+                                                defaultMessage=' [Def]'
+                                            />
+                                            <span>{artifact.name}</span>
+                                        </Link>
+                                    );
                                 }
                                 return (
                                     <Link to={'/apis/' + apiId + '/overview'} className={classes.apiNameLink}>
@@ -449,6 +467,8 @@ class TableView extends React.Component {
                 if (artifact) {
                     if (artifact.type === 'DOC') {
                         return <DocThumb doc={artifact} />;
+                    } else if (artifact.type === 'DEFINITION') {
+                        return <DefThumb def={artifact} />;
                     } else if (artifact.type === 'APIPRODUCT') {
                         artifact.state = 'PUBLISHED';
                         return <ApiThumb api={artifact} isAPIProduct updateData={this.updateData} />;

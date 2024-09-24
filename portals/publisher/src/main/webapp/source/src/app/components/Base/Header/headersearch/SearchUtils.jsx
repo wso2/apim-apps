@@ -85,6 +85,12 @@ function getPath(suggestion) {
             return `/apis/${suggestion.id}/overview`;
         case 'APIPRODUCT':
             return `/api-products/${suggestion.id}/overview`;
+        case 'DEFINITION':
+            if (suggestion.associatedType === 'API') {
+                return `/apis/${suggestion.apiUUID}/api-definition`
+            } else {
+                return `/api-products/${suggestion.apiUUID}/api-definition`
+            }
         default:
             if (suggestion.associatedType === 'API') {
                 return `/apis/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
@@ -118,6 +124,8 @@ function getIcon(type) {
                     strokeColor='#000000'
                 />
             );
+        case 'DEFINITION':
+            return <Icon style={{ fontSize: 30 }}>code</Icon>;
         default:
             return <Icon style={{ fontSize: 30 }}>library_books</Icon>;
     }

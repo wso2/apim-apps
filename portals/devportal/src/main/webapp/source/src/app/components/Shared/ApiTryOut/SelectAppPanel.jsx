@@ -41,7 +41,7 @@ const SelectAppPanel = (props) => {
     } = props;
 
     const {
-        subscriptions, handleChanges,
+        subscriptions, handleChanges, allApplications,
     } = props;
 
     /**
@@ -67,39 +67,75 @@ const SelectAppPanel = (props) => {
     return (
         <Root>
             <Grid x={12} md={6} className={classes.centerItems}>
-                <TextField
-                    fullWidth
-                    id='selected-application'
-                    select
-                    label={(
-                        <FormattedMessage
-                            defaultMessage='Applications'
-                            id='Apis.Details.ApiConsole.SelectAppPanel.applications'
-                        />
-                    )}
-                    value={selectedApplication}
-                    name='selectedApplication'
-                    onChange={handleSelectPanelChange}
-                    SelectProps={subscriptions}
-                    helperText={(
-                        <FormattedMessage
-                            defaultMessage='Subscribed applications'
-                            id='Apis.Details.ApiConsole.SelectAppPanel.select.subscribed.application'
-                        />
-                    )}
-                    margin='normal'
-                    variant='outlined'
-                >
-                    {subscriptions.map((sub) => (
-                        <MenuItem
-                            value={sub.applicationInfo.applicationId}
-                            key={sub.applicationInfo.applicationId}
-                            className={classes.menuItem}
-                        >
-                            {sub.applicationInfo.name}
-                        </MenuItem>
-                    ))}
-                </TextField>
+                {allApplications !== null ? (
+                    <TextField
+                        fullWidth
+                        id='selected-application'
+                        select
+                        label={(
+                            <FormattedMessage
+                                defaultMessage='Applications'
+                                id='Apis.Details.ApiConsole.SelectAppPanel.applications'
+                            />
+                        )}
+                        value={selectedApplication}
+                        name='selectedApplication'
+                        onChange={handleSelectPanelChange}
+                        SelectProps={allApplications}
+                        helperText={(
+                            <FormattedMessage
+                                defaultMessage='Available applications'
+                                id='Apis.Details.ApiConsole.SelectAppPanel.select.available.application'
+                            />
+                        )}
+                        margin='normal'
+                        variant='outlined'
+                    >
+                        {allApplications.map((app) => (
+                            <MenuItem
+                                value={app.applicationId}
+                                key={app.applicationId}
+                                className={classes.menuItem}
+                            >
+                                {app.name}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                ) : (
+                    <TextField
+                        fullWidth
+                        id='selected-application'
+                        select
+                        label={(
+                            <FormattedMessage
+                                defaultMessage='Applications'
+                                id='Apis.Details.ApiConsole.SelectAppPanel.applications'
+                            />
+                        )}
+                        value={selectedApplication}
+                        name='selectedApplication'
+                        onChange={handleSelectPanelChange}
+                        SelectProps={subscriptions}
+                        helperText={(
+                            <FormattedMessage
+                                defaultMessage='Subscribed applications'
+                                id='Apis.Details.ApiConsole.SelectAppPanel.select.subscribed.application'
+                            />
+                        )}
+                        margin='normal'
+                        variant='outlined'
+                    >
+                        {subscriptions.map((sub) => (
+                            <MenuItem
+                                value={sub.applicationInfo.applicationId}
+                                key={sub.applicationInfo.applicationId}
+                                className={classes.menuItem}
+                            >
+                                {sub.applicationInfo.name}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                )}
             </Grid>
             <Grid x={12} md={6} className={classes.centerItems}>
                 <Typography variant='h6' component='label' id='key-type' color='textSecondary' className={classes.tryoutHeading}>
@@ -108,42 +144,75 @@ const SelectAppPanel = (props) => {
                         defaultMessage='Key Type'
                     />
                 </Typography>
-                <FormControl variant='standard' component='fieldset'>
-                    <RadioGroup
-                        name='selectedKeyType'
-                        value={selectedKeyType}
-                        onChange={handleSelectPanelChange}
-                        aria-labelledby='key-type'
-                        row
-                    >
-                        {(subscriptions !== null && (subscriptions.find((sub) => sub.applicationId
-                                === selectedApplication).status === 'UNBLOCKED'
-                                || subscriptions.find((sub) => sub.applicationId
-                                === selectedApplication).status === 'TIER_UPDATE_PENDING'))
-                                && (
-                                    <FormControlLabel
-                                        value='PRODUCTION'
-                                        control={<Radio />}
-                                        label={(
-                                            <FormattedMessage
-                                                id='Apis.Details.ApiConsole.SelectAppPanel.production.radio'
-                                                defaultMessage='Production'
-                                            />
-                                        )}
+                {allApplications !== null ? (
+                    <FormControl variant='standard' component='fieldset'>
+                        <RadioGroup
+                            name='selectedKeyType'
+                            value={selectedKeyType}
+                            onChange={handleSelectPanelChange}
+                            aria-labelledby='key-type'
+                            row
+                        >
+                            <FormControlLabel
+                                value='PRODUCTION'
+                                control={<Radio />}
+                                label={(
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.SelectAppPanel.production.radio'
+                                        defaultMessage='Production'
                                     />
                                 )}
-                        <FormControlLabel
-                            value='SANDBOX'
-                            control={<Radio />}
-                            label={(
-                                <FormattedMessage
-                                    id='Apis.Details.ApiConsole.SelectAppPanel.sandbox.radio'
-                                    defaultMessage='Sandbox'
-                                />
-                            )}
-                        />
-                    </RadioGroup>
-                </FormControl>
+                            />
+                            <FormControlLabel
+                                value='SANDBOX'
+                                control={<Radio />}
+                                label={(
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.SelectAppPanel.sandbox.radio'
+                                        defaultMessage='Sandbox'
+                                    />
+                                )}
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                ) : (
+                    <FormControl variant='standard' component='fieldset'>
+                        <RadioGroup
+                            name='selectedKeyType'
+                            value={selectedKeyType}
+                            onChange={handleSelectPanelChange}
+                            aria-labelledby='key-type'
+                            row
+                        >
+                            {(subscriptions !== null && (subscriptions.find((sub) => sub.applicationId
+                                    === selectedApplication).status === 'UNBLOCKED'
+                                    || subscriptions.find((sub) => sub.applicationId
+                                    === selectedApplication).status === 'TIER_UPDATE_PENDING'))
+                                    && (
+                                        <FormControlLabel
+                                            value='PRODUCTION'
+                                            control={<Radio />}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.ApiConsole.SelectAppPanel.production.radio'
+                                                    defaultMessage='Production'
+                                                />
+                                            )}
+                                        />
+                                    )}
+                            <FormControlLabel
+                                value='SANDBOX'
+                                control={<Radio />}
+                                label={(
+                                    <FormattedMessage
+                                        id='Apis.Details.ApiConsole.SelectAppPanel.sandbox.radio'
+                                        defaultMessage='Sandbox'
+                                    />
+                                )}
+                            />
+                        </RadioGroup>
+                    </FormControl>
+                )}
             </Grid>
         </Root>
     );

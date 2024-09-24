@@ -45,8 +45,10 @@ import Social from 'AppComponents/Apis/Details/Social/Social';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import AuthManager from 'AppData/AuthManager';
 import Alert from 'AppComponents/Shared/Alert';
+import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Progress from 'AppComponents/Shared/Progress';
 import API from 'AppData/api';
+import CONSTANTS from 'AppData/Constants';
 import View from 'AppComponents/Apis/Details/Documents/View';
 import SolaceEndpoints from './SolaceEndpoints';
 import Environments from './Environments';
@@ -239,6 +241,9 @@ function Overview() {
         const filteredApiPolicies = api.tiers.filter((t) => t.tierName === policyName);
         return filteredApiPolicies && filteredApiPolicies.length > 0;
     };
+
+    const isSubValidationDisabled = api.tiers && api.tiers.length === 1
+            && api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
 
     const updateSelectedEndpoint = (e) => {
         const selectedEnvName = e.target.value;
@@ -531,7 +536,28 @@ function Overview() {
                                     </MUILink>
                                 )}
                             </Box>
-                            {api.gatewayVendor === 'wso2' && allPolicies && allPolicies.length > 0 && (
+                            {isSubValidationDisabled && (
+                                <Box mt={2} ml={1} pr={6}>
+                                    <InlineMessage
+                                        type='info'
+                                        title={(
+                                            <FormattedMessage
+                                                id='Apis.Details.Overview.subscriptions.not.required'
+                                                defaultMessage='No subscriptions required'
+                                            />
+                                        )}
+                                    >
+                                        <Typography component='p'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Overview.subscriptions.not.required.content'
+                                                defaultMessage='Subscriptions are not required for this API.
+                                                    You can consume this without subscribing to it.'
+                                            />
+                                        </Typography>
+                                    </InlineMessage>
+                                </Box>
+                            )}
+                            {api.gatewayVendor === 'wso2' && allPolicies && allPolicies.length > 0 && !isSubValidationDisabled && (
                                 <>
                                     <Box mt={6}>
                                         <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
@@ -551,36 +577,38 @@ function Overview() {
                                         textAlign='center'
                                     >
                                         {allPolicies && allPolicies.map((tier) => (
-                                            <Card className={classes.cardRoot} key={tier.name}>
-                                                <CardContent>
-                                                    <Typography className={classes.cardMainTitle} color='textSecondary' gutterBottom>
-                                                        {tier.name}
-                                                    </Typography>
-                                                    <Box mt={2}>
-                                                        <Typography className={classes.requestCount} color='textSecondary'>
-                                                            {tier.requestCount === 2147483647 ? 'Unlimited' : tier.requestCount}
+                                            tier.name.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) ? null : (
+                                                <Card className={classes.cardRoot} key={tier.name}>
+                                                    <CardContent>
+                                                        <Typography className={classes.cardMainTitle} color='textSecondary' gutterBottom>
+                                                            {tier.name}
                                                         </Typography>
-                                                    </Box>
-                                                    <Box>
-                                                        <Typography className={classes.requestUnit} color='textSecondary'>
-                                                            <FormattedMessage
-                                                                id='Apis.Details.Overview.business.plans.requests.unit'
-                                                                defaultMessage='Requests/{timeUnit}'
-                                                                values={{
-                                                                    timeUnit: tier.timeUnit in subscriptionTimeUnits
-                                                                        ? subscriptionTimeUnits[tier.timeUnit]
-                                                                        : tier.timeUnit,
-                                                                }}
-                                                            />
-                                                        </Typography>
-                                                    </Box>
-                                                </CardContent>
-                                            </Card>
+                                                        <Box mt={2}>
+                                                            <Typography className={classes.requestCount} color='textSecondary'>
+                                                                {tier.requestCount === 2147483647 ? 'Unlimited' : tier.requestCount}
+                                                            </Typography>
+                                                        </Box>
+                                                        <Box>
+                                                            <Typography className={classes.requestUnit} color='textSecondary'>
+                                                                <FormattedMessage
+                                                                    id='Apis.Details.Overview.business.plans.requests.unit'
+                                                                    defaultMessage='Requests/{timeUnit}'
+                                                                    values={{
+                                                                        timeUnit: tier.timeUnit in subscriptionTimeUnits
+                                                                            ? subscriptionTimeUnits[tier.timeUnit]
+                                                                            : tier.timeUnit,
+                                                                    }}
+                                                                />
+                                                            </Typography>
+                                                        </Box>
+                                                    </CardContent>
+                                                </Card>
+                                            )
                                         ))}
                                     </Box>
                                 </>
                             )}
-                            {(showCredentials && subscribedApplications.length > 0) && (
+                            {(showCredentials && subscribedApplications.length > 0) && !isSubValidationDisabled && (
                                 <>
                                     <Box mt={6}>
                                         <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
@@ -683,9 +711,15 @@ function Overview() {
                                     defaultMessage='Subscriptions'
                                 />
                             </Typography>
-                            <Typography variant='body2'>
-                                {api.subscriptions || 0}
-                            </Typography>
+                            { !isSubValidationDisabled ? (
+                                <Typography variant='body2'>
+                                    {api.subscriptions || 0}
+                                </Typography>
+                            ) : (
+                                <Typography variant='body2'>
+                                    N/A
+                                </Typography>
+                            )}
                         </Box>
                         <Box mt={2} mb={1}>
                             <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>

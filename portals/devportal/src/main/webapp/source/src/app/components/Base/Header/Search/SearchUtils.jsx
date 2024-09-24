@@ -32,6 +32,7 @@ import SearchOutlined from '@mui/icons-material/SearchOutlined';
 import { Link } from 'react-router-dom';
 import APIsIcon from '@mui/icons-material/SettingsApplicationsOutlined';
 import DocumentsIcon from '@mui/icons-material/LibraryBooks';
+import CodeIcon from '@mui/icons-material/Code';
 import NativeSelect from '@mui/material/NativeSelect';
 import { FormattedMessage } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -169,6 +170,20 @@ function renderInput(inputProps) {
 }
 
 /**
+ * Get search result path
+ */
+function getPath(suggestion) {
+    switch (suggestion.type) {
+        case 'API':
+            return `/apis/${suggestion.id}/overview`;
+        case 'DEFINITION':
+            return `/apis/${suggestion.apiUUID}/overview`;
+        default:
+            return `/apis/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
+    }
+}
+
+/**
  *
  * Use your imagination to define how suggestions are rendered.
  * @param {Object} suggestion This is either API object or document coming from search API call
@@ -178,16 +193,24 @@ function renderInput(inputProps) {
 function renderSuggestion(suggestion, { query, isHighlighted }) {
     const matches = match(suggestion.name, query);
     const parts = parse(suggestion.name, matches);
-    const path = suggestion.type === 'API' ? `/apis/${suggestion.id}/overview`
-        : `/apis/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
+    const path = getPath(suggestion);
     // TODO: Style the version ( and apiName if docs) apearing in the menu item
     const suffix = suggestion.type === 'API' ? suggestion.version : (suggestion.apiName + ' ' + suggestion.apiVersion);
+    const getIcon = (type) => {
+        if (type === 'API') {
+            return <APIsIcon />;
+        } else if (type === 'DEFINITION') {
+            return <CodeIcon />;
+        } else {
+            return <DocumentsIcon />;
+        }
+    };
     return (
         <>
             <Link to={path} style={{ color: 'black' }}>
                 <MenuItem selected={isHighlighted}>
                     <ListItemIcon>
-                        { suggestion.type === 'API' ? <APIsIcon /> : <DocumentsIcon /> }
+                        { getIcon(suggestion.type) }
                     </ListItemIcon>
 
                     <ListItemText

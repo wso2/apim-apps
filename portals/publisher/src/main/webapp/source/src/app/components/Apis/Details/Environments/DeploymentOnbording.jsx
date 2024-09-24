@@ -154,14 +154,9 @@ export default function DeploymentOnboarding(props) {
         internalGatewaysFiltered.filter((p) => p.gatewayType.toLowerCase() === assignGateway.toLowerCase());
     const externalGateways = environments.filter((p) => p.provider.toLowerCase().includes('solace'));
     const hasOnlyOneEnvironment = internalGateways.length === 1;
-    const securityScheme = [...api.securityScheme];
-    const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
-    && securityScheme.includes('mutualssl_mandatory');
     const isEndpointAvailable = api.endpointConfig !== null;
-    const isTierAvailable = api.policies.length !== 0;
 
     const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || (!isMutualSslOnly && !isTierAvailable)
     || api.workflowStatus === 'CREATED');
 
     const defaultVhosts = internalGateways.map((e) => {

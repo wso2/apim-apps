@@ -30,6 +30,7 @@ import Paper from '@mui/material/Paper';
 import API from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
 import Configurations from 'Config';
+import CONSTS from 'AppData/Constants';
 import Tooltip from '@mui/material/Tooltip';
 import InfoIcon from '@mui/icons-material/Info';
 
@@ -75,6 +76,9 @@ class SubscriptionPoliciesManage extends Component {
         super(props);
         this.state = {
             subscriptionPolicies: {},
+            isMutualSslOnly: false,
+            isAsyncAPI: false,
+            isApiKeyEnabled: false,
         };
         this.handleChange = this.handleChange.bind(this);
     }
@@ -82,6 +86,13 @@ class SubscriptionPoliciesManage extends Component {
     componentDidMount() {
         const { api } = this.props;
         const isAsyncAPI = (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC');
+        this.setState( {isAsyncAPI});
+        const securityScheme = [...api.securityScheme];
+        const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
+        && securityScheme.includes('mutualssl_mandatory');
+        this.setState({ isMutualSslOnly });
+        const isApiKeyEnabled = securityScheme.includes('api_key');
+        this.setState({ isApiKeyEnabled });
         const limit = Configurations.app.subscriptionPolicyLimit;
         const isAiApi = api?.subtype?.toLowerCase().includes('aiapi') ?? false;
         let policyPromise;
@@ -108,12 +119,25 @@ class SubscriptionPoliciesManage extends Component {
      */
     handleChange(event) {
         const { name, checked } = event.target;
-        const { setPolices, policies } = this.props;
+        const { setPolices, policies, subValidationDisablingAllowed } = this.props;
+        const { isMutualSslOnly, isAsyncAPI, isApiKeyEnabled } = this.state;
         let newSelectedPolicies = [...policies];
         if (checked) {
             newSelectedPolicies.push(name);
+            if (newSelectedPolicies.length > 1) {
+                newSelectedPolicies = newSelectedPolicies.filter((policy) =>
+                    !policy.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
+            }
         } else {
             newSelectedPolicies = policies.filter((policy) => policy !== name);
+            if (subValidationDisablingAllowed
+                    && !isMutualSslOnly && !isApiKeyEnabled && newSelectedPolicies.length === 0) {
+                if (!isAsyncAPI) {
+                    newSelectedPolicies.push(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+                } else {
+                    newSelectedPolicies.push(CONSTS.DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN);
+                }
+            }
         }
         setPolices(newSelectedPolicies);
     }
@@ -142,7 +166,7 @@ class SubscriptionPoliciesManage extends Component {
 
         const getPolicyDetails = (policy) => {
             const details = [];
-        
+
             if (policy.requestCount && policy.requestCount !== 0) details.push(`Request Count: ${policy.requestCount}`);
             if (policy.dataUnit) details.push(`Data Unit: ${policy.dataUnit}`);
             if (policy.timeUnit && policy.unitTime && policy.unitTime !== 0) {
@@ -161,7 +185,7 @@ class SubscriptionPoliciesManage extends Component {
             if (policy.completionTokenCount && policy.completionTokenCount !== 0) {
                 details.push(`Completion Token Count: ${policy.completionTokenCount}`);
             }
-        
+
             return details.length > 0 ? details.join(', ') : 'No additional details';
         };
 
@@ -193,8 +217,12 @@ class SubscriptionPoliciesManage extends Component {
                 <Paper className={classes.subscriptionPoliciesPaper}>
                     <FormControl className={classes.formControl}>
                         <FormGroup>
-                            { subscriptionPolicies && Object.entries(subscriptionPolicies).map((value) => (
-                                <FormControlLabel
+                            { subscriptionPolicies && Object.entries(subscriptionPolicies).map((value) => {
+                                if (value[1].displayName.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)) {
+                                    return null; // Skip rendering for "Default"
+                                }
+                                return (
+                                    <FormControlLabel
                                     data-testid={'policy-checkbox-' + value[1].displayName.toLowerCase()}
                                     key={value[1].displayName}
                                     control={(
@@ -212,10 +240,11 @@ class SubscriptionPoliciesManage extends Component {
                                             <Tooltip title={getPolicyDetails(value[1])} arrow>
                                                 <InfoIcon style={{ marginLeft: 5, fontSize: 18 }} />
                                             </Tooltip>
-                                        </div>                             
+                                        </div>
                                     }
                                 />
-                            ))}
+                                );
+                            })}
                             { migratedCase && (
                                 <Box display='flex' flexDirection='column'>
                                     <Box className={classes.migrateMessage}>
