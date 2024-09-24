@@ -551,6 +551,8 @@ function Endpoints(props) {
     }, []);
 
     useEffect(() => {
+        setIsCustomBackendSelected(false);
+        setIsValidSequenceBackend(true);
         setAPIEndpointsValid(validate(apiObject.endpointImplementationType));
     }, [apiObject]);
 
@@ -635,7 +637,7 @@ function Endpoints(props) {
                                 className={classes.buttonSection}
                             >
                                 <Grid item>
-                                    {api.isRevision || !endpointValidity.isValid || !isValidSequenceBackend
+                                    {api.isRevision || !endpointValidity.isValid
                                         || (settings && settings.portalConfigurationOnlyModeEnabled)
                                         || isRestricted(['apim:api_create'], api) ? (
                                             <Button
