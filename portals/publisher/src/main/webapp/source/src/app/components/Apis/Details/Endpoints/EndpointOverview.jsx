@@ -40,11 +40,13 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import ServiceCatalog from 'AppData/ServiceCatalog';
 import Alert from 'AppComponents/Shared/Alert';
 import MockImplEndpoints from 'AppComponents/Apis/Details/Endpoints/Prototype/MockImplEndpoints';
+import API from 'AppData/api';
 import {
     getEndpointTypeProperty,
     createEndpointConfig,
     getEndpointTemplate,
 } from './endpointUtils';
+
 import GeneralConfiguration from './GeneralConfiguration';
 import LoadbalanceFailoverConfig from './LoadbalanceFailoverConfig';
 import GenericEndpoint from './GenericEndpoint';
@@ -52,6 +54,8 @@ import AdvanceEndpointConfig from './AdvancedConfig/AdvanceEndpointConfig';
 import EndpointSecurity from './GeneralConfiguration/EndpointSecurity';
 import Credentials from './AWSLambda/Credentials.jsx';
 import ServiceEndpoint from './ServiceEndpoint';
+import AIEndpointAuth from './AIEndpointAuth';
+
 
 const PREFIX = 'EndpointOverview';
 
@@ -204,6 +208,11 @@ function EndpointOverview(props) {
     (api.serviceInfo) });
     const [servicesList, setServicesList] = useState([]);
 
+    const [apiKeyParamConfig, setApiKeyParamConfig] = useState({
+        authHeader: "ApiKey",
+        authQueryParameter: null
+    });
+
     const handleToggleEndpointSecurity = () => {
         const tmpSecurityInfo = !endpointSecurityInfo ? {
             production: CONSTS.DEFAULT_ENDPOINT_SECURITY,
@@ -266,7 +275,7 @@ function EndpointOverview(props) {
      * @return {string} The supported endpoint types.
      * */
     const getSupportedType = (apiObject) => {
-        const { type } = apiObject;
+        const { type, aiConfiguration } = apiObject;
         let supportedEndpointTypes = [];
         if (type === 'GRAPHQL' && apiObject.gatewayType !== 'wso2/apk') {
             supportedEndpointTypes = [
@@ -288,7 +297,7 @@ function EndpointOverview(props) {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
             ];
-        } else if (type === 'http' && api.aiConfiguration) {
+        } else if (type === 'HTTP' && aiConfiguration) {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
             ]
@@ -718,6 +727,22 @@ function EndpointOverview(props) {
         handleOnChangeEndpointCategoryChange('prod');
     }
 
+    useEffect(() => {
+        if (api.aiConfiguration) {
+            API.getLLMProviderEndpointConfiguration(
+                api.aiConfiguration.llmProviderName,
+                api.aiConfiguration.llmProviderApiVersion)
+                .then((response) => {
+                    if (response.body) {
+                        const config = response.body;
+                        if (config) {
+                            setApiKeyParamConfig(config);
+                        }
+                    }
+                });
+        }
+    }, []);
+
     return (
         <Root className={classes.overviewWrapper}>
             <Grid container spacing={2}>
@@ -1024,7 +1049,7 @@ function EndpointOverview(props) {
                                                                     </InlineMessage>
                                                                 )
                                                                 : (
-                                                                    <GenericEndpoint
+                                                                    <><GenericEndpoint
                                                                         autoFocus
                                                                         name={endpointType.key === 'prototyped'
                                                                             ? (
@@ -1056,6 +1081,12 @@ function EndpointOverview(props) {
                                                                         setESConfigOpen={toggleEndpointSecurityConfig}
                                                                         apiId={api.id}
                                                                     />
+                                                                    {api.aiConfiguration && (<AIEndpointAuth // eslint-disable-line
+                                                                        api={api}
+                                                                        saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
+                                                                        apiKeyParamConfig={apiKeyParamConfig}
+                                                                        isProduction
+                                                                    />)}</>
                                                                 )}
                                                         </Collapse>
                                                         {endpointType.key === 'prototyped' ? <div />
@@ -1172,7 +1203,7 @@ function EndpointOverview(props) {
                                                                                 </InlineMessage>
                                                                             )
                                                                             : (
-                                                                                <GenericEndpoint
+                                                                                <><GenericEndpoint
                                                                                     autoFocus
                                                                                     name={(
                                                                                         <FormattedMessage
@@ -1204,6 +1235,11 @@ function EndpointOverview(props) {
                                                                                         {toggleEndpointSecurityConfig}
                                                                                     apiId={api.id}
                                                                                 />
+                                                                                {api.aiConfiguration && (<AIEndpointAuth // eslint-disable-line
+                                                                                    api={api}
+                                                                                    saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
+                                                                                    apiKeyParamConfig={apiKeyParamConfig} // eslint-disable-line
+                                                                                />)}</>
                                                                             )}
 
                                                                     </Collapse>
