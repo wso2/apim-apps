@@ -670,7 +670,8 @@ class SubscriptionsTable extends Component {
         api.getMonetization(this.props.api.id).then((status) => {
             this.setState({ monetizationStatus: status.enabled });
         });
-        api.getSubscriptionPolicies(this.api.id).then((policies) => {
+        const isAiApi = this.api.subtype?.toLowerCase().includes('aiapi') ?? false;
+        api.getSubscriptionPolicies(this.api.id, isAiApi).then((policies) => {
             const filteredPolicies = policies ? policies.filter((policy) => policy.tierPlan === 'COMMERCIAL') : [];
             this.setState({ policies: filteredPolicies });
         });

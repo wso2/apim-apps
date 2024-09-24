@@ -695,11 +695,12 @@ class API extends Resource {
      * @param callback {function} Function which needs to be called upon success of the API deletion
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    getSubscriptionPolicies(id, callback = null) {
+    getSubscriptionPolicies(id, isAiApi, callback = null) {
         const promisePolicies = this.client.then(client => {
             return client.apis['APIs'].getAPISubscriptionPolicies(
                 {
                     apiId: id,
+                    isAiApi,
                 },
                 this._requestMetaData(),
             );
@@ -2470,13 +2471,14 @@ class API extends Resource {
      * @returns {Promise}
      *
      */
-    static policies(policyLevel, limit ) {
+    static policies(policyLevel, limit, isAiApi ) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
             return client.apis['Throttling Policies'].getAllThrottlingPolicies(
                 {
                     policyLevel: policyLevel,
                     limit,
+                    isAiApi,
                 },
                 this._requestMetaData(),
             );
