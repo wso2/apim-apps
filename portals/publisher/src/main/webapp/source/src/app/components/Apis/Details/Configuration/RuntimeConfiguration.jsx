@@ -206,8 +206,6 @@ function copyAPIConfig(api) {
     if (api.aiConfiguration) {
         apiConfigJson.aiConfiguration = {
             ...api.aiConfiguration,
-            endpointConfiguration: api.aiConfiguration.endpointConfiguration ?
-                { ...api.aiConfiguration.endpointConfiguration } : null,
         };
     }
     if (api.maxTps) {
@@ -252,21 +250,6 @@ export default function RuntimeConfiguration() {
             case 'enableSchemaValidation':
             case 'accessControl':
             case 'visibility':
-            case 'maxTps': {
-                nextState.maxTps = value;
-                const { tokenBasedThrottlingConfiguration } = nextState.maxTps;
-                if (tokenBasedThrottlingConfiguration) {
-                    tokenBasedThrottlingConfiguration.isTokenBasedThrottlingEnabled = !!(
-                        tokenBasedThrottlingConfiguration.productionMaxPromptTokenCount ||
-                        tokenBasedThrottlingConfiguration.productionMaxCompletionTokenCount ||
-                        tokenBasedThrottlingConfiguration.productionMaxTotalTokenCount ||
-                        tokenBasedThrottlingConfiguration.sandboxMaxPromptTokenCount ||
-                        tokenBasedThrottlingConfiguration.sandboxMaxCompletionTokenCount ||
-                        tokenBasedThrottlingConfiguration.sandboxMaxTotalTokenCount
-                    );
-                }
-                return nextState;
-            }
             case 'enableSubscriberVerification':
             case 'tags':
                 nextState[action] = value;
@@ -406,7 +389,21 @@ export default function RuntimeConfiguration() {
             case 'saveButtonDisabled':
                 setSaveButtonDisabled(value);
                 return state;
-            case 'aiConfiguration':
+            case 'maxTps': {
+                nextState.maxTps = value;
+                const { tokenBasedThrottlingConfiguration } = nextState.maxTps;
+                if (tokenBasedThrottlingConfiguration) {
+                    tokenBasedThrottlingConfiguration.isTokenBasedThrottlingEnabled = !!(
+                        tokenBasedThrottlingConfiguration.productionMaxPromptTokenCount ||
+                        tokenBasedThrottlingConfiguration.productionMaxCompletionTokenCount ||
+                        tokenBasedThrottlingConfiguration.productionMaxTotalTokenCount ||
+                        tokenBasedThrottlingConfiguration.sandboxMaxPromptTokenCount ||
+                        tokenBasedThrottlingConfiguration.sandboxMaxCompletionTokenCount ||
+                        tokenBasedThrottlingConfiguration.sandboxMaxTotalTokenCount
+                    );
+                }
+                return nextState;
+            }
             default:
                 return state;
         }
