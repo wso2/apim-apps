@@ -30,10 +30,7 @@ export default function AIEndpointAuth(props) {
 
     const intl = useIntl();
 
-    const [apiKeyIdentifier, setApiKeyIdentifier] =
-        useState(api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyIdentifier
-            ? api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyIdentifier
-            : apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParam);
+    const [apiKeyIdentifier] = useState(apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParam);
 
     const [apiKeyValue, setApiKeyValue] =
         useState(api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue ?
@@ -59,7 +56,7 @@ export default function AIEndpointAuth(props) {
                 )}
             </Typography>
             <TextField
-                disabled={isRestricted(['apim:api_create'], api)}
+                disabled
                 label={<FormattedMessage
                     id='Apis.Details.Endpoints.Security.api.key.identifier'
                     defaultMessage='API Key Identifier'
@@ -67,47 +64,10 @@ export default function AIEndpointAuth(props) {
                 id={'api-key-id-' + (isProduction ? '-production' : '-sandbox')}
                 sx={{ width: '48%', mr: 2 }}
                 value={apiKeyIdentifier}
-                placeholder={intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.Security.api.key.identifier.placeholder',
-                    defaultMessage: 'Enter API Key Identifier',
-                })}
-                onChange={(event) => setApiKeyIdentifier(event.target.value)}
-                onBlur={(event) => {
-                    saveEndpointSecurityConfig({
-                        ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
-                        type: 'APIKEY',
-                        apiKeyIdentifier: event.target.value
-                    }, isProduction ? 'production' : 'sandbox');
-                }}
-                error={!apiKeyIdentifier}
-                helperText={!apiKeyIdentifier
-                    ? (
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.Security.no.api.key.identifier.error'
-                            defaultMessage='API Key Identifier should not be empty'
-                        />
-                    ) : ''}
+                placeholder={apiKeyIdentifier}
                 variant='outlined'
                 margin='normal'
                 required
-                InputProps={{
-                    endAdornment: <InputAdornment position='end'>
-                        <Tooltip
-                            placement='top-start'
-                            interactive
-                            title={(
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.Security.api.key.identifier.tooltip'
-                                    defaultMessage='API Key Identifier for the AI API'
-                                />
-                            )}
-                        >
-                            <Icon>
-                                book
-                            </Icon>
-                        </Tooltip>
-                    </InputAdornment>
-                }}
             />
             <TextField
                 disabled={isRestricted(['apim:api_create'], api)}
@@ -127,7 +87,9 @@ export default function AIEndpointAuth(props) {
                     saveEndpointSecurityConfig({
                         ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
                         type: 'APIKEY',
-                        apiKeyValue: event.target.value
+                        apiKeyIdentifier,
+                        apiKeyValue: event.target.value,
+                        enabled: true,
                     }, isProduction ? 'production' : 'sandbox');
                 }}
                 error={!apiKeyValue}
