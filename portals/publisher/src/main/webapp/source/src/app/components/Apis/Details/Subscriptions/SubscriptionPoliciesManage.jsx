@@ -30,6 +30,9 @@ import Paper from '@mui/material/Paper';
 import API from 'AppData/api';
 import { isRestricted } from 'AppData/AuthManager';
 import Configurations from 'Config';
+import Tooltip from '@mui/material/Tooltip';
+import InfoIcon from '@mui/icons-material/Info';
+
 
 const PREFIX = 'SubscriptionPoliciesManage';
 
@@ -80,13 +83,12 @@ class SubscriptionPoliciesManage extends Component {
         const { api } = this.props;
         const isAsyncAPI = (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC');
         const limit = Configurations.app.subscriptionPolicyLimit;
+        const isAiApi = api?.subtype?.toLowerCase().includes('aiapi') ?? false;
         let policyPromise;
         if (isAsyncAPI) {
             policyPromise = API.asyncAPIPolicies();
-        } else if (limit) {
-            policyPromise = API.policies('subscription', limit);
         } else {
-            policyPromise = API.policies('subscription');
+            policyPromise = API.policies('subscription', limit || undefined, isAiApi);
         }
         policyPromise
             .then((res) => {
@@ -138,6 +140,31 @@ class SubscriptionPoliciesManage extends Component {
             migratedCase = preMigrationPolicies.length > 0;
         }
 
+        const getPolicyDetails = (policy) => {
+            const details = [];
+        
+            if (policy.requestCount && policy.requestCount !== 0) details.push(`Request Count: ${policy.requestCount}`);
+            if (policy.dataUnit) details.push(`Data Unit: ${policy.dataUnit}`);
+            if (policy.timeUnit && policy.unitTime && policy.unitTime !== 0) {
+                details.push(`Unit Time: ${policy.unitTime}  ${policy.timeUnit}`);
+            }
+            if (policy.rateLimitCount && policy.rateLimitCount !== 0) {
+                details.push(`Rate Limit Count: ${policy.rateLimitCount}`);
+            }
+            if (policy.rateLimitTimeUnit) details.push(`Rate Limit Time Unit: ${policy.rateLimitTimeUnit}`);
+            if (policy.totalTokenCount && policy.totalTokenCount !== 0) {
+                details.push(`Total Token Count: ${policy.totalTokenCount}`);
+            }
+            if (policy.promptTokenCount && policy.promptTokenCount !== 0) {
+                details.push(`Prompt Token Count: ${policy.promptTokenCount}`);
+            }
+            if (policy.completionTokenCount && policy.completionTokenCount !== 0) {
+                details.push(`Completion Token Count: ${policy.completionTokenCount}`);
+            }
+        
+            return details.length > 0 ? details.join(', ') : 'No additional details';
+        };
+
         return (
             (<Root>
                 <Typography id='itest-api-details-bushiness-plans-head' variant='h4' component='h2'>
@@ -179,7 +206,14 @@ class SubscriptionPoliciesManage extends Component {
                                             name={value[1].displayName}
                                         />
                                     )}
-                                    label={value[1].displayName + ' : ' + value[1].description}
+                                    label={
+                                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            {value[1].displayName + ' : ' + value[1].description}
+                                            <Tooltip title={getPolicyDetails(value[1])} arrow>
+                                                <InfoIcon style={{ marginLeft: 5, fontSize: 18 }} />
+                                            </Tooltip>
+                                        </div>                             
+                                    }
                                 />
                             ))}
                             { migratedCase && (
