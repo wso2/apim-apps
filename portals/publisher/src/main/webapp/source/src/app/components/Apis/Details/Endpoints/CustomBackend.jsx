@@ -150,7 +150,7 @@ const dropzoneStyles = {
 };
 
 /**
- * This is Custom Backend component.
+ * This is Sequence Backend component.
  * 
  * @param {any} props The input props
  * @returns {any} The HTML representation of the component.
@@ -172,17 +172,15 @@ export default function CustomBackend(props) {
 
     const [customBackend, setCustomBackend] = useState({ name: '', content: {} });
     const [isSaving, setSaving] = useState(false);
-    const [keyType, setKeyType] = useState(API_SECURITY_KEY_TYPE_PRODUCTION);
     const [isRejected, setIsRejected] = useState(false);
     const [apiFromContext] = useAPI();
-    const [uploadCustomBackendOpen, setUploadCustomBackendOpen] = useState(false);
+    const [uploadCustomBackendOpen, setUploadCustomBackendOpen] = useState({ open: false, keyType: '' });
     const [sequenceBackendToDelete, setSequenceBackendToDelete] = useState({ open: false, keyType: '', name: '' });
     const [isDeleting, setDeleting] = useState(false);
     
     const closeCustomBackendUpload = () => {
-        setUploadCustomBackendOpen(false);
+        setUploadCustomBackendOpen({ open: false, keyType: '' });
         setCustomBackend({ name: '', content: '' });
-        setKeyType(API_SECURITY_KEY_TYPE_PRODUCTION);
     };
 
     useEffect(() => {
@@ -217,7 +215,7 @@ export default function CustomBackend(props) {
         console.log("Downloading");
         restAPI.getSequenceBackendContentByAPIID(api.id, keyType).then((resp) => {
             Utils.forceDownload(resp);
-            console.log('Custom backend downloaded successfully' + resp);
+            console.log('Custom backend downloaded successfully');
         })
         .catch((error) => {
             console.log(error);
@@ -259,35 +257,22 @@ export default function CustomBackend(props) {
     }
 
 
-
-    /**
-     * On change functionality to handle the keyType radio button
-     *
-     * @param {*} event
-     */
-    function handleOnChangekeyType(event) {
-        const { value } = event.target;
-        setKeyType(value);
-    }
-
-
     /**
      * Method to upload the certificate content by calling the rest api.
      * */
     const saveCustomBackend = () => {
         setSaving(true);
-        setUploadCustomBackendOpen(false);
-        backenCount = backenCount + 1;
-        if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
+        if (uploadCustomBackendOpen.keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
             sandBoxBackendList.push({"sequenceName": customBackend.name, "content": customBackend.content});
         } else {
             productionBackendList.push({"sequenceName": customBackend.name, "content": customBackend.content});
         }
-        restAPI.uploadCustomBackend(customBackend.content, keyType, api.id).then((resp) => {
+        restAPI.uploadCustomBackend(customBackend.content, uploadCustomBackendOpen.keyType, api.id).then((resp) => {
             console.log('Custom backend uploaded successfully' + resp);
         }).finally(() => {
             setSaving(false);
             setCustomBackend({ name: '', content: '' });
+            setUploadCustomBackendOpen({ open: false, keyType: '' });
             if (sandBoxBackendList.length > 0 || productionBackendList.length > 0) {
                 setIsValidSequenceBackend(true);
             }
@@ -316,36 +301,7 @@ export default function CustomBackend(props) {
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
     return (
         <StyledGrid container direction='column'>
-            <Grid>
-                <Typography className={classes.customBackendHeader}>
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.CustomBackend'
-                        defaultMessage='Custom Backend'
-                    />
-                </Typography>
-            </Grid>
             <Grid item>
-                <List>
-                    <ListItem
-                        button
-                        disabled={(isRestricted(['apim:api_create'], apiFromContext))}
-                        className={classes.addCustomBackendBtn}
-                        onClick={() => setUploadCustomBackendOpen(true)}
-                        id='custom-backend-add-btn'
-                    >
-                        <ListItemAvatar>
-                            <IconButton size='large'>
-                                <Icon>add</Icon>
-                            </IconButton>
-                        </ListItemAvatar>
-                        <ListItemText>
-                            <FormattedMessage
-                                    id='Apis.Details.Endpoints.CustomBackend.AddCertificat'
-                                    defaultMessage='Add Custom Backend' 
-                                />
-                        </ListItemText>
-                    </ListItem>
-                </List>
                 <Box my={1} />
                     <>
                         <Typography className={classes.productionBackendTitle}>
@@ -393,15 +349,23 @@ export default function CustomBackend(props) {
                                     );
                                 })
                             ) : (
-                                <ListItem>
-                                    <ListItemAvatar sx={infoIconStyle}>
-                                        <Icon color='primary'>info</Icon>
+                                <ListItem
+                                    button
+                                    disabled={(isRestricted(['apim:api_create'], apiFromContext))}
+                                    className={classes.addCustomBackendBtn}
+                                    onClick={() => setUploadCustomBackendOpen({ open: true, keyType: API_SECURITY_KEY_TYPE_PRODUCTION })}
+                                    id='custom-backend-add-btn'
+                                >  
+                                    <ListItemAvatar>
+                                        <IconButton size='large'>
+                                            <Icon>add</Icon>
+                                        </IconButton>
                                     </ListItemAvatar>
                                     <ListItemText>
                                         <FormattedMessage
-                                            id='Apis.Details.Endpoints.CustomBackend.no.production.backend'
-                                            defaultMessage='You do not have any production type backend uploaded'
-                                        />
+                                                id='Apis.Details.Endpoints.SequenceBackend.AddCertificat'
+                                                defaultMessage='Add Sequence Backend' 
+                                            />
                                     </ListItemText>
                                 </ListItem>
                             )}
@@ -451,70 +415,41 @@ export default function CustomBackend(props) {
                                     );
                                 })
                             ) : (
-                                <ListItem>
-                                    <ListItemAvatar sx={infoIconStyle}>
-                                        <Icon color='primary'>info</Icon>
+                                <ListItem
+                                    button
+                                    disabled={(isRestricted(['apim:api_create'], apiFromContext))}
+                                    className={classes.addCustomBackendBtn}
+                                    onClick={() => setUploadCustomBackendOpen({ open: true, keyType: API_SECURITY_KEY_TYPE_SANDBOX })}
+                                    id='custom-backend-add-btn'
+                                >
+                                    <ListItemAvatar>
+                                        <IconButton size='large'>
+                                            <Icon>add</Icon>
+                                        </IconButton>
                                     </ListItemAvatar>
                                     <ListItemText>
                                         <FormattedMessage
-                                            id='Apis.Details.Endpoints.CustomBackend.no.sandbox.backend'
-                                            defaultMessage='You do not have any sandbox type backend uploaded'
-                                        />
+                                                id='Apis.Details.Endpoints.SequenceBackend.AddCertificat'
+                                                defaultMessage='Add Sequence Backend' 
+                                            />
                                     </ListItemText>
                                 </ListItem>
                             )}
                         </List>
                     </>
             </Grid>
-            <StyledDialog open = {uploadCustomBackendOpen}>
+            <StyledDialog open = {uploadCustomBackendOpen.open}>
                 <DialogTitle>
                     <Typography className={classes.uploadCustomBackendDialogHeader}>
                         <FormattedMessage
                             id='Apis.Details.Endpoints.CustomBackend.uploadCustomBackend'
-                            defaultMessage='Upload Custom Backend'
+                            defaultMessage='Upload Sequence Backend'
                         />
                     </Typography>
                 </DialogTitle>
                 <DialogContent>
                     <Grid>
                         <div>
-                            { api.gatewayType === 'wso2/synapse' && (sandBoxBackendList.length === 0 || productionBackendList.length === 0) && (
-                                <>
-                                    <RadioGroup
-                                        aria-label='Production Sandbox type selection'
-                                        name={API_SECURITY_KEY_TYPE_PRODUCTION}
-                                        value={keyType}
-                                        onChange={handleOnChangekeyType}
-                                        data-testid='radio-group-key-type'
-                                        row
-                                    >
-                                        <FormControlLabel
-                                            value={API_SECURITY_KEY_TYPE_PRODUCTION}
-                                            disabled={productionBackendList.length > 0}
-                                            control={(
-                                                <Radio
-                                                    color='primary' 
-                                                />
-                                            )}
-                                            label='Production'
-                                            labelPlacement='end'
-                                            data-testid='radio-production' 
-                                        />
-                                        <FormControlLabel
-                                            value={API_SECURITY_KEY_TYPE_SANDBOX}
-                                            disabled={sandBoxBackendList.length > 0}
-                                            control={(
-                                                <Radio
-                                                    color='primary' 
-                                                />
-                                            )}
-                                            label='Sandbox'
-                                            labelPlacement='end'
-                                            data-testid='radio-sandbox' 
-                                        />
-                                    </RadioGroup>
-                                </>
-                            )}
                             <Dropzone
                                 multiple={false}
                                 accept={
@@ -543,7 +478,7 @@ export default function CustomBackend(props) {
                                                                     + '.UploadCustomBackend.click.or.drop.to.upload.file'
                                                             }
                                                             defaultMessage={
-                                                                'Click or drag the custom backend'
+                                                                'Click or drag the sequence backend'
                                                                     + ' file to upload.'
                                                             }
                                                         />

@@ -181,7 +181,7 @@ function NewEndpointCreate(props) {
             type: 'sequence_backend',
             name: intl.formatMessage({
                 id: 'Apis.Details.Endpoints.NewEndpointCreate.create.sequencebackend.endpoint',
-                defaultMessage: 'Sequence Bacekend',
+                defaultMessage: 'Sequence Backend',
             }),
             description: intl.formatMessage({
                 id: 'Apis.Details.Endpoints.NewEndpointCreate.create.sequencebackend.endpoint.description',
