@@ -117,7 +117,7 @@ export default function BackendRateLimitingForm(props) {
                         commonFormProps={{
                             key: (isProduction ? 'production' : 'sandbox') + 'MaxPromptTokenCount',
                             label: 'Max Prompt Token Count',
-                            helperText: 'Max Prompt Token Count integer',
+                            // helperText: 'Max Prompt Token Count integer',
                             placeholder: 'Max Prompt Token Count',
                             tooltip: 'Max Prompt Token Count as an Integer value',
                         }}
@@ -127,8 +127,8 @@ export default function BackendRateLimitingForm(props) {
                         configDispatcher={configDispatcher}
                         commonFormProps={{
                             key: (isProduction ? 'production' : 'sandbox') + 'MaxCompletionTokenCount',
-                            label: 'MaxCompletionTokenCount',
-                            helperText: 'Max Completion Token Count integer',
+                            label: 'Max Completion TokenCount',
+                            // helperText: 'Max Completion Token Count integer',
                             placeholder: 'Max Completion Token Count',
                             tooltip: 'Max Completion Token Count as an Integer value',
                         }}
@@ -139,7 +139,7 @@ export default function BackendRateLimitingForm(props) {
                         commonFormProps={{
                             key: (isProduction ? 'production' : 'sandbox') + 'MaxTotalTokenCount',
                             label: 'Max Total Token Count',
-                            helperText: 'Max Total Token Count integer',
+                            // helperText: 'Max Total Token Count integer',
                             placeholder: 'Max Total Token Count',
                             tooltip: 'Max Total Token Count as an Integer value',
                         }}
