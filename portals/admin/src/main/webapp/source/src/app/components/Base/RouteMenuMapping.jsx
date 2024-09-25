@@ -58,6 +58,7 @@ import TouchAppIcon from '@mui/icons-material/TouchApp';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import ListApis from '../APISettings/ListApis';
+import UsageReport from '../APISettings/UsageReport';
 
 const RouteMenuMapping = (intl) => [
     {
@@ -397,6 +398,16 @@ const RouteMenuMapping = (intl) => [
                 path: '/settings/advanced',
                 component: TenantConfSave,
                 icon: <SettingsApplicationsIcon />,
+            },
+            {
+                id: 'Usage Report',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.usage.report',
+                    defaultMessage: 'Usage Report',
+                }),
+                path: '/settings/usage-report',
+                component: UsageReport,
+                icon: <AssignmentIcon />,
             },
         ],
     },
