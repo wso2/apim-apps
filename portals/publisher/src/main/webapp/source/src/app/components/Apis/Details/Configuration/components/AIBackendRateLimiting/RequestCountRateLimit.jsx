@@ -18,7 +18,8 @@
 
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Grid, TextField } from '@mui/material';
+import { Grid, TextField, Tooltip } from '@mui/material';
+import { HelpOutline } from '@mui/icons-material';
 import { useIntl } from 'react-intl';
 
 import { isRestricted } from 'AppData/AuthManager';
@@ -50,37 +51,50 @@ export default function RequestCountRateLimit(props) {
         }
     }
 
-    return (<>
-        <Grid item xs={12} style={{ marginBottom: 10, position: 'relative' }}>
-            <TextField
-                label={intl.formatMessage({
-                    id: 'Apis.Details.Configuration.components.MaxBackendTps.max.'
-                        + 'throughput.specify.max.request.count',
-                    defaultMessage: 'Max Request Count',
-                })}
-                margin='normal'
-                variant='outlined'
-                type='number'
-                error={!isValueValid}
-                onChange={(event) => {
-                    setInputValue(event.target.value);
-                }}
-                onBlur={(event) => {
-                    validateValue(event.target.value);
-                    const value = isProduction ?
-                        { ...api.maxTps, production: event.target.value } :
-                        { ...api.maxTps, sandbox: event.target.value };
-                    configDispatcher({
-                        action: 'maxTps',
-                        value,
-                    });
-                }}
-                value={inputValue}
-                disabled={isRestricted(['apim:api_create'], api)}
-                style={{display: 'flex'}}
-            />
+    return (
+        <Grid container spacing={1} alignItems='center'>
+            <Grid item xs={11} style={{ marginBottom: 10, position: 'relative' }}>
+                <TextField
+                    label={intl.formatMessage({
+                        id: 'Apis.Details.Configuration.components.MaxBackendTps.max.'
+                            + 'throughput.specify.max.request.count',
+                        defaultMessage: 'Max Request Count',
+                    })}
+                    margin='normal'
+                    variant='outlined'
+                    type='number'
+                    error={!isValueValid}
+                    onChange={(event) => {
+                        setInputValue(event.target.value);
+                    }}
+                    onBlur={(event) => {
+                        validateValue(event.target.value);
+                        const value = isProduction ?
+                            { ...api.maxTps, production: event.target.value } :
+                            { ...api.maxTps, sandbox: event.target.value };
+                        configDispatcher({
+                            action: 'maxTps',
+                            value,
+                        });
+                    }}
+                    value={inputValue}
+                    disabled={isRestricted(['apim:api_create'], api)}
+                    sx={{ my: 1 }}
+                    style={{ display: 'flex' }}
+                />
+            </Grid>
+            <Grid item xs={1}>
+                <Tooltip
+                    title='Max Request Count'
+                    aria-label='Max Request Count as an integer value'
+                    placement='right-end'
+                    interactive
+                >
+                    <HelpOutline />
+                </Tooltip>
+            </Grid>
         </Grid>
-    </>);
+    );
 }
 
 RequestCountRateLimit.propTypes = {

@@ -18,10 +18,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
+import { Collapse, FormControl, FormControlLabel, Radio, RadioGroup, Typography } from '@mui/material';
+import { useIntl } from 'react-intl';
 
+import { isRestricted } from 'AppData/AuthManager';
 import BackendRateLimitingForm from './BackendRateLimitingForm';
-
-// import { useIntl } from 'react-intl';
 
 /**
  * Backend Rate Limiting for AI APIs
@@ -33,21 +34,87 @@ import BackendRateLimitingForm from './BackendRateLimitingForm';
 export default function BackendRateLimiting(props) {
     const { api, configDispatcher } = props;
 
+    const intl = useIntl();
+
+    const stylesSx = {
+        subHeading: {
+            fontSize: '1rem',
+            fontWeight: 400,
+            margin: 0,
+            display: 'inline-flex',
+            lineHeight: 1.5,
+        },
+    };
+
     return (
         <>
-            <Grid item xs={12} sx={{mb:2}}>
-                <BackendRateLimitingForm
-                    api={api}
-                    configDispatcher={configDispatcher}
-                    isProduction
-                />
-            </Grid>
-            <Grid item xs={12} sx={{mb:2}}>
-                <BackendRateLimitingForm
-                    api={api}
-                    configDispatcher={configDispatcher}
-                />
-            </Grid>
+            <Typography sx={stylesSx.subHeading} variant='h6' component='h4'>
+                Backend Rate Limiting
+            </Typography>
+            <br />
+            <FormControl component='fieldset'>
+                <RadioGroup
+                    aria-label='change-max-TPS'
+                    value={!api.maxTps ? 'unlimited' : 'specify'}
+                    onChange={(event) => {
+                        configDispatcher({
+                            action: 'maxTps',
+                            value:
+                                event.target.value === 'specify' ? { production: null, sandbox: null }
+                                    : null,
+                        });
+                    }}
+                    row
+                >
+                    <FormControlLabel
+                        value='unlimited'
+                        control={(
+                            <Radio
+                                color='primary'
+                                disabled={isRestricted(['apim:api_create'], api)}
+                            />
+                        )}
+                        label={intl.formatMessage({
+                            id: 'Apis.Details.Configuration.components.MaxBackendTps.max.'
+                                + 'throughput.unlimited',
+                            defaultMessage: 'Unlimited',
+                        })}
+                        labelPlacement='end'
+
+                    />
+                    <FormControlLabel
+                        value='specify'
+                        control={(
+                            <Radio
+                                color='primary'
+                                disabled={isRestricted(['apim:api_create'], api)}
+                            />
+                        )}
+                        label={intl.formatMessage({
+                            id: 'Apis.Details.Configuration.components.MaxBackendTps.max.'
+                                + 'throughput.specify',
+                            defaultMessage: 'Specify',
+                        })}
+                        labelPlacement='end'
+                        disabled={isRestricted(['apim:api_create'], api)}
+                    />
+                </RadioGroup>
+            </FormControl>
+            <Collapse in={!!api.maxTps}>
+                <Grid item xs={12} sx={{ mb: 2 }}>
+                    <BackendRateLimitingForm
+                        api={api}
+                        configDispatcher={configDispatcher}
+                        isProduction
+                    />
+                </Grid>
+                <Grid item xs={12} sx={{ mb: 2 }}>
+                    <BackendRateLimitingForm
+                        api={api}
+                        configDispatcher={configDispatcher}
+                    />
+                </Grid>
+            </Collapse>
         </>
     );
 }

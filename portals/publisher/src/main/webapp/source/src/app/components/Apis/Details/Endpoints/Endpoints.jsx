@@ -338,8 +338,8 @@ function Endpoints(props) {
                             };
                         }
                     }
-                } else if (production.type === 'APIKEY') {
-                    if (production.apiKeyValue === null || production.apiKeyValue === null) {
+                } else if (production.type === 'apikey') {
+                    if (!production.apiKeyValue || !production.apiKeyValue) {
                         return {
                             isValid: false,
                             message: intl.formatMessage({
@@ -392,8 +392,8 @@ function Endpoints(props) {
                             };
                         }
                     }
-                } else if (sandbox.type === 'APIKEY') {
-                    if (sandbox.apiKeyValue === null || sandbox.apiKeyValue === null) {
+                } else if (sandbox.type === 'apikey') {
+                    if (!sandbox.apiKeyValue|| !sandbox.apiKeyValue) {
                         return {
                             isValid: false,
                             message: intl.formatMessage({

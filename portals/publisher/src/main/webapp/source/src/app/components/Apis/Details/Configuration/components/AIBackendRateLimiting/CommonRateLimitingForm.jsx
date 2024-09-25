@@ -39,8 +39,11 @@ export default function CommonRateLimitingForm(props) {
     const [apiFromContext] = useAPI();
     const [isValueValid, setIsValueValid] = useState(true);
 
-    const [inputValue, setInputValue] = useState(api.aiConfiguration.throttlingConfiguration ?
-        api.aiConfiguration.throttlingConfiguration[commonFormProps.key] : '');
+    const [inputValue, setInputValue] = useState(
+        api && api.maxTps && api.maxTps.tokenBasedThrottlingConfiguration
+            ? api.maxTps.tokenBasedThrottlingConfiguration[commonFormProps.key] 
+            : ''
+    );
 
     function validateValue(value) {
         const validity = commonFormProps.validator ?
@@ -57,19 +60,19 @@ export default function CommonRateLimitingForm(props) {
 
     function handleOnChange({ target: { value } }) {
         validateValue(value);
-        let throttlingConfiguration = {};
-        if (api.aiConfiguration && api.aiConfiguration.throttlingConfiguration) {
-            throttlingConfiguration = api.aiConfiguration.throttlingConfiguration;
+        let tokenBasedThrottlingConfiguration = {};
+        if (api.maxTps && api.maxTps.tokenBasedThrottlingConfiguration) {
+            tokenBasedThrottlingConfiguration = api.maxTps.tokenBasedThrottlingConfiguration;
         }
         const dispatchValue = {
-            ...api.aiConfiguration,
-            throttlingConfiguration: {
-                ...throttlingConfiguration,
+            ...api.maxTps,
+            tokenBasedThrottlingConfiguration: {
+                ...tokenBasedThrottlingConfiguration,
                 [commonFormProps.key]: value
             }
         }
         configDispatcher({
-            action: 'aiConfiguration',
+            action: 'maxTps',
             value: dispatchValue
         })
     }
@@ -94,6 +97,7 @@ export default function CommonRateLimitingForm(props) {
                     type='number'
                     onChange={(event) => { setInputValue(event.target.value); }}
                     onBlur={handleOnChange}
+                    sx={{ my: 1 }}
                     style={{ display: 'flex' }}
                 />
             </Grid>
