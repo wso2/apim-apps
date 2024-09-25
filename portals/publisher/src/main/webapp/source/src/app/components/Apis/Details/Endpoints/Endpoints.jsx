@@ -338,7 +338,7 @@ function Endpoints(props) {
                             };
                         }
                     }
-                } else if (production.type === 'APIKEY') {
+                } else if (production.type === 'apikey') {
                     if (!production.apiKeyValue || !production.apiKeyValue) {
                         return {
                             isValid: false,
@@ -392,7 +392,7 @@ function Endpoints(props) {
                             };
                         }
                     }
-                } else if (sandbox.type === 'APIKEY') {
+                } else if (sandbox.type === 'apikey') {
                     if (!sandbox.apiKeyValue|| !sandbox.apiKeyValue) {
                         return {
                             isValid: false,
