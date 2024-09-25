@@ -86,7 +86,7 @@ export default function AIEndpointAuth(props) {
                 onBlur={(event) => {
                     saveEndpointSecurityConfig({
                         ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
-                        type: 'APIKEY',
+                        type: 'apikey',
                         apiKeyIdentifier,
                         apiKeyValue: event.target.value,
                         enabled: true,
