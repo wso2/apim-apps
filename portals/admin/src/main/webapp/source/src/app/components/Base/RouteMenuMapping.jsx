@@ -35,6 +35,7 @@ import AdvancedThrottlePolicies from 'AppComponents/Throttling/Advanced';
 import CustomThrottlingPolicies from 'AppComponents/Throttling/Custom';
 import TenantTheme from 'AppComponents/TenantTheme/UploadTheme';
 import KeyManagers from 'AppComponents/KeyManagers';
+import AiVendors from 'AppComponents/AiVendors';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
 
@@ -54,6 +55,7 @@ import APIRevisionDeployment from 'AppComponents/Workflow/APIRevisionDeployment'
 import UserCreation from 'AppComponents/Workflow/UserCreation';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import SecurityIcon from '@mui/icons-material/Security';
+import AssistantIcon from '@mui/icons-material/Assistant';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
@@ -230,6 +232,34 @@ const RouteMenuMapping = (intl) => [
                     defaultMessage: 'Edit Key Manager',
                 }),
                 path: '/settings/key-managers/(.*?)$',
+            },
+        ],
+    },
+    {
+        id: 'Ai Vendors',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.aivendors',
+            defaultMessage: 'AI Vendors',
+        }),
+        path: '/settings/ai-vendors',
+        component: AiVendors,
+        icon: <AssistantIcon />,
+        addEditPageDetails: [
+            {
+                id: 'Add AI Vendor',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.aivendors.items.Adding',
+                    defaultMessage: 'Add AI Vendor',
+                }),
+                path: '/settings/ai-vendors/create',
+            },
+            {
+                id: 'Edit AI Vendor',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.aivendors.items.Editing',
+                    defaultMessage: 'Edit AI Vendor',
+                }),
+                path: '/settings/ai-vendors/(.*?)$',
             },
         ],
     },

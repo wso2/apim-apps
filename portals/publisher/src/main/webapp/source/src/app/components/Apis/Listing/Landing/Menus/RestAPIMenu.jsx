@@ -97,6 +97,7 @@ const RestAPIMenu = (props) => {
                     defaultMessage='Import Open API'
                 />
             </LandingMenuItem>
+
             {(!isCreateMenu || (isCreateMenu && alwaysShowDeploySampleButton)) && showSampleDeploy &&
                 !apkGatewayType && (
                 <>

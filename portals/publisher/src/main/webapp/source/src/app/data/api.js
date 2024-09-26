@@ -143,6 +143,31 @@ class API extends Resource {
         return promise_create;
     }
 
+    importOpenAPIByInlineDefinition(inlineDefinition) {
+        let payload, promise_create;
+
+        promise_create = this.client.then(client => {
+            const apiData = this.getDataFromSpecFields(client);
+
+            payload = {
+                requestBody: {
+                    inlineAPIDefinition: inlineDefinition,
+                    additionalProperties: JSON.stringify(apiData),
+                }
+            };
+
+            const promisedResponse = client.apis['APIs'].importOpenAPIDefinition(
+                null,
+                payload,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+            return promisedResponse.then(response => new API(response.body));
+        });
+        return promise_create;
+    }
+
     /**
      * Get list of workflow pending requests
      */
@@ -218,6 +243,29 @@ class API extends Resource {
         const requestBody = {
             requestBody: {
                 url: url,
+            },
+        };
+        return apiClient.then(client => {
+            return client.apis['Validation'].validateOpenAPIDefinition(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+
+    }
+
+    static validateOpenAPIByInlineDefinition(inlineDefinition, params = { returnContent: false }) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const payload = {
+            'Content-Type': 'multipart/form-data',
+            ...params
+        };
+        const requestBody = {
+            requestBody: {
+                inlineAPIDefinition: inlineDefinition,
             },
         };
         return apiClient.then(client => {
@@ -647,11 +695,12 @@ class API extends Resource {
      * @param callback {function} Function which needs to be called upon success of the API deletion
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    getSubscriptionPolicies(id, callback = null) {
+    getSubscriptionPolicies(id, isAiApi, callback = null) {
         const promisePolicies = this.client.then(client => {
             return client.apis['APIs'].getAPISubscriptionPolicies(
                 {
                     apiId: id,
+                    isAiApi,
                 },
                 this._requestMetaData(),
             );
@@ -2422,13 +2471,14 @@ class API extends Resource {
      * @returns {Promise}
      *
      */
-    static policies(policyLevel, limit ) {
+    static policies(policyLevel, limit, isAiApi ) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
             return client.apis['Throttling Policies'].getAllThrottlingPolicies(
                 {
                     policyLevel: policyLevel,
                     limit,
+                    isAiApi,
                 },
                 this._requestMetaData(),
             );
@@ -3248,6 +3298,65 @@ class API extends Resource {
             );
         });
     }
+
+    /**
+     * Get the all LLM providers
+     * @returns {Promise} Promise containing the list of LLM providers
+     */
+    static getLLMProviders() {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProviders'].getLLMProviders();
+        });
+    }
+
+    /**
+     * Get the LLM provider by ID
+     * @param {String} llmProviderId UUID of the LLM provider
+     * @returns {Promise} Promise containing the information of the requested LLM provider
+     */
+    static getLLMProviderById(llmProviderId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProvider(
+                {llmProviderId},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the LLM provider API definition by name and version
+     *
+     * @param {String} name
+     * @param {String} apiVersion
+     */
+    static getLLMProviderAPIDefinition(name, apiVersion) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProviderApiDefinition(
+                { name, apiVersion },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the LLM provider API Endpoint Configuration by name and version
+     * 
+     * @param {String} name
+     * @param {String} apiVersion
+     */
+    static getLLMProviderEndpointConfiguration(name, apiVersion) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProviderEndpointConfiguration(
+                { name, apiVersion },
+                this._requestMetaData(),
+            );
+        });
+    }
+
 }
 
 API.CONSTS = {

@@ -1080,6 +1080,80 @@ class API extends Resource {
     }
 
     /**
+     * Get list of AI Vendors Configured
+     */
+    getAiVendorsList() {
+        return this.client.then((client) => {
+            return client.apis['LLMProviders'].getLLMProviders(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get AI Vendor Configuration by id
+     * @param aiVendorId AI Vendor configuration id
+     * @returns {*}
+     */
+   aiVendorGet(aiVendorId) {
+        return this.client.then((client) => {
+            return client.apis['LLMProvider'].getLLMProvider(
+                { llmProviderId: aiVendorId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete an AI Vendor
+     * @param aiVendorId AI Vendor configuration id
+     * @returns {*}
+     */
+    deleteAiVendor(aiVendorId) {
+        return this.client.then((client) => {
+            return client.apis['LLMProvider'].deleteLLMProvider(
+                { llmProviderId: aiVendorId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add an AI Vendor
+     */
+    addAiVendor(aiVendorBody) {
+        return this.client.then((client) => {
+            const payload = {
+                'Content-Type': 'multipart/form-data',
+            };
+            return client.apis['LLMProviders'].addLLMProvider(
+                payload,
+                { requestBody: aiVendorBody },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update an AI Vendor
+     */
+    updateAiVendor(aiVendorId, aiVendorBody) {
+        return this.client.then((client) => {
+            const payload = {
+                llmProviderId: aiVendorId,
+                'Content-Type': 'multipart/form-data',
+            };
+            return client.apis['LLMProvider'].updateLLMProvider(
+                payload,
+                { requestBody: {
+                    ...aiVendorBody,
+                    llmProviderId: aiVendorId
+                }},
+                this._requestMetaData(),
+            );
+        });
+    }
+    /**
      * Retrieve transaction count
      */
     getTransactionCount(params) {

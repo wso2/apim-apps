@@ -333,10 +333,20 @@ function Endpoints(props) {
                                 message: intl.formatMessage({
                                     id: 'Apis.Details.Endpoints.Endpoints.missing.security.oauth.client.error',
                                     defaultMessage: 'Endpoint Security Token URL'
-                                            + '/API Key/API Secret should not be empty',
+                                        + '/API Key/API Secret should not be empty',
                                 }),
                             };
                         }
+                    }
+                } else if (production.type === 'apikey') {
+                    if (!production.apiKeyValue || !production.apiKeyValue) {
+                        return {
+                            isValid: false,
+                            message: intl.formatMessage({
+                                id: 'Apis.Details.Endpoints.Endpoints.missing.security.apikey.error',
+                                defaultMessage: 'Endpoint Security API Key should not be empty',
+                            }),
+                        };
                     }
                 } else if (production.username === '' || production.password === null) {
                     return {
@@ -381,6 +391,16 @@ function Endpoints(props) {
                                 }),
                             };
                         }
+                    }
+                } else if (sandbox.type === 'apikey') {
+                    if (!sandbox.apiKeyValue|| !sandbox.apiKeyValue) {
+                        return {
+                            isValid: false,
+                            message: intl.formatMessage({
+                                id: 'Apis.Details.Endpoints.Endpoints.missing.security.apikey.error',
+                                defaultMessage: 'Endpoint Security API Key should not be empty',
+                            }),
+                        };
                     }
                 } else if (sandbox.username === '' || sandbox.password === null) {
                     return {
@@ -506,7 +526,14 @@ function Endpoints(props) {
             api.getSwagger(apiObject.id).then((resp) => {
                 setSwagger(resp.obj);
             }).catch((err) => {
-                console.err(err);
+                if (err.response) {
+                    Alert.error(err.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.API.Definition.fetch.error',
+                        defaultMessage: 'Error occurred while fetching API definition',
+                    }));
+                }
             });
         }
     }, []);

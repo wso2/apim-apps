@@ -54,6 +54,7 @@ import {
     ALL_AUDIENCES_ALLOWED,
 } from './components/APISecurity/components/apiSecurityConstants';
 import WebSubConfiguration from './components/WebSubConfiguration';
+import BackendRateLimiting from './components/AIBackendRateLimiting/BackendRateLimiting';
 
 const PREFIX = 'RuntimeConfiguration';
 
@@ -179,7 +180,6 @@ function copyAPIConfig(api) {
         accessControlRoles: [...api.accessControlRoles],
         visibleRoles: [...api.visibleRoles],
         tags: [...api.tags],
-        maxTps: api.maxTps,
         wsdlUrl: api.wsdlUrl,
         transport: [...api.transport],
         securityScheme: [...api.securityScheme],
@@ -202,6 +202,18 @@ function copyAPIConfig(api) {
             apiOwner: api.advertiseInfo.apiOwner,
             vendor: api.advertiseInfo.vendor,
         }
+    }
+    if (api.aiConfiguration) {
+        apiConfigJson.aiConfiguration = {
+            ...api.aiConfiguration,
+        };
+    }
+    if (api.maxTps) {
+        apiConfigJson.maxTps = {
+            ...api.maxTps,
+            tokenBasedThrottlingConfiguration: api.maxTps.tokenBasedThrottlingConfiguration ?
+                { ...api.maxTps.tokenBasedThrottlingConfiguration } : null,
+        };
     }
     return apiConfigJson;
 }
@@ -238,7 +250,6 @@ export default function RuntimeConfiguration() {
             case 'enableSchemaValidation':
             case 'accessControl':
             case 'visibility':
-            case 'maxTps':
             case 'enableSubscriberVerification':
             case 'tags':
                 nextState[action] = value;
@@ -378,6 +389,35 @@ export default function RuntimeConfiguration() {
             case 'saveButtonDisabled':
                 setSaveButtonDisabled(value);
                 return state;
+            case 'maxTps': {
+                nextState.maxTps = value;
+                if (nextState.maxTps){
+                    if (!nextState.maxTps.productionTimeUnit) {
+                        nextState.maxTps.productionTimeUnit = 'SECOND';
+                    }
+                    if (!nextState.maxTps.sandboxTimeUnit) {
+                        nextState.maxTps.sandboxTimeUnit = 'SECOND';
+                    }
+                    if (!nextState.maxTps.production) {
+                        nextState.maxTps.production = '';
+                    }
+                    if (!nextState.maxTps.sandbox) {
+                        nextState.maxTps.sandbox = '';
+                    }
+                    const { tokenBasedThrottlingConfiguration } = nextState.maxTps;
+                    if (tokenBasedThrottlingConfiguration) {
+                        tokenBasedThrottlingConfiguration.isTokenBasedThrottlingEnabled = !!(
+                            tokenBasedThrottlingConfiguration.productionMaxPromptTokenCount ||
+                            tokenBasedThrottlingConfiguration.productionMaxCompletionTokenCount ||
+                            tokenBasedThrottlingConfiguration.productionMaxTotalTokenCount ||
+                            tokenBasedThrottlingConfiguration.sandboxMaxPromptTokenCount ||
+                            tokenBasedThrottlingConfiguration.sandboxMaxCompletionTokenCount ||
+                            tokenBasedThrottlingConfiguration.sandboxMaxTotalTokenCount
+                        );
+                    }
+                }
+                return nextState;
+            }
             default:
                 return state;
         }
@@ -632,7 +672,13 @@ export default function RuntimeConfiguration() {
                                         style={{ height: 'calc(100% - 75px)' }}
                                         elevation={0}
                                     >
-                                        {!api.isAPIProduct() && (
+                                        {api.aiConfiguration && (
+                                            <BackendRateLimiting
+                                                api={apiConfig}
+                                                configDispatcher={configDispatcher}
+                                            />
+                                        )}
+                                        {!api.aiConfiguration && !api.isAPIProduct() && (
                                             <>
                                                 {(!isAsyncAPI && api.gatewayType !== 'wso2/apk') && (
                                                     <MaxBackendTps
@@ -640,12 +686,16 @@ export default function RuntimeConfiguration() {
                                                         configDispatcher={configDispatcher}
                                                     />
                                                 )}
+                                            </>
+                                        )}
+                                        {!api.isAPIProduct() && (
+                                            <>
                                                 { !isWebSub && (
                                                     <Endpoints api={api} />
                                                 )}
                                             </>
                                         )}
-                                        {api.isAPIProduct() && (
+                                        {!api.aiConfiguration && api.isAPIProduct() && (
                                             <Box alignItems='center' justifyContent='center' className={classes.info}>
                                                 <Typography variant='body1'>
                                                     <FormattedMessage
