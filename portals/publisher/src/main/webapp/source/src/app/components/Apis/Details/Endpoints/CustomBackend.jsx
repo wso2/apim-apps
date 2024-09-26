@@ -53,7 +53,7 @@ import RadioGroup from '@mui/material/RadioGroup';
 import Dropzone from 'react-dropzone';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
-import Alert from 'AppComponents/Shared/Alert';
+import { Alert } from 'AppComponents/Shared';
 import Utils from 'AppData/Utils';
 
 const PREFIX = 'CustomBackend';
@@ -196,8 +196,8 @@ export default function CustomBackend(props) {
                     setIsValidSequenceBackend(true);
                 }
             })
-            .catch(() => {
-                console.error('Error while fetching sequence backends');
+            .catch((err) => {
+                Alert.error('Error while fetching sequence backends');
             });
     }, []);
 
@@ -213,13 +213,15 @@ export default function CustomBackend(props) {
     };
 
     const downloadCustomBackend = (keyType) => {
-        console.log("Downloading");
         restAPI.getSequenceBackendContentByAPIID(api.id, keyType).then((resp) => {
             Utils.forceDownload(resp);
-            console.log('Custom backend downloaded successfully');
         })
         .catch((error) => {
-            console.log(error);
+            if (error.response) {
+                Alert.error(error.response.body.description);
+            } else {
+                Alert.error('Error while downloading the sequence backend');
+            }
         });
     };
 
@@ -238,7 +240,7 @@ export default function CustomBackend(props) {
         if (allowDelete) {
             setDeleting(true);
             restAPI.deleteSequenceBackend(keyType, api.id).then((resp) => {
-                console.log('Custom backend deleted successfully');
+                Alert.success('Sequence backend deleted successfully');
             }).finally(() => {
                 setDeleting(false);
                 setSequenceBackendToDelete({ open: false, keyType: '', name: '' });
@@ -269,7 +271,7 @@ export default function CustomBackend(props) {
             productionBackendList.push({"sequenceName": customBackend.name, "content": customBackend.content});
         }
         restAPI.uploadCustomBackend(customBackend.content, uploadCustomBackendOpen.keyType, api.id).then((resp) => {
-            console.log('Custom backend uploaded successfully' + resp);
+            Alert.success('Custom backend uploaded successfully');
         }).finally(() => {
             setSaving(false);
             setCustomBackend({ name: '', content: '' });
