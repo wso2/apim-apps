@@ -45,7 +45,7 @@ const AIAPIMenu = (props) => {
                 helperText={(
                     <FormattedMessage
                         id='Apis.Listing.SampleAPI.SampleAPI.ai.api.import.content'
-                        defaultMessage='Create AI APIs by importing AI vendor APIs'
+                        defaultMessage='Create AI APIs by importing AI service provider APIs'
                     />
                 )}
             >

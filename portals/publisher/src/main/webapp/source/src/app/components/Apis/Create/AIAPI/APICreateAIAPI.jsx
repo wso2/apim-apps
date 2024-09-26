@@ -72,7 +72,7 @@ function apiInputsReducer(currentState, inputAction) {
     }
 }
 /**
- * Handle API creation from AI Provider API Definition.
+ * Handle API creation from AI Service Provider API Definition.
  *
  * @export
  * @param {*} props
@@ -189,13 +189,13 @@ export default function ApiCreateAIAPI(props) {
                     <Typography variant='h5'>
                         <FormattedMessage
                             id='Apis.Create.AIAPI.ApiCreateAIAPI.heading'
-                            defaultMessage='Create an API using an AI provider API definition.'
+                            defaultMessage='Create an API using an AI Service provider API definition.'
                         />
                     </Typography>
                     <Typography variant='caption'>
                         <FormattedMessage
                             id='Apis.Create.AIAPI.ApiCreateAIAPI.sub.heading'
-                            defaultMessage='Create an API using an existing AI provider API definition.'
+                            defaultMessage='Create an API using an existing AI Service provider API definition.'
                         />
                     </Typography>
                 </>
@@ -207,7 +207,7 @@ export default function ApiCreateAIAPI(props) {
                         <StepLabel>
                             <FormattedMessage
                                 id='Apis.Create.AIAPI.ApiCreateAIAPI.wizard.one'
-                                defaultMessage='Provide AI provider API'
+                                defaultMessage='Provide AI Service provider API'
                             />
                         </StepLabel>
                     </Step>
