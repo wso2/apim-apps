@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
 import PropTypes from 'prop-types';
 import 'swagger-ui-react/swagger-ui.css';
 import './swagger-ui-overrides.css';
@@ -39,6 +39,12 @@ const SwaggerUI = (props) => {
     const {
         spec, accessTokenProvider, authorizationHeader, api,
     } = props;
+    const accessTokenProviderRef = useRef(accessTokenProvider);
+
+    useEffect(() => {
+        accessTokenProviderRef.current = accessTokenProvider;
+    }, [accessTokenProvider]);
+
     const componentProps = {
         spec,
         validatorUrl: null,
@@ -48,7 +54,7 @@ const SwaggerUI = (props) => {
             const { url } = req;
             const { context, version } = api;
             const patternToCheck = `${context}/${version}/*`;
-            const accessToken = accessTokenProvider();
+            const accessToken = accessTokenProviderRef.current();
             if (accessToken) {
                 req.headers[authorizationHeader] = accessToken;
             }
