@@ -222,7 +222,6 @@ function EndpointOverview(props) {
                     if (response.body) {
                         const config = response.body;
                         setApiKeyParamConfig(config);
-                        console.log(config);
                     }
                 });
         }

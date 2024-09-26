@@ -21,7 +21,7 @@ import PropTypes from 'prop-types';
 
 import { isRestricted } from 'AppData/AuthManager';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Icon, TextField, Tooltip, InputAdornment, Typography, } from '@mui/material';
+import { Icon, TextField, Tooltip, InputAdornment, } from '@mui/material';
 
 import CONSTS from 'AppData/Constants';
 
@@ -40,26 +40,14 @@ export default function AIEndpointAuth(props) {
 
     return (
         <>
-            <Typography
-                sx={{ mx: 2 }}
-            >
-                {isHeaderParameter ? (
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.Security.api.key.identifier.header'
-                        defaultMessage='API Key Header'
-                    />
-                ) : (
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.Security.api.key.identifier.query'
-                        defaultMessage='API Key Query Parameter'
-                    />
-                )}
-            </Typography>
             <TextField
                 disabled
-                label={<FormattedMessage
-                    id='Apis.Details.Endpoints.Security.api.key.identifier'
-                    defaultMessage='API Key Identifier'
+                label={isHeaderParameter ? <FormattedMessage
+                    id='Apis.Details.Endpoints.Security.api.key.header'
+                    defaultMessage='Authorization Header'
+                /> : <FormattedMessage
+                    id='Apis.Details.Endpoints.Security.api.key.query.param'
+                    defaultMessage='Authorization Query Param'
                 />}
                 id={'api-key-id-' + (isProduction ? '-production' : '-sandbox')}
                 sx={{ width: '49%', mr: 2 }}

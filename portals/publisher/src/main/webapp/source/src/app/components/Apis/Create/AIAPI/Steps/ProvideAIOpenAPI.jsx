@@ -24,9 +24,9 @@ import TextField from '@mui/material/TextField';
 import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Autocomplete } from '@mui/material';
 import Alert from 'AppComponents/Shared/Alert';
 
+import { Autocomplete, Typography } from '@mui/material';
 
 const PREFIX = 'ProvideAIOpenAPI';
 
@@ -46,7 +46,7 @@ const Root = styled('div')((
 
 
 /**
- * Sub component of API Create using AI Provider OpenAPI UI
+ * Sub component of API Create using AI Service Provider OpenAPI UI
  *
  * @export
  * @param {*} props
@@ -140,7 +140,7 @@ export default function ProvideAIOpenAPI(props) {
                                 fullWidth
                                 id='AI-providers-autocomplete'
                                 options={getUniqueProviderList(llmProviders)}
-                                noOptionsText='No API Provider defined'
+                                noOptionsText='No AI Service Provider defined'
                                 value={selectedProvider}
                                 onChange={(e, newValue) => {
                                     setSelectedProvider(newValue);
@@ -156,23 +156,23 @@ export default function ProvideAIOpenAPI(props) {
                                         label={llmProviders.list.length !== 0 ? (
                                             <FormattedMessage
                                                 id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider'
-                                                defaultMessage='API Provider'
+                                                defaultMessage='AI Service Provider'
                                             />
                                         ) : (
                                             <FormattedMessage
                                                 id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.empty'
-                                                defaultMessage='No API Provider defined.'
+                                                defaultMessage='No AI Service Provider defined.'
                                             />
                                         )
                                         }
                                         placeholder={intl.formatMessage({
                                             id: 'Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.placeholder',
-                                            defaultMessage: 'Search AI API Provider'
+                                            defaultMessage: 'Search AI Service Provider'
                                         })}
                                         helperText={(
                                             <FormattedMessage
                                                 id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.helper.text'
-                                                defaultMessage='Select AI API Provider for the API'
+                                                defaultMessage='Select AI Service Provider for the API'
                                             />
                                         )}
                                         margin='normal'
@@ -191,9 +191,9 @@ export default function ProvideAIOpenAPI(props) {
                                 fullWidth
                                 id='AI-model-autocomplete'
                                 options={llmProviders.list.filter((model) => model.name === selectedProvider)}
-                                noOptionsText='No API Provider selected'
+                                noOptionsText='No AI Service Provider selected'
                                 getOptionLabel={(option) =>
-                                    option.apiVersion + ' - ' + option.description
+                                    option.apiVersion
                                 }
                                 value={selectedModel}
                                 onChange={(e, newValue) => {
@@ -218,7 +218,7 @@ export default function ProvideAIOpenAPI(props) {
                                 }}
                                 renderOption={(options, option) => (
                                     <li {...options}>
-                                        {option.apiVersion + ' - ' + option.description}
+                                        {option.apiVersion}
                                     </li>
                                 )}
                                 renderInput={(params) => (
@@ -232,7 +232,7 @@ export default function ProvideAIOpenAPI(props) {
                                         ) : (
                                             <FormattedMessage
                                                 id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.model.empty'
-                                                defaultMessage='No API Provider selected.'
+                                                defaultMessage='No AI Service Provider selected.'
                                             />
                                         )
                                         }
@@ -243,7 +243,7 @@ export default function ProvideAIOpenAPI(props) {
                                         helperText={(
                                             <FormattedMessage
                                                 id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.model.helper'
-                                                defaultMessage='Select API Model version for the API'
+                                                defaultMessage='Select API version for the API'
                                             />
                                         )}
                                         margin='normal'
@@ -260,10 +260,12 @@ export default function ProvideAIOpenAPI(props) {
             {!llmProviders && (
                 <Grid container>
                     <Grid item xs={12} sx={{ mb: 2 }}>
-                        <FormattedMessage
-                            id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.empty'
-                            defaultMessage='Loading API Providers...'
-                        />
+                        <Typography>
+                            <FormattedMessage
+                                id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.empty'
+                                defaultMessage='Loading AI Service Providers...'
+                            />
+                        </Typography>
                     </Grid>
                 </Grid>
             )}
