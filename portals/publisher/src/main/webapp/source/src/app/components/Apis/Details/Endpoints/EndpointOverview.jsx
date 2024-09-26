@@ -209,9 +209,24 @@ function EndpointOverview(props) {
     const [servicesList, setServicesList] = useState([]);
 
     const [apiKeyParamConfig, setApiKeyParamConfig] = useState({
-        authHeader: "ApiKey",
+        authHeader: null,
         authQueryParameter: null
     });
+
+    useEffect(() => {
+        if (api.aiConfiguration) {
+            API.getLLMProviderEndpointConfiguration(
+                api.aiConfiguration.llmProviderName,
+                api.aiConfiguration.llmProviderApiVersion)
+                .then((response) => {
+                    if (response.body) {
+                        const config = response.body;
+                        setApiKeyParamConfig(config);
+                        console.log(config);
+                    }
+                });
+        }
+    }, []);
 
     const handleToggleEndpointSecurity = () => {
         const tmpSecurityInfo = !endpointSecurityInfo ? {
@@ -727,21 +742,7 @@ function EndpointOverview(props) {
         handleOnChangeEndpointCategoryChange('prod');
     }
 
-    useEffect(() => {
-        if (api.aiConfiguration) {
-            API.getLLMProviderEndpointConfiguration(
-                api.aiConfiguration.llmProviderName,
-                api.aiConfiguration.llmProviderApiVersion)
-                .then((response) => {
-                    if (response.body) {
-                        const config = response.body;
-                        if (config) {
-                            setApiKeyParamConfig(config);
-                        }
-                    }
-                });
-        }
-    }, []);
+
 
     return (
         <Root className={classes.overviewWrapper}>
@@ -1081,12 +1082,14 @@ function EndpointOverview(props) {
                                                                         setESConfigOpen={toggleEndpointSecurityConfig}
                                                                         apiId={api.id}
                                                                     />
-                                                                    {api.aiConfiguration && (<AIEndpointAuth // eslint-disable-line
-                                                                        api={api}
-                                                                        saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
-                                                                        apiKeyParamConfig={apiKeyParamConfig}
-                                                                        isProduction
-                                                                    />)}</>
+                                                                    {api.aiConfiguration && // eslint-disable-line
+                                                                        (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
+                                                                        (<AIEndpointAuth
+                                                                            api={api}
+                                                                            saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
+                                                                            apiKeyParamConfig={apiKeyParamConfig}
+                                                                            isProduction
+                                                                    />)}</> // eslint-disable-line
                                                                 )}
                                                         </Collapse>
                                                         {endpointType.key === 'prototyped' ? <div />
@@ -1235,11 +1238,13 @@ function EndpointOverview(props) {
                                                                                         {toggleEndpointSecurityConfig}
                                                                                     apiId={api.id}
                                                                                 />
-                                                                                {api.aiConfiguration && (<AIEndpointAuth // eslint-disable-line
-                                                                                    api={api}
-                                                                                    saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
-                                                                                    apiKeyParamConfig={apiKeyParamConfig} // eslint-disable-line
-                                                                                />)}</>
+                                                                                {api.aiConfiguration && // eslint-disable-line
+                                                                                    (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
+                                                                                    (<AIEndpointAuth
+                                                                                        api={api}
+                                                                                        saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
+                                                                                        apiKeyParamConfig={apiKeyParamConfig} // eslint-disable-line
+                                                                                />)}</> // eslint-disable-line
                                                                             )}
 
                                                                     </Collapse>
