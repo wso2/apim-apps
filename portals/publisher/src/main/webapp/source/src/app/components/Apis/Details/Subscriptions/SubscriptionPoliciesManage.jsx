@@ -223,26 +223,26 @@ class SubscriptionPoliciesManage extends Component {
                                 }
                                 return (
                                     <FormControlLabel
-                                    data-testid={'policy-checkbox-' + value[1].displayName.toLowerCase()}
-                                    key={value[1].displayName}
-                                    control={(
-                                        <Checkbox
-                                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'], api)}
-                                            color='primary'
-                                            checked={policies.includes(value[1].displayName)}
-                                            onChange={(e) => this.handleChange(e)}
-                                            name={value[1].displayName}
-                                        />
-                                    )}
-                                    label={
-                                        <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            {value[1].displayName + ' : ' + value[1].description}
-                                            <Tooltip title={getPolicyDetails(value[1])} arrow>
-                                                <InfoIcon style={{ marginLeft: 5, fontSize: 18 }} />
-                                            </Tooltip>
-                                        </div>
-                                    }
-                                />
+                                        data-testid={'policy-checkbox-' + value[1].displayName.toLowerCase()}
+                                        key={value[1].displayName}
+                                        control={(
+                                            <Checkbox
+                                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'], api)}
+                                                color='primary'
+                                                checked={policies.includes(value[1].displayName)}
+                                                onChange={(e) => this.handleChange(e)}
+                                                name={value[1].displayName}
+                                            />
+                                        )}
+                                        label={
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                {value[1].displayName + ' : ' + value[1].description}
+                                                <Tooltip title={getPolicyDetails(value[1])} arrow>
+                                                    <InfoIcon style={{ marginLeft: 5, fontSize: 18 }} />
+                                                </Tooltip>
+                                            </div>
+                                        }
+                                    />
                                 );
                             })}
                             { migratedCase && (
