@@ -25,6 +25,8 @@ import FormControl from '@mui/material/FormControl';
 import FormLabel from '@mui/material/FormLabel';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Autocomplete } from '@mui/material';
+import Alert from 'AppComponents/Shared/Alert';
+
 
 const PREFIX = 'ProvideAIOpenAPI';
 
@@ -87,7 +89,14 @@ export default function ProvideAIOpenAPI(props) {
             }
             onValidate(res.body.isValid);
         }).catch((error) => {
-            console.error(error);
+            if (error.response) {
+                Alert.error(error.response.body.description);
+            } else {
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.LLMProvider.API.Definition.validation.failure.error',
+                    defaultMessage: 'Error while validating the LLM Provider API Definition',
+                }));
+            }
             inputsDispatcher({ action: 'inputValue', value: null });
             inputsDispatcher({ action: 'isFormValid', value: false });
             onValidate(false);
@@ -110,7 +119,14 @@ export default function ProvideAIOpenAPI(props) {
         API.getLLMProviders().then((response) => {
             setLLMProviders(response.body);
         }).catch((error) => {
-            console.error(error);
+            if (error.response) {
+                Alert.error(error.response.body.description);
+            } else {
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.LLM.Provider.fetch.error',
+                    defaultMessage: 'Something went wrong while fetching LLM Providers',
+                }));
+            }
         });
     }, []);
 
@@ -187,7 +203,16 @@ export default function ProvideAIOpenAPI(props) {
                                             .then((response) => {
                                                 handleGetLLMProviderAPIDefinitionResponse(response, newValue);
                                             }).catch((error) => {
-                                                console.error(error);
+                                                if (error.response) {
+                                                    Alert.error(error.response.body.description);
+                                                } else {
+                                                    Alert.error(intl.formatMessage({
+                                                        id: 'Apis.Create.AIAPI.Steps.ProvideAIOpenAPI' +
+                                                        '.LLMProvider.API.Definition.fetch.error',
+                                                        defaultMessage: 'Something went wrong while ' +
+                                                        'fetching LLM Provider API Definition',
+                                                    }));
+                                                }
                                             });
                                     }
                                 }}
