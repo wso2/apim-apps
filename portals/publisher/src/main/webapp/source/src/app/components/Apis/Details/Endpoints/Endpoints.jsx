@@ -526,7 +526,14 @@ function Endpoints(props) {
             api.getSwagger(apiObject.id).then((resp) => {
                 setSwagger(resp.obj);
             }).catch((err) => {
-                console.error(err);
+                if (err.response) {
+                    Alert.error(err.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.API.Definition.fetch.error',
+                        defaultMessage: 'Error occurred while fetching API definition',
+                    }));
+                }
             });
         }
     }, []);

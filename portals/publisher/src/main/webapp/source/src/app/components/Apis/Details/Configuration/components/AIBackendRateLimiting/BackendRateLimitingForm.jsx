@@ -127,7 +127,7 @@ export default function BackendRateLimitingForm(props) {
                         configDispatcher={configDispatcher}
                         commonFormProps={{
                             key: (isProduction ? 'production' : 'sandbox') + 'MaxCompletionTokenCount',
-                            label: 'Max Completion TokenCount',
+                            label: 'Max Completion Token Count',
                             // helperText: 'Max Completion Token Count integer',
                             placeholder: 'Max Completion Token Count',
                             tooltip: 'Max Completion Token Count as an Integer value',

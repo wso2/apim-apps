@@ -178,7 +178,6 @@ export default function ApiCreateAIAPI(props) {
                         defaultMessage: 'Something went wrong while adding the API',
                     }));
                 }
-                console.error(error);
             })
             .finally(() => setCreating(false));
     }
