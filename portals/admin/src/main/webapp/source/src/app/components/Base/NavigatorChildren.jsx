@@ -48,6 +48,7 @@ function NavigatorChildren(props) {
 
     if (!isSuperTenant) {
         navigationChildren = navChildren.filter((menu) => menu.id !== 'Custom Policies');
+        navigationChildren = navChildren.filter((menu) => menu.id !== 'Usage Report');
     }
 
     return (
