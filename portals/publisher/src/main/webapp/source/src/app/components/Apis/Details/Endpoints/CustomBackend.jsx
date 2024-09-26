@@ -1,6 +1,6 @@
 /* eslint-disable */
 /*
- * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2024, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -202,10 +202,11 @@ export default function CustomBackend(props) {
     }, []);
 
     /**
-     * Show certificate deletion dialog box.
+     * Show sequence backend deletion dialog box.
      *
      * @param {any} event The button click event.
-     * @param {string} certAlias  The alias of the certificate which information is required.
+     * @param {string} keyType  Key Type of the sequence backend to be invoked.
+     * @param {string} name  The name of the Sequence Backend.
      * */
     const showSequenceBackendDeleteDialog = async (event, keyType, name) => {
         setSequenceBackendToDelete({ open: true, keyType: keyType, name: name });
@@ -258,7 +259,7 @@ export default function CustomBackend(props) {
 
 
     /**
-     * Method to upload the certificate content by calling the rest api.
+     * Method to upload the sequence backend content by calling the rest api.
      * */
     const saveCustomBackend = () => {
         setSaving(true);
