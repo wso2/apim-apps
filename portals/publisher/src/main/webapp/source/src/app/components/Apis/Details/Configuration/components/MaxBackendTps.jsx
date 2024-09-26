@@ -181,7 +181,7 @@ export default function MaxBackendTps(props) {
                                             value: { ...api.maxTps, production: event.target.value },
                                         });
                                     }}
-                                    value={api.maxTps !== null ? api.maxTps.production : ''}
+                                    value={api.maxTps ? api.maxTps.production : ''}
                                     disabled={isRestricted(['apim:api_create'], api)}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>TPS</InputAdornment>,
@@ -203,7 +203,7 @@ export default function MaxBackendTps(props) {
                                             value: { ...api.maxTps, sandbox: event.target.value },
                                         });
                                     }}
-                                    value={api.maxTps !== null ? api.maxTps.sandbox : ''}
+                                    value={api.maxTps ? api.maxTps.sandbox : ''}
                                     disabled={isRestricted(['apim:api_create'], api)}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>TPS</InputAdornment>,

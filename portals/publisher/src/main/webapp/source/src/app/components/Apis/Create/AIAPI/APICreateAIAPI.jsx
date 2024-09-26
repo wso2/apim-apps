@@ -145,7 +145,8 @@ export default function ApiCreateAIAPI(props) {
                 llmProviderName,
                 llmProviderApiVersion,
             },
-            securityScheme: [API_SECURITY_API_KEY]
+            securityScheme: [API_SECURITY_API_KEY],
+            egress : true
         };
         if (endpoint) {
             additionalProperties.endpointConfig = {

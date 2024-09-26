@@ -34,7 +34,7 @@ export default function AIEndpointAuth(props) {
 
     const [apiKeyValue, setApiKeyValue] =
         useState(api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue ?
-            api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue : null);
+            '***********' : null);
 
     const [isHeaderParameter] = useState(!!apiKeyParamConfig.authHeader);
 
@@ -80,7 +80,7 @@ export default function AIEndpointAuth(props) {
                 value={apiKeyValue}
                 placeholder={intl.formatMessage({
                     id: 'Apis.Details.Endpoints.Security.api.key.value.placeholder',
-                    defaultMessage: 'Ener API Key',
+                    defaultMessage: 'Enter API Key',
                 })}
                 onChange={(event) => setApiKeyValue(event.target.value)}
                 onBlur={(event) => {
