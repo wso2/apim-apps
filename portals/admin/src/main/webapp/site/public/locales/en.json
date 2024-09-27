@@ -202,7 +202,7 @@
   "AiVendors.ListAiVendors.table.header.label.description": "Description",
   "AiVendors.ListAiVendors.table.is.used.delete.tooltip": "Default AI Vendors cannot be deleted",
   "AiVendors.OpenAPI.file.error": "Error reading file",
-  "AiVendors.OpenAPI.override.message": "Upload new file to override the current openapi",
+  "AiVendors.OpenAPI.override.message": "Upload new file to override the current OpenAPI",
   "Api.Name": "API Name",
   "Api.Provider": "Provider",
   "Api.Version": "Version",
