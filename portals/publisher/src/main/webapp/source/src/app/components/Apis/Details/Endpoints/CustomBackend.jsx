@@ -187,7 +187,6 @@ export default function CustomBackend(props) {
         setIsValidSequenceBackend(false);
         restAPI.getSequenceBackends(api.id)
             .then((result) => {
-                console.log(result);
                 const allSequenceBackends = result.body.list;
                 setProductionBackendList(allSequenceBackends.filter((backend) => backend.sequenceType === API_SECURITY_KEY_TYPE_PRODUCTION));
                 setSandBoxBackendList(allSequenceBackends.filter((backend) => backend.sequenceType === API_SECURITY_KEY_TYPE_SANDBOX));
