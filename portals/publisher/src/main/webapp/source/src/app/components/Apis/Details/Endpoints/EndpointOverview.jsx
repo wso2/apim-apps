@@ -57,6 +57,7 @@ import CustomBackend from './CustomBackend';
 import { API_SECURITY_KEY_TYPE_PRODUCTION } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
 import { API_SECURITY_KEY_TYPE_SANDBOX } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
 import API from 'AppData/api';
+import AIEndpointAuth from './AIEndpointAuth';
 
 const PREFIX = 'EndpointOverview';
 
@@ -1104,7 +1105,14 @@ function EndpointOverview(props) {
                                                                             ap
                                                                             iId={api.id}
                                                                         />
-                                                                        </>
+                                                                        {api.aiConfiguration && // eslint-disable-line
+                                                                            (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
+                                                                            (<AIEndpointAuth
+                                                                                api={api}
+                                                                                saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
+                                                                                apiKeyParamConfig={apiKeyParamConfig}
+                                                                                isProduction
+                                                                        />)}</>
                                                                     )}
                                                             </Collapse>
                                                             {endpointType.key === 'prototyped' ? <div />
@@ -1221,7 +1229,7 @@ function EndpointOverview(props) {
                                                                                     </InlineMessage>
                                                                                 )
                                                                                 : (
-                                                                                    <GenericEndpoint
+                                                                                   <> <GenericEndpoint
                                                                                         autoFocus
                                                                                         name={(
                                                                                             <FormattedMessage
@@ -1253,8 +1261,14 @@ function EndpointOverview(props) {
                                                                                             {toggleEndpointSecurityConfig}
                                                                                         apiId={api.id}
                                                                                     />
+                                                                                    {api.aiConfiguration && // eslint-disable-line
+                                                                                        (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
+                                                                                        (<AIEndpointAuth
+                                                                                            api={api}
+                                                                                            saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
+                                                                                            apiKeyParamConfig={apiKeyParamConfig} // eslint-disable-line
+                                                                                    />)}</> // eslint-disable-line
                                                                                 )}
-    
                                                                         </Collapse>
                                                                     </div>
                                                                 )}
