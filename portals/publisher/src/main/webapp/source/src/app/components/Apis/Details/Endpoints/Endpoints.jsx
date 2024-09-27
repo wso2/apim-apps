@@ -101,6 +101,10 @@ function Endpoints(props) {
     const [swagger, setSwagger] = useState(defaultSwagger);
     const [endpointValidity, setAPIEndpointsValid] = useState({ isValid: true, message: '' });
     const [isUpdating, setUpdating] = useState(false);
+    const [sandBoxBackendList, setSandBoxBackendList] = useState([]);
+    const [productionBackendList, setProductionBackendList] = useState([]);
+    const [isValidSequenceBackend, setIsValidSequenceBackend] = useState(false);
+    const [isCustomBackendSelected, setIsCustomBackendSelected] = useState(false);
 
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
@@ -445,6 +449,14 @@ function Endpoints(props) {
                     }),
                 }
             }
+        } else if (endpointType === 'sequence_backend') {
+            return {
+                isValid: endpointValidity.isValid,
+                message: intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.SequenceBackend.missing.backend.error',
+                    defaultMessage: 'Either one of Production or Sandbox Endpoints should be added.',
+                }),
+            };
         } else if (endpointType === 'load_balance') {
             /**
              * Checklist:
@@ -539,6 +551,8 @@ function Endpoints(props) {
     }, []);
 
     useEffect(() => {
+        setIsCustomBackendSelected(false);
+        setIsValidSequenceBackend(true);
         setAPIEndpointsValid(validate(apiObject.endpointImplementationType));
     }, [apiObject]);
 
@@ -593,6 +607,14 @@ function Endpoints(props) {
                                         onChangeAPI={apiDispatcher}
                                         endpointsDispatcher={apiDispatcher}
                                         saveAndRedirect={saveAndRedirect}
+                                        sandBoxBackendList={sandBoxBackendList}
+                                        setSandBoxBackendList={setSandBoxBackendList}
+                                        productionBackendList={productionBackendList}
+                                        setProductionBackendList={setProductionBackendList}
+                                        isValidSequenceBackend={isValidSequenceBackend}
+                                        setIsValidSequenceBackend={setIsValidSequenceBackend}
+                                        isCustomBackendSelected={isCustomBackendSelected} 
+                                        setIsCustomBackendSelected={setIsCustomBackendSelected}
                                     />
                                 </Grid>
                             </Grid>
@@ -637,6 +659,8 @@ function Endpoints(props) {
                                                 handleSaveAndDeploy={handleSaveAndDeploy}
                                                 isUpdating={isUpdating}
                                                 id='endpoint-save-btn'
+                                                isValidSequenceBackend={isValidSequenceBackend}
+                                                isCustomBackendSelected
                                             />
                                         )}
                                 </Grid>

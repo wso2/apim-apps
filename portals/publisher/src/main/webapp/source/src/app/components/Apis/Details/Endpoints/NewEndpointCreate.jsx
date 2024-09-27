@@ -177,6 +177,19 @@ function NewEndpointCreate(props) {
             options: null,
             disabled: ['SOAPTOREST', 'GRAPHQL', 'SSE'],
         },
+        {
+            type: 'sequence_backend',
+            name: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.NewEndpointCreate.create.sequencebackend.endpoint',
+                defaultMessage: 'Sequence Backend',
+            }),
+            description: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.NewEndpointCreate.create.sequencebackend.endpoint.description',
+                defaultMessage: 'If you need to provde Sequence as a Backend for APIs.',
+            }),
+            options: null,
+            disabled: ['GRAPHQL', 'SSE'],
+        },
     ];
 
     const eligibleTypes = endpointTypes.filter((type) => !type.disabled.includes(apiType)).map((type) => {

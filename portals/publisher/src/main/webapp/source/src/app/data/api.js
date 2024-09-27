@@ -916,6 +916,75 @@ class API extends Resource {
         return promised_update;
     }
 
+    deleteSequenceBackend(keyType, apiId) {
+        const promised_delete = this.client.then(client => {
+            return client.apis['APIs'].sequenceBackendDelete(
+                {
+                    type: keyType,
+                    apiId: apiId,
+                },
+                this._requestMetaData({
+                
+                }),
+            );
+        });
+        return promised_delete; 
+    }
+
+    getSequenceBackends(apiId) {
+        const promised_get = this.client.then(client => {
+            return client.apis['APIs'].getSequenceBackendData(
+                {
+                    apiId: apiId,
+                },
+                this._requestMetaData({
+                
+                }),
+            );
+        });
+        return promised_get; 
+    }
+
+    getSequenceBackendContentByAPIID(apiId, keyType) {
+        const promised_get = this.client.then(client => {
+            return client.apis['APIs'].getSequenceBackendContent(
+                {
+                    type: keyType,
+                    apiId: apiId,
+                },
+                this._requestMetaData({
+                
+                }),
+            );
+        });
+        return promised_get; 
+    }
+
+    uploadCustomBackend(customBackend, keyType, apiId) {
+        const promised_update = this.client.then(client => {
+            const payload = {
+                apiId: apiId,
+                'Content-Type': 'multipart/form-data',
+            };
+            const requestBody = {
+                requestBody: {
+                    sequence: customBackend,
+                    type: keyType,
+                },
+            };
+            console.log('requestBody', requestBody);
+            console.log('payload', payload);
+            return client.apis['APIs'].sequenceBackendUpdate(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+        return promised_update;
+    }
+
     /**
      * Update API definition of a given API by URL content
      * @param apiId         API Identifier
