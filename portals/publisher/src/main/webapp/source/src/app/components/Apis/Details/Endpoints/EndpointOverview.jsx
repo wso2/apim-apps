@@ -218,6 +218,25 @@ function EndpointOverview(props) {
     (api.serviceInfo) });
     const [servicesList, setServicesList] = useState([]);
 
+    const [apiKeyParamConfig, setApiKeyParamConfig] = useState({
+        authHeader: null,
+        authQueryParameter: null
+    });
+
+    useEffect(() => {
+        if (api.aiConfiguration) {
+            API.getLLMProviderEndpointConfiguration(
+                api.aiConfiguration.llmProviderName,
+                api.aiConfiguration.llmProviderApiVersion)
+                .then((response) => {
+                    if (response.body) {
+                        const config = response.body;
+                        setApiKeyParamConfig(config);
+                    }
+                });
+        }
+    }, []);
+
     const handleToggleEndpointSecurity = () => {
         const tmpSecurityInfo = !endpointSecurityInfo ? {
             production: CONSTS.DEFAULT_ENDPOINT_SECURITY,
@@ -282,7 +301,7 @@ function EndpointOverview(props) {
      * @return {string} The supported endpoint types.
      * */
     const getSupportedType = (apiObject) => {
-        const { type } = apiObject;
+        const { type, aiConfiguration } = apiObject;
         let supportedEndpointTypes = [];
         if (type === 'GRAPHQL' && apiObject.gatewayType !== 'wso2/apk') {
             supportedEndpointTypes = [
@@ -304,6 +323,10 @@ function EndpointOverview(props) {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
             ];
+        } else if (type === 'HTTP' && aiConfiguration) {
+            supportedEndpointTypes = [
+                { key: 'http', value: 'HTTP/REST Endpoint' },
+            ];
         } else {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
@@ -314,7 +337,7 @@ function EndpointOverview(props) {
                 { key: 'awslambda', value: 'AWS Lambda' },
             ];
         }
-        if(apiObject.gatewayType !== 'wso2/apk' && type === 'HTTP' ) {
+        if(!aiConfiguration && apiObject.gatewayType !== 'wso2/apk' && type === 'HTTP' ) {
             supportedEndpointTypes.push({ key: 'sequence_backend', value: 'Sequence Backend' });
         }
         return supportedEndpointTypes;
@@ -927,7 +950,6 @@ function EndpointOverview(props) {
                                                     setProductionBackendList={setProductionBackendList}
                                                     isValidSequenceBackend={isValidSequenceBackend}
                                                     setIsValidSequenceBackend={setIsValidSequenceBackend}
-                                                    endpointValidation={setAPIEndpointsValid}
                                                 />
                                             )
                                             : (
