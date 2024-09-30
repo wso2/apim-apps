@@ -950,7 +950,6 @@ function EndpointOverview(props) {
                                                     setProductionBackendList={setProductionBackendList}
                                                     isValidSequenceBackend={isValidSequenceBackend}
                                                     setIsValidSequenceBackend={setIsValidSequenceBackend}
-                                                    endpointValidation={setAPIEndpointsValid}
                                                 />
                                             )
                                             : (
