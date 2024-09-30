@@ -35,7 +35,8 @@ import ExpandMore from '@mui/icons-material/ExpandMore';
  * @returns {JSX} Header AppBar components.
  */
 function NavigatorChildren(props) {
-    const { isSuperTenant } = useAppContext();
+    const { isSuperTenant, user: { _scopes } } = useAppContext();
+    const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
     const [open, setOpen] = React.useState(true);
     const { navChildren, navText, classes } = props;
     const handleClick = () => {
@@ -48,6 +49,8 @@ function NavigatorChildren(props) {
 
     if (!isSuperTenant) {
         navigationChildren = navChildren.filter((menu) => menu.id !== 'Custom Policies');
+    }
+    if (!isSuperAdmin) {
         navigationChildren = navChildren.filter((menu) => menu.id !== 'Usage Report');
     }
 
