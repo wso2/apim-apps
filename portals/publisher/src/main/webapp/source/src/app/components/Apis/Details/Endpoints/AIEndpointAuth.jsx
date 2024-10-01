@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 import { isRestricted } from 'AppData/AuthManager';
@@ -33,10 +33,21 @@ export default function AIEndpointAuth(props) {
     const [apiKeyIdentifier] = useState(apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParam);
 
     const [apiKeyValue, setApiKeyValue] =
-        useState(api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue ?
-            '***********' : null);
+        useState(api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue === '' ?
+            '********' : null);
 
     const [isHeaderParameter] = useState(!!apiKeyParamConfig.authHeader);
+
+    useEffect(() => {
+        saveEndpointSecurityConfig({
+            ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+            type: 'apikey',
+            apiKeyIdentifier,
+            apiKeyValue: api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue
+                === '' ? '' : null,
+            enabled: true,
+        }, isProduction ? 'production' : 'sandbox');
+    }, []);
 
     return (
         <>
@@ -76,7 +87,7 @@ export default function AIEndpointAuth(props) {
                         ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
                         type: 'apikey',
                         apiKeyIdentifier,
-                        apiKeyValue: event.target.value,
+                        apiKeyValue: event.target.value === '********' ? '' : event.target.value,
                         enabled: true,
                     }, isProduction ? 'production' : 'sandbox');
                 }}
