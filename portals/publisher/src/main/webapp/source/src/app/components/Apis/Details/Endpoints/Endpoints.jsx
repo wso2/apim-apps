@@ -343,7 +343,7 @@ function Endpoints(props) {
                         }
                     }
                 } else if (production.type === 'apikey') {
-                    if (!production.apiKeyValue || !production.apiKeyValue) {
+                    if (production.apiKeyValue === null) {
                         return {
                             isValid: false,
                             message: intl.formatMessage({
@@ -397,7 +397,7 @@ function Endpoints(props) {
                         }
                     }
                 } else if (sandbox.type === 'apikey') {
-                    if (!sandbox.apiKeyValue|| !sandbox.apiKeyValue) {
+                    if (sandbox.apiKeyValue === null) {
                         return {
                             isValid: false,
                             message: intl.formatMessage({
@@ -416,6 +416,14 @@ function Endpoints(props) {
                     };
                 }
             }
+        } else if ((!endpointConfig || !endpointConfig.endpoint_security) && apiObject.aiConfiguration) {
+            return {
+                isValid: false,
+                message: intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.Endpoints.missing.endpoint.error',
+                    defaultMessage: 'Production & Sandbox Endpoint Security should be added',
+                }),
+            };
         }
         if (endpointConfig === null) {
             return { isValid: true, message: '' };
