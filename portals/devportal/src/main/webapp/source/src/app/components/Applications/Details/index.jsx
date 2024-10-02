@@ -102,6 +102,9 @@ const Root = styled('div')((
         top: 0,
         right: 0,
         overflowY: 'auto',
+        [theme.breakpoints.down('md')]: {
+            width: 50,
+        },
     },
 
     [`& .${classes.leftLInkMain}`]: {
