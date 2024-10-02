@@ -710,6 +710,11 @@ function EndpointOverview(props) {
     const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
         const { type } = endpointSecurityObj;
         let newEndpointSecurityObj = endpointSecurityObj;
+        const secretPlaceholder = '******';
+        newEndpointSecurityObj.clientSecret = newEndpointSecurityObj.clientSecret 
+            === secretPlaceholder ? '' : newEndpointSecurityObj.clientSecret;
+        newEndpointSecurityObj.password = newEndpointSecurityObj.password 
+            === secretPlaceholder ? '' : newEndpointSecurityObj.password;
         if (type === 'NONE') {
             newEndpointSecurityObj = { ...CONSTS.DEFAULT_ENDPOINT_SECURITY, type };
         } else {

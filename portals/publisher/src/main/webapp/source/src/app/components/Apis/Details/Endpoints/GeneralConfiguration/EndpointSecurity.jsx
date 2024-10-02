@@ -188,13 +188,14 @@ function EndpointSecurity(props) {
             const {
                 type, username, password, grantType, tokenUrl, clientId, clientSecret, customParameters,
             } = securityInfo;
+            const secretPlaceholder = '******';
             tmpSecurity.type = type === null ? 'NONE' : type;
             tmpSecurity.username = username;
-            tmpSecurity.password = password === '' ? '**********' : password;
+            tmpSecurity.password = password === '' ? secretPlaceholder : password;
             tmpSecurity.grantType = grantType;
             tmpSecurity.tokenUrl = tokenUrl;
-            tmpSecurity.clientId = clientId === '' ? '********' : clientId;
-            tmpSecurity.clientSecret = clientSecret === '' ? '********' : clientSecret;
+            tmpSecurity.clientId = clientId === '' ? secretPlaceholder : clientId;
+            tmpSecurity.clientSecret = clientSecret === '' ? secretPlaceholder : clientSecret;
             tmpSecurity.customParameters = customParameters;
         }
         setEndpointSecurityInfo(tmpSecurity);
