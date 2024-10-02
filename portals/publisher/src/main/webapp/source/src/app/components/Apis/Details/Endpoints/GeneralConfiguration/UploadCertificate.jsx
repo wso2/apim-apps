@@ -500,6 +500,7 @@ export default function UploadCertificate(props) {
                             || isSaving
                             || isAliasIncluded()
                             || isRejected
+                            || policy === ''
                     }
                 >
                     <FormattedMessage
