@@ -67,6 +67,7 @@ export default function SOAPToRESTListing(props) {
     const selectedPolicy = selectedTab === 'in' ? resourcePolicyIn : resourcePolicyOut;
     const editorProps = {
         language: 'xml',
+        width: '99%',
         height: 'calc(50vh)',
         theme: prefersDarkMode ? 'vs-dark' : 'vs',
         value: selectedPolicy.content,
