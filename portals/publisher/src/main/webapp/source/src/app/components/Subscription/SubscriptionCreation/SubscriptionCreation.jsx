@@ -56,7 +56,6 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import WarningBase from 'AppComponents/Addons/Addons/WarningBase';
-import LeftMenu from '../LeftMenu/LeftMenu';
 
 const PREFIX = 'subscriptioncreation';
 
@@ -82,12 +81,6 @@ const StyledBox = styled(Box)((
 ) => ({
     [`& .${classes.main}`]: {
         paddingTop: '0',
-    },
-
-    [`& .${classes.LeftMenu}`]: {
-        backgroundColor: theme.palette.background.leftMenu,
-        width: theme.custom.leftMenuWidth,
-        minHeight: `calc(100vh - ${64 + theme.custom.footer.height}px)`,
     },
 
     [`& .${classes.content}`]: {
@@ -450,9 +443,6 @@ function ListLabels() {
     if (data && data.length === 0) {
         return (
             <StyledBox display='flex' alignItems='stretch' flexDirection='row' className={classes.main}>
-                <Box className={classes.LeftMenu}>  
-                    <LeftMenu/>
-                </Box>
                 <Box className={classes.content}>
                     <ContentBase
                         {...pageProps}
@@ -524,9 +514,6 @@ function ListLabels() {
     }
     return (
         <StyledBox display='flex' alignItems='stretch' flexDirection='row' className={classes.main}>
-            <Box className={classes.LeftMenu}>  
-                <LeftMenu/>
-            </Box>
             <Box className={classes.content}>
                 <ContentBase {...pageProps}>
                     {(searchActive || addButtonProps) && (
