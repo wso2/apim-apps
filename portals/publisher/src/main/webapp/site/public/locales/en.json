@@ -2024,6 +2024,7 @@
   "SubscriptionAproval.Addons.ListBase.nodata.message": "No items yet",
   "Task.SubscriptionCreation.table.button.reject": "Reject",
   "Task.SubscriptionUpdate.table.button.reject": "Reject",
+  "Task.title": "Tasks",
   "Undeploy": "Undeploy",
   "UnexpectedError.logout": "Logout",
   "UnexpectedError.message": "Error occurred due to invalid request",
