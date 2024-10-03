@@ -44,7 +44,7 @@ function Copyright() {
         <Typography variant='body2' color='textSecondary' align='center' sx={{ p: '16px' }}>
             <FormattedMessage
                 id='Base.Footer.Footer.product_details'
-                defaultMessage='WSO2 API-M v4.3.0 | © 2024 WSO2 LLC'
+                defaultMessage='WSO2 API-M v4.4.0 | © 2024 WSO2 LLC'
             />
         </Typography>
     );

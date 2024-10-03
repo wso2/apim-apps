@@ -726,6 +726,7 @@ function TryOutController(props) {
                             />
                         )}
                     {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST'
+                    && securitySchemeType !== 'BASIC'
                         && (!api.advertiseInfo || !api.advertiseInfo.advertised) && !isSubValidationDisabled ? (
                             <Grid x={8} md={6} className={classes.tokenType} item>
                                 <Box mb={1} alignItems='center'>

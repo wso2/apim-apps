@@ -346,12 +346,16 @@ function CreateApi(props) {
 
                     if (contextValidity === null && charCount === 0) {
                         APIValidation.apiParameter.validate(field + ':' + apiContext).then((result) => {
-                            const count = result.body.list.length;
-                            if (count > 0 && checkContext(value, result.body.list)) {
-                                updateValidity({
-                                    ...validity,
-                                    context: { details: [{ message: apiContext + ' context already exists' }] },
-                                });
+                            if (result !== false) {
+                                const count = result.body.list.length;
+                                if (count > 0 && checkContext(value, result.body.list)) {
+                                    updateValidity({
+                                        ...validity,
+                                        context: {details: [{message: apiContext + ' context already exists'}]},
+                                    });
+                                } else {
+                                    updateValidity({ ...validity, context: contextValidity, version: null });
+                                }
                             } else {
                                 updateValidity({ ...validity, context: contextValidity, version: null });
                             }
