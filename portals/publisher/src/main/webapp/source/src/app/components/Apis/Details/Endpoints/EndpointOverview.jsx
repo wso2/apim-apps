@@ -533,19 +533,6 @@ function EndpointOverview(props) {
     const changeEndpointType = (value) => {
         setTypeChangeConfirmation({ openDialog: false, serviceInfo: false });
         setIsCustomBackendSelected(false);
-        if (endpointType.key === 'sequence_backend') {
-            const restAPI = new API();
-            restAPI.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id).then((resp) => {
-                console.log('Custom backend deleted successfully');
-            }).catch((error) => {
-                console.log(error);
-            });
-            restAPI.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id).then((resp) => {
-                console.log('Custom backend deleted successfully');
-            }).catch((error) => {
-                console.log(error);
-            });
-        }
         const selectedKey = typeChangeConfirmation.type || value;
         if (selectedKey === 'INLINE' || selectedKey === 'MOCKED_OAS') {
             const tmpConfig = createEndpointConfig('prototyped');
@@ -927,7 +914,6 @@ function EndpointOverview(props) {
                                                     setProductionBackendList={setProductionBackendList}
                                                     isValidSequenceBackend={isValidSequenceBackend}
                                                     setIsValidSequenceBackend={setIsValidSequenceBackend}
-                                                    endpointValidation={setAPIEndpointsValid}
                                                 />
                                             )
                                             : (
