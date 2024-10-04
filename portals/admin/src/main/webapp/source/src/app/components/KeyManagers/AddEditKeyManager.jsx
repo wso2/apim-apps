@@ -160,6 +160,8 @@ function AddEditKeyManager(props) {
     const location = useLocation();
     const { isGlobal } = (location && location.state) || false;
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
+    const [validOrgs, setValidOrgs] = useState([]);
+    const [orgValidity, setOrgValidity] = useState(true);
 
     const defaultKMType = (settings.keyManagerConfiguration
         && settings.keyManagerConfiguration.length > 0)
@@ -205,6 +207,7 @@ function AddEditKeyManager(props) {
             value: '',
         },
         wellKnownEndpoint: '',
+        allowedOrganizations: [],
     });
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
@@ -315,6 +318,7 @@ function AddEditKeyManager(props) {
                         setIsResidentKeyManager(true);
                     }
                 }
+                setValidOrgs(result.body.allowedOrganizations);
                 setValidRoles(result.body.permissions
                     && result.body.permissions.roles
                     ? result.body.permissions.roles
@@ -465,6 +469,7 @@ function AddEditKeyManager(props) {
         const keymanager = {
             ...state,
             tokenValidation: newTokenValidation,
+            allowedOrganizations: validOrgs,
             tokenType,
             permissions: (state.permissions === null || state.permissions.permissionStatus === null
                 || state.permissions.permissionStatus === 'PUBLIC') ? null : {
@@ -593,6 +598,15 @@ function AddEditKeyManager(props) {
             defaultMessage: 'Key Manager - Create new',
         });
     }
+
+    const handleOrganizationAddition = (org) => {
+        setValidOrgs(validOrgs.concat(org));
+        setOrgValidity(true);
+    };
+
+    const handleOrgDeletion = (org) => {
+        setValidOrgs(validOrgs.filter((existingOrg) => existingOrg !== org));
+    };
 
     return (
         <StyledContentBase
@@ -1867,6 +1881,87 @@ function AddEditKeyManager(props) {
                                                 </Box>
                                             )
                                         }
+                                    </Box>
+                                </Grid>
+                                <Grid item xs={12}>
+                                    <Box marginTop={2} marginBottom={2}>
+                                        <StyledHr />
+                                    </Box>
+                                </Grid>
+                            </>
+                        )
+                    }
+                    {
+                        settings.orgAccessControlEnabled && (
+                            <>
+                                <Grid item xs={12} md={12} lg={3}>
+                                    <Typography
+                                        color='inherit'
+                                        variant='subtitle2'
+                                        component='div'
+                                        id='KeyManagers.AddEditKeyManager.certificate.header'
+                                    >
+                                        <FormattedMessage
+                                            id='KeyManagers.AddEditKeyManager.orgs'
+                                            defaultMessage='Available Organizations'
+                                        />
+                                    </Typography>
+                                    <Typography
+                                        color='inherit'
+                                        variant='caption'
+                                        component='p'
+                                        id='KeyManagers.AddEditKeyManager.certificate.body'
+                                    >
+                                        <FormattedMessage
+                                            id='KeyManagers.AddEditKeyManager.org.description'
+                                            defaultMessage='Make this key manager available to selected organizations.'
+                                        />
+                                    </Typography>
+                                </Grid>
+                                <Grid item xs={12} md={12} lg={9}>
+                                    <Box display='flex' flexDirection='row' alignItems='center'>
+                                        <MuiChipsInput
+                                            fullWidth
+                                            label='Organizations'
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                            variant='outlined'
+                                            value={validOrgs}
+                                            placeholder='Type organizations and press Enter'
+                                            clearInputOnBlur
+                                            InputProps={{
+                                                endAdornment: !orgValidity && (
+                                                    <InputAdornment
+                                                        position='end'
+                                                        sx={{ position: 'absolute', right: '25px', top: '50%' }}
+                                                    >
+                                                        <Error color='error' />
+                                                    </InputAdornment>
+                                                ),
+                                            }}
+                                            onAddChip={handleOrganizationAddition}
+                                            error={!orgValidity}
+                                            helperText={
+                                                !orgValidity ? (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Scopes.Roles.Invalid'
+                                                        defaultMessage='A Role is invalid'
+                                                    />
+                                                ) : []
+                                            }
+                                            renderChip={(ChipComponent, key, ChipProps) => (
+                                                <ChipComponent
+                                                    key={ChipProps.label}
+                                                    label={ChipProps.label}
+                                                    onDelete={() => handleOrgDeletion(ChipProps.label)}
+                                                    style={{
+                                                        margin: '8px 8px 8px 0',
+                                                        float: 'left',
+                                                    }}
+                                                />
+                                            )}
+                                        />
                                     </Box>
                                 </Grid>
                                 <Grid item xs={12}>
