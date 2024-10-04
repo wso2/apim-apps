@@ -28,15 +28,15 @@ const SwaggerUI = (props) => {
     } = props;
 
     const securitySchemeRef = useRef(props.securitySchemeType);
-    const authorizationHeaderRef = useRef(props.authorizationHeader);
+    const authorizationHeaderRef = useRef(authorizationHeader);
 
     useEffect(() => {
         securitySchemeRef.current = props.securitySchemeType;
     }, [props.securitySchemeType]);
 
     useEffect(() => {
-        authorizationHeaderRef.current = props.authorizationHeader;
-    }, [props.authorizationHeader]);
+        authorizationHeaderRef.current = authorizationHeader;
+    }, [authorizationHeader]);
 
     const componentProps = {
         spec,
@@ -55,8 +55,10 @@ const SwaggerUI = (props) => {
                 req.headers[currentAuthHeader] = 'Basic ' + accessTokenProvider();
             } else if (currentSecuritySchemeType === 'TEST') {
                 req.headers[currentAuthHeader] = accessTokenProvider();
-            } else if (api.advertiseInfo && api.advertiseInfo.advertised && authorizationHeader !== '') {
-                req.headers[currentAuthHeader] = accessTokenProvider();
+            } else if (api.advertiseInfo && api.advertiseInfo.advertised) {
+                if (currentAuthHeader) {
+                    req.headers[currentAuthHeader] = accessTokenProvider();
+                }
             } else {
                 req.headers[currentAuthHeader] = 'Bearer ' + accessTokenProvider();
             }
