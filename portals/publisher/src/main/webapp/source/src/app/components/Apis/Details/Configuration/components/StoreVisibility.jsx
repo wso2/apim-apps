@@ -30,6 +30,7 @@ import APIValidation from 'AppData/APIValidation';
 import base64url from 'base64url';
 import Error from '@mui/icons-material/Error';
 import InputAdornment from '@mui/material/InputAdornment';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import Chip from '@mui/material/Chip';
 import { red } from '@mui/material/colors/';
 import Alert from 'AppComponents/Shared/Alert';
@@ -74,6 +75,7 @@ export default function StoreVisibility(props) {
     const [invalidOrgs, setInvalidOrgs] = useState([]);
     const isRestrictedByRoles = api.visibility === 'RESTRICTED';
     const [apiFromContext] = useAPI();
+    const { settings } = useAppContext();
 
     const restApi = new API();
     const intl = useIntl();
@@ -345,61 +347,66 @@ export default function StoreVisibility(props) {
                     />
                 </Box>
             )}
-            <Box py={2} style={{ marginTop: -10, marginBottom: 10 }}>
-                <ChipInput
-                    data-testid='visibility-select-role'
-                    fullWidth
-                    variant='outlined'
-                    label={(
-                        <FormattedMessage
-                            id='Apis.Details.Configuration.components.storeVisibility.orgs'
-                            defaultMessage='Developer Portal Organization Visibility'
-                        />
-                    )}
-                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
-                    value={api.visibleOrganizations.concat(invalidOrgs)}
-                    alwaysShowPlaceholder={false}
-                    placeholder='Enter organization and press Enter'
-                    blurBehavior='clear'
-                    InputProps={{
-                        endAdornment: !orgValidity && (
-                            <InputAdornment position='end'>
-                                <Error color='error' style={{ paddingBottom: 8 }} />
-                            </InputAdornment>
-                        ),
-                    }}
-                    onAdd={handleOrgAddition}
-                    error={!orgValidity || !orgExists}
-                    helperText={
-                        orgValidity ? (
-                            <FormattedMessage
-                                id='Apis.Details.Scopes.visibility.CreateScope.orgs.help'
-                                defaultMessage='Enter valid organization and press enter'
-                            />
-                        ) : (
-                            <FormattedMessage
-                                id='Apis.Details.Scopes.Orgs.Invalid'
-                                defaultMessage='Organization is invalid'
-                            />
-                        )
-                    }
-                    chipRenderer={({ value }, key) => (
-                        <Chip
-                            key={key}
-                            size='small'
-                            label={value}
-                            onDelete={() => {
-                                handleOrgDeletion(value);
+            {
+                settings.orgAccessControlEnabled && (
+                    <Box py={2} style={{ marginTop: -10, marginBottom: 10 }}>
+                        <ChipInput
+                            data-testid='visibility-select-role'
+                            fullWidth
+                            variant='outlined'
+                            label={(
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.components.storeVisibility.orgs'
+                                    defaultMessage='Developer Portal Organization Visibility'
+                                />
+                            )}
+                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)}
+                            value={api.visibleOrganizations.concat(invalidOrgs)}
+                            alwaysShowPlaceholder={false}
+                            placeholder='Enter organization and press Enter'
+                            blurBehavior='clear'
+                            InputProps={{
+                                endAdornment: !orgValidity && (
+                                    <InputAdornment position='end'>
+                                        <Error color='error' style={{ paddingBottom: 8 }} />
+                                    </InputAdornment>
+                                ),
                             }}
-                            style={{
-                                backgroundColor: invalidOrgs.includes(value) ? red[300] : null,
-                                margin: '0 8px 12px 0',
-                                float: 'left',
-                            }}
+                            onAdd={handleOrgAddition}
+                            error={!orgValidity || !orgExists}
+                            helperText={
+                                orgValidity ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.Scopes.visibility.CreateScope.orgs.help'
+                                        defaultMessage='Enter valid organization and press enter'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        id='Apis.Details.Scopes.Orgs.Invalid'
+                                        defaultMessage='Organization is invalid'
+                                    />
+                                )
+                            }
+                            chipRenderer={({ value }, key) => (
+                                <Chip
+                                    key={key}
+                                    size='small'
+                                    label={value}
+                                    onDelete={() => {
+                                        handleOrgDeletion(value);
+                                    }}
+                                    style={{
+                                        backgroundColor: invalidOrgs.includes(value) ? red[300] : null,
+                                        margin: '0 8px 12px 0',
+                                        float: 'left',
+                                    }}
+                                />
+                            )}
                         />
-                    )}
-                />
-            </Box>
+                    </Box>
+                )
+            }
+
         </Root>)
     );
 }

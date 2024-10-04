@@ -26,7 +26,6 @@ import PropTypes from 'prop-types';
 import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: DON'T USE THIS COMPONENT or even COPY
 import { Typography, Grid, Box } from '@mui/material';
 
-
 const PREFIX = 'ApplicationCreateForm';
 
 const classes = {
@@ -139,6 +138,7 @@ const ApplicationCreate = (props) => {
         validateName,
         validateDescription,
         isApplicationSharingEnabled,
+        isOrgAccessControlEnabled,
         handleAddChip,
         handleDeleteChip,
     } = props;
@@ -253,29 +253,34 @@ const ApplicationCreate = (props) => {
                 onBlur={(e) => validateDescription(e.target.value)}
 
             />
-            <Box display='flex' flexDirection='row' sx={{ pt: 1 }}>
-                <Typography sx={{ fontSize: 14 }}>
-                    <FormattedMessage
-                        defaultMessage="Share with the organization"
-                        id="Shared.AppsAndKeys.ApplicationCreateForm.enable.share.app.with.org"
-                        classes={{
-                            root: classes.mandatoryStarText,
-                        }}
-                    />
-                </Typography>
-                <Switch
-                    checked={applicationRequest?.visibility === 'SHARED_WITH_ORG'}
-                    onChange={handleSwitchToggle}
-                    name="orgSwitch"
-                    sx={{ mt: -0.75 }}
-                    inputProps={{
-                        'aria-label': intl.formatMessage({
-                            defaultMessage: 'Share application with the organization',
-                            id: 'Shared.AppsAndKeys.ApplicationCreateForm.enable.share.app.with.org.label',
-                        }),
-                    }}
-                />
-            </Box>
+            {
+                isOrgAccessControlEnabled && (
+                    <Box display='flex' flexDirection='row' sx={{ pt: 1 }}>
+                        <Typography sx={{ fontSize: 14 }}>
+                            <FormattedMessage
+                                defaultMessage="Share with the organization"
+                                id="Shared.AppsAndKeys.ApplicationCreateForm.enable.share.app.with.org"
+                                classes={{
+                                    root: classes.mandatoryStarText,
+                                }}
+                            />
+                        </Typography>
+                        <Switch
+                            checked={applicationRequest?.visibility === 'SHARED_WITH_ORG'}
+                            onChange={handleSwitchToggle}
+                            name="orgSwitch"
+                            sx={{ mt: -0.75 }}
+                            inputProps={{
+                                'aria-label': intl.formatMessage({
+                                    defaultMessage: 'Share application with the organization',
+                                    id: 'Shared.AppsAndKeys.ApplicationCreateForm.enable.share.app.with.org.label',
+                                }),
+                            }}
+                        />
+                    </Box>
+                )
+            }
+
             {allAppAttributes && (
                 Object.entries(allAppAttributes).map((item) => (
                     item[1].hidden !== 'true' ? (
@@ -349,6 +354,7 @@ ApplicationCreate.propTypes = {
     updateApplicationRequest: PropTypes.func.isRequired,
     isRequiredAttribute: PropTypes.func.isRequired,
     isApplicationSharingEnabled: PropTypes.bool.isRequired,
+    isOrgAccessControlEnabled: PropTypes.bool.isRequired,
     handleAddChip: PropTypes.func.isRequired,
     handleDeleteChip: PropTypes.func.isRequired,
     throttlingPolicyList: PropTypes.arrayOf(PropTypes.string).isRequired,
