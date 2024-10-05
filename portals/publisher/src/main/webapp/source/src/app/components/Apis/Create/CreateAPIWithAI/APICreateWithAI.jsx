@@ -35,7 +35,7 @@ import { Typography } from '@mui/material';
 const ApiCreateWithAI = () => {
     const [inputQuery, setInputQuery] = useState('');
     const [lastQuery, setLastQuery] = useState('');
-    const [finalOutcome, setFinalOutcome] = useState(''); // add setFinalOutcome logic
+    const [finalOutcome, setFinalOutcome] = useState('');
     const [executionResults, setExecutionResults] = useState([]);
 
     // const abortControllerRef = useRef(new AbortController());
@@ -56,6 +56,9 @@ const ApiCreateWithAI = () => {
     };
 
     const sendInitialRequest = async (query) => {
+        // setExecutionResults(() => {
+        //     return [];
+        // });
         try {
             console.log(query);
             const response = await fetch('http://127.0.0.1:5000/generate', {
@@ -68,118 +71,64 @@ const ApiCreateWithAI = () => {
     
             const text = await response.text();
             console.log(text);
-            // You can set the response to state here if needed
-            // setResponseText(text); // or data.generatedText
+            setFinalOutcome(text);              // setFinalOutcome('');
+
+            // const lines = text.split('\n'); // Split the text by newline characters and set the outcome line by line
+            // setFinalOutcome(lines.join('\n'));  // This will join them back with newline chars for rendering
+
         } catch (error) {
             console.error('Error:', error);
-            // Optionally, handle the error by setting a response state
-            // setResponseText('An error occurred while fetching the data.');
+            setFinalOutcome('An error occurred while fetching the data.');
         }
     };
 
-    // const sendInitialRequest = (query) => {
-    //     setIsExecutionError(false);
-    //     setExecutionResults(() => {
-    //         return [];
-    //     });
-    //     if (query.length < 1) {
-    //         setFinalOutcome(
-    //             intl.formatMessage({
-    //                 id: 'Apis.Details.ApiChat.components.finalOutcome.noQuery',
-    //                 defaultMessage: 'An invalid query is provided.',
-    //             }),
-    //         );
-    //         return;
-    //     }
-    //     setIsAgentRunning(true);
-    //     setFinalOutcome('');
-    //     const requestId = Utils.generateUUID();
-    //     const executePromise = apiClient.runAiAgentInitialIteration(
-    //         api.id,
-    //         requestId,
-    //         query,
-    //         enrichedSpec,
-    //     );
-    //     executePromise.then((response) => {
-    //         const { data } = response;
-    //         if (response.status === 201) {
-    //             if (abortControllerRef.current.signal.aborted) {
-    //                 return;
-    //             }
-    //             if (data.code) {
-    //                 setIsExecutionError(true);
-    //                 setExecutionErrorMessage(data.code);
-    //                 setIsAgentRunning(false);
-    //             } else {
-    //                 const { body } = response;
-    //                 switch (body.taskStatus) {
-    //                     case 'IN_PROGRESS':
-    //                         sendSubsequentRequest(requestId, body.resource);
-    //                         break;
-    //                     case 'COMPLETED':
-    //                         if (body.result && body.result !== '') {
-    //                             setFinalOutcome(body.result);
-    //                         } else {
-    //                             setFinalOutcome(
-    //                                 intl.formatMessage({
-    //                                     id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskCompletedOneItr',
-    //                                     defaultMessage: 'Task completed in 1 iteration.',
-    //                                 }),
-    //                             );
-    //                         }
-    //                         setIsAgentRunning(false);
-    //                         break;
-    //                     default:
-    //                         setIsExecutionError(true);
-    //                         setFinalOutcome(
-    //                             intl.formatMessage({
-    //                                 id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
-    //                                 defaultMessage: 'An error occurred during query execution.',
-    //                             }),
-    //                         );
-    //                         setIsAgentRunning(false);
-    //                 }
-    //             }
+
+    // const { body } = response;
+    // switch (body.taskStatus) {
+    //     case 'IN_PROGRESS':
+    //         sendSubsequentRequest(requestId, body.resource);
+    //         break;
+    //     case 'COMPLETED':
+    //         if (body.result && body.result !== '') {
+    //             setFinalOutcome(body.result);
     //         } else {
-    //             setIsExecutionError(true);
-    //             setExecutionErrorMessage(response?.data?.code);
-    //             setIsAgentRunning(false);
-    //         }
-    //     }).catch((error) => {
-    //         setIsExecutionError(true);
-    //         const statusCode = error?.response?.status;
-    //         if (statusCode === 401) { // Hanlde on-prem key vaidation failed scenario
-    //             setExecutionErrorMessage(getUnauthorizedErrorMessage());
-    //         } else if (statusCode === 429) { // Handle throttled out scenario
-    //             setExecutionErrorMessage(getTooManyRequestsErrorMessage());
-    //         } else if (statusCode === 504) { // Handle gateway timeout scenario
-    //             setExecutionErrorMessage(getGatewayTimeoutErrorMessage());
-    //         } else {
-    //             const errorMessage = error?.response?.data || 'An error occurred during query execution.';
-    //             setExecutionErrorMessage(errorMessage);
+    //             setFinalOutcome(
+    //                 intl.formatMessage({
+    //                     id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskCompletedOneItr',
+    //                     defaultMessage: 'Task completed in 1 iteration.',
+    //                 }),
+    //             );
     //         }
     //         setIsAgentRunning(false);
-    //     });
-    // };
+    //         break;
+    //     default:
+    //         setIsExecutionError(true);
+    //         setFinalOutcome(
+    //             intl.formatMessage({
+    //                 id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
+    //                 defaultMessage: 'An error occurred during query execution.',
+    //             }),
+    //         );
+    //         setIsAgentRunning(false);
+    // }
 
     return (
         <div>
             <ApiChatPoweredBy/>
             <ApiChatBanner/>
-            <h1>test5</h1>
-            <div>
-                <Typography variant='body1'>
-                    <FormattedMessage
-                        id='Apis.Details.ApiChat.warning.notSignedIn'
-                        defaultMessage='You must sign in if you wish to interact with API Chat bot.'
-                    />
-                </Typography>
-            </div>
+            <h1>testing UI changes for the text display</h1>
             <ApiChatResponse
                 lastQuery={lastQuery}
                 executionResults={executionResults}
                 finalOutcome={finalOutcome}
             />
+            {/* {(isAgentRunning || lastQuery || finalOutcome) && (
+                <ApiChatResponse
+                    lastQuery={lastQuery}
+                    executionResults={executionResults}
+                    finalOutcome={finalOutcome}
+                />
+            )} */}          
             <ApiChatExecute
                 lastQuery={lastQuery}
                 inputQuery={inputQuery}
