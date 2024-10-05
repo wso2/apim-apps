@@ -32,7 +32,7 @@ import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import { styled, alpha } from '@mui/material/styles';
 import { CircularProgress, Typography } from '@mui/material';
-import MonacoEditor from 'react-monaco-editor';
+// import MonacoEditor from 'react-monaco-editor';
 import xmlFormat from 'xml-formatter';
 import Utils from 'AppData/Utils';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
@@ -138,9 +138,9 @@ interface ApiChatResponseProps {
     lastQuery: string;
     executionResults: any;
     finalOutcome: string;
-    isAgentRunning: boolean;
-    isAgentTerminating: boolean;
-    isExecutionError: boolean;
+    // isAgentRunning: boolean;
+    // isAgentTerminating: boolean;
+    // isExecutionError: boolean;
 }
 
 /**
@@ -151,19 +151,19 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
     lastQuery,
     executionResults,
     finalOutcome,
-    isAgentRunning,
-    isAgentTerminating,
-    isExecutionError,
+    // isAgentRunning,
+    // isAgentTerminating,
+    // isExecutionError,
 }) => {
     const intl = useIntl();
     const [user, setUser] = useState('You');
 
-    useEffect(() => {
-        const loggedInUser = Utils.getUser();
-        if (loggedInUser) {
-            setUser(loggedInUser);
-        }
-    }, []);
+    // useEffect(() => {
+    //     const loggedInUser = Utils.getUser();
+    //     if (loggedInUser) {
+    //         setUser(loggedInUser);
+    //     }
+    // }, []);
 
     const copyText = intl.formatMessage({
         id: 'Apis.Details.ApiChat.components.ApiChatResponse.CopyToClipboard.copyText',
@@ -227,36 +227,36 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
         }
 
         if (contentType.includes(APPLICATION_JSON) && executionResult.body !== '') {
-            return (
-                <MonacoEditor
-                    width='100%'
-                    height='200'
-                    language='json'
-                    value={JSON.stringify(JSON.parse(executionResult.body), null, 2)}
-                    options={{
-                        readOnly: true,
-                        minimap: { enabled: false },
-                        scrollBeyondLastLine: false,
-                        wordWrap: 'on',
-                    }}
-                />
-            );
+            // return (
+            //     <MonacoEditor
+            //         width='100%'
+            //         height='200'
+            //         language='json'
+            //         value={JSON.stringify(JSON.parse(executionResult.body), null, 2)}
+            //         options={{
+            //             readOnly: true,
+            //             minimap: { enabled: false },
+            //             scrollBeyondLastLine: false,
+            //             wordWrap: 'on',
+            //         }}
+            //     />
+            // );
         } else if (contentType.includes(APPLICATION_XML) && executionResult.body !== '') {
             const formattedMessage = xmlFormat(executionResult.body);
-            return (
-                <MonacoEditor
-                    width='100%'
-                    height='200'
-                    language='xml'
-                    value={formattedMessage}
-                    options={{
-                        readOnly: true,
-                        minimap: { enabled: false },
-                        scrollBeyondLastLine: false,
-                        wordWrap: 'on',
-                    }}
-                />
-            );
+            // return (
+            //     <MonacoEditor
+            //         width='100%'
+            //         height='200'
+            //         language='xml'
+            //         value={formattedMessage}
+            //         options={{
+            //             readOnly: true,
+            //             minimap: { enabled: false },
+            //             scrollBeyondLastLine: false,
+            //             wordWrap: 'on',
+            //         }}
+            //     />
+            // );
         } else {
             return (
                 <Typography variant='body1'>
@@ -287,7 +287,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                             </Typography>
                         </Box>
                     </Box>
-                    <CustomIcon width={50} height={50} icon='api-chat' />
+                    {/* <CustomIcon width={50} height={50} icon='api-chat' /> */}
                     <Box className={classes.responseBannerContentWrap} ml={6} mr={6} mt={-2.5}>
                         <Box className={classes.responseBannerContent}>
                             <Box className={classes.responseBannerTriangle} />
@@ -359,7 +359,8 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                     </Accordion>
                                 );
                             })}
-                            {!isAgentRunning && lastQuery && finalOutcome && !isExecutionError && (
+                            {/* {!isAgentRunning && lastQuery && finalOutcome && !isExecutionError && ( */}
+                            {lastQuery && finalOutcome && (
                                 <>
                                     {executionResults.length === 0 ? (
                                         <Box display='flex'>
@@ -378,7 +379,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                             )}
                             {lastQuery && !finalOutcome && (
                                 <>
-                                    <Box className={classes.queryProcessLoader}>
+                                    {/* <Box className={classes.queryProcessLoader}>
                                         {isAgentTerminating ? (
                                             <>
                                                 <CircularProgress size={20} />
@@ -400,7 +401,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                                 </Typography>
                                             </>
                                         )}
-                                    </Box>
+                                    </Box> */}
                                 </>
                             )}
                         </Box>
