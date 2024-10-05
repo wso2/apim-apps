@@ -71,11 +71,7 @@ const ApiCreateWithAI = () => {
     
             const text = await response.text();
             console.log(text);
-            setFinalOutcome(text);              // setFinalOutcome('');
-
-            // const lines = text.split('\n'); // Split the text by newline characters and set the outcome line by line
-            // setFinalOutcome(lines.join('\n'));  // This will join them back with newline chars for rendering
-
+            setFinalOutcome(<pre>{text}</pre>);
         } catch (error) {
             console.error('Error:', error);
             setFinalOutcome('An error occurred while fetching the data.');
@@ -116,7 +112,7 @@ const ApiCreateWithAI = () => {
         <div>
             <ApiChatPoweredBy/>
             <ApiChatBanner/>
-            <h1>testing UI changes for the text display</h1>
+            <h1>test UI for payload</h1>
             <ApiChatResponse
                 lastQuery={lastQuery}
                 executionResults={executionResults}
