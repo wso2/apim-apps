@@ -24,6 +24,7 @@ import { styled } from '@mui/material/styles';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
+import ApiChatResponse from './components/ApiChatResponse';
 import { FormattedMessage } from 'react-intl';
 import { Typography } from '@mui/material';
 
@@ -34,8 +35,8 @@ import { Typography } from '@mui/material';
 const ApiCreateWithAI = () => {
     const [inputQuery, setInputQuery] = useState('');
     const [lastQuery, setLastQuery] = useState('');
-    // const [finalOutcome, setFinalOutcome] = useState('');
-    // const [executionResults, setExecutionResults] = useState([]);
+    const [finalOutcome, setFinalOutcome] = useState(''); // add setFinalOutcome logic
+    const [executionResults, setExecutionResults] = useState([]);
 
     // const abortControllerRef = useRef(new AbortController());
 
@@ -75,28 +76,6 @@ const ApiCreateWithAI = () => {
             // setResponseText('An error occurred while fetching the data.');
         }
     };
-
-    // const handleSubmit = async (inputQuery: string) => {
-    //     try {
-    //         console.log(inputQuery);
-    //         const response = await fetch('http://127.0.0.1:5000/generate', {
-    //             method: 'POST',
-    //             headers: {
-    //                 'Content-Type': 'application/json',
-    //             },
-    //             body: JSON.stringify({ text: inputQuery }),
-    //         });
-    
-    //         const text = await response.text();
-    //         console.log(text);
-    //         // You can set the response to state here if needed
-    //         // setResponseText(text); // or data.generatedText
-    //     } catch (error) {
-    //         console.error('Error:', error);
-    //         // Optionally, handle the error by setting a response state
-    //         // setResponseText('An error occurred while fetching the data.');
-    //     }
-    // };
 
     // const sendInitialRequest = (query) => {
     //     setIsExecutionError(false);
@@ -196,7 +175,11 @@ const ApiCreateWithAI = () => {
                     />
                 </Typography>
             </div>
-            {/* <ApiChatExecute/> */}
+            <ApiChatResponse
+                lastQuery={lastQuery}
+                executionResults={executionResults}
+                finalOutcome={finalOutcome}
+            />
             <ApiChatExecute
                 lastQuery={lastQuery}
                 inputQuery={inputQuery}
