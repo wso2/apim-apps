@@ -48,13 +48,12 @@ import {
     API_SECURITY_KEY_TYPE_PRODUCTION, 
     API_SECURITY_KEY_TYPE_SANDBOX 
 } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
 import Dropzone from 'react-dropzone';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import { Alert } from 'AppComponents/Shared';
 import Utils from 'AppData/Utils';
+import cloneDeep from 'lodash.clonedeep';
 
 const PREFIX = 'CustomBackend';
 
@@ -64,13 +63,22 @@ const classes = {
     uploadCustomBackendDialogHeader: `${PREFIX}-uploadCustomBackendDialogHeader`,
     productionBackendTitle: `${PREFIX}-productionTitle`,
     backendList: `${PREFIX}-backendList`,
+    errorMessageContainer: `${PREFIX}-errorMessageContainer`,
+    endpointValidityMessage: `${PREFIX}-endpointValidityMessage`,
 }
 
 const StyledGrid = styled(Grid)((
     {
         theme
     }
-) => ({}));
+) => ({
+    [`& .${classes.errorMessageContainer}`]: {
+        marginTop: theme.spacing(1),
+    },
+    [`& .${classes.endpointValidityMessage}`]: {
+        color: theme.palette.error.main,
+    },
+}));
 
 const StyledDialog = styled(Dialog)((
     {
@@ -168,7 +176,7 @@ export default function CustomBackend(props) {
     } = props;
 
     const restAPI = new API();
-    let backenCount = 0;
+    const sequenceError = 'Sequence backend is not configured. Please add a sequence backend to proceed.';
 
     const [customBackend, setCustomBackend] = useState({ name: '', content: {} });
     const [isSaving, setSaving] = useState(false);
@@ -181,6 +189,7 @@ export default function CustomBackend(props) {
     const closeCustomBackendUpload = () => {
         setUploadCustomBackendOpen({ open: false, keyType: '' });
         setCustomBackend({ name: '', content: '' });
+        setCustomBackendProd({ name: '', content: '' });
     };
 
     useEffect(() => {
@@ -225,37 +234,21 @@ export default function CustomBackend(props) {
     };
 
     const deleteSequenceBackendByKey = (keyType) => {
-        let allowDelete = false;
+        setDeleting(true);
+        setSequenceBackendToDelete({ open: false, keyType: '', name: '' });
         if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
-            if (productionBackendList.length > 0) {
-                allowDelete = true;
+            setSandBoxBackendList([]);
+            if (productionBackendList.length === 0) {
+                setIsValidSequenceBackend(false);
             }
-        } else {
-            if (sandBoxBackendList.length > 0) {
-                allowDelete = true;
+        } else if (keyType === API_SECURITY_KEY_TYPE_PRODUCTION) {
+            setProductionBackendList([]);
+            if (sandBoxBackendList.length === 0) {
+                setIsValidSequenceBackend(false);
             }
         }
-
-        if (allowDelete) {
-            setDeleting(true);
-            restAPI.deleteSequenceBackend(keyType, api.id).then((resp) => {
-                Alert.success('Sequence backend deleted successfully');
-            }).finally(() => {
-                setDeleting(false);
-                setSequenceBackendToDelete({ open: false, keyType: '', name: '' });
-                if (keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
-                    setSandBoxBackendList([]);
-                    if (productionBackendList.length === 0) {
-                        setIsValidSequenceBackend(false);
-                    }
-                } else {
-                    setProductionBackendList([]);
-                    if (sandBoxBackendList.length === 0) {
-                        setIsValidSequenceBackend(false);
-                    }
-                }
-            });
-        }
+        setCustomBackend({ name: '', content: '' });
+        setDeleting(false);
     }
 
 
@@ -264,21 +257,20 @@ export default function CustomBackend(props) {
      * */
     const saveCustomBackend = () => {
         setSaving(true);
+        const customBackendClone = cloneDeep(customBackend);
         if (uploadCustomBackendOpen.keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
-            sandBoxBackendList.push({"sequenceName": customBackend.name, "content": customBackend.content});
+            sandBoxBackendList.push({"sequenceName": customBackendClone.name, "content": customBackendClone.content});
+            setSandBoxBackendList(sandBoxBackendList);
         } else {
-            productionBackendList.push({"sequenceName": customBackend.name, "content": customBackend.content});
+            productionBackendList.push({"sequenceName": customBackendClone.name, "content": customBackendClone.content});
+            setProductionBackendList(productionBackendList);
         }
-        restAPI.uploadCustomBackend(customBackend.content, uploadCustomBackendOpen.keyType, api.id).then((resp) => {
-            Alert.success('Custom backend uploaded successfully');
-        }).finally(() => {
-            setSaving(false);
-            setCustomBackend({ name: '', content: '' });
-            setUploadCustomBackendOpen({ open: false, keyType: '' });
-            if (sandBoxBackendList.length > 0 || productionBackendList.length > 0) {
-                setIsValidSequenceBackend(true);
-            }
-        });
+        setSaving(false);
+        setUploadCustomBackendOpen({ open: false, keyType: '' });
+        if (sandBoxBackendList.length > 0 || productionBackendList.length > 0) {
+            setIsValidSequenceBackend(true);
+        }
+        setCustomBackend({ name: '', content: '' });
     };
 
     /**
@@ -431,7 +423,7 @@ export default function CustomBackend(props) {
                                     </ListItemAvatar>
                                     <ListItemText>
                                         <FormattedMessage
-                                                id='Apis.Details.Endpoints.SequenceBackend.AddCertificat'
+                                                id='Apis.Details.Endpoints.SequenceBackend.AddSequence'
                                                 defaultMessage='Add Sequence Backend' 
                                             />
                                     </ListItemText>
@@ -439,6 +431,17 @@ export default function CustomBackend(props) {
                             )}
                         </List>
                     </>
+            {
+                isValidSequenceBackend
+                    ? <div />
+                    : (
+                        <Grid item className={classes.errorMessageContainer}>
+                            <Typography className={classes.endpointValidityMessage}>
+                                {sequenceError}
+                            </Typography>
+                        </Grid>
+                    )
+            }
             </Grid>
             <StyledDialog open = {uploadCustomBackendOpen.open}>
                 <DialogTitle>
@@ -511,7 +514,7 @@ export default function CustomBackend(props) {
                                                     <InsertDriveFileIcon color='primary' fontSize='large' />
                                                     <Box fontSize='h6.fontSize' fontWeight='fontWeightLight'>
                                                         <Typography>
-                                                            {customBackend.name}
+                                                        {customBackend.name}
                                                         </Typography>
                                                     </Box>
                                                 </div>,
