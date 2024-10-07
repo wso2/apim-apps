@@ -32,7 +32,6 @@ import Alert from 'AppComponents/Shared/Alert';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import CONSTS from 'AppData/Constants';
-import Progress from 'AppComponents/Shared/Progress';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
@@ -192,7 +191,6 @@ function Subscriptions(props) {
                     setTenantList={setTenantList}
                 />
             )}
-            { updateInProgress && <Progress /> }
             {(api.gatewayVendor === 'wso2') && (
                 <Grid
                     container
@@ -206,14 +204,19 @@ function Subscriptions(props) {
                             type='submit'
                             variant='contained'
                             color='primary'
-                            disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            disabled={updateInProgress || api.isRevision 
+                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                             onClick={() => handleSubscriptionSave()}
                             id='subscriptions-save-btn'
                         >
-                            <FormattedMessage
-                                id='Apis.Details.Subscriptions.Subscriptions.save'
-                                defaultMessage='Save'
-                            />
+                            {updateInProgress ? (
+                                <CircularProgress size={24} />
+                            ) : (
+                                <FormattedMessage
+                                    id='Apis.Details.Subscriptions.Subscriptions.save'
+                                    defaultMessage='Save'
+                                />
+                            )}
                         </Button>
                     </Grid>
                     <Grid item>

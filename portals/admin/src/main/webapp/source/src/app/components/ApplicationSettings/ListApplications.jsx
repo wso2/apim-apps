@@ -49,17 +49,19 @@ export default function ListApplications() {
     const [totalApps, setTotalApps] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(0);
-    const [owner, setOwner] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     /**
     * API call to get application list
     * @returns {Promise}.
     */
-    function apiCall(pageNo, user = owner) {
+    function apiCall(pageNo, user = searchQuery, name = searchQuery) {
         setLoading(true);
         const restApi = new API();
         return restApi
-            .getApplicationList({ limit: rowsPerPage, offset: pageNo * rowsPerPage, user })
+            .getApplicationList({
+                limit: rowsPerPage, offset: pageNo * rowsPerPage, user, name,
+            })
             .then((result) => {
                 setApplicationList(result.body.list);
                 const { pagination: { total } } = result.body;
@@ -106,7 +108,7 @@ export default function ListApplications() {
 
     function clearSearch() {
         setPage(0);
-        setOwner('');
+        setSearchQuery('');
         apiCall(page, '').then((result) => {
             setApplicationList(result);
         });
@@ -117,7 +119,7 @@ export default function ListApplications() {
         if (newQuery === '') {
             clearSearch();
         } else {
-            setOwner(newQuery);
+            setSearchQuery(newQuery);
         }
     }
 
@@ -149,21 +151,20 @@ export default function ListApplications() {
                                     fullWidth
                                     id='search-label'
                                     label={intl.formatMessage({
-                                        defaultMessage: 'Search Application by Application Owner',
+                                        defaultMessage: 'Search Application',
                                         id: 'Applications.Listing.Listing.applications.search.label',
                                     })}
                                     placeholder={intl.formatMessage({
-                                        defaultMessage: 'Application Owner',
+                                        defaultMessage: 'Application Name/Owner',
                                         id: 'Applications.Listing.Listing.search.placeholder',
                                     })}
                                     InputProps={{
                                         disableUnderline: true,
                                     }}
-                                    value={owner}
-                                    // onKeyPress={this.handleSearchKeyPress}
+                                    value={searchQuery}
                                     onChange={setQuery}
                                 />
-                                { owner.length > 0
+                                { searchQuery.length > 0
                                 && (
                                     <Tooltip
                                         title={

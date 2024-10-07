@@ -135,7 +135,8 @@ export default function CustomSplitButton(props) {
                                                     selected={index === selectedIndex}
                                                     onClick={(event) => handleClick(event, index)}
                                                     disabled={(option.key === 'Save and deploy'
-                                                        && isDeployButtonDisabled)}
+                                                        && (isDeployButtonDisabled || (!isValidSequenceBackend 
+                                                            && isCustomBackendSelected)))}
                                                 >
                                                     {option.label}
                                                 </MenuItem>
