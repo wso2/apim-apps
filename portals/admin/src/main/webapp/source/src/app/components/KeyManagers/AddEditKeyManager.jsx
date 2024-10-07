@@ -451,8 +451,8 @@ function AddEditKeyManager(props) {
         setSaving(true);
 
         let promisedAddKeyManager;
-        const newTokenValidation = (tokenValidation.length > 0 && tokenValidation[0].type === '')
-            ? [] : tokenValidation;
+        const newTokenValidation = (tokenValidation.length > 0 && (tokenValidation[0].type === ''
+            || tokenValidation[0].type === 'NONE')) ? [] : tokenValidation;
         let tokenType;
         if (enableDirectToken && enableExchangeToken) {
             tokenType = 'BOTH';
@@ -1995,17 +1995,7 @@ function AddEditKeyManager(props) {
                                         >
                                             <FormControlLabel
                                                 value='selfValidate'
-                                                control={(
-                                                    <Radio
-                                                        onChange={(event) => {
-                                                            if (event.target.checked) {
-                                                                setTokenValidations([{
-                                                                    id: 1, type: '', value: '', enable: true,
-                                                                }]); // Reset sampleValue to false
-                                                            }
-                                                        }}
-                                                    />
-                                                )}
+                                                control={<Radio />}
                                                 label={intl.formatMessage({
                                                     id: 'KeyManagers.AddEditKeyManager.selfvalidate',
                                                     defaultMessage: 'Self validate JWT',
@@ -2022,33 +2012,28 @@ function AddEditKeyManager(props) {
                                         </RadioGroup>
                                     </FormControl>
                                 </Box>
-                                {!enableSelfValidationJWT && (
-                                    <>
-                                        <Box display='flex' marginTop={3} marginBottom={2}>
-                                            <Typography
-                                                color='inherit'
-                                                variant='subtitle2'
-                                                component='div'
-                                                id='KeyManagers.AddEditKeyManager.token.handling.options.header'
-                                            >
-                                                <FormattedMessage
-                                                    id='KeyManagers.AddEditKeyManager.token.handling.options'
-                                                    defaultMessage='Token Handling Options'
-                                                />
-                                            </Typography>
-                                        </Box>
-
-                                        <Box>
-                                            {(isEmpty(tokenValidation)
-                                                || (
-                                                    <KeyValidations
-                                                        tokenValidations={tokenValidation}
-                                                        setTokenValidations={setTokenValidations}
-                                                    />
-                                                ))}
-                                        </Box>
-                                    </>
-                                )}
+                                <Box display='flex' marginTop={3} marginBottom={2}>
+                                    <Typography
+                                        color='inherit'
+                                        variant='subtitle2'
+                                        component='div'
+                                        id='KeyManagers.AddEditKeyManager.token.handling.options.header'
+                                    >
+                                        <FormattedMessage
+                                            id='KeyManagers.AddEditKeyManager.token.handling.options'
+                                            defaultMessage='Token Handling Options'
+                                        />
+                                    </Typography>
+                                </Box>
+                                <Box>
+                                    {(isEmpty(tokenValidation)
+                                        || (
+                                            <KeyValidations
+                                                tokenValidations={tokenValidation}
+                                                setTokenValidations={setTokenValidations}
+                                            />
+                                        ))}
+                                </Box>
                                 <Box display='flex' marginTop={3} marginBottom={2}>
                                     <Typography
                                         color='inherit'

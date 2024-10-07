@@ -135,6 +135,9 @@ export default function KeyValidation(props) {
                         onChange={onChange}
                         fullWidth
                     >
+                        <MenuItem value='NONE'>
+                            <FormattedMessage id='KeyManager.KeyValidation.NONE' defaultMessage='NONE' />
+                        </MenuItem>
                         <MenuItem value='REFERENCE'>
                             <FormattedMessage id='KeyManager.KeyValidation.REFERENCE' defaultMessage='REFERENCE' />
                         </MenuItem>
