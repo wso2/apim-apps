@@ -371,136 +371,140 @@ class Operations extends React.Component {
                         />
                     </Typography>
                 </Box>
-                <Grid container spacing={2}>
-                    <Grid item md={12}>
-                        <APIRateLimiting
-                            operationRateLimits={apiPolicies}
-                            api={api}
-                            value={apiThrottlingPolicy}
-                            onChange={this.handleApiThrottlePolicy}
-                        />
-                    </Grid>
-                    <Grid item md={2}>
-                        <Box mt={4} pb={2}>
-                            <div className={classes.searchWrapper}>
-                                <TextField
-                                    id='outlined-full-width'
-                                    disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                                    label={(
-                                        <FormattedMessage
-                                            id='Apis.Details.Operations.filter.label'
-                                            defaultMessage='Operation'
-                                        />
-                                    )}
-                                    placeholder={intl.formatMessage({
-                                        id: 'Apis.Details.Operations.filter.placeholder',
-                                        defaultMessage: 'Filter Operations',
-                                    })}
-                                    onChange={(e) => this.setFilterByKeyWord(e, api.operations)}
-                                    fullWidth
-                                    variant='outlined'
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                />
-                            </div>
-                        </Box>
-                    </Grid>
-                    <Grid item md={12}>
-                        <Table>
-                            <TableRow>
-                                <TableCell>
-                                    <Typography variant='subtitle2'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Operations.operation.operationName'
-                                            defaultMessage='Operation'
-                                        />
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant='subtitle2'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Operations.Operation.OperationType'
-                                            defaultMessage='Operation Type'
-                                        />
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant='subtitle2'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Operations.Operation.throttling.policy'
-                                            defaultMessage='Rate Limiting'
-                                        />
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant='subtitle2'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Operations.Operation.scopes'
-                                            defaultMessage='Scope'
-                                        />
-                                    </Typography>
-                                </TableCell>
-                                <TableCell>
-                                    <Typography variant='subtitle2'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Operations.Operation.authType'
-                                            defaultMessage='Security Enabled'
-                                        />
-                                    </Typography>
-                                </TableCell>
-                            </TableRow>
-                            {operations.filter(
-                                (operation) => operation.target.toLowerCase().includes(filterKeyWord),
-                            ).map((item) => {
-                                return (
-                                    <Operation
-                                        operation={item}
-                                        handleUpdateList={this.handleUpdateList}
-                                        scopes={api.scopes}
-                                        sharedScopes={sharedScopes}
-                                        isOperationRateLimiting={!apiThrottlingPolicy}
-                                        apiPolicies={apiPolicies}
-                                    />
-                                );
-                            })}
-                        </Table>
-                    </Grid>
-                    <Grid container direction='row' spacing={1} style={{ marginTop: 20 }}>
-                        <Grid item>
-                            {api.isRevision || enableReadOnly
-                                || isRestricted(['apim:api_create'], api) ? (
-                                    <Button
-                                        disabled
-                                        type='submit'
-                                        variant='contained'
-                                        color='primary'
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.Operations.Operation.save'
-                                            defaultMessage='Save'
-                                        />
-                                    </Button>
-                                ) : (
-                                    <CustomSplitButton
-                                        advertiseInfo={api.advertiseInfo}
-                                        api={api}
-                                        handleSave={this.updateOperations}
-                                        handleSaveAndDeploy={this.handleSaveAndDeployOperations}
-                                        isUpdating={isSaving}
+                <Grid item md={12}>
+                    <APIRateLimiting
+                        operationRateLimits={apiPolicies}
+                        api={api}
+                        value={apiThrottlingPolicy}
+                        onChange={this.handleApiThrottlePolicy}
+                    />
+                </Grid>
+                <Grid item>
+                    <Box mt={4} pb={2}>
+                        <div className={classes.searchWrapper}>
+                            <TextField
+                                id='outlined-full-width'
+                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                label={(
+                                    <FormattedMessage
+                                        id='Apis.Details.Operations.filter.label'
+                                        defaultMessage='Operation'
                                     />
                                 )}
+                                placeholder={intl.formatMessage({
+                                    id: 'Apis.Details.Operations.filter.placeholder',
+                                    defaultMessage: 'Filter Operations',
+                                })}
+                                onChange={(e) => this.setFilterByKeyWord(e, api.operations)}
+                                fullWidth
+                                variant='outlined'
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                sx={{ width:'initial' }}
+                            />
+                        </div>
+                    </Box>
+                </Grid>
+                <Grid item>
+                    <Paper>
+                        <Grid container>
+                            <Grid item md={12}>
+                                <Table>
+                                    <TableRow>
+                                        <TableCell>
+                                            <Typography variant='subtitle2'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Operations.operation.operationName'
+                                                    defaultMessage='Operation'
+                                                />
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant='subtitle2'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Operations.Operation.OperationType'
+                                                    defaultMessage='Operation Type'
+                                                />
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant='subtitle2'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Operations.Operation.throttling.policy'
+                                                    defaultMessage='Rate Limiting'
+                                                />
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant='subtitle2'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Operations.Operation.scopes'
+                                                    defaultMessage='Scope'
+                                                />
+                                            </Typography>
+                                        </TableCell>
+                                        <TableCell>
+                                            <Typography variant='subtitle2'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Operations.Operation.authType'
+                                                    defaultMessage='Security Enabled'
+                                                />
+                                            </Typography>
+                                        </TableCell>
+                                    </TableRow>
+                                    {operations.filter(
+                                        (operation) => operation.target.toLowerCase().includes(filterKeyWord),
+                                    ).map((item) => {
+                                        return (
+                                            <Operation
+                                                operation={item}
+                                                handleUpdateList={this.handleUpdateList}
+                                                scopes={api.scopes}
+                                                sharedScopes={sharedScopes}
+                                                isOperationRateLimiting={!apiThrottlingPolicy}
+                                                apiPolicies={apiPolicies}
+                                            />
+                                        );
+                                    })}
+                                </Table>
+                            </Grid>
                         </Grid>
-                        <Grid item>
-                            <Link to={'/apis/' + api.id + '/overview'}>
-                                <Button>
-                                    <FormattedMessage
-                                        id='Apis.Details.Operations.Operation.cancel'
-                                        defaultMessage='Cancel'
-                                    />
-                                </Button>
-                            </Link>
-                        </Grid>
+                    </Paper>
+                </Grid>
+                <Grid container direction='row' spacing={1} style={{marginTop: 20}}>
+                    <Grid item>
+                        {api.isRevision || enableReadOnly || isRestricted(['apim:api_create'], api) ? (
+                            <Button
+                                disabled
+                                type='submit'
+                                variant='contained'
+                                color='primary'
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.Operations.Operation.save'
+                                    defaultMessage='Save'
+                                />
+                            </Button>
+                        ) : (
+                            <CustomSplitButton
+                                advertiseInfo={api.advertiseInfo}
+                                api={api}
+                                handleSave={this.updateOperations}
+                                handleSaveAndDeploy={this.handleSaveAndDeployOperations}
+                                isUpdating={isSaving}
+                            />
+                        )}
+                    </Grid>
+                    <Grid item>
+                        <Link to={'/apis/' + api.id + '/overview'}>
+                            <Button>
+                                <FormattedMessage
+                                    id='Apis.Details.Operations.Operation.cancel'
+                                    defaultMessage='Cancel'
+                                />
+                            </Button>
+                        </Link>
                     </Grid>
                 </Grid>
             </Root>)
