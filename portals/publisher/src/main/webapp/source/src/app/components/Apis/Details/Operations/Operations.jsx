@@ -20,6 +20,7 @@ import React from 'react';
 import { styled } from '@mui/material/styles';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
+import Paper from '@mui/material/Paper';
 import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import Box from '@mui/material/Box';
