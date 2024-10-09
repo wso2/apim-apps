@@ -967,7 +967,6 @@ function AddEdit(props) {
                                             value={totalTokenCount}
                                             type='number'
                                             onChange={onChange}
-                                            required
                                             InputProps={{
                                                 id: 'totalTokenCount',
                                                 onBlur: ({ target: { value } }) => {
@@ -1000,7 +999,6 @@ function AddEdit(props) {
                                             value={promptTokenCount}
                                             type='number'
                                             onChange={onChange}
-                                            required
                                             InputProps={{
                                                 id: 'promptTokenCount',
                                                 onBlur: ({ target: { value } }) => {
@@ -1033,7 +1031,6 @@ function AddEdit(props) {
                                             value={completionTokenCount}
                                             type='number'
                                             onChange={onChange}
-                                            required
                                             InputProps={{
                                                 id: 'completionTokenCount',
                                                 onBlur: ({ target: { value } }) => {

@@ -237,8 +237,11 @@ class SubscriptionPoliciesManage extends Component {
                                         label={
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                                 {value[1].displayName + ' : ' + value[1].description}
-                                                <Tooltip title={getPolicyDetails(value[1])} arrow>
-                                                    <InfoIcon style={{ marginLeft: 5, fontSize: 18 }} />
+                                                <Tooltip title={getPolicyDetails(value[1])}>
+                                                    <InfoIcon
+                                                        color='action'
+                                                        style={{ marginLeft: 5, fontSize: 20, cursor: 'default' }}
+                                                    />
                                                 </Tooltip>
                                             </div>
                                         }
