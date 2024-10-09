@@ -287,7 +287,7 @@ function Configuration(props) {
                             component='p' 
                             variant='subtitle2' 
                             className={parentClasses.subtitle}
-                            style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}
+                            style={{ overflow: 'hidden' }}
                         >
                             <FormattedMessage
                                 id='Apis.Details.NewOverview.MetaData.visibility.store'
