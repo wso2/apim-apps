@@ -31,6 +31,7 @@ export default function AIEndpointAuth(props) {
     const intl = useIntl();
 
     const [apiKeyIdentifier] = useState(apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParam);
+    const [apiKeyIdentifierType] = useState(apiKeyParamConfig.authHeader ? 'HEADER' : 'QUERY_PARAMETER');
 
     const [apiKeyValue, setApiKeyValue] =
         useState(api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue === '' ?
@@ -43,6 +44,7 @@ export default function AIEndpointAuth(props) {
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: 'apikey',
             apiKeyIdentifier,
+            apiKeyIdentifierType,
             apiKeyValue: api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue
                 === '' ? '' : null,
             enabled: true,
@@ -87,6 +89,7 @@ export default function AIEndpointAuth(props) {
                         ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
                         type: 'apikey',
                         apiKeyIdentifier,
+                        apiKeyIdentifierType,
                         apiKeyValue: event.target.value === '********' ? '' : event.target.value,
                         enabled: true,
                     }, isProduction ? 'production' : 'sandbox');
