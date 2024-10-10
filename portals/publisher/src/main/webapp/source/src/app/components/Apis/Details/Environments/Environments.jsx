@@ -80,7 +80,7 @@ const classes = {
     infoIcon: `${PREFIX}-infoIcon`,
     saveButton: `${PREFIX}-saveButton`,
     shapeRec: `${PREFIX}-shapeRec`,
-    shapeCircaleBack: `${PREFIX}-shapeCircaleBack`,
+    shapeCircleBack: `${PREFIX}-shapeCircleBack`,
     shapeInnerComplete: `${PREFIX}-shapeInnerComplete`,
     shapeInnerInactive: `${PREFIX}-shapeInnerInactive`,
     shapeDottedEnd: `${PREFIX}-shapeDottedEnd`,
@@ -155,18 +155,18 @@ const Root = styled('div')(({ theme }) => ({
         height: 3,
     },
 
-    [`& .${classes.shapeCircaleBack}`]: {
+    [`& .${classes.shapeCircleBack}`]: {
         backgroundColor: '#E2E2E2',
-        width: 63,
-        height: 63,
+        width: 64,
+        height: 64,
     },
 
     [`& .${classes.shapeInnerComplete}`]: {
         backgroundColor: '#095677',
         width: 50,
         height: 50,
-        marginTop: 6,
-        marginLeft: 6.5,
+        marginTop: 7,
+        marginLeft: 7,
         placeSelf: 'middle',
     },
 
@@ -174,16 +174,16 @@ const Root = styled('div')(({ theme }) => ({
         backgroundColor: '#BFBFBF',
         width: 50,
         height: 50,
-        marginTop: 6,
-        marginLeft: 6,
+        marginTop: 7,
+        marginLeft: 7,
         placeSelf: 'middle',
     },
 
     [`& .${classes.shapeDottedEnd}`]: {
         backgroundColor: '#BFBFBF',
         border: '1px dashed #707070',
-        width: 47,
-        height: 47,
+        width: 50,
+        height: 50,
         marginTop: 7,
         marginLeft: 7,
         placeSelf: 'middle',
@@ -192,10 +192,10 @@ const Root = styled('div')(({ theme }) => ({
     [`& .${classes.shapeDottedStart}`]: {
         backgroundColor: '#1CB1BF',
         border: '2px solid #ffffff',
-        width: 47,
-        height: 47,
-        marginTop: 8,
-        marginLeft: 8,
+        width: 50,
+        height: 50,
+        marginTop: 7,
+        marginLeft: 7,
         placeSelf: 'middle',
     },
 
@@ -209,8 +209,8 @@ const Root = styled('div')(({ theme }) => ({
         backgroundColor: '#1CB1BF',
         width: 50,
         height: 50,
-        marginTop: 6,
-        marginLeft: 6.5,
+        marginTop: 7,
+        marginLeft: 7,
         placeSelf: 'middle',
     },
 
@@ -223,7 +223,7 @@ const Root = styled('div')(({ theme }) => ({
         display: 'flex',
         alignItems: 'center',
         marginTop: 12,
-        marginLeft: 115,
+        marginLeft: 105,
         height: '18px',
         fontFamily: 'sans-serif',
     },
@@ -242,7 +242,6 @@ const Root = styled('div')(({ theme }) => ({
 
     [`& .${classes.textShape3}`]: {
         color: '#38536c',
-        marginLeft: 70,
     },
 
     [`& .${classes.textShape7}`]: {
@@ -1287,7 +1286,7 @@ export default function Environments() {
                 className={classes.containerInline}
             >
                 <Grid item className={classes.shapeRec} />
-                <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+                <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                     <Grid
                         className={clsx(classes.shapeInnerComplete, classes.shapeCircle)}
                         onMouseEnter={handlePopoverOpen}
@@ -1332,7 +1331,7 @@ export default function Environments() {
             className={classes.containerInline}
         >
             <Grid item className={classes.shapeRec}/>
-            <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+            <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                 <Grid className={clsx(classes.shapeInnerInactive, classes.shapeCircle)} />
             </Grid>
             <Grid item className={classes.shapeRecBack} />
@@ -1343,7 +1342,7 @@ export default function Environments() {
             className={classes.containerInline}
         >
             <Grid item className={classes.shapeRec} />
-            <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+            <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                 <Grid className={clsx(classes.shapeDottedEnd, classes.shapeCircle)} />
             </Grid>
         </Grid>
@@ -1353,7 +1352,7 @@ export default function Environments() {
             className={classes.containerInline}
         >
             <Grid item className={classes.shapeRec} />
-            <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+            <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                 {api.advertiseInfo && api.advertiseInfo.advertised ? (
                     <Grid
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
@@ -1380,7 +1379,7 @@ export default function Environments() {
             className={classes.containerInline}
         >
             <Grid item className={classes.shapeRec} />
-            <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+            <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                 {api.advertiseInfo && api.advertiseInfo.advertised ? (
                     <Grid
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
@@ -1423,7 +1422,7 @@ export default function Environments() {
                 className={classes.containerInline}
             >
                 <Grid item className={classes.shapeRec} />
-                <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+                <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                     <Grid
                         className={clsx(classes.shapeDottedStart1, classes.shapeCircle)}
                         onMouseEnter={handlePopoverOpen}
@@ -1469,7 +1468,7 @@ export default function Environments() {
        * @param {*} revDescription The description of the revision
        * @returns {Object} Returns the infoIconItem
      */
-    function ReturnInfoIconItem({ revDescription}) {
+    function ReturnInfoIconItem({ revDescription }) {
         const [anchorEl, setAnchorEl] = useState(null);
 
         const handlePopoverOpen = (event) => {
@@ -1537,7 +1536,7 @@ export default function Environments() {
                                     </>
                                 )}
                             </Grid>
-                            <Grid style={{display:'flex', flexDirection:'row'}}>
+                            <Grid style={{display:'flex', flexDirection:'row', marginLeft: '76px'}}>
                                 <Button
                                     className={classes.textShape3}
                                     onClick={() => toggleOpenConfirmRestore(
@@ -1587,7 +1586,8 @@ export default function Environments() {
                                 </>
                                 }
                             </Grid>
-                            <Grid className={classes.textPadding} style={{display:'flex',flexDirection:'row'}}>
+                            <Grid className={classes.textPadding} 
+                                style={{display:'flex', flexDirection:'row', marginLeft: '76px'}}>
                                 <Button
                                     className={classes.textShape3}
                                     onClick={() => toggleOpenConfirmRestore(
@@ -2576,8 +2576,9 @@ export default function Environments() {
                                         defaultMessage='Create new revision and deploy'
                                     />
                                 )}
-                                placement='top-end'
+                                placement='right-start'
                                 aria-label='New Deployment'
+                                style={{ padding: '5px' }}
                             >
                                 <IconButton size='small' aria-label='delete'>
                                     <HelpOutlineIcon fontSize='small' />
