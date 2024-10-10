@@ -25,8 +25,6 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';
 import Icon from '@mui/material/Icon';
-import fileDownload from 'js-file-download';
-import converter from 'graphql-to-postman';
 import Box from '@mui/material/Box';
 import GraphQLUI from './GraphQLUI';
 import TryOutController from '../../../Shared/ApiTryOut/TryOutController';
@@ -215,27 +213,6 @@ export default function GraphQLConsole() {
         }
     }
 
-    function grapgQLToPostman(graphQL, URL) {
-        converter.convert({
-            type: 'string',
-            data: graphQL,
-        }, {}, (error, result) => {
-            if (error) {
-                console.log(error);
-            } else {
-                const urlValue = URL.https;
-                const results = result;
-                results.output[0].data.variable[0].value = urlValue;
-                const outputData = results.output[0].data;
-                fileDownload(
-                    JSON.stringify(outputData),
-                    'postman collection',
-                );
-                console.log('Conversion success');
-            }
-        });
-    }
-
     if (api == null) {
         return <Progress />;
     }
@@ -301,7 +278,6 @@ export default function GraphQLConsole() {
                         username={username}
                         password={password}
                         setSelectedKeyType={setSelectedKeyType}
-                        convertToPostman={grapgQLToPostman}
                         selectedKeyType={selectedKeyType}
                         setKeys={setKeys}
                         setURLs={setURLs}

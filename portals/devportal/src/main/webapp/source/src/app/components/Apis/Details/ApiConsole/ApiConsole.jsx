@@ -30,7 +30,6 @@ import postmanIcon from '@iconify/icons-simple-icons/postman';
 import { Icon as Icons } from '@iconify/react';
 import fileDownload from 'js-file-download';
 import openapiToPostman from 'openapi-to-postmanv2';
-import swaggerToPostman from 'swagger2-postman2-converter';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import Tooltip from '@mui/material/Tooltip';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
@@ -390,15 +389,7 @@ class ApiConsole extends React.Component {
         openapiToPostman.convert({ type: 'string', data: fr },
             {}, (err, conversionResult) => {
                 if (!conversionResult.result) {
-                    const collection = swaggerToPostman.convert(fr);
-                    if (!collection) {
-                        console.log('Could not convert');
-                    } else {
-                        fileDownload(
-                            JSON.stringify(collection),
-                            'postman collection',
-                        );
-                    }
+                    console.log('Could not convert');
                 } else {
                     fileDownload(
                         JSON.stringify(conversionResult.output[0].data),
