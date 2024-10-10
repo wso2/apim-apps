@@ -295,7 +295,7 @@ export default function ListKeyManagers() {
                                         size='small'
                                         label='Global'
                                         color='primary'
-                                        style={{ marginTop: -4, marginLeft: 10 }}
+                                        style={{ marginLeft: 10 }}
                                     />
                                 )}
                             </RouterLink>

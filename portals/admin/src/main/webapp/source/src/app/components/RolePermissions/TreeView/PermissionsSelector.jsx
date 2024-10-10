@@ -150,13 +150,15 @@ export default function PermissionsSelector(props) {
                     </Box>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} variant='outlined'>
-                        <Button onClick={handleClose}>
-                            <FormattedMessage
-                                id='RolePermissions.TreeView.PermissionsSelector.scope.assignment.cancel.btn'
-                                defaultMessage='Cancel'
-                            />
-                        </Button>
+                    <Button
+                        size='small'
+                        variant='outlined'
+                        onClick={handleClose}
+                    >
+                        <FormattedMessage
+                            id='RolePermissions.TreeView.PermissionsSelector.scope.assignment.cancel.btn'
+                            defaultMessage='Cancel'
+                        />
                     </Button>
                     <Button
                         size='small'

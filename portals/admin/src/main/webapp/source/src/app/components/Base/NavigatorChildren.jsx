@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import PropTypes from 'prop-types';
 import clsx from 'clsx';
@@ -42,17 +42,22 @@ function NavigatorChildren(props) {
     const handleClick = () => {
         setOpen(!open);
     };
-    let navigationChildren = navChildren;
-    if (isSuperTenant) {
-        navigationChildren = navChildren.filter((menu) => menu.id !== 'Tenant Theme');
-    }
 
-    if (!isSuperTenant) {
-        navigationChildren = navChildren.filter((menu) => menu.id !== 'Custom Policies');
-    }
-    if (!isSuperAdmin) {
-        navigationChildren = navChildren.filter((menu) => menu.id !== 'Usage Report');
-    }
+    const [navigationChildren, setNavigationChildren] = React.useState(navChildren); // Corrected useState syntax
+
+    useEffect(() => {
+        let filteredNavChildren = [...navChildren]; // Start with the original array
+        if (isSuperTenant) {
+            filteredNavChildren = filteredNavChildren.filter((menu) => menu.id !== 'Tenant Theme');
+        }
+        if (!isSuperTenant) {
+            filteredNavChildren = filteredNavChildren.filter((menu) => menu.id !== 'Custom Policies');
+        }
+        if (!isSuperAdmin) {
+            filteredNavChildren = filteredNavChildren.filter((menu) => menu.id !== 'Usage Report');
+        }
+        setNavigationChildren(filteredNavChildren); // Set the filtered array once
+    }, [isSuperTenant, isSuperAdmin, navChildren]);
 
     return (
         <>
