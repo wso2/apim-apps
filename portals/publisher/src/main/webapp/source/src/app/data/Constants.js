@@ -44,6 +44,7 @@ const CONSTS = {
         type: 'NONE',
         apiKeyIdentifier: null, // AI api key identifier
         apiKeyValue: null, // AI api key value
+        apiKeyIdentifierType: null,
         username: '',
         password: null, // has to use null to differentiate the returned '' (empty) password vs no password provided
         grantType: '',
