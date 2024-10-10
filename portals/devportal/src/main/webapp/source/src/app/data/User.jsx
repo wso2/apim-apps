@@ -81,7 +81,7 @@ export default class User {
      * @returns {String|null}
      */
     getOrganizationName() {
-        return Utils.getCookie(User.CONST.ORGANIZATION);
+        return decodeURIComponent(Utils.getCookie(User.CONST.ORGANIZATION)).replace(/\+/g, ' ');
     }
 
     /**

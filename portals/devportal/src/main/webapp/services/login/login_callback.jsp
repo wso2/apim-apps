@@ -22,6 +22,7 @@
 <%@page import="org.wso2.carbon.apimgt.impl.dto.SystemApplicationDTO"%>
 <%@page import="com.google.gson.GsonBuilder"%>
 <%@page import="java.net.URLDecoder"%>
+<%@page import="java.net.URLEncoder" %>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="com.google.gson.JsonObject"%>
 <%@page import="java.net.URI"%>
@@ -264,7 +265,8 @@
         cookie.setMaxAge(-1);
         response.addCookie(cookie);
 
-        cookie = new Cookie("ORGANIZATION_Default", organization);
+        String encodedOrg = URLEncoder.encode(organization, "UTF-8");
+        cookie = new Cookie("ORGANIZATION_Default", encodedOrg);
         cookie.setPath(context + "/");
         cookie.setSecure(true);
         cookie.setMaxAge((int) expiresIn);
