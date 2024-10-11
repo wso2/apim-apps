@@ -491,7 +491,7 @@ const Policies: FC<PolicyProps> =  ({
     return (
         <GlobalPolicyContextProvider value={providerValue}>
             <Box mt={3} mb={3} ml={5} mr={5}>   
-                <DndProvider backend={HTML5Backend}>
+                <DndProvider backend={HTML5Backend} context={window}>
                     {/**
                     * Breadcrumb Navigation.
                     */}
