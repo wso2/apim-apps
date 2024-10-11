@@ -265,7 +265,10 @@
         cookie.setMaxAge(-1);
         response.addCookie(cookie);
 
-        String encodedOrg = URLEncoder.encode(organization, "UTF-8");
+        String encodedOrg = organization;
+        if (organization != null) {
+            encodedOrg = URLEncoder.encode(organization, "UTF-8");
+        }       
         cookie = new Cookie("ORGANIZATION_Default", encodedOrg);
         cookie.setPath(context + "/");
         cookie.setSecure(true);
