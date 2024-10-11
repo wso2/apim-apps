@@ -40,7 +40,7 @@ function Policies(props) {
                 <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                     <FormattedMessage
                         id='Apis.Details.NewOverview.Policies.business.plans'
-                        defaultMessage='Business Plans:'
+                        defaultMessage='Business Plans'
                     />
                 </Typography>
             </Grid>
