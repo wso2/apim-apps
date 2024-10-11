@@ -36,15 +36,15 @@ function Policies(props) {
     && api.policies.length === 1 && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
     return (
         <>
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} md={6} lg={6}>
                 <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                     <FormattedMessage
                         id='Apis.Details.NewOverview.Policies.business.plans'
-                        defaultMessage='Business Plans:'
+                        defaultMessage='Business Plans'
                     />
                 </Typography>
             </Grid>
-            <Grid item xs={12} md={6} lg={8}>
+            <Grid item xs={12} md={6} lg={6}>
                 {/* Throttling Policies */}
                 <Typography component='p' variant='body1'>
                     {api.policies && api.policies.length > 0 ? (

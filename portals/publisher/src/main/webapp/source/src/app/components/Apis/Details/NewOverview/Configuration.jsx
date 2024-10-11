@@ -61,7 +61,7 @@ function Configuration(props) {
 
                     {(api.gatewayVendor === 'wso2') && (
                         <>
-                            <Grid item xs={12} md={6} lg={4}>
+                            <Grid item xs={12} md={6} lg={6}>
                                 {/* Transports */}
                                 <Typography
                                     id='transports'
@@ -98,7 +98,7 @@ function Configuration(props) {
                                     </Tooltip>
                                 </Typography>
                             </Grid>
-                            <Grid item xs={12} md={6} lg={8}>
+                            <Grid item xs={12} md={6} lg={6}>
                                 <Typography component='p' variant='body1'>
                                     {api.transport && api.transport.length !== 0 && (
                                         api.transport.map((item, index) => (
@@ -128,7 +128,7 @@ function Configuration(props) {
                     )}
                     { (api.gatewayVendor === 'solace') && (
                         <>
-                            <Grid item xs={12} md={6} lg={4}>
+                            <Grid item xs={12} md={6} lg={6}>
                                 <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                     <FormattedMessage
                                         id='Apis.Details.NewOverview.MetaData.solace.transports'
@@ -136,7 +136,7 @@ function Configuration(props) {
                                     />
                                 </Typography>
                             </Grid>
-                            <Grid item xs={12} md={6} lg={8}>
+                            <Grid item xs={12} md={6} lg={6}>
                                 {api.solaceTransportProtocols
                                 && api.solaceTransportProtocols.map((protocol) => (
                                     <Chip
@@ -153,7 +153,7 @@ function Configuration(props) {
                             </Grid>
                         </>
                     )}
-                    <Grid item xs={12} md={6} lg={4}>
+                    <Grid item xs={12} md={6} lg={6}>
                         {/* API Security */}
                         <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                             <FormattedMessage
@@ -182,7 +182,7 @@ function Configuration(props) {
                             </Tooltip>
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} md={6} lg={8}>
+                    <Grid item xs={12} md={6} lg={6}>
                         <Typography component='p' variant='body1'>
                             {api.securityScheme && api.securityScheme.length !== 0 && (
                                 <>
@@ -204,7 +204,7 @@ function Configuration(props) {
                             )}
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} md={6} lg={4}>
+                    <Grid item xs={12} md={6} lg={6}>
                         {/* Access Control */}
                         <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                             <FormattedMessage
@@ -245,7 +245,7 @@ function Configuration(props) {
                             </Tooltip>
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} md={6} lg={8}>
+                    <Grid item xs={12} md={6} lg={6}>
                         <Typography component='p' variant='body1'>
                             {api.accessControl && (
                                 <>
@@ -257,7 +257,7 @@ function Configuration(props) {
                             {api.accessControl === 'RESTRICTED' && ' ) '}
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} md={6} lg={4}>
+                    <Grid item xs={12} md={6} lg={6}>
                         {/* workflowStatus */}
                         <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                             <FormattedMessage
@@ -266,7 +266,7 @@ function Configuration(props) {
                             />
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} md={6} lg={8}>
+                    <Grid item xs={12} md={6} lg={6}>
                         <Typography component='p' variant='body1'>
                             {api.workflowStatus && <>{api.workflowStatus}</>}
                             {!api.workflowStatus && (
@@ -281,13 +281,12 @@ function Configuration(props) {
                             )}
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} md={6} lg={4}>
+                    <Grid item xs={12} md={6} lg={6}>
                         {/* Visibility */}
                         <Typography 
                             component='p' 
                             variant='subtitle2' 
                             className={parentClasses.subtitle}
-                            style={{ overflow: 'hidden', whiteSpace: 'nowrap' }}
                         >
                             <FormattedMessage
                                 id='Apis.Details.NewOverview.MetaData.visibility.store'
@@ -327,7 +326,7 @@ function Configuration(props) {
                             </Tooltip>
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} md={6} lg={8}>
+                    <Grid item xs={12} md={6} lg={6}>
                         <Typography component='p' variant='body1'>
                             {(api.visibility && api.visibility === 'PRIVATE')
                                 ? (
@@ -348,7 +347,7 @@ function Configuration(props) {
                     {(api.gatewayVendor === 'wso2') && (<Policies parentClasses={parentClasses} />)}
                     {api.apiType === API.CONSTS.APIProduct ? null : (
                         <>
-                            <Grid item xs={12} md={6} lg={4}>
+                            <Grid item xs={12} md={6} lg={6}>
                                 <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                     <FormattedMessage
                                         id='Apis.Details.NewOverview.MetaData.tags'
@@ -356,7 +355,7 @@ function Configuration(props) {
                                     />
                                 </Typography>
                             </Grid>
-                            <Grid item xs={12} md={6} lg={8}>
+                            <Grid item xs={12} md={6} lg={6}>
                                 {api.tags
                                     && api.tags.map((tag) => (
                                         <Chip
@@ -386,7 +385,7 @@ function Configuration(props) {
                             </Grid>
                         </>
                     )}
-                    <Grid item xs={12} md={6} lg={4}>
+                    <Grid item xs={12} md={6} lg={6}>
                         <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                             <FormattedMessage
                                 id='Apis.Details.NewOverview.MetaData.subvalidation'
@@ -417,7 +416,7 @@ function Configuration(props) {
                             </Tooltip> 
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} md={6} lg={8}>
+                    <Grid item xs={12} md={6} lg={6}>
                         <Typography component='p' variant='body1'>
                             {isSubValidationDisabled ? 
                                 <Typography
