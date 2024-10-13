@@ -44,7 +44,7 @@ export default function KeyManagerConfiguration(props) {
             if (e.target.checked) {
                 finalValue.push(value);
             } else {
-                const newValue = value.filter((v) => v !== e.target.value);
+                const newValue = finalValue.filter((v) => v !== e.target.value);
                 finalValue = newValue;
             }
         } else {
@@ -105,7 +105,12 @@ export default function KeyManagerConfiguration(props) {
         } else if (keymanagerConnectorConfiguration.type === 'select') {
             return (
                 <FormControl variant='standard' component='fieldset'>
-                    <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
+                    <FormLabel component='legend'>
+                        <span>
+                            {keymanagerConnectorConfiguration.label}
+                            {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
+                        </span>
+                    </FormLabel>
                     <FormGroup>
                         {keymanagerConnectorConfiguration.values.map((selection) => (
                             <FormControlLabel
