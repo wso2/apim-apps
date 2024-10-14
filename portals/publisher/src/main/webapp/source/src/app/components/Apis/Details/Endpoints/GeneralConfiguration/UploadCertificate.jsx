@@ -145,7 +145,7 @@ export default function UploadCertificate(props) {
     const [isSaving, setSaving] = useState(false);
     const [certificate, setCertificate] = useState({ name: '', content: {} });
     const [isEndpointEmpty, setIsEndpointEmpty] = useState(false);
-    const [isPoliciesEmpty, setPoliciesEmpty] = useState(false);
+    const [isPoliciesEmpty, setPoliciesEmpty] = useState(true);
     const [aliasValidity, setAliasValidity] = useState();
     const [keyType, setKeyType] = useState(API_SECURITY_KEY_TYPE_PRODUCTION);
 
@@ -500,7 +500,6 @@ export default function UploadCertificate(props) {
                             || isSaving
                             || isAliasIncluded()
                             || isRejected
-                            || policy === ''
                     }
                 >
                     <FormattedMessage
