@@ -44,14 +44,14 @@ function NavigatorChildren(props) {
     };
     let navigationChildren = navChildren;
     if (isSuperTenant) {
-        navigationChildren = navChildren.filter((menu) => menu.id !== 'Tenant Theme');
+        navigationChildren = navigationChildren.filter((menu) => menu.id !== 'Tenant Theme');
     }
 
     if (!isSuperTenant) {
-        navigationChildren = navChildren.filter((menu) => menu.id !== 'Custom Policies');
+        navigationChildren = navigationChildren.filter((menu) => menu.id !== 'Custom Policies');
     }
     if (!isSuperAdmin) {
-        navigationChildren = navChildren.filter((menu) => menu.id !== 'Usage Report');
+        navigationChildren = navigationChildren.filter((menu) => menu.id !== 'Usage Report');
     }
 
     return (
