@@ -23,7 +23,7 @@ import Grid from '@mui/material/Grid';
 import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCard';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
 import { PropTypes } from 'prop-types';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage, injectIntl, useIntl } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';
 import Alert from 'AppComponents/Shared/MuiAlert';
 
@@ -36,6 +36,7 @@ import Alert from 'AppComponents/Shared/MuiAlert';
  */
 function SampleAPI() {
     const theme = useTheme();
+    const intl = useIntl();
     const { apiproductAddIcon } = theme.custom.landingPage.icons;
     return (
         <Onboarding
@@ -70,12 +71,10 @@ function SampleAPI() {
                 disabled={AuthManager.isNotPublisher()}
                 id='itest-id-create-api-product'
                 to='/api-products/create'
-                name={(
-                    <FormattedMessage
-                        id='Apis.Listing.SampleAPIProduct.onboarding.menu.card.name'
-                        defaultMessage='API Product'
-                    />
-                )}
+                name={intl.formatMessage({
+                    id: 'Apis.Listing.SampleAPIProduct.onboarding.menu.card.name',
+                    defaultMessage: 'API Product',
+                })}
                 iconName={apiproductAddIcon}
             />
         </Onboarding>
