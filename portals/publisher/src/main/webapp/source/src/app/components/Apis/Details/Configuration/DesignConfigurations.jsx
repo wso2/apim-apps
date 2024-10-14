@@ -625,8 +625,9 @@ export default function DesignConfigurations() {
                                     )}
                                     <Box pt={2}>
                                         <Button
-                                            disabled={errorInAccessRoles ||
-                                                errorInRoleVisibility ||
+                                            disabled={
+                                                (apiConfig.accessControl === 'RESTRICTED' && errorInAccessRoles) ||
+                                                (apiConfig.visibility === 'RESTRICTED' && errorInRoleVisibility) ||
                                                 restricted ||
                                                 errorInTags ||
                                                 errorInExternalEndpoints}
