@@ -160,6 +160,7 @@ export default function UploadCertificate(props) {
         setKeyType(API_SECURITY_KEY_TYPE_PRODUCTION);
         setEndpoint('');
         setPolicy('');
+        setPoliciesEmpty(true);
     };
 
     const isAliasIncluded = () => {
