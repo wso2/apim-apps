@@ -266,9 +266,9 @@
         response.addCookie(cookie);
 
         String encodedOrg = organization;
-        if (organization != null) {
+        if (encodedOrg != null) {
             encodedOrg = URLEncoder.encode(organization, "UTF-8");
-        }       
+        }
         cookie = new Cookie("ORGANIZATION_Default", encodedOrg);
         cookie.setPath(context + "/");
         cookie.setSecure(true);
