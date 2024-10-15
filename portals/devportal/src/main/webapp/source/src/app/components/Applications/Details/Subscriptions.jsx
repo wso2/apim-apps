@@ -63,41 +63,17 @@ const classes = {
     titleWrapper: `${PREFIX}-titleWrapper`,
     dialogTitle: `${PREFIX}-dialogTitle`,
     genericMessageWrapper: `${PREFIX}-genericMessageWrapper`,
-    searchWrapper: `${PREFIX}-searchWrapper`,
     searchResults: `${PREFIX}-searchResults`,
     clearSearchIcon: `${PREFIX}-clearSearchIcon`,
     subsTable: `${PREFIX}-subsTable`,
+    closeButton: `${PREFIX}-closeButton`,
 };
 
-const StyledProgress = styled(Progress)((
+const Root = styled('div')((
     {
         theme,
     },
 ) => ({
-    [`& .${classes.searchRoot}`]: {
-        padding: '2px 4px',
-        display: 'flex',
-        alignItems: 'center',
-        width: 400,
-        flex: 1,
-        marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2),
-    },
-
-    [`& .${classes.input}`]: {
-        marginLeft: theme.spacing(1),
-        flex: 1,
-    },
-
-    [`& .${classes.iconButton}`]: {
-        padding: 10,
-    },
-
-    [`& .${classes.divider}`]: {
-        height: 28,
-        margin: 4,
-    },
-
     [`& .${classes.root}`]: {
         padding: theme.spacing(3),
         '& h5': {
@@ -105,18 +81,8 @@ const StyledProgress = styled(Progress)((
         },
     },
 
-    [`& .${classes.subscribePop}`]: {
-        '& span, & h5, & label, & input, & td, & li': {
-            color: theme.palette.getContrastText(theme.palette.background.paper),
-        },
-    },
-
     [`& .${classes.firstCell}`]: {
         paddingLeft: 0,
-    },
-
-    [`& .${classes.cardTitle}`]: {
-        paddingLeft: theme.spacing(2),
     },
 
     [`& .${classes.cardContent}`]: {
@@ -152,18 +118,53 @@ const StyledProgress = styled(Progress)((
         },
     },
 
-    [`& .${classes.dialogTitle}`]: {
-        display: 'flex',
-        alignItems: 'flex-start',
-        padding: theme.spacing(1),
-    },
-
     [`& .${classes.genericMessageWrapper}`]: {
         margin: theme.spacing(2),
     },
 
-    [`& .${classes.searchWrapper}`]: {
+    [`& .${classes.subsTable}`]: {
+        '& td': {
+            padding: '4px 8px',
+        },
+    },
+
+}));
+
+const StyledDialog = styled(Dialog)((
+    {
+        theme,
+    },
+) => ({
+    [`& .${classes.subscribePop}`]: {
+        '& span, & h5, & label, & input, & td, & li': {
+            color: theme.palette.getContrastText(theme.palette.background.paper),
+        },
+    },
+
+    [`& .${classes.dialogTitle}`]: {
+        padding: theme.spacing(2),
+    },
+
+    [`& .${classes.searchRoot}`]: {
+        padding: '2px 4px',
+        display: 'flex',
+        alignItems: 'center',
         flex: 1,
+        marginLeft: theme.spacing(2),
+        marginRight: theme.spacing(2),
+    },
+
+    [`& .${classes.clearSearchIcon}`]: {
+        cursor: 'pointer',
+    },
+
+    [`& .${classes.input}`]: {
+        marginLeft: theme.spacing(1),
+        flex: 1,
+    },
+
+    [`& .${classes.iconButton}`]: {
+        padding: 10,
     },
 
     [`& .${classes.searchResults}`]: {
@@ -172,17 +173,13 @@ const StyledProgress = styled(Progress)((
         paddingTop: theme.spacing(1),
         paddingRight: 0,
         paddingBottom: 0,
-        paddingLeft: theme.spacing(2),
+        paddingLeft: theme.spacing(3),
     },
 
-    [`& .${classes.clearSearchIcon}`]: {
-        cursor: 'pointer',
-    },
-
-    [`& .${classes.subsTable}`]: {
-        '& td': {
-            padding: '4px 8px',
-        },
+    [`& .${classes.closeButton}`]: {
+        position: 'absolute',
+        right: theme.spacing(0.5),
+        top: theme.spacing(0.5),
     },
 }));
 
@@ -507,227 +504,162 @@ class Subscriptions extends React.Component {
 
         if (subscriptions) {
             return (
-                <Box sx={(theme) => ({
-                    padding: theme.spacing(3),
-                    '& h5': {
-                        color: theme.palette.getContrastText(theme.palette.background.default),
-                    },
-                })}
-                >
-                    <Box sx={(theme) => ({
-                        display: 'flex',
-                        alignItems: 'center',
-                        paddingBottom: theme.spacing(2),
-                        '& h5': {
-                            marginRight: theme.spacing(1),
-                        },
-                    })}
-                    >
-                        <Typography
-                            variant='h5'
-                            sx={{
-                                textTransform: 'capitalize',
-                            }}
-                        >
-                            <FormattedMessage
-                                id='Applications.Details.Subscriptions.subscription.management'
-                                defaultMessage='Subscription Management'
-                            />
-                        </Typography>
-                        <Button
-                            color='secondary'
-                            className={classes.buttonElm}
-                            size='small'
-                            onClick={this.handleOpenDialog}
-                        >
-                            <Icon>add_circle_outline</Icon>
-                            <FormattedMessage
-                                id='Applications.Details.Subscriptions.subscription.management.add'
-                                defaultMessage='Subscribe APIs'
-                            />
-                        </Button>
-                    </Box>
-                    <Grid container sx='tab-grid' spacing={2}>
-                        <Grid item xs={12} xl={11}>
-                            {((subscriptions && subscriptions.length === 0) || this.state.pseudoSubscriptions)
-                                ? (
-                                    <Box sx={(theme) => ({
-                                        margin: theme.spacing(2),
-                                    })}
-                                    >
-                                        <InlineMessage
-                                            type='info'
-                                            sx={(theme) => ({
-                                                width: 1000,
-                                                padding: theme.spacing(2),
-                                            })}
-                                        >
-                                            <Typography variant='h5' component='h3'>
-                                                <FormattedMessage
-                                                    id='Applications.Details.Subscriptions.no.subscriptions'
-                                                    defaultMessage='No Subscriptions Available'
-                                                />
-                                            </Typography>
-                                            <Typography component='p'>
-                                                <FormattedMessage
-                                                    id='Applications.Details.Subscriptions.no.subscriptions.content'
-                                                    defaultMessage='No subscriptions are available for this Application'
-                                                />
-                                            </Typography>
-                                        </InlineMessage>
-                                    </Box>
-                                )
-                                : (
-                                    <Box sx={(theme) => ({
-                                        '& table tr td': {
-                                            paddingLeft: theme.spacing(1),
-                                        },
-                                        '& table tr:nth-child(even)': {
-                                            backgroundColor: theme.custom.listView.tableBodyEvenBackgrund,
-                                            '& td, & a': {
-                                                color: theme.palette.getContrastText(theme.custom.listView.tableBodyEvenBackgrund),
-                                            },
-                                        },
-                                        '& table tr:nth-child(odd)': {
-                                            backgroundColor: theme.custom.listView.tableBodyOddBackgrund,
-                                            '& td, & a': {
-                                                color: theme.palette.getContrastText(theme.custom.listView.tableBodyOddBackgrund),
-                                            },
-                                        },
-                                        '& table th': {
-                                            backgroundColor: theme.custom.listView.tableHeadBackground,
-                                            color: theme.palette.getContrastText(theme.custom.listView.tableHeadBackground),
-                                            paddingLeft: theme.spacing(1),
-                                        },
-
-                                    })}
-                                    >
-                                        {subscriptionsNotFound ? (
-                                            <ResourceNotFound />
-                                        ) : (
-                                            <Table sx={{
-                                                '& td': {
-                                                    padding: '4px 8px',
-                                                },
-                                            }}
-                                            >
-                                                <TableHead>
-                                                    <TableRow>
-                                                        <TableCell sx={{
-                                                            paddingLeft: 0,
-                                                        }}
-                                                        >
-                                                            <FormattedMessage
-                                                                id='Applications.Details.Subscriptions.api.name'
-                                                                defaultMessage='API'
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <FormattedMessage
-                                                                id={`Applications.Details.Subscriptions
-                                                                        .subscription.state`}
-                                                                defaultMessage='Lifecycle State'
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <FormattedMessage
-                                                                id={`Applications.Details.Subscriptions
-                                                                        .business.plan`}
-                                                                defaultMessage='Business Plan'
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <FormattedMessage
-                                                                id='Applications.Details.Subscriptions.Status'
-                                                                defaultMessage='Subscription Status'
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <FormattedMessage
-                                                                id='Applications.Details.Subscriptions.action'
-                                                                defaultMessage='Action'
-                                                            />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                </TableHead>
-                                                <TableBody>
-                                                    {subscriptions
-                                                                && subscriptions.map((subscription) => {
-                                                                    return (
-                                                                        <SubscriptionTableData
-                                                                            key={subscription.subscriptionId}
-                                                                            subscription={subscription}
-                                                                            handleSubscriptionDelete={
-                                                                                this.handleSubscriptionDelete
-                                                                            }
-                                                                            handleSubscriptionUpdate={
-                                                                                this.handleSubscriptionUpdate
-                                                                            }
-                                                                        />
-                                                                    );
-                                                                })}
-                                                </TableBody>
-                                            </Table>
-                                        )}
-                                    </Box>
-                                )}
-                        </Grid>
-                    </Grid>
-                    <Dialog
-                        onClose={this.handleOpenDialog}
-                        aria-labelledby='simple-dialog-title'
-                        open={openDialog}
-                        maxWidth='lg'
-                        sx={(theme) => ({
-                            '& span, & h5, & label, & input, & td, & li': {
-                                color: theme.palette.getContrastText(theme.palette.background.paper),
-                            },
-                        })}
-                    >
-                        <MuiDialogTitle
-                            disableTypography
-                            sx={(theme) => ({
-                                display: 'flex',
-                                alignItems: 'flex-start',
-                                padding: theme.spacing(1),
-                            })}
-                        >
-                            <Typography variant='h6'>
+                <Root>
+                    <Box className={classes.root}>
+                        <Box className={classes.titleWrapper}>
+                            <Typography
+                                variant='h5'
+                                sx={{
+                                    textTransform: 'capitalize',
+                                }}
+                            >
+                                <FormattedMessage
+                                    id='Applications.Details.Subscriptions.subscription.management'
+                                    defaultMessage='Subscription Management'
+                                />
+                            </Typography>
+                            <Button
+                                color='secondary'
+                                className={classes.buttonElm}
+                                size='small'
+                                onClick={this.handleOpenDialog}
+                            >
+                                <Icon>add_circle_outline</Icon>
                                 <FormattedMessage
                                     id='Applications.Details.Subscriptions.subscription.management.add'
                                     defaultMessage='Subscribe APIs'
                                 />
-                            </Typography>
-                            <Box sx={{
-                                flex: 1,
-                            }}
+                            </Button>
+                        </Box>
+                        <Grid container sx='tab-grid' spacing={2}>
+                            <Grid item xs={12} xl={11}>
+                                {((subscriptions && subscriptions.length === 0) || this.state.pseudoSubscriptions)
+                                    ? (
+                                        <Box className={classes.genericMessageWrapper}>
+                                            <InlineMessage
+                                                type='info'
+                                                sx={(theme) => ({
+                                                    width: 1000,
+                                                    padding: theme.spacing(2),
+                                                })}
+                                            >
+                                                <Typography variant='h5' component='h3'>
+                                                    <FormattedMessage
+                                                        id='Applications.Details.Subscriptions.no.subscriptions'
+                                                        defaultMessage='No Subscriptions Available'
+                                                    />
+                                                </Typography>
+                                                <Typography component='p'>
+                                                    <FormattedMessage
+                                                        id='Applications.Details.Subscriptions.no.subscriptions.content'
+                                                        defaultMessage='No subscriptions are available for this Application'
+                                                    />
+                                                </Typography>
+                                            </InlineMessage>
+                                        </Box>
+                                    )
+                                    : (
+                                        <Box className={classes.cardContent}>
+                                            {subscriptionsNotFound ? (
+                                                <ResourceNotFound />
+                                            ) : (
+                                                <Table className={classes.subsTable}>
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell className={classes.firstCell}>
+                                                                <FormattedMessage
+                                                                    id='Applications.Details.Subscriptions.api.name'
+                                                                    defaultMessage='API'
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <FormattedMessage
+                                                                    id={`Applications.Details.Subscriptions
+                                                                            .subscription.state`}
+                                                                    defaultMessage='Lifecycle State'
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <FormattedMessage
+                                                                    id={`Applications.Details.Subscriptions
+                                                                            .business.plan`}
+                                                                    defaultMessage='Business Plan'
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <FormattedMessage
+                                                                    id='Applications.Details.Subscriptions.Status'
+                                                                    defaultMessage='Subscription Status'
+                                                                />
+                                                            </TableCell>
+                                                            <TableCell>
+                                                                <FormattedMessage
+                                                                    id='Applications.Details.Subscriptions.action'
+                                                                    defaultMessage='Action'
+                                                                />
+                                                            </TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {subscriptions
+                                                                    && subscriptions.map((subscription) => {
+                                                                        return (
+                                                                            <SubscriptionTableData
+                                                                                key={subscription.subscriptionId}
+                                                                                subscription={subscription}
+                                                                                handleSubscriptionDelete={
+                                                                                    this.handleSubscriptionDelete
+                                                                                }
+                                                                                handleSubscriptionUpdate={
+                                                                                    this.handleSubscriptionUpdate
+                                                                                }
+                                                                            />
+                                                                        );
+                                                                    })}
+                                                    </TableBody>
+                                                </Table>
+                                            )}
+                                        </Box>
+                                    )}
+                            </Grid>
+                        </Grid>
+                        <StyledDialog
+                            onClose={this.handleOpenDialog}
+                            aria-labelledby='simple-dialog-title'
+                            open={openDialog}
+                            fullWidth='true'
+                            maxWidth='sm'
+                            className={classes.subscribePop}
+                        >
+                            <MuiDialogTitle className={classes.dialogTitle} disableTypography>
+                                <Typography variant='h6'>
+                                    <FormattedMessage
+                                        id='Applications.Details.Subscriptions.subscription.management.add'
+                                        defaultMessage='Subscribe APIs'
+                                    />
+                                </Typography>
+                            </MuiDialogTitle>
+                            <IconButton
+                                aria-label='close'
+                                className={classes.closeButton}
+                                onClick={this.handleOpenDialog}
+                                size='large'
                             >
+                                <Icon>cancel</Icon>
+                            </IconButton>
+                            <Box>
                                 <Paper
                                     component='form'
-                                    sx={(theme) => ({
-                                        padding: '2px 4px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        width: 400,
-                                        height: 50,
-                                        flex: 1,
-                                        marginLeft: theme.spacing(2),
-                                        marginRight: theme.spacing(2),
-                                    })}
+                                    className={classes.searchRoot}
                                 >
                                     {searchText && (
                                         <HighlightOffIcon
-                                            sx={{
-                                                cursor: 'pointer',
-                                            }}
+                                            className={classes.clearSearchIcon}
                                             onClick={this.handleClearSearch}
                                         />
                                     )}
                                     <InputBase
-                                        sx={(theme) => ({
-                                            marginLeft: theme.spacing(1),
-                                            flex: 1,
-                                        })}
+                                        className={classes.input}
                                         placeholder={intl.formatMessage({
                                             defaultMessage: 'Search APIs',
                                             id: 'Applications.Details.Subscriptions.search',
@@ -743,9 +675,7 @@ class Subscriptions extends React.Component {
                                         onKeyDown={this.handleEnterPress}
                                     />
                                     <IconButton
-                                        sx={{
-                                            padding: 10,
-                                        }}
+                                        className={classes.iconButton}
                                         aria-label='search'
                                         onClick={this.handleSearchTextChange}
                                         size='large'
@@ -753,23 +683,15 @@ class Subscriptions extends React.Component {
                                         <SearchIcon />
                                     </IconButton>
                                 </Paper>
-                                <Box sx={(theme) => ({
-                                    height: 30,
-                                    display: 'flex',
-                                    paddingTop: theme.spacing(1),
-                                    paddingRight: 0,
-                                    paddingBottom: 0,
-                                    paddingLeft: theme.spacing(2),
-                                })}
-                                >
+                                <Box className={classes.searchResults}>
                                     {(searchText && searchText !== '') ? (
                                         <>
                                             <Typography variant='caption'>
                                                 <FormattedMessage
                                                     id='Applications.Details.Subscriptions.filter.msg'
-                                                    defaultMessage='Filtered APIs for '
+                                                    defaultMessage='Filtered APIs for'
                                                 />
-                                                {searchText}
+                                                {` ${searchText}`}
                                             </Typography>
                                         </>
                                     ) : (
@@ -783,30 +705,21 @@ class Subscriptions extends React.Component {
                                 </Box>
 
                             </Box>
-
-                            <IconButton
-                                aria-label='close'
-                                className={classes.closeButton}
-                                onClick={this.handleOpenDialog}
-                                size='large'
-                            >
-                                <Icon>cancel</Icon>
-                            </IconButton>
-                        </MuiDialogTitle>
-                        <Box padding={2}>
-                            <APIList
-                                apisNotFound={apisNotFound}
-                                subscriptions={subscriptions}
-                                applicationId={applicationId}
-                                handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
-                                searchText={searchText}
-                            />
-                        </Box>
-                    </Dialog>
-                </Box>
+                            <Box padding={2}>
+                                <APIList
+                                    apisNotFound={apisNotFound}
+                                    subscriptions={subscriptions}
+                                    applicationId={applicationId}
+                                    handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
+                                    searchText={searchText}
+                                />
+                            </Box>
+                        </StyledDialog>
+                    </Box>
+                </Root>
             );
         } else {
-            return <StyledProgress />;
+            return <Progress />;
         }
     }
 }
