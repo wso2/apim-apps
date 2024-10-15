@@ -52,6 +52,7 @@ const PREFIX = 'Subscriptions';
 
 const classes = {
     searchRoot: `${PREFIX}-searchRoot`,
+    searchBar: `${PREFIX}-searchBar`,
     input: `${PREFIX}-input`,
     iconButton: `${PREFIX}-iconButton`,
     divider: `${PREFIX}-divider`,
@@ -61,6 +62,7 @@ const classes = {
     cardTitle: `${PREFIX}-cardTitle`,
     cardContent: `${PREFIX}-cardContent`,
     titleWrapper: `${PREFIX}-titleWrapper`,
+    dialogHeader: `${PREFIX}-dialogHeader`,
     dialogTitle: `${PREFIX}-dialogTitle`,
     genericMessageWrapper: `${PREFIX}-genericMessageWrapper`,
     searchResults: `${PREFIX}-searchResults`,
@@ -141,17 +143,29 @@ const StyledDialog = styled(Dialog)((
         },
     },
 
+    [`& .${classes.dialogHeader}`]: {
+        display: 'flex',
+        justifyContent: 'space-between',
+    },
+
     [`& .${classes.dialogTitle}`]: {
+        marginTop: theme.spacing(1),
         padding: theme.spacing(2),
     },
 
     [`& .${classes.searchRoot}`]: {
+        marginLeft: 'auto',
+        width: '50%',
+        marginTop: theme.spacing(2),
+    },
+
+    [`& .${classes.searchBar}`]: {
         padding: '2px 4px',
         display: 'flex',
         alignItems: 'center',
         flex: 1,
         marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2),
+        marginRight: theme.spacing(1),
     },
 
     [`& .${classes.clearSearchIcon}`]: {
@@ -177,9 +191,9 @@ const StyledDialog = styled(Dialog)((
     },
 
     [`& .${classes.closeButton}`]: {
-        position: 'absolute',
-        right: theme.spacing(0.5),
-        top: theme.spacing(0.5),
+        height: '100%',
+        marginTop: theme.spacing(2),
+        marginRight: theme.spacing(1),
     },
 }));
 
@@ -631,79 +645,80 @@ class Subscriptions extends React.Component {
                             maxWidth='sm'
                             className={classes.subscribePop}
                         >
-                            <MuiDialogTitle className={classes.dialogTitle} disableTypography>
-                                <Typography variant='h6'>
-                                    <FormattedMessage
-                                        id='Applications.Details.Subscriptions.subscription.management.add'
-                                        defaultMessage='Subscribe APIs'
-                                    />
-                                </Typography>
-                            </MuiDialogTitle>
-                            <IconButton
-                                aria-label='close'
-                                className={classes.closeButton}
-                                onClick={this.handleOpenDialog}
-                                size='large'
-                            >
-                                <Icon>cancel</Icon>
-                            </IconButton>
-                            <Box>
-                                <Paper
-                                    component='form'
-                                    className={classes.searchRoot}
-                                >
-                                    {searchText && (
-                                        <HighlightOffIcon
-                                            className={classes.clearSearchIcon}
-                                            onClick={this.handleClearSearch}
+                            <Box className={classes.dialogHeader}>
+                                <MuiDialogTitle className={classes.dialogTitle} disableTypography>
+                                    <Typography variant='h6'>
+                                        <FormattedMessage
+                                            id='Applications.Details.Subscriptions.subscription.management.add'
+                                            defaultMessage='Subscribe APIs'
                                         />
-                                    )}
-                                    <InputBase
-                                        className={classes.input}
-                                        placeholder={intl.formatMessage({
-                                            defaultMessage: 'Search APIs',
-                                            id: 'Applications.Details.Subscriptions.search',
-                                        })}
-                                        inputProps={{
-                                            'aria-label': intl.formatMessage({
+                                    </Typography>
+                                </MuiDialogTitle>
+                                <Box className={classes.searchRoot}>
+                                    <Paper
+                                        component='form'
+                                        className={classes.searchBar}
+                                    >
+                                        {searchText && (
+                                            <HighlightOffIcon
+                                                className={classes.clearSearchIcon}
+                                                onClick={this.handleClearSearch}
+                                            />
+                                        )}
+                                        <InputBase
+                                            className={classes.input}
+                                            placeholder={intl.formatMessage({
                                                 defaultMessage: 'Search APIs',
                                                 id: 'Applications.Details.Subscriptions.search',
-                                            }),
-                                        }}
-                                        inputRef={(el) => { this.searchInputElem = el; }}
-                                        onChange={this.handleSearchTextTmpChange}
-                                        onKeyDown={this.handleEnterPress}
-                                    />
-                                    <IconButton
-                                        className={classes.iconButton}
-                                        aria-label='search'
-                                        onClick={this.handleSearchTextChange}
-                                        size='large'
-                                    >
-                                        <SearchIcon />
-                                    </IconButton>
-                                </Paper>
-                                <Box className={classes.searchResults}>
-                                    {(searchText && searchText !== '') ? (
-                                        <>
+                                            })}
+                                            inputProps={{
+                                                'aria-label': intl.formatMessage({
+                                                    defaultMessage: 'Search APIs',
+                                                    id: 'Applications.Details.Subscriptions.search',
+                                                }),
+                                            }}
+                                            inputRef={(el) => { this.searchInputElem = el; }}
+                                            onChange={this.handleSearchTextTmpChange}
+                                            onKeyDown={this.handleEnterPress}
+                                        />
+                                        <IconButton
+                                            className={classes.iconButton}
+                                            aria-label='search'
+                                            onClick={this.handleSearchTextChange}
+                                            size='large'
+                                        >
+                                            <SearchIcon />
+                                        </IconButton>
+                                    </Paper>
+                                    <Box className={classes.searchResults}>
+                                        {(searchText && searchText !== '') ? (
+                                            <>
+                                                <Typography variant='caption'>
+                                                    <FormattedMessage
+                                                        id='Applications.Details.Subscriptions.filter.msg'
+                                                        defaultMessage='Filtered APIs for'
+                                                    />
+                                                    {` ${searchText}`}
+                                                </Typography>
+                                            </>
+                                        ) : (
                                             <Typography variant='caption'>
                                                 <FormattedMessage
-                                                    id='Applications.Details.Subscriptions.filter.msg'
-                                                    defaultMessage='Filtered APIs for'
+                                                    id='Applications.Details.Subscriptions.filter.msg.all.apis'
+                                                    defaultMessage='Displaying all APIs'
                                                 />
-                                                {` ${searchText}`}
                                             </Typography>
-                                        </>
-                                    ) : (
-                                        <Typography variant='caption'>
-                                            <FormattedMessage
-                                                id='Applications.Details.Subscriptions.filter.msg.all.apis'
-                                                defaultMessage='Displaying all APIs'
-                                            />
-                                        </Typography>
-                                    )}
+                                        )}
+                                    </Box>
                                 </Box>
-
+                                <IconButton
+                                    aria-label='close'
+                                    className={classes.closeButton}
+                                    onClick={this.handleOpenDialog}
+                                    size='large'
+                                >
+                                    <Icon>cancel</Icon>
+                                </IconButton>
                             </Box>
                             <Box padding={2}>
                                 <APIList
