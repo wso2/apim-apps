@@ -94,7 +94,7 @@ class SubscriptionPoliciesManage extends Component {
         const isApiKeyEnabled = securityScheme.includes('api_key');
         this.setState({ isApiKeyEnabled });
         const limit = Configurations.app.subscriptionPolicyLimit;
-        const isAiApi = api?.subtype?.toLowerCase().includes('aiapi') ?? false;
+        const isAiApi = api?.subtypeConfiguration?.subtype?.toLowerCase().includes('aiapi') ?? false;
         let policyPromise;
         if (isAsyncAPI) {
             policyPromise = API.asyncAPIPolicies();
