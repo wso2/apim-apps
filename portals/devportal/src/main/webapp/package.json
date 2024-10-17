@@ -58,7 +58,6 @@
         "graphiql": "^3.1.1",
         "graphiql-subscriptions-fetcher": "0.0.2",
         "graphql": "^16.8.0",
-        "graphql-to-postman": "0.1.1",
         "graphql-ws": "^5.14.0",
         "html-react-parser": "^4.2.2",
         "js-file-download": "^0.4.12",
@@ -97,7 +96,6 @@
         "stream-browserify": "^3.0.0",
         "swagger-client": "^3.18.5",
         "swagger-ui-react": "^5.17.14",
-        "swagger2-postman2-converter": "0.0.3",
         "url": "^0.11.3",
         "xml-formatter": "^3.6.2"
     },

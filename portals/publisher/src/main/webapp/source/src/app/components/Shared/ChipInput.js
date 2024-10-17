@@ -96,7 +96,7 @@ const StyledFormControl = styled(FormControl)(({ theme }) => {
     },
     [`& .${classes.labeled}`]: {},
     [`& .${classes.label}`]: {
-      top: 4,
+      top: 0,
       padding: '0 8px',
       backgroundColor: theme.palette.background.paper,
       '&$outlined&:not($labelShrink)': {
@@ -758,6 +758,7 @@ export const defaultChipRenderer = ({ value, text, isFocused, isDisabled, isRead
     style={{
       pointerEvents: isDisabled || isReadOnly ? 'none' : undefined,
       backgroundColor: isFocused ? blue[300] : undefined,
+      marginRight: '8px',
     }}
     onClick={handleClick}
     onDelete={handleDelete}

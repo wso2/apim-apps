@@ -391,7 +391,7 @@ export default function DeploymentOnboarding(props) {
                                                                     direction='column'
                                                                     spacing={2}
                                                                 >
-                                                                    <Grid item xs={12}>
+                                                                    <Grid item xs={12} style={{ maxWidth: '100%' }}>
                                                                         <Tooltip
                                                                             title={(
                                                                                 <>
@@ -433,6 +433,13 @@ export default function DeploymentOnboarding(props) {
                                                                                 fullWidth
                                                                                 helperText={getVhostHelperText(row.name,
                                                                                     selectedVhostDeploy, true)}
+                                                                                FormHelperTextProps={{
+                                                                                    style: {
+                                                                                        whiteSpace: 'nowrap',
+                                                                                        overflow: 'hidden',
+                                                                                        textOverflow: 'ellipsis',
+                                                                                    },
+                                                                                }}
                                                                             >
                                                                                 {row.vhosts.map(
                                                                                     (vhost) => (

@@ -18,48 +18,74 @@
 
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
-
 import { isRestricted } from 'AppData/AuthManager';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Icon, TextField, Tooltip, InputAdornment, } from '@mui/material';
-
+import { Icon, TextField, Tooltip, InputAdornment, IconButton } from '@mui/material';
 import CONSTS from 'AppData/Constants';
 
 export default function AIEndpointAuth(props) {
     const { api, saveEndpointSecurityConfig, apiKeyParamConfig, isProduction } = props;
-
     const intl = useIntl();
 
     const [apiKeyIdentifier] = useState(apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParam);
+    const [apiKeyIdentifierType] = useState(apiKeyParamConfig.authHeader ? 'HEADER' : 'QUERY_PARAMETER');
 
-    const [apiKeyValue, setApiKeyValue] =
-        useState(api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue === '' ?
-            '********' : null);
-
+    const [apiKeyValue, setApiKeyValue] = useState(
+        api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue === ''
+            ? '********'
+            : null
+    );
     const [isHeaderParameter] = useState(!!apiKeyParamConfig.authHeader);
+    const [showApiKey, setShowApiKey] = useState(false);
 
     useEffect(() => {
         saveEndpointSecurityConfig({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: 'apikey',
             apiKeyIdentifier,
-            apiKeyValue: api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue
-                === '' ? '' : null,
+            apiKeyIdentifierType,
+            apiKeyValue: api.endpointConfig?.endpoint_security?.[isProduction ? 
+                'production' : 'sandbox']?.apiKeyValue === '' ? '' : null,
             enabled: true,
         }, isProduction ? 'production' : 'sandbox');
     }, []);
+
+    const handleApiKeyChange = (event) => {
+        setApiKeyValue(event.target.value);
+    };
+
+    const handleApiKeyBlur = (event) => {
+        saveEndpointSecurityConfig({
+            ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+            type: 'apikey',
+            apiKeyIdentifier,
+            apiKeyIdentifierType,
+            apiKeyValue: event.target.value === '********' ? '' : event.target.value,
+            enabled: true,
+        }, isProduction ? 'production' : 'sandbox');
+    };
+
+    const handleToggleApiKeyVisibility = () => {
+        if (apiKeyValue !== '********') {
+            setShowApiKey((prev) => !prev);
+        }
+    };
 
     return (
         <>
             <TextField
                 disabled
-                label={isHeaderParameter ? <FormattedMessage
-                    id='Apis.Details.Endpoints.Security.api.key.header'
-                    defaultMessage='Authorization Header'
-                /> : <FormattedMessage
-                    id='Apis.Details.Endpoints.Security.api.key.query.param'
-                    defaultMessage='Authorization Query Param'
-                />}
+                label={isHeaderParameter ? (
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.Security.api.key.header'
+                        defaultMessage='Authorization Header'
+                    />
+                ) : (
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.Security.api.key.query.param'
+                        defaultMessage='Authorization Query Param'
+                    />
+                )}
                 id={'api-key-id-' + (isProduction ? '-production' : '-sandbox')}
                 sx={{ width: '49%', mr: 2 }}
                 value={apiKeyIdentifier}
@@ -81,45 +107,41 @@ export default function AIEndpointAuth(props) {
                     id: 'Apis.Details.Endpoints.Security.api.key.value.placeholder',
                     defaultMessage: 'Enter API Key',
                 })}
-                onChange={(event) => setApiKeyValue(event.target.value)}
-                onBlur={(event) => {
-                    saveEndpointSecurityConfig({
-                        ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
-                        type: 'apikey',
-                        apiKeyIdentifier,
-                        apiKeyValue: event.target.value === '********' ? '' : event.target.value,
-                        enabled: true,
-                    }, isProduction ? 'production' : 'sandbox');
-                }}
+                onChange={handleApiKeyChange}
+                onBlur={handleApiKeyBlur}
                 error={!apiKeyValue}
-                helperText={!apiKeyValue
-                    ? (
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.Security.no.api.key.value.error'
-                            defaultMessage='API Key should not be empty'
-                        />
-                    ) : ''}
+                helperText={!apiKeyValue ? (
+                    <FormattedMessage
+                        id='Apis.Details.Endpoints.Security.no.api.key.value.error'
+                        defaultMessage='API Key should not be empty'
+                    />
+                ) : ''}
                 variant='outlined'
                 margin='normal'
                 required
-                type='password'
+                type={showApiKey ? 'text' : 'password'}
                 InputProps={{
-                    endAdornment: <InputAdornment position='end'>
-                        <Tooltip
-                            placement='top-start'
-                            interactive
-                            title={(
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.Security.api.key.value.tooltip'
-                                    defaultMessage='API Key for the AI API'
-                                />
-                            )}
-                        >
-                            <Icon>
-                                security
-                            </Icon>
-                        </Tooltip>
-                    </InputAdornment>
+                    endAdornment: (
+                        <InputAdornment position='end'>
+                            <Tooltip
+                                placement='top-start'
+                                interactive
+                                title={(
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.Security.api.key.value.tooltip'
+                                        defaultMessage='API Key for the AI API'
+                                    />
+                                )}
+                            >
+                                <Icon>security</Icon>
+                            </Tooltip>
+                            <IconButton onClick={handleToggleApiKeyVisibility} edge='end'>
+                                <Icon>
+                                    {showApiKey ? 'visibility' : 'visibility_off'}
+                                </Icon>
+                            </IconButton>
+                        </InputAdornment>
+                    ),
                 }}
             />
         </>

@@ -154,10 +154,13 @@ export default function ProvideAIOpenAPI(props) {
                                     <TextField {...params}
                                         fullWidth
                                         label={llmProviders.list.length !== 0 ? (
-                                            <FormattedMessage
-                                                id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider'
-                                                defaultMessage='AI Service Provider'
-                                            />
+                                            <>
+                                                <FormattedMessage
+                                                    id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider'
+                                                    defaultMessage='AI Service Provider'
+                                                />
+                                                <sup className={classes.mandatoryStar}>*</sup>
+                                            </>
                                         ) : (
                                             <FormattedMessage
                                                 id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.empty'
@@ -175,7 +178,7 @@ export default function ProvideAIOpenAPI(props) {
                                                 defaultMessage='Select AI Service Provider for the API'
                                             />
                                         )}
-                                        margin='normal'
+                                        margin='dense'
                                         variant='outlined'
                                         id='APIProvider'
                                     />
@@ -214,6 +217,8 @@ export default function ProvideAIOpenAPI(props) {
                                                     }));
                                                 }
                                             });
+                                    } else {
+                                        inputsDispatcher({ action: 'isFormValid', value: false });
                                     }
                                 }}
                                 renderOption={(options, option) => (
@@ -225,10 +230,13 @@ export default function ProvideAIOpenAPI(props) {
                                     <TextField {...params}
                                         fullWidth
                                         label={llmProviders.list.length !== 0 ? (
-                                            <FormattedMessage
-                                                id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.model'
-                                                defaultMessage='API version'
-                                            />
+                                            <>
+                                                <FormattedMessage
+                                                    id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.model'
+                                                    defaultMessage='API version'
+                                                />
+                                                <sup className={classes.mandatoryStar}>*</sup>
+                                            </>
                                         ) : (
                                             <FormattedMessage
                                                 id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.model.empty'
@@ -246,7 +254,7 @@ export default function ProvideAIOpenAPI(props) {
                                                 defaultMessage='Select API version for the API'
                                             />
                                         )}
-                                        margin='normal'
+                                        margin='dense'
                                         variant='outlined'
                                         id='APIModelVersion'
                                     />
@@ -255,7 +263,18 @@ export default function ProvideAIOpenAPI(props) {
                         </FormLabel>
                     </FormControl>
                 </Grid>
-                <Grid item xs={2} md={5} />
+                <Grid container direction='row' justifyContent='flex-end' alignItems='center'>
+                    <Grid item>
+                        <Typography variant='caption' display='block' gutterBottom>
+                            <sup style={{ color: 'red' }}>*</sup>
+                            {' '}
+                            <FormattedMessage
+                                id='Apis.Create.Components.DefaultAPIForm.mandatory.fields'
+                                defaultMessage='Mandatory fields'
+                            />
+                        </Typography>
+                    </Grid>
+                </Grid>
             </Grid>)}
             {!llmProviders && (
                 <Grid container>

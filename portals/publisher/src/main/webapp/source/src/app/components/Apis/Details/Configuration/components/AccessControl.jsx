@@ -279,7 +279,7 @@ export default function AccessControl(props) {
                         InputProps={{
                             endAdornment: (!roleValidity || !userRoleValidity) && (
                                 <InputAdornment position='end'>
-                                    <Error color='error' style={{ paddingBottom: 8 }} />
+                                    <Error color='error' />
                                 </InputAdornment>
                             ),
                         }}
@@ -297,7 +297,7 @@ export default function AccessControl(props) {
                                 }}
                                 style={{
                                     backgroundColor: invalidRoles.includes(value) ? red[300] : null,
-                                    margin: '0 8px 12px 0',
+                                    marginRight: '8px',
                                     float: 'left',
                                 }}
                             />

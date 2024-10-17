@@ -161,6 +161,7 @@ export default function CustomizedStepper() {
     const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct && api.endpointConfig !== null
     && api.endpointConfig.implementation_status === 'prototyped';
     const isEndpointAvailable = api.endpointConfig !== null;
+    const isEndpointSecurityConfigured = api.endpointConfig && api.endpointConfig.endpoint_security;
     const isTierAvailable = api.policies.length !== 0;
     const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
@@ -490,11 +491,18 @@ export default function CustomizedStepper() {
                                                     style={{ marginLeft: '2px' }}
                                                 >
                                                     <Grid item>
-                                                        {isEndpointAvailable ? (
-                                                            <CheckIcon className={classes.iconTrue} />
-                                                        ) : (
-                                                            <CloseIcon className={classes.iconFalse} />
-                                                        )}
+                                                        {isEndpointAvailable && (
+                                                            api.subtype === 'AIAPI'
+                                                                ? isEndpointSecurityConfigured
+                                                                : true
+                                                        ) 
+                                                            ? (
+                                                                <CheckIcon className={classes.iconTrue} />
+                                                            ) 
+                                                            : (
+                                                                <CloseIcon className={classes.iconFalse} />
+                                                            )
+                                                        }
                                                     </Grid>
                                                     <Box ml={1} mb={1}>
                                                         <Grid item>
