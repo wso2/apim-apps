@@ -219,34 +219,24 @@ function Endpoints(props) {
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0 || (productionBackendList?.length > 0
                 && productionBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id).then(() => {
-                    Alert.success('Production Sequence backend deleted successfully');
-                })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Production Sequence Backend',
-                        }));
-                    });
+                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id).catch(() => {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
+                        defaultMessage: 'Error Deleting Production Sequence Backend',
+                    }));
+                });
             }
-
             if (sandBoxBackendList?.length === 0 || (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id).then(() => {
-                    Alert.success('Sandbox Sequence backend deleted successfully');
-                })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Sandbox Sequence Backend',
-                        }));
-                    });
+                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id).catch(() => {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
+                        defaultMessage: 'Error Deleting Sandbox Sequence Backend',
+                    }));
+                });
             }
             if (productionBackendList?.length > 0 && productionBackendList[0].content) {
                 const productionBackend = productionBackendList[0];
                 api.uploadCustomBackend(productionBackend.content, API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
                     .catch(() => {
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
@@ -256,15 +246,12 @@ function Endpoints(props) {
             }
             if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
                 const sandBackend = sandBoxBackendList[0];
-                api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id).then(() => {
-                    Alert.success('Custom backend uploaded successfully');
-                })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
-                            defaultMessage: 'Error Uploading Sandbox Sequence Backend',
-                        }));
-                    });
+                api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id).catch(() => {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
+                        defaultMessage: 'Error Uploading Sandbox Sequence Backend',
+                    }));
+                });
             }
         }
         if (endpointImplementationType === 'INLINE' || endpointImplementationType === 'MOCKED_OAS') {
@@ -316,37 +303,26 @@ function Endpoints(props) {
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0
                 || (productionBackendList?.length > 0 && productionBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
-                    .then(() => {
-                        Alert.success('Production Sequence backend deleted successfully');
-                    })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Production Sequence Backend',
-                        }));
-                    });
+                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_PRODUCTION, api.id).catch(() => {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
+                        defaultMessage: 'Error Deleting Production Sequence Backend',
+                    }));
+                });
             }
 
             if (sandBoxBackendList?.length === 0
                 || (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content)) {
-                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id)
-                    .then(() => {
-                        Alert.success('Sandbox Sequence backend deleted successfully');
-                    })
-                    .catch(() => {
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
-                            defaultMessage: 'Error Deleting Sandbox Sequence Backend',
-                        }));
-                    });
+                api.deleteSequenceBackend(API_SECURITY_KEY_TYPE_SANDBOX, api.id).catch(() => {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Endpoints.delete.sequence.backend.error',
+                        defaultMessage: 'Error Deleting Sandbox Sequence Backend',
+                    }));
+                });
             }
             if (productionBackendList?.length > 0 && productionBackendList[0].content) {
                 const productionBackend = productionBackendList[0];
                 api.uploadCustomBackend(productionBackend.content, API_SECURITY_KEY_TYPE_PRODUCTION, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
                     .catch(() => {
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
@@ -357,9 +333,6 @@ function Endpoints(props) {
             if (sandBoxBackendList?.length > 0 && sandBoxBackendList[0].content) {
                 const sandBackend = sandBoxBackendList[0];
                 api.uploadCustomBackend(sandBackend.content, API_SECURITY_KEY_TYPE_SANDBOX, api.id)
-                    .then(() => {
-                        Alert.success('Custom backend uploaded successfully');
-                    })
                     .catch(() => {
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.Endpoints.Endpoints.upload.sequence.backend.error',
