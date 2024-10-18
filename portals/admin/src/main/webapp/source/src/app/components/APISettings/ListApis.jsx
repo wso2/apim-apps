@@ -51,11 +51,6 @@ const styles = {
     block: {
         display: 'block',
     },
-    clearSearch: {
-        position: 'absolute',
-        right: 111,
-        top: 13,
-    },
     addUser: {
         marginRight: 1,
     },
@@ -157,17 +152,14 @@ export default function ListApis() {
                             <Grid item>
                                 <SearchIcon sx={styles.block} color='inherit' />
                             </Grid>
-                            <Grid item xs>
+                            <Grid item xs sx={{ display: 'flex', alignItems: 'center' }}>
                                 <TextField
+                                    hiddenLabel
                                     fullWidth
                                     variant='standard'
                                     id='search-label'
-                                    label={intl.formatMessage({
-                                        defaultMessage: 'Search by API',
-                                        id: 'Apis.Listing.Listing.apis.search.label',
-                                    })}
                                     placeholder={intl.formatMessage({
-                                        defaultMessage: 'Api Name',
+                                        defaultMessage: 'Search by API Name',
                                         id: 'Apis.Listing.Listing.search.placeholder',
                                     })}
                                     sx={(theme) => ({
@@ -194,7 +186,6 @@ export default function ListApis() {
                                     >
                                         <IconButton
                                             aria-label='delete'
-                                            sx={styles.clearSearch}
                                             onClick={clearSearch}
                                         >
                                             <HighlightOffRoundedIcon />
