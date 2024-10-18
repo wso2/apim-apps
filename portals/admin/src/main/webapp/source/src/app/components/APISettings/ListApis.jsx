@@ -144,7 +144,12 @@ export default function ListApis() {
     }
 
     return (
-        <ContentBase>
+        <ContentBase
+            title={intl.formatMessage({
+                defaultMessage: 'Change API Provider',
+                id: 'Apis.Listing.Listing.title',
+            })}
+        >
             <AppBar sx={styles.searchBar} position='static' color='default' elevation={0}>
                 <Toolbar>
                     <form onSubmit={filterApps} style={{ width: '100%' }} disabled={loading}>

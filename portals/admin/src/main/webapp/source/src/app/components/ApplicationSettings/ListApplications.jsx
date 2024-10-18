@@ -132,7 +132,12 @@ export default function ListApplications() {
     }
 
     return (
-        <ContentBase>
+        <ContentBase
+            title={intl.formatMessage({
+                defaultMessage: 'Change Application Owner',
+                id: 'Applications.Listing.Listing.title',
+            })}
+        >
             <AppBar
                 sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
                 position='static'
