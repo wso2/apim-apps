@@ -224,10 +224,8 @@ function EndpointOverview(props) {
     });
 
     useEffect(() => {
-        if (api.aiConfiguration) {
-            API.getLLMProviderEndpointConfiguration(
-                api.aiConfiguration.llmProviderName,
-                api.aiConfiguration.llmProviderApiVersion)
+        if (api.subtypeConfiguration?.subtype === 'AIAPI') {
+            API.getLLMProviderEndpointConfiguration(JSON.parse(api.subtypeConfiguration.configuration).llmProviderId)
                 .then((response) => {
                     if (response.body) {
                         const config = response.body;
@@ -301,7 +299,7 @@ function EndpointOverview(props) {
      * @return {string} The supported endpoint types.
      * */
     const getSupportedType = (apiObject) => {
-        const { type, aiConfiguration } = apiObject;
+        const { type, subtypeConfiguration } = apiObject;
         let supportedEndpointTypes = [];
         if (type === 'GRAPHQL' && apiObject.gatewayType !== 'wso2/apk') {
             supportedEndpointTypes = [
@@ -323,7 +321,7 @@ function EndpointOverview(props) {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
             ];
-        } else if (type === 'HTTP' && aiConfiguration) {
+        } else if (type === 'HTTP' && subtypeConfiguration?.subtype === 'AIAPI') {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
             ];
@@ -337,7 +335,7 @@ function EndpointOverview(props) {
                 { key: 'awslambda', value: 'AWS Lambda' },
             ];
         }
-        if(!aiConfiguration && apiObject.gatewayType !== 'wso2/apk' && type === 'HTTP' ) {
+        if(subtypeConfiguration?.subtype !== 'AIAPI' && apiObject.gatewayType !== 'wso2/apk' && type === 'HTTP' ) {
             supportedEndpointTypes.push({ key: 'sequence_backend', value: 'Sequence Backend' });
         }
         return supportedEndpointTypes;
@@ -1119,7 +1117,7 @@ function EndpointOverview(props) {
                                                                             ap
                                                                             iId={api.id}
                                                                         />
-                                                                        {api.aiConfiguration && // eslint-disable-line
+                                                                        {api.subtypeConfiguration?.subtype === 'AIAPI' && // eslint-disable-line
                                                                             (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
                                                                             (<AIEndpointAuth
                                                                                 api={api}
@@ -1275,7 +1273,7 @@ function EndpointOverview(props) {
                                                                                             {toggleEndpointSecurityConfig}
                                                                                         apiId={api.id}
                                                                                     />
-                                                                                    {api.aiConfiguration && // eslint-disable-line
+                                                                                    {api.subtypeConfiguration?.subtype === 'AIAPI' && // eslint-disable-line
                                                                                         (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
                                                                                         (<AIEndpointAuth
                                                                                             api={api}

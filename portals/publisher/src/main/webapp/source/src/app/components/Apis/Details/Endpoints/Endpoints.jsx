@@ -525,7 +525,8 @@ function Endpoints(props) {
                     };
                 }
             }
-        } else if ((!endpointConfig || !endpointConfig.endpoint_security) && apiObject.aiConfiguration) {
+        } else if ((!endpointConfig || !endpointConfig.endpoint_security)
+            && apiObject.subtypeConfiguration?.subtype === 'AIAPI' ) {
             return {
                 isValid: false,
                 message: intl.formatMessage({

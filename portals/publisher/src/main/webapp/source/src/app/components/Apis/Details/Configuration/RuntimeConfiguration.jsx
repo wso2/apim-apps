@@ -203,9 +203,9 @@ function copyAPIConfig(api) {
             vendor: api.advertiseInfo.vendor,
         }
     }
-    if (api.aiConfiguration) {
-        apiConfigJson.aiConfiguration = {
-            ...api.aiConfiguration,
+    if (api.subtypeConfiguration) {
+        apiConfigJson.subtypeConfiguration = {
+            ...api.subtypeConfiguration,
         };
     }
     if (api.maxTps) {
@@ -672,13 +672,13 @@ export default function RuntimeConfiguration() {
                                         style={{ height: 'calc(100% - 75px)' }}
                                         elevation={0}
                                     >
-                                        {api.aiConfiguration && (
+                                        {api.subtypeConfiguration?.subtype === 'AIAPI' && (
                                             <BackendRateLimiting
                                                 api={apiConfig}
                                                 configDispatcher={configDispatcher}
                                             />
                                         )}
-                                        {!api.aiConfiguration && !api.isAPIProduct() && (
+                                        {api.subtypeConfiguration?.subtype !== 'AIAPI' && !api.isAPIProduct() && (
                                             <>
                                                 {(!isAsyncAPI && api.gatewayType !== 'wso2/apk') && (
                                                     <MaxBackendTps
@@ -695,7 +695,7 @@ export default function RuntimeConfiguration() {
                                                 )}
                                             </>
                                         )}
-                                        {!api.aiConfiguration && api.isAPIProduct() && (
+                                        {api.subtypeConfiguration?.subtype !== 'AIAPI' && api.isAPIProduct() && (
                                             <Box alignItems='center' justifyContent='center' className={classes.info}>
                                                 <Typography variant='body1'>
                                                     <FormattedMessage
