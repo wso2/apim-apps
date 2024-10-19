@@ -210,7 +210,7 @@ class ApiConsole extends React.Component {
                 if (!apiData.securityScheme.includes('oauth2')) {
                     defaultSecurityScheme = apiData.securityScheme.includes('api_key') ? 'API-KEY' : 'BASIC';
                 }
-                if (apiData.subtype.includes('AIAPI')) {
+                if (apiData.subtypeConfiguration?.subtype.includes('AIAPI')) {
                     defaultSecurityScheme = 'API-KEY';
                     if (!apiData.securityScheme.includes('api_key')) {
                         defaultSecurityScheme = apiData.securityScheme.includes('oauth2') ? 'OAUTH' : 'BASIC';

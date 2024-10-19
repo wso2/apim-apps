@@ -55,8 +55,7 @@ function apiInputsReducer(currentState, inputAction) {
         case 'gatewayType':
         case 'context':
         case 'policies':
-        case 'llmProviderName':
-        case 'llmProviderApiVersion':
+        case 'llmProviderId':
         case 'isFormValid':
             return { ...currentState, [action]: value };
         case 'preSetAPI':
@@ -123,8 +122,7 @@ export default function ApiCreateAIAPI(props) {
     function createAPI() {
         setCreating(true);
         const {
-            name, version, context, endpoint, gatewayType, policies = ["Unlimited"], inputValue,
-            llmProviderName, llmProviderApiVersion,
+            name, version, context, endpoint, gatewayType, policies = ["Unlimited"], inputValue, llmProviderId,
         } = apiInputs;
         let defaultGatewayType;
         if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
@@ -141,9 +139,11 @@ export default function ApiCreateAIAPI(props) {
             context,
             gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
             policies,
-            aiConfiguration: {
-                llmProviderName,
-                llmProviderApiVersion,
+            subtypeConfiguration: {
+                subtype: 'AIAPI',
+                configuration: {
+                    llmProviderId,
+                },
             },
             securityScheme: [API_SECURITY_API_KEY],
             egress : true

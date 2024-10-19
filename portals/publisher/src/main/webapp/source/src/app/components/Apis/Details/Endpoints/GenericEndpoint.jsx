@@ -249,7 +249,7 @@ function GenericEndpoint(props) {
                                                 </Icon>
                                             </Tooltip>
                                         </IconButton>
-                                        {!api.aiConfiguration && (<IconButton
+                                        {api.subtypeConfiguration?.subtype !== 'AIAPI' && (<IconButton
                                             className={classes.iconButton}
                                             aria-label='Security'
                                             onClick={() => setESConfigOpen(type, esCategory)}

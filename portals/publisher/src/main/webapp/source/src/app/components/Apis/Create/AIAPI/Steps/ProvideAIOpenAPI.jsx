@@ -80,8 +80,7 @@ export default function ProvideAIOpenAPI(props) {
 
         API.validateOpenAPIByInlineDefinition(apiDefinition).then((res) => {
             if (res.body.isValid) {
-                inputsDispatcher({ action: 'llmProviderName', value: newSelectedModel.name });
-                inputsDispatcher({ action: 'llmProviderApiVersion', value: newSelectedModel.apiVersion });
+                inputsDispatcher({ action: 'llmProviderId', value: newSelectedModel.id });
                 inputsDispatcher({ action: 'inputValue', value: apiDefinition });
                 inputsDispatcher({ action: 'preSetAPI', value: res.body.info });
             } else {
@@ -202,7 +201,7 @@ export default function ProvideAIOpenAPI(props) {
                                 onChange={(e, newValue) => {
                                     setSelectedModel(newValue);
                                     if (newValue) {
-                                        API.getLLMProviderAPIDefinition(newValue.name, newValue.apiVersion)
+                                        API.getLLMProviderAPIDefinition(newValue.id)
                                             .then((response) => {
                                                 handleGetLLMProviderAPIDefinitionResponse(response, newValue);
                                             }).catch((error) => {
