@@ -38,6 +38,8 @@ interface AttachedPolicyListProps {
     verb: string;
     allPolicies: PolicySpec[] | null;
     isAPILevelPolicy: boolean;
+    listOriginatedFromCommonPolicies: string[];
+    isApiRevision: boolean;
 }
 
 /**
@@ -54,6 +56,8 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
     verb,
     allPolicies,
     isAPILevelPolicy,
+    listOriginatedFromCommonPolicies,
+    isApiRevision
 }) => {
     const reversedPolicyList = [...currentPolicyList].reverse();
     const policyListToDisplay =
@@ -105,6 +109,8 @@ const AttachedPolicyList: FC<AttachedPolicyListProps> = ({
             handleDragEnd={handleDragEnd}
             policyListToDisplay={policyListToDisplay}
             AttachedPolicyCard={AttachedPolicyCard}
+            listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+            isApiRevision={isApiRevision}
         />
     );
 };
