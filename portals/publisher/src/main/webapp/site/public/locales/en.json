@@ -865,7 +865,6 @@
   "Apis.Details.Endpoints.Security.api.key.header": "Authorization Header",
   "Apis.Details.Endpoints.Security.api.key.query.param": "Authorization Query Param",
   "Apis.Details.Endpoints.Security.api.key.value.placeholder": "Enter API Key",
-  "Apis.Details.Endpoints.Security.api.key.value.tooltip": "API Key for the AI API",
   "Apis.Details.Endpoints.Security.api.key.value.value": "API Key",
   "Apis.Details.Endpoints.Security.no.api.key.value.error": "API Key should not be empty",
   "Apis.Details.Endpoints.SequenceBackend.AddCertificat": "Add Sequence Backend",

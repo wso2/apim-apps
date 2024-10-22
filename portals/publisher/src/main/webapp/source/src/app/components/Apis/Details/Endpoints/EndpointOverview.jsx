@@ -408,6 +408,9 @@ function EndpointOverview(props) {
             const endpointProp = 'production_endpoints';
             if (endpointCategory[category]) {
                 delete endpointConfigCopy[endpointProp];
+                if (endpointConfigCopy?.endpoint_security?.production !== null) {
+                    delete endpointConfigCopy.endpoint_security.production;
+                }
                 if (endpointConfigCopy.endpointType === 'failover') {
                     delete endpointConfigCopy.production_failovers;
                 }
@@ -423,6 +426,9 @@ function EndpointOverview(props) {
             const endpointProp = 'sandbox_endpoints';
             if (endpointCategory[category]) {
                 delete endpointConfigCopy[endpointProp];
+                if (endpointConfigCopy?.endpoint_security?.sandbox !== null) {
+                    delete endpointConfigCopy.endpoint_security.sandbox;
+                }
                 if (endpointConfigCopy.endpointType === 'failover') {
                     delete endpointConfigCopy.sandbox_failovers;
                 }
@@ -1273,7 +1279,8 @@ function EndpointOverview(props) {
                                                                                             {toggleEndpointSecurityConfig}
                                                                                         apiId={api.id}
                                                                                     />
-                                                                                    {api.subtypeConfiguration?.subtype === 'AIAPI' && // eslint-disable-line
+                                                                                    {endpointCategory.sandbox && // eslint-disable-line
+                                                                                        api.subtypeConfiguration?.subtype === 'AIAPI' && // eslint-disable-line
                                                                                         (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
                                                                                         (<AIEndpointAuth
                                                                                             api={api}
