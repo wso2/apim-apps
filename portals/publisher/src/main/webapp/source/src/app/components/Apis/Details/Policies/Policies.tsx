@@ -504,7 +504,7 @@ const Policies: React.FC = () => {
 
     return (
         <StyledApiOperationContextProvider value={providerValue}>
-            <DndProvider backend={HTML5Backend}>
+            <DndProvider backend={HTML5Backend} context={window}>
                 <Box mb={4}>
                     <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
                         <FormattedMessage
