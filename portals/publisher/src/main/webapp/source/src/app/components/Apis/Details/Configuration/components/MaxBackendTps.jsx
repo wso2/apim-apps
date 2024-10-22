@@ -120,7 +120,7 @@ export default function MaxBackendTps(props) {
                             </FormLabel>
                             <RadioGroup
                                 aria-label='change-max-TPS'
-                                value={api.maxTps === null ? 'unlimited' : 'specify'}
+                                value={api.maxTps === null || api.maxTps === undefined ? 'unlimited' : 'specify'}
                                 onChange={(event) => {
                                     configDispatcher({
                                         action: 'maxTps',
