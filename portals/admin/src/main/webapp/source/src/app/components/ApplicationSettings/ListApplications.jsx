@@ -50,17 +50,24 @@ export default function ListApplications() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(0);
     const [searchQuery, setSearchQuery] = useState('');
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('name');
 
     /**
     * API call to get application list
     * @returns {Promise}.
     */
-    function apiCall(pageNo, user = searchQuery, name = searchQuery) {
+    function apiCall(pageNo, user = searchQuery, name = searchQuery, sortBy = orderBy, sortOrder = order) {
         setLoading(true);
         const restApi = new API();
         return restApi
             .getApplicationList({
-                limit: rowsPerPage, offset: pageNo * rowsPerPage, user, name,
+                limit: rowsPerPage,
+                offset: pageNo * rowsPerPage,
+                user,
+                name,
+                sortBy,
+                sortOrder,
             })
             .then((result) => {
                 setApplicationList(result.body.list);
@@ -80,13 +87,13 @@ export default function ListApplications() {
         apiCall(page).then((result) => {
             setApplicationList(result);
         });
-    }, [page]);
+    }, [page, rowsPerPage, order, orderBy]);
 
-    useEffect(() => {
-        apiCall(page).then((result) => {
-            setApplicationList(result);
-        });
-    }, [rowsPerPage]);
+    function handleRequestSort(event, property) {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    }
 
     function handleChangePage(event, pageNo) {
         setPage(pageNo);
@@ -220,7 +227,11 @@ export default function ListApplications() {
             {applicationList && applicationList.length > 0
                 && (
                     <Table id='itest-application-list-table'>
-                        <ApplicationTableHead />
+                        <ApplicationTableHead
+                            order={order}
+                            orderBy={orderBy}
+                            onRequestSort={handleRequestSort}
+                        />
                         <AppsTableContent
                             apps={applicationList}
                             page={page}

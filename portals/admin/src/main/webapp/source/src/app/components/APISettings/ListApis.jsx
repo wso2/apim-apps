@@ -64,16 +64,24 @@ export default function ListApis() {
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(0);
     const [provider, setProvider] = useState('');
+    const [order, setOrder] = useState('asc');
+    const [orderBy, setOrderBy] = useState('name');
 
     /**
     * API call to get api list
     * @returns {Promise}.
     */
-    function apiCall(pageNo, query = provider) {
+    function apiCall(pageNo, query = provider, sortBy = orderBy, sortOrder = order) {
         setLoading(true);
         const restApi = new API();
         return restApi
-            .getApiList({ limit: rowsPerPage, offset: pageNo * rowsPerPage, query })
+            .getApiList({
+                limit: rowsPerPage,
+                offset: pageNo * rowsPerPage,
+                query,
+                sortBy,
+                sortOrder,
+            })
             .then((result) => {
                 setApiList(result.body.apis);
                 const { pagination: { total } } = result.body;
@@ -92,13 +100,13 @@ export default function ListApis() {
         apiCall(page).then((result) => {
             setApiList(result);
         });
-    }, [page]);
+    }, [page, rowsPerPage, order, orderBy]);
 
-    useEffect(() => {
-        apiCall(page).then((result) => {
-            setApiList(result);
-        });
-    }, [rowsPerPage]);
+    function handleRequestSort(event, property) {
+        const isAsc = orderBy === property && order === 'asc';
+        setOrder(isAsc ? 'desc' : 'asc');
+        setOrderBy(property);
+    }
 
     function handleChangePage(event, pageNo) {
         setPage(pageNo);
@@ -226,7 +234,11 @@ export default function ListApis() {
             {apiList && apiList.length > 0
                 && (
                     <Table id='itest-api-list-table'>
-                        <ApisTableHead />
+                        <ApisTableHead
+                            order={order}
+                            orderBy={orderBy}
+                            onRequestSort={handleRequestSort}
+                        />
                         <ApisTableContent
                             apis={apiList}
                             page={page}
