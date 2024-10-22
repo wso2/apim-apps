@@ -83,7 +83,7 @@ function ContentBase(props) {
                     </Toolbar>
                 </Grid>
                 <Grid item xs={11} sm={size}>
-                    <Box pt={6} position='relative'>
+                    <Box py={6} position='relative'>
                         {pageStyle === 'paperLess' || paperLess ? children : (
                             <Paper {...PaperProps}>
                                 {children}

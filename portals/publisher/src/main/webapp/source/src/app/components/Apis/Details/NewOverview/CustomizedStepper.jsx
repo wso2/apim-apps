@@ -492,7 +492,7 @@ export default function CustomizedStepper() {
                                                 >
                                                     <Grid item>
                                                         {isEndpointAvailable && (
-                                                            api.subtype === 'AIAPI'
+                                                            api.subtypeConfiguration?.subtype === 'AIAPI'
                                                                 ? isEndpointSecurityConfigured
                                                                 : true
                                                         ) 

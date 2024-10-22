@@ -3395,32 +3395,30 @@ class API extends Resource {
     }
 
     /**
-     * Get the LLM provider API definition by name and version
+     * Get the LLM provider API definition by id
      *
-     * @param {String} name
-     * @param {String} apiVersion
+     * @param {String} llmProviderId
      */
-    static getLLMProviderAPIDefinition(name, apiVersion) {
+    static getLLMProviderAPIDefinition(llmProviderId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
             return client.apis['LLMProvider'].getLLMProviderApiDefinition(
-                { name, apiVersion },
+                { llmProviderId },
                 this._requestMetaData(),
             );
         });
     }
 
     /**
-     * Get the LLM provider API Endpoint Configuration by name and version
+     * Get the LLM provider API Endpoint Configuration by llmProviderId
      * 
-     * @param {String} name
-     * @param {String} apiVersion
+     * @param {String} llmProviderId
      */
-    static getLLMProviderEndpointConfiguration(name, apiVersion) {
+    static getLLMProviderEndpointConfiguration(llmProviderId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
             return client.apis['LLMProvider'].getLLMProviderEndpointConfiguration(
-                { name, apiVersion },
+                { llmProviderId },
                 this._requestMetaData(),
             );
         });

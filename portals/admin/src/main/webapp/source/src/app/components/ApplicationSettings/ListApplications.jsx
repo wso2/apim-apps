@@ -109,7 +109,7 @@ export default function ListApplications() {
     function clearSearch() {
         setPage(0);
         setSearchQuery('');
-        apiCall(page, '').then((result) => {
+        apiCall(page, '', '').then((result) => {
             setApplicationList(result);
         });
     }
@@ -132,7 +132,12 @@ export default function ListApplications() {
     }
 
     return (
-        <ContentBase>
+        <ContentBase
+            title={intl.formatMessage({
+                defaultMessage: 'Change Application Owner',
+                id: 'Applications.Listing.Listing.title',
+            })}
+        >
             <AppBar
                 sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
                 position='static'
@@ -145,21 +150,24 @@ export default function ListApplications() {
                             <Grid item>
                                 <SearchIcon sx={{ display: 'block' }} color='inherit' />
                             </Grid>
-                            <Grid item xs>
+                            <Grid item xs sx={{ display: 'flex', alignItems: 'center' }}>
                                 <TextField
+                                    hiddenLabel
                                     variant='standard'
                                     fullWidth
                                     id='search-label'
-                                    label={intl.formatMessage({
-                                        defaultMessage: 'Search Application',
-                                        id: 'Applications.Listing.Listing.applications.search.label',
-                                    })}
                                     placeholder={intl.formatMessage({
-                                        defaultMessage: 'Application Name/Owner',
+                                        defaultMessage: 'Search Application by Name/Owner',
                                         id: 'Applications.Listing.Listing.search.placeholder',
+                                    })}
+                                    sx={(theme) => ({
+                                        '& .search-input': {
+                                            fontSize: theme.typography.fontSize,
+                                        },
                                     })}
                                     InputProps={{
                                         disableUnderline: true,
+                                        className: 'search-input',
                                     }}
                                     value={searchQuery}
                                     onChange={setQuery}
@@ -176,11 +184,6 @@ export default function ListApplications() {
                                     >
                                         <IconButton
                                             aria-label='delete'
-                                            sx={{
-                                                position: 'absolute',
-                                                right: 111,
-                                                top: 13,
-                                            }}
                                             onClick={clearSearch}
                                             size='large'
                                         >

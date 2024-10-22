@@ -111,6 +111,7 @@ const Root = styled('div')((
         padding: theme.spacing(),
         border: 'solid 1px',
         borderColor: theme.palette.grey[800],
+        width: 100,
     },
 
     [`& .${classes.chipRoot}`]: {

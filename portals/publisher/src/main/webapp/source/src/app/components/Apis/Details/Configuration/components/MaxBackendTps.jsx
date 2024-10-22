@@ -120,7 +120,7 @@ export default function MaxBackendTps(props) {
                             </FormLabel>
                             <RadioGroup
                                 aria-label='change-max-TPS'
-                                value={api.maxTps === null || api.maxTps === undefined ? 'unlimited' : 'specify'}
+                                value={api.maxTps === undefined || api.maxTps === null ? 'unlimited' : 'specify'}
                                 onChange={(event) => {
                                     configDispatcher({
                                         action: 'maxTps',
@@ -165,7 +165,7 @@ export default function MaxBackendTps(props) {
                                 />
                             </RadioGroup>
                         </FormControl>
-                        <Collapse in={api.maxTps !== null}>
+                        <Collapse in={api.maxTps !== undefined && api.maxTps !== null}>
                             <Grid item xs={12} style={{ marginBottom: 10, position: 'relative' }}>
                                 <TextField
                                     label={intl.formatMessage({

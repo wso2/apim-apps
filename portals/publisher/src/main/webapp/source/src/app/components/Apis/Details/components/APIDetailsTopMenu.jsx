@@ -302,7 +302,7 @@ const APIDetailsTopMenu = (props) => {
                     </MUIAlert>
                 )}
                 <div className={classes.dateWrapper} />
-                {(api.aiConfiguration) && (
+                {(api.subtypeConfiguration?.subtype === 'AIAPI') && (
                     <MUIAlert
                         data-testid='itest-ai-api-label'
                         variant='outlined'
