@@ -173,6 +173,8 @@ export default function CustomBackend(props) {
         setProductionBackendList,
         isValidSequenceBackend,
         setIsValidSequenceBackend,
+        setIsCustomBackendSelected,
+        isCustomBackendSelected
     } = props;
 
     const restAPI = new API();
@@ -193,6 +195,7 @@ export default function CustomBackend(props) {
     };
 
     useEffect(() => {
+        setIsCustomBackendSelected(true);
         setIsValidSequenceBackend(false);
         restAPI.getSequenceBackends(api.id)
             .then((result) => {
@@ -607,6 +610,7 @@ export default function CustomBackend(props) {
 CustomBackend.defaultProps = {
     sandBoxBackendList: [],
     productionBackendList: [],
+    isCustomBackendSelected: true,
 };
 
 CustomBackend.propTypes = {
@@ -623,4 +627,6 @@ CustomBackend.propTypes = {
     setUploadCustomBackendOpen: PropTypes.func.isRequired,
     isValidSequenceBackend: PropTypes.bool.isRequired,
     setIsValidSequenceBackend: PropTypes.func.isRequired,
+    setIsCustomBackendSelected: PropTypes.func.isRequired,
+    isCustomBackendSelected: PropTypes.bool,
 };
