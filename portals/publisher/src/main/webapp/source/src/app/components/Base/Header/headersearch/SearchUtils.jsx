@@ -201,6 +201,11 @@ function buildSearchQuery(searchText) {
  * @returns {Promise} If no input text, return a promise which resolve to empty array, else return the API.all response
  */
 function getSuggestions(value) {
+    // Skip invalid inputs such as queries ending with a colon
+    if (/:(\s+|(?![\s\S]))/g.test(value)) {
+        return new Promise((resolve) => resolve({ obj: { list: [] } }));
+    }
+    
     const modifiedSearchQuery = buildSearchQuery(value);
 
     if (value.trim().length === 0 || !modifiedSearchQuery) {
