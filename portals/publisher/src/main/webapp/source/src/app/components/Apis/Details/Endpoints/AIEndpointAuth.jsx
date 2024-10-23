@@ -20,7 +20,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Icon, TextField, Tooltip, InputAdornment, IconButton } from '@mui/material';
+import { Icon, TextField, InputAdornment, IconButton } from '@mui/material';
 import CONSTS from 'AppData/Constants';
 
 export default function AIEndpointAuth(props) {
@@ -123,18 +123,6 @@ export default function AIEndpointAuth(props) {
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position='end'>
-                            <Tooltip
-                                placement='top-start'
-                                interactive
-                                title={(
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.Security.api.key.value.tooltip'
-                                        defaultMessage='API Key for the AI API'
-                                    />
-                                )}
-                            >
-                                <Icon>security</Icon>
-                            </Tooltip>
                             <IconButton onClick={handleToggleApiKeyVisibility} edge='end'>
                                 <Icon>
                                     {showApiKey ? 'visibility' : 'visibility_off'}

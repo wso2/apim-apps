@@ -152,7 +152,8 @@ function Endpoints(props) {
             case 'endpointSecurity': { // set endpoint security
                 const config = cloneDeep(initState.endpointConfig);
                 const tmpSecurityInfo = cloneDeep(value);
-                return { ...initState, endpointConfig: { ...config, endpoint_security: tmpSecurityInfo } };
+                return { ...initState, endpointConfig:
+                     { ...config, endpoint_security: { ...(config.endpoint_security || {}), ...tmpSecurityInfo } } };
             }
             case 'endpoint_type': { // set endpoint type
                 const config = getEndpointTemplateByType(
