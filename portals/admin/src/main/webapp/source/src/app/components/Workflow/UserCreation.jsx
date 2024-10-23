@@ -173,7 +173,7 @@ function ListLabels() {
                         <Link
                             target='_blank'
                             href={Configurations.app.docUrl
-                        + 'develop/customizations/adding-a-user-signup-workflow/'}
+                                + 'reference/customize-product/customizations/adding-a-user-signup-workflow/'}
                             underline='hover'
                         >
                             <ListItemText primary={(
