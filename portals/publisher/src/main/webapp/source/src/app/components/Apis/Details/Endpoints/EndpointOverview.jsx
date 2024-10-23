@@ -192,6 +192,7 @@ function EndpointOverview(props) {
         setProductionBackendList,
         isValidSequenceBackend,
         setIsValidSequenceBackend,
+        isCustomBackendSelected,
         setIsCustomBackendSelected,
     } = props;
     const { endpointConfig } = api;
@@ -946,6 +947,8 @@ function EndpointOverview(props) {
                                                     setProductionBackendList={setProductionBackendList}
                                                     isValidSequenceBackend={isValidSequenceBackend}
                                                     setIsValidSequenceBackend={setIsValidSequenceBackend}
+                                                    setIsCustomBackendSelected={setIsCustomBackendSelected}
+                                                    isCustomBackendSelected={isCustomBackendSelected}
                                                 />
                                             )
                                             : (

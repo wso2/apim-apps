@@ -48,7 +48,7 @@ export default function CustomSplitButton(props) {
     const isEndpointAvailable = api.endpointConfig !== null;
     const isTierAvailable = api.policies.length !== 0;
 
-    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
+    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && (!isCustomBackendSelected && !isEndpointAvailable)))
     || (!isMutualSslOnly && !isTierAvailable)
     || api.workflowStatus === 'CREATED');
 
@@ -135,8 +135,7 @@ export default function CustomSplitButton(props) {
                                                     selected={index === selectedIndex}
                                                     onClick={(event) => handleClick(event, index)}
                                                     disabled={(option.key === 'Save and deploy'
-                                                        && (isDeployButtonDisabled || (!isValidSequenceBackend 
-                                                            && isCustomBackendSelected)))}
+                                                        && isDeployButtonDisabled)}
                                                 >
                                                     {option.label}
                                                 </MenuItem>
