@@ -196,8 +196,8 @@ function ListLabels(props) {
                         <Link
                             target='_blank'
                             href={Configurations.app.docUrl
-                        + 'learn/design-api/advanced-topics/adding-an-api-'
-                        + 'state-change-workflow/#adding-an-api-state-change-workflow'}
+                                + 'design/advanced-topics/adding-an-api-state-change-workflow/'
+                                + '#adding-an-api-state-change-workflow'}
                             underline='hover'
                         >
                             <ListItemText primary={(
