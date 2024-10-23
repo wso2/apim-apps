@@ -1461,7 +1461,9 @@ EndpointOverview.propTypes = {
         endpointTypesWrapper: PropTypes.shape({}),
         endpointName: PropTypes.shape({}),
     }).isRequired,
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        subtypeConfiguration: PropTypes.shape({}),
+    }).isRequired,
     endpointsDispatcher: PropTypes.func.isRequired,
     swaggerDef: PropTypes.shape({}).isRequired,
     updateSwagger: PropTypes.func.isRequired,
