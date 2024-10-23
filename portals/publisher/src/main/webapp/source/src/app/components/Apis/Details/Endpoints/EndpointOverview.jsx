@@ -1329,6 +1329,7 @@ function EndpointOverview(props) {
                         || endpointType.key === 'awslambda'
                         || endpointType.key === 'service'
                         || api.gatewayType === 'wso2/apk'
+                        || api.subtypeConfiguration?.subtype === 'AIAPI'
                         ? <div />
                         : (
                             <Grid item xs={12}>
