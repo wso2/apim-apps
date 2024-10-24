@@ -33,7 +33,7 @@ const AIAPIMenu = (props) => {
             title={(
                 <FormattedMessage
                     id='Apis.Listing.AIAPI.ai.api'
-                    defaultMessage='AI API'
+                    defaultMessage='AI/LLM API'
                 />
             )}
             icon={icon}
@@ -45,13 +45,13 @@ const AIAPIMenu = (props) => {
                 helperText={(
                     <FormattedMessage
                         id='Apis.Listing.SampleAPI.SampleAPI.ai.api.import.content'
-                        defaultMessage='Create AI APIs by importing AI service provider APIs'
+                        defaultMessage='Create AI/LLM APIs by importing service provider APIs'
                     />
                 )}
             >
                 <FormattedMessage
                     id='Apis.Listing.SampleAPI.SampleAPI.ai.api.create.title'
-                    defaultMessage='Create AI API'
+                    defaultMessage='Create AI/LLM API'
                 />
             </LandingMenuItem>
         </Component>

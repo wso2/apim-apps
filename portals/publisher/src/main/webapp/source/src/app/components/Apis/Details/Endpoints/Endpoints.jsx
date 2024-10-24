@@ -550,7 +550,7 @@ function Endpoints(props) {
             return {
                 isValid: false,
                 message: intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.Endpoints.missing.endpoint.error',
+                    id: 'Apis.Details.Endpoints.Endpoints.missing.endpoint.ai.error',
                     defaultMessage: 'Production & Sandbox Endpoint Security should be added',
                 }),
             };
