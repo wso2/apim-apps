@@ -29,7 +29,7 @@ import RequestCountRateLimit from './RequestCountRateLimit';
 import RequestCountRateLimitUnit from './RequestCountRateLimitUnit';
 
 /**
- * Backend Rate Limiting for AI APIs
+ * Backend Rate Limiting for AI/LLM APIs
  *
  * @export
  * @param {*} props
