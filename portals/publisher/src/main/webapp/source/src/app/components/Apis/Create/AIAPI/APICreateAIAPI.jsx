@@ -238,6 +238,7 @@ export default function ApiCreateAIAPI(props) {
                             multiGateway={multiGateway}
                             api={apiInputs}
                             isAPIProduct={false}
+                            hideEndpoint
                         />
                     )}
                 </Grid>
