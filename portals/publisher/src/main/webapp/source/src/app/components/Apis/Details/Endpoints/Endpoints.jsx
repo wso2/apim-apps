@@ -471,7 +471,7 @@ function Endpoints(props) {
                         }
                     }
                 } else if (production.type === 'apikey') {
-                    if (production.apiKeyValue === null) {
+                    if (production.apiKeyValue === null && endpointConfig.production_endpoints) {
                         return {
                             isValid: false,
                             message: intl.formatMessage({
@@ -525,7 +525,7 @@ function Endpoints(props) {
                         }
                     }
                 } else if (sandbox.type === 'apikey') {
-                    if (sandbox.apiKeyValue === null) {
+                    if (sandbox.apiKeyValue === null && endpointConfig.sandbox_endpoints) {
                         return {
                             isValid: false,
                             message: intl.formatMessage({
