@@ -106,7 +106,7 @@ export default function AddEditAiVendor(props) {
     const { match: { params: { id } }, history } = props;
     const inputSources = ['payload', 'header', 'queryParams'];
     const [authSource, setAuthSource] = useState('authHeader');
-    const authSources = ['authHeader', 'authQueryParameter'];
+    const authSources = ['unsecured', 'authHeader', 'authQueryParameter'];
     const [validating, setValidating] = useState(false);
     const [file, setFile] = useState(null);
     const [initialState] = useState({
@@ -147,10 +147,10 @@ export default function AddEditAiVendor(props) {
 
     const pageTitle = id ? `${intl.formatMessage({
         id: 'AiVendors.AddEditAiVendor.title.edit',
-        defaultMessage: 'AI Vendor - Edit ',
+        defaultMessage: 'AI/LLM Vendor - Edit ',
     })} ${state.name}` : intl.formatMessage({
         id: 'AiVendors.AddEditAiVendor.title.new',
-        defaultMessage: 'AI Vendor - Create new',
+        defaultMessage: 'AI/LLM Vendor - Create new',
     });
 
     useEffect(() => {
@@ -170,8 +170,10 @@ export default function AddEditAiVendor(props) {
 
                     if (newState.configurations.authQueryParameter) {
                         setAuthSource('authQueryParameter');
-                    } else {
+                    } else if (newState.configurations.authHeader) {
                         setAuthSource('authHeader');
+                    } else {
+                        setAuthSource('unsecured');
                     }
 
                     dispatch({ field: 'all', value: newState });
@@ -190,6 +192,13 @@ export default function AddEditAiVendor(props) {
             .replace(/^./, (str) => str.toUpperCase());
     };
 
+    const camelCaseToSentence = (camelCaseStr) => {
+        return camelCaseStr
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/^./, (str) => str.toUpperCase())
+            .replace(/\b(?!^)\w+/g, (str) => str.toLowerCase());
+    };
+
     const hasErrors = (fieldName, fieldValue, validatingActive) => {
         let error = false;
         if (!validatingActive) {
@@ -198,7 +207,7 @@ export default function AddEditAiVendor(props) {
         switch (fieldName) {
             case 'name':
                 if (fieldValue.trim() === '') {
-                    error = `AI Vendor name ${intl.formatMessage({
+                    error = `AI/LLM Vendor name ${intl.formatMessage({
                         id: 'AiVendors.AddEditAiVendor.is.empty.error',
                         defaultMessage: ' is empty',
                     })}`;
@@ -285,13 +294,13 @@ export default function AddEditAiVendor(props) {
                 await new API().updateAiVendor(id, { ...newState, apiDefinition: file });
                 Alert.success(`${state.name} ${intl.formatMessage({
                     id: 'AiVendor.edit.success',
-                    defaultMessage: ' - AI Vendor edited successfully.',
+                    defaultMessage: ' - AI/LLM Vendor edited successfully.',
                 })}`);
             } else {
                 await new API().addAiVendor({ ...newState, apiDefinition: file });
                 Alert.success(`${state.name} ${intl.formatMessage({
                     id: 'AiVendor.add.success.msg',
-                    defaultMessage: ' - AI Vendor added successfully.',
+                    defaultMessage: ' - AI/LLM Vendor added successfully.',
                 })}`);
             }
             setSaving(false);
@@ -306,6 +315,20 @@ export default function AddEditAiVendor(props) {
         setSaving(false);
 
         return true;
+    };
+
+    const clearAuthHeader = () => {
+        dispatch({
+            field: 'authHeader',
+            value: '',
+        });
+    };
+
+    const clearAuthQueryParameter = () => {
+        dispatch({
+            field: 'authQueryParameter',
+            value: '',
+        });
     };
 
     return (
@@ -336,7 +359,7 @@ export default function AddEditAiVendor(props) {
                         >
                             <FormattedMessage
                                 id='AiVendors.AddEditAiVendor.general.details.description'
-                                defaultMessage='Provide name and description of the AI Vendor'
+                                defaultMessage='Provide name and description of the AI/LLM Vendor'
                             />
                         </Typography>
                     </Grid>
@@ -370,7 +393,7 @@ export default function AddEditAiVendor(props) {
                                         error={hasErrors('name', state.name, validating)}
                                         helperText={hasErrors('name', state.name, validating) || intl.formatMessage({
                                             id: 'AiVendors.AddEditAiVendor.form.name.help',
-                                            defaultMessage: 'Name of the AI Vendor.',
+                                            defaultMessage: 'Name of the AI/LLM Vendor.',
                                         })}
                                     />
                                 </Grid>
@@ -401,7 +424,7 @@ export default function AddEditAiVendor(props) {
                                             helperText={hasErrors('apiVersion', state.apiVersion, validating)
                                                 || intl.formatMessage({
                                                     id: 'AiVendors.AddEditAiVendor.form.displayName.help',
-                                                    defaultMessage: 'API Version of the AI Vendor.',
+                                                    defaultMessage: 'API Version of the AI/LLM Vendor.',
                                                 })}
                                         />
                                     </Box>
@@ -430,7 +453,7 @@ export default function AddEditAiVendor(props) {
                                 })}
                                 helperText={intl.formatMessage({
                                     id: 'AiVendors.AddEditAiVendor.form.description.help',
-                                    defaultMessage: 'Description of the AI Vendor.',
+                                    defaultMessage: 'Description of the AI/LLM Vendor.',
                                 })}
                             />
                         </Box>
@@ -526,7 +549,10 @@ export default function AddEditAiVendor(props) {
                                                                 'Admin.AiVendor.form.llm.'
                                                                 + `${metadata.attributeName}.select.input.message`
                                                             }
-                                                            defaultMessage={`Path to ${metadata.attributeName}`}
+                                                            defaultMessage={
+                                                                `${camelCaseToSentence(metadata.attributeName)}`
+                                                                + ' identifier'
+                                                            }
                                                         />
 
                                                         <StyledSpan>*</StyledSpan>
@@ -578,7 +604,7 @@ export default function AddEditAiVendor(props) {
                         >
                             <FormattedMessage
                                 id='AiVendors.AddEditAiVendor.apiDefinition.description'
-                                defaultMessage='Upload API Definition of the AI Vendor'
+                                defaultMessage='Upload API Definition of the AI/LLM Vendor'
                             />
                         </Typography>
                     </Grid>
@@ -637,7 +663,11 @@ export default function AddEditAiVendor(props) {
                                             id='Admin.AiVendor.form.llm.auth.select'
                                             name='authSource'
                                             value={authSource}
-                                            onChange={(e) => setAuthSource(e.target.value)}
+                                            onChange={(e) => {
+                                                clearAuthHeader();
+                                                clearAuthQueryParameter();
+                                                setAuthSource(e.target.value);
+                                            }}
                                             data-testid='ai-vendor-llm-auth-select'
                                         >
                                             {authSources
@@ -647,31 +677,35 @@ export default function AddEditAiVendor(props) {
                                                     </MenuItem>
                                                 ))}
                                         </Select>
-                                        <TextField
-                                            id='Admin.AiVendor.form.llm.auth.select.input'
-                                            margin='dense'
-                                            name='model.auth.attributeIdentifier'
-                                            label={(
-                                                <span>
-                                                    <FormattedMessage
-                                                        id={
-                                                            'Admin.AiVendor.form.llm.'
-                                                            + 'auth.select.input.message'
-                                                        }
-                                                        defaultMessage='Authorization key'
-                                                    />
-                                                </span>
-                                            )}
-                                            fullWidth
-                                            variant='outlined'
-                                            value={authSource === 'authHeader'
-                                                ? state.configurations.authHeader ?? ''
-                                                : state.configurations.authQueryParameter ?? ''}
-                                            onChange={(e) => dispatch({
-                                                field: authSource,
-                                                value: e.target.value,
-                                            })}
-                                        />
+                                        {authSource !== 'unsecured' && (
+                                            <TextField
+                                                id='Admin.AiVendor.form.llm.auth.select.input'
+                                                margin='dense'
+                                                name='model.auth.attributeIdentifier'
+                                                label={(
+                                                    <span>
+                                                        <FormattedMessage
+                                                            id={
+                                                                'Admin.AiVendor.form.llm.'
+                                                                + 'auth.select.input.message'
+                                                            }
+                                                            defaultMessage={
+                                                                `${camelCaseToSentence(authSource)} identifier`
+                                                            }
+                                                        />
+                                                    </span>
+                                                )}
+                                                fullWidth
+                                                variant='outlined'
+                                                value={authSource === 'authHeader'
+                                                    ? state.configurations.authHeader ?? ''
+                                                    : state.configurations.authQueryParameter ?? ''}
+                                                onChange={(e) => dispatch({
+                                                    field: authSource,
+                                                    value: e.target.value,
+                                                })}
+                                            />
+                                        )}
                                     </FormControl>
                                 </Box>
                             </>
@@ -691,7 +725,7 @@ export default function AddEditAiVendor(props) {
                         >
                             <FormattedMessage
                                 id='AiVendors.AddEditAiVendor.connectorType'
-                                defaultMessage='Connector Type for AI Vendor'
+                                defaultMessage='Connector Type for AI/LLM Vendor'
                             />
                         </Typography>
                         <Typography
@@ -702,7 +736,7 @@ export default function AddEditAiVendor(props) {
                         >
                             <FormattedMessage
                                 id='AiVendors.AddEditAiVendor.connectorType.description'
-                                defaultMessage='Reference to the connector model for the AI vendor'
+                                defaultMessage='Reference to the connector model for the AI/LLM vendor'
                             />
                         </Typography>
                     </Grid>
@@ -737,7 +771,7 @@ export default function AddEditAiVendor(props) {
                                     validating,
                                 ) || intl.formatMessage({
                                     id: 'AiVendors.AddEditAiVendor.form.name.help',
-                                    defaultMessage: 'Connector Type for AI Vendor',
+                                    defaultMessage: 'Connector Type for AI/LLM Vendor',
                                 })}
                             />
                         </Box>
