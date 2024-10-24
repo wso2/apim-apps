@@ -46,7 +46,8 @@ export default function AIEndpointAuth(props) {
         let newApiKeyValue = api.endpointConfig?.endpoint_security?.[isProduction ? 
             'production' : 'sandbox']?.apiKeyValue === '' ? '' : null;
 
-        if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') && newApiKeyValue !== '') {
+        if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') &&
+            newApiKeyValue != null && newApiKeyValue !== '') {
             newApiKeyValue = `Bearer ${newApiKeyValue}`;
         }
 
