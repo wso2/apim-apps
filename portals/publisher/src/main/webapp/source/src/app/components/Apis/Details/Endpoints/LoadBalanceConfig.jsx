@@ -61,7 +61,7 @@ const defaultTemplateObj = {
     algoClassName: algorithms[0].key,
     algoCombo: algorithms[0].key,
     sessionManagement: sessionManagementOps[0].key,
-    sessionTimeOut: 300,
+    sessionTimeOut: '300',
     failOver: false,
 };
 
