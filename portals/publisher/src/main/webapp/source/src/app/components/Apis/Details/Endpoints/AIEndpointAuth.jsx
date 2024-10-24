@@ -69,7 +69,8 @@ export default function AIEndpointAuth(props) {
 
         let updatedApiKeyValue = event.target.value === '********' ? '' : event.target.value;
 
-        if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') && updatedApiKeyValue !== '') {
+        if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') &&
+            updatedApiKeyValue !== null && updatedApiKeyValue !== '') {
             updatedApiKeyValue = `Bearer ${updatedApiKeyValue}`;
         }
 
