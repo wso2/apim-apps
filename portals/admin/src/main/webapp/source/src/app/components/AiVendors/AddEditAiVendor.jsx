@@ -336,7 +336,7 @@ export default function AddEditAiVendor(props) {
                         >
                             <FormattedMessage
                                 id='AiVendors.AddEditAiVendor.general.details.description'
-                                defaultMessage='Provide name and description of the AI Vendor.'
+                                defaultMessage='Provide name and description of the AI Vendor'
                             />
                         </Typography>
                     </Grid>
@@ -578,12 +578,12 @@ export default function AddEditAiVendor(props) {
                         >
                             <FormattedMessage
                                 id='AiVendors.AddEditAiVendor.apiDefinition.description'
-                                defaultMessage='Upload API Definition of the AI Vendor.'
+                                defaultMessage='Upload API Definition of the AI Vendor'
                             />
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
+                        <Box component='div'>
                             <AIAPIDefinition
                                 apiDefinition={state.apiDefinition}
                                 vendorName={state.name}
@@ -737,7 +737,7 @@ export default function AddEditAiVendor(props) {
                                     validating,
                                 ) || intl.formatMessage({
                                     id: 'AiVendors.AddEditAiVendor.form.name.help',
-                                    defaultMessage: 'Connector Type for AI Vendor.',
+                                    defaultMessage: 'Connector Type for AI Vendor',
                                 })}
                             />
                         </Box>
@@ -754,6 +754,7 @@ export default function AddEditAiVendor(props) {
                                 variant='contained'
                                 color='primary'
                                 onClick={formSaveCallback}
+                                disabled={!state.apiDefinition}
                             >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
