@@ -105,7 +105,7 @@ export default function AddEditAiVendor(props) {
     const [saving, setSaving] = useState(false);
     const { match: { params: { id } }, history } = props;
     const inputSources = ['payload', 'header', 'queryParams'];
-    const [authSource, setAuthSource] = useState('unsecured');
+    const [authSource, setAuthSource] = useState('authHeader');
     const authSources = ['unsecured', 'authHeader', 'authQueryParameter'];
     const [validating, setValidating] = useState(false);
     const [file, setFile] = useState(null);
