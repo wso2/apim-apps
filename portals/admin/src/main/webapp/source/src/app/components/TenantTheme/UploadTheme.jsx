@@ -255,7 +255,9 @@ function UploadTheme() {
                                     <Link
                                         target='_blank'
                                         href={Configurations.app.docUrl
-        + 'develop/customizations/customizing-the-developer-portal/overriding-developer-portal-theme/#tenant-theming'}
+                                            + 'reference/customize-product/customizations/'
+                                            + 'customizing-the-developer-portal/'
+                                            + 'overriding-developer-portal-theme/#tenant-theming'}
                                         underline='hover'
                                     >
                                         <ListItemText primary={(
@@ -293,7 +295,8 @@ function UploadTheme() {
                             <Link
                                 target='_blank'
                                 href={Configurations.app.docUrl
-        + 'develop/customizations/customizing-the-developer-portal/overriding-developer-portal-theme/#tenant-theming'}
+                                    + 'reference/customize-product/customizations/customizing-the-developer-portal/'
+                                    + 'overriding-developer-portal-theme/#tenant-theming'}
                                 underline='hover'
                             >
                                 {' '}

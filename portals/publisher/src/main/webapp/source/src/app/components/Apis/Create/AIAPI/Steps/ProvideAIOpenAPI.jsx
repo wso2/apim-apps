@@ -139,7 +139,7 @@ export default function ProvideAIOpenAPI(props) {
                                 fullWidth
                                 id='AI-providers-autocomplete'
                                 options={getUniqueProviderList(llmProviders)}
-                                noOptionsText='No AI Service Provider defined'
+                                noOptionsText='No AI/LLM Service Provider defined'
                                 value={selectedProvider}
                                 onChange={(e, newValue) => {
                                     setSelectedProvider(newValue);
@@ -156,25 +156,25 @@ export default function ProvideAIOpenAPI(props) {
                                             <>
                                                 <FormattedMessage
                                                     id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider'
-                                                    defaultMessage='AI Service Provider'
+                                                    defaultMessage='AI/LLM Service Provider'
                                                 />
                                                 <sup className={classes.mandatoryStar}>*</sup>
                                             </>
                                         ) : (
                                             <FormattedMessage
                                                 id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.empty'
-                                                defaultMessage='No AI Service Provider defined.'
+                                                defaultMessage='No AI/LLM Service Provider defined.'
                                             />
                                         )
                                         }
                                         placeholder={intl.formatMessage({
                                             id: 'Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.placeholder',
-                                            defaultMessage: 'Search AI Service Provider'
+                                            defaultMessage: 'Search AI/LLM Service Provider'
                                         })}
                                         helperText={(
                                             <FormattedMessage
                                                 id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.helper.text'
-                                                defaultMessage='Select AI Service Provider for the API'
+                                                defaultMessage='Select AI/LLM Service Provider for the API'
                                             />
                                         )}
                                         margin='dense'
@@ -193,7 +193,7 @@ export default function ProvideAIOpenAPI(props) {
                                 fullWidth
                                 id='AI-model-autocomplete'
                                 options={llmProviders.list.filter((model) => model.name === selectedProvider)}
-                                noOptionsText='No AI Service Provider selected'
+                                noOptionsText='No AI/LLM Service Provider selected'
                                 getOptionLabel={(option) =>
                                     option.apiVersion
                                 }
@@ -239,7 +239,7 @@ export default function ProvideAIOpenAPI(props) {
                                         ) : (
                                             <FormattedMessage
                                                 id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.model.empty'
-                                                defaultMessage='No AI Service Provider selected.'
+                                                defaultMessage='No AI/LLM Service Provider selected.'
                                             />
                                         )
                                         }
@@ -280,8 +280,8 @@ export default function ProvideAIOpenAPI(props) {
                     <Grid item xs={12} sx={{ mb: 2 }}>
                         <Typography>
                             <FormattedMessage
-                                id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.empty'
-                                defaultMessage='Loading AI Service Providers...'
+                                id='Apis.Create.AIAPI.Steps.ProvideAIOpenAPI.AI.provider.loading'
+                                defaultMessage='Loading AI/LLM Service Providers...'
                             />
                         </Typography>
                     </Grid>

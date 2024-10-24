@@ -108,7 +108,7 @@ export default function ListAiVendors() {
             >
                 {intl.formatMessage({
                     id: 'AiVendors.ListAiVendors.addNewAiVendor',
-                    defaultMessage: 'Add AI Vendor',
+                    defaultMessage: 'Add AI/LLM Vendor',
                 })}
             </Button>
         );
@@ -119,7 +119,7 @@ export default function ListAiVendors() {
             name: 'name',
             label: intl.formatMessage({
                 id: 'AiVendors.ListAiVendors.table.header.label.aiVendorName',
-                defaultMessage: 'AI Vendor Name',
+                defaultMessage: 'AI/LLM Vendor Name',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
@@ -214,7 +214,7 @@ export default function ListAiVendors() {
                     if (dataRow.builtInSupport) {
                         tooltipTitle = intl.formatMessage({
                             id: 'AiVendors.ListAiVendors.table.is.used.delete.tooltip',
-                            defaultMessage: 'Default AI Vendors cannot be deleted',
+                            defaultMessage: 'Default AI/LLM Vendors cannot be deleted',
                         });
                     }
                     return (
@@ -241,7 +241,7 @@ export default function ListAiVendors() {
         pageStyle: 'paperLess',
         title: intl.formatMessage({
             id: 'AiVendors.ListAiVendors.List.title',
-            defaultMessage: 'AI Vendors',
+            defaultMessage: 'AI/LLM Vendors',
         }),
     };
 
@@ -255,7 +255,7 @@ export default function ListAiVendors() {
             >
                 <FormattedMessage
                     id='AdminPages.AiVendors.List.empty.content.Aivendors'
-                    defaultMessage='It is possible to register an AI Vendor.'
+                    defaultMessage='It is possible to register an AI/LLM Vendor.'
                 />
             </Typography>
         ),
@@ -268,7 +268,7 @@ export default function ListAiVendors() {
             >
                 <FormattedMessage
                     id='AiVendors.ListAiVendors.empty.title'
-                    defaultMessage='AI Vendors'
+                    defaultMessage='AI/LLM Vendors'
                 />
             </Typography>
         ),

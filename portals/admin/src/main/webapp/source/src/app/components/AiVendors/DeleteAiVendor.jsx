@@ -38,7 +38,7 @@ function DeleteAiVendor({ updateList, dataRow }) {
             .then(() => (
                 <FormattedMessage
                     id='AdminPages.AiVendor.Delete.form.delete.successful'
-                    defaultMessage='AI Vendor deleted successfully'
+                    defaultMessage='AI/LLM Vendor deleted successfully'
                 />
             ))
             .catch((error) => {
@@ -53,7 +53,7 @@ function DeleteAiVendor({ updateList, dataRow }) {
         <FormDialogBase
             title={intl.formatMessage({
                 id: 'AdminPages.AiVendor.Delete.form.delete.dialog.title',
-                defaultMessage: 'Delete AI Vendor ?',
+                defaultMessage: 'Delete AI/LLM Vendor ?',
             })}
             saveButtonText={intl.formatMessage({
                 id: 'AdminPages.AiVendor.Delete.form.delete.dialog.btn',
@@ -70,7 +70,7 @@ function DeleteAiVendor({ updateList, dataRow }) {
             <DialogContentText>
                 <FormattedMessage
                     id='AdminPages.AiVendor.Delete.form.delete.confirmation.message'
-                    defaultMessage='Are you sure you want to delete this AI Vendor ?'
+                    defaultMessage='Are you sure you want to delete this AI/LLM Vendor ?'
                 />
             </DialogContentText>
         </FormDialogBase>
