@@ -583,7 +583,7 @@ export default function AddEditAiVendor(props) {
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
+                        <Box component='div'>
                             <AIAPIDefinition
                                 apiDefinition={state.apiDefinition}
                                 vendorName={state.name}
@@ -754,6 +754,7 @@ export default function AddEditAiVendor(props) {
                                 variant='contained'
                                 color='primary'
                                 onClick={formSaveCallback}
+                                disabled={!state.apiDefinition}
                             >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
