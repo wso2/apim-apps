@@ -25,6 +25,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import DropZoneLocal from 'AppComponents/Shared/DropZoneLocal';
 import { styled } from '@mui/material/styles';
 import { IconButton } from '@mui/material';
+import InputLabel from '@mui/material/InputLabel';
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
@@ -104,14 +105,13 @@ export default function AIAPIDefinition(props) {
                 </Box>
             ) : (
                 <>
-                    <Box mb={1}>
-                        <StyledSpan>*</StyledSpan>
-                        {' '}
+                    <InputLabel sx={{ position: 'relative', marginBottom: 1 }}>
                         <FormattedMessage
-                            id='AiVendors.AddEditAiVendor.apiDefinition.title'
+                            id='AiVendors.AddEditAiVendor.apiDefinition.upload'
                             defaultMessage='Upload API Definition'
                         />
-                    </Box>
+                        <StyledSpan>*</StyledSpan>
+                    </InputLabel>
                     <DropZoneLocal
                         onDrop={onDrop}
                         accept='.json, .yaml, .yml'
