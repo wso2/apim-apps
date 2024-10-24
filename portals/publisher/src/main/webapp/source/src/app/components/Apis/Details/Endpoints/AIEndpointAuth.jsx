@@ -38,14 +38,24 @@ export default function AIEndpointAuth(props) {
     const [isHeaderParameter] = useState(!!apiKeyParamConfig.authHeader);
     const [showApiKey, setShowApiKey] = useState(false);
 
+    const subtypeConfig = api.subtypeConfiguration && JSON.parse(api.subtypeConfiguration.configuration);
+    const llmProviderName = subtypeConfig ? subtypeConfig.llmProviderName : null;
+
     useEffect(() => {
+
+        let newApiKeyValue = api.endpointConfig?.endpoint_security?.[isProduction ? 
+            'production' : 'sandbox']?.apiKeyValue === '' ? '' : null;
+
+        if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') && newApiKeyValue !== '') {
+            newApiKeyValue = `Bearer ${newApiKeyValue}`;
+        }
+
         saveEndpointSecurityConfig({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: 'apikey',
             apiKeyIdentifier,
             apiKeyIdentifierType,
-            apiKeyValue: api.endpointConfig?.endpoint_security?.[isProduction ? 
-                'production' : 'sandbox']?.apiKeyValue === '' ? '' : null,
+            apiKeyValue: newApiKeyValue,
             enabled: true,
         }, isProduction ? 'production' : 'sandbox');
     }, []);
@@ -55,12 +65,19 @@ export default function AIEndpointAuth(props) {
     };
 
     const handleApiKeyBlur = (event) => {
+
+        let updatedApiKeyValue = event.target.value === '********' ? '' : event.target.value;
+
+        if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') && updatedApiKeyValue !== '') {
+            updatedApiKeyValue = `Bearer ${updatedApiKeyValue}`;
+        }
+
         saveEndpointSecurityConfig({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: 'apikey',
             apiKeyIdentifier,
             apiKeyIdentifierType,
-            apiKeyValue: event.target.value === '********' ? '' : event.target.value,
+            apiKeyValue: updatedApiKeyValue,
             enabled: true,
         }, isProduction ? 'production' : 'sandbox');
     };
