@@ -31,6 +31,8 @@ import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import cloneDeep from 'lodash.clonedeep';
 import { isRestricted } from 'AppData/AuthManager';
 import { Alert } from 'AppComponents/Shared';
+
+import API from 'AppData/api';
 import EndpointOverview from './EndpointOverview';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
 import { API_SECURITY_KEY_TYPE_PRODUCTION, 
@@ -107,6 +109,22 @@ function Endpoints(props) {
     const [productionBackendList, setProductionBackendList] = useState([]);
     const [isValidSequenceBackend, setIsValidSequenceBackend] = useState(false);
     const [isCustomBackendSelected, setIsCustomBackendSelected] = useState(false);
+    const [apiKeyParamConfig, setApiKeyParamConfig] = useState({
+        authHeader: null,
+        authQueryParameter: null
+    });
+
+    useEffect(() => {
+        if (api.subtypeConfiguration?.subtype === 'AIAPI') {
+            API.getLLMProviderEndpointConfiguration(JSON.parse(api.subtypeConfiguration.configuration).llmProviderId)
+                .then((response) => {
+                    if (response.body) {
+                        const config = response.body;
+                        setApiKeyParamConfig(config);
+                    }
+                });
+        }
+    }, []);
 
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
@@ -527,7 +545,8 @@ function Endpoints(props) {
                 }
             }
         } else if ((!endpointConfig || !endpointConfig.endpoint_security)
-            && apiObject.subtypeConfiguration?.subtype === 'AIAPI' ) {
+            && apiObject.subtypeConfiguration?.subtype === 'AIAPI'
+            && (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter)) {
             return {
                 isValid: false,
                 message: intl.formatMessage({
@@ -734,6 +753,7 @@ function Endpoints(props) {
                                         setIsValidSequenceBackend={setIsValidSequenceBackend}
                                         isCustomBackendSelected={isCustomBackendSelected} 
                                         setIsCustomBackendSelected={setIsCustomBackendSelected}
+                                        apiKeyParamConfig={apiKeyParamConfig}
                                     />
                                 </Grid>
                             </Grid>
