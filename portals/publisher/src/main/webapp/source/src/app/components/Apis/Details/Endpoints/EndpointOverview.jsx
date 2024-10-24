@@ -409,7 +409,7 @@ function EndpointOverview(props) {
             const endpointProp = 'production_endpoints';
             if (endpointCategory[category]) {
                 delete endpointConfigCopy[endpointProp];
-                if (endpointConfigCopy?.endpoint_security?.production !== null) {
+                if (endpointConfigCopy?.endpoint_security?.production) {
                     delete endpointConfigCopy.endpoint_security.production;
                 }
                 if (endpointConfigCopy.endpointType === 'failover') {
@@ -427,7 +427,7 @@ function EndpointOverview(props) {
             const endpointProp = 'sandbox_endpoints';
             if (endpointCategory[category]) {
                 delete endpointConfigCopy[endpointProp];
-                if (endpointConfigCopy?.endpoint_security?.sandbox !== null) {
+                if (endpointConfigCopy?.endpoint_security?.sandbox) {
                     delete endpointConfigCopy.endpoint_security.sandbox;
                 }
                 if (endpointConfigCopy.endpointType === 'failover') {
