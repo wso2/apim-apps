@@ -50,7 +50,7 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                     <Typography id='itest-api-details-api-chat-title' variant='h3' component='h3'>
                         <FormattedMessage
                             id='Apis.Details.ApiChat.components.ApiChatPoweredBy.apiChatMainHeader'
-                            defaultMessage='API Chat'
+                            defaultMessage='API Design Assistant'
                         />
                     </Typography>
                     <Chip
@@ -72,7 +72,7 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
             </Box>
             <Box>
                 <Box display='flex' pr={4}>
-                    <Box mr={3}>
+                    {/* <Box mr={3}>
                         <Button
                             startIcon={<KeyboardBackspaceIcon />}
                             id='go-back'
@@ -86,8 +86,8 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                                 defaultMessage='Go Back'
                             />
                         </Button>
-                    </Box>
-                    <Box>
+                    </Box> */}
+                    {/* <Box>
                         <Button
                             startIcon={<SettingsOutlinedIcon />}
                             id='view-sample-queries'
@@ -101,7 +101,7 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                                 defaultMessage='Configure Key'
                             />
                         </Button>
-                    </Box>
+                    </Box> */}
                 </Box>
             </Box>
         </Box>
