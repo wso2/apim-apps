@@ -64,10 +64,12 @@ export default function AIEndpointAuth(props) {
 
     const handleApiKeyChange = (event) => {
         let apiKeyVal = event.target.value;
-        if (apiKeyVal === '********' || apiKeyVal.includes('********')) {
+        if (apiKeyVal === '********') {
             apiKeyVal = '';
         } else if (apiKeyVal === '') {
             apiKeyVal = null;
+        } else if (apiKeyVal.includes('********')) {
+            apiKeyVal = apiKeyVal.replace('********', '');
         }
         setApiKeyValue(apiKeyVal);
     };
