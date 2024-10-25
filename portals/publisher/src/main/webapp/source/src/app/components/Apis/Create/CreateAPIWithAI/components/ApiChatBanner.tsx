@@ -97,15 +97,14 @@ const ApiChatBanner: React.FC = () => {
                         <Typography variant='h5'>
                             {intl.formatMessage({
                                 id: 'Apis.Details.ApiChat.components.ApiChatBanner.apiChatMainTextHeader',
-                                defaultMessage: 'Your API is now equipped with an Intelligent Agent!',
+                                defaultMessage: 'Streamline Your API Creation Process!',
                             })}
                         </Typography>
                         <Typography variant='caption'>
                             {intl.formatMessage({
                                 id: 'Apis.Details.ApiChat.components.ApiChatBanner.apiChatMainTextContent',
                                 defaultMessage:
-                    'Effortlessly test your APIs in natural language with our API Chat Agent powered by Azure '
-                    + "OpenAI's cutting-edge language models.",
+                    'Design APIs (REST API, GraphQL API, Async API) and Accurate Swagger Definitions!',
                             })}
                         </Typography>
                     </Box>
