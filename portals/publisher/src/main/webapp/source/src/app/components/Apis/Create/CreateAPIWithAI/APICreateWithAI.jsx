@@ -20,13 +20,21 @@
 import React, { useState } from 'react';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
+import Paper from '@mui/material/Paper';
+import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
+// import Grid from '@mui/material/Grid2';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
 import ApiChatResponse from './components/ApiChatResponse';
+import SampleQueryCard from './components/SampleQueryCard';
+import LinearDeterminate from './components/LinearDeterminate';
+import AlertDialog from './components/AlertDialog';
+import { Editor as MonacoEditor } from '@monaco-editor/react';
 import { FormattedMessage } from 'react-intl';
 import { Typography } from '@mui/material';
+
 
 /**
  * Renders the Create API with AI UI.
@@ -37,6 +45,7 @@ const ApiCreateWithAI = () => {
     const [lastQuery, setLastQuery] = useState('');
     const [finalOutcome, setFinalOutcome] = useState('');
     const [executionResults, setExecutionResults] = useState([]);
+    const [taskId, setTaskId] = useState('');  // State to track task ID
 
     // const abortControllerRef = useRef(new AbortController());
 
@@ -55,20 +64,30 @@ const ApiCreateWithAI = () => {
         }
     };
 
+    const generateTaskId = () => {
+        return `task-${Date.now()}`;
+    };
+
     const sendInitialRequest = async (query) => {
-        // setExecutionResults(() => {
-        //     return [];
-        // });
+        // setFinalOutcome('');
+        const newTaskId = 1728534776568;
+        setTaskId(newTaskId);
+        console.log(newTaskId);
+
         try {
             console.log(query);
+            
             const response = await fetch('http://127.0.0.1:5000/generate', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ text: query }),
+                body: JSON.stringify({
+                    text: query,
+                    task_id: newTaskId
+                }),
             });
-    
+            
             const text = await response.text();
             console.log(text);
             setFinalOutcome(<pre>{text}</pre>);
@@ -78,59 +97,117 @@ const ApiCreateWithAI = () => {
         }
     };
 
+    // styling for the right side box
+    const Item = styled(Paper)(({ theme }) => ({
+        backgroundColor: '#fff',
+        ...theme.typography.body2,
+        padding: theme.spacing(1),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+        height: '100%', // Ensure the item takes full height within the stack
+        display: 'flex', // Enable Flexbox for vertical alignment
+        justifyContent: 'center', // Horizontally center content (optional)
+        ...theme.applyStyles('dark', {
+          backgroundColor: '#1A2027',
+        }),
+      }));
 
-    // const { body } = response;
-    // switch (body.taskStatus) {
-    //     case 'IN_PROGRESS':
-    //         sendSubsequentRequest(requestId, body.resource);
-    //         break;
-    //     case 'COMPLETED':
-    //         if (body.result && body.result !== '') {
-    //             setFinalOutcome(body.result);
-    //         } else {
-    //             setFinalOutcome(
-    //                 intl.formatMessage({
-    //                     id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskCompletedOneItr',
-    //                     defaultMessage: 'Task completed in 1 iteration.',
-    //                 }),
-    //             );
-    //         }
-    //         setIsAgentRunning(false);
-    //         break;
-    //     default:
-    //         setIsExecutionError(true);
-    //         setFinalOutcome(
-    //             intl.formatMessage({
-    //                 id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
-    //                 defaultMessage: 'An error occurred during query execution.',
-    //             }),
-    //         );
-    //         setIsAgentRunning(false);
-    // }
+
+    // return (
+    //     <div>
+    //         <ApiChatPoweredBy/>
+    //         <h1>qwerty2</h1>
+    //         <ApiChatBanner/>
+    //         <ApiChatResponse
+    //             lastQuery={lastQuery}
+    //             executionResults={executionResults}
+    //             finalOutcome={finalOutcome}
+    //         />       
+    //         <ApiChatExecute
+    //             lastQuery={lastQuery}
+    //             inputQuery={inputQuery}
+    //             handleExecute={handleExecute}
+    //             handleQueryChange={handleQueryChange}
+    //         />
+    //     </div>
+    // );
+    
+
 
     return (
         <div>
-            <ApiChatPoweredBy/>
-            <ApiChatBanner/>
-            <h1>test UI for payload</h1>
-            <ApiChatResponse
-                lastQuery={lastQuery}
-                executionResults={executionResults}
-                finalOutcome={finalOutcome}
-            />
-            {/* {(isAgentRunning || lastQuery || finalOutcome) && (
-                <ApiChatResponse
-                    lastQuery={lastQuery}
-                    executionResults={executionResults}
-                    finalOutcome={finalOutcome}
-                />
-            )} */}          
-            <ApiChatExecute
-                lastQuery={lastQuery}
-                inputQuery={inputQuery}
-                handleExecute={handleExecute}
-                handleQueryChange={handleQueryChange}
-            />
+            <Stack
+                direction="row"
+                spacing={1}
+                sx={{ width: '100%', height: '80vh' }}
+            >
+                <Item sx={{ flex: 6 }}>
+                    <Stack direction="column" spacing={2} sx={{ width: '100%', height: '100%' }}>
+                        <Box><ApiChatPoweredBy sx={{ textAlign: 'left', alignItems: 'flex-start' }} /></Box>
+                        {!lastQuery && (
+                            <Box>
+                                <Stack 
+                                    direction="row" 
+                                    spacing={7} 
+                                    justifyContent="center"
+                                >
+                                    <SampleQueryCard sx={{ textAlign: 'left' }} />
+                                    <SampleQueryCard sx={{ textAlign: 'left' }} />
+                                </Stack>
+                            </Box>
+                        )}
+                        {/* <Box>
+                            <Stack 
+                                direction="row" 
+                                spacing={7} 
+                                justifyContent="center"
+                            >
+                                <SampleQueryCard sx={{ textAlign: 'left' }} />
+                                <SampleQueryCard sx={{ textAlign: 'left' }} />
+                            </Stack>
+                        </Box> */}
+                        <Box sx={{ flexGrow: 1 }}>
+                            {(lastQuery || finalOutcome) && (
+                                <ApiChatResponse
+                                    lastQuery={lastQuery}
+                                    executionResults={executionResults}
+                                    finalOutcome={finalOutcome}
+                                />
+                            )}
+                        </Box> {/* Fixed Item 1.3 with flexGrow */}
+                        <Box>
+                            <ApiChatExecute
+                                    lastQuery={lastQuery}
+                                    inputQuery={inputQuery}
+                                    handleExecute={handleExecute}
+                                    handleQueryChange={handleQueryChange}
+                            />
+                        </Box>
+                    </Stack>
+                </Item>
+                <Item sx={{ flex: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'left' }}>
+                    {!lastQuery && (
+                        <ApiChatBanner />
+                        // <LinearDeterminate />
+                        // <MonacoEditor
+                        //     width='100%'
+                        //     height='100%'
+                        //     language='yaml'
+                        //     theme='vs-dark'
+                        //     value={finalOutcome}
+                        //     options={{
+                        //         readOnly: true,
+                        //         minimap: { enabled: false },
+                        //         scrollBeyondLastLine: false,
+                        //         wordWrap: 'on',
+                        //     }}
+                        // /> 
+                        
+                        // TESTING DIALOG BOX
+                        // <AlertDialog/>                           
+                    )}
+                </Item>
+            </Stack>
         </div>
     );
 };
