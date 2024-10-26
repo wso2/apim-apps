@@ -43,7 +43,8 @@ const Root = styled('div')(({ theme }) => ({
         marginRight: theme.spacing(-1),
     },
     [`& .${classes.tryAiBottomInner}`]: {
-        padding: theme.spacing(3, 1),
+        // padding: theme.spacing(3, 1),
+        padding: theme.spacing(0.25, 1),
     },
     [`& .${classes.reExecuteWrap}`]: {
         marginTop: theme.spacing(2),
