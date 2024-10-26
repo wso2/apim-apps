@@ -47,7 +47,12 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
         <Box display='flex' width='100%' m={3}>
             <Box display='flex' flexDirection='column' flexGrow={1}>
                 <Box display='flex'>
-                    <Typography id='itest-api-details-api-chat-title' variant='h3' component='h3'>
+                    {/* <Typography id='itest-api-details-api-chat-title' variant='h3' component='h3'> */}
+                    <Typography
+                        id='itest-api-details-api-chat-title'
+                        component='h3'
+                        sx={{ fontSize: '2rem', fontWeight: 'bold' }}
+                    >
                         <FormattedMessage
                             id='Apis.Details.ApiChat.components.ApiChatPoweredBy.apiChatMainHeader'
                             defaultMessage='API Design Assistant'
@@ -63,12 +68,12 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                         }}
                     />
                 </Box>
-                <Typography variant='body2' color='textSecondary' component='p'>
+                {/* <Typography variant='body2' color='textSecondary' component='p' alignItems='flex-start'>
                     <FormattedMessage
                         id='Apis.Details.ApiChat.components.ApiChatPoweredBy.poweredByText'
                         defaultMessage='Powered by Azure OpenAI'
                     />
-                </Typography>
+                </Typography> */}
             </Box>
             <Box>
                 <Box display='flex' pr={4}>
