@@ -23,9 +23,21 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import CreateAPISuccessDialog from './CreateAPISuccessDialog';
 
-const AlertDialog = () => {
+interface AlertDialogProps {
+  finalOutcomeCode: string; // Define the type of finalOutcome (assuming it's a string)
+}
+
+const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
+
+// const AlertDialog = () => {
   const [open, setOpen] = React.useState(false);
+  const [successDialogOpen, setSuccessDialogOpen] = React.useState(false); // Control success dialog visibility
+  const [dialogTitle, setDialogTitle] = React.useState('');
+  const [dialogContentText, setDialogContentText] = React.useState('');
+  const [firstDialogAction, setFirstDialogAction] = React.useState('');
+  const [secondDialogAction, setSecondDialogAction] = React.useState('');
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -33,11 +45,63 @@ const AlertDialog = () => {
 
   const handleClose = () => {
     setOpen(false);
+    setSuccessDialogOpen(true);
+  };
+
+  const handleCreate = async () => {
+    try {
+      const response = await fetch('http://127.0.0.1:5000/createapiinportal', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          text: finalOutcomeCode, // Send finalOutcomeCode to the endpoint
+        }),
+      });
+
+      if (!response.ok) {
+        setDialogTitle('API Creation Unsuccessful');
+        setDialogContentText('API creation was unsuccessful');
+        setFirstDialogAction('');
+        setSecondDialogAction('CLOSE');
+
+        throw new Error('Failed to create API');
+      }
+
+      const data = await response.json();
+      console.log('API creation response:', data);
+
+      setDialogTitle('API Creation Successful!');
+      setDialogContentText('API created successfully in the Publisher Portal!');
+      setFirstDialogAction('VIEW API');
+      setSecondDialogAction('CLOSE');
+
+    } catch (error) {
+      setDialogTitle('API Creation Unsuccessful');
+      setDialogContentText('API creation was unsuccessful');
+      setFirstDialogAction('');
+      setSecondDialogAction('CLOSE');
+
+      console.error('Error during API creation:', error);
+    } finally {
+      handleClose(); // Close the dialog after the request completes
+      // <CreateAPISuccessDialog
+      //   dialogTitle = {dialogTitle}
+      //   dialogContentText={dialogContentText}
+      //   firstDialogAction={firstDialogAction}
+      //   secondDialogAction={secondDialogAction}
+      // />
+    }
   };
 
   return (
     <React.Fragment>
-      <Button variant="outlined" onClick={handleClickOpen}>
+      <Button
+        variant="outlined"
+        onClick={handleClickOpen}
+        sx={{ backgroundColor: '#FFF' }}
+      >
         Create API
       </Button>
       <Dialog
@@ -55,12 +119,23 @@ const AlertDialog = () => {
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleClose}>Create</Button>
+          <Button onClick={handleCreate}>CREATE</Button>
           <Button onClick={handleClose} autoFocus>
-            Cancel
+            CANCEL
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Render success dialog */}
+      <CreateAPISuccessDialog
+        dialogTitle={dialogTitle}
+        dialogContentText={dialogContentText}
+        firstDialogAction={firstDialogAction}
+        secondDialogAction={secondDialogAction}
+        open={successDialogOpen}
+        onClose={() => setSuccessDialogOpen(false)} // Close success dialog
+      />
+
     </React.Fragment>
   );
 };
