@@ -32,6 +32,7 @@ import SampleQueryCard from './components/SampleQueryCard';
 import LinearDeterminate from './components/LinearDeterminate';
 import AlertDialog from './components/AlertDialog';
 import { Editor as MonacoEditor } from '@monaco-editor/react';
+import DisplayCode from './components/DisplayCode';
 import { FormattedMessage } from 'react-intl';
 import { Typography } from '@mui/material';
 
@@ -44,8 +45,10 @@ const ApiCreateWithAI = () => {
     const [inputQuery, setInputQuery] = useState('');
     const [lastQuery, setLastQuery] = useState('');
     const [finalOutcome, setFinalOutcome] = useState('');
+    const [finalOutcomeCode, setFinalOutcomeCode] = useState('');
     const [executionResults, setExecutionResults] = useState([]);
-    const [taskId, setTaskId] = useState('');  // State to track task ID
+    const [taskId, setTaskId] = useState('');
+    const [taskStatus, setTaskStatus] = useState('');
 
     // const abortControllerRef = useRef(new AbortController());
 
@@ -60,6 +63,8 @@ const ApiCreateWithAI = () => {
             const query = inputQuery;
             setInputQuery('');
             setLastQuery(inputQuery);
+            // setLastQuery(query);
+            setTaskStatus('IN_PROGRESS'); // Set state to IN PROGRESS
             sendInitialRequest(query);
         }
     };
@@ -71,6 +76,7 @@ const ApiCreateWithAI = () => {
     const sendInitialRequest = async (query) => {
         // setFinalOutcome('');
         const newTaskId = 1728534776568;
+        // const newTaskId = `task-${Date.now()}`;
         setTaskId(newTaskId);
         console.log(newTaskId);
 
@@ -90,10 +96,16 @@ const ApiCreateWithAI = () => {
             
             const text = await response.text();
             console.log(text);
-            setFinalOutcome(<pre>{text}</pre>);
+            // setFinalOutcome(<pre>{text}</pre>);
+            setFinalOutcome('I have successfully generated the code for your query!');
+            setFinalOutcomeCode(text);
+            console.log(finalOutcomeCode);
+            // setFinalOutcome(text);
+            setTaskStatus('COMPLETE'); // Set state to COMPLETE after success
         } catch (error) {
             console.error('Error:', error);
             setFinalOutcome('An error occurred while fetching the data.');
+            setTaskStatus('ERROR'); // Set state to ERROR if failed
         }
     };
 
@@ -156,17 +168,7 @@ const ApiCreateWithAI = () => {
                                 </Stack>
                             </Box>
                         )}
-                        {/* <Box>
-                            <Stack 
-                                direction="row" 
-                                spacing={7} 
-                                justifyContent="center"
-                            >
-                                <SampleQueryCard sx={{ textAlign: 'left' }} />
-                                <SampleQueryCard sx={{ textAlign: 'left' }} />
-                            </Stack>
-                        </Box> */}
-                        <Box sx={{ flexGrow: 1 }}>
+                        <Box sx={{ flexGrow: 1, textAlign: 'left' }}>
                             {(lastQuery || finalOutcome) && (
                                 <ApiChatResponse
                                     lastQuery={lastQuery}
@@ -174,7 +176,7 @@ const ApiCreateWithAI = () => {
                                     finalOutcome={finalOutcome}
                                 />
                             )}
-                        </Box> {/* Fixed Item 1.3 with flexGrow */}
+                        </Box>
                         <Box>
                             <ApiChatExecute
                                     lastQuery={lastQuery}
@@ -185,26 +187,58 @@ const ApiCreateWithAI = () => {
                         </Box>
                     </Stack>
                 </Item>
-                <Item sx={{ flex: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'left' }}>
+                {/* <Item sx={{ flex: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'left' }}>
                     {!lastQuery && (
                         <ApiChatBanner />
-                        // <LinearDeterminate />
-                        // <MonacoEditor
-                        //     width='100%'
-                        //     height='100%'
-                        //     language='yaml'
-                        //     theme='vs-dark'
-                        //     value={finalOutcome}
-                        //     options={{
-                        //         readOnly: true,
-                        //         minimap: { enabled: false },
-                        //         scrollBeyondLastLine: false,
-                        //         wordWrap: 'on',
-                        //     }}
-                        // /> 
+                        <LinearDeterminate />
+                        <MonacoEditor
+                            width='100%'
+                            height='100%'
+                            language='yaml'
+                            theme='vs-dark'
+                            value={finalOutcome}
+                            options={{
+                                readOnly: true,
+                                minimap: { enabled: false },
+                                scrollBeyondLastLine: false,
+                                wordWrap: 'on',
+                            }}
+                        /> 
                         
-                        // TESTING DIALOG BOX
-                        // <AlertDialog/>                           
+                        TESTING DIALOG BOX
+                        <AlertDialog/>                           
+                    )}
+                </Item> */}
+                {/* <Item sx={{ flex: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'left' }}>
+                    {taskStatus === 'IN_PROGRESS' ? (
+                        <LinearDeterminate /> // Show loading bar when task is in progress
+                    ) : (
+                        !lastQuery && <ApiChatBanner /> // Show ApiChatBanner otherwise
+                    )}
+                </Item> */}
+
+                <Item sx={{ flex: 4, display: 'flex', justifyContent: 'center', alignItems: 'center', textAlign: 'left' }}>
+                    {taskStatus === 'IN_PROGRESS' ? (
+                        <LinearDeterminate /> // Show loading bar when task is in progress
+                    ) : taskStatus === 'COMPLETE' ? (
+                        // <MonacoEditor
+                        //     width="100%"
+                        //     height="100%"
+                        //     language="yaml"
+                        //     theme="vs-dark"
+                        //     value={finalOutcomeCode} // Display final outcome
+                        //     // options={{
+                        //     //     readOnly: true,
+                        //     //     minimap: { enabled: false },
+                        //     //     scrollBeyondLastLine: false,
+                        //     //     wordWrap: 'on',
+                        //     // }}
+                        // />
+                        <DisplayCode 
+                            finalOutcomeCode={finalOutcomeCode}
+                        />
+                    ) : (
+                        !lastQuery && <ApiChatBanner /> // Show ApiChatBanner otherwise
                     )}
                 </Item>
             </Stack>
