@@ -94,14 +94,25 @@ const ApiCreateWithAI = () => {
                 }),
             });
             
-            const text = await response.text();
-            console.log(text);
+            const jsonResponse = await response.text();
+            console.log(jsonResponse);
+
+            const openapispec = jsonResponse.openapispec;
+            const suggestions = jsonResponse.suggestions;
+
+            setFinalOutcome('I have successfully generated the code for your query! ${suggestions}');
+            setFinalOutcomeCode(openapispec);
+
+            console.log("OpenAPI Spec", openapispec);
+            console.log("Suggestions", suggestions);
+
             // setFinalOutcome(<pre>{text}</pre>);
-            setFinalOutcome('I have successfully generated the code for your query!');
-            setFinalOutcomeCode(text);
-            console.log(finalOutcomeCode);
+            // setFinalOutcome('I have successfully generated the code for your query!');
+            // setFinalOutcomeCode(text);
+            // console.log(finalOutcomeCode);
             // setFinalOutcome(text);
             setTaskStatus('COMPLETE'); // Set state to COMPLETE after success
+            
         } catch (error) {
             console.error('Error:', error);
             setFinalOutcome('An error occurred while fetching the data.');
