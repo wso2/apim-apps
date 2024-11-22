@@ -310,7 +310,7 @@ export default function StoreVisibility(props) {
                         InputProps={{
                             endAdornment: !roleValidity && (
                                 <InputAdornment position='end'>
-                                    <Error color='error' style={{ paddingBottom: 8 }} />
+                                    <Error color='error' />
                                 </InputAdornment>
                             ),
                         }}
@@ -339,7 +339,7 @@ export default function StoreVisibility(props) {
                                 }}
                                 style={{
                                     backgroundColor: invalidRoles.includes(value) ? red[300] : null,
-                                    margin: '0 8px 12px 0',
+                                    marginRight: '8px',
                                     float: 'left',
                                 }}
                             />

@@ -117,6 +117,7 @@ const classes = {
     leftMenuVerticalLeft: `${PREFIX}-leftMenuVerticalLeft`,
     leftMenuVerticalLeftMinView: `${PREFIX}-leftMenuVerticalLeftMinView`,
     leftMenuVerticalRight: `${PREFIX}-leftMenuVerticalRight`,
+    leftMenuVerticalRightMinView: `${PREFIX}-leftMenuVerticalRightMinView`,
     leftLInkMain: `${PREFIX}-leftLInkMain`,
     leftLInkMainText: `${PREFIX}-leftLInkMainText`,
     detailsContent: `${PREFIX}-detailsContent`,
@@ -125,7 +126,13 @@ const classes = {
     shiftLeft: `${PREFIX}-shiftLeft`,
     contentLoader: `${PREFIX}-contentLoader`,
     contentLoaderRightMenu: `${PREFIX}-contentLoaderRightMenu`,
-    expandIconColor: `${PREFIX}-expandIconColor`,
+    expandIcon: `${PREFIX}-expandIcon`,
+    expandIconMinView: `${PREFIX}-expandIconMinView`,
+    accordianSummary: `${PREFIX}-accordianSummary`,
+    accordianSummaryMinView: `${PREFIX}-accordianSummaryMinView`,
+    accordionDetails: `${PREFIX}-accordionDetails`,
+    accordionDetailsMinView: `${PREFIX}-accordionDetailsMinView`,
+    leftMenuVerticalRightDrawerIcon: `${PREFIX}-leftMenuVerticalRightDrawerIcon`,
 };
 
 const Root = styled('div')((
@@ -158,7 +165,7 @@ const Root = styled('div')((
         [`& .${classes.leftMenuHorizontal}`]: {
             top: theme.custom.infoBar.height,
             overflowX: 'auto',
-            height: 60,
+            position: 'static',
             display: 'flex',
             left: 0,
         },
@@ -172,13 +179,22 @@ const Root = styled('div')((
             overflowY: 'auto',
         },
         [`& .${classes.leftMenuVerticalLeftMinView}`]: {
-            width: 45,
+            width: 50,
             top: 0,
             left: 0,
             overflowY: 'auto',
         },
         [`& .${classes.leftMenuVerticalRight}`]: {
             width: theme.custom.leftMenu.width,
+            [theme.breakpoints.down('md')]: {
+                width: 50,
+            },
+            top: 0,
+            right: 0,
+            overflowY: 'auto',
+        },
+        [`& .${classes.leftMenuVerticalRightMinView}`]: {
+            width: 50,
             top: 0,
             right: 0,
             overflowY: 'auto',
@@ -238,8 +254,39 @@ const Root = styled('div')((
         [`& .${classes.contentLoaderRightMenu}`]: {
             paddingRight: theme.custom.leftMenu.width,
         },
-        [`& .${classes.expandIconColor}`]: {
+        [`& .${classes.expandIcon}`]: {
             color: '#ffffff',
+            [theme.breakpoints.down('md')]: {
+                display: 'none',
+            },
+        },
+        [`& .${classes.expandIconMinView}`]: {
+            display: 'none',
+        },
+        [`& .${classes.accordianSummary}`]: {
+            padding: '0 12px 0 5px',
+            [theme.breakpoints.down('md')]: {
+                padding: 0,
+            },
+        },
+        [`& .${classes.accordianSummaryMinView}`]: {
+            padding: 0,
+        },
+        [`& .${classes.accordionDetails}`]: {
+            paddingTop: 0,
+            paddingBottom: 0,
+            margin: 0,
+            [theme.breakpoints.down('md')]: {
+                paddingLeft: 0,
+                paddingRight: 0,
+            },
+        },
+        [`& .${classes.accordionDetailsMinView}`]: {
+            paddingLeft: 0,
+            paddingRight: 0,
+        },
+        [`& .${classes.leftMenuVerticalRightDrawerIcon}`]: {
+            transform: 'rotate(180deg)',
         },
     };
 });
@@ -488,6 +535,8 @@ class DetailsLegacy extends React.Component {
         const pageUrl = new URL(window.location);
         const isWidget = pageUrl.searchParams.get('widget');
         const isAsyncApi = this.isAsyncAPI(api);
+        const isSubValidationDisabled = api && api.tiers && api.tiers.length === 1
+            && api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
 
         return api ? (
             <Root>
@@ -514,7 +563,8 @@ class DetailsLegacy extends React.Component {
 
                                 },
                                 {
-                                    [classes.leftMenuVerticalRight]: position === 'vertical-right',
+                                    [classes.leftMenuVerticalRight]: position === 'vertical-right' && open,
+                                    [classes.leftMenuVerticalRightMinView]: position === 'vertical-right' && !open,
                                 },
                                 'left-menu',
                             )}
@@ -537,7 +587,7 @@ class DetailsLegacy extends React.Component {
                                 open={open}
                                 id='left-menu-overview'
                             />
-                            {user && showCredentials && (
+                            {user && showCredentials && !isSubValidationDisabled && (
                                 <>
 
                                     <LeftMenuItem
@@ -567,8 +617,19 @@ class DetailsLegacy extends React.Component {
                                         onChange={(_event, expanded) => this.setState({ tryOutExpanded: expanded })}
                                     >
                                         <AccordionSummary
-                                            expandIcon={<ExpandMoreIcon className={classes.expandIconColor} />}
-                                            style={{ padding: '0 12px 0 5px', maxHeight: 43, minHeight: 43 }}
+                                            expandIcon={(
+                                                <ExpandMoreIcon
+                                                    className={classNames(
+                                                        classes.expandIcon,
+                                                        { [classes.expandIconMinView]: !open },
+                                                    )}
+                                                />
+                                            )}
+                                            style={{ maxHeight: 43, minHeight: 43 }}
+                                            className={classNames(
+                                                classes.accordianSummary,
+                                                { [classes.accordianSummaryMinView]: !open },
+                                            )}
                                         >
                                             <LeftMenuItem
                                                 text={(
@@ -583,7 +644,12 @@ class DetailsLegacy extends React.Component {
                                             />
                                         </AccordionSummary>
                                         <AccordionDetails
-                                            style={{ paddingTop: 0, paddingBottom: 0, margin: 0 }}
+                                            className={
+                                                classNames(
+                                                    classes.accordionDetails,
+                                                    { [classes.accordionDetailsMinView]: !open },
+                                                )
+                                            }
                                         >
                                             <div>
                                                 <LeftMenuItem
@@ -702,7 +768,17 @@ class DetailsLegacy extends React.Component {
                                         width: 100, paddingLeft: '15px', position: 'absolute', bottom: 0, cursor: 'pointer',
                                     }}
                                 >
-                                    <ArrowBackIosIcon fontSize='medium' style={{ color: 'white' }} />
+                                    <ArrowBackIosIcon
+                                        fontSize='medium'
+                                        style={{ color: 'white' }}
+                                        className={
+                                            classNames(
+                                                {
+                                                    [classes.leftMenuVerticalRightDrawerIcon]: position === 'vertical-right',
+                                                },
+                                            )
+                                        }
+                                    />
                                 </div>
                             ) : (
                                 <div
@@ -712,7 +788,17 @@ class DetailsLegacy extends React.Component {
                                         paddingLeft: '15px', position: 'absolute', bottom: 0, cursor: 'pointer',
                                     }}
                                 >
-                                    <ArrowForwardIosIcon fontSize='medium' style={{ color: 'white' }} />
+                                    <ArrowForwardIosIcon
+                                        fontSize='medium'
+                                        style={{ color: 'white' }}
+                                        className={
+                                            classNames(
+                                                {
+                                                    [classes.leftMenuVerticalRightDrawerIcon]: position === 'vertical-right',
+                                                },
+                                            )
+                                        }
+                                    />
                                 </div>
 
                             )}

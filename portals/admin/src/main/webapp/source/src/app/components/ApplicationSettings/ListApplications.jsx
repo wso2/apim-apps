@@ -49,17 +49,19 @@ export default function ListApplications() {
     const [totalApps, setTotalApps] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(10);
     const [page, setPage] = useState(0);
-    const [owner, setOwner] = useState('');
+    const [searchQuery, setSearchQuery] = useState('');
 
     /**
     * API call to get application list
     * @returns {Promise}.
     */
-    function apiCall(pageNo, user = owner) {
+    function apiCall(pageNo, user = searchQuery, name = searchQuery) {
         setLoading(true);
         const restApi = new API();
         return restApi
-            .getApplicationList({ limit: rowsPerPage, offset: pageNo * rowsPerPage, user })
+            .getApplicationList({
+                limit: rowsPerPage, offset: pageNo * rowsPerPage, user, name,
+            })
             .then((result) => {
                 setApplicationList(result.body.list);
                 const { pagination: { total } } = result.body;
@@ -106,8 +108,8 @@ export default function ListApplications() {
 
     function clearSearch() {
         setPage(0);
-        setOwner('');
-        apiCall(page, '').then((result) => {
+        setSearchQuery('');
+        apiCall(page, '', '').then((result) => {
             setApplicationList(result);
         });
     }
@@ -117,7 +119,7 @@ export default function ListApplications() {
         if (newQuery === '') {
             clearSearch();
         } else {
-            setOwner(newQuery);
+            setSearchQuery(newQuery);
         }
     }
 
@@ -130,7 +132,12 @@ export default function ListApplications() {
     }
 
     return (
-        <ContentBase>
+        <ContentBase
+            title={intl.formatMessage({
+                defaultMessage: 'Change Application Owner',
+                id: 'Applications.Listing.Listing.title',
+            })}
+        >
             <AppBar
                 sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
                 position='static'
@@ -143,27 +150,29 @@ export default function ListApplications() {
                             <Grid item>
                                 <SearchIcon sx={{ display: 'block' }} color='inherit' />
                             </Grid>
-                            <Grid item xs>
+                            <Grid item xs sx={{ display: 'flex', alignItems: 'center' }}>
                                 <TextField
+                                    hiddenLabel
                                     variant='standard'
                                     fullWidth
                                     id='search-label'
-                                    label={intl.formatMessage({
-                                        defaultMessage: 'Search Application by Application Owner',
-                                        id: 'Applications.Listing.Listing.applications.search.label',
-                                    })}
                                     placeholder={intl.formatMessage({
-                                        defaultMessage: 'Application Owner',
+                                        defaultMessage: 'Search Application by Name/Owner',
                                         id: 'Applications.Listing.Listing.search.placeholder',
+                                    })}
+                                    sx={(theme) => ({
+                                        '& .search-input': {
+                                            fontSize: theme.typography.fontSize,
+                                        },
                                     })}
                                     InputProps={{
                                         disableUnderline: true,
+                                        className: 'search-input',
                                     }}
-                                    value={owner}
-                                    // onKeyPress={this.handleSearchKeyPress}
+                                    value={searchQuery}
                                     onChange={setQuery}
                                 />
-                                { owner.length > 0
+                                { searchQuery.length > 0
                                 && (
                                     <Tooltip
                                         title={
@@ -175,11 +184,6 @@ export default function ListApplications() {
                                     >
                                         <IconButton
                                             aria-label='delete'
-                                            sx={{
-                                                position: 'absolute',
-                                                right: 111,
-                                                top: 13,
-                                            }}
                                             onClick={clearSearch}
                                             size='large'
                                         >

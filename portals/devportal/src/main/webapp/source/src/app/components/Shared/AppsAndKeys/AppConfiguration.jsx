@@ -310,7 +310,7 @@ const AppConfiguration = (props) => {
                                             handleAppRequestChange(e);
                                         }}
                                         style={{
-                                            margin: '0 8px 12px 0',
+                                            marginRight: '8px',
                                             float: 'left',
                                         }}
                                     />

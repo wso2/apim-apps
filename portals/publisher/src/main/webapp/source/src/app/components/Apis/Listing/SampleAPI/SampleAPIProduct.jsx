@@ -19,13 +19,11 @@
 import React from 'react';
 import { withRouter } from 'react-router';
 import { useTheme } from '@mui/material';
-import Grid from '@mui/material/Grid';
 import OnboardingMenuCard from 'AppComponents/Shared/Onboarding/OnboardingMenuCard';
 import Onboarding from 'AppComponents/Shared/Onboarding/Onboarding';
 import { PropTypes } from 'prop-types';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage, injectIntl, useIntl } from 'react-intl';
 import AuthManager from 'AppData/AuthManager';
-import Alert from 'AppComponents/Shared/MuiAlert';
 
 /**
  * Show Initial Welcome card if no APIs are available to list
@@ -36,6 +34,7 @@ import Alert from 'AppComponents/Shared/MuiAlert';
  */
 function SampleAPI() {
     const theme = useTheme();
+    const intl = useIntl();
     const { apiproductAddIcon } = theme.custom.landingPage.icons;
     return (
         <Onboarding
@@ -52,30 +51,14 @@ function SampleAPI() {
                 />
             )}
         >
-            {AuthManager.isNotPublisher()
-            && (
-                <>
-                    <Grid item xs={6}>
-                        <Alert variant='outlined' severity='warning'>
-                            <FormattedMessage
-                                id='Apis.Listing.SampleAPIProduct.creator.error'
-                                defaultMessage='API is not deployed yet! Please deploy the API before trying out'
-                            />
-                        </Alert>
-                    </Grid>
-                    <Grid item xs={12} />
-                </>
-            )}
             <OnboardingMenuCard
                 disabled={AuthManager.isNotPublisher()}
                 id='itest-id-create-api-product'
                 to='/api-products/create'
-                name={(
-                    <FormattedMessage
-                        id='Apis.Listing.SampleAPIProduct.onboarding.menu.card.name'
-                        defaultMessage='API Product'
-                    />
-                )}
+                name={intl.formatMessage({
+                    id: 'Apis.Listing.SampleAPIProduct.onboarding.menu.card.name',
+                    defaultMessage: 'API Product',
+                })}
                 iconName={apiproductAddIcon}
             />
         </Onboarding>

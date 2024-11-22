@@ -42,6 +42,9 @@ const CONSTS = {
     DEFAULT_ENDPOINT_SECURITY: {
         enabled: false,
         type: 'NONE',
+        apiKeyIdentifier: null, // AI api key identifier
+        apiKeyValue: null, // AI api key value
+        apiKeyIdentifierType: null,
         username: '',
         password: null, // has to use null to differentiate the returned '' (empty) password vs no password provided
         grantType: '',
@@ -49,6 +52,9 @@ const CONSTS = {
         clientId: null,
         clientSecret: null, // same as above password case
         customParameters: {},
+        connectionTimeoutDuration: -1,
+        connectionRequestTimeoutDuration: -1,
+        socketTimeoutDuration: -1,
     },
     GATEWAY_TYPE: {
         synapse: 'Synapse',
@@ -57,7 +63,9 @@ const CONSTS = {
     PATH_TEMPLATES: {
         COMMON_POLICIES: '/policies',
         COMMON_POLICY_CREATE: '/policies/create',
-    }
+    },
+    DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
+    DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
 };
 
 export default CONSTS;

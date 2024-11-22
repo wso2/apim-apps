@@ -8,6 +8,7 @@ import Checkbox from '@mui/material/Checkbox';
 import CircularProgress from '@mui/material/CircularProgress';
 import { FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
+import CONSTS from 'AppData/Constants';
 
 const PREFIX = 'SelectPolicies';
 
@@ -68,7 +69,7 @@ export default function SelectPolicies(props) {
                     multiple,
                     renderValue: (selected) => (Array.isArray(selected) ? selected.join(', ') : selected),
                 }}
-                helperText={isAPIProduct ? helperText + 'API Product' : helperText + 'API'}
+                helperText={helperText}
                 margin='normal'
                 variant='outlined'
                 InputProps={{
@@ -78,18 +79,19 @@ export default function SelectPolicies(props) {
                     for: 'itest-id-apipolicies-input',
                 }}
             >
-                {policies.list.map((policy) => (
-                    <MenuItem
-                        dense
-                        disableGutters={multiple}
-                        id={policy.name}
-                        key={policy.name}
-                        value={policy.displayName}
-                    >
-                        {multiple && <Checkbox color='primary' checked={selectedPolicies.includes(policy.name)} />}
-                        <ListItemText primary={policy.displayName} secondary={policy.description} />
-                    </MenuItem>
-                ))}
+                {policies.list.filter((policy) => !policy.name.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN))
+                    .map((policy) => (
+                        <MenuItem
+                            dense
+                            disableGutters={multiple}
+                            id={policy.name}
+                            key={policy.name}
+                            value={policy.displayName}
+                        >
+                            {multiple && <Checkbox color='primary' checked={selectedPolicies.includes(policy.name)} />}
+                            <ListItemText primary={policy.displayName} secondary={policy.description} />
+                        </MenuItem>
+                    ))}
             </StyledTextField>
         );
     }

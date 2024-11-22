@@ -302,6 +302,19 @@ const APIDetailsTopMenu = (props) => {
                     </MUIAlert>
                 )}
                 <div className={classes.dateWrapper} />
+                {(api.subtypeConfiguration?.subtype === 'AIAPI') && (
+                    <MUIAlert
+                        data-testid='itest-ai-api-label'
+                        variant='outlined'
+                        severity='info'
+                        icon={false}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.components.APIDetailsTopMenu.ai.api.label'
+                            defaultMessage='AI/LLM API'
+                        />
+                    </MUIAlert>
+                )}
                 {(api.advertiseInfo && api.advertiseInfo.advertised) && (
                     <MUIAlert
                         data-testid='itest-third-party-api-label'
@@ -490,7 +503,9 @@ const APIDetailsTopMenu = (props) => {
 APIDetailsTopMenu.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        subtypeConfiguration: PropTypes.shape({}),
+    }).isRequired,
     isAPIProduct: PropTypes.bool.isRequired,
     imageUpdate: PropTypes.number.isRequired,
 };

@@ -19,6 +19,7 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import AuthManager from 'AppData/AuthManager';
+import CONSTS from 'AppData/Constants';
 import Typography from '@mui/material/Typography';
 import LinkIcon from '@mui/icons-material/Link';
 import API from 'AppData/api';
@@ -160,6 +161,7 @@ export default function CustomizedStepper() {
     const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct && api.endpointConfig !== null
     && api.endpointConfig.implementation_status === 'prototyped';
     const isEndpointAvailable = api.endpointConfig !== null;
+    const isEndpointSecurityConfigured = api.endpointConfig && api.endpointConfig.endpoint_security;
     const isTierAvailable = api.policies.length !== 0;
     const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
@@ -171,6 +173,8 @@ export default function CustomizedStepper() {
     const securityScheme = [...api.securityScheme];
     const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
     && securityScheme.includes('mutualssl_mandatory');
+    const isSubValidationDisabled = api.policies 
+    && api.policies.length === 1 && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
     let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
     const intl = useIntl();
     // TODO: tmkasun need to handle is loading
@@ -186,7 +190,7 @@ export default function CustomizedStepper() {
     }
     let activeStep = 0;
     if (api && (api.type === 'WEBSUB' || isEndpointAvailable)
-        && (isTierAvailable || isMutualSslOnly) && !deploymentsAvailable) {
+        && !deploymentsAvailable) {
         activeStep = 1;
     } else if ((api && !isEndpointAvailable && api.type !== 'WEBSUB')
         || (api && !isMutualSslOnly && !isTierAvailable)) {
@@ -426,7 +430,6 @@ export default function CustomizedStepper() {
     || (!isMutualSslOnly && !isTierAvailable)
     || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT');
     const isDeployLinkDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || (!isMutualSslOnly && !isTierAvailable)
     || api.workflowStatus === 'CREATED' || lifecycleState === 'RETIRED');
     let deployLinkToolTipTitle = '';
     if (lifecycleState === 'RETIRED') {
@@ -488,11 +491,18 @@ export default function CustomizedStepper() {
                                                     style={{ marginLeft: '2px' }}
                                                 >
                                                     <Grid item>
-                                                        {isEndpointAvailable ? (
-                                                            <CheckIcon className={classes.iconTrue} />
-                                                        ) : (
-                                                            <CloseIcon className={classes.iconFalse} />
-                                                        )}
+                                                        {isEndpointAvailable && (
+                                                            api.subtypeConfiguration?.subtype === 'AIAPI'
+                                                                ? isEndpointSecurityConfigured
+                                                                : true
+                                                        ) 
+                                                            ? (
+                                                                <CheckIcon className={classes.iconTrue} />
+                                                            ) 
+                                                            : (
+                                                                <CloseIcon className={classes.iconFalse} />
+                                                            )
+                                                        }
                                                     </Grid>
                                                     <Box ml={1} mb={1}>
                                                         <Grid item>
@@ -507,50 +517,6 @@ export default function CustomizedStepper() {
                                                                         id={'Apis.Details.Overview.'
                                                                             + 'CustomizedStepper.Endpoint'}
                                                                         defaultMessage=' Endpoint'
-                                                                    />
-                                                                </Typography>
-                                                                <Box ml={1}>
-                                                                    <LinkIcon
-                                                                        color='primary'
-                                                                        fontSize='small'
-                                                                    />
-                                                                </Box>
-                                                            </Link>
-                                                        </Grid>
-                                                    </Box>
-                                                </Grid>
-                                            </Box>
-                                        )}
-                                        {(api.gatewayVendor === 'wso2') && (
-                                            <Box ml={6}>
-                                                <Grid
-                                                    container
-                                                    direction='row'
-                                                    justifyContent='center'
-                                                    style={{ marginLeft: '2px' }}
-                                                >
-                                                    <Grid item>
-                                                        {isTierAvailable ? (
-                                                            <CheckIcon className={classes.iconTrue} />
-                                                        ) : (
-                                                            <CloseIcon className={classes.iconFalse} />
-                                                        )}
-                                                    </Grid>
-                                                    <Box ml={1}>
-                                                        <Grid item>
-                                                            <Link
-                                                                underline='none'
-                                                                component={RouterLink}
-                                                                className={classes.pageLinks}
-                                                                to={api.isAPIProduct()
-                                                                    ? '/api-products/' + api.id + '/subscriptions'
-                                                                    : '/apis/' + api.id + '/subscriptions'}
-                                                            >
-                                                                <Typography variant='h6'>
-                                                                    <FormattedMessage
-                                                                        id={'Apis.Details.Overview.CustomizedStepper' +
-                                                                            '.Tier'}
-                                                                        defaultMessage=' Business Plan'
                                                                     />
                                                                 </Typography>
                                                                 <Box ml={1}>
@@ -662,9 +628,56 @@ export default function CustomizedStepper() {
                                     </Tooltip>
                                 )}
                                 {label === 'Publish' && (
-                                    <>
-                                        {finalLifecycleState(lifecycleState)}
-                                    </>
+                                    <div>
+                                        {(api.gatewayVendor === 'wso2') && !isSubValidationDisabled && (
+                                            <Box ml={1} mb={1}>
+                                                <Grid
+                                                    container
+                                                    direction='row'
+                                                    justifyContent='center'
+                                                    alignItems='center'
+                                                    style={{ marginLeft: '2px' }}
+                                                >
+                                                    <Grid item>
+                                                        {isTierAvailable ? (
+                                                            <CheckIcon className={classes.iconTrue} />
+                                                        ) : (
+                                                            <CloseIcon className={classes.iconFalse} />
+                                                        )}
+                                                    </Grid>
+                                                    <Box ml={1}>
+                                                        <Grid item>
+                                                            <Link
+                                                                underline='none'
+                                                                component={RouterLink}
+                                                                className={classes.pageLinks}
+                                                                to={api.isAPIProduct()
+                                                                    ? '/api-products/' + api.id + '/subscriptions'
+                                                                    : '/apis/' + api.id + '/subscriptions'}
+                                                            >
+                                                                <Typography variant='h6'>
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Overview.CustomizedStepper' +
+                                                                            '.Tier'}
+                                                                        defaultMessage=' Business Plan'
+                                                                    />
+                                                                </Typography>
+                                                                <Box ml={1}>
+                                                                    <LinkIcon
+                                                                        color='primary'
+                                                                        fontSize='small'
+                                                                    />
+                                                                </Box>
+                                                            </Link>
+                                                        </Grid>
+                                                    </Box>
+                                                </Grid>
+                                            </Box>
+                                        )}
+                                        <>
+                                            {finalLifecycleState(lifecycleState)}
+                                        </>
+                                    </div>
                                 )}
                             </StepLabel>
                         </Step>

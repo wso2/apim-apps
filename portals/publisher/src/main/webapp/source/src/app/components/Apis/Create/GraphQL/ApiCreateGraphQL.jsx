@@ -235,48 +235,25 @@ export default function ApiCreateGraphQL(props) {
             )}
         >
             <Box sx={{ mb: 2 }}>
-                {wizardStep === 0 && (
-                    <Stepper alternativeLabel activeStep={0}>
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.one'
-                                    defaultMessage='Provide GraphQL'
-                                />
-                            </StepLabel>
-                        </Step>
+                <Stepper alternativeLabel activeStep={wizardStep}>
+                    <Step>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.one'
+                                defaultMessage='Provide GraphQL'
+                            />
+                        </StepLabel>
+                    </Step>
 
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.two'
-                                    defaultMessage='Create API'
-                                />
-                            </StepLabel>
-                        </Step>
-                    </Stepper>
-                )}
-                {wizardStep === 1 && (
-                    <Stepper alternativeLabel activeStep={1}>
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.one'
-                                    defaultMessage='Provide GraphQL'
-                                />
-                            </StepLabel>
-                        </Step>
-
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.two'
-                                    defaultMessage='Create API'
-                                />
-                            </StepLabel>
-                        </Step>
-                    </Stepper>
-                )}
+                    <Step>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.two'
+                                defaultMessage='Create API'
+                            />
+                        </StepLabel>
+                    </Step>
+                </Stepper>
             </Box>
 
             <Grid container spacing={2}>

@@ -54,6 +54,8 @@ function ListBase(props) {
         },
         noDataMessage,
         addedActions,
+        enableCollapsable,
+        renderExpandableRow,
     } = props;
 
     const [searchText, setSearchText] = useState('');
@@ -150,9 +152,15 @@ function ListBase(props) {
                         if (editComponentProps && editComponentProps.routeTo) {
                             if (typeof tableMeta.rowData === 'object') {
                                 const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
+                                const isAI = tableMeta.rowData[1] === 'AI API Quota';
                                 return (
                                     <div data-testid={`${itemName}-actions`}>
-                                        <RouterLink to={editComponentProps.routeTo + artifactId}>
+                                        <RouterLink
+                                            to={{
+                                                pathname: editComponentProps.routeTo + artifactId,
+                                                state: { isAI },
+                                            }}
+                                        >
                                             <IconButton color='primary' component='span' size='large'>
                                                 <EditIcon aria-label={`edit-policies+${artifactId}`} />
                                             </IconButton>
@@ -234,6 +242,8 @@ function ListBase(props) {
                 }),
             },
         },
+        expandableRows: enableCollapsable,
+        renderExpandableRow,
     };
 
     // If no apiCall is provided OR,
@@ -392,6 +402,8 @@ ListBase.defaultProps = {
     DeleteComponent: null,
     editComponentProps: {},
     columProps: null,
+    enableCollapsable: false,
+    renderExpandableRow: null,
 };
 ListBase.propTypes = {
     EditComponent: PropTypes.element,
@@ -418,5 +430,7 @@ ListBase.propTypes = {
     noDataMessage: PropTypes.element,
     addButtonOverride: PropTypes.element,
     addedActions: PropTypes.shape([]),
+    enableCollapsable: PropTypes.bool,
+    renderExpandableRow: PropTypes.func,
 };
 export default ListBase;

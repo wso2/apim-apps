@@ -52,7 +52,7 @@ function MetaData(props) {
                 ) : (
                     <FormattedMessage
                         id='Apis.Details.NewOverview.MetaData.context:'
-                        defaultMessage='Context:'
+                        defaultMessage='Context'
                     />
                 )}
             </Typography>
@@ -109,7 +109,7 @@ function MetaData(props) {
                         <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                             <FormattedMessage
                                 id='Apis.Details.NewOverview.MetaData.context:'
-                                defaultMessage='Context:'
+                                defaultMessage='Context'
                             />
                         </Typography>
                     </Grid>
@@ -162,7 +162,7 @@ function MetaData(props) {
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.MetaData.type:'
-                                            defaultMessage='Type:'
+                                            defaultMessage='Type'
                                         />
                                     </Typography>
                                 </>

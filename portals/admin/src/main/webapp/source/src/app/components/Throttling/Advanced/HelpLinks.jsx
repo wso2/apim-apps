@@ -41,8 +41,7 @@ export default function HelpLinks() {
                     <Link
                         target='_blank'
                         href={Configurations.app.docUrl
-                + 'learn/rate-limiting/'
-                + 'introducing-throttling-use-cases/'}
+                            + 'design/rate-limiting/introducing-throttling-use-cases/'}
                         underline='hover'
                     >
                         <ListItemText primary={(
@@ -62,8 +61,8 @@ export default function HelpLinks() {
                     <Link
                         target='_blank'
                         href={Configurations.app.docUrl
-                + 'learn/rate-limiting/adding-new-throttling-policies/'
-                + '#adding-a-new-advanced-throttling-policy'}
+                            + 'design/rate-limiting/adding-new-throttling-policies/'
+                            + '#adding-a-new-advanced-throttling-policy'}
                         underline='hover'
                     >
                         <ListItemText primary={(

@@ -77,6 +77,21 @@ function Banner(props) {
 
     const [isOpen, setIsOpen] = useState(open);
     const iconProps = {};
+
+    const defaultErrorMessages = {
+        400: 'BAD REQUEST',
+        401: 'UNAUTHORIZED',
+        403: 'FORBIDDEN',
+        404: 'NOT FOUND',
+        500: 'INTERNAL SERVER ERROR',
+        502: 'BAD GATEWAY',
+    };
+
+    const getDefaultErrorMessage = (code) => {
+        return defaultErrorMessages[code] || 'ERROR';
+    };
+
+
     if (dense) {
         iconProps.fontSize = 'large';
     } else {
@@ -94,7 +109,7 @@ function Banner(props) {
         title = `${first.toUpperCase()}${rest.join('')}`; // Capitalize the first letter
     } else {
         // If `message` is an object, we expect it to be a REST API error response object
-        title = `[${message.code}]: ${message.message}`;
+        title = `[${message.code}]: ${message.message || getDefaultErrorMessage(message.code)}`;
     }
 
     // IF add,remove or modify cases update the proptypes as well

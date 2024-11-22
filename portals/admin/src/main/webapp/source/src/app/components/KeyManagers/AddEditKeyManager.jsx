@@ -455,8 +455,8 @@ function AddEditKeyManager(props) {
         setSaving(true);
 
         let promisedAddKeyManager;
-        const newTokenValidation = (tokenValidation.length > 0 && tokenValidation[0].type === '')
-            ? [] : tokenValidation;
+        const newTokenValidation = (tokenValidation.length > 0 && (tokenValidation[0].type === ''
+            || tokenValidation[0].type === 'NONE')) ? [] : tokenValidation;
         let tokenType;
         if (enableDirectToken && enableExchangeToken) {
             tokenType = 'BOTH';

@@ -20,8 +20,8 @@ import {
     Dialog,
     DialogContent,
     DialogTitle,
-    Accordion, 
-    AccordionSummary, 
+    Accordion,
+    AccordionSummary,
     AccordionDetails,
     Grid,
     Icon,
@@ -32,7 +32,7 @@ import {
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { FormattedMessage, injectIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import cloneDeep from 'lodash.clonedeep';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
@@ -134,12 +134,12 @@ function LoadbalanceFailoverConfig(props) {
         toggleESConfig,
         globalEpType,
         handleEndpointCategorySelect,
-        intl,
     } = props;
     const { api } = useContext(APIContext);
     const [isConfigExpanded, setConfigExpand] = useState(false);
     const [endpointType, setEndpointType] = useState(props);
     const [isLBConfigOpen, setLBConfigOpen] = useState(false);
+    const intl = useIntl();
 
     const endpointTypes = [
         {
@@ -456,7 +456,6 @@ LoadbalanceFailoverConfig.propTypes = {
     toggleESConfig: PropTypes.func.isRequired,
     handleEndpointCategorySelect: PropTypes.func.isRequired,
     globalEpType: PropTypes.shape({}).isRequired,
-    intl: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl((LoadbalanceFailoverConfig));
+export default LoadbalanceFailoverConfig;

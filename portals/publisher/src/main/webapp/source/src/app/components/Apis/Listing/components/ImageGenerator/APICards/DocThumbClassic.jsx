@@ -105,7 +105,6 @@ const DocThumb = (props) => {
             component={RouterLink}
             to={'/apis/' + doc.apiUUID + '/documents/' + doc.id + '/details'}
             aria-hidden='true'
-            sx={{ border: '2px solid blue'}}
         >
             <Card
                 onMouseOver={toggleMouseOver}

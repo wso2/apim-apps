@@ -456,7 +456,7 @@ class EditScope extends React.Component {
                                                 }}
                                                 style={{
                                                     backgroundColor: invalidRoles.includes(value) ? red[300] : null,
-                                                    margin: '8px 8px 8px 0',
+                                                    marginRight: '8px',
                                                     float: 'left',
                                                 }}
                                             />

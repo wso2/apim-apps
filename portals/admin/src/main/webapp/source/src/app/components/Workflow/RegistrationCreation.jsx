@@ -182,8 +182,9 @@ function ListLabels() {
                         <Link
                             target='_blank'
                             href={Configurations.app.docUrl
-                        + 'learn/consume-api/manage-application/advanced-topics/adding-an-application-'
-                        + 'key-generation-workflow/#adding-an-application-key-generation-workflow'}
+                                + 'consume/manage-application/advanced-topics/'
+                                + 'adding-an-application-key-generation-workflow/'
+                                + '#adding-an-application-key-generation-workflow'}
                             underline='hover'
                         >
                             <ListItemText primary={(

@@ -140,8 +140,8 @@ export default function ListApiCategories() {
                             target='_blank'
                             href={
                                 Configurations.app.docUrl
-                                + 'develop/customizations/customizing-the-developer-portal/customize-api-listing/'
-                                + 'api-category-based-grouping/'
+                                + 'reference/customize-product/customizations/customizing-the-developer-portal/'
+                                + 'customize-api-listing/api-category-based-grouping/'
                             }
                             underline='hover'
                         >

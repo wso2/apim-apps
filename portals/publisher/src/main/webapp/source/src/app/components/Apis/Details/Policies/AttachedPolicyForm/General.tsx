@@ -31,6 +31,7 @@ import {
     InputLabel,
     FormControl,
     FormHelperText,
+    MenuItem,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
@@ -383,8 +384,7 @@ const General: FC<GeneralProps> = ({
                                                 )}
                                             </>
                                         </InputLabel>
-                                        <Select 
-                                            native
+                                        <Select
                                             value={getValue(spec)}
                                             onChange={(e) => onInputChange(e, spec.type)}
                                             label={(
@@ -400,9 +400,9 @@ const General: FC<GeneralProps> = ({
                                                 id: `enum-label-${spec.name}`
                                             }}
                                         >
-                                            <option aria-label='None' value='' />
+                                            <MenuItem aria-label='None' value=''>&nbsp;</MenuItem>
                                             {spec.allowedValues && spec.allowedValues.map((enumVal) => (
-                                                <option value={enumVal}>{enumVal}</option>
+                                                <MenuItem value={enumVal}>{enumVal}</MenuItem>
                                             ))}                                           
                                         </Select>
                                         <FormHelperText>

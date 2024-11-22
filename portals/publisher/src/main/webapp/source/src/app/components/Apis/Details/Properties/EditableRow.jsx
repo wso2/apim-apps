@@ -214,7 +214,7 @@ function EditableRow(props) {
                     </TableCell>
                 </>
             )}
-            <TableCell align='right'>
+            <TableCell align='left'>
                 {editMode ? (
                     <>
                         <Button

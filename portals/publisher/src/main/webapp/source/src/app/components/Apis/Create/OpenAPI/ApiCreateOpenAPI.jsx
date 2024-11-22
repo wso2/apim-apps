@@ -196,7 +196,7 @@ export default function ApiCreateOpenAPI(props) {
             )}
         >
             <Box sx={{ mb: 2 }}>
-                <Stepper alternativeLabel activeStep={0}>
+                <Stepper alternativeLabel activeStep={wizardStep}>
                     <Step>
                         <StepLabel>
                             <FormattedMessage

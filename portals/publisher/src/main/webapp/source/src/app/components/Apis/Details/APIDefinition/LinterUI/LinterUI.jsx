@@ -54,10 +54,10 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
     },
 
     [`& .${classes.tableWrapper}`]: {
-        '& table tr td:first-child': {
+        '& table tr td:first-of-type': {
             width: 10,
         },
-        '& table tr td:nth-child(2)': {
+        '& table tr td:nth-of-type(2)': {
             width: 10,
         },
     },

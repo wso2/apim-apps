@@ -84,7 +84,7 @@ function DocThumbPlain(props) {
 
     const { doc } = props;
     return (
-        <StyledCard className={classes.root} variant='outlined' sx={{ border: '2px solid purple'}}>
+        <StyledCard className={classes.root} variant='outlined'>
             <CardContent>
                 <Box>
                     <Link to={'/apis/' + doc.apiUUID + '/documents/' + doc.id + '/details'} aria-hidden='true'>

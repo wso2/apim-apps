@@ -20,7 +20,7 @@ import React, { Component } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 
-import { isRestricted } from 'AppData/AuthManager';
+import AuthManager, { isRestricted } from 'AppData/AuthManager';
 import LifeCycleIcon from '@mui/icons-material/Autorenew';
 import StoreIcon from '@mui/icons-material/Store';
 import DashboardIcon from '@mui/icons-material/Dashboard';
@@ -712,6 +712,7 @@ class Details extends Component {
         const uuid = match.params.apiUUID || match.params.api_uuid || match.params.apiProdUUID;
         const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/';
         const redirectUrl = pathPrefix;
+        const readOnlyUser = AuthManager.isReadOnlyUser();
         const isAsyncAPI = api && (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE'
             || api.type === 'ASYNC');
         if (apiNotFound) {
@@ -834,7 +835,7 @@ class Details extends Component {
                                     />
                                 </>
                             )}
-                            {(isAPIProduct || (!isAPIProduct && !api.isWebSocket() && !api.isGraphql()
+                            {!readOnlyUser && (isAPIProduct || (!isAPIProduct && !api.isWebSocket() && !api.isGraphql()
                                 && !isAsyncAPI)) && (
                                 <div>
                                     <Divider />

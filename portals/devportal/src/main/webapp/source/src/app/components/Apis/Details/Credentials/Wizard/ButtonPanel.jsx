@@ -28,7 +28,7 @@ const ButtonPanel = (props) => {
      * Redirect  to the API console page
      */
     const handleTest = () => {
-        history.push(`/apis/${api.id}/test`);
+        history.push(`/apis/${api.id}/api-console`);
     };
 
     /**
