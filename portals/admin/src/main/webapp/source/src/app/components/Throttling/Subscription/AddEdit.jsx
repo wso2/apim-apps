@@ -130,6 +130,9 @@ function AddEdit(props) {
     const [roleValidity, setRoleValidity] = useState(true);
     const location = useLocation();
     const isAI = location.state?.isAI || false;
+    const [validOrgs, setValidOrgs] = useState([]);
+    const [orgValidity, setOrgValidity] = useState(true);
+
     const [initialState, setInitialState] = useState({
         policyName: '',
         description: '',
@@ -166,6 +169,7 @@ function AddEdit(props) {
             roles: [],
             permissionStatus: 'NONE',
         },
+        allowedOrganizations: [],
         graphQL: {
             maxComplexity: '',
             maxDepth: '',
@@ -218,6 +222,7 @@ function AddEdit(props) {
                     && result.body.permissions.roles
                     ? result.body.permissions.roles
                     : []);
+                setValidOrgs(result.body.allowedOrganizations);
                 const editState = {
                     policyName: result.body.policyName,
                     description: result.body.description,
@@ -256,6 +261,7 @@ function AddEdit(props) {
                     },
                     customAttributes: setCustomAttributes(result.body.customAttributes),
                     stopOnQuotaReach: result.body.stopOnQuotaReach,
+                    allowedOrganizations: result.body.allowedOrganizations,
                     permissions: (result.body.permissions === null || result.body.permissions === 'NONE')
                         ? {
                             permissionStatus: 'NONE',
@@ -304,6 +310,7 @@ function AddEdit(props) {
             customAttributes: [],
             stopOnQuotaReach: true,
             permissions: null,
+            allowedOrganizations: [],
             graphQL: {
                 maxComplexity: '',
                 maxDepth: '',
@@ -473,6 +480,15 @@ function AddEdit(props) {
             });
     };
 
+    const handleOrganizationAddition = (org) => {
+        setValidOrgs(validOrgs.concat(org));
+        setOrgValidity(true);
+    };
+
+    const handleOrgDeletion = (org) => {
+        setValidOrgs(validOrgs.filter((existingOrg) => existingOrg !== org));
+    };
+
     const handleRoleDeletion = (role) => {
         if (invalidRoles.includes(role)) {
             const invalidRolesArray = invalidRoles.filter((existingRole) => existingRole !== role);
@@ -522,6 +538,7 @@ function AddEdit(props) {
                         billingCycle: state.monetization.billingCycle,
                     },
                 },
+                allowedOrganizations: validOrgs,
                 permissions: (state.permissions === null || state.permissions.permissionStatus === null
                     || state.permissions.permissionStatus === 'NONE') ? null : {
                         permissionType: state.permissions.permissionStatus,
@@ -596,6 +613,7 @@ function AddEdit(props) {
                         billingCycle: state.monetization.billingCycle,
                     },
                 },
+                allowedOrganizations: validOrgs,
                 permissions: (state.permissions == null || state.permissions.permissionStatus === null
                     || state.permissions.permissionStatus === 'NONE') ? null : {
                         permissionType: state.permissions.permissionStatus,
@@ -631,6 +649,7 @@ function AddEdit(props) {
                         billingCycle: state.monetization.billingCycle,
                     },
                 },
+                allowedOrganizations: validOrgs,
                 permissions: (state.permissions === null || state.permissions.permissionStatus === null
                     || state.permissions.permissionStatus === 'NONE') ? null : {
                         permissionType: state.permissions.permissionStatus,
@@ -1970,6 +1989,98 @@ function AddEdit(props) {
                                     />
                                 </RadioGroup>
                             </Box>
+                        </Box>
+                    </Grid>
+                    {/* Organization visibility */}
+                    <Grid item xs={12} md={12} lg={3}>
+                        <Box display='flex' flexDirection='row' alignItems='center'>
+                            <Box flex='1'>
+                                <Typography color='inherit' variant='subtitle2' component='div'>
+                                    <FormattedMessage
+                                        id='Throttling.Subscription.organizations'
+                                        defaultMessage='Organizations'
+                                    />
+                                </Typography>
+                                <Typography color='inherit' variant='caption' component='p'>
+                                    <FormattedMessage
+                                        id='Throttling.Subscription.AddEdit.org.add.description'
+                                        defaultMessage='Define the organizations for the subscription policy.'
+                                    />
+                                </Typography>
+                            </Box>
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={9}>
+                        <Box display='flex' flexDirection='row' alignItems='center'>
+                            <MuiChipsInput
+                                fullWidth
+                                label='Organizations'
+                                InputLabelProps={{
+                                    shrink: true,
+                                }}
+                                variant='outlined'
+                                value={validOrgs}
+                                placeholder='Type organizations and press Enter'
+                                clearInputOnBlur
+                                InputProps={{
+                                    endAdornment: !orgValidity && (
+                                        <InputAdornment
+                                            position='end'
+                                            sx={{ position: 'absolute', right: '25px', top: '50%' }}
+                                        >
+                                            <Error color='error' />
+                                        </InputAdornment>
+                                    ),
+                                }}
+                                onAddChip={handleOrganizationAddition}
+                                error={!orgValidity}
+                                helperText={
+                                    !orgValidity ? (
+                                        <FormattedMessage
+                                            id='Apis.Details.Scopes.Roles.Invalid'
+                                            defaultMessage='A Role is invalid'
+                                        />
+                                    ) : [
+                                        (permissionStatus === 'ALLOW'
+                                            ? (
+                                                <FormattedMessage
+                                                    id='Throttling.Subscription.enter.permission.allowed'
+                                                    defaultMessage='This policy is "Allowed" for above
+                                                                roles.'
+                                                />
+                                            )
+                                            : (
+                                                <FormattedMessage
+                                                    id='Throttling.Subscription.enter.permission.denied'
+                                                    defaultMessage='This policy is "Denied" for above
+                                                                roles.'
+                                                />
+                                            )
+                                        ),
+                                        ' ',
+                                        <FormattedMessage
+                                            id='Apis.Details.Scopes.CreateScope.roles.help'
+                                            defaultMessage='Enter a valid role and press `Enter`.'
+                                        />,
+                                    ]
+                                }
+                                renderChip={(ChipComponent, key, ChipProps) => (
+                                    <ChipComponent
+                                        key={ChipProps.label}
+                                        label={ChipProps.label}
+                                        onDelete={() => handleOrgDeletion(ChipProps.label)}
+                                        style={{
+                                            margin: '8px 8px 8px 0',
+                                            float: 'left',
+                                        }}
+                                    />
+                                )}
+                            />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box marginTop={2} marginBottom={2}>
+                            <StyledHr />
                         </Box>
                     </Grid>
                 </Grid>

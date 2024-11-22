@@ -414,9 +414,11 @@ class LayoutLegacy extends React.Component {
         const user = AuthManager.getUser();
         // TODO: Refer to fix: https://github.com/mui-org/material-ui/issues/10076#issuecomment-361232810 ~tmkb
         let username = null;
+        let organization = null;
 
         if (user) {
             username = user.name;
+            organization = user.getOrganizationName();
             const count = (username.match(/@/g) || []).length;
             if (user.name.endsWith('@carbon.super') && count <= 1) {
                 username = user.name.replace('@carbon.super', '');
@@ -599,6 +601,34 @@ class LayoutLegacy extends React.Component {
                                 {user ? (
                                     <>
                                         <div className={classes.linkWrapper}>
+                                            {organization && (
+                                                <>
+                                                    <Icon
+                                                        className={classes.icons}
+                                                        sx={{
+                                                            color: 'black',
+                                                            marginTop: '8px',
+                                                        }}
+                                                    >
+                                                        business
+                                                    </Icon>
+                                                    <Typography
+                                                        variant='body1'
+                                                        className={classes.organizationLabel}
+                                                        sx={{
+                                                            marginLeft: '1px',
+                                                            marginRight: '8px',
+                                                            color: 'black',
+                                                            textTransform: 'uppercase',
+                                                            fontWeight: 'bold',
+                                                            paddingTop: '8px',
+                                                            fontSize: '12px',
+                                                        }}
+                                                    >
+                                                        {organization}
+                                                    </Typography>
+                                                </>
+                                            )}
                                             <Button
                                                 aria-owns={this.openUserMenu ? 'menu-list-grow' : null}
                                                 aria-haspopup='true'

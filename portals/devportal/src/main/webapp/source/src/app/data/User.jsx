@@ -77,6 +77,14 @@ export default class User {
     }
 
     /**
+     * Get the user organization from cookie storage.
+     * @returns {String|null}
+     */
+    getOrganizationName() {
+        return decodeURIComponent(Utils.getCookie(User.CONST.ORGANIZATION)).replace(/\+/g, ' ');
+    }
+
+    /**
      * Store the JavaScript accessible access token segment in cookie storage
      * @param {String} newToken : Part of the access token which needs when accessing REST API
      * @param {Number} validityPeriod : Validity period of the cookie in seconds
@@ -149,7 +157,8 @@ User.CONST = {
     WSO2_AM_REFRESH_TOKEN_1: 'WSO2_AM_REFRESH_TOKEN_1',
     LOCALSTORAGE_USER: "wso2_user_store",
     DEVPORTAL_CLIENT_ID: "CLIENT_ID",
-    DEVPORTAL_SESSION_STATE: "devportal_session_state"
+    DEVPORTAL_SESSION_STATE: "devportal_session_state",
+    ORGANIZATION: "ORGANIZATION"
 };
 /**
  * Map of users (key = environmentLabel, value = User instance)

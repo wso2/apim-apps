@@ -72,11 +72,13 @@ class ApplicationFormHandler extends React.Component {
                 tokenType: 'JWT',
                 groups: null,
                 attributes: {},
+                visibility: '',
             },
             isNameValid: true,
             throttlingPolicyList: [],
             allAppAttributes: null,
             isApplicationSharingEnabled: true,
+            isOrgAccessControlEnabled: false,
             applicationOwner: '',
         };
         this.handleAddChip = this.handleAddChip.bind(this);
@@ -99,6 +101,7 @@ class ApplicationFormHandler extends React.Component {
             this.initApplicationCreateState();
         }
         this.isApplicationGroupSharingEnabled();
+        this.isOrgAccessControlEnabledEnabled();
     }
 
     /**
@@ -136,6 +139,7 @@ class ApplicationFormHandler extends React.Component {
                 newRequest.groups = application.groups;
                 newRequest.tokenType = application.tokenType;
                 newRequest.attributes = application.attributes;
+                newRequest.visibility = application.visibility;
                 this.setState({
                     isEdit: true,
                     applicationRequest: newRequest,
@@ -153,6 +157,7 @@ class ApplicationFormHandler extends React.Component {
                 }
             });
         this.isApplicationGroupSharingEnabled();
+        this.isOrgAccessControlEnabledEnabled();
     }
 
     /**
@@ -409,13 +414,23 @@ class ApplicationFormHandler extends React.Component {
     }
 
     /**
+     * retrieve Settings from the context and check the application sharing enabled
+     * @param {*} settingsData required data
+     */
+    isOrgAccessControlEnabledEnabled = () => {
+        const settingsContext = this.context;
+        const enabled = settingsContext.settings.orgAccessControlEnabled;
+        this.setState({ isOrgAccessControlEnabled: enabled });
+    }
+
+    /**
      * @inheritdoc
      * @memberof ApplicationFormHandler
      */
     render() {
         const {
             throttlingPolicyList, applicationRequest, isNameValid, allAppAttributes, isApplicationSharingEnabled,
-            isEdit, applicationOwner,
+            isEdit, applicationOwner, isOrgAccessControlEnabled,
         } = this.state;
         const { match: { params } } = this.props;
 
@@ -488,8 +503,10 @@ class ApplicationFormHandler extends React.Component {
                                     isRequiredAttribute={this.isRequiredAttribute}
                                     getAttributeValue={this.getAttributeValue}
                                     isApplicationSharingEnabled={isApplicationSharingEnabled}
+                                    isOrgAccessControlEnabled={isOrgAccessControlEnabled}
                                     handleDeleteChip={this.handleDeleteChip}
                                     handleAddChip={this.handleAddChip}
+                                    enable
                                 />
 
                                 <Box display='flex' justifyContent='flex-start' mt={4} spacing={1}>
