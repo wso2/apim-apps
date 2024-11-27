@@ -56,7 +56,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          text: finalOutcomeCode, // Send finalOutcomeCode to the endpoint
+          text: finalOutcomeCode,
         }),
       });
 
@@ -74,8 +74,8 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
 
       setDialogTitle('API Creation Successful!');
       setDialogContentText('API created successfully in the Publisher Portal!');
-      setFirstDialogAction('VIEW API');
-      setSecondDialogAction('CLOSE');
+      setFirstDialogAction('CLOSE');
+      setSecondDialogAction('VIEW API');
 
     } catch (error) {
       setDialogTitle('API Creation Unsuccessful');
@@ -118,10 +118,19 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
             Confirm creation of API in the Publisher Portal.
           </DialogContentText>
         </DialogContent>
+
         <DialogActions>
-          <Button onClick={handleCreate}>CREATE</Button>
-          <Button onClick={handleClose} autoFocus>
+          <Button onClick={handleClose}>
             CANCEL
+          </Button>
+          <Button
+            onClick={handleCreate}
+            sx={{
+              border: '1px solid #1C7EA7'
+            }}
+            autoFocus
+          >
+            CREATE
           </Button>
         </DialogActions>
       </Dialog>
