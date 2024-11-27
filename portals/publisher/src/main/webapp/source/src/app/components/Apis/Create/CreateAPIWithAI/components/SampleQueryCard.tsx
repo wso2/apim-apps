@@ -57,15 +57,17 @@ export interface SampleQuery {
 }
 
 interface SampleQueryCardProps {
-//   onExecuteClick: (query: string) => void;
-//   queryData: SampleQuery;
+  onExecuteClick: (query: string) => void;
+  queryHeading: string;
+  queryData: string;
 //   onCopyClick: (query: string) => void;
 //   disabled: boolean;
 }
 
 const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
-    // onExecuteClick,
-    // queryData,
+    onExecuteClick,
+    queryHeading,
+    queryData,
     // onCopyClick,
     // disabled,
 }) => {
@@ -103,10 +105,10 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
                         <Box display='flex' flexDirection='column' height={1} alignItems='flex-start' >
                             <Box mb={2}>
                                 <Typography variant='body1'>
-                                    Invoke an action to create a swagger definition      
+                                    {queryHeading}
                                 </Typography>
                                 <Typography variant='body2' color='textSecondary' component='p' className={classes.sampleQuery}>
-                                    Create a swagger definition to search for banks in a ...
+                                    {queryData}
                                 </Typography>
                             </Box>
                             <Box mt='auto'>
@@ -117,9 +119,9 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
                                         variant='outlined'
                                         // disabled={disabled}
                                         // onClick={(e) => {
-                                        //     onExecuteClick(queryData.query);
-                                        //     e.stopPropagation();
+                                        //     onExecuteClick(queryData);
                                         // }}
+                                        onClick={() => onExecuteClick(queryData)}
                                     >
                                         {intl.formatMessage({
                                             id: 'Apis.Details.ApiChat.components.SampleQueryCard.executeButton',
