@@ -103,48 +103,6 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
     const intl = useIntl();
     const QUERY_CHARACTER_LIMIT = 500;
 
-    // const handleSubmit = async () => {
-    //     try {
-    //       const response = await fetch('http://127.0.0.1:5000/generate', {
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //         },
-    //         // body: JSON.stringify({ text: inputText }),
-    //       });
-          
-    //       const text = await response.text();
-    //       console.log(text);
-    //     //   setResponseText(text); // or data.generatedText
-    //     } catch (error) {
-    //       console.error('Error:', error);
-    //     //   setResponseText('An error occurred while fetching the data.');
-    //     }
-    //   };
-      
-      const handleSubmit = async (inputQuery: string) => {
-        try {
-            console.log(inputQuery);
-            const response = await fetch('http://127.0.0.1:5000/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ text: inputQuery }),
-            });
-    
-            const text = await response.text();
-            console.log(text);
-            // You can set the response to state here if needed
-            // setResponseText(text); // or data.generatedText
-        } catch (error) {
-            console.error('Error:', error);
-            // Optionally, handle the error by setting a response state
-            // setResponseText('An error occurred while fetching the data.');
-        }
-    };
-      
-
     return (
         <Root>
             <Box className={classes.tryAiBottom}>
@@ -220,11 +178,11 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                             }}
                         />
                         <Box display='flex' justifyContent='flex-end' mt={1} mr={2}>
-                            {/* <Typography variant='caption'>
+                            <Typography variant='caption'>
                                 {inputQuery.length}
                                 /
                                 {QUERY_CHARACTER_LIMIT}
-                            </Typography> */}
+                            </Typography>
                         </Box>
                         <Box className={classes.disclaimerText}>
                             <Typography variant='body2' color='textSecondary' component='p'>
