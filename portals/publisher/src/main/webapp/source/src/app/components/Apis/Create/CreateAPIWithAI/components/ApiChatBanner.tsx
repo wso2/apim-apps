@@ -19,6 +19,7 @@
 import React from 'react';
 import { useIntl } from 'react-intl';
 import Typography from '@mui/material/Typography';
+import Stack from '@mui/material/Stack';
 import Box from '@mui/material/Box';
 // @ts-ignore
 import { app } from 'Settings';
@@ -37,6 +38,7 @@ const classes = {
 const Root = styled('div')(({ theme }: any) => ({
     [`& .${classes.tryAiBannerCont}`]: {
         display: 'flex',
+        flexDirection: 'column',
         paddingLeft: theme.spacing(1),
         gridGap: theme.spacing(1.5),
         maxWidth: theme.spacing(85),
@@ -84,32 +86,25 @@ const ApiChatBanner: React.FC = () => {
     const intl = useIntl();
     return (
         <Root>
-            <Box className={classes.tryAiBannerCont}>
-                <Box className={classes.tryAiBannerImgWrap}>
+            <Stack spacing={2} sx={{ maxWidth: '100%', alignItems: 'center', textAlign: 'center' }}>
+                <Box>
                     <img
-                        alt='API Chat'
+                        alt='API Design Assistant'
                         src={`${app.context}/site/public/images/ai/ApiChat.svg`}
+                        // src={`${app.context}/site/public/images/ai/chatBanner.svg`}
+                        // src={`${app.context}/site/public/images/ai/apiDesignAssistantImage.svg`}
+                        style={{ width: '300px', height: 'auto' }}
                     />
                 </Box>
                 <Box className={classes.tryAiBannerContentWrap}>
-                    <Box className={classes.tryAiBannerContent}>
-                        <Box className={classes.tryAiBannerTriangle} />
-                        <Typography variant='h5'>
-                            {intl.formatMessage({
-                                id: 'Apis.Details.ApiChat.components.ApiChatBanner.apiChatMainTextHeader',
-                                defaultMessage: 'Streamline Your API Creation Process!',
-                            })}
+                    <Typography sx={{ fontSize: '1.0rem', fontWeight: 'bold' }}>
+                        Design APIs with Confidence!{'\n'}
+                        <Typography sx={{ marginTop: '8px', fontSize: '0.9rem', fontWeight: 'bold' }}>
+                            From Concept to Creation in Minutes With Our Assistant!
                         </Typography>
-                        <Typography variant='caption'>
-                            {intl.formatMessage({
-                                id: 'Apis.Details.ApiChat.components.ApiChatBanner.apiChatMainTextContent',
-                                defaultMessage:
-                    'Design APIs (REST API, GraphQL API, Async API) and Accurate Swagger Definitions!',
-                            })}
-                        </Typography>
-                    </Box>
+                    </Typography>
                 </Box>
-            </Box>
+            </Stack>
         </Root>
     );
 };
