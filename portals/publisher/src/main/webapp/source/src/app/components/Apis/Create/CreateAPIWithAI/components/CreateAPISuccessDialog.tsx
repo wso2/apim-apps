@@ -72,7 +72,7 @@ interface CreateAPISuccessDialogProps {
   
         <DialogActions>
           {firstDialogAction && <Button onClick={onClose} autoFocus>{firstDialogAction}</Button>}
-          <Button onClick={onClose} autoFocus>{secondDialogAction}</Button>
+          <Button onClick={onClose} sx={{ border: '1px solid #1C7EA7' }} autoFocus>{secondDialogAction}</Button>
         </DialogActions>
       </Dialog>
     );
