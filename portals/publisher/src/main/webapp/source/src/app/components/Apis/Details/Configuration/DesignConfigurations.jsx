@@ -197,7 +197,7 @@ function copyAPIConfig(api) {
         enableSchemaValidation: api.enableSchemaValidation,
         accessControlRoles: [...api.accessControlRoles],
         visibleRoles: [...api.visibleRoles],
-        visibleOrganizations: [...api.visibleOrganizations],
+        visibleOrganizations: [...(api?.visibleOrganizations || [])],
         tags: [...api.tags],
         maxTps: api.maxTps,
         transport: [...api.transport],
