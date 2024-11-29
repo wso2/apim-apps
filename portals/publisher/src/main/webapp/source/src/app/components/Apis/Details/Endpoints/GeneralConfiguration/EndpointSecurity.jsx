@@ -23,6 +23,9 @@ import {
     ListItem,
     ListItemAvatar,
     ListItemText,
+    Switch,
+    FormGroup,
+    FormControlLabel,
 } from '@mui/material';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Table from '@mui/material/Table';
@@ -103,6 +106,17 @@ function EndpointSecurity(props) {
         intl, securityInfo, onChangeEndpointAuth, isProduction, saveEndpointSecurityConfig, closeEndpointSecurityConfig,
     } = props;
     const [endpointSecurityInfo, setEndpointSecurityInfo] = useState(CONSTS.DEFAULT_ENDPOINT_SECURITY);
+
+    if (!(securityInfo?.proxyConfigs != null)) {
+        securityInfo.proxyConfigs = {
+            proxyEnabled: false,
+            proxyHost: '',
+            proxyPort: '',
+            proxyUsername: '',
+            proxyPassword: '',
+            proxyProtocol: '',
+        };
+    }
     const [securityValidity, setSecurityValidity] = useState();
 
     const [showAddParameter, setShowAddParameter] = useState(false);
@@ -189,7 +203,7 @@ function EndpointSecurity(props) {
             tmpSecurity = { ...securityInfo };
             const {
                 type, username, password, grantType, tokenUrl, clientId, clientSecret, customParameters,
-                connectionTimeoutDuration, connectionRequestTimeoutDuration, socketTimeoutDuration,
+                connectionTimeoutDuration, connectionRequestTimeoutDuration, socketTimeoutDuration, proxyConfigs,
             } = securityInfo;
             const secretPlaceholder = '******';
             tmpSecurity.type = type === null ? 'NONE' : type;
@@ -203,6 +217,7 @@ function EndpointSecurity(props) {
             tmpSecurity.connectionTimeoutDuration = connectionTimeoutDuration;
             tmpSecurity.connectionRequestTimeoutDuration = connectionRequestTimeoutDuration;
             tmpSecurity.socketTimeoutDuration = socketTimeoutDuration;
+            tmpSecurity.proxyConfigs = proxyConfigs;
         }
         setEndpointSecurityInfo(tmpSecurity);
     }, [securityInfo]);
@@ -727,6 +742,178 @@ function EndpointSecurity(props) {
                         </>
                     )}
 
+                    <Grid
+                        item
+                        xs={12}
+                        style={{
+                            paddingTop: '30px',
+                        }}
+                    />
+                    <Grid
+                        item
+                        xs={12}
+                        style={{
+                            paddingTop: '20px',
+                            borderTop: '1px solid Gainsboro',
+                        }}
+                    >
+                        <FormGroup row>
+                            <FormControlLabel
+                                control={(
+                                    <Switch
+                                        name='proxyEnabled'
+                                        onChange={(event) => {
+                                            endpointSecurityInfo.proxyConfigs.proxyEnabled = event.target.checked;
+                                            setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                            validateAndUpdateSecurityInfo('proxyEnabled');
+                                        }}
+                                        checked={endpointSecurityInfo.proxyConfigs.proxyEnabled}
+                                    />
+                                )}
+                                label='Proxy Configurations'
+                            />
+
+                        </FormGroup>
+                    </Grid>
+                    <Grid
+                        item
+                        xs={6}
+                        style={{}}
+                    >
+                        <TextField
+                            disabled={isRestricted(['apim:api_create'], api)
+                                || !endpointSecurityInfo.proxyConfigs.proxyEnabled}
+                            required
+                            fullWidth
+                            variant='outlined'
+                            id='proxy-host'
+                            label={(
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.GeneralConfiguration.'
+                                        + 'EndpointSecurity.proxyHost.input'}
+                                    defaultMessage='Proxy Hostname'
+                                />
+                            )}
+                            onChange={(event) => {
+                                endpointSecurityInfo.proxyConfigs.proxyHost = event.target.value;
+                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                validateAndUpdateSecurityInfo('proxyConfigs');
+                            }}
+                            value={endpointSecurityInfo.proxyConfigs.proxyHost}
+                            onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        xs={6}
+                        style={{}}
+                    >
+                        <TextField
+                            disabled={isRestricted(['apim:api_create'], api)
+                                || !endpointSecurityInfo.proxyConfigs.proxyEnabled}
+                            required
+                            fullWidth
+                            variant='outlined'
+                            id='proxy-port'
+                            label={(
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.GeneralConfiguration.'
+                                        + 'EndpointSecurity.proxyPort.input'}
+                                    defaultMessage='Proxy Port'
+                                />
+                            )}
+                            onChange={(event) => {
+                                endpointSecurityInfo.proxyConfigs.proxyPort = event.target.value;
+                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                validateAndUpdateSecurityInfo('proxyConfigs');
+                            }}
+                            value={endpointSecurityInfo.proxyConfigs.proxyPort}
+                            onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        xs={6}
+                        style={{}}
+                    >
+                        <TextField
+                            disabled={isRestricted(['apim:api_create'], api)
+                                || !endpointSecurityInfo.proxyConfigs.proxyEnabled}
+                            fullWidth
+                            variant='outlined'
+                            id='proxy-username'
+                            label={(
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.GeneralConfiguration.'
+                                        + 'EndpointSecurity.proxyUsername.input'}
+                                    defaultMessage='Proxy Username'
+                                />
+                            )}
+                            onChange={(event) => {
+                                endpointSecurityInfo.proxyConfigs.proxyUsername = event.target.value;
+                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                validateAndUpdateSecurityInfo('proxyConfigs');
+                            }}
+                            value={endpointSecurityInfo.proxyConfigs.proxyUsername}
+                            onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        xs={6}
+                        style={{}}
+                    >
+                        <TextField
+                            disabled={isRestricted(['apim:api_create'], api)
+                                || !endpointSecurityInfo.proxyConfigs.proxyEnabled}
+                            fullWidth
+                            variant='outlined'
+                            id='proxy-password'
+                            type='password'
+                            label={(
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.GeneralConfiguration.'
+                                        + 'EndpointSecurity.proxyPassword.input'}
+                                    defaultMessage='Proxy Password'
+                                />
+                            )}
+                            onChange={(event) => {
+                                endpointSecurityInfo.proxyConfigs.proxyPassword = event.target.value;
+                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                validateAndUpdateSecurityInfo('proxyConfigs');
+                            }}
+                            value={endpointSecurityInfo.proxyConfigs.proxyPassword}
+                            onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
+                        />
+                    </Grid>
+                    <Grid
+                        item
+                        xs={6}
+                        style={{}}
+                    >
+                        <TextField
+                            disabled={isRestricted(['apim:api_create'], api)
+                                || !endpointSecurityInfo.proxyConfigs.proxyEnabled}
+                            required
+                            fullWidth
+                            variant='outlined'
+                            id='proxy-protocol'
+                            label={(
+                                <FormattedMessage
+                                    id={'Apis.Details.Endpoints.GeneralConfiguration.'
+                                        + 'EndpointSecurity.proxyProtocol.input'}
+                                    defaultMessage='Proxy Protocol'
+                                />
+                            )}
+                            onChange={(event) => {
+                                endpointSecurityInfo.proxyConfigs.proxyProtocol = event.target.value;
+                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                validateAndUpdateSecurityInfo('proxyConfigs');
+                            }}
+                            value={endpointSecurityInfo.proxyConfigs.proxyProtocol}
+                            onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
+                        />
+                    </Grid>
                     <Grid item xs={12}>
                         <ListItem
                             className={classes.listItem}
