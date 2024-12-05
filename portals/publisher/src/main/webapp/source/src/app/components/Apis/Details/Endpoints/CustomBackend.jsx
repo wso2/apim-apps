@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2024, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -42,18 +41,17 @@ import {
 } from '@mui/material';
 import Icon from '@mui/material/Icon';
 import PropTypes from 'prop-types';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import { FormattedMessage, injectIntl } from 'react-intl';
-import { 
-    API_SECURITY_KEY_TYPE_PRODUCTION, 
-    API_SECURITY_KEY_TYPE_SANDBOX 
-} from '../Configuration/components/APISecurity/components/apiSecurityConstants';
+import { FormattedMessage } from 'react-intl';
 import Dropzone from 'react-dropzone';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
 import { Alert } from 'AppComponents/Shared';
 import Utils from 'AppData/Utils';
 import cloneDeep from 'lodash.clonedeep';
+import {
+    API_SECURITY_KEY_TYPE_PRODUCTION,
+    API_SECURITY_KEY_TYPE_SANDBOX
+} from '../Configuration/components/APISecurity/components/apiSecurityConstants';
 
 const PREFIX = 'CustomBackend';
 
@@ -143,8 +141,6 @@ const StyledDialog = styled(Dialog)((
     },
 }));
 
-const infoIconStyle = { mr: 1, minWidth: 'initial'};
-
 const dropzoneStyles = {
     border: '1px dashed #c4c4c4',
     borderRadius: '5px',
@@ -166,13 +162,13 @@ const dropzoneStyles = {
 export default function CustomBackend(props) {
     const {
         api,
-        intl,
         sandBoxBackendList,
         productionBackendList,
         setSandBoxBackendList,
         setProductionBackendList,
         isValidSequenceBackend,
         setIsValidSequenceBackend,
+        setIsCustomBackendSelected,
     } = props;
 
     const restAPI = new API();
@@ -185,26 +181,28 @@ export default function CustomBackend(props) {
     const [uploadCustomBackendOpen, setUploadCustomBackendOpen] = useState({ open: false, keyType: '' });
     const [sequenceBackendToDelete, setSequenceBackendToDelete] = useState({ open: false, keyType: '', name: '' });
     const [isDeleting, setDeleting] = useState(false);
-    
+
     const closeCustomBackendUpload = () => {
         setUploadCustomBackendOpen({ open: false, keyType: '' });
         setCustomBackend({ name: '', content: '' });
-        setCustomBackendProd({ name: '', content: '' });
     };
 
     useEffect(() => {
+        setIsCustomBackendSelected(true);
         setIsValidSequenceBackend(false);
         restAPI.getSequenceBackends(api.id)
             .then((result) => {
                 const allSequenceBackends = result.body.list;
-                setProductionBackendList(allSequenceBackends.filter((backend) => backend.sequenceType === API_SECURITY_KEY_TYPE_PRODUCTION));
-                setSandBoxBackendList(allSequenceBackends.filter((backend) => backend.sequenceType === API_SECURITY_KEY_TYPE_SANDBOX));
+                setProductionBackendList(allSequenceBackends.filter((backend) =>
+                    backend.sequenceType === API_SECURITY_KEY_TYPE_PRODUCTION));
+                setSandBoxBackendList(allSequenceBackends.filter((backend) =>
+                    backend.sequenceType === API_SECURITY_KEY_TYPE_SANDBOX));
 
                 if (result.body.count > 0) {
                     setIsValidSequenceBackend(true);
                 }
             })
-            .catch((err) => {
+            .catch(() => {
                 Alert.error('Error while fetching sequence backends');
             });
     }, []);
@@ -217,20 +215,20 @@ export default function CustomBackend(props) {
      * @param {string} name  The name of the Sequence Backend.
      * */
     const showSequenceBackendDeleteDialog = async (event, keyType, name) => {
-        setSequenceBackendToDelete({ open: true, keyType: keyType, name: name });
+        setSequenceBackendToDelete({ open: true, keyType, name });
     };
 
     const downloadCustomBackend = (keyType) => {
         restAPI.getSequenceBackendContentByAPIID(api.id, keyType).then((resp) => {
             Utils.forceDownload(resp);
         })
-        .catch((error) => {
-            if (error.response) {
-                Alert.error(error.response.body.description);
-            } else {
-                Alert.error('Error while downloading the sequence backend');
-            }
-        });
+            .catch((error) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error('Error while downloading the sequence backend');
+                }
+            });
     };
 
     const deleteSequenceBackendByKey = (keyType) => {
@@ -259,10 +257,12 @@ export default function CustomBackend(props) {
         setSaving(true);
         const customBackendClone = cloneDeep(customBackend);
         if (uploadCustomBackendOpen.keyType === API_SECURITY_KEY_TYPE_SANDBOX) {
-            sandBoxBackendList.push({"sequenceName": customBackendClone.name, "content": customBackendClone.content});
+            sandBoxBackendList.push(
+                { "sequenceName": customBackendClone.name, "content": customBackendClone.content });
             setSandBoxBackendList(sandBoxBackendList);
         } else {
-            productionBackendList.push({"sequenceName": customBackendClone.name, "content": customBackendClone.content});
+            productionBackendList.push(
+                { "sequenceName": customBackendClone.name, "content": customBackendClone.content });
             setProductionBackendList(productionBackendList);
         }
         setSaving(false);
@@ -297,153 +297,157 @@ export default function CustomBackend(props) {
         <StyledGrid container direction='column'>
             <Grid item>
                 <Box my={1} />
-                    <>
-                        <Typography className={classes.productionBackendTitle}>
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.production.certificates'
-                                defaultMessage='Production' 
-                            />
-                        </Typography>
-                        <List className={classes.backendList} data-testid='list-production-backend'>
-                            {productionBackendList?.length > 0 ? (
-                                productionBackendList.map((backend) => {
-                                    return (
-                                        <ListItem id={`production-backend-list-item-${backend.sequenceName}`}>
-                                            <ListItemAvatar>
-                                                <TextSnippetIcon />
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={backend.sequenceName}
-                                            />
-                                            <ListItemSecondaryAction>
-                                                <IconButton
-                                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                    onClick={() => downloadCustomBackend(API_SECURITY_KEY_TYPE_PRODUCTION)}  
-                                                    id='download-backend-btn'
+                <>
+                    <Typography className={classes.productionBackendTitle}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.GeneralConfiguration.Certificates.production.certificates'
+                            defaultMessage='Production'
+                        />
+                    </Typography>
+                    <List className={classes.backendList} data-testid='list-production-backend'>
+                        {productionBackendList?.length > 0 ? (
+                            productionBackendList.map((backend) => {
+                                return (
+                                    <ListItem id={`production-backend-list-item-${backend.sequenceName}`}>
+                                        <ListItemAvatar>
+                                            <TextSnippetIcon />
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={backend.sequenceName}
+                                        />
+                                        <ListItemSecondaryAction>
+                                            <IconButton
+                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                onClick={() => downloadCustomBackend(API_SECURITY_KEY_TYPE_PRODUCTION)}
+                                                id='download-backend-btn'
+                                            >
+                                                <CloudDownloadIcon className={isRestricted(['apim:api_create'], 
+                                                    apiFromContext)
+                                                    ? classes.deleteIconDisable : classes.deleteIcon} />
+                                            </IconButton>
+
+                                            <IconButton
+                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                onClick={(event) => showSequenceBackendDeleteDialog(event,
+                                                    API_SECURITY_KEY_TYPE_PRODUCTION, backend.sequenceName)}
+                                                id='delete-backend-btn'
+                                                size='large'>
+                                                <Icon className={isRestricted(['apim:api_create'], apiFromContext)
+                                                    ? classes.deleteIconDisable : classes.deleteIcon}
                                                 >
-                                                    <CloudDownloadIcon className={isRestricted(['apim:api_create'], apiFromContext)
-                                                        ? classes.deleteIconDisable : classes.deleteIcon} />
-                                                </IconButton>
-                                                
-                                                <IconButton
-                                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                    onClick={(event) => showSequenceBackendDeleteDialog(event,
-                                                        API_SECURITY_KEY_TYPE_PRODUCTION, backend.sequenceName)}
-                                                    id='delete-backend-btn'
-                                                    size='large'>
-                                                    <Icon className={isRestricted(['apim:api_create'], apiFromContext)
-                                                        ? classes.deleteIconDisable : classes.deleteIcon}
-                                                    >
-                                                        {' '}
-                                                        delete
-                                                    </Icon>
-                                                </IconButton>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    );
-                                })
-                            ) : (
-                                <ListItem
-                                    button
-                                    disabled={(isRestricted(['apim:api_create'], apiFromContext))}
-                                    className={classes.addCustomBackendBtn}
-                                    onClick={() => setUploadCustomBackendOpen({ open: true, keyType: API_SECURITY_KEY_TYPE_PRODUCTION })}
-                                    id='custom-backend-add-btn'
-                                >  
-                                    <ListItemAvatar>
-                                        <IconButton size='large'>
-                                            <Icon>add</Icon>
-                                        </IconButton>
-                                    </ListItemAvatar>
-                                    <ListItemText>
-                                        <FormattedMessage
-                                                id='Apis.Details.Endpoints.SequenceBackend.AddCertificat'
-                                                defaultMessage='Add Sequence Backend' 
-                                            />
-                                    </ListItemText>
-                                </ListItem>
-                            )}
-                        </List>
-                        <Box my={2} />
-                        <Typography className={classes.sandboxCertificatesListTitle}>
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.GeneralConfiguration.CustomBackend.sandbox.backend'
-                                defaultMessage='Sandbox' 
-                            />
-                        </Typography>
-                        <List className={classes.backendList} data-testid='list-sandbox-backend'>
-                            {sandBoxBackendList?.length > 0 ? (
-                                sandBoxBackendList.map((backend) => {
-                                    return (
-                                        <ListItem id={`sandbox-backend-list-item-${backend.sequenceName}`}>
-                                            <ListItemAvatar>
-                                                <TextSnippetIcon />
-                                            </ListItemAvatar>
-                                            <ListItemText
-                                                primary={backend.sequenceName}
-                                            />
-                                            <ListItemSecondaryAction>
-                                                <IconButton
-                                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                    onClick={() => downloadCustomBackend(API_SECURITY_KEY_TYPE_SANDBOX)}  
-                                                    id='download-backend-btn'                                           
+                                                    {' '}
+                                                    delete
+                                                </Icon>
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                );
+                            })
+                        ) : (
+                            <ListItem
+                                button
+                                disabled={(isRestricted(['apim:api_create'], apiFromContext))}
+                                className={classes.addCustomBackendBtn}
+                                onClick={() => setUploadCustomBackendOpen(
+                                    { open: true, keyType: API_SECURITY_KEY_TYPE_PRODUCTION })}
+                                id='custom-backend-add-btn'
+                            >
+                                <ListItemAvatar>
+                                    <IconButton size='large'>
+                                        <Icon>add</Icon>
+                                    </IconButton>
+                                </ListItemAvatar>
+                                <ListItemText>
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.SequenceBackend.AddCertificat'
+                                        defaultMessage='Add Sequence Backend'
+                                    />
+                                </ListItemText>
+                            </ListItem>
+                        )}
+                    </List>
+                    <Box my={2} />
+                    <Typography className={classes.sandboxCertificatesListTitle}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.GeneralConfiguration.CustomBackend.sandbox.backend'
+                            defaultMessage='Sandbox'
+                        />
+                    </Typography>
+                    <List className={classes.backendList} data-testid='list-sandbox-backend'>
+                        {sandBoxBackendList?.length > 0 ? (
+                            sandBoxBackendList.map((backend) => {
+                                return (
+                                    <ListItem id={`sandbox-backend-list-item-${backend.sequenceName}`}>
+                                        <ListItemAvatar>
+                                            <TextSnippetIcon />
+                                        </ListItemAvatar>
+                                        <ListItemText
+                                            primary={backend.sequenceName}
+                                        />
+                                        <ListItemSecondaryAction>
+                                            <IconButton
+                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                onClick={() => downloadCustomBackend(API_SECURITY_KEY_TYPE_SANDBOX)}
+                                                id='download-backend-btn'
+                                            >
+                                                <CloudDownloadIcon className={isRestricted(['apim:api_create'], 
+                                                    apiFromContext)
+                                                    ? classes.deleteIconDisable : classes.deleteIcon} />
+                                            </IconButton>
+                                            <IconButton
+                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                                onClick={(event) => showSequenceBackendDeleteDialog(event,
+                                                    API_SECURITY_KEY_TYPE_SANDBOX, backend.sequenceName)}
+                                                id='delete-backend-btn'
+                                                size='large'>
+                                                <Icon className={isRestricted(['apim:api_create'], apiFromContext)
+                                                    ? classes.deleteIconDisable : classes.deleteIcon}
                                                 >
-                                                    <CloudDownloadIcon className={isRestricted(['apim:api_create'], apiFromContext)
-                                                            ? classes.deleteIconDisable : classes.deleteIcon} />
-                                                </IconButton>
-                                                <IconButton
-                                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                                    onClick={(event) => showSequenceBackendDeleteDialog(event,
-                                                        API_SECURITY_KEY_TYPE_SANDBOX, backend.sequenceName)}
-                                                    id='delete-backend-btn'
-                                                    size='large'>
-                                                    <Icon className={isRestricted(['apim:api_create'], apiFromContext)
-                                                        ? classes.deleteIconDisable : classes.deleteIcon}
-                                                    >
-                                                        {' '}
-                                                        delete
-                                                    </Icon>
-                                                </IconButton>
-                                            </ListItemSecondaryAction>
-                                        </ListItem>
-                                    );
-                                })
-                            ) : (
-                                <ListItem
-                                    button
-                                    disabled={(isRestricted(['apim:api_create'], apiFromContext))}
-                                    className={classes.addCustomBackendBtn}
-                                    onClick={() => setUploadCustomBackendOpen({ open: true, keyType: API_SECURITY_KEY_TYPE_SANDBOX })}
-                                    id='custom-backend-add-btn'
-                                >
-                                    <ListItemAvatar>
-                                        <IconButton size='large'>
-                                            <Icon>add</Icon>
-                                        </IconButton>
-                                    </ListItemAvatar>
-                                    <ListItemText>
-                                        <FormattedMessage
-                                                id='Apis.Details.Endpoints.SequenceBackend.AddSequence'
-                                                defaultMessage='Add Sequence Backend' 
-                                            />
-                                    </ListItemText>
-                                </ListItem>
-                            )}
-                        </List>
-                    </>
-            {
-                isValidSequenceBackend
-                    ? <div />
-                    : (
-                        <Grid item className={classes.errorMessageContainer}>
-                            <Typography className={classes.endpointValidityMessage}>
-                                {sequenceError}
-                            </Typography>
-                        </Grid>
-                    )
-            }
+                                                    {' '}
+                                                    delete
+                                                </Icon>
+                                            </IconButton>
+                                        </ListItemSecondaryAction>
+                                    </ListItem>
+                                );
+                            })
+                        ) : (
+                            <ListItem
+                                button
+                                disabled={(isRestricted(['apim:api_create'], apiFromContext))}
+                                className={classes.addCustomBackendBtn}
+                                onClick={() => setUploadCustomBackendOpen(
+                                    { open: true, keyType: API_SECURITY_KEY_TYPE_SANDBOX })}
+                                id='custom-backend-add-btn'
+                            >
+                                <ListItemAvatar>
+                                    <IconButton size='large'>
+                                        <Icon>add</Icon>
+                                    </IconButton>
+                                </ListItemAvatar>
+                                <ListItemText>
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.SequenceBackend.AddSequence'
+                                        defaultMessage='Add Sequence Backend'
+                                    />
+                                </ListItemText>
+                            </ListItem>
+                        )}
+                    </List>
+                </>
+                {
+                    isValidSequenceBackend
+                        ? <div />
+                        : (
+                            <Grid item className={classes.errorMessageContainer}>
+                                <Typography className={classes.endpointValidityMessage}>
+                                    {sequenceError}
+                                </Typography>
+                            </Grid>
+                        )
+                }
             </Grid>
-            <StyledDialog open = {uploadCustomBackendOpen.open}>
+            <StyledDialog open={uploadCustomBackendOpen.open}>
                 <DialogTitle>
                     <Typography className={classes.uploadCustomBackendDialogHeader}>
                         <FormattedMessage
@@ -459,8 +463,8 @@ export default function CustomBackend(props) {
                                 multiple={false}
                                 accept={
                                     'application/xml,'
-                                        + 'text/xml,'
-                                        + '.xml'
+                                    + 'text/xml,'
+                                    + '.xml'
                                 }
                                 className={classes.dropzone}
                                 activeClassName={classes.acceptDrop}
@@ -472,7 +476,8 @@ export default function CustomBackend(props) {
                                 {({ getRootProps, getInputProps }) => (
                                     <div {...getRootProps({ style: dropzoneStyles })}>
                                         <input {...getInputProps()} />
-                                        <div className={classes.dropZoneWrapper} data-testid='custom-backend-upload-btn'>
+                                        <div className={classes.dropZoneWrapper} 
+                                            data-testid='custom-backend-upload-btn'>
                                             {customBackend.name === '' ? (
                                                 <div>
                                                     <Icon style={{ fontSize: 56 }}>cloud_upload</Icon>
@@ -480,11 +485,11 @@ export default function CustomBackend(props) {
                                                         <FormattedMessage
                                                             id={
                                                                 'Apis.Details.Endpoints'
-                                                                    + '.UploadCustomBackend.click.or.drop.to.upload.file'
+                                                                + '.UploadCustomBackend.click.or.drop.to.upload.file'
                                                             }
                                                             defaultMessage={
                                                                 'Click or drag the sequence backend'
-                                                                    + ' file to upload.'
+                                                                + ' file to upload.'
                                                             }
                                                         />
                                                     </Typography>
@@ -493,7 +498,8 @@ export default function CustomBackend(props) {
                                                 isRejected,
                                                 <div className={classes.uploadedFile}>
                                                     <InsertDriveFileIcon color='error' fontSize='large' />
-                                                    <Box fontSize='h6.fontSize' color='error' fontWeight='fontWeightLight'>
+                                                    <Box fontSize='h6.fontSize' color='error' 
+                                                        fontWeight='fontWeightLight'>
                                                         <Grid xs={12}>
                                                             {customBackend.name}
                                                         </Grid>
@@ -502,7 +508,7 @@ export default function CustomBackend(props) {
                                                                 <FormattedMessage
                                                                     id={
                                                                         'Apis.Details.Endpoints'
-                                                                + '.UploadCustomBackend.invalid.file'
+                                                                        + '.UploadCustomBackend.invalid.file'
                                                                     }
                                                                     defaultMessage='Invalid file type'
                                                                 />
@@ -514,7 +520,7 @@ export default function CustomBackend(props) {
                                                     <InsertDriveFileIcon color='primary' fontSize='large' />
                                                     <Box fontSize='h6.fontSize' fontWeight='fontWeightLight'>
                                                         <Typography>
-                                                        {customBackend.name}
+                                                            {customBackend.name}
                                                         </Typography>
                                                     </Box>
                                                 </div>,
@@ -540,9 +546,9 @@ export default function CustomBackend(props) {
                         color='primary'
                         autoFocus
                         disabled={
-                                customBackend.name === ''
-                                || isSaving
-                                || isRejected
+                            customBackend.name === ''
+                            || isSaving
+                            || isRejected
                         }
                     >
                         <FormattedMessage
@@ -570,13 +576,13 @@ export default function CustomBackend(props) {
                                 defaultMessage='Are you sure you want to delete '
                             />
                             {' '}
-                            { sequenceBackendToDelete.name + '?'}
+                            {sequenceBackendToDelete.name + '?'}
                         </Typography>
                     </div>
                 </DialogContent>
                 <DialogActions>
                     <Button
-                        onClick={() => 
+                        onClick={() =>
                             deleteSequenceBackendByKey(sequenceBackendToDelete.keyType)
                         }
                         variant='contained'
@@ -607,6 +613,7 @@ export default function CustomBackend(props) {
 CustomBackend.defaultProps = {
     sandBoxBackendList: [],
     productionBackendList: [],
+    isCustomBackendSelected: true,
 };
 
 CustomBackend.propTypes = {
@@ -623,4 +630,6 @@ CustomBackend.propTypes = {
     setUploadCustomBackendOpen: PropTypes.func.isRequired,
     isValidSequenceBackend: PropTypes.bool.isRequired,
     setIsValidSequenceBackend: PropTypes.func.isRequired,
+    setIsCustomBackendSelected: PropTypes.func.isRequired,
+    isCustomBackendSelected: PropTypes.bool,
 };

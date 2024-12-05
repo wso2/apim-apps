@@ -311,7 +311,7 @@ const APIDetailsTopMenu = (props) => {
                     >
                         <FormattedMessage
                             id='Apis.Details.components.APIDetailsTopMenu.ai.api.label'
-                            defaultMessage='AI API'
+                            defaultMessage='AI/LLM API'
                         />
                     </MUIAlert>
                 )}
@@ -503,7 +503,9 @@ const APIDetailsTopMenu = (props) => {
 APIDetailsTopMenu.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        subtypeConfiguration: PropTypes.shape({}),
+    }).isRequired,
     isAPIProduct: PropTypes.bool.isRequired,
     imageUpdate: PropTypes.number.isRequired,
 };

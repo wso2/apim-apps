@@ -56,7 +56,6 @@ import ServiceEndpoint from './ServiceEndpoint';
 import CustomBackend from './CustomBackend';
 import { API_SECURITY_KEY_TYPE_PRODUCTION } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
 import { API_SECURITY_KEY_TYPE_SANDBOX } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
-import API from 'AppData/api';
 import AIEndpointAuth from './AIEndpointAuth';
 
 const PREFIX = 'EndpointOverview';
@@ -192,7 +191,9 @@ function EndpointOverview(props) {
         setProductionBackendList,
         isValidSequenceBackend,
         setIsValidSequenceBackend,
+        isCustomBackendSelected,
         setIsCustomBackendSelected,
+        apiKeyParamConfig,
     } = props;
     const { endpointConfig } = api;
     const [endpointType, setEndpointType] = useState(endpointTypes[0]);
@@ -217,23 +218,6 @@ function EndpointOverview(props) {
     const [typeChangeConfirmation, setTypeChangeConfirmation] = useState({ openDialog: false, serviceInfo:
     (api.serviceInfo) });
     const [servicesList, setServicesList] = useState([]);
-
-    const [apiKeyParamConfig, setApiKeyParamConfig] = useState({
-        authHeader: null,
-        authQueryParameter: null
-    });
-
-    useEffect(() => {
-        if (api.subtypeConfiguration?.subtype === 'AIAPI') {
-            API.getLLMProviderEndpointConfiguration(JSON.parse(api.subtypeConfiguration.configuration).llmProviderId)
-                .then((response) => {
-                    if (response.body) {
-                        const config = response.body;
-                        setApiKeyParamConfig(config);
-                    }
-                });
-        }
-    }, []);
 
     const handleToggleEndpointSecurity = () => {
         const tmpSecurityInfo = !endpointSecurityInfo ? {
@@ -408,6 +392,9 @@ function EndpointOverview(props) {
             const endpointProp = 'production_endpoints';
             if (endpointCategory[category]) {
                 delete endpointConfigCopy[endpointProp];
+                if (endpointConfigCopy?.endpoint_security?.production) {
+                    delete endpointConfigCopy.endpoint_security.production;
+                }
                 if (endpointConfigCopy.endpointType === 'failover') {
                     delete endpointConfigCopy.production_failovers;
                 }
@@ -423,6 +410,9 @@ function EndpointOverview(props) {
             const endpointProp = 'sandbox_endpoints';
             if (endpointCategory[category]) {
                 delete endpointConfigCopy[endpointProp];
+                if (endpointConfigCopy?.endpoint_security?.sandbox) {
+                    delete endpointConfigCopy.endpoint_security.sandbox;
+                }
                 if (endpointConfigCopy.endpointType === 'failover') {
                     delete endpointConfigCopy.sandbox_failovers;
                 }
@@ -940,6 +930,8 @@ function EndpointOverview(props) {
                                                     setProductionBackendList={setProductionBackendList}
                                                     isValidSequenceBackend={isValidSequenceBackend}
                                                     setIsValidSequenceBackend={setIsValidSequenceBackend}
+                                                    setIsCustomBackendSelected={setIsCustomBackendSelected}
+                                                    isCustomBackendSelected={isCustomBackendSelected}
                                                 />
                                             )
                                             : (
@@ -1273,7 +1265,8 @@ function EndpointOverview(props) {
                                                                                             {toggleEndpointSecurityConfig}
                                                                                         apiId={api.id}
                                                                                     />
-                                                                                    {api.subtypeConfiguration?.subtype === 'AIAPI' && // eslint-disable-line
+                                                                                    {endpointCategory.sandbox && // eslint-disable-line
+                                                                                        api.subtypeConfiguration?.subtype === 'AIAPI' && // eslint-disable-line
                                                                                         (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
                                                                                         (<AIEndpointAuth
                                                                                             api={api}
@@ -1322,6 +1315,7 @@ function EndpointOverview(props) {
                         || endpointType.key === 'awslambda'
                         || endpointType.key === 'service'
                         || api.gatewayType === 'wso2/apk'
+                        || api.subtypeConfiguration?.subtype === 'AIAPI'
                         ? <div />
                         : (
                             <Grid item xs={12}>
@@ -1453,7 +1447,9 @@ EndpointOverview.propTypes = {
         endpointTypesWrapper: PropTypes.shape({}),
         endpointName: PropTypes.shape({}),
     }).isRequired,
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        subtypeConfiguration: PropTypes.shape({}),
+    }).isRequired,
     endpointsDispatcher: PropTypes.func.isRequired,
     swaggerDef: PropTypes.shape({}).isRequired,
     updateSwagger: PropTypes.func.isRequired,

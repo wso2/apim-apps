@@ -174,8 +174,8 @@ function ListLabels() {
                         <Link
                             target='_blank'
                             href={Configurations.app.docUrl
-                        + 'learn/consume-api/manage-application/advanced-topics/'
-                        + 'adding-an-application-creation-workflow/#adding-an-application-creation-workflow'}
+                                + 'consume/manage-application/advanced-topics/'
+                                + 'adding-an-application-creation-workflow/#adding-an-application-creation-workflow'}
                             underline='hover'
                         >
                             <ListItemText primary={(

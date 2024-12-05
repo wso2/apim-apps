@@ -239,7 +239,7 @@ const RouteMenuMapping = (intl) => [
         id: 'Ai Vendors',
         displayText: intl.formatMessage({
             id: 'Base.RouteMenuMapping.aivendors',
-            defaultMessage: 'AI Vendors',
+            defaultMessage: 'AI/LLM Vendors',
         }),
         path: '/settings/ai-vendors',
         component: AiVendors,
@@ -249,7 +249,7 @@ const RouteMenuMapping = (intl) => [
                 id: 'Add AI Vendor',
                 displayText: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.aivendors.items.Adding',
-                    defaultMessage: 'Add AI Vendor',
+                    defaultMessage: 'Add AI/LLM Vendor',
                 }),
                 path: '/settings/ai-vendors/create',
             },
@@ -257,7 +257,7 @@ const RouteMenuMapping = (intl) => [
                 id: 'Edit AI Vendor',
                 displayText: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.aivendors.items.Editing',
-                    defaultMessage: 'Edit AI Vendor',
+                    defaultMessage: 'Edit AI/LLM Vendor',
                 }),
                 path: '/settings/ai-vendors/(.*?)$',
             },

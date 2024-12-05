@@ -25,7 +25,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import BackendRateLimitingForm from './BackendRateLimitingForm';
 
 /**
- * Backend Rate Limiting for AI APIs
+ * Backend Rate Limiting for AI/LLM APIs
  *
  * @export
  * @param {*} props

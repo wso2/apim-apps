@@ -20,7 +20,7 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Icon, TextField, Tooltip, InputAdornment, IconButton } from '@mui/material';
+import { Icon, TextField, InputAdornment, IconButton } from '@mui/material';
 import CONSTS from 'AppData/Constants';
 
 export default function AIEndpointAuth(props) {
@@ -38,14 +38,25 @@ export default function AIEndpointAuth(props) {
     const [isHeaderParameter] = useState(!!apiKeyParamConfig.authHeader);
     const [showApiKey, setShowApiKey] = useState(false);
 
+    const subtypeConfig = api.subtypeConfiguration && JSON.parse(api.subtypeConfiguration.configuration);
+    const llmProviderName = subtypeConfig ? subtypeConfig.llmProviderName : null;
+
     useEffect(() => {
+
+        let newApiKeyValue = api.endpointConfig?.endpoint_security?.[isProduction ? 
+            'production' : 'sandbox']?.apiKeyValue === '' ? '' : null;
+
+        if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') &&
+            newApiKeyValue != null && newApiKeyValue !== '') {
+            newApiKeyValue = `Bearer ${newApiKeyValue}`;
+        }
+
         saveEndpointSecurityConfig({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: 'apikey',
             apiKeyIdentifier,
             apiKeyIdentifierType,
-            apiKeyValue: api.endpointConfig?.endpoint_security?.[isProduction ? 
-                'production' : 'sandbox']?.apiKeyValue === '' ? '' : null,
+            apiKeyValue: newApiKeyValue,
             enabled: true,
         }, isProduction ? 'production' : 'sandbox');
     }, []);
@@ -55,12 +66,20 @@ export default function AIEndpointAuth(props) {
     };
 
     const handleApiKeyBlur = (event) => {
+
+        let updatedApiKeyValue = event.target.value === '********' ? '' : event.target.value;
+
+        if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') &&
+            updatedApiKeyValue !== null && updatedApiKeyValue !== '') {
+            updatedApiKeyValue = `Bearer ${updatedApiKeyValue}`;
+        }
+
         saveEndpointSecurityConfig({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
             type: 'apikey',
             apiKeyIdentifier,
             apiKeyIdentifierType,
-            apiKeyValue: event.target.value === '********' ? '' : event.target.value,
+            apiKeyValue: updatedApiKeyValue,
             enabled: true,
         }, isProduction ? 'production' : 'sandbox');
     };
@@ -123,18 +142,6 @@ export default function AIEndpointAuth(props) {
                 InputProps={{
                     endAdornment: (
                         <InputAdornment position='end'>
-                            <Tooltip
-                                placement='top-start'
-                                interactive
-                                title={(
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.Security.api.key.value.tooltip'
-                                        defaultMessage='API Key for the AI API'
-                                    />
-                                )}
-                            >
-                                <Icon>security</Icon>
-                            </Tooltip>
                             <IconButton onClick={handleToggleApiKeyVisibility} edge='end'>
                                 <Icon>
                                     {showApiKey ? 'visibility' : 'visibility_off'}
