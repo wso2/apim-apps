@@ -60,6 +60,7 @@ const classes = {
     topRevisionStyle: `${PREFIX}-topRevisionStyle`,
     readOnlyStyle: `${PREFIX}-readOnlyStyle`,
     active: `${PREFIX}-active`,
+    alertMargin: `${PREFIX}-alertMargin`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -139,6 +140,9 @@ const Root = styled('div')(({ theme }) => ({
         height: 8,
         borderRadius: '50%',
         alignItems: 'center',
+    },
+    [`.${classes.alertMargin}`]: {
+        marginLeft: theme.spacing(1),
     },
 }));
 
@@ -294,6 +298,7 @@ const APIDetailsTopMenu = (props) => {
                         variant='outlined'
                         severity='warning'
                         icon={false}
+                        className={classes.alertMargin}
                     >
                         <FormattedMessage
                             id='Apis.Details.components.APIDetailsTopMenu.read.only.label'
@@ -301,13 +306,13 @@ const APIDetailsTopMenu = (props) => {
                         />
                     </MUIAlert>
                 )}
-                <div className={classes.dateWrapper} />
                 {(api.subtypeConfiguration?.subtype === 'AIAPI') && (
                     <MUIAlert
                         data-testid='itest-ai-api-label'
                         variant='outlined'
                         severity='info'
                         icon={false}
+                        className={classes.alertMargin}
                     >
                         <FormattedMessage
                             id='Apis.Details.components.APIDetailsTopMenu.ai.api.label'
@@ -321,6 +326,7 @@ const APIDetailsTopMenu = (props) => {
                         variant='outlined'
                         severity='warning'
                         icon={false}
+                        className={classes.alertMargin}
                     >
                         <FormattedMessage
                             id='Apis.Details.components.APIDetailsTopMenu.advertise.only.label'
