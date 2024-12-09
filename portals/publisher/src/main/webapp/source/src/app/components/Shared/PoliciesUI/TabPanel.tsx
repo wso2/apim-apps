@@ -16,51 +16,145 @@
 * under the License.
 */
 
-import { Box } from '@mui/material';
+import { Box, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
 import React, { FC } from 'react';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Typography from '@mui/material/Typography';
+import { FormattedMessage } from 'react-intl';
 import type { Policy } from './Types';
 
-interface TabPanelSharedProps {
+interface TabPanelSharedBaseProps {
     children?: React.ReactNode;
     currentFlow: string;
     index: number;
-    policyList: Policy[];
     selectedTab: number;
     fetchPolicies: () => void;
     DraggablePolicyCard: any;
 }
 
-const TabPanelShared: FC<TabPanelSharedProps> = ({
-    selectedTab,
-    index,
-    currentFlow,
-    policyList,
-    fetchPolicies,
-    DraggablePolicyCard
-}) => {
-    return (
-        <div
-            role='tabpanel'
-            hidden={selectedTab !== index}
-            id={`${currentFlow}-tabpanel`}
-            aria-labelledby={`${currentFlow}-tab`}
-        >
-            <Box py={1} px={3}>
-                {selectedTab === index &&
-                    policyList?.map((singlePolicy: Policy) => {
+// Option 1: Either `policyList` is passed...
+interface TabPanelPolicyListProps extends TabPanelSharedBaseProps {
+    policyList: Policy[];  // Mandatory
+    commonPolicyList?: never; // Not allowed
+    apiPolicyList?: never;    // Not allowed
+}
+
+// Option 2: ...or both `commonPolicyList` and `apiPolicyList` are passed
+interface TabPanelCommonApiPolicyListProps extends TabPanelSharedBaseProps {
+    policyList?: never;      // Not allowed
+    commonPolicyList: Policy[]; // Mandatory
+    apiPolicyList: Policy[];    // Mandatory
+}
+
+// Combine the two using a union type
+type TabPanelSharedProps = TabPanelPolicyListProps | TabPanelCommonApiPolicyListProps;
+
+const TabPanelShared: FC<TabPanelSharedProps> = (props) => {
+    if ('policyList' in props) {
+        return (
+            <div
+                role='tabpanel'
+                hidden={props.selectedTab !== props.index}
+                id={`${props.currentFlow}-tabpanel`}
+                aria-labelledby={`${props.currentFlow}-tab`}
+            >
+                <Box py={1} px={3}>
+                {props.selectedTab === props.index &&
+                    props.policyList?.map((singlePolicy: Policy) => {
                         return (
-                            <DraggablePolicyCard
+                            <props.DraggablePolicyCard
                                 key={singlePolicy.id}
                                 policyObj={singlePolicy}
                                 showCopyIcon
                                 isLocalToAPI={singlePolicy.isAPISpecific}
-                                fetchPolicies={fetchPolicies}
+                                fetchPolicies={props.fetchPolicies}
                             />
                         );
                     })}
-            </Box>
-        </div>
-    );
+                </Box>
+            </div>
+        );
+    } else {
+        return (
+            <div
+                role='tabpanel'
+                hidden={props.selectedTab !== props.index}
+                id={`${props.currentFlow}-tabpanel`}
+                aria-labelledby={`${props.currentFlow}-tab`}
+            >
+                <Accordion id='tabPanel-common-policies'>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography variant='subtitle1'>
+                            <FormattedMessage
+                                id='Apis.Details.Policies.Components.TabPanel.Components.Common.Policy.List'
+                                defaultMessage='Common Policies'
+                            />
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Box py={1} px={3} width='100%' alignItems='center'>
+                            {props.selectedTab === props.index && (
+                                <>
+                                    {(props.commonPolicyList && props.commonPolicyList.length > 0) ? (
+                                        props.commonPolicyList.map((singlePolicy: Policy) => {
+                                            return (
+                                                <props.DraggablePolicyCard
+                                                    key={singlePolicy.id}
+                                                    policyObj={singlePolicy}
+                                                    showCopyIcon
+                                                    isLocalToAPI={singlePolicy.isAPISpecific}
+                                                    fetchPolicies={props.fetchPolicies}
+                                                />
+                                            );
+                                        })
+                                    ) : (
+                                        <Typography variant='body2' color='textSecondary' align='left'>
+                                            No Policies Found
+                                        </Typography>
+                                    )}
+                                </>
+                            )}
+                        </Box>
+                    </AccordionDetails>
+                </Accordion>
+                <Accordion id='tabPanel-api-policies'>
+                    <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                        <Typography variant='subtitle1'>
+                            <FormattedMessage
+                                id='Apis.Details.Policies.Components.TabPanel.Components.API.Policy.List'
+                                defaultMessage='API Policies'
+                            />
+                        </Typography>
+                    </AccordionSummary>
+                    <AccordionDetails>
+                        <Box py={1} px={3} width='100%' alignItems='center'>
+                            {props.selectedTab === props.index && (
+                                <>                                               
+                                    {(props.apiPolicyList && props.apiPolicyList.length > 0) ? (
+                                        props.apiPolicyList.map((singlePolicy: Policy) => {
+                                            return (
+                                                <props.DraggablePolicyCard
+                                                    key={singlePolicy.id}
+                                                    policyObj={singlePolicy}
+                                                    showCopyIcon
+                                                    isLocalToAPI={singlePolicy.isAPISpecific}
+                                                    fetchPolicies={props.fetchPolicies}
+                                                />
+                                            );
+                                        })
+                                    ): (
+                                        <Typography variant='body2' color='textSecondary' align='left'>
+                                            No Policies Found
+                                        </Typography>
+                                    )}
+                                </>
+                            )}
+                        </Box>
+                    </AccordionDetails>
+                </Accordion>
+            </div>
+        );
+    }
 }
 
 export default TabPanelShared;
