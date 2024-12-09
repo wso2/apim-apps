@@ -29,8 +29,21 @@
     Map settings = Util.readJsonFile("/site/public/conf/settings.json", request.getServletContext());
     response.setContentType("application/javascript");
 
-    String serverUrl = Util.getIDPOrigin();
-    String customIDPCheckSessionEndpoint = Util.getIDPCheckSessionEndpoint();
+    String serverUrl = "";
+    String forwarded_for = request.getHeader((String) Util.readJsonObj(settings, "app.customUrl.forwardedHeader"));
+    boolean customUrlEnabled = (boolean) Util.readJsonObj(settings, "app.customUrl.enabled");
+    if (customUrlEnabled && forwarded_for != null && !forwarded_for.isEmpty()) {
+        serverUrl = "https://" + forwarded_for;
+    } else {
+        serverUrl = Util.getIDPOrigin();
+    }
+
+    String customIDPCheckSessionEndpoint = "";
+    if (customUrlEnabled && forwarded_for != null && !forwarded_for.isEmpty()) {
+        customIDPCheckSessionEndpoint = "https://" + forwarded_for + "/oidc/checksession";
+    } else {
+        customIDPCheckSessionEndpoint = Util.getIDPCheckSessionEndpoint();
+    }
 
     HashMap<String, Object> idp = new HashMap();
     idp.put("origin", serverUrl);
