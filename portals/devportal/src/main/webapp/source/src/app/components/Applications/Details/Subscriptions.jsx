@@ -306,6 +306,12 @@ class Subscriptions extends React.Component {
 
         promisedDelete
             .then((response) => {
+                if (response.status === 200) {
+                    Alert.info(intl.formatMessage({
+                        defaultMessage: 'Subscription deleted successfully!',
+                        id: 'Applications.Details.Subscriptions.delete.success',
+                    }));
+                }
                 if (response.status === 201) {
                     console.log(response);
                     Alert.info(intl.formatMessage({
@@ -316,7 +322,7 @@ class Subscriptions extends React.Component {
                     this.updateSubscriptions(applicationId);
                     return;
                 }
-                if (response.status !== 200) {
+                if (response.status !== 200 && response.status !== 201) {
                     console.log(response);
                     Alert.info(intl.formatMessage({
                         defaultMessage: 'Something went wrong while deleting the Subscription!',
@@ -324,10 +330,6 @@ class Subscriptions extends React.Component {
                     }));
                     return;
                 }
-                Alert.info(intl.formatMessage({
-                    defaultMessage: 'Subscription deleted successfully!',
-                    id: 'Applications.Details.Subscriptions.delete.success',
-                }));
                 const { subscriptions } = this.state;
                 for (const endpointIndex in subscriptions) {
                     if (
