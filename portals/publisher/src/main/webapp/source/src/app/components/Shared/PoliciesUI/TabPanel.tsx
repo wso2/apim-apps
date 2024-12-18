@@ -92,7 +92,10 @@ const TabPanelShared: FC<TabPanelSharedProps> = (props) => {
                         </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Box py={1} px={3} width='100%' alignItems='center'>
+                        <Box py={1} px={3} sx={{
+                                                maxWidth: "90%", // Set a maximum width for the accordion
+                                                margin: "0 auto",  // Center the accordion horizontally
+                                            }} alignItems='center'>
                             {props.selectedTab === props.index && (
                                 <>
                                     {(props.commonPolicyList && props.commonPolicyList.length > 0) ? (
@@ -127,7 +130,10 @@ const TabPanelShared: FC<TabPanelSharedProps> = (props) => {
                         </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Box py={1} px={3} width='100%' alignItems='center'>
+                        <Box py={1} px={3} sx={{
+                                                maxWidth: "90%", // Set a maximum width for the accordion
+                                                margin: "0 auto",  // Center the accordion horizontally
+                                            }} alignItems='center'>
                             {props.selectedTab === props.index && (
                                 <>                                               
                                     {(props.apiPolicyList && props.apiPolicyList.length > 0) ? (
