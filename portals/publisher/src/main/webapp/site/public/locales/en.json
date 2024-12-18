@@ -2047,6 +2047,7 @@
   "UnexpectedError.logout": "Logout",
   "UnexpectedError.message": "Error occurred due to invalid request",
   "UnexpectedError.title": "Internal Server Error",
+  "Uploading.Policies.Error": "Incompatible file type",
   "Workflow.ApplicationCreation.updateStatus.has.errors": "Unable to complete subscription creation approve/reject process.",
   "Workflow.SubscriptionCreation.List.empty.content.subscriptioncreations": "There are no pending workflow requests for subscription creation.",
   "Workflow.SubscriptionCreation.List.empty.title.subscriptioncreations": "Subscription Creation",
