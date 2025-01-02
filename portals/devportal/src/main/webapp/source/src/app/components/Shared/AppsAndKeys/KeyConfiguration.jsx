@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import Box from '@mui/material/Box';
 import cloneDeep from 'lodash.clonedeep';
@@ -36,6 +36,7 @@ import PropTypes from 'prop-types';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Validation from 'AppData/Validation';
 import AppConfiguration from './AppConfiguration';
+import ContextSettings from 'AppComponents/Shared/SettingsContext';
 
 const PREFIX = 'KeyConfiguration';
 
@@ -154,6 +155,8 @@ const KeyConfiguration = (props) => {
         enableMapOAuthConsumerApps, enableOAuthAppCreation, enableTokenEncryption, enableTokenGeneration,
         id, name, revokeEndpoint, tokenEndpoint, type, userInfoEndpoint,
     } = keyManagerConfig;
+    const [isOrgWideAppUpdateEnabled, setIsOrgWideAppUpdateEnabled] = useState(false);
+    const settingsContext = useContext(ContextSettings);
 
     /**
      * Get the display names for the supported grant types
@@ -267,6 +270,14 @@ const KeyConfiguration = (props) => {
         availableGrantTypes,
         Settings.grantTypes,
     );
+
+    /**
+     * Update the state when new props are available
+     */
+    useEffect(() => {
+        const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
+        setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
+    }, [settingsContext]);
 
     // Check for additional properties for token endpoint and revoke endpoints.
     return (
@@ -406,7 +417,7 @@ const KeyConfiguration = (props) => {
                                                                 && selectedGrantTypes.includes(key))}
                                                         onChange={(e) => handleChange('grantType', e)}
                                                         value={value}
-                                                        disabled={!isUserOwner}
+                                                        disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                                                         color='grey'
                                                         data-testid={key}
                                                     />
@@ -460,7 +471,7 @@ const KeyConfiguration = (props) => {
                                             />
                                         )}
                                         variant='outlined'
-                                        disabled={!isUserOwner
+                                        disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner)
                                             || (selectedGrantTypes && !selectedGrantTypes.includes('authorization_code')
                                                 && !selectedGrantTypes.includes('implicit'))}
                                         error={callbackError}

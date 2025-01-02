@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 /*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -32,6 +33,7 @@ import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
 import PropTypes from 'prop-types';
 import AuthManager from 'AppData/AuthManager';
+import Settings from 'AppComponents/Shared/SettingsContext';
 
 const PREFIX = 'AppsTableContent';
 
@@ -90,6 +92,7 @@ class AppsTableContent extends Component {
         super(props);
         this.state = {
             notFound: false,
+            isOrgWideAppUpdateEnabled: false,
         };
         this.APPLICATION_STATES = {
             CREATED: 'CREATED',
@@ -100,6 +103,24 @@ class AppsTableContent extends Component {
     }
 
     /**
+     *
+     * Get all tags
+     * @memberof CommonListing
+     */
+    componentDidMount() {
+        this.isOrgWideAppUpdateEnabled();
+    }
+
+    /**
+     * retrieve Settings from the context and check the org-wide application update enabled
+     */
+    isOrgWideAppUpdateEnabled = () => {
+        const settingsContext = this.context;
+        const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
+        this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
+    }
+
+    /**
      * @inheritdoc
      * @memberof AppsTableContent
      */
@@ -107,7 +128,7 @@ class AppsTableContent extends Component {
         const {
             apps, toggleDeleteConfirmation,
         } = this.props;
-        const { notFound } = this.state;
+        const { notFound, isOrgWideAppUpdateEnabled } = this.state;
         let appsTableData = [];
 
         if (apps) {
@@ -248,7 +269,7 @@ class AppsTableContent extends Component {
                                     >
                                         {(app.status === this.APPLICATION_STATES.APPROVED
                                         || app.status === this.APPLICATION_STATES.DELETE_PENDING) && (
-                                            <Tooltip title={isAppOwner
+                                            <Tooltip title={isOrgWideAppUpdateEnabled || isAppOwner
                                                 ? (
                                                     <FormattedMessage
                                                         id='Applications.Listing.AppsTableContent.edit.tooltip'
@@ -264,9 +285,13 @@ class AppsTableContent extends Component {
                                                 <span>
                                                     <Link
                                                         to={`/applications/${app.applicationId}/edit/`}
-                                                        className={!isAppOwner && classes.appOwner}
+                                                        className={(!isOrgWideAppUpdateEnabled &&!isAppOwner) && classes.appOwner}
                                                     >
-                                                        <IconButton disabled={!isAppOwner} aria-label={'Edit' + app.name} size='large'>
+                                                        <IconButton 
+                                                            disabled={!isOrgWideAppUpdateEnabled && !isAppOwner}
+                                                            aria-label={'Edit' + app.name}
+                                                            size='large'
+                                                        >
                                                             <Icon>
                                                                 edit
                                                             </Icon>
@@ -280,7 +305,7 @@ class AppsTableContent extends Component {
                                         resourcePath={resourcePaths.SINGLE_APPLICATION}
                                         resourceMethod={resourceMethods.DELETE}
                                     >
-                                        <Tooltip title={isAppOwner ? (
+                                        <Tooltip title={isOrgWideAppUpdateEnabled || isAppOwner ? (
                                             <FormattedMessage
                                                 id='Applications.Listing.AppsTableContent.delete.tooltip'
                                                 defaultMessage='Delete'
@@ -295,7 +320,7 @@ class AppsTableContent extends Component {
                                             <span>
                                                 <IconButton
                                                     className='itest-application-delete-button'
-                                                    disabled={app.deleting || !isAppOwner
+                                                    disabled={app.deleting || (!isOrgWideAppUpdateEnabled && !isAppOwner)
                                                         || app.status === this.APPLICATION_STATES.DELETE_PENDING}
                                                     data-appid={app.applicationId}
                                                     onClick={toggleDeleteConfirmation}
@@ -318,6 +343,9 @@ class AppsTableContent extends Component {
         );
     }
 }
+
+AppsTableContent.contextType = Settings;
+
 AppsTableContent.propTypes = {
     toggleDeleteConfirmation: PropTypes.func.isRequired,
     apps: PropTypes.instanceOf(Map).isRequired,

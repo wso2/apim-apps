@@ -1,3 +1,4 @@
+/* eslint-disable prefer-destructuring */
 /*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -78,6 +79,7 @@ class ApplicationFormHandler extends React.Component {
             allAppAttributes: null,
             isApplicationSharingEnabled: true,
             applicationOwner: '',
+            isOrgWideAppUpdateEnabled: false,
         };
         this.handleAddChip = this.handleAddChip.bind(this);
         this.handleDeleteChip = this.handleDeleteChip.bind(this);
@@ -99,6 +101,16 @@ class ApplicationFormHandler extends React.Component {
             this.initApplicationCreateState();
         }
         this.isApplicationGroupSharingEnabled();
+        this.isOrgWideAppUpdateEnabled();
+    }
+
+    /**
+     * retrieve Settings from the context and check the org-wide application update enabled
+     */
+    isOrgWideAppUpdateEnabled = () => {
+        const settingsContext = this.context;
+        const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
+        this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
     }
 
     /**
@@ -415,7 +427,7 @@ class ApplicationFormHandler extends React.Component {
     render() {
         const {
             throttlingPolicyList, applicationRequest, isNameValid, allAppAttributes, isApplicationSharingEnabled,
-            isEdit, applicationOwner,
+            isEdit, applicationOwner, isOrgWideAppUpdateEnabled,
         } = this.state;
         const { match: { params } } = this.props;
 
@@ -501,7 +513,8 @@ class ApplicationFormHandler extends React.Component {
                                             onClick={isEdit ? this.saveEdit : this.saveApplication}
                                             disabled={
                                                 isEdit
-                                                && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase()
+                                                && (!isOrgWideAppUpdateEnabled
+                                                && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase())
                                             }
                                             className={classes.button}
                                         >

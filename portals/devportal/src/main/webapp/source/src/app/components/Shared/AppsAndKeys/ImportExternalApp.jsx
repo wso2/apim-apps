@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
@@ -30,6 +30,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import FormControl from '@mui/material/FormControl';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
+import Settings from 'AppComponents/Shared/SettingsContext';
 
 function ImportExternalApp(props) {
     const {
@@ -46,6 +47,18 @@ function ImportExternalApp(props) {
     const handleClose = () => {
         setOpen(false);
     };
+
+    const [isOrgWideAppUpdateEnabled, setIsOrgWideAppUpdateEnabled] = useState(false);
+    const settingsContext = useContext(Settings);
+
+    /**
+     * Update the state when new props are available
+     */
+    useEffect(() => {
+        const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
+        setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
+    }, [settingsContext]);
+
     /**
      * Handle onChange of provided consumer key and secret
      *
@@ -90,7 +103,7 @@ function ImportExternalApp(props) {
                                 onChange={e => handleChange(e)}
                                 margin='normal'
                                 fullWidth
-                                disabled={!isUserOwner}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                                 variant='outlined'
                             />
                             <FormControl variant="standard">
@@ -114,7 +127,7 @@ function ImportExternalApp(props) {
                                 onChange={e => handleChange(e)}
                                 margin='normal'
                                 fullWidth
-                                disabled={!isUserOwner}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                                 variant='outlined'
                             />
                             <FormControl variant="standard">
@@ -140,13 +153,13 @@ function ImportExternalApp(props) {
                         resourcePath={resourcePaths.APPLICATION_GENERATE_KEYS}
                         resourceMethod={resourceMethods.POST}
                     >
-                        {!isUserOwner ? (
+                        {!isOrgWideAppUpdateEnabled && !isUserOwner ? (
                             <>
                                 <Button
                                     variant='contained'
                                     color='primary'
                                     onClick={() => provideOAuthKeySecret()}
-                                    disabled={!isUserOwner}
+                                    disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                                 >
                                     {
                                         key
