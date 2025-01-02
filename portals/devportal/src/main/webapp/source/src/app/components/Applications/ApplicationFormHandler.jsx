@@ -107,8 +107,6 @@ class ApplicationFormHandler extends React.Component {
      * retrieve Settings from the context and check the org-wide application update enabled
      */
     isOrgWideAppUpdateEnabled = () => {
-        // const settingsContext = this.context;
-        // const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
         const { settings: { orgWideAppUpdateEnabled } } = this.context;
         this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
     }
