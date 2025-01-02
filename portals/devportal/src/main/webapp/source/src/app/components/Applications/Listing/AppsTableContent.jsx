@@ -1,4 +1,3 @@
-/* eslint-disable prefer-destructuring */
 /*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -115,8 +114,7 @@ class AppsTableContent extends Component {
      * retrieve Settings from the context and check the org-wide application update enabled
      */
     isOrgWideAppUpdateEnabled = () => {
-        const settingsContext = this.context;
-        const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
+        const { settings: { orgWideAppUpdateEnabled } } = this.context;
         this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
     }
 

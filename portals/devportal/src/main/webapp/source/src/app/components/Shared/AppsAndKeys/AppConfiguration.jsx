@@ -240,7 +240,7 @@ const AppConfiguration = (props) => {
                                 margin='dense'
                                 variant='outlined'
                                 size='small'
-                                disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner)}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                             >
                                 {config.values.map(key => (
                                     <MenuItem key={key} value={key}>
@@ -345,7 +345,7 @@ const AppConfiguration = (props) => {
                                 margin='dense'
                                 size='small'
                                 variant='outlined'
-                                disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner)}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                             />
                         ) : (config.type === 'checkbox') ? (
                             <Checkbox
@@ -365,7 +365,7 @@ const AppConfiguration = (props) => {
                                 }
                                 margin='dense'
                                 variant='outlined'
-                                disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner)}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                             />
                         ) : (
                             <TextField
@@ -385,7 +385,7 @@ const AppConfiguration = (props) => {
                                 }
                                 margin='dense'
                                 variant='outlined'
-                                disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner)}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                             />
                         )}
                     </Box>
