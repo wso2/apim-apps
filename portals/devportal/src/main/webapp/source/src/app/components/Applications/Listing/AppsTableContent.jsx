@@ -285,9 +285,9 @@ class AppsTableContent extends Component {
                                                 <span>
                                                     <Link
                                                         to={`/applications/${app.applicationId}/edit/`}
-                                                        className={(!isOrgWideAppUpdateEnabled &&!isAppOwner) && classes.appOwner}
+                                                        className={(!isOrgWideAppUpdateEnabled && !isAppOwner) && classes.appOwner}
                                                     >
-                                                        <IconButton 
+                                                        <IconButton
                                                             disabled={!isOrgWideAppUpdateEnabled && !isAppOwner}
                                                             aria-label={'Edit' + app.name}
                                                             size='large'
