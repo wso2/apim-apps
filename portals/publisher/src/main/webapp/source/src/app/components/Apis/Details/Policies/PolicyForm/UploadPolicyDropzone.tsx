@@ -117,7 +117,7 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
             defaultMessage: 'Incompatible file type',
         }));
     };
-    const intl = useIntl();
+    
     const renderPolicyFileDropzone = () => {
         return (
             <Dropzone

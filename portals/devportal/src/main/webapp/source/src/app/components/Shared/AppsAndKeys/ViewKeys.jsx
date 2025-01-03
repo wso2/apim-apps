@@ -45,6 +45,7 @@ import Tokens from './Tokens';
 import ViewToken from './ViewToken';
 import ViewSecret from './ViewSecret';
 import ViewCurl from './ViewCurl';
+import Settings from 'AppComponents/Shared/SettingsContext';
 
 const PREFIX = 'ViewKeys';
 
@@ -125,6 +126,7 @@ class ViewKeys extends React.Component {
             },
             subscriptionScopes: [],
             isUpdating: false,
+            isOrgWideAppUpdateEnabled: false,
         };
     }
 
@@ -133,6 +135,16 @@ class ViewKeys extends React.Component {
      */
     componentDidMount() {
         this.getGeneratedKeys();
+        this.isOrgWideAppUpdateEnabled();
+    }
+
+    /**
+     * retrieve Settings from the context and check the org-wide application update enabled
+     */
+    isOrgWideAppUpdateEnabled = () => {
+        const settingsContext = this.context;
+        const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
+        this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
     }
 
     /**
@@ -358,7 +370,7 @@ class ViewKeys extends React.Component {
             });
     };
 
-    viewKeyAndSecret = (consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner) => {
+    viewKeyAndSecret = (consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner, isOrgWideAppUpdateEnabled) => {
         const {
             intl, selectedApp: { hashEnabled }, keyType,
         } = this.props;
@@ -492,7 +504,7 @@ class ViewKeys extends React.Component {
                                 color='primary'
                                 sx={{ mt: 1 }}
                                 onClick={() => this.handleSecretRegenerate(consumerKey, keyType, keyMappingId, selectedTab)}
-                                disabled={!isUserOwner}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                             >
                                 <FormattedMessage
                                     defaultMessage='Regenerate Consumer Secret'
@@ -523,7 +535,7 @@ class ViewKeys extends React.Component {
         const {
             notFound, showToken, showCurl, showSecretGen, tokenCopied, open,
             token, tokenScopes, tokenValidityTime, accessTokenRequest, subscriptionScopes,
-            isKeyJWT, tokenResponse, secretGenResponse, isUpdating,
+            isKeyJWT, tokenResponse, secretGenResponse, isUpdating, isOrgWideAppUpdateEnabled,
         } = this.state;
         const {
             intl, keyType, fullScreen, keys, selectedApp: { tokenType }, selectedGrantTypes, isUserOwner, summary,
@@ -585,7 +597,7 @@ class ViewKeys extends React.Component {
         if (summary) {
             return (
                 <Grid container spacing={3}>
-                    {this.viewKeyAndSecret(consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner)}
+                    {this.viewKeyAndSecret(consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner, isOrgWideAppUpdateEnabled)}
                 </Grid>
             );
         }
@@ -595,7 +607,7 @@ class ViewKeys extends React.Component {
         return consumerKey && (
             <Root className={classes.inputWrapper}>
                 <Grid container spacing={3}>
-                    {this.viewKeyAndSecret(consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner)}
+                    {this.viewKeyAndSecret(consumerKey, consumerSecret, keyMappingId, selectedTab, isUserOwner, isOrgWideAppUpdateEnabled)}
                     <Grid item xs={12}>
                         <Dialog
                             fullScreen={fullScreen}
@@ -724,6 +736,9 @@ class ViewKeys extends React.Component {
         );
     }
 }
+
+ViewKeys.contextType = Settings;
+
 ViewKeys.defaultProps = {
     fullScreen: false,
     summary: false,
