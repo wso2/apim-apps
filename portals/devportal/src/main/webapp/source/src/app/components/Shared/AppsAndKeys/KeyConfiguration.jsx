@@ -159,6 +159,14 @@ const KeyConfiguration = (props) => {
     const settingsContext = useContext(ContextSettings);
 
     /**
+     * Update the state when new props are available
+     */
+    useEffect(() => {
+        const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
+        setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
+    }, [settingsContext]);
+
+    /**
      * Get the display names for the supported grant types
      * @param grantTypes
      * @param grantTypeDisplayNameMap
@@ -270,14 +278,6 @@ const KeyConfiguration = (props) => {
         availableGrantTypes,
         Settings.grantTypes,
     );
-
-    /**
-     * Update the state when new props are available
-     */
-    useEffect(() => {
-        const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
-        setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
-    }, [settingsContext]);
 
     // Check for additional properties for token endpoint and revoke endpoints.
     return (
