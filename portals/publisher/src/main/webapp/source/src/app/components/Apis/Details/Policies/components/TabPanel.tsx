@@ -25,7 +25,8 @@ import type { Policy } from '../Types';
 interface TabPanelProps {
     children?: React.ReactNode;
     index: number;
-    policyList: Policy[];
+    commonPolicyList: Policy[];
+    apiPolicyList: Policy[];
     selectedTab: number;
     fetchPolicies: () => void;
 }
@@ -38,7 +39,8 @@ interface TabPanelProps {
  */
 const TabPanel: FC<TabPanelProps> = ({
     index,
-    policyList,
+    commonPolicyList,
+    apiPolicyList,
     selectedTab,
     fetchPolicies,
 }) => {
@@ -50,7 +52,8 @@ const TabPanel: FC<TabPanelProps> = ({
             selectedTab={selectedTab}
             index={index}
             currentFlow={currentFlow}
-            policyList={policyList}
+            commonPolicyList={commonPolicyList}
+            apiPolicyList={apiPolicyList}
             fetchPolicies={fetchPolicies}
             DraggablePolicyCard={DraggablePolicyCard}
         />
