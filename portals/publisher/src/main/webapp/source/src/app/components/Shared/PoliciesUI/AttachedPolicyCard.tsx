@@ -36,6 +36,9 @@ const classes = {
     actionsBox: `${PREFIX}-actionsBox`
 };
 
+const COMMON_POLICY = "Common Policy";
+const API_POLICY = "API Policy";
+
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
 const Root = styled('div')(() => ({
     [`& .${classes.actionsBox}`]: {
@@ -112,18 +115,18 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = (props) => {
 
     if ('listOriginatedFromCommonPolicies' in props) {
         // Props were passed, use `listOriginatedFromCommonPolicies` and `isApiRevision`
-        let policyType =   "Common Policy";
+        let policyType = COMMON_POLICY;
         if (props.isApiRevision) {
             policyType = "API Policy";
         } else if (props.policyObj.isAPISpecific) {
             if (props.listOriginatedFromCommonPolicies && props.listOriginatedFromCommonPolicies.includes(props.policyObj.id)) {
-                policyType = "Common Policy";
+                policyType = COMMON_POLICY;
             } else {
-                policyType = "API Policy";
+                policyType = API_POLICY;
             }
         }
         return (
-            (<Root>
+            <Root>
                 <div
                     ref={setNodeRef}
                     style={style}
@@ -188,11 +191,11 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = (props) => {
                         isAPILevelPolicy={props.isAPILevelPolicy}
                     />
                 )}
-            </Root>)
+            </Root>
         );
     } else {
         return (
-            (<Root>
+            <Root>
                 <div
                     ref={setNodeRef}
                     style={style}
@@ -253,7 +256,7 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = (props) => {
                         isAPILevelPolicy={props.isAPILevelPolicy}
                     />
                 )}
-            </Root>)
+            </Root>
         );
     }
 }
