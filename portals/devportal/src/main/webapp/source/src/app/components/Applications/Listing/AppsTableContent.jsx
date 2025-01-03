@@ -101,11 +101,6 @@ class AppsTableContent extends Component {
         };
     }
 
-    /**
-     *
-     * Get all tags
-     * @memberof CommonListing
-     */
     componentDidMount() {
         this.isOrgWideAppUpdateEnabled();
     }

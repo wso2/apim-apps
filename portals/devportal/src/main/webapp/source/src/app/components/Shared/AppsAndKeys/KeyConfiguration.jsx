@@ -159,7 +159,7 @@ const KeyConfiguration = (props) => {
     const settingsContext = useContext(ContextSettings);
 
     /**
-     * Update the state when new props are available
+     * Updates isOrgWideAppUpdateEnabled whenever settingsContext changes
      */
     useEffect(() => {
         const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;

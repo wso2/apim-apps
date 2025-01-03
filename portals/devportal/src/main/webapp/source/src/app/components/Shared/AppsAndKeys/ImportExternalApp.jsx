@@ -52,7 +52,7 @@ function ImportExternalApp(props) {
     const settingsContext = useContext(Settings);
 
     /**
-     * Update the state when new props are available
+     * Updates isOrgWideAppUpdateEnabled whenever settingsContext changes
      */
     useEffect(() => {
         const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;

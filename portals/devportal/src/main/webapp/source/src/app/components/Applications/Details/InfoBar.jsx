@@ -58,11 +58,6 @@ class InfoBar extends React.Component {
         this.toggleDeleteConfirmation = this.toggleDeleteConfirmation.bind(this);
     }
 
-    /**
-     *
-     * Get all tags
-     * @memberof CommonListing
-     */
     componentDidMount() {
         this.isOrgWideAppUpdateEnabled();
     }
