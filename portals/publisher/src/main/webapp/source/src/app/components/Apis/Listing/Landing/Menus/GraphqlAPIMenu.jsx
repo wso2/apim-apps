@@ -46,13 +46,13 @@ const GraphqlAPIMenu = (props) => {
                 helperText={(
                     <FormattedMessage
                         id='Apis.Listing.SampleAPI.SampleAPI.graphql.import.sdl.content'
-                        defaultMessage='Use an existing definition'
+                        defaultMessage='Use an existing schema or introspection'
                     />
                 )}
             >
                 <FormattedMessage
                     id='Apis.Listing.SampleAPI.SampleAPI.graphql.import.sdl.title'
-                    defaultMessage='Import GraphQL SDL'
+                    defaultMessage='Create GraphQL API'
                 />
             </LandingMenuItem>
         </Component>
