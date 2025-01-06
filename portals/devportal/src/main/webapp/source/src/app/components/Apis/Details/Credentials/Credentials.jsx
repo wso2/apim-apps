@@ -391,7 +391,7 @@ class Credentials extends React.Component {
                 Alert.info(intl.formatMessage({
                     defaultMessage: 'Subscription Deletion Request Created!',
                     id: 'Apis.Details.Credentials.Credentials.subscription.request.created',
-                }));  
+                }));
             }
             if (response.status !== 200 && response.status !== 201) {
                 console.log(response);
@@ -401,7 +401,6 @@ class Credentials extends React.Component {
                 }));
                 return;
             }
-            
             if (updateSubscriptionData) updateSubscriptionData(this.updateData);
         });
     };
