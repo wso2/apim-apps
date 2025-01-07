@@ -249,7 +249,6 @@ class BusinessPlans extends Component {
 BusinessPlans.propTypes = {
     api: PropTypes.instanceOf(API).isRequired,
     classes: PropTypes.shape({}).isRequired,
-    ref: PropTypes.shape({}).isRequired,
 };
 
 export default injectIntl(BusinessPlans,{ forwardRef: true });
