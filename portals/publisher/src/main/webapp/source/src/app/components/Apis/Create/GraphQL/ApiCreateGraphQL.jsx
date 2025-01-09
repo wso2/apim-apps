@@ -236,7 +236,7 @@ export default function ApiCreateGraphQL(props) {
                         <FormattedMessage
                             id='Apis.Create.GraphQL.ApiCreateGraphQL.sub.heading'
                             defaultMessage={'Create a GraphQL API by importing a SDL definition'
-                                + ' from a file or URL, or by using introspection.'}
+                                + ' from a file or URL, or by using endpoint.'}
                         />
                     </Typography>
                 </>

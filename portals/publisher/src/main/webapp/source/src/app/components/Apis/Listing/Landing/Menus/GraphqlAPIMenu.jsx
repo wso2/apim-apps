@@ -46,7 +46,7 @@ const GraphqlAPIMenu = (props) => {
                 helperText={(
                     <FormattedMessage
                         id='Apis.Listing.SampleAPI.SampleAPI.graphql.import.sdl.content'
-                        defaultMessage='Use an existing schema or introspection'
+                        defaultMessage='Use an existing schema or endpoint'
                     />
                 )}
             >
