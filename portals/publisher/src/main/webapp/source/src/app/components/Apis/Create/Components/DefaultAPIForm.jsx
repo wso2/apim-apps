@@ -160,6 +160,7 @@ export default function DefaultAPIForm(props) {
     const {
         onChange, onValidate, api, isAPIProduct, multiGateway,
         isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
+        readOnlyAPIEndpoint,
     } = props;
 
     const [validity, setValidity] = useState({});
@@ -594,6 +595,7 @@ export default function DefaultAPIForm(props) {
                     <TextField
                         fullWidth
                         id='itest-id-apiendpoint-input'
+                        disabled={readOnlyAPIEndpoint !== null}
                         label={(
                             <FormattedMessage
                                 id='Apis.Create.Components.DefaultAPIForm.api.endpoint'
@@ -756,6 +758,7 @@ DefaultAPIForm.defaultProps = {
     onValidate: () => { },
     api: {}, // Uncontrolled component
     isWebSocket: false,
+    readOnlyAPIEndpoint: null,
 };
 DefaultAPIForm.propTypes = {
     api: PropTypes.shape({}),
@@ -764,4 +767,5 @@ DefaultAPIForm.propTypes = {
     isWebSocket: PropTypes.shape({}),
     onChange: PropTypes.func.isRequired,
     onValidate: PropTypes.func,
+    readOnlyAPIEndpoint: PropTypes.string,
 };
