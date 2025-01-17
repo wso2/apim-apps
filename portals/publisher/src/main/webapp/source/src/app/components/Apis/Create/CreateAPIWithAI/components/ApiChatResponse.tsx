@@ -406,6 +406,7 @@ import IconButton from '@mui/material/IconButton';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CustomizedAccordions from './CustomizedAccordions';
 import Button from '@mui/material/Button';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 const PREFIX = 'ApiChatResponse';
 const CONTENT_TYPE: string = 'Content-Type';
@@ -650,8 +651,6 @@ const Root = styled('div')(({ theme }) => ({
         }
     };
 
-    // --------------------------------------------------------------------------------------
-
     const capitalizeWords = (text: string): string => {
         if (typeof text !== 'string') return text;
         return text
@@ -671,7 +670,6 @@ const Root = styled('div')(({ theme }) => ({
     const handleApplyChanges = () => {
         onTitlesSelected(selectedTitles);
     };
-    // --------------------------------------------------------------------------------------
 
     return (
         <Box>
@@ -679,9 +677,22 @@ const Root = styled('div')(({ theme }) => ({
                 <Box key={index} display="flex" justifyContent={message.role === 'user' ? 'flex-end' : 'flex-start'}>
                     {message.role === 'system' ? (
                         <Box ml={6} mr={6} mt={-2.5}>
-                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                Assistant
-                            </Typography>
+                            <Box 
+                                sx={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'flex-start', 
+                                    gap: 1,
+                                    mb: 1,
+                                    mt: 3
+                                }}
+                            >
+                                <AutoAwesomeIcon fontSize='large' sx={{ color: '#10597f', fontSize: 22 }} />
+                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                    Assistant
+                                </Typography>
+                            </Box>
+
                             <Box
                                 sx={{
                                     backgroundColor: '#f0f0f0',
@@ -779,56 +790,10 @@ const Root = styled('div')(({ theme }) => ({
                                         </Box>
                                     </>
                                 ) : (
-                                    <Typography variant="body1">{message.content}</Typography>
+                                    <Typography variant="body1" style={{ whiteSpace: 'pre-wrap' }}>
+                                        {message.content}
+                                    </Typography>
                                 )}
-
-                                {/* {message.isSuggestion ? (
-                                    <>
-                                        <Typography variant="body1" sx={{ padding: 2, whiteSpace: 'pre-line' }}>
-                                            I have successfully generated your API! To further enhance its functionality and
-                                            performance, here are a few expert recommendations to elevate your API to the next
-                                            level.{"\n"}{"\n"}If everything looks good, you can click the{" "}
-                                            <span style={{ color: '#3764b3', fontWeight: 'bold' }}>Create API</span> button
-                                            on the right-side panel to proceed.
-                                        </Typography>
-    
-                                        <Typography variant="body1">
-                                            {(() => {
-                                                let parsedContent = message.content;
-    
-                                                // If the message content is a string, attempt to parse it
-                                                if (typeof message.content === 'string') {
-                                                    try {
-                                                        parsedContent = JSON.parse(message.content);
-                                                    } catch (error) {
-                                                        console.error('Failed to parse message content:', error);
-                                                        return null; // If parsing fails, return nothing
-                                                    }
-                                                }
-    
-                                                // Check if parsed content is an object and render the accordions
-                                                return typeof parsedContent === 'object' && !Array.isArray(parsedContent) ? (
-                                                    Object.keys(parsedContent).map((key) => (
-                                                        <CustomizedAccordions
-                                                            key={key}
-                                                            title={capitalizeWords(parsedContent[key].title)}
-                                                            description={capitalizeWords(parsedContent[key].description)}
-                                                            onAdd={handleAddTitle}
-                                                            onRemove={handleRemoveTitle}
-                                                        />
-                                                    ))
-                                                ) : null;
-                                            })()}
-                                        </Typography>
-                                        <Box marginTop={2}>
-                                            <Button variant="contained" color="primary" onClick={handleApplyChanges}>
-                                                APPLY CHANGES
-                                            </Button>
-                                        </Box>
-                                    </>
-                                ) : (
-                                    <Typography variant="body1">{message.content}</Typography>
-                                )} */}
                             </Box>
                         </Box>
                     ) : (
@@ -841,9 +806,20 @@ const Root = styled('div')(({ theme }) => ({
                                 mr: 3,
                             }}
                         >
-                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-                                You
-                            </Typography>
+                            <Box 
+                                sx={{ 
+                                    display: 'flex', 
+                                    alignItems: 'center', 
+                                    justifyContent: 'flex-end', 
+                                    gap: 1,
+                                    mb: 1 
+                                }}
+                            >
+                                <AccountCircleIcon fontSize='large' sx={{ color: '#10597f', fontSize: 25 }} />
+                                <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                    You
+                                </Typography>
+                            </Box>
                             <Box sx={{ position: 'relative' }}>
                                 <Box
                                     sx={{
@@ -876,127 +852,6 @@ const Root = styled('div')(({ theme }) => ({
             ))}
         </Box>
     );
-
-    
-// return (
-//     <Box>
-//       {messages.map((message, index) => (
-//         <Box key={index} display="flex" justifyContent={message.role === 'user' ? 'flex-end' : 'flex-start'}>
-//           {message.role === 'system' ? (
-//             <Box ml={6} mr={6} mt={-2.5}>
-//                 <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-//                         Assistant
-//                 </Typography>           
-//                 <Box sx={{ 
-//                     backgroundColor: '#f0f0f0', 
-//                     padding: 2, 
-//                     borderRadius: '10px', 
-//                     position: 'relative',
-//                     boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-//                     maxWidth: '60%',
-//                     mt: 2,
-//                     mb: 2 
-//                 }}>
-//                     <Box
-//                         sx={{
-//                             width: 0,
-//                             height: 0,
-//                             borderLeft: '10px solid transparent',
-//                             borderRight: '10px solid transparent',
-//                             borderBottom: '10px solid #f0f0f0',
-//                             position: 'absolute',
-//                             top: '-10px',
-//                             left: '10px',
-//                         }}
-//                     />
-//                     {isSuggestion ? (
-//                         <>
-//                             <Typography variant='body1' sx={{ padding: 2, whiteSpace: 'pre-line' }}>
-//                                 I have successfully generated your API!
-//                                 To further enhance its functionality and performance, here are a few expert recommendations to elevate your API to the next level.{"\n"}{"\n"}
-//                                 If everything looks good, you can click the <span style={{ color: '#3764b3', fontWeight: 'bold' }}>Create API</span> button on the right-side panel to proceed.
-//                             </Typography>
-
-//                             <Typography variant='body1'>
-//                                 {(() => {
-//                                     let parsedContent = message.content;
-                                    
-//                                     // If the message content is a string, attempt to parse it
-//                                     if (typeof message.content === 'string') {
-//                                         try {
-//                                             parsedContent = JSON.parse(message.content);
-//                                         } catch (error) {
-//                                             console.error('Failed to parse message content:', error);
-//                                             return null;  // If parsing fails, return nothing
-//                                         }
-//                                     }
-
-//                                     // Check if parsed content is an object and render the accordions
-//                                     return typeof parsedContent === 'object' && !Array.isArray(parsedContent) ? (
-//                                         Object.keys(parsedContent).map((key) => (
-//                                             <CustomizedAccordions
-//                                                 key={key}
-//                                                 title={capitalizeWords(parsedContent[key].title)}
-//                                                 description={capitalizeWords(parsedContent[key].description)}
-//                                                 onAdd={handleAddTitle}
-//                                                 onRemove={handleRemoveTitle}
-//                                             />
-//                                         ))
-//                                     ) : null;  // Remove plain text rendering fallback
-//                                 })()}
-//                             </Typography>
-//                                 <Box marginTop={2}>
-//                                     <Button
-//                                         variant='contained'
-//                                         color='primary'
-//                                         onClick={handleApplyChanges}
-//                                     >
-//                                         APPLY CHANGES
-//                                     </Button>
-//                                 </Box>
-//                         </>
-//                     ) : (
-//                         <Typography variant="body1">{message.content}</Typography>
-//                     )}
-//                 </Box>
-//             </Box>
-//           ) : (
-//                 <Box sx={{ maxWidth: '60%', textAlign: 'right', mt: 2, mb: 2, mr: 3 }}>
-//                     <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>
-//                         You
-//                     </Typography>
-//                     <Box sx={{ position: 'relative' }}>
-//                         <Box
-//                             sx={{
-//                                 width: 0,
-//                                 height: 0,
-//                                 borderLeft: '10px solid transparent',
-//                                 borderRight: '10px solid transparent',
-//                                 borderBottom: '10px solid #e3f5fa',
-//                                 position: 'absolute',
-//                                 top: '-10px',
-//                                 right: '10px',
-//                             }}
-//                         />
-//                         <Box
-//                             sx={{
-//                                 backgroundColor: '#e3f5fa',
-//                                 padding: 2,
-//                                 borderRadius: '10px',
-//                                 color: '#000',
-//                                 boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
-//                                 display: 'inline-block',
-//                             }}
-//                         >
-//                             <Typography variant="body1">{message.content}</Typography>
-//                         </Box>
-//                     </Box>
-//                 </Box>
-//             )}
-//             </Box>
-//         ))}
-//     </Box>
-//   );
 };
 
 export default ApiChatResponse;

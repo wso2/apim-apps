@@ -24,16 +24,16 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import CreateAPISuccessDialog from './CreateAPISuccessDialog';
+import LinearProgress from '@mui/material/LinearProgress';
 
 interface AlertDialogProps {
-  finalOutcomeCode: string; // Define the type of finalOutcome (assuming it's a string)
+  finalOutcomeCode: string;
 }
 
 const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
-
-// const AlertDialog = () => {
   const [open, setOpen] = React.useState(false);
-  const [successDialogOpen, setSuccessDialogOpen] = React.useState(false); // Control success dialog visibility
+  const [showProgress, setShowProgress] = React.useState(false);
+  const [successDialogOpen, setSuccessDialogOpen] = React.useState(false);
   const [dialogTitle, setDialogTitle] = React.useState('');
   const [dialogContentText, setDialogContentText] = React.useState('');
   const [firstDialogAction, setFirstDialogAction] = React.useState('');
@@ -45,12 +45,14 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
 
   const handleClose = () => {
     setOpen(false);
-    setSuccessDialogOpen(true);
   };
 
   const handleCreate = async () => {
+    handleClose();
+    setShowProgress(true);
+
     try {
-      const response = await fetch('http://127.0.0.1:5000/createapiinportal', {
+      const response = await fetch('http://127.0.0.1:5000/create-api', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,6 +61,8 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
           text: finalOutcomeCode,
         }),
       });
+
+      setShowProgress(false);
 
       if (!response.ok) {
         setDialogTitle('API Creation Unsuccessful');
@@ -77,21 +81,19 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
       setFirstDialogAction('CLOSE');
       setSecondDialogAction('VIEW API');
 
+      setSuccessDialogOpen(true);
+
     } catch (error) {
+      setShowProgress(false);
+
       setDialogTitle('API Creation Unsuccessful');
-      setDialogContentText('API creation was unsuccessful');
+      setDialogContentText('API creation was unsuccessful. Please try again.');
       setFirstDialogAction('');
       setSecondDialogAction('CLOSE');
 
+      setSuccessDialogOpen(true);
+
       console.error('Error during API creation:', error);
-    } finally {
-      handleClose(); // Close the dialog after the request completes
-      // <CreateAPISuccessDialog
-      //   dialogTitle = {dialogTitle}
-      //   dialogContentText={dialogContentText}
-      //   firstDialogAction={firstDialogAction}
-      //   secondDialogAction={secondDialogAction}
-      // />
     }
   };
 
@@ -104,6 +106,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
       >
         Create API
       </Button>
+      
       <Dialog
         open={open}
         onClose={handleClose}
@@ -135,18 +138,40 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
         </DialogActions>
       </Dialog>
 
-      {/* Render success dialog */}
+      {showProgress && (
+        <Dialog 
+          open={showProgress} 
+          aria-labelledby="progress-dialog-title" 
+          sx={{ 
+            '.MuiDialog-paper': { 
+              padding: '33px 55px',
+            } 
+          }}
+        >
+          <DialogTitle id="progress-dialog-title" sx={{ textAlign: 'center' }}>
+            API Creation in Progress
+          </DialogTitle>
+          <DialogContent>
+            <LinearProgress
+              sx={{ 
+                width: '100%',
+                height: '6px'
+              }} 
+            />
+          </DialogContent>
+        </Dialog>
+      )}
+
       <CreateAPISuccessDialog
         dialogTitle={dialogTitle}
         dialogContentText={dialogContentText}
         firstDialogAction={firstDialogAction}
         secondDialogAction={secondDialogAction}
         open={successDialogOpen}
-        onClose={() => setSuccessDialogOpen(false)} // Close success dialog
+        onClose={() => setSuccessDialogOpen(false)}
       />
-
     </React.Fragment>
   );
 };
 
-export default AlertDialog
+export default AlertDialog;

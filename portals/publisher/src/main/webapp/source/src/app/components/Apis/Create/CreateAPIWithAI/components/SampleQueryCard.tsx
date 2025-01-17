@@ -93,63 +93,84 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
         // onCopyClick(query);
     };
 
+    // return (
+    //     <Root>
+    //         <Card className={classes.sampleQueryCard}>
+    //             <CardActionArea
+    //                 // disabled={disabled}
+    //                 // onClick={() => onExecuteClick(queryData.query)}
+    //             >
+    //                 <CardContent>
+    //                     <Box display='flex' flexDirection='column' height={1} alignItems='flex-start' >
+    //                         <Box mb={2}>
+    //                             <Typography variant='body1'>
+    //                                 {queryHeading}
+    //                             </Typography>
+    //                             <Typography variant='body2' color='textSecondary' component='p' className={classes.sampleQuery}>
+    //                                 {queryData}
+    //                             </Typography>
+    //                         </Box>
+    //                         <Box mt='auto'>
+    //                             <Box>
+    //                                 <Button
+    //                                     size='small'
+    //                                     id='sample-query-execute'
+    //                                     variant='outlined'
+    //                                     onClick={() => onExecuteClick(queryData)}
+    //                                 >
+    //                                     {intl.formatMessage({
+    //                                         id: 'Apis.Details.ApiChat.components.SampleQueryCard.executeButton',
+    //                                         defaultMessage: 'EXECUTE',
+    //                                     })}
+    //                                 </Button>
+    //                             </Box>
+    //                         </Box>
+    //                     </Box>
+    //                 </CardContent>
+    //             </CardActionArea>
+    //         </Card>
+    //     </Root>
+    // );
+
     return (
         <Root>
-            <Card className={classes.sampleQueryCard}>
-                <CardActionArea
-                    // disabled={disabled}
-                    // onClick={() => onExecuteClick(queryData.query)}
-                >
-                    <CardContent>
-                        {/* <Box display='flex' flexDirection='column' height={1}> */}
-                        <Box display='flex' flexDirection='column' height={1} alignItems='flex-start' >
-                            <Box mb={2}>
-                                <Typography variant='body1'>
-                                    {queryHeading}
-                                </Typography>
-                                <Typography variant='body2' color='textSecondary' component='p' className={classes.sampleQuery}>
-                                    {queryData}
-                                </Typography>
-                            </Box>
-                            <Box mt='auto'>
-                                <Box>
-                                    <Button
-                                        size='small'
-                                        id='sample-query-execute'
-                                        variant='outlined'
-                                        // disabled={disabled}
-                                        // onClick={(e) => {
-                                        //     onExecuteClick(queryData);
-                                        // }}
-                                        onClick={() => onExecuteClick(queryData)}
-                                    >
-                                        {intl.formatMessage({
-                                            id: 'Apis.Details.ApiChat.components.SampleQueryCard.executeButton',
-                                            defaultMessage: 'EXECUTE',
-                                        })}
-                                    </Button>
-                                    <Tooltip
-                                        title={copyBtnText}
-                                        onClose={handleTooltipClose}
-                                        placement='top-end'
-                                    >
-                                        <IconButton
-                                            id='sample-query-copy'
-                                            size='small'
-                                            onClick={(e: any) => {
-                                                // handleCopyClick(queryData.query);
-                                                e.stopPropagation();
-                                            }}
-                                            sx={{ ml: 1 }}
-                                        >
-                                            <ContentCopyIcon fontSize='inherit' />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Box>
+            <Card 
+                className={classes.sampleQueryCard}
+                sx={{ 
+                    '&:hover': {
+                        backgroundColor: 'transparent',
+                        cursor: 'default'
+                    },
+                    border: 'none', // Remove border
+                }}
+            >
+                <CardContent>
+                    <Box display='flex' flexDirection='column' height={1} alignItems='flex-start' >
+                        <Box mb={2}>
+                            <Typography variant='body1'>
+                                {queryHeading}
+                            </Typography>
+                            <Typography variant='body2' color='textSecondary' component='p' className={classes.sampleQuery}>
+                                {queryData}
+                            </Typography>
+                        </Box>
+                        <Box mt='auto'>
+                            <Box>
+                                <Button
+                                    size='small'
+                                    id='sample-query-execute'
+                                    variant='outlined'
+                                    onClick={() => onExecuteClick(queryData)}
+                                >
+                                    {intl.formatMessage({
+                                        id: 'Apis.Details.ApiChat.components.SampleQueryCard.executeButton',
+                                        defaultMessage: 'EXECUTE',
+                                    })}
+                                </Button>
                             </Box>
                         </Box>
-                    </CardContent>
-                </CardActionArea>
+                    </Box>
+                </CardContent>
             </Card>
         </Root>
     );

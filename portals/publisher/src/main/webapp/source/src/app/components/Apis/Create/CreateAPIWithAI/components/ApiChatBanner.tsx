@@ -90,9 +90,7 @@ const ApiChatBanner: React.FC = () => {
                 <Box>
                     <img
                         alt='API Design Assistant'
-                        src={`${app.context}/site/public/images/ai/ApiChat.svg`}
-                        // src={`${app.context}/site/public/images/ai/chatBanner.svg`}
-                        // src={`${app.context}/site/public/images/ai/apiDesignAssistantImage.svg`}
+                        src={`${app.context}/site/public/images/ai/APIchatassistantImageWithColour.svg`}
                         style={{ width: '300px', height: 'auto' }}
                     />
                 </Box>

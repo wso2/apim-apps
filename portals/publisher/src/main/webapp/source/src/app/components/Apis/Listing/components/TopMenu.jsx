@@ -30,6 +30,7 @@ import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { isRestricted } from 'AppData/AuthManager';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import APICreateMenu from './APICreateMenu';
 
 const PREFIX = 'TopMenu';
@@ -197,10 +198,17 @@ function TopMenu(props) {
                         color='primary'
                         component={Link}
                         to='/apis/create-ai'
+                        sx={{ marginLeft: '10px' }}
                     >
                         <FormattedMessage
                             id='Apis.Listing.components.TopMenu.create.api.with.ai'
                             defaultMessage='Create API with AI'
+                        />
+                        <AutoAwesomeIcon 
+                            sx={{ 
+                                marginLeft: '6px',
+                                fontSize: 15
+                            }} 
                         />
                     </Button>                              
                 </div>
