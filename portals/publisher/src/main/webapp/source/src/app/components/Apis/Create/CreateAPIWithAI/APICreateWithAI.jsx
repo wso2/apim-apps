@@ -16,25 +16,19 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
 import { styled } from '@mui/material/styles';
-import { FormattedMessage } from 'react-intl';
-import { Typography } from '@mui/material';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
 import ApiChatResponse from './components/ApiChatResponse';
 import SampleQueryCard from './components/SampleQueryCard';
 import LinearDeterminate from './components/LinearDeterminate';
-import AlertDialog from './components/AlertDialog';
-import { Editor as MonacoEditor } from '@monaco-editor/react';
 import DisplayCode from './components/DisplayCode';
 import WelcomeMessage from './components/WelcomeMessage';
+import LoadingDots from './components/LoadingDots';
 
 /**
  * Renders the Create API with AI UI.
@@ -44,13 +38,27 @@ const ApiCreateWithAI = () => {
     const [inputQuery, setInputQuery] = useState('');
     const [lastQuery, setLastQuery] = useState('');
     const [finalOutcome, setFinalOutcome] = useState('');
+    const [apiType, setApiType] = useState('');
     const [finalOutcomeCode, setFinalOutcomeCode] = useState('');
     const [executionResults, setExecutionResults] = useState([]);
     const [messages, setMessages] = useState([]);
     const [taskId, setTaskId] = useState('');
     const [taskStatus, setTaskStatus] = useState('');
+    const [loading, setLoading] = useState(false); 
     const [isSuggestion, setIsSuggestion] = useState('');
     const [selectedTitles, setSelectedTitles] = useState([]);
+    const [paths, setPaths] = useState([]);
+    const [apiTypeSuggestion, setApiTypeSuggestion] = useState('');
+    const [missingValues, setMissingValues] = useState('');
+
+    const chatContainerRef = useRef(null);
+
+    useEffect(() => {
+        if (chatContainerRef.current) {
+            const element = chatContainerRef.current;
+            element.scrollTop = element.scrollHeight;
+        }
+    }, [messages]);
     
     const handleQueryChange = (event) => {
         const { value } = event.target;
@@ -61,18 +69,16 @@ const ApiCreateWithAI = () => {
         if (inputQuery.length !== 0) {
             const query = inputQuery;
             setInputQuery('');
-            setLastQuery(inputQuery);
+            setLastQuery(inputQuery);    
             setTaskStatus('IN_PROGRESS');
 
             setMessages((prevMessages) => [
                 ...prevMessages,
-                { role: 'user', content: query }
+                { role: 'user', content: query },
             ]);
-
             sendInitialRequest(query);
         }
     };
-
 
     const handleExecuteSampleQuery = async (query) => {
         setInputQuery('');
@@ -83,7 +89,6 @@ const ApiCreateWithAI = () => {
             ...prevMessages,
             { role: 'user', content: query }
         ]);
-
         sendInitialRequest(query);
     };
 
@@ -102,12 +107,12 @@ const ApiCreateWithAI = () => {
             ...prevMessages,
             { role: 'user', content: titlesString }
         ]);
-
         sendInitialRequest(titlesString);
     };
 
     const sendInitialRequest = async (query) => {
         setFinalOutcome('');
+        setLoading(true);
 
         const newTaskId = 1728534776568;
         // const newTaskId = `task-${Date.now()}`;
@@ -117,7 +122,7 @@ const ApiCreateWithAI = () => {
         try {
             console.log("Sending to backend:", query);
             
-            const response = await fetch('http://127.0.0.1:5000/generate', {
+            const response = await fetch('http://127.0.0.1:5000/api-design', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -132,35 +137,24 @@ const ApiCreateWithAI = () => {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
 
-            // const jsonResponse = await response.text();
-            // setFinalOutcome(<pre>{text}</pre>);
-
             const jsonResponse = await response.json();
-
-            // const openApiSpec = jsonResponse.openapispec;
-            // const suggestions = jsonResponse.suggestions;
-            // const isSuggestions = jsonResponse.isSuggestions;
-
-            // setFinalOutcome(suggestions);
-            // setFinalOutcomeCode(openApiSpec);
-            // setIsSuggestion(isSuggestions);
-            // setTaskStatus(state);
-
-            // if (suggestions) {
-            //     setMessages((prevMessages) => [
-            //         ...prevMessages,
-            //         { role: 'system', content: suggestions }
-            //     ]);
-            // }
 
             const backendResponse = jsonResponse.backendResponse;
             const isSuggestions = jsonResponse.isSuggestions;
+            const typeOfApi = jsonResponse.typeOfApi;
             const code = jsonResponse.code;
+            const paths = jsonResponse.paths;
+            const apiTypeSuggestion = jsonResponse.apiTypeSuggestion;
+            const missingValues = jsonResponse.missingValues;
             const state = jsonResponse.state;
 
             setFinalOutcome(backendResponse);
             setIsSuggestion(isSuggestions);
+            setApiType(typeOfApi);
             setFinalOutcomeCode(code);
+            setPaths(paths);
+            setApiTypeSuggestion(apiTypeSuggestion);
+            setMissingValues(missingValues);
             setTaskStatus(state);
 
             if (backendResponse) {
@@ -170,24 +164,34 @@ const ApiCreateWithAI = () => {
                 ]);
             }
 
+            if (apiTypeSuggestion) {
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { role: 'system', content: apiTypeSuggestion, suggestions: false }
+                ]);
+            }
+
+            if (missingValues) {
+                setMessages((prevMessages) => [
+                    ...prevMessages,
+                    { role: 'system', content: missingValues, suggestions: false }
+                ]);
+            }
+
         } catch (error) {
             console.error('Error:', error);
             setFinalOutcome('An error occurred while fetching the data.');
 
             setMessages((prevMessages) => [
                 ...prevMessages,
-                { role: 'system', content: 'An error occurred while fetching the response to your query. Please try again.', isSuggestions: false }
+                { role: 'system', content: 'Sorry! I could not process your request this time. Could you please try again?', isSuggestions: false }
             ]);
 
             setTaskStatus('ERROR');
+        } finally {
+            setLoading(false);
         }
     };
-
-    // padding: theme.spacing(1),
-    // textAlign: 'center',
-    // height: '100%',
-    // justifyContent: 'center',
-    // backgroundColor: '#1A2027',
 
     return (
         <div>
@@ -201,10 +205,12 @@ const ApiCreateWithAI = () => {
                         flex: 6,
                         display: 'flex',
                         flexDirection: 'column',
+                        paddingTop:'10px',
+                        marginTop:'10px',
                     }}
                 >
                     <Stack direction="column" spacing={1} sx={{ width: '100%', height: '100%' }}>
-                        <Box><ApiChatPoweredBy sx={{ textAlign: 'left', alignItems: 'flex-start' }} /></Box>
+                        {/* <Box><ApiChatPoweredBy sx={{ textAlign: 'left', alignItems: 'flex-start' }} /></Box> */}
                         {!lastQuery && (
                             <Box>
                                 <WelcomeMessage/>
@@ -215,25 +221,19 @@ const ApiCreateWithAI = () => {
                                     marginTop= '40px'
                                 >
                                     <SampleQueryCard onExecuteClick={handleExecuteSampleQuery} queryHeading={'Invoke an action to create a REST API'} queryData={'Create an API for a banking transaction'} sx={{ textAlign: 'left' }} />
-                                    <SampleQueryCard onExecuteClick={handleExecuteSampleQuery} queryHeading={'Invoke an action to create an Async API'} queryData={'Create an API for a hospital database'} sx={{ textAlign: 'left' }} />
+                                    <SampleQueryCard onExecuteClick={handleExecuteSampleQuery} queryHeading={'Invoke an action to create a SSE API'} queryData={'Create an API for live sports scores'} sx={{ textAlign: 'left' }} />
                                 </Stack>
                             </Box>
                         )}
-                        <Box sx={{ flexGrow: 1, textAlign: 'left', overflowY: 'auto', overflowX: 'auto' }}>
+                        <Box ref={chatContainerRef} sx={{ flexGrow: 1, textAlign: 'left', overflowY: 'auto', overflowX: 'auto', scrollBehavior: 'smooth' }}>
                             {(lastQuery || finalOutcome) && (
-                                // <ApiChatResponse
-                                //     lastQuery={lastQuery}
-                                //     executionResults={executionResults}
-                                //     finalOutcome={finalOutcome}
-                                //     isSuggestion={isSuggestion}
-                                //     onTitlesSelected={handleSelectedTitles}
-                                // />
                                 <ApiChatResponse 
                                     messages={messages} 
-                                    // isSuggestion={isSuggestion}
                                     onTitlesSelected={handleSelectedTitles}
+                                    taskStatus={taskStatus}
                                 />
                             )}
+                            {loading && <LoadingDots />}
                         </Box>
                         <Box>
                             <ApiChatExecute
@@ -241,6 +241,7 @@ const ApiCreateWithAI = () => {
                                     inputQuery={inputQuery}
                                     handleExecute={handleExecute}
                                     handleQueryChange={handleQueryChange}
+                                    paths={paths} 
                             />
                         </Box>
                     </Stack>
@@ -263,9 +264,10 @@ const ApiCreateWithAI = () => {
                     ) : taskStatus === 'COMPLETE' ? (
                         <DisplayCode 
                             finalOutcomeCode={finalOutcomeCode}
+                            apiType={apiType}
                         />
                     ) : (
-                        !lastQuery && <ApiChatBanner />
+                        <ApiChatBanner />
                     )}
                 </Box>
             </Stack>
