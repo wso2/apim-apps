@@ -16,13 +16,15 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import * as React from 'react';
+import React, { useContext } from 'react';
+import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 
 interface CreateAPISuccessDialogProps {
   dialogTitle: string;
@@ -32,50 +34,75 @@ interface CreateAPISuccessDialogProps {
   open: boolean;
   onClose: () => void;
 }
-  
-  const CreateAPISuccessDialog: React.FC<CreateAPISuccessDialogProps> = ({ dialogTitle, dialogContentText, firstDialogAction, secondDialogAction, open, onClose }) => {
-    // const handleCreate = async () => {
-    //   try {
-    //     const response = await fetch('http://127.0.0.1:5000/createapiinportal', {
-    //       method: 'POST',
-    //       headers: {
-    //         'Content-Type': 'application/json',
-    //       },
-    //       body: JSON.stringify({
-    //         text: finalOutcomeCode, // Send finalOutcomeCode to the endpoint
-    //       }),
-    //     });
-  
-    //     if (!response.ok) {
-    //       throw new Error('Failed to create API');
-    //     }
-  
-    //     const data = await response.json();
-    //     console.log('API creation response:', data);
-    //   } catch (error) {
-    //     console.error('Error during API creation:', error);
-    //   } finally {
-    //     handleClose(); // Close the dialog after the request completes
-    //   }
-    // };
 
+const CreateAPISuccessDialog: React.FC<CreateAPISuccessDialogProps> = ({ 
+  dialogTitle, 
+  dialogContentText, 
+  firstDialogAction, 
+  secondDialogAction, 
+  open, 
+  onClose 
+}) => {
+  const { api } = useContext(APIContext);
 
-    return (
-      <Dialog open={open} onClose={onClose} aria-labelledby="success-dialog-title" aria-describedby="success-dialog-description">
-        <DialogTitle id="success-dialog-title">{dialogTitle}</DialogTitle>
-  
-        <DialogContent>
-          <DialogContentText id="success-dialog-description">
-            {dialogContentText}
-          </DialogContentText>
-        </DialogContent>
-  
-        <DialogActions>
-          {firstDialogAction && <Button onClick={onClose} autoFocus>{firstDialogAction}</Button>}
-          <Button onClick={onClose} sx={{ border: '1px solid #1C7EA7' }} autoFocus>{secondDialogAction}</Button>
-        </DialogActions>
-      </Dialog>
-    );
-};
+  const handleSecondAction = () => {
+    if (secondDialogAction === 'VIEW API') {
+      return;
+    }
+    onClose();
+  };
+
+  // Render the button with conditional navigation
+  const renderSecondButton = () => {
+    if (secondDialogAction === 'VIEW API') {
+      return (
+        <Link 
+          to={`/apis`}
+          style={{ textDecoration: 'none' }}
+        >
+          <Button 
+            onClick={handleSecondAction} 
+            sx={{ border: '1px solid #1C7EA7' }} 
+            autoFocus
+          >
+            {secondDialogAction}
+          </Button>
+        </Link>
+      );
+    }
     
-export default CreateAPISuccessDialog
+    return (
+      <Button 
+        onClick={handleSecondAction} 
+        sx={{ border: '1px solid #1C7EA7' }} 
+        autoFocus
+      >
+        {secondDialogAction}
+      </Button>
+    );
+  };
+
+  return (
+    <Dialog 
+      open={open} 
+      onClose={onClose} 
+      aria-labelledby="success-dialog-title" 
+      aria-describedby="success-dialog-description"
+    >
+      <DialogTitle id="success-dialog-title">{dialogTitle}</DialogTitle>
+ 
+      <DialogContent>
+        <DialogContentText id="success-dialog-description">
+          {dialogContentText}
+        </DialogContentText>
+      </DialogContent>
+ 
+      <DialogActions>
+        {firstDialogAction && <Button onClick={onClose} autoFocus>{firstDialogAction}</Button>}
+        {renderSecondButton()}
+      </DialogActions>
+    </Dialog>
+  );
+};
+   
+export default CreateAPISuccessDialog;

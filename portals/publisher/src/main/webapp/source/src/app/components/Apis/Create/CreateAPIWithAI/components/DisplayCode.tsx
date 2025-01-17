@@ -23,43 +23,73 @@ import AlertDialog from './AlertDialog';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
-import { styled } from '@mui/material/styles';
 import SwaggerUI from './swaggerUIChatbot/SwaggerUI';
 import 'swagger-ui-react/swagger-ui.css';
 
 interface DisplayCodeProps {
-    finalOutcomeCode: string;
+  finalOutcomeCode: string;
+  apiType: string;
 }
-  
-const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode }) => {
-  const [showCode, setShowCode] = useState(false);  // State to toggle between SwaggerUI and MonacoEditor
 
-  // Toggle between SwaggerUI and MonacoEditor
+const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType }) => {
+  const [showCode, setShowCode] = useState(false);
+
   const handleClickOpenCode = () => {
-    setShowCode((prevState) => !prevState);  // Toggle the state
+    setShowCode((prevState) => !prevState);
   };
 
   const backgroundColor = showCode ? '#192738' : 'rgba(0, 0, 0, .03)';
 
   return (
-      <Box sx={{ width: '100%', height: '85vh'}}>
-        <Stack spacing={0} sx={{ height: '95%', mt: 2 }}>
-          
-          {/* Button to toggle view */}
-          <Box sx={{ height: '12%', backgroundColor: backgroundColor, display: 'flex', justifyContent: 'flex-end', alignItems: 'center', paddingRight: 10 }}>
-            <Stack direction="row" spacing={2}>
+    <Box sx={{ width: '100%', height: '85vh' }}>
+      <Stack spacing={0} sx={{ height: '95%', mt: 2 }}>
+        <Box
+          sx={{
+            height: '12%',
+            backgroundColor: backgroundColor,
+            display: 'flex',
+            justifyContent: 'flex-end',
+            alignItems: 'center',
+            paddingRight: 10,
+          }}
+        >
+          <Stack direction="row" spacing={2}>
+            {apiType === 'REST' && (
               <Button
                 variant="outlined"
                 onClick={handleClickOpenCode}
                 sx={{ backgroundColor: '#FFF' }}
               >
-                {showCode ? 'View Swagger UI' : 'View Code'} {/* Text toggles based on view */}
+                {showCode ? 'View Swagger UI' : 'View Spec'}
               </Button>
-            </Stack>
-          </Box>
+            )}
+          </Stack>
+        </Box>
 
-        {/* Conditionally render SwaggerUI or MonacoEditor based on showCode state */}
-        {showCode ? (
+        {/* Conditionally render SwaggerUI or MonacoEditor based on apiType and showCode state */}
+        {apiType === 'REST' ? (
+          showCode ? (
+            <Box sx={{ height: '76%', display: 'flex', backgroundColor: backgroundColor }}>
+              <MonacoEditor
+                width="100%"
+                height="100%"
+                language="yaml"
+                theme="vs-dark"
+                value={finalOutcomeCode}
+                options={{
+                  readOnly: true,
+                  minimap: { enabled: false },
+                  scrollBeyondLastLine: false,
+                  wordWrap: 'on',
+                }}
+              />
+            </Box>
+          ) : (
+            <Box sx={{ height: '76%', display: 'flex', backgroundColor: backgroundColor }}>
+              <SwaggerUI spec={finalOutcomeCode} />
+            </Box>
+          )
+        ) : (
           <Box sx={{ height: '76%', display: 'flex', backgroundColor: backgroundColor }}>
             <MonacoEditor
               width="100%"
@@ -75,13 +105,17 @@ const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode }) => {
               }}
             />
           </Box>
-        ) : (
-          <Box sx={{ height: '76%', display: 'flex', backgroundColor: backgroundColor }}>
-            <SwaggerUI spec={finalOutcomeCode} />
-          </Box>
         )}
 
-        <Box sx={{ height: '12%', backgroundColor: backgroundColor, display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+        <Box
+          sx={{
+            height: '12%',
+            backgroundColor: backgroundColor,
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+          }}
+        >
           <AlertDialog finalOutcomeCode={finalOutcomeCode} />
         </Box>
       </Stack>
@@ -89,4 +123,4 @@ const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode }) => {
   );
 };
 
-export default DisplayCode
+export default DisplayCode;
