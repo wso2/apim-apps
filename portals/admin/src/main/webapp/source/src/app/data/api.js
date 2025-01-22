@@ -494,9 +494,9 @@ class API extends Resource {
     /**
      * Add a Gateway Environment
      */
-    addGatewayEnvironment(name, displayName, type, description, gatewayType, vhosts, provider="wso2",  callback = null) {
+    addGatewayEnvironment(name, displayName, type, description, gatewayType, vhosts, permissions, provider="wso2",  callback = null) {
         return this.client.then((client) => {
-            const data = { name, displayName, type, description, gatewayType, vhosts, provider };
+            const data = { name, displayName, type, description, gatewayType, vhosts, permissions, provider };
             const payload = {
                 'Content-Type': 'application/json',
             };
@@ -511,9 +511,9 @@ class API extends Resource {
     /**
      * Update a Gateway Environment
      */
-    updateGatewayEnvironment(id, name, displayName, type, description, gatewayType, vhosts,  callback = null) {
+    updateGatewayEnvironment(id, name, displayName, type, description, gatewayType, vhosts, permissions, callback = null) {
         return this.client.then((client) => {
-            const data = { name, displayName, type, description, gatewayType, vhosts };
+            const data = { name, displayName, type, description, gatewayType, vhosts, permissions };
             return client.apis['Environments'].put_environments__environmentId_(
                 { environmentId: id },
                 { requestBody: data },
