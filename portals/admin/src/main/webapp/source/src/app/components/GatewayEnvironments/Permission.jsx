@@ -51,7 +51,7 @@ export default function SimplePopper(props) {
                 {type}
             </Button>
             <Popper id={id} open={open} anchorEl={anchorEl}>
-                <Box sx={{ 
+                <Box sx={{
                     fontFamily: 'sans-serif',
                     border: 'lightgray 1px solid',
                     p: 1,

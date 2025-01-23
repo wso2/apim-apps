@@ -947,7 +947,7 @@
   "Apis.Details.Environments.Environments.status.not.deployed": "No Revision Deployed",
   "Apis.Details.Environments.Environments.undeploy.btn": "Undeploy",
   "Apis.Details.Environments.Environments.visibility.in.devportal": "Gateway URL Visibility",
-  "Apis.Details.Environments.Environments.visibility.permission": "Gateway Visibility Permission",
+  "Apis.Details.Environments.Environments.visibility.permission": "Visibility Permission",
   "Apis.Details.Environments.deploy.api.gateways.text": "API Gateways",
   "Apis.Details.Environments.deploy.env.text": "Deploy API to the Gateway Environment",
   "Apis.Details.Environments.deploy.text": "Deploy the API",

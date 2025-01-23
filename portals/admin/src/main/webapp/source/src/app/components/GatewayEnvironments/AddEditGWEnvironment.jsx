@@ -38,9 +38,9 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import { MuiChipsInput } from 'mui-chips-input';
-import Error from '@material-ui/icons/Error';
-import InputAdornment from '@material-ui/core/InputAdornment';
-import { red } from '@material-ui/core/colors/';
+import Error from '@mui/icons-material/Error';
+import InputAdornment from '@mui/material/InputAdornment';
+import { red } from '@mui/material/colors/';
 import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 
 const styles = {

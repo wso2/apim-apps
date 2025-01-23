@@ -2803,7 +2803,7 @@ export default function Environments() {
                                     <TableCell>
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.visibility.permission'
-                                            defaultMessage='Gateway Visibility Permission'
+                                            defaultMessage='Visibility Permission'
                                         />
                                     </TableCell>
                                 </TableRow>
