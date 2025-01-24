@@ -72,6 +72,7 @@ import { Parser } from '@asyncapi/parser';
 import { upperCaseString } from 'AppData/stringFormatter';
 import DisplayDevportal from './DisplayDevportal';
 import DeploymentOnbording from './DeploymentOnbording';
+import Permission from './Permission';
 
 const PREFIX = 'Environments';
 
@@ -2799,6 +2800,26 @@ export default function Environments() {
                                             </IconButton>
                                         </Tooltip>
                                     </TableCell>
+                                    <TableCell>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.visibility.permission'
+                                            defaultMessage='Visibility Permission'
+                                        />
+                                        <Tooltip
+                                            title={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.Environments.visibility.permission'
+                                                    defaultMessage='Gateway Environment Visibility in Developer Portal.'
+                                                />
+                                            )}
+                                            placement='top-end'
+                                            aria-label='New Deployment'
+                                        >
+                                            <IconButton size='small' aria-label='delete'>
+                                                <HelpOutlineIcon fontSize='small' />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -2911,6 +2932,12 @@ export default function Environments() {
                                                 name={row.name}
                                                 api={api}
                                                 EnvDeployments={allEnvDeployments[row.name]}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Permission
+                                                type={row.permissions.permissionType}
+                                                roles={row.permissions.roles}
                                             />
                                         </TableCell>
                                     </TableRow>
