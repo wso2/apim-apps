@@ -2805,6 +2805,20 @@ export default function Environments() {
                                             id='Apis.Details.Environments.Environments.visibility.permission'
                                             defaultMessage='Visibility Permission'
                                         />
+                                        <Tooltip
+                                            title={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.Environments.visibility.permission'
+                                                    defaultMessage='Gateway Environment Visibility in Developer Portal.'
+                                                />
+                                            )}
+                                            placement='top-end'
+                                            aria-label='New Deployment'
+                                        >
+                                            <IconButton size='small' aria-label='delete'>
+                                                <HelpOutlineIcon fontSize='small' />
+                                            </IconButton>
+                                        </Tooltip>
                                     </TableCell>
                                 </TableRow>
                             </TableHead>
