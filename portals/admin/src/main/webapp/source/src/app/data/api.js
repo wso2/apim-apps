@@ -1200,6 +1200,7 @@ class API extends Resource {
     addAiVendor(aiVendorBody) {
         return this.client.then((client) => {
             const payload = {
+                // 'Content-Type': 'application/json',
                 'Content-Type': 'multipart/form-data',
             };
             return client.apis['LLMProviders'].addLLMProvider(
@@ -1229,6 +1230,7 @@ class API extends Resource {
             );
         });
     }
+
     /**
      * Retrieve transaction count
      */
