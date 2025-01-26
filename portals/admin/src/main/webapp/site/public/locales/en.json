@@ -206,6 +206,7 @@
   "AiVendors.AddEditAiVendor.form.add": "Add",
   "AiVendors.AddEditAiVendor.form.cancel": "Cancel",
   "AiVendors.AddEditAiVendor.form.connectorType": "Connector Type",
+  "AiVendors.AddEditAiVendor.form.connectorType.help": "Connector Type for AI/LLM Vendor",
   "AiVendors.AddEditAiVendor.form.description": "Description",
   "AiVendors.AddEditAiVendor.form.description.help": "Description of the AI/LLM Vendor.",
   "AiVendors.AddEditAiVendor.form.displayName.help": "API Version of the AI/LLM Vendor.",
