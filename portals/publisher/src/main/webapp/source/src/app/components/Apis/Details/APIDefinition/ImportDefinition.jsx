@@ -456,18 +456,19 @@ export default function ImportDefinition(props) {
                             defaultMessage='Cancel'
                         />
                     </Button>
-                    {!isGraphQL && <Button
-                        onClick={handleAPIDefinitionEditAndImport}
-                        id='import-before-edit-btn'
-                        variant='contained'
-                        color='primary'
-                        disabled={apiInputs.importingContent == null}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.APIDefinition.APIDefinition.import.definition.edit'
-                            defaultMessage='Edit and Import'
-                        />
-                    </Button>
+                    {!isGraphQL && 
+                        <Button
+                            onClick={handleAPIDefinitionEditAndImport}
+                            id='import-before-edit-btn'
+                            variant='contained'
+                            color='primary'
+                            disabled={apiInputs.importingContent == null}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.import.definition.edit'
+                                defaultMessage='Edit and Import'
+                            />
+                        </Button>
                     }
                     <Button
                         onClick={importDefinition}

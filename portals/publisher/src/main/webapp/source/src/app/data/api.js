@@ -1588,13 +1588,14 @@ class API extends Resource {
         return promised_validationResponse;
     }
 
-    static validateGraphQLByUrl(url) {
+    static validateGraphQL(url, params = { useIntrospection: false }) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         const promised_validationResponse = apiClient.then(client => {
             return client.apis['Validation'].validateGraphQLSchema(
                 {
                     type: 'GraphQL',
                     'Content-Type': 'multipart/form-data',
+                    ...params
                 },
                 {
                     requestBody: {
@@ -1606,29 +1607,7 @@ class API extends Resource {
                 }),
             );
         });
-        return promised_validationResponse
-    }
-
-    static validateGraphQLByEndpoint(endpoint, params = { useIntrospection: true }){
-        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-        const promised_validationResponse = apiClient.then(client => {
-            return client.apis['Validation'].validateGraphQLSchema(
-                {
-                    type: 'GraphQL',
-                    'Content-Type': 'multipart/form-data',
-                    ...params
-                },
-                {
-                    requestBody: {
-                        url: endpoint,
-                    }
-                },
-                this._requestMetaData({
-                    'Content-Type': 'multipart/form-data',
-                }),
-            );
-        });
-        return promised_validationResponse
+        return promised_validationResponse;
     }
 
     /**

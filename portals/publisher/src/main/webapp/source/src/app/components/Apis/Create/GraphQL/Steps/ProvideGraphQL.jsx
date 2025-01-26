@@ -155,7 +155,16 @@ export default function ProvideGraphQL(props) {
                     inputsDispatcher({ action: 'graphQLInfo', value: graphQLInfo });
                     setValidity({ isValidURL, file: null });
                 } else {
-                    setValidity({ isValidURL, file: { message: 'GraphQL content validation failed!' } });
+                    let errorMessage;
+                    if (inputType === ProvideGraphQL.INPUT_TYPES.ENDPOINT) {
+                        errorMessage = 'Error occurred while generating GraphQL schema from endpoint';
+                    } else if (inputType === ProvideGraphQL.INPUT_TYPES.URL) {
+                        errorMessage = 'Error occurred while retrieving GraphQL schema from url';
+                    }
+                    setValidity({
+                        isValidURL,
+                        file: { message: errorMessage }
+                    });
                 }
                 onValidate(isValidURL);
                 setIsValidating(false);
@@ -169,8 +178,8 @@ export default function ProvideGraphQL(props) {
             }
             
             const validationFunction = inputType === ProvideGraphQL.INPUT_TYPES.URL
-                ? () => API.validateGraphQLByUrl(newURL)
-                : () => API.validateGraphQLByEndpoint(newURL, { useIntrospection: true });
+                ? () => API.validateGraphQL(newURL)
+                : () => API.validateGraphQL(newURL, { useIntrospection: true });
 
             validationFunction()
                 .then(handleResponse)
@@ -296,8 +305,10 @@ export default function ProvideGraphQL(props) {
                                             </Avatar>
                                         </ListItemAvatar>
                                         <ListItemText
-                                            primary={`${apiInputs.inputValue.path} - 
-                                    ${humanFileSize(apiInputs.inputValue.size)}`}
+                                            primary={`
+                                                ${apiInputs.inputValue.path} - 
+                                                ${humanFileSize(apiInputs.inputValue.size)}`
+                                            }
                                             data-testid={'file-input-' + apiInputs.inputValue.path}
                                         />
                                         <ListItemSecondaryAction>

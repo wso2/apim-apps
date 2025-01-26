@@ -81,7 +81,6 @@ export default function ApiCreateGraphQL(props) {
             case 'version':
             case 'gatewayType':
             case 'endpoint':
-                return { ...currentState, [action]: value };
             case 'context':
             case 'isFormValid':
                 return { ...currentState, [action]: value };
@@ -236,7 +235,8 @@ export default function ApiCreateGraphQL(props) {
                         <FormattedMessage
                             id='Apis.Create.GraphQL.ApiCreateGraphQL.sub.heading'
                             defaultMessage={'Create a GraphQL API by importing a SDL definition'
-                                + ' from a file or URL, or by using endpoint.'}
+                                + ' using a file, SDL hosted URL, or by using a GraphQL endpoint.'
+                            }
                         />
                     </Typography>
                 </>
@@ -280,7 +280,7 @@ export default function ApiCreateGraphQL(props) {
                             multiGateway={multiGateway}
                             api={apiInputs}
                             isAPIProduct={false}
-                            readOnlyAPIEndpoint={apiInputs.inputType==='endpoint' ? apiInputs.endpoint : null}
+                            readOnlyAPIEndpoint={apiInputs.inputType === 'endpoint' ? apiInputs.endpoint : null}
                         />
                     )}
                 </Grid>
