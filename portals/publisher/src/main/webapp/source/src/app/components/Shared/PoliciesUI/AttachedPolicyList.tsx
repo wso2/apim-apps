@@ -40,6 +40,8 @@ interface AttachedPolicyListSharedProps {
     handleDragEnd: (event: DragEndEvent) => void;
     policyListToDisplay: AttachedPolicy[];
     AttachedPolicyCard: any;
+    listOriginatedFromCommonPolicies?: string[];
+    isApiRevision?: boolean;
 }
 
 const AttachedPolicyListShared: FC<AttachedPolicyListSharedProps> = ({
@@ -54,6 +56,8 @@ const AttachedPolicyListShared: FC<AttachedPolicyListSharedProps> = ({
     handleDragEnd,
     policyListToDisplay,
     AttachedPolicyCard,
+    listOriginatedFromCommonPolicies,
+    isApiRevision
 }) => {
     return (
         <>
@@ -77,6 +81,8 @@ const AttachedPolicyListShared: FC<AttachedPolicyListSharedProps> = ({
                             verb={verb}
                             allPolicies={allPolicies}
                             isAPILevelPolicy={isAPILevelPolicy}
+                            listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+                            isApiRevision={isApiRevision}
                         />
                     ))}
                 </SortableContext>

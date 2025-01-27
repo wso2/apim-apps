@@ -89,6 +89,8 @@ interface PolicyDropzoneProps {
     verb: string;
     allPolicies: PolicySpec[] | null;
     isAPILevelPolicy: boolean;
+    listOriginatedFromCommonPolicies: string[];
+    isApiRevision: boolean;
 }
 
 /**
@@ -106,6 +108,8 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
     verb,
     allPolicies,
     isAPILevelPolicy,
+    listOriginatedFromCommonPolicies,
+    isApiRevision
 }) => {
 
     const [droppedPolicy, setDroppedPolicy] = useState<Policy | null>(null);
@@ -134,6 +138,8 @@ const PolicyDropzone: FC<PolicyDropzoneProps> = ({
             setDroppedPolicy={setDroppedPolicy}
             AttachedPolicyList={AttachedPolicyList}
             PolicyConfiguringDrawer={PolicyConfiguringDrawer}
+            listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+            isApiRevision={isApiRevision}
         />
     );
 };

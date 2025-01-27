@@ -91,6 +91,8 @@ interface PolicyDropzoneSharedProps {
     setDroppedPolicy: any;
     AttachedPolicyList: any;
     PolicyConfiguringDrawer: any;
+    listOriginatedFromCommonPolicies?: string[];
+    isApiRevision?: boolean;
 }
 
 const PolicyDropzoneShared: FC<PolicyDropzoneSharedProps> = ({
@@ -107,7 +109,9 @@ const PolicyDropzoneShared: FC<PolicyDropzoneSharedProps> = ({
     droppedPolicy,
     setDroppedPolicy,
     AttachedPolicyList,
-    PolicyConfiguringDrawer
+    PolicyConfiguringDrawer,
+    listOriginatedFromCommonPolicies,
+    isApiRevision
 }) => {
 
     return (
@@ -146,6 +150,8 @@ const PolicyDropzoneShared: FC<PolicyDropzoneSharedProps> = ({
                             verb={verb}
                             allPolicies={allPolicies}
                             isAPILevelPolicy={isAPILevelPolicy}
+                            listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+                            isApiRevision={isApiRevision}
                         />
                     )}
                 </div>
