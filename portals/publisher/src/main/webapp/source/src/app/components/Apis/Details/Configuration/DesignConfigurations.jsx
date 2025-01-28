@@ -197,6 +197,7 @@ function copyAPIConfig(api) {
         enableSchemaValidation: api.enableSchemaValidation,
         accessControlRoles: [...api.accessControlRoles],
         visibleRoles: [...api.visibleRoles],
+        visibleOrganizations: [...(api?.visibleOrganizations || [])],
         tags: [...api.tags],
         maxTps: api.maxTps,
         transport: [...api.transport],
@@ -261,6 +262,8 @@ function configReducer(state, configAction) {
             return { ...copyAPIConfig(state), [action]: value };
         case 'visibleRoles':
             return { ...copyAPIConfig(state), [action]: value };
+        case 'visibleOrganizations':
+            return { ...copyAPIConfig(state), [action]: value };
         case 'github_repo':
         case 'slack_url': {
             const targetProperty = nextState.additionalProperties.find((property) => property.name === action);
@@ -292,6 +295,7 @@ function configReducer(state, configAction) {
         case 'visibility':
             if (nextState[action] !== value && value !== 'RESTRICTED') {
                 nextState.visibleRoles = [];
+                nextState.visibleOrganizations = [];
             }
             nextState[action] = value;
             return nextState;

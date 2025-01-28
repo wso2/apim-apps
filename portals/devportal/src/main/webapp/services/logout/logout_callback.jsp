@@ -78,6 +78,12 @@
     cookie.setMaxAge(2);
     response.addCookie(cookie);
 
+    cookie = new Cookie("ORGANIZATION_Default", "");
+    cookie.setPath(context + "/");
+    cookie.setSecure(true);
+    cookie.setMaxAge(2);
+    response.addCookie(cookie);
+
     log.debug("redirecting to logout");
     String referrer = request.getParameter("referrer");
     if (referrer == null) {
