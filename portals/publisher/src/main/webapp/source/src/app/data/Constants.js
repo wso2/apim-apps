@@ -55,6 +55,14 @@ const CONSTS = {
         connectionTimeoutDuration: -1,
         connectionRequestTimeoutDuration: -1,
         socketTimeoutDuration: -1,
+        proxyConfigs: {
+            proxyEnabled: '',
+            proxyHost: '',
+            proxyPort: '',
+            proxyUsername: '',
+            proxyPassword: '',
+            proxyProtocol: '',
+        },
     },
     GATEWAY_TYPE: {
         synapse: 'Synapse',

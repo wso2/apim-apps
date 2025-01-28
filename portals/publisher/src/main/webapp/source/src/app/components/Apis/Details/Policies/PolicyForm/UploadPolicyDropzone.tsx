@@ -35,9 +35,10 @@ import clsx from 'clsx';
 import Icon from '@mui/material/Icon';
 import { HelpOutline } from '@mui/icons-material';
 import { green, red } from '@mui/material/colors';
-
+import APIMAlert from 'AppComponents/Shared/Alert';
 
 const PREFIX = 'UploadPolicyDropzone';
+
 
 const classes = {
     dropZoneWrapper: `${PREFIX}-dropZoneWrapper`,
@@ -102,12 +103,21 @@ const UploadPolicyDropzone: FC<UploadPolicyDropzoneProps> = ({
     policyDefinitionFile,
     setPolicyDefinitionFile,
 }) => {
-
+    const intl = useIntl();
 
     const handleDrop = (policyDefinition: any) => {
-        setPolicyDefinitionFile(policyDefinition);
+        if (policyDefinition && policyDefinition[0] && 
+                (policyDefinition[0].name.endsWith('.j2') || 
+                policyDefinition[0].name.endsWith('.xml'))) {
+            setPolicyDefinitionFile(policyDefinition);
+            return;
+        }
+        APIMAlert.error(intl.formatMessage({
+            id: 'Uploading.Policies.Error',
+            defaultMessage: 'Incompatible file type',
+        }));
     };
-    const intl = useIntl();
+    
     const renderPolicyFileDropzone = () => {
         return (
             <Dropzone

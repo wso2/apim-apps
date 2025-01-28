@@ -137,6 +137,7 @@ class CreateNewVersion extends React.Component {
                     MaxLengthExceeds: false,
                 },
             },
+            isLoading: false,
         };
     }
 
@@ -200,6 +201,7 @@ class CreateNewVersion extends React.Component {
             this.setState({ valid: { version: { empty: true } } });
             return;
         }
+        this.setState({ isLoading: true });
         const isDefaultVersionBool = isDefaultVersion === 'yes';
         const apiClient = new API();
         const { intl } = this.props;
@@ -209,6 +211,7 @@ class CreateNewVersion extends React.Component {
                     this.setState({
                         redirectToReferrer: true,
                         apiId: response.obj.id,
+                        isLoading: false,
                     });
                     Alert.info(intl.formatMessage({
                         id: 'Apis.Details.APIProduct.NewVersion.NewVersion.success',
@@ -217,8 +220,12 @@ class CreateNewVersion extends React.Component {
                 })
                 .catch((error) => {
                     if (error.status === 409) {
-                        this.setState({ valid: { version: { alreadyExists: true } } });
+                        this.setState({
+                            valid: { version: { alreadyExists: true } },
+                            isLoading: false,
+                        });
                     } else {
+                        this.setState({ isLoading: false });
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.APIProduct.NewVersion.NewVersion.error',
                             defaultMessage: 'Something went wrong while creating a new version!. Error: ',
@@ -231,6 +238,7 @@ class CreateNewVersion extends React.Component {
                     this.setState({
                         redirectToReferrer: true,
                         apiId: response.obj.id,
+                        isLoading: false,
                     });
                     Alert.info(intl.formatMessage({
                         id: 'Apis.Details.NewVersion.NewVersion.success',
@@ -239,8 +247,12 @@ class CreateNewVersion extends React.Component {
                 })
                 .catch((error) => {
                     if (error.status === 409) {
-                        this.setState({ valid: { version: { alreadyExists: true } } });
+                        this.setState({
+                            valid: { version: { alreadyExists: true } },
+                            isLoading: false,
+                        });
                     } else {
+                        this.setState({ isLoading: false });
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.NewVersion.NewVersion.error',
                             defaultMessage: 'Something went wrong while creating a new version!. Error: ',
@@ -279,7 +291,7 @@ class CreateNewVersion extends React.Component {
     render() {
         const {  api, intl } = this.props;
         const {
-            isDefaultVersion, newVersion, redirectToReferrer, apiId, valid, serviceVersion, versionList,
+            isDefaultVersion, newVersion, redirectToReferrer, apiId, valid, serviceVersion, versionList, isLoading
         } = this.state;
         if (redirectToReferrer) {
             return <Redirect to={(api.apiType === 'APIPRODUCT' ? '/api-products/' : '/apis/') + apiId + '/overview'} />;
@@ -448,6 +460,7 @@ class CreateNewVersion extends React.Component {
                                                         || valid.version.hasSpecialChars
                                                         || valid.version.MaxLengthExceeds
                                                         || api.isRevision
+                                                        || isLoading
                                                     }
                                                 >
                                                     <FormattedMessage

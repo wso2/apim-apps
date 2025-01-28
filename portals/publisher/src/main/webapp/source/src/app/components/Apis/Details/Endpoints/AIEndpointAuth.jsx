@@ -62,15 +62,21 @@ export default function AIEndpointAuth(props) {
     }, []);
 
     const handleApiKeyChange = (event) => {
-        setApiKeyValue(event.target.value);
+        let apiKeyVal = event.target.value;
+        if (apiKeyVal === '********') {
+            apiKeyVal = '';
+        } else if (apiKeyVal === '') {
+            apiKeyVal = null;
+        } else if (apiKeyVal.includes('********')) {
+            apiKeyVal = apiKeyVal.replace('********', '');
+        }
+        setApiKeyValue(apiKeyVal);
     };
 
-    const handleApiKeyBlur = (event) => {
-
-        let updatedApiKeyValue = event.target.value === '********' ? '' : event.target.value;
-
+    const handleApiKeyBlur = () => {
+        let updatedApiKeyValue = apiKeyValue;
         if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') &&
-            updatedApiKeyValue !== null && updatedApiKeyValue !== '') {
+            apiKeyValue !== null && apiKeyValue !== '') {
             updatedApiKeyValue = `Bearer ${updatedApiKeyValue}`;
         }
 

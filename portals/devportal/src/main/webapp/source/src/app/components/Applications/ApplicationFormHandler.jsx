@@ -80,6 +80,7 @@ class ApplicationFormHandler extends React.Component {
             isApplicationSharingEnabled: true,
             isOrgAccessControlEnabled: false,
             applicationOwner: '',
+            isOrgWideAppUpdateEnabled: false,
         };
         this.handleAddChip = this.handleAddChip.bind(this);
         this.handleDeleteChip = this.handleDeleteChip.bind(this);
@@ -101,7 +102,16 @@ class ApplicationFormHandler extends React.Component {
             this.initApplicationCreateState();
         }
         this.isApplicationGroupSharingEnabled();
+        this.isOrgWideAppUpdateEnabled();
         this.isOrgAccessControlEnabledEnabled();
+    }
+
+    /**
+     * retrieve Settings from the context and check the org-wide application update enabled
+     */
+    isOrgWideAppUpdateEnabled = () => {
+        const { settings: { orgWideAppUpdateEnabled } } = this.context;
+        this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
     }
 
     /**
@@ -430,7 +440,7 @@ class ApplicationFormHandler extends React.Component {
     render() {
         const {
             throttlingPolicyList, applicationRequest, isNameValid, allAppAttributes, isApplicationSharingEnabled,
-            isEdit, applicationOwner, isOrgAccessControlEnabled,
+            isEdit, applicationOwner, isOrgWideAppUpdateEnabled, isOrgAccessControlEnabled,
         } = this.state;
         const { match: { params } } = this.props;
 
@@ -518,7 +528,8 @@ class ApplicationFormHandler extends React.Component {
                                             onClick={isEdit ? this.saveEdit : this.saveApplication}
                                             disabled={
                                                 isEdit
-                                                && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase()
+                                                && (!isOrgWideAppUpdateEnabled
+                                                && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase())
                                             }
                                             className={classes.button}
                                         >
