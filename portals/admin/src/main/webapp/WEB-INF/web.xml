@@ -119,6 +119,7 @@
     <servlet-mapping>
         <servlet-name>index</servlet-name>
         <url-pattern>/tasks/*</url-pattern>
+        <url-pattern>/governance/*</url-pattern>
         <url-pattern>/microgateway/*</url-pattern>
         <url-pattern>/settings/*</url-pattern>
         <url-pattern>/categories/*</url-pattern>

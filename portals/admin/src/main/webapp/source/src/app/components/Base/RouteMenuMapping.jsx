@@ -38,10 +38,13 @@ import KeyManagers from 'AppComponents/KeyManagers';
 import AiVendors from 'AppComponents/AiVendors';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
+import Policies from 'AppComponents/Governance/Policies';
+import RulesetCatalog from 'AppComponents/Governance/RulesetCatalog';
 
 import GamesIcon from '@mui/icons-material/Games';
 import CategoryIcon from '@mui/icons-material/Category';
 import PolicyIcon from '@mui/icons-material/Policy';
+import RuleIcon from '@mui/icons-material/Rule';
 import BlockIcon from '@mui/icons-material/Block';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ApplicationCreation from 'AppComponents/Workflow/ApplicationCreation';
@@ -260,6 +263,35 @@ const RouteMenuMapping = (intl) => [
                     defaultMessage: 'Edit AI/LLM Vendor',
                 }),
                 path: '/settings/ai-vendors/(.*?)$',
+            },
+        ],
+    },
+    {
+        id: 'Governance',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.governance',
+            defaultMessage: 'Governance',
+        }),
+        children: [
+            {
+                id: 'Governance Policies',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.governance.policies',
+                    defaultMessage: 'Governance Policies',
+                }),
+                path: '/governance/policies',
+                component: Policies,
+                icon: <PolicyIcon />,
+            },
+            {
+                id: 'Ruleset Catalog',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.ruleset.catalog',
+                    defaultMessage: 'Ruleset Catalog',
+                }),
+                path: '/governance/ruleset-catalog',
+                component: RulesetCatalog,
+                icon: <RuleIcon />,
             },
         ],
     },
