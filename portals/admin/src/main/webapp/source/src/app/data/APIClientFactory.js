@@ -17,6 +17,7 @@
  */
 
 import APIClient from './APIClient';
+import GovernanceAPIClient from './GovernanceAPIClient';
 import Utils from './Utils';
 
 /**
@@ -40,28 +41,39 @@ class APIClientFactory {
     }
 
     /**
-     *
-     * @param {Object} environment
-     * @returns {APIClient} APIClient object for the environment
+     * Get an API Client for the given environment and client type
+     * @param {Object} environment - Environment object for the client
+     * @param {String} clientType - Type of client (API_CLIENT or GOVERNANCE_CLIENT)
+     * @returns {APIClient|GovernanceAPIClient} Client instance
      */
-    getAPIClient(environment = Utils.getDefaultEnvironment()) {
-        let apiClient = this._APIClientMap.get(environment.label);
+    getAPIClient(environment = Utils.getDefaultEnvironment(), clientType = Utils.CONST.API_CLIENT) {
+        const key = environment.label + '_' + clientType;
+        let client = this._APIClientMap.get(key);
 
-        if (apiClient) {
-            return apiClient;
+        console.log('client', clientType);
+        if (client) {
+            return client;
         }
 
-        apiClient = new APIClient(environment);
-        this._APIClientMap.set(environment.label, apiClient);
-        return apiClient;
+        if (clientType === Utils.CONST.API_CLIENT) {
+            client = new APIClient(environment);
+            console.log('api client created', client);
+        } else if (clientType === Utils.CONST.GOVERNANCE_CLIENT) {
+            client = new GovernanceAPIClient(environment);
+            console.log('governance client created', client);
+        }
+
+        this._APIClientMap.set(key, client);
+        return client;
     }
 
     /**
-     * Remove an APIClient object from the environment
+     * Remove client from map
      * @param {String} environmentLabel name of the environment
+     * @param {String} clientType - Type of client (API_CLIENT or GOVERNANCE_CLIENT)
      */
-    destroyAPIClient(environmentLabel) {
-        this._APIClientMap.delete(environmentLabel);
+    destroyAPIClient(environmentLabel, clientType = Utils.CONST.API_CLIENT) {
+        this._APIClientMap.delete(environmentLabel + '_' + clientType);
     }
 }
 
