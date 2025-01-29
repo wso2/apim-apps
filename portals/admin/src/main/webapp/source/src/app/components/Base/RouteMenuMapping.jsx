@@ -45,6 +45,7 @@ import GamesIcon from '@mui/icons-material/Games';
 import CategoryIcon from '@mui/icons-material/Category';
 import PolicyIcon from '@mui/icons-material/Policy';
 import RuleIcon from '@mui/icons-material/Rule';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import BlockIcon from '@mui/icons-material/Block';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ApplicationCreation from 'AppComponents/Workflow/ApplicationCreation';
@@ -283,6 +284,16 @@ const RouteMenuMapping = (intl) => [
             defaultMessage: 'Governance',
         }),
         children: [
+            {
+                id: 'Overview',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.overview',
+                    defaultMessage: 'Overview',
+                }),
+                path: '/governance/overview',
+                component: Overview,
+                icon: <BarChartIcon />,
+            },
             {
                 id: 'Governance Policies',
                 displayText: intl.formatMessage({

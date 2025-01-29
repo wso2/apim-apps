@@ -135,7 +135,6 @@ function AddEditPolicy(props) {
             restApi
                 .getPolicy(id)
                 .then((result) => {
-                    console.log(result);
                     const { body } = result;
                     // Store the full ruleset objects for display
                     setSelectedRulesets(body.rulesets.map(rulesetId => ({
