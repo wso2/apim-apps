@@ -20,7 +20,7 @@ import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
-import { InputAdornment, IconButton, Icon, Select, MenuItem } from '@mui/material';
+import { InputAdornment, IconButton, Icon, Select, MenuItem, Box } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
@@ -646,7 +646,7 @@ export default function DefaultAPIForm(props) {
                         }}
                     />
                 )}
-                {multiGateway && 
+                {multiGateway && multiGateway.length > 1 && 
                     <Grid container spacing={2}>
                         <FormControl component='fieldset' fullWidth>
                             <FormLabel sx={{ marginLeft: '15px', marginTop: '20px' }}>
@@ -659,6 +659,7 @@ export default function DefaultAPIForm(props) {
                             <Select
                                 id='gateway-type-select'
                                 value={api.gatewayType}
+                                defaultValue={multiGateway[0].value}
                                 onChange={onChange}
                                 fullWidth
                                 sx={{ marginLeft: '15px', marginTop: '10px', minWidth: 200 }}
@@ -672,15 +673,23 @@ export default function DefaultAPIForm(props) {
                                 </MenuItem>
                                 {multiGateway.map((gateway) => 
                                     <MenuItem key={gateway.value} value={gateway.value}>
-                                        <div>
-                                            {gateway.name}
-                                            {gateway.isNew && 
-                                                <span className={`${classes.label} ${classes.newLabel}`}>New</span>
-                                            }
+                                        <Box>
+                                            <Grid container direction='row' gap={1} alignItems='center'>
+                                                <Grid item>
+                                                    <Typography variant='body1'>
+                                                        {gateway.name}
+                                                    </Typography>
+                                                </Grid>
+                                                {gateway.isNew && 
+                                                    <Grid item>
+                                                        <Chip label='New' color='success' size='small' />
+                                                    </Grid>
+                                                }
+                                            </Grid>
                                             <Typography variant='body2' color='textSecondary'>
                                                 {gateway.description}
                                             </Typography>
-                                        </div>
+                                        </Box>
                                     </MenuItem>
                                 )}
                             </Select>

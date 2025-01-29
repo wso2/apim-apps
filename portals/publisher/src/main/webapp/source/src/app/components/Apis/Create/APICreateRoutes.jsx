@@ -78,10 +78,18 @@ const WithSomeValue = (Component, additionalProps) => (routeProps) => (
 function APICreateRoutes() {
     const { data: publisherSettings, isLoading } = usePublisherSettings();
     const [apiTypes, setApiTypes] = useState(null);
+    const [gatewayTypes, setGatewayTypes] = useState(null);
 
     useEffect(() => {
         if (!isLoading) {
             setApiTypes(JSON.parse(publisherSettings.gatewayFeatureCatalog).apiTypes);
+            const data = publisherSettings.gatewayTypes;
+            const updatedData = data.map(item => {
+                if (item === "Regular") return "wso2/synapse";
+                if (item === "APK") return "wso2/apk";
+                return item;
+            });
+            setGatewayTypes(updatedData);
         }
     }, [isLoading]);
 
@@ -93,30 +101,38 @@ function APICreateRoutes() {
         <Root className={classes.content}>
             <Switch>
                 <Route path='/apis/create/rest' component={WithSomeValue(APICreateDefault, 
-                    { multiGateway: apiTypes?.rest.map(type => gatewayDetsils[type]) })}
+                    { multiGateway: apiTypes?.rest
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetsils[type]) })}
                 />
                 <Route path='/api-products/create' component={APIProductCreateWrapper} />
                 <Route path='/apis/create/graphQL' component={WithSomeValue(ApiCreateGraphQL,
-                    { multiGateway: apiTypes?.graphql.map(type => gatewayDetsils[type]) })}
+                    { multiGateway: apiTypes?.graphql
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetsils[type]) })}
                 />
                 <Route path='/apis/create/openapi' component={WithSomeValue(ApiCreateSwagger,
-                    { multiGateway: apiTypes?.rest.map(type => gatewayDetsils[type]) })}
+                    { multiGateway: apiTypes?.rest
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetsils[type]) })}
                 />
                 <Route path='/apis/create/wsdl' component={WithSomeValue(ApiCreateWSDL,
-                    { multiGateway: apiTypes?.soap.map(type => gatewayDetsils[type]) })}
+                    { multiGateway: apiTypes?.soap
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetsils[type]) })}
                 />
                 {/* TODO: Remove ApiCreateWebSocket components and associated routes */}
                 <Route path='/apis/create/ws' component={WithSomeValue(ApiCreateWebSocket,
-                    { multiGateway: apiTypes?.ws.map(type => gatewayDetsils[type]) })}
+                    { multiGateway: apiTypes?.ws
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetsils[type]) })}
                 />
                 <Route path='/apis/create/streamingapi/:apiType' component={WithSomeValue(APICreateStreamingAPI,
-                    { multiGateway: apiTypes?.ws.map(type => gatewayDetsils[type]) })}
+                    { multiGateway: apiTypes?.ws
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetsils[type]) })}
                 />
                 <Route path='/apis/create/asyncapi' component={WithSomeValue(APICreateAsyncAPI,
-                    { multiGateway: apiTypes?.ws.map(type => gatewayDetsils[type]) })}
+                    { multiGateway: apiTypes?.ws
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetsils[type]) })}
                 />
                 <Route path='/apis/create/ai-api' component={WithSomeValue(ApiCreateAIAPI,
-                    { multiGateway: apiTypes?.ai.map(type => gatewayDetsils[type]) })}
+                    { multiGateway: apiTypes?.ai
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetsils[type]) })}
                 />
                 <Route component={ResourceNotFound} />
             </Switch>

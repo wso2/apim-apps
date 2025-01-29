@@ -67,31 +67,7 @@ function APICreateDefault(props) {
     const { data: settings, isLoading, error: settingsError } = usePublisherSettings();
     const [isAvailbaleGateway, setIsAvailableGateway] = useState(false);
     const [pageError, setPageError] = useState(null);
-    useEffect(() => {
-        if (settingsError) {
-            setPageError(settingsError.message);
-        }
-    }, [settingsError]);
 
-    useEffect(() => {
-        if (settings != null) {
-            if (settings.gatewayTypes && settings.gatewayTypes.length === 1) {
-                for (const env of settings.environment) {
-                    if (env.gatewayType === settings.gatewayTypes[0]) {
-                        setIsAvailableGateway(true);
-                        break;
-                    }
-                }
-            }
-        }
-    }, [isLoading]);
-    const [isCreating, setIsCreating] = useState();
-    const [isPublishing, setIsPublishing] = useState(false);
-
-    const [isRevisioning, setIsRevisioning] = useState(false);
-    const [isDeploying, setIsDeploying] = useState(false);
-    const [isMandatoryPropsConfigured, setIsMandatoryPropsConfigured] = useState(false);
-    const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
     /**
      *
      * Reduce the events triggered from API input fields to current state
@@ -112,7 +88,35 @@ function APICreateDefault(props) {
     }
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         formValidity: false,
+        gatewayType: 'wso2/synapse',
     });
+
+    useEffect(() => {
+        if (settingsError) {
+            setPageError(settingsError.message);
+        }
+    }, [settingsError]);
+
+    useEffect(() => {
+        if (settings != null) {
+            if (settings.gatewayTypes && settings.gatewayTypes.includes('Regular')) {
+                for (const env of settings.environment) {
+                    if (env.gatewayType === 'Regular') {
+                        setIsAvailableGateway(true);
+                        break;
+                    }
+                }
+            }
+        }
+    }, [isLoading]);
+    const [isCreating, setIsCreating] = useState();
+    const [isPublishing, setIsPublishing] = useState(false);
+
+    const [isRevisioning, setIsRevisioning] = useState(false);
+    const [isDeploying, setIsDeploying] = useState(false);
+    const [isMandatoryPropsConfigured, setIsMandatoryPropsConfigured] = useState(false);
+    const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
+
     const isPublishable = apiInputs.endpoint;
     const isAPICreateDisabled = !(apiInputs.name && apiInputs.version && apiInputs.context) || isCreating
                                  || isPublishing;
@@ -125,13 +129,16 @@ function APICreateDefault(props) {
     function handleOnChange(event) {
         const { name: action, value } = event.target;
         inputsDispatcher({ action, value });
-        const settingsEnvList = settings && settings.environment;
-        if (settings && settings.gatewayTypes.length >= 2 && Object.values(gatewayTypeMap).includes(value)) {
-            for (const env of settingsEnvList) {
-                const tmpEnv = gatewayTypeMap[env.gatewayType];
-                if (tmpEnv === value) {
-                    setIsAvailableGateway(true);
-                    break;
+        if (action === 'gatewayType') {
+            const settingsEnvList = settings && settings.environment;
+            if (settings && settings.gatewayTypes.length >= 2 && Object.values(gatewayTypeMap).includes(value)) {
+                for (const env of settingsEnvList) {
+                    const tmpEnv = gatewayTypeMap[env.gatewayType];
+                    if (tmpEnv === value) {
+                        setIsAvailableGateway(true);
+                        break;
+                    }
+                    setIsAvailableGateway(false);
                 }
                 setIsAvailableGateway(false);
             }
@@ -302,8 +309,7 @@ function APICreateDefault(props) {
                 setIsRevisioning(false);
                 const envList = settings.environment.map((env) => env.name);
                 const body1 = [];
-                const internalGateways = settings.environment.filter((p) => p.provider
-                        && p.provider.toLowerCase().includes('wso2'));
+                const internalGateways = settings.environment;
                 const getFirstVhost = (envName) => {
                     const env = internalGateways.find(
                         (e) => e.name === envName && e.vhosts.length > 0,
@@ -330,12 +336,7 @@ function APICreateDefault(props) {
                     const envList1 = settings.environment;
                     let foundEnv = false;
                     envList1.forEach((env) => {
-                        let tmpEnv = '';
-                        if (env.gatewayType === 'APK') {
-                            tmpEnv = 'wso2/apk';
-                        } else if (env.gatewayType === 'Regular') {
-                            tmpEnv = 'wso2/synapse';
-                        }
+                        const tmpEnv = gatewayTypeMap[env.gatewayType];
                         if (!foundEnv && tmpEnv === apiInputs.gatewayType && getFirstVhost(env.name)) {
                             body1.push({
                                 name: env.name,
