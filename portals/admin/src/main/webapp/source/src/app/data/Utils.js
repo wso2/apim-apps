@@ -194,6 +194,25 @@ class Utils {
     }
 
     /**
+     * Get governance swagger definition URL
+     * @static
+     * @returns
+     * @memberof Utils
+     */
+    static getGovernanceSwaggerURL() {
+        if (Configurations.app.proxy_context_path) {
+            return 'https://'
+                + Utils.getCurrentEnvironment().host
+                + Configurations.app.proxy_context_path
+                + Utils.CONST.GOVERNANCE_SWAGGER_JSON;
+        } else {
+            return 'https://'
+                + Utils.getCurrentEnvironment().host
+                + Utils.CONST.GOVERNANCE_SWAGGER_JSON;
+        }
+    }
+
+    /**
      * Return the time difference between the current time and the given time in the Date object in seconds
      * @param targetTime {Date|Integer} Date object which needs to be compared with current time
      * @returns {Integer} Time difference in seconds
@@ -346,7 +365,10 @@ Utils.CONST = {
     LOGOUT_CALLBACK: '/services/auth/callback/logout',
     INTROSPECT: '/services/auth/introspect',
     SWAGGER_JSON: '/api/am/admin/v4/swagger.yaml',
+    GOVERNANCE_SWAGGER_JSON: '/api/am/governance/v0/swagger.yaml',
     PROTOCOL: 'https://',
+    API_CLIENT: 'API_CLIENT',
+    GOVERNANCE_CLIENT: 'GOVERNANCE_CLIENT',
 };
 
 /**
