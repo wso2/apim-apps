@@ -56,6 +56,8 @@ interface PoliciesExpansionSharedProps {
     faultFlowDroppablePolicyList: string[];
     FlowArrow: any;
     PolicyDropzone: any;
+    listOriginatedFromCommonPolicies?: string[];
+    isApiRevision?: boolean;
 }
 
 const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
@@ -74,7 +76,9 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
     setFaultFlowPolicyList,
     faultFlowDroppablePolicyList,
     FlowArrow,
-    PolicyDropzone
+    PolicyDropzone,
+    listOriginatedFromCommonPolicies,
+    isApiRevision
 }) => {
 
 
@@ -106,6 +110,8 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                             verb={verb}
                             allPolicies={allPolicies}
                             isAPILevelPolicy={isAPILevelPolicy}
+                            listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+                            isApiRevision={isApiRevision}
                         />
                     </Box>
                     <Box className={classes.flowSpecificPolicyAttachGrid} data-testid='drop-policy-zone-response'>
@@ -128,6 +134,8 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                             verb={verb}
                             allPolicies={allPolicies}
                             isAPILevelPolicy={isAPILevelPolicy}
+                            listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+                            isApiRevision={isApiRevision}
                         />
                     </Box>
                     {!isChoreoConnectEnabled && (
@@ -151,6 +159,8 @@ const PoliciesExpansionShared: FC<PoliciesExpansionSharedProps> = ({
                                 verb={verb}
                                 allPolicies={allPolicies}
                                 isAPILevelPolicy={isAPILevelPolicy}
+                                listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+                                isApiRevision={isApiRevision}
                             />
                         </Box>
                     )}
