@@ -2842,7 +2842,7 @@ class API extends Resource {
      * Get all Organizations of the given tenant (Mock Data)
      * @return {Promise}
      */
-    static sharedOrganizations() {
+    static getOrganizations() {
         return {
             count: 2,
             list: [
