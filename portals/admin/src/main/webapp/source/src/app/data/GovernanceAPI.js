@@ -1,6 +1,6 @@
 /* eslint-disable */
 /*
- * Copyright (c) 2024, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -103,9 +103,9 @@ class GovernanceAPI extends Resource {
     }
 
     /**
-     * Add a governance policy
-     * @param {object} policy Policy object
-     * @returns {Promise} Promised response
+     * Add a new governance policy
+     * @param {Object} policy - Policy object containing the policy configuration
+     * @returns {Promise} Promise resolving to API response
      */
     addPolicy(policy) {
         return this.client.then((client) => {
@@ -118,9 +118,10 @@ class GovernanceAPI extends Resource {
     }
 
     /**
-     * Update a governance policy
-     * @param {object} policy Policy object
-     * @returns {Promise} Promised response
+     * Update an existing governance policy
+     * @param {Object} policy - Policy object containing the updated policy configuration and ID
+     * @param {string} policy.id - ID of the policy to update
+     * @returns {Promise} Promise resolving to API response
      */
     updatePolicy(policy) {
         console.log(policy);
@@ -192,43 +193,32 @@ class GovernanceAPI extends Resource {
     }
 
     /**
-     * Add a ruleset
-     * @param {object} ruleset Ruleset object
-     * @returns {Promise} Promised response
+     * Add a new ruleset
+     * @param {FormData} ruleset Ruleset data including the file
+     * @returns {Promise} Promise resolving to response
      */
     addRuleset(ruleset) {
         return this.client.then((client) => {
-            const payload = {
-                'Content-Type': 'multipart/form-data',
-            };
             return client.apis['Rulesets'].createRuleset(
-                payload,
+                { 'Content-Type': 'multipart/form-data' },
                 { requestBody: ruleset },
-                this._requestMetaData(),
             );
         });
     }
 
     /**
      * Update a ruleset
-     * @param {object} ruleset Ruleset object
-     * @returns {Promise} Promised response
+     * @param {string} id Ruleset ID
+     * @param {FormData} ruleset Updated ruleset data including the file
+     * @returns {Promise} Promise resolving to response
      */
-    updateRuleset(ruleset) {
+    updateRuleset(id, ruleset) {
         return this.client.then((client) => {
-            const payload = {
-                rulesetId: ruleset.id,
-                'Content-Type': 'multipart/form-data',
-            };
+            const payload = ruleset;
             return client.apis['Rulesets'].updateRulesetById(
-                payload,
-                {
-                    requestBody: {
-                        ...ruleset,
-                        rulesetId: ruleset.id
-                    }
-                },
-                this._requestMetaData(),
+                { rulesetId: id },
+                { requestBody: payload },
+                { 'Content-Type': 'multipart/form-data' },
             );
         });
     }

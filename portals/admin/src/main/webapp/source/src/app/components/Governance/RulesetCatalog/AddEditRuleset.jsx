@@ -1,4 +1,22 @@
 /* eslint-disable */
+/*
+ * Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+
 import React, { useReducer, useState, useEffect } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
@@ -65,6 +83,7 @@ function reducer(state, { field, value }) {
         case 'description':
         case 'ruleType':
         case 'artifactType':
+        case 'provider':
         case 'rulesetContent':
             nextState[field] = value;
             return nextState;
@@ -85,6 +104,7 @@ function AddEditRuleset(props) {
         description: '',
         ruleType: '',
         artifactType: '',
+        provider: '',
         rulesetContent: ''
     };
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -94,24 +114,39 @@ function AddEditRuleset(props) {
         description,
         ruleType,
         artifactType,
+        provider,
         rulesetContent
     } = state;
 
     useEffect(() => {
         const restApi = new GovernanceAPI();
         if (id) {
+            // Get ruleset metadata
             restApi
                 .getRuleset(id)
                 .then((result) => {
-                    console.log(result);
                     const { body } = result;
                     return body;
                 })
                 .then((data) => {
                     dispatch({ field: 'all', value: data });
+                    // After getting metadata, fetch the ruleset content
+                    return restApi.getRulesetContent(id);
+                })
+                .then((contentResult) => {
+                    const { text } = contentResult;
+                    dispatch({ field: 'rulesetContent', value: text });
                 })
                 .catch((error) => {
-                    throw error;
+                    const { response } = error;
+                    if (response && response.body) {
+                        Alert.error(response.body.description);
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Governance.Rulesets.AddEdit.error.loading',
+                            defaultMessage: 'Error loading ruleset',
+                        }));
+                    }
                 });
         }
     }, [id]);
@@ -177,27 +212,28 @@ function AddEditRuleset(props) {
         }
 
         setSaving(true);
-        const body = { ...state };
+
+        const file = new File([rulesetContent], `${name}.yaml`);
+        const body = {
+            ...state,
+            rulesetContent: file
+        }
 
         // Do the API call
         const restApi = new GovernanceAPI();
         let promiseAPICall = null;
-        
+
         if (id) {
-            promiseAPICall = restApi
-                .updateRuleset(id, body).then(() => {
+            promiseAPICall = restApi.updateRuleset(id, body)
+                .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.edit.success',
                         defaultMessage: 'Ruleset Updated Successfully',
                     });
                 });
         } else {
-            // create yaml file with the ruleset content
-            // const blob = new Blob([rulesetContent], { type: 'text/yaml' });
-            // const file = new File([blob], `${name}.yaml`, { type: 'text/yaml' });
-            // body.rulesetContent = file;
-            promiseAPICall = restApi
-                .addRuleset(body).then(() => {
+            promiseAPICall = restApi.addRuleset(body)
+                .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.add.success',
                         defaultMessage: 'Ruleset Added Successfully',
