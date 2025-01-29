@@ -527,6 +527,7 @@ export default function DeploymentOnboarding(props) {
                                             }
                                             color='primary'
                                             disabled={selectedEnvironment.length === 0
+                                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
                                                 || (advertiseInfo && advertiseInfo.advertised)
                                                 || isDeployButtonDisabled}
                                         >
