@@ -351,7 +351,7 @@ class Operations extends React.Component {
      * @inheritdoc
      */
     render() {
-        const { api, resourceNotFoundMessage, intl} = this.props;
+        const { api, resourceNotFoundMessage, intl, componentValidator} = this.props;
         const {
             operations, apiPolicies, apiThrottlingPolicy, isSaving,
             filterKeyWord, notFound, sharedScopes, enableReadOnly,
@@ -429,30 +429,37 @@ class Operations extends React.Component {
                                                 />
                                             </Typography>
                                         </TableCell>
-                                        <TableCell>
-                                            <Typography variant='subtitle2'>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Operations.Operation.throttling.policy'
-                                                    defaultMessage='Rate Limiting'
-                                                />
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Typography variant='subtitle2'>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Operations.Operation.scopes'
-                                                    defaultMessage='Scope'
-                                                />
-                                            </Typography>
-                                        </TableCell>
-                                        <TableCell>
-                                            <Typography variant='subtitle2'>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Operations.Operation.authType'
-                                                    defaultMessage='Security Enabled'
-                                                />
-                                            </Typography>
-                                        </TableCell>
+                                        {componentValidator.includes("operationLevelRateLimiting") &&
+                                            <TableCell>
+                                                <Typography variant='subtitle2'>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Operations.Operation
+                                                            .throttling.policy'
+                                                        defaultMessage='Rate Limiting'
+                                                    />
+                                                </Typography>
+                                            </TableCell>
+                                        }
+                                        {componentValidator.includes("operationSecurity") &&
+                                            <>
+                                                <TableCell>
+                                                    <Typography variant='subtitle2'>
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Operations.Operation.scopes'
+                                                            defaultMessage='Scope'
+                                                        />
+                                                    </Typography>
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Typography variant='subtitle2'>
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Operations.Operation.authType'
+                                                            defaultMessage='Security Enabled'
+                                                        />
+                                                    </Typography>
+                                                </TableCell>
+                                            </>
+                                        }
                                     </TableRow>
                                     {operations.filter(
                                         (operation) => operation.target.toLowerCase().includes(filterKeyWord),
@@ -465,6 +472,7 @@ class Operations extends React.Component {
                                                 sharedScopes={sharedScopes}
                                                 isOperationRateLimiting={!apiThrottlingPolicy}
                                                 apiPolicies={apiPolicies}
+                                                componentValidator={componentValidator}
                                             />
                                         );
                                     })}

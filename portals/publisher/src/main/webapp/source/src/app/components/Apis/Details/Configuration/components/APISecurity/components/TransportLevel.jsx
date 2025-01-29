@@ -94,7 +94,7 @@ const Root = styled('div')((
  */
 function TransportLevel(props) {
     const {
-        haveMultiLevelSecurity, securityScheme, configDispatcher, intl, id, api,
+        haveMultiLevelSecurity, securityScheme, configDispatcher, intl, id, api, componentValidator,
     } = props;
     const isMutualSSLEnabled = securityScheme.includes(API_SECURITY_MUTUAL_SSL);
     const [apiFromContext] = useAPI();
@@ -273,20 +273,23 @@ function TransportLevel(props) {
                         </Typography>
                     </AccordionSummary>
                     <AccordionDetails className={classes.expansionPanelDetails}>
-                        <Transports api={api} configDispatcher={configDispatcher} securityScheme={securityScheme} />
-                        <FormControlLabel
-                            control={(
-                                <Checkbox
-                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                    checked={isMutualSSLEnabled}
-                                    onChange={handleMutualSSLChange}
-                                    color='primary'
-                                    id='mutual-ssl-checkbox'
-                                />
-                            )}
-                            label='Mutual SSL'
-                        />
-                        {isMutualSSLEnabled && (
+                        <Transports api={api} configDispatcher={configDispatcher} 
+                            securityScheme={securityScheme} componentValidator={componentValidator} />
+                        {componentValidator.includes('transportsMutualSSL') && 
+                            <FormControlLabel
+                                control={(
+                                    <Checkbox
+                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                        checked={isMutualSSLEnabled}
+                                        onChange={handleMutualSSLChange}
+                                        color='primary'
+                                        id='mutual-ssl-checkbox'
+                                    />
+                                )}
+                                label='Mutual SSL'
+                            />
+                        }
+                        {(isMutualSSLEnabled && componentValidator.includes('transportsMutualSSL')) && (
                             <FormControl component='fieldset'>
                                 <RadioGroup
                                     aria-label='HTTP security SSL mandatory selection'
@@ -343,7 +346,8 @@ function TransportLevel(props) {
                                 </FormHelperText>
                             </FormControl>
                         )}
-                        {(isMutualSSLEnabled && (!api.advertiseInfo || !api.advertiseInfo.advertised)) && (
+                        {(isMutualSSLEnabled && (!api.advertiseInfo || !api.advertiseInfo.advertised)) &&
+                            componentValidator.includes('transportsMutualSSL') && (
                             // TODO:
                             // This is half baked!!!
                             // Refactor the Certificate component to share its capabilities in here and

@@ -587,7 +587,7 @@ class DetailsLegacy extends React.Component {
                                 open={open}
                                 id='left-menu-overview'
                             />
-                            {user && showCredentials && !isSubValidationDisabled && (
+                            {user && showCredentials && !isSubValidationDisabled && api.gatewayVendor === 'wso2' && (
                                 <>
 
                                     <LeftMenuItem
@@ -606,7 +606,7 @@ class DetailsLegacy extends React.Component {
 
                                 </>
                             )}
-                            {showTryout && (api.gatewayVendor === 'wso2'
+                            {showTryout && (api.gatewayType !== 'wso2/apk'
                                 || (api.type === 'APIPRODUCT' && !api.gatewayVendor)) && (
                                 <>
                                     <Accordion
@@ -665,7 +665,8 @@ class DetailsLegacy extends React.Component {
                                                     open={open}
                                                     id='left-menu-test'
                                                 />
-                                                {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi && apiChatEnabled && (
+                                                {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi
+                                                    && apiChatEnabled && api.gatewayVendor === 'wso2' && (
                                                     <LeftMenuItem
                                                         text={(
                                                             <FormattedMessage

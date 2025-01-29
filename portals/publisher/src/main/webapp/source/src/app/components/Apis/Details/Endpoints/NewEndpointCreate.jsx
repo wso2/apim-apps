@@ -95,6 +95,7 @@ function NewEndpointCreate(props) {
         intl,
         generateEndpointConfig,
         apiType,
+        componentValidator,
     } = props;
     const [endpointImplType, setImplType] = useState('mock');
     const endpointTypes = [
@@ -138,7 +139,7 @@ function NewEndpointCreate(props) {
             disabled: ['GRAPHQL', 'SSE'],
         },
         {
-            type: 'prototyped',
+            type: 'INLINE',
             name: intl.formatMessage({
                 id: 'Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint',
                 defaultMessage: 'Mock Implementation',
@@ -205,7 +206,7 @@ function NewEndpointCreate(props) {
                 />
             </Typography>
             <Grid container justifyContent='flex-start' spacing={2}>
-                {eligibleTypes.map(((type) => {
+                {(eligibleTypes.filter(ep => componentValidator.includes(ep.type)).map((type) => {
                     return (
                         <Grid item className={classes.inlineMessageContainer}>
                             <Card className={classes.endpointTypeCard}>

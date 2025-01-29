@@ -807,7 +807,9 @@ export default function DesignConfigurations() {
                                         />
                                     </Box>
                                     <Box py={1}>
-                                        {api.apiType !== API.CONSTS.APIProduct && (
+                                        {api.apiType !== API.CONSTS.APIProduct &&
+                                            settings && settings.gatewayFeatureCatalog
+                                            .gatewayFeatures[api.gatewayType].basic.includes("advertised") && (
                                             <AdvertiseInfo
                                                 oldApi={api}
                                                 api={apiConfig}
@@ -817,12 +819,14 @@ export default function DesignConfigurations() {
                                             />
                                         )}
                                     </Box>
-                                    { settings && !settings.portalConfigurationOnlyModeEnabled && (
-                                        <Box py={1}>
-                                            <DefaultVersion
-                                                api={apiConfig} configDispatcher={configDispatcher} />
-                                        </Box>
-                                    )}
+                                    { settings && !settings.portalConfigurationOnlyModeEnabled &&
+                                        settings.gatewayFeatureCatalog.gatewayFeatures[api.gatewayType]
+                                            .basic.includes("defaultVersion") &&
+                                            <Box py={1}>
+                                                <DefaultVersion api={apiConfig}
+                                                    configDispatcher={configDispatcher} />
+                                            </Box>
+                                    }
                                     <Box pt={2}>
                                         <Button
                                             disabled={
