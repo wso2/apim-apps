@@ -35,7 +35,7 @@ import RefreshIcon from '@mui/icons-material/Refresh';
  */
 function ListAddOns(props) {
     const {
-        searchActive, filterData, onRefresh, searchPlaceholder, children,
+        searchActive, filterData, onRefresh, searchPlaceholder, children, searchValue,
     } = props;
 
     return (
@@ -60,6 +60,7 @@ function ListAddOns(props) {
                                     disableUnderline: true,
                                     style: { fontSize: '12px' },
                                 }}
+                                value={searchValue}
                                 onChange={filterData}
                             />
                         )}

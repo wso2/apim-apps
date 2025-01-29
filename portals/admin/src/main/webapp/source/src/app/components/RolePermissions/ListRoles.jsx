@@ -158,9 +158,11 @@ export default function ListRoles() {
     const [hasListPermission, setHasListPermission] = useState(true);
     const intl = useIntl();
     const [errorMessage, setError] = useState(null);
+    const [searchText, setSearchText] = useState('');
 
-    useEffect(() => {
+    const fetchData = useCallback(() => {
         PermissionAPI.getRoleAliases();
+        setSearchText('');
         Promise.all([PermissionAPI.getRoleAliases(), PermissionAPI.systemScopes()]).then(
             ([roleAliasesRes, systemScopesRes]) => {
                 setSystemScopes(systemScopesRes.body);
@@ -182,6 +184,10 @@ export default function ListRoles() {
     }, []);
 
     useEffect(() => {
+        fetchData();
+    }, [fetchData]);
+
+    useEffect(() => {
         if (systemScopes && roleAliases) {
             const [roleMapping, appMapping] = extractMappings(systemScopes.list);
             setPermissionMappings(mergeRoleAliasesAndScopeMappings(roleAliases.list, roleMapping));
@@ -200,6 +206,7 @@ export default function ListRoles() {
 
     const onSearch = (searchKey) => {
         const keys = Object.keys(permissionMappings);
+        setSearchText(searchKey.target.value);
         const filteredKeys = keys.filter((key) => key.toLowerCase().includes(searchKey.target.value.toLowerCase()));
         const newPermissionMappings = {};
         for (let i = 0; i < filteredKeys.length; i++) {
@@ -300,6 +307,8 @@ export default function ListRoles() {
                 searchActive={searchProps.active}
                 searchPlaceholder={searchProps.searchPlaceholder}
                 filterData={onSearch}
+                onRefresh={fetchData}
+                searchValue={searchText}
             >
                 <Grid item>
                     <Button
