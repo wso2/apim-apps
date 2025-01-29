@@ -37,6 +37,11 @@ import APIProduct from 'AppData/APIProduct';
 import AuthManager from 'AppData/AuthManager';
 import Progress from 'AppComponents/Shared/Progress';
 
+const gatewayTypeMap = {
+    'Regular': 'wso2/synapse',
+    'APK': 'wso2/apk',
+    'AWS': 'AWS',
+}
 
 const getPolicies = async () => {
     const promisedPolicies = API.policies('subscription');
@@ -79,7 +84,7 @@ function APICreateDefault(props) {
                 }
             }
         }
-    }, [settings]);
+    }, [isLoading]);
     const [isCreating, setIsCreating] = useState();
     const [isPublishing, setIsPublishing] = useState(false);
 
@@ -121,20 +126,14 @@ function APICreateDefault(props) {
         const { name: action, value } = event.target;
         inputsDispatcher({ action, value });
         const settingsEnvList = settings && settings.environment;
-        if (settings && settings.gatewayTypes.length === 2 && (value === 'wso2/synapse' || value === 'wso2/apk')) {
+        if (settings && settings.gatewayTypes.length >= 2 && Object.values(gatewayTypeMap).includes(value)) {
             for (const env of settingsEnvList) {
-                let tmpEnv = '';
-                if (env.gatewayType === 'APK') {
-                    tmpEnv = 'wso2/apk';
-                } else if (env.gatewayType === 'Regular') {
-                    tmpEnv = 'wso2/synapse';
-                }
+                const tmpEnv = gatewayTypeMap[env.gatewayType];
                 if (tmpEnv === value) {
                     setIsAvailableGateway(true);
                     break;
-                } else {
-                    setIsAvailableGateway(false);
                 }
+                setIsAvailableGateway(false);
             }
         }
     }
@@ -176,7 +175,6 @@ function APICreateDefault(props) {
         } = apiInputs;
         let promisedCreatedAPI;
         let policies;
-        let defaultGatewayType;
         const allPolicies = await getPolicies();
         if (allPolicies.length === 0) {
             Alert.info(intl.formatMessage({
@@ -188,19 +186,12 @@ function APICreateDefault(props) {
         } else {
             policies = [allPolicies[0].name];
         }
-        if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
-            defaultGatewayType = 'wso2/synapse';
-        } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')){
-            defaultGatewayType = 'wso2/apk';
-        } else {
-            defaultGatewayType = 'default';
-        }
 
         const apiData = {
             name,
             version,
             context,
-            gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
+            gatewayType,
             policies,
         };
         if (endpoint) {
@@ -633,7 +624,7 @@ APICreateDefault.WORKFLOW_STATUS = {
 };
 APICreateDefault.propTypes = {
     history: PropTypes.shape({ push: PropTypes.func }).isRequired,
-    multiGateway: PropTypes.string.isRequired,
+    multiGateway: PropTypes.isRequired,
     isAPIProduct: PropTypes.shape({}),
     isWebSocket: PropTypes.shape({}),
     intl: PropTypes.shape({

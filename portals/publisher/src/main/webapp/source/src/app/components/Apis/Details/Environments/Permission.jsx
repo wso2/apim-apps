@@ -33,7 +33,7 @@ export default function SimplePopper(props) {
     } = props;
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    let msg = roles.toString();
+    let msg = roles?.toString();
     if (type === 'PUBLIC') {
         msg = 'No Visibility Restrictions!';
     }

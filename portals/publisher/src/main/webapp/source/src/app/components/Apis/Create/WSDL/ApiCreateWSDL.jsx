@@ -47,7 +47,7 @@ import ProvideWSDL from './Steps/ProvideWSDL';
 export default function ApiCreateWSDL(props) {
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
-    const { history } = props;
+    const { history, multiGateway } = props;
     const [policies, setPolicies] = useState([]);
 
     useEffect(() => {
@@ -255,6 +255,7 @@ export default function ApiCreateWSDL(props) {
                             onChange={handleOnChange}
                             api={apiInputs}
                             isAPIProduct={false}
+                            multiGateway={multiGateway}
                         />
                     )}
                 </Grid>

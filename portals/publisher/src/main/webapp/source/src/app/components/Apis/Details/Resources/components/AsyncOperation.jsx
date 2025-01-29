@@ -94,6 +94,7 @@ function AsyncOperation(props) {
         target,
         verb,
         sharedScopes,
+        componentValidator
     } = props;
 
     const trimmedVerb = verb === 'publish' || verb === 'subscribe' ? verb.substr(0, 3) : verb;
@@ -253,6 +254,7 @@ function AsyncOperation(props) {
                                     target={target}
                                     verb={verb}
                                     sharedScopes={sharedScopes}
+                                    componentValidator={componentValidator}
                                 />
                                 {(api.type === 'WS' || api.type === 'WEBSUB') && (
                                     <Runtime
