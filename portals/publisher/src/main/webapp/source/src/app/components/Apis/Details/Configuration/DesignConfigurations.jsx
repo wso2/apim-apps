@@ -51,6 +51,7 @@ import StoreVisibility from './components/StoreVisibility';
 import Tags from './components/Tags';
 import Social from './components/Social';
 import APICategories from './components/APICategories';
+import SharedOrganizations from './components/SharedOrganizations';
 
 const PREFIX = 'DesignConfigurations';
 
@@ -249,6 +250,7 @@ function configReducer(state, configAction) {
         case 'enableSchemaValidation':
         case 'maxTps':
         case 'categories':
+        case 'visibleOrganizations':
         case 'tags':
             nextState[action] = value;
             return nextState;
@@ -261,8 +263,6 @@ function configReducer(state, configAction) {
         case 'accessControlRoles':
             return { ...copyAPIConfig(state), [action]: value };
         case 'visibleRoles':
-            return { ...copyAPIConfig(state), [action]: value };
-        case 'visibleOrganizations':
             return { ...copyAPIConfig(state), [action]: value };
         case 'github_repo':
         case 'slack_url': {
@@ -295,7 +295,6 @@ function configReducer(state, configAction) {
         case 'visibility':
             if (nextState[action] !== value && value !== 'RESTRICTED') {
                 nextState.visibleRoles = [];
-                nextState.visibleOrganizations = [];
             }
             nextState[action] = value;
             return nextState;
@@ -602,6 +601,13 @@ export default function DesignConfigurations() {
                                             api={apiConfig}
                                             configDispatcher={configDispatcher}
                                             categories={api.categories}
+                                        />
+                                    </Box>
+                                    <Box py={1}>
+                                        <SharedOrganizations
+                                            api={apiConfig}
+                                            configDispatcher={configDispatcher}
+                                            organizations={api.visibleOrganizations}
                                         />
                                     </Box>
                                     <Box py={1}>

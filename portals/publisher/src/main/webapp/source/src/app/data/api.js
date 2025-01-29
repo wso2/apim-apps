@@ -2822,6 +2822,48 @@ class API extends Resource {
             );
         });
     }
+
+    // /**
+    //  * @static
+    //  * Get all Organizations of the given tenant
+    //  * @return {Promise}
+    //  * */
+    // static sharedOrganizations() {
+    //     const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+    //     return apiClient.then(client => {
+    //         return client.apis["Organization (Collection)"].getAllOrganizations(
+    //             this._requestMetaData(),
+    //         );
+    //     });
+    // }
+
+    /**
+     * @static
+     * Get all Organizations of the given tenant (Mock Data)
+     * @return {Promise}
+     */
+    static sharedOrganizations() {
+        return {
+            count: 2,
+            list: [
+                {
+                    organizationId: "ece92bdc-e1e6-325c-b6f4-656208a041e9",
+                    externalOrganizationId: "external-org-1",
+                    parentOrganizationId: "ece92bdc-e1e6-325c-b6f4-656208a041e1",
+                    displayName: "Mock Organization 1",
+                    description: "This is a mock organization 1",
+                },
+                {
+                    organizationId: "b123fca4-9dcd-432d-88e2-456708bca90e",
+                    externalOrganizationId: "external-org-2",
+                    parentOrganizationId: "ece92bdc-e1e6-325c-b6f4-656208a041e1",
+                    displayName: "Mock Organization 2",
+                    description: "This is a mock organization 2",
+                },
+            ],
+        };
+    }
+
     static keyManagers() {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
