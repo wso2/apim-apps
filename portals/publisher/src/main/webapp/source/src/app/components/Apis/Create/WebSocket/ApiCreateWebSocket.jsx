@@ -16,7 +16,9 @@
 import React from 'react';
 import APICreateDefault from 'AppComponents/Apis/Create/Default/APICreateDefault';
 
-const ApiCreateWebSocket = () => {
-    return (<APICreateDefault isWebSocket />);
+const ApiCreateWebSocket = (props) => {
+    const {multiGateway} = props;
+
+    return (<APICreateDefault multiGateway={multiGateway} isWebSocket />);
 };
 export default ApiCreateWebSocket;

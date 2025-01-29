@@ -117,6 +117,7 @@ function GenericEndpoint(props) {
         name,
         id,
         apiId,
+        componentValidator,
     } = props;
     const [serviceUrl, setServiceUrl] = useState(endpointURL);
     const { api } = useContext(APIContext);
@@ -227,28 +228,30 @@ function GenericEndpoint(props) {
                                 ? <div />
                                 : (
                                     <>
-                                        <IconButton
-                                            className={classes.iconButton}
-                                            aria-label='Settings'
-                                            onClick={() => setAdvancedConfigOpen(index, type, category)}
-                                            disabled={(isRestricted(['apim:api_create'], api))}
-                                            id={category + '-endpoint-configuration-icon-btn'}
-                                            size='large'>
-                                            <Tooltip
-                                                placement='top-start'
-                                                interactive
-                                                title={(
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Endpoints.GenericEndpoint.config.endpoint'
-                                                        defaultMessage='Endpoint configurations'
-                                                    />
-                                                )}
-                                            >
-                                                <Icon>
-                                                    settings
-                                                </Icon>
-                                            </Tooltip>
-                                        </IconButton>
+                                        {componentValidator.includes('advancedConfigurations') &&
+                                            <IconButton
+                                                className={classes.iconButton}
+                                                aria-label='Settings'
+                                                onClick={() => setAdvancedConfigOpen(index, type, category)}
+                                                disabled={(isRestricted(['apim:api_create'], api))}
+                                                id={category + '-endpoint-configuration-icon-btn'}
+                                                size='large'>
+                                                <Tooltip
+                                                    placement='top-start'
+                                                    interactive
+                                                    title={(
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Endpoints.GenericEndpoint.config.endpoint'
+                                                            defaultMessage='Endpoint configurations'
+                                                        />
+                                                    )}
+                                                >
+                                                    <Icon>
+                                                        settings
+                                                    </Icon>
+                                                </Tooltip>
+                                            </IconButton>
+                                        }
                                         {api.subtypeConfiguration?.subtype !== 'AIAPI' && (<IconButton
                                             className={classes.iconButton}
                                             aria-label='Security'
