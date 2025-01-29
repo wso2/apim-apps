@@ -181,7 +181,7 @@ export default function ListRoles() {
                 console.error(error);
             }
         });
-    }, [intl]);
+    }, []);
 
     useEffect(() => {
         fetchData();
