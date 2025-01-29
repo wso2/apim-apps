@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy} from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import Progress from 'AppComponents/Shared/Progress';
 import AuthManager from 'AppData/AuthManager';
@@ -73,7 +73,7 @@ const Apis = () => {
                     }
                 }}
             />
-            <Route path='/apis/:apiUUID/' render={(props) => <DeferredDetails {...props} isAPIProduct={false} />} />
+            <Route path='/apis/:apiUUID/' render={(props) =><DeferredDetails {...props} isAPIProduct={false} />} />
             <Route
                 path='/api-products/:apiProdUUID/'
                 render={(props) => {

@@ -67,6 +67,7 @@ export default function APISecurity(props) {
         api: { securityScheme, id },
         configDispatcher,
         api,
+        componentValidator,
     } = props;
     const apiContext = useContext(ApiContext);
     const isAPIProduct = apiContext.api.apiType === API.CONSTS.APIProduct;
@@ -133,24 +134,32 @@ export default function APISecurity(props) {
                 {(isAPIProduct || (!isEndpointAvailable || (isEndpointAvailable && !isPrototyped)))
                 && (
                     <>
-                        <Grid item xs={12}>
-                            <TransportLevel
-                                haveMultiLevelSecurity={haveMultiLevelSecurity}
-                                securityScheme={securityScheme}
-                                configDispatcher={configDispatcher}
-                                api={api}
-                                id={id}
-                            />
-                        </Grid>
-                        <Grid item xs={12}>
-                            <ApplicationLevel
-                                haveMultiLevelSecurity={haveMultiLevelSecurity}
-                                securityScheme={securityScheme}
-                                api={api}
-                                configDispatcher={configDispatcher}
-                                id={id}
-                            />
-                        </Grid>
+                        {["transportsHTTP", "transportsHTTPS", "transportsMutualSSL"].some(transport =>
+                            componentValidator?.includes(transport)) &&
+                            <Grid item xs={12}>
+                                <TransportLevel
+                                    haveMultiLevelSecurity={haveMultiLevelSecurity}
+                                    securityScheme={securityScheme}
+                                    configDispatcher={configDispatcher}
+                                    api={api}
+                                    id={id}
+                                    componentValidator={componentValidator}
+                                />
+                            </Grid>
+                        }
+                        {["oauth2", "apikey", "basicAuth", "keyManagerConfig"].some(authType =>
+                            componentValidator?.includes(authType)) &&
+                            <Grid item xs={12}>
+                                <ApplicationLevel
+                                    haveMultiLevelSecurity={haveMultiLevelSecurity}
+                                    securityScheme={securityScheme}
+                                    api={api}
+                                    configDispatcher={configDispatcher}
+                                    id={id}
+                                    componentValidator={componentValidator}
+                                />
+                            </Grid>
+                        }
                         <Grid item xs={12}>
                             <span className={classes.error}>
                                 <Validate />

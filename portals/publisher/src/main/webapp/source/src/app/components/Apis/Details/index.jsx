@@ -764,7 +764,8 @@ class Details extends Component {
                 >
                     <Box className={classes.LeftMenu}>
                         <nav name='secondaryNavigation' aria-label='secondary navigation'>
-                            <Link to={'/' + (isAPIProduct ? 'api-products' : 'apis') + '/'} aria-label='ALL APIs'>
+                            <Link to={'/' + (isAPIProduct ? 'api-products' : 'apis') + '/'} 
+                                aria-label='ALL APIs'>
                                 <div className={classes.leftLInkMain}>
                                     <CustomIcon
                                         className={classes.customIcon}
@@ -785,7 +786,8 @@ class Details extends Component {
                                 id='left-menu-overview'
                             />
                             <Typography className={classes.headingText}>
-                                <FormattedMessage id='Apis.Details.index.develop.title' defaultMessage='Develop' />
+                                <FormattedMessage id='Apis.Details.index.develop.title' 
+                                    defaultMessage='Develop' />
                             </Typography>
                             <DevelopSectionMenu
                                 pathPrefix={pathPrefix}
@@ -793,6 +795,9 @@ class Details extends Component {
                                 api={api}
                                 getLeftMenuItemForResourcesByType={this.getLeftMenuItemForResourcesByType}
                                 getLeftMenuItemForDefinitionByType={this.getLeftMenuItemForDefinitionByType}
+                                componentValidator=
+                                    {settings && JSON.parse(settings.gatewayFeatureCatalog)
+                                        .gatewayFeatures[api.gatewayType]}  
                             />
                             <Divider />
                             {!isAPIProduct && (
@@ -835,8 +840,8 @@ class Details extends Component {
                                     />
                                 </>
                             )}
-                            {!readOnlyUser && (isAPIProduct || (!isAPIProduct && !api.isWebSocket() && !api.isGraphql()
-                                && !isAsyncAPI)) && (
+                            {!readOnlyUser && (isAPIProduct || (!isAPIProduct && !api.isWebSocket() 
+                                && !api.isGraphql() && !isAsyncAPI)) && (
                                 <div>
                                     <Divider />
                                     <Typography className={classes.headingText}>
@@ -936,7 +941,8 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.API_DEFINITION}
-                                        component={() => <APIDefinition api={api} updateAPI={this.updateAPI} />}
+                                        component={() => <APIDefinition api={api} 
+                                            updateAPI={this.updateAPI} />}
                                     />
                                     <Route
                                         path={Details.subPaths.WSDL}
@@ -952,7 +958,8 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.ASYNCAPI_DEFINITION}
-                                        component={() => <APIDefinition api={api} updateAPI={this.updateAPI} />}
+                                        component={() => <APIDefinition api={api} 
+                                            updateAPI={this.updateAPI} />}
                                     />
                                     <Route
                                         path={Details.subPaths.LIFE_CYCLE}
@@ -964,7 +971,8 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.CONFIGURATION}
-                                        component={() => <DesignConfigurations api={api} updateAPI={this.updateAPI}/>}
+                                        component={() => <DesignConfigurations api={api} 
+                                            updateAPI={this.updateAPI}/>}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION}
@@ -976,11 +984,13 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.TOPICS}
-                                        component={() => <Topics api={api} updateAPI={this.updateAPI} />}
+                                        component={() => <Topics api={api} 
+                                            updateAPI={this.updateAPI} />}
                                     />
                                     <Route
                                         path={Details.subPaths.CONFIGURATION_PRODUCT}
-                                        component={() => <DesignConfigurations api={api} updateAPI={this.updateAPI}/>}
+                                        component={() => <DesignConfigurations api={api} 
+                                            updateAPI={this.updateAPI}/>}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION_PRODUCT}
@@ -1000,7 +1010,11 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.OPERATIONS}
-                                        component={() => <Operations api={api} updateAPI={this.updateAPI} />}
+                                        component={() => <Operations api={api} 
+                                            componentValidator={settings && 
+                                                JSON.parse(settings.gatewayFeatureCatalog)
+                                                    .gatewayFeatures[api.gatewayType].resources}
+                                            updateAPI={this.updateAPI} />}
                                     />
                                     <Route
                                         exact
@@ -1017,8 +1031,12 @@ class Details extends Component {
                                         key={Details.subPaths.RESOURCES}
                                         component={APIOperations}
                                     />
-
-                                    <Route path={Details.subPaths.SCOPES} component={() => <Scope api={api} />} />
+                                    {settings && JSON.parse(settings.gatewayFeatureCatalog)
+                                        .gatewayFeatures[api.gatewayType]
+                                        .localScopes.includes("operationScopes") &&
+                                        <Route path={Details.subPaths.SCOPES} component={() => 
+                                            <Scope api={api} />} />
+                                    }
                                     <Route
                                         path={Details.subPaths.DOCUMENTS}
                                         component={() => <Documents api={api} />}
@@ -1027,16 +1045,24 @@ class Details extends Component {
                                         path={Details.subPaths.DOCUMENTS_PRODUCT}
                                         component={() => <Documents api={api} />}
                                     />
-                                    <Route
-                                        path={Details.subPaths.SUBSCRIPTIONS}
-                                        component={() => <Subscriptions api={api} updateAPI={this.updateAPI} />}
-                                    />
+                                    {settings && JSON.parse(settings.gatewayFeatureCatalog)
+                                        .gatewayFeatures[api.gatewayType]
+                                        .subscriptions.includes("subscriptions") &&
+                                        <Route
+                                            path={Details.subPaths.SUBSCRIPTIONS}
+                                            component={() => <Subscriptions api={api} 
+                                                updateAPI={this.updateAPI} />}
+                                        />
+                                    }
                                     <Route
                                         path={Details.subPaths.SUBSCRIPTIONS_PRODUCT}
-                                        component={() => <Subscriptions api={api} updateAPI={this.updateAPI} />}
+                                        component={() => <Subscriptions api={api} 
+                                            updateAPI={this.updateAPI} />}
                                     />
-                                    <Route path={Details.subPaths.SECURITY} component={() => <Security api={api} />} />
-                                    <Route path={Details.subPaths.COMMENTS} component={() => <Comments api={api} />} />
+                                    <Route path={Details.subPaths.SECURITY} component={() => 
+                                        <Security api={api} />} />
+                                    <Route path={Details.subPaths.COMMENTS} component={() => 
+                                        <Comments api={api} />} />
                                     <Route
                                         path={Details.subPaths.BUSINESS_INFO}
                                         component={() => <BusinessInformation api={api} />}
@@ -1053,16 +1079,22 @@ class Details extends Component {
                                         path={Details.subPaths.PROPERTIES_PRODUCT}
                                         component={() => <Properties api={api} />}
                                     />
-                                    <Route path={Details.subPaths.NEW_VERSION} component={() => <CreateNewVersion />} />
+                                    <Route path={Details.subPaths.NEW_VERSION} component={() => 
+                                        <CreateNewVersion />} />
                                     <Route
                                         path={Details.subPaths.NEW_VERSION_PRODUCT}
                                         component={() => <CreateNewVersion />} />
 
-                                    <Route path={Details.subPaths.SUBSCRIPTIONS} component={() => <Subscriptions />} />
-                                    <Route
-                                        path={Details.subPaths.MONETIZATION}
-                                        component={() => <Monetization api={api} />}
-                                    />
+                                    <Route path={Details.subPaths.SUBSCRIPTIONS} component={() => 
+                                        <Subscriptions />} />
+                                    {settings && JSON.parse(settings.gatewayFeatureCatalog)
+                                        .gatewayFeatures[api.gatewayType]
+                                        .monetization.includes("monetization") &&
+                                        <Route
+                                            path={Details.subPaths.MONETIZATION}
+                                            component={() => <Monetization api={api} />}
+                                        />
+                                    }
                                     <Route
                                         path={Details.subPaths.MONETIZATION_PRODUCT}
                                         component={() => <Monetization api={api} />}
@@ -1075,7 +1107,8 @@ class Details extends Component {
                                         path={Details.subPaths.TRYOUT_PRODUCT}
                                         component={() => <TryOutConsole apiObj={api} />}
                                     />
-                                    <Route path={Details.subPaths.EXTERNAL_STORES} component={ExternalStores} />
+                                    <Route path={Details.subPaths.EXTERNAL_STORES} 
+                                        component={ExternalStores} />
                                     <Route
                                         path={Details.subPaths.COMMENTS}
                                         component={() => <Comments apiObj={api} />}
