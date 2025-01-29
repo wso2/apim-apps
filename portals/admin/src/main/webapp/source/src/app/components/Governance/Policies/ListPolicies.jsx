@@ -38,7 +38,6 @@ function apiCall() {
     return restApi
         .getPoliciesList()
         .then((result) => {
-            console.log(result);
             return result.body.list;
         })
         .catch((error) => {
