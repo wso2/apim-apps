@@ -34,8 +34,10 @@ export default function Compliance(props) {
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0 });
 
     useEffect(() => {
+        const abortController = new AbortController();
         const restApi = new GovernanceAPI();
-        return restApi.getArtifactComplianceByArtifactId(artifactId)
+
+        restApi.getArtifactComplianceByArtifactId(artifactId, { signal: abortController.signal })
             .then((response) => {
                 // Get ruleset statuses and count them
                 const rulesetStatuses = response.body.governedPolicies.flatMap(policy =>
@@ -51,10 +53,16 @@ export default function Compliance(props) {
                 setStatusCounts(counts);
             })
             .catch((error) => {
-                console.error('Error fetching ruleset adherence data:', error);
-                setStatusCounts({ passed: 0, failed: 0 });
+                if (!abortController.signal.aborted) {
+                    console.error('Error fetching ruleset adherence data:', error);
+                    setStatusCounts({ passed: 0, failed: 0 });
+                }
             });
-    }, []);
+
+        return () => {
+            abortController.abort();
+        };
+    }, [artifactId]);
 
     return (
         <ContentBase
@@ -62,7 +70,6 @@ export default function Compliance(props) {
             title="Compliance Summary - Pizzashack API"
             pageStyle='paperLess'
         >
-            {/* TODO: Fix the back button bug */}
             <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: 4 }}>
                 <RouterLink to={`/governance/overview`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
                     <ArrowBackIcon /> Back to Overview
