@@ -89,6 +89,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
     const { apiOperations } = useContext<any>(ApiOperationContext);
     const { apiLevelPolicies } = useContext<any>(ApiOperationContext);
     const { api } = useContext<any>(APIContext);
+    const [listOriginatedFromCommonPolicies, setListOriginatedFromCommonPolicies] = useState<string[]>([]);
 
     useEffect(() => {
         const requestList = [];
@@ -119,12 +120,13 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                     op.verb.toLowerCase() === verb.toLowerCase(),
             ) : null;
             const apiPolicies = (isAPILevelPolicy) ? apiLevelPolicies : null;
+            const originatedFromCommonPolicies : string[] = [];
 
             // Populate request flow attached policy list
             const requestFlowList: AttachedPolicy[] = [];
             const requestFlow = (isAPILevelPolicy) ? apiPolicies.request : operationInAction.operationPolicies.request;
             for (const requestFlowAttachedPolicy of requestFlow) {
-                const { policyId, policyName, policyVersion, uuid } =
+                const { policyId, policyName, uuid } =
                     requestFlowAttachedPolicy;
                 if (policyId === null) {
                     // Handling migration flow
@@ -136,14 +138,11 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         uniqueKey: uuid,
                     });
                 } else {
-                    const policyObj = allPolicies?.find(
-                        (policy: PolicySpec) => 
-                            policy.name === policyName && 
-                            policy.version === policyVersion,
-                    );
+                    const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId);
                     if (policyObj) {
                         requestFlowList.push({ ...policyObj, uniqueKey: uuid });
                     } else {
+                        originatedFromCommonPolicies.push(policyId);
                         try {
                             // eslint-disable-next-line no-await-in-loop
                             const policyResponse = await API.getOperationPolicy(
@@ -167,7 +166,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             const responseFlowList: AttachedPolicy[] = [];
             const responseFlow = isAPILevelPolicy ? apiPolicies.response : operationInAction.operationPolicies.response;
             for (const responseFlowAttachedPolicy of responseFlow) {
-                const { policyId, policyName, policyVersion, uuid } =
+                const { policyId, policyName, uuid } =
                     responseFlowAttachedPolicy;
                 if (policyId === null) {
                     // Handling migration flow
@@ -179,14 +178,11 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                         uniqueKey: uuid,
                     });
                 } else {
-                    const policyObj = allPolicies?.find(
-                        (policy: PolicySpec) => 
-                            policy.name === policyName && 
-                            policy.version === policyVersion,
-                    );
+                    const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId);
                     if (policyObj) {
                         responseFlowList.push({ ...policyObj, uniqueKey: uuid });
                     } else {
+                        originatedFromCommonPolicies.push(policyId);
                         try {
                             // eslint-disable-next-line no-await-in-loop
                             const policyResponse = await API.getOperationPolicy(
@@ -211,7 +207,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                 const faultFlowList: AttachedPolicy[] = [];
                 const faultFlow = isAPILevelPolicy ? apiPolicies.fault : operationInAction.operationPolicies.fault;
                 for (const faultFlowAttachedPolicy of faultFlow) {
-                    const { policyId, policyName, policyVersion, uuid } =
+                    const { policyId, policyName, uuid } =
                         faultFlowAttachedPolicy;
                     if (policyId === null) {
                         // Handling migration flow
@@ -223,14 +219,11 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                             uniqueKey: uuid,
                         });
                     } else {
-                        const policyObj = allPolicies?.find(
-                            (policy: PolicySpec) => 
-                                policy.name === policyName && 
-                                policy.version === policyVersion,
-                        );
+                        const policyObj = allPolicies?.find((policy: PolicySpec) => policy.id === policyId);
                         if (policyObj) {
                             faultFlowList.push({ ...policyObj, uniqueKey: uuid });
                         } else {
+                            originatedFromCommonPolicies.push(policyId);
                             try {
                                 // eslint-disable-next-line no-await-in-loop
                                 const policyResponse = await API.getOperationPolicy(
@@ -250,6 +243,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
                 }
                 setFaultFlowPolicyList(faultFlowList);
             }
+            setListOriginatedFromCommonPolicies(originatedFromCommonPolicies);
         })();
     }, [apiOperations, apiLevelPolicies]);
 
@@ -271,6 +265,8 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             faultFlowDroppablePolicyList={faultFlowDroppablePolicyList}
             FlowArrow={FlowArrow}
             PolicyDropzone={PolicyDropzone}
+            listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+            isApiRevision={api.isRevision}
         />
     );
 };

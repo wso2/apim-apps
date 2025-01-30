@@ -45,6 +45,8 @@ interface AttachedPolicyCardProps {
     target: string;
     allPolicies: PolicySpec[] | null;
     isAPILevelPolicy: boolean;
+    listOriginatedFromCommonPolicies: string[];
+    isApiRevision: boolean;
 }
 
 /**
@@ -61,6 +63,8 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
     target,
     allPolicies,
     isAPILevelPolicy,
+    listOriginatedFromCommonPolicies,
+    isApiRevision
 }) => {
     const { api } = useContext<any>(ApiContext);
     const { deleteApiOperation } = useContext<any>(ApiOperationContext);
@@ -155,6 +159,8 @@ const AttachedPolicyCard: FC<AttachedPolicyCardProps> = ({
             handleDelete={handleDelete}
             setDrawerOpen={setDrawerOpen}
             PolicyConfigurationEditDrawer={PolicyConfigurationEditDrawer}
+            listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
+            isApiRevision={isApiRevision}
         />
     );
 };

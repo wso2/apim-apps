@@ -24,6 +24,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import Typography from '@mui/material/Typography';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import Utils from 'AppData/Utils';
@@ -34,6 +35,9 @@ const PREFIX = 'AttachedPolicyCardShared';
 const classes = {
     actionsBox: `${PREFIX}-actionsBox`
 };
+
+const COMMON_POLICY = "Common Policy";
+const API_POLICY = "API Policy";
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
 const Root = styled('div')(() => ({
@@ -52,6 +56,8 @@ interface AttachedPolicyCardSharedProps {
     allPolicies: PolicySpec[] | null;
     isAPILevelPolicy: boolean;
     drawerOpen: any;
+    listOriginatedFromCommonPolicies?: string[];
+    isApiRevision?: boolean;
     handleDrawerOpen: () => void;
     handlePolicyDownload: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
     handleDelete: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
@@ -72,6 +78,8 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
     allPolicies,
     isAPILevelPolicy,
     drawerOpen,
+    listOriginatedFromCommonPolicies,
+    isApiRevision,
     handleDrawerOpen,
     handlePolicyDownload,
     handleDelete,
@@ -106,70 +114,154 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
         backgroundColor: policyBackgroundColor,
         opacity: isDragging ? 0.5 : 1,
     };
-    return (
-        (<Root>
-            <div
-                ref={setNodeRef}
-                style={style}
-                {...attributes}
-                {...listeners}
-                onClick={handleDrawerOpen}
-                onKeyDown={handleDrawerOpen}
-            >
-                <Tooltip
-                    key={policyObj.id}
-                    title={`${policyObj.displayName} : ${policyObj.version}`}
-                    placement='top'
+    
+    if (listOriginatedFromCommonPolicies != undefined) {
+        // Props were passed, use `listOriginatedFromCommonPolicies` and `isApiRevision`
+        let policyType = COMMON_POLICY;
+        if (isApiRevision) {
+            policyType = API_POLICY;
+        } else if (policyObj.isAPISpecific) {
+            if (listOriginatedFromCommonPolicies && listOriginatedFromCommonPolicies.includes(policyObj.id)) {
+                policyType = COMMON_POLICY;
+            } else {
+                policyType = API_POLICY;
+            }
+        }
+        return (
+            <Root>
+                <div
+                    ref={setNodeRef}
+                    style={style}
+                    {...attributes}
+                    {...listeners}
+                    onClick={handleDrawerOpen}
+                    onKeyDown={handleDrawerOpen}
                 >
-                    <Avatar
-                        style={{
-                            margin: '0.2em',
-                            backgroundColor: policyColor,
-                        }}
+                    <Tooltip
+                        key={policyObj.id}
+                        title={
+                            <Typography style={{ whiteSpace: 'pre-line' }} variant='caption'>
+                                {`*${policyType}\n${policyObj.displayName} : ${policyObj.version}`}
+                            </Typography>
+                        }
+                        placement='top'
+                    > 
+                        <Avatar
+                            style={{
+                                margin: '0.2em',
+                                backgroundColor: policyColor,
+                            }}
+                        >
+                            {Utils.stringAvatar(
+                                policyObj.displayName.toUpperCase(),
+                            )}
+                        </Avatar>
+                    </Tooltip>
+                    <Box className={classes.actionsBox}>
+                        <IconButton
+                            key={`${policyObj.id}-download`}
+                            aria-label='Download policy'
+                            size='small'
+                            onClick={handlePolicyDownload}
+                            disableFocusRipple
+                            disableRipple
+                            disabled={policyObj.id === ''} // Disabling policy download for migrated policy
+                        >
+                            <CloudDownloadIcon />
+                        </IconButton>
+                        <IconButton
+                            key={`${policyObj.id}-delete`}
+                            aria-label='delete attached policy'
+                            size='small'
+                            onClick={handleDelete}
+                            disableFocusRipple
+                            disableRipple
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
+                </div>
+                {drawerOpen && (
+                    <PolicyConfigurationEditDrawer
+                        policyObj={policyObj}
+                        drawerOpen={drawerOpen}
+                        setDrawerOpen={setDrawerOpen}
+                        currentFlow={currentFlow}
+                        target={target}
+                        verb={verb}
+                        allPolicies={allPolicies}
+                        isAPILevelPolicy={isAPILevelPolicy}
+                    />
+                )}
+        
+            </Root>
+        );
+    } else {
+        return (
+            (<Root>
+                <div
+                    ref={setNodeRef}
+                    style={style}
+                    {...attributes}
+                    {...listeners}
+                    onClick={handleDrawerOpen}
+                    onKeyDown={handleDrawerOpen}
+                >
+                    <Tooltip
+                        key={policyObj.id}
+                        title={`${policyObj.displayName} : ${policyObj.version}`}
+                        placement='top'
                     >
-                        {Utils.stringAvatar(
-                            policyObj.displayName.toUpperCase(),
-                        )}
-                    </Avatar>
-                </Tooltip>
-                <Box className={classes.actionsBox}>
-                    <IconButton
-                        key={`${policyObj.id}-download`}
-                        aria-label='Download policy'
-                        size='small'
-                        onClick={handlePolicyDownload}
-                        disableFocusRipple
-                        disableRipple
-                        disabled={policyObj.id === ''} // Disabling policy download for migrated policy
-                    >
-                        <CloudDownloadIcon />
-                    </IconButton>
-                    <IconButton
-                        key={`${policyObj.id}-delete`}
-                        aria-label='delete attached policy'
-                        size='small'
-                        onClick={handleDelete}
-                        disableFocusRipple
-                        disableRipple
-                    >
-                        <DeleteIcon />
-                    </IconButton>
-                </Box>
-            </div>
-            {drawerOpen && (
-                <PolicyConfigurationEditDrawer
-                    policyObj={policyObj}
-                    drawerOpen={drawerOpen}
-                    setDrawerOpen={setDrawerOpen}
-                    currentFlow={currentFlow}
-                    target={target}
-                    verb={verb}
-                    allPolicies={allPolicies}
-                    isAPILevelPolicy={isAPILevelPolicy}
-                />
-            )}
-        </Root>)
-    );
+                        <Avatar
+                            style={{
+                                margin: '0.2em',
+                                backgroundColor: policyColor,
+                            }}
+                        >
+                            {Utils.stringAvatar(
+                                policyObj.displayName.toUpperCase(),
+                            )}
+                        </Avatar>
+                    </Tooltip>
+                    <Box className={classes.actionsBox}>
+                        <IconButton
+                            key={`${policyObj.id}-download`}
+                            aria-label='Download policy'
+                            size='small'
+                            onClick={handlePolicyDownload}
+                            disableFocusRipple
+                            disableRipple
+                            disabled={policyObj.id === ''} // Disabling policy download for migrated policy
+                        >
+                            <CloudDownloadIcon />
+                        </IconButton>
+                        <IconButton
+                            key={`${policyObj.id}-delete`}
+                            aria-label='delete attached policy'
+                            size='small'
+                            onClick={handleDelete}
+                            disableFocusRipple
+                            disableRipple
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Box>
+                </div>
+                {drawerOpen && (
+                    <PolicyConfigurationEditDrawer
+                        policyObj={policyObj}
+                        drawerOpen={drawerOpen}
+                        setDrawerOpen={setDrawerOpen}
+                        currentFlow={currentFlow}
+                        target={target}
+                        verb={verb}
+                        allPolicies={allPolicies}
+                        isAPILevelPolicy={isAPILevelPolicy}
+                    />
+                )}
+            </Root>)
+        );
+    }
 }
 
 export default AttachedPolicyCardShared;
