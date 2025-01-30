@@ -263,13 +263,14 @@ class GovernanceAPI extends Resource {
     /**
      * Get artifact compliance by id
      * @param {string} artifactId Artifact id
+     * @param {Object} options Optional parameters including signal for AbortController
      * @returns {Promise} Promised artifact compliance response
      */
-    getArtifactComplianceByArtifactId(artifactId) {
+    getArtifactComplianceByArtifactId(artifactId, options = {}) {
         return this.client.then((client) => {
             return client.apis['Artifact Compliance'].getArtifactComplianceByArtifactId(
                 { artifactId: artifactId },
-                this._requestMetaData(),
+                { ...this._requestMetaData(), signal: options.signal }
             );
         });
     }
