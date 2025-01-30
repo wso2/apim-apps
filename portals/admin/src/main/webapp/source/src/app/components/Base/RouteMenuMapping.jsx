@@ -41,6 +41,7 @@ import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
 
 import GamesIcon from '@mui/icons-material/Games';
 import CategoryIcon from '@mui/icons-material/Category';
+import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PolicyIcon from '@mui/icons-material/Policy';
 import BlockIcon from '@mui/icons-material/Block';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -61,6 +62,7 @@ import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import ListApis from '../APISettings/ListApis';
 import UsageReport from '../APISettings/UsageReport';
+import ListLabels from '../Labels/ListLabels';
 
 const RouteMenuMapping = (intl) => [
     {
@@ -262,6 +264,16 @@ const RouteMenuMapping = (intl) => [
                 path: '/settings/ai-vendors/(.*?)$',
             },
         ],
+    },
+    {
+        id: 'Labels',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.labels',
+            defaultMessage: 'Labels',
+        }),
+        path: '/settings/labels',
+        component: ListLabels,
+        icon: <BookmarksIcon />,
     },
     {
         id: 'Tasks',

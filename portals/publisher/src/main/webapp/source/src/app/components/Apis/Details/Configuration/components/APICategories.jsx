@@ -108,6 +108,10 @@ function APICategories(props) {
                             disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)
                                 || categories.list.length === 0
                             }
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: null,
+                            }}
                             fullWidth
                             label={categories.list.length !== 0 ? (
                                 <FormattedMessage
