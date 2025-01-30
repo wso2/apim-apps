@@ -63,15 +63,42 @@ const EditorContainer = styled(Box)(({ theme }) => ({
 
 // TODO: should load from backend
 const RULE_TYPES = [
-    { value: 'API_DEFINITION', label: 'API Definition' },
-    { value: 'API_METADATA', label: 'API Metadata' },
-    { value: 'DOCUMENTATION', label: 'Documentation' },
+    {
+        value: 'API_DEFINITION',
+        label: <FormattedMessage
+            id='Governance.Rulesets.AddEdit.type.api.definition'
+            defaultMessage='API Definition'
+        />
+    },
+    {
+        value: 'API_METADATA',
+        label: <FormattedMessage
+            id='Governance.Rulesets.AddEdit.type.api.metadata'
+            defaultMessage='API Metadata'
+        />
+    },
+    {
+        value: 'DOCUMENTATION', label: <FormattedMessage
+            id='Governance.Rulesets.AddEdit.type.documentation'
+            defaultMessage='Documentation'
+        />
+    },
 ];
 
 // TODO: should load from backend
 const ARTIFACT_TYPES = [
-    { value: 'REST_API', label: 'REST API' },
-    { value: 'ASYNC_API', label: 'Async API' },
+    {
+        value: 'REST_API', label: <FormattedMessage
+            id='Governance.Rulesets.AddEdit.artifact.rest'
+            defaultMessage='REST API'
+        />
+    },
+    {
+        value: 'ASYNC_API', label: <FormattedMessage
+            id='Governance.Rulesets.AddEdit.artifact.async'
+            defaultMessage='Async API'
+        />
+    },
 ];
 
 function reducer(state, { field, value }) {
@@ -261,8 +288,19 @@ function AddEditRuleset(props) {
     return (
         <ContentBase
             pageStyle='half'
-            title={id ? `Edit Ruleset - ${name}` : 'Create New Ruleset'}
-            help={<div>Help</div>}
+            title={id ? (
+                <FormattedMessage
+                    id='Governance.Rulesets.AddEdit.title.edit'
+                    defaultMessage='Edit Ruleset - {name}'
+                    values={{ name }}
+                />
+            ) : (
+                <FormattedMessage
+                    id='Governance.Rulesets.AddEdit.title.new'
+                    defaultMessage='Create New Ruleset'
+                />
+            )}
+            help={<div>TODO: Link Doc</div>}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
@@ -310,7 +348,10 @@ function AddEditRuleset(props) {
                                 name='description'
                                 value={description}
                                 onChange={onChange}
-                                label='Description'
+                                label={<FormattedMessage
+                                    id='Governance.Rulesets.AddEdit.form.description'
+                                    defaultMessage='Description'
+                                />}
                                 fullWidth
                                 multiline
                                 rows={3}
@@ -324,7 +365,10 @@ function AddEditRuleset(props) {
                                         name='ruleType'
                                         value={ruleType}
                                         onChange={onChange}
-                                        label='Ruleset Type'
+                                        label={<FormattedMessage
+                                            id='Governance.Rulesets.AddEdit.form.ruleset.type'
+                                            defaultMessage='Ruleset Type'
+                                        />}
                                         fullWidth
                                         required
                                         variant='outlined'
@@ -343,7 +387,10 @@ function AddEditRuleset(props) {
                                         name='artifactType'
                                         value={artifactType}
                                         onChange={onChange}
-                                        label='Artifact Type'
+                                        label={<FormattedMessage
+                                            id='Governance.Rulesets.AddEdit.form.artifact.type'
+                                            defaultMessage='Artifact Type'
+                                        />}
                                         fullWidth
                                         required
                                         variant='outlined'
@@ -391,7 +438,10 @@ function AddEditRuleset(props) {
                                         startIcon={<CloudUploadIcon />}
                                         size="small"
                                     >
-                                        Upload File
+                                        <FormattedMessage
+                                            id='Governance.Rulesets.AddEdit.button.upload'
+                                            defaultMessage='Upload File'
+                                        />
                                         <input
                                             type="file"
                                             hidden
@@ -428,7 +478,17 @@ function AddEditRuleset(props) {
                                 disabled={saving}
                             >
                                 {saving ? <CircularProgress size={16} /> : (
-                                    id ? 'Update' : 'Create'
+                                    id ? (
+                                        <FormattedMessage
+                                            id='Governance.Rulesets.AddEdit.button.update'
+                                            defaultMessage='Update'
+                                        />
+                                    ) : (
+                                        <FormattedMessage
+                                            id='Governance.Rulesets.AddEdit.button.create'
+                                            defaultMessage='Create'
+                                        />
+                                    )
                                 )}
                             </Button>
                         </Box>

@@ -26,6 +26,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import LabelIcon from '@mui/icons-material/Label';
+import RuleIcon from '@mui/icons-material/Rule';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
@@ -239,7 +240,6 @@ export default function RuleViolationSummary({ artifactId }) {
                                             showActionColumn={false}
                                             useContentBase={false}
                                             emptyBoxProps={{
-                                                title: 'No Rules Found',
                                                 content: 'There are no rules to display',
                                             }}
                                             options={{
@@ -263,6 +263,60 @@ export default function RuleViolationSummary({ artifactId }) {
     // Add this new function to calculate total rules
     const getTotalRuleCount = (rulesets) => {
         return rulesets.reduce((sum, ruleset) => sum + ruleset.rules.length, 0);
+    };
+
+    const renderEmptyContent = (message) => (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 3
+            }}
+        >
+            <RuleIcon
+                sx={{
+                    fontSize: 60,
+                    color: 'action.disabled',
+                    mb: 2
+                }}
+            />
+            <Typography
+                variant="h6"
+                color="text.secondary"
+                gutterBottom
+                sx={{ fontWeight: 'medium' }}
+            >
+                {message}
+            </Typography>
+        </Box>
+    );
+
+    const getEmptyMessage = (tabIndex) => {
+        switch (tabIndex) {
+            case 0:
+                return intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.errors',
+                    defaultMessage: 'No Error violations found',
+                });
+            case 1:
+                return intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.warnings',
+                    defaultMessage: 'No Warning violations found',
+                });
+            case 2:
+                return intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.info',
+                    defaultMessage: 'No Info violations found',
+                });
+            case 3:
+                return intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.passed',
+                    defaultMessage: 'No Passed rules found',
+                });
+            default:
+                return '';
+        }
     };
 
     return (
@@ -349,10 +403,26 @@ export default function RuleViolationSummary({ artifactId }) {
                     }, { count: getTotalRuleCount(complianceData.passed) })}
                 />
             </Tabs>
-            {selectedTab === 0 && renderComplianceCards(complianceData.errors, 'errors')}
-            {selectedTab === 1 && renderComplianceCards(complianceData.warnings, 'warnings')}
-            {selectedTab === 2 && renderComplianceCards(complianceData.info, 'info')}
-            {selectedTab === 3 && renderComplianceCards(complianceData.passed, 'passed')}
+            {selectedTab === 0 && (
+                complianceData.errors.length > 0
+                    ? renderComplianceCards(complianceData.errors, 'errors')
+                    : renderEmptyContent(getEmptyMessage(0))
+            )}
+            {selectedTab === 1 && (
+                complianceData.warnings.length > 0
+                    ? renderComplianceCards(complianceData.warnings, 'warnings')
+                    : renderEmptyContent(getEmptyMessage(1))
+            )}
+            {selectedTab === 2 && (
+                complianceData.info.length > 0
+                    ? renderComplianceCards(complianceData.info, 'info')
+                    : renderEmptyContent(getEmptyMessage(2))
+            )}
+            {selectedTab === 3 && (
+                complianceData.passed.length > 0
+                    ? renderComplianceCards(complianceData.passed, 'passed')
+                    : renderEmptyContent(getEmptyMessage(3))
+            )}
         </>
     );
 }

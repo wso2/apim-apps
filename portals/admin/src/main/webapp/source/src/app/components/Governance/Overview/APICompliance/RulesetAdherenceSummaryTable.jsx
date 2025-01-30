@@ -25,6 +25,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
+import AssignmentIcon from '@mui/icons-material/Assignment';
 
 export default function RulesetAdherenceSummaryTable({ artifactId }) {
     const intl = useIntl();
@@ -194,20 +195,53 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         );
     };
 
+    const emptyStateContent = (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 3
+            }}
+        >
+            <AssignmentIcon
+                sx={{
+                    fontSize: 60,
+                    color: 'action.disabled',
+                    mb: 2
+                }}
+            />
+            <Typography
+                variant="h6"
+                color="text.secondary"
+                gutterBottom
+                sx={{ fontWeight: 'medium' }}
+            >
+                {intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RulesetAdherence.empty.title',
+                    defaultMessage: 'No Rulesets Found',
+                })}
+            </Typography>
+            <Typography
+                variant="body2"
+                color="text.secondary"
+                align="center"
+            >
+                {intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RulesetAdherence.empty.helper',
+                    defaultMessage: 'No governance rulesets have been applied for this API.',
+                })}
+            </Typography>
+        </Box>
+    );
+
     return (
         <ListBase
             columProps={RulesetColumProps}
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                title: intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RulesetAdherence.empty.title',
-                    defaultMessage: 'No Policies Found',
-                }),
-                content: intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RulesetAdherence.empty.content',
-                    defaultMessage: 'There are no policies to display',
-                }),
+                content: emptyStateContent
             }}
             addButtonProps={false}
             showActionColumn={false}

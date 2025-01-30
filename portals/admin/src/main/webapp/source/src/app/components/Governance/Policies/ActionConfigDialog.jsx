@@ -35,13 +35,14 @@ import {
     Radio,
     Grid,
 } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 // TODO: load these from backend
 const GOVERNED_STATES = ['API_CREATE', 'API_UPDATE', 'API_DEPLOY', 'API_PUBLISH'];
 const SEVERITY_LEVELS = ['Error', 'Warn', 'Info'];
 
 export default function ActionConfigDialog({ open, onClose, onSave, editAction }) {
+    const intl = useIntl();
     const [formState, setFormState] = useState(editAction || {
         governedState: '',
         actions: {
@@ -125,12 +126,18 @@ export default function ActionConfigDialog({ open, onClose, onSave, editAction }
                         <Grid container spacing={2}>
                             <Grid item xs={5}>
                                 <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                                    Severity Levels
+                                    <FormattedMessage
+                                        id="Governance.Policies.AddEdit.action.severity.levels"
+                                        defaultMessage="Severity Levels"
+                                    />
                                 </Typography>
                             </Grid>
                             <Grid item xs={7}>
                                 <Typography variant="subtitle2" sx={{ mb: 2 }}>
-                                    Actions
+                                    <FormattedMessage
+                                        id="Governance.Policies.AddEdit.action.actions"
+                                        defaultMessage="Actions"
+                                    />
                                 </Typography>
                             </Grid>
                         </Grid>
@@ -138,7 +145,12 @@ export default function ActionConfigDialog({ open, onClose, onSave, editAction }
                             <Box key={level} sx={{ mb: 2 }}>
                                 <Grid container spacing={2} alignItems="center">
                                     <Grid item xs={5}>
-                                        <Typography variant="body2">{level}</Typography>
+                                        <Typography variant="body2">
+                                            {intl.formatMessage({
+                                                id: `Governance.Policies.AddEdit.action.severity.${level.toLowerCase()}`,
+                                                defaultMessage: level
+                                            })}
+                                        </Typography>
                                     </Grid>
                                     <Grid item xs={7}>
                                         <RadioGroup
@@ -155,12 +167,22 @@ export default function ActionConfigDialog({ open, onClose, onSave, editAction }
                                             <FormControlLabel
                                                 value="notify"
                                                 control={<Radio size="small" />}
-                                                label={<Typography variant="body2">Notify</Typography>}
+                                                label={<Typography variant="body2">
+                                                    {intl.formatMessage({
+                                                        id: 'Governance.Policies.AddEdit.action.notify',
+                                                        defaultMessage: 'Notify'
+                                                    })}
+                                                </Typography>}
                                             />
                                             <FormControlLabel
                                                 value="block"
                                                 control={<Radio size="small" />}
-                                                label={<Typography variant="body2">Block</Typography>}
+                                                label={<Typography variant="body2">
+                                                    {intl.formatMessage({
+                                                        id: 'Governance.Policies.AddEdit.action.block',
+                                                        defaultMessage: 'Block'
+                                                    })}
+                                                </Typography>}
                                             />
                                         </RadioGroup>
                                     </Grid>

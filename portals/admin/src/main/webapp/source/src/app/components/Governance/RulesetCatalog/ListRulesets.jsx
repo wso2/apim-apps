@@ -66,6 +66,7 @@ export default function ListRulesets() {
                 customBodyRender: (value, tableMeta) => {
                     const dataRow = tableMeta.rowData;
                     return (
+                        // TODO: Add text wrapping + tooltip for long descriptions
                         <>
                             <Typography>{value}</Typography>
                             <Typography
@@ -170,6 +171,12 @@ export default function ListRulesets() {
             id: 'Governance.Rulesets.List.title',
             defaultMessage: 'Ruleset Catalog',
         }),
+        pageDescription: intl.formatMessage({
+            id: 'Governance.Rulesets.List.description',
+            defaultMessage:
+                'Find comprehensive governance rulesets designed to ensure'
+                + ' the consistency, security and reliability for your APls',
+        }),
     };
 
     const addButtonProps = {
@@ -185,18 +192,21 @@ export default function ListRulesets() {
 
     const emptyBoxProps = {
         content: (
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant='body2' color='textSecondary' component='p'>
                 <FormattedMessage
-                    id='Governance.Policies.List.empty.content'
-                    defaultMessage='You can create a new policy.'
+                    id='Governance.Rulesets.List.empty.content'
+                    defaultMessage={'Rulesets are the building blocks for creating'
+                        + ' governance policies. They contain predefined rules and'
+                        + ' validations that can be used to enforce standards across your APIs.'
+                        + ' Click Create Ruleset to get started.'}
                 />
             </Typography>
         ),
         title: (
-            <Typography variant="h5" component="h2">
+            <Typography gutterBottom variant="h5" component="h2">
                 <FormattedMessage
-                    id='Governance.Policies.List.empty.title'
-                    defaultMessage='Governance Policies'
+                    id='Governance.Rulesets.List.empty.title'
+                    defaultMessage='Ruleset Catalog'
                 />
             </Typography>
         ),
@@ -238,14 +248,20 @@ export default function ListRulesets() {
                 addButtonProps={addButtonProps}
                 emptyBoxProps={emptyBoxProps}
                 searchProps={{
-                    searchPlaceholder: 'Search rulesets by name or type',
+                    searchPlaceholder: intl.formatMessage({
+                        id: 'Governance.Rulesets.List.search.placeholder',
+                        defaultMessage: 'Search rulesets by name or type'
+                    }),
                     active: true,
                 }}
                 apiCall={apiCall}
                 DeleteComponent={DeleteRuleset}
                 editComponentProps={{
                     icon: <EditIcon />,
-                    title: 'Edit Ruleset',
+                    title: intl.formatMessage({
+                        id: 'Governance.Rulesets.List.edit.title',
+                        defaultMessage: 'Edit Ruleset'
+                    }),
                     routeTo: '/governance/ruleset-catalog/',
                 }}
                 addButtonOverride={addButtonOverride}
