@@ -28,10 +28,13 @@ import RuleViolationSummary from './RuleViolationSummary';
 import { PieChart } from '@mui/x-charts';
 import { Box } from '@mui/system';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import { FormattedMessage, useIntl } from 'react-intl';
 
 export default function Compliance(props) {
+    const intl = useIntl();
     const { match: { params: { id: artifactId } } } = props;
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0 });
+    const [artifactName, setArtifactName] = useState('');
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -39,6 +42,9 @@ export default function Compliance(props) {
 
         restApi.getArtifactComplianceByArtifactId(artifactId, { signal: abortController.signal })
             .then((response) => {
+                // Set the artifact name
+                setArtifactName(response.body.artifactName);
+
                 // Get ruleset statuses and count them
                 const rulesetStatuses = response.body.governedPolicies.flatMap(policy =>
                     policy.rulesetValidationResults.map(result => result.status)
@@ -56,6 +62,7 @@ export default function Compliance(props) {
                 if (!abortController.signal.aborted) {
                     console.error('Error fetching ruleset adherence data:', error);
                     setStatusCounts({ passed: 0, failed: 0 });
+                    setArtifactName('');
                 }
             });
 
@@ -67,12 +74,22 @@ export default function Compliance(props) {
     return (
         <ContentBase
             width='full'
-            title="Compliance Summary - Pizzashack API"
+            title={
+                <FormattedMessage
+                    id='Governance.Overview.Compliance.title'
+                    defaultMessage='Compliance Summary - {artifactName}'
+                    values={{ artifactName }}
+                />
+            }
             pageStyle='paperLess'
         >
             <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: 4 }}>
                 <RouterLink to={`/governance/overview`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-                    <ArrowBackIcon /> Back to Overview
+                    <ArrowBackIcon />
+                    <FormattedMessage
+                        id='Governance.Overview.Compliance.back.to.overview'
+                        defaultMessage='Back to Overview'
+                    />
                 </RouterLink>
             </Box>
 
@@ -99,7 +116,10 @@ export default function Compliance(props) {
                                 variant='body1'
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
-                                Policy Adherence Summary
+                                <FormattedMessage
+                                    id='Governance.Overview.Compliance.policy.adherence.summary'
+                                    defaultMessage='Policy Adherence Summary'
+                                />
                             </Typography>
                             <PolicyAdherenceSummaryTable artifactId={artifactId} />
                         </CardContent>
@@ -114,14 +134,31 @@ export default function Compliance(props) {
                                 variant='body1'
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
-                                Ruleset Adherence
+                                <FormattedMessage
+                                    id='Governance.Overview.Compliance.ruleset.adherence'
+                                    defaultMessage='Ruleset Adherence'
+                                />
                             </Typography>
                             <PieChart
                                 colors={['#2E96FF', '#FF5252']}
                                 series={[{
                                     data: [
-                                        { id: 0, value: statusCounts.passed, label: `Passed (${statusCounts.passed})` },
-                                        { id: 1, value: statusCounts.failed, label: `Failed (${statusCounts.failed})` },
+                                        {
+                                            id: 0,
+                                            value: statusCounts.passed,
+                                            label: `${intl.formatMessage({
+                                                id: 'Governance.Overview.Compliance.passed',
+                                                defaultMessage: 'Passed'
+                                            })} (${statusCounts.passed})`
+                                        },
+                                        {
+                                            id: 1,
+                                            value: statusCounts.failed,
+                                            label: `${intl.formatMessage({
+                                                id: 'Governance.Overview.Compliance.failed',
+                                                defaultMessage: 'Failed'
+                                            })} (${statusCounts.failed})`
+                                        },
                                     ],
                                     innerRadius: 50,
                                     outerRadius: 100,
@@ -149,7 +186,10 @@ export default function Compliance(props) {
                                 variant='body1'
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
-                                Ruleset Adherence Summary
+                                <FormattedMessage
+                                    id='Governance.Overview.Compliance.ruleset.adherence.summary'
+                                    defaultMessage='Ruleset Adherence Summary'
+                                />
                             </Typography>
                             <RulesetAdherenceSummaryTable artifactId={artifactId} />
                         </CardContent>

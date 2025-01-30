@@ -28,9 +28,11 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import LabelIcon from '@mui/icons-material/Label';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import { useIntl } from 'react-intl';
 
 // TODO: Improve the component
 export default function RuleViolationSummary({ artifactId }) {
+    const intl = useIntl();
     const [selectedTab, setSelectedTab] = React.useState(0);
     // To store expanded state per tab (TODO: Remove this and simplify the component)
     const [expandedCards, setExpandedCards] = React.useState({
@@ -152,7 +154,10 @@ export default function RuleViolationSummary({ artifactId }) {
     const ruleColumProps = [
         {
             name: 'name',
-            label: 'Rule',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.RuleViolation.column.rule',
+                defaultMessage: 'Rule',
+            }),
             options: {
                 customBodyRender: (value) => (
                     <Typography variant="body2">{value}</Typography>
@@ -161,7 +166,10 @@ export default function RuleViolationSummary({ artifactId }) {
         },
         {
             name: 'violatedPath',
-            label: 'Path',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.RuleViolation.column.path',
+                defaultMessage: 'Path',
+            }),
             options: {
                 customBodyRender: (value) => (
                     <Typography variant="body2">{value}</Typography>
@@ -170,7 +178,10 @@ export default function RuleViolationSummary({ artifactId }) {
         },
         {
             name: 'message',
-            label: 'Message',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.RuleViolation.column.message',
+                defaultMessage: 'Message',
+            }),
             options: {
                 customBodyRender: (value) => (
                     <Typography variant="body2">{value}</Typography>
@@ -308,22 +319,34 @@ export default function RuleViolationSummary({ artifactId }) {
                 <Tab
                     icon={<ReportIcon color="error" />}
                     iconPosition="start"
-                    label={`Errors (${getTotalRuleCount(complianceData.errors)})`}
+                    label={intl.formatMessage({
+                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.errors',
+                        defaultMessage: 'Errors ({count})',
+                    }, { count: getTotalRuleCount(complianceData.errors) })}
                 />
                 <Tab
                     icon={<WarningIcon color="warning" />}
                     iconPosition="start"
-                    label={`Warnings (${getTotalRuleCount(complianceData.warnings)})`}
+                    label={intl.formatMessage({
+                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.warnings',
+                        defaultMessage: 'Warnings ({count})',
+                    }, { count: getTotalRuleCount(complianceData.warnings) })}
                 />
                 <Tab
                     icon={<InfoIcon color="info" />}
                     iconPosition="start"
-                    label={`Info (${getTotalRuleCount(complianceData.info)})`}
+                    label={intl.formatMessage({
+                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.info',
+                        defaultMessage: 'Info ({count})',
+                    }, { count: getTotalRuleCount(complianceData.info) })}
                 />
                 <Tab
                     icon={<CheckCircleIcon color="success" />}
                     iconPosition="start"
-                    label={`Passed (${getTotalRuleCount(complianceData.passed)})`}
+                    label={intl.formatMessage({
+                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.passed',
+                        defaultMessage: 'Passed ({count})',
+                    }, { count: getTotalRuleCount(complianceData.passed) })}
                 />
             </Tabs>
             {selectedTab === 0 && renderComplianceCards(complianceData.errors, 'errors')}

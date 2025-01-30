@@ -24,8 +24,11 @@ import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
 import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import { useIntl } from 'react-intl';
 
 export default function RulesetAdherenceSummaryTable({ artifactId }) {
+    const intl = useIntl();
+    
     const apiCall = () => {
         const restApi = new GovernanceAPI();
         return restApi.getArtifactComplianceByArtifactId(artifactId)
@@ -58,7 +61,10 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         },
         {
             name: 'name',
-            label: 'Ruleset',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.RulesetAdherence.column.ruleset',
+                defaultMessage: 'Ruleset',
+            }),
             options: {
                 width: '40%',
                 customBodyRender: (value) => (
@@ -81,7 +87,10 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         },
         {
             name: 'status',
-            label: 'Status',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.RulesetAdherence.column.status',
+                defaultMessage: 'Status',
+            }),
             options: {
                 setCellProps: () => ({
                     style: { width: '30%' },
@@ -116,7 +125,10 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         },
         {
             name: 'violationsSummary',
-            label: 'Violations',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.RulesetAdherence.column.violations',
+                defaultMessage: 'Violations',
+            }),
             options: {
                 customBodyRender: (value, tableMeta) => {
                     // Count the number of errors, warnings, and info messages in the violations
@@ -150,7 +162,13 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         const { error, warn, info } = violations;
         return (
             <Tooltip title={
-                "Errors: " + error + ", Warnings: " + warn + ", Info: " + info
+                intl.formatMessage(
+                    {
+                        id: 'Governance.Overview.APICompliance.RulesetAdherence.violations.tooltip',
+                        defaultMessage: 'Errors: {error}, Warnings: {warn}, Info: {info}',
+                    },
+                    { error, warn, info }
+                )
             }>
                 <Box sx={{ display: 'flex', gap: 1 }}>
                     <Box key="error" sx={{ display: 'flex', alignItems: 'center' }}>
@@ -182,8 +200,14 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                title: 'No Policies Found',
-                content: 'There are no policies to display',
+                title: intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RulesetAdherence.empty.title',
+                    defaultMessage: 'No Policies Found',
+                }),
+                content: intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RulesetAdherence.empty.content',
+                    defaultMessage: 'There are no policies to display',
+                }),
             }}
             addButtonProps={false}
             showActionColumn={false}

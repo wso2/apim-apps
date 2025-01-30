@@ -83,15 +83,39 @@ export default function Summary() {
                                 variant='body1'
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
-                                Policy Adherence
+                                {intl.formatMessage({
+                                    id: 'Governance.Overview.Summary.policy.adherence',
+                                    defaultMessage: 'Policy Adherence',
+                                })}
                             </Typography>
                             <PieChart
                                 colors={['#2E96FF', '#FF5252', 'grey']}
                                 series={[{
                                     data: [
-                                        { id: 0, value: policyAdherence.followedPolicies, label: `Followed (${policyAdherence.followedPolicies})` },
-                                        { id: 1, value: policyAdherence.violatedPolicies, label: `Violated (${policyAdherence.violatedPolicies})` },
-                                        { id: 2, value: policyAdherence.unAppliedPolicies, label: `Not Applied (${policyAdherence.unAppliedPolicies})` },
+                                        { 
+                                            id: 0, 
+                                            value: policyAdherence.followedPolicies, 
+                                            label: intl.formatMessage({
+                                                id: 'Governance.Overview.Summary.policy.followed',
+                                                defaultMessage: 'Followed ({count})',
+                                            }, { count: policyAdherence.followedPolicies })
+                                        },
+                                        {
+                                            id: 1,
+                                            value: policyAdherence.violatedPolicies,
+                                            label: intl.formatMessage({
+                                                id: 'Governance.Overview.Summary.policy.violated',
+                                                defaultMessage: 'Violated ({count})',
+                                            }, { count: policyAdherence.violatedPolicies })
+                                        },
+                                        {
+                                            id: 2,
+                                            value: policyAdherence.unAppliedPolicies,
+                                            label: intl.formatMessage({
+                                                id: 'Governance.Overview.Summary.policy.not.applied',
+                                                defaultMessage: 'Not Applied ({count})',
+                                            }, { count: policyAdherence.unAppliedPolicies })
+                                        },
                                     ],
                                     innerRadius: 50,
                                     outerRadius: 100,
@@ -114,16 +138,39 @@ export default function Summary() {
                                 variant='body1'
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
-                                {/* TODO: add intl texts */}
-                                API Compliance
+                                {intl.formatMessage({
+                                    id: 'Governance.Overview.Summary.api.compliance',
+                                    defaultMessage: 'API Compliance',
+                                })}
                             </Typography>
                             <PieChart
                                 colors={['#2E96FF', '#FF5252', 'grey']}
                                 series={[{
                                     data: [
-                                        { id: 0, value: apiCompliance.compliantArtifacts, label: `Compliant (${apiCompliance.compliantArtifacts})` },
-                                        { id: 1, value: apiCompliance.nonCompliantArtifacts, label: `Non-Compliant (${apiCompliance.nonCompliantArtifacts})` },
-                                        { id: 2, value: apiCompliance.notApplicableArtifacts, label: `Not Applicable (${apiCompliance.notApplicableArtifacts})` },
+                                        {
+                                            id: 0,
+                                            value: apiCompliance.compliantArtifacts,
+                                            label: intl.formatMessage({
+                                                id: 'Governance.Overview.Summary.api.compliant',
+                                                defaultMessage: 'Compliant ({count})',
+                                            }, { count: apiCompliance.compliantArtifacts })
+                                        },
+                                        {
+                                            id: 1,
+                                            value: apiCompliance.nonCompliantArtifacts,
+                                            label: intl.formatMessage({
+                                                id: 'Governance.Overview.Summary.api.non.compliant',
+                                                defaultMessage: 'Non-Compliant ({count})',
+                                            }, { count: apiCompliance.nonCompliantArtifacts })
+                                        },
+                                        {
+                                            id: 2,
+                                            value: apiCompliance.notApplicableArtifacts,
+                                            label: intl.formatMessage({
+                                                id: 'Governance.Overview.Summary.api.not.applicable',
+                                                defaultMessage: 'Not Applicable ({count})',
+                                            }, { count: apiCompliance.notApplicableArtifacts })
+                                        },
                                     ],
                                     innerRadius: 50,
                                     outerRadius: 100,
@@ -151,7 +198,10 @@ export default function Summary() {
                                 variant='body1'
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
-                                API Compliance Details
+                                {intl.formatMessage({
+                                    id: 'Governance.Overview.Summary.api.compliance.details',
+                                    defaultMessage: 'API Compliance Details',
+                                })}
                             </Typography>
                             <ApiComplianceTable />
                         </CardContent>
@@ -169,7 +219,10 @@ export default function Summary() {
                                 variant='body1'
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
-                                Policy Adherence Details
+                                {intl.formatMessage({
+                                    id: 'Governance.Overview.Summary.policy.adherence.details',
+                                    defaultMessage: 'Policy Adherence Details',
+                                })}
                             </Typography>
                             <PolicyAdherenceTable />
                         </CardContent>
