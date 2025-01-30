@@ -253,10 +253,20 @@ export default function ImportDefinition(props) {
     function updateGraphQLSchema() {
         const {
             inputValue,
+            inputType,
         } = apiInputs;
 
-        const promisedValidation = API.validateGraphQLFile(inputValue);
-        promisedValidation
+        let validationPromise;
+
+        if (inputType === ProvideGraphQL.INPUT_TYPES.FILE) {
+            validationPromise = API.validateGraphQLFile(inputValue);
+        } else if (inputType === ProvideGraphQL.INPUT_TYPES.URL) {
+            validationPromise = API.validateGraphQLByUrl(inputValue);
+        } else if (inputType === ProvideGraphQL.INPUT_TYPES.ENDPOINT) {
+            validationPromise = API.validateGraphQLByEndpoint(inputValue, { useIntrospection: true });
+        }
+
+        validationPromise
             .then((response) => {
                 const { isValid, graphQLInfo } = response.obj;
                 if (isValid === true) {
@@ -446,18 +456,20 @@ export default function ImportDefinition(props) {
                             defaultMessage='Cancel'
                         />
                     </Button>
-                    <Button 
-                        onClick={handleAPIDefinitionEditAndImport}
-                        id='import-before-edit-btn'
-                        variant='contained'
-                        color='primary'
-                        disabled={apiInputs.importingContent==null}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.APIDefinition.APIDefinition.import.definition.edit'
-                            defaultMessage='Edit and Import'
-                        />
-                    </Button>
+                    {!isGraphQL && 
+                        <Button
+                            onClick={handleAPIDefinitionEditAndImport}
+                            id='import-before-edit-btn'
+                            variant='contained'
+                            color='primary'
+                            disabled={apiInputs.importingContent == null}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.APIDefinition.APIDefinition.import.definition.edit'
+                                defaultMessage='Edit and Import'
+                            />
+                        </Button>
+                    }
                     <Button
                         onClick={importDefinition}
                         variant='contained'

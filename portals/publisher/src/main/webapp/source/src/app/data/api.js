@@ -1545,7 +1545,9 @@ class API extends Resource {
             requestBody: {
                 type: 'GraphQL',
                 additionalProperties: api_data.additionalProperties,
-                file: api_data.file,
+                ...(api_data.file !== undefined
+                    ? { file: api_data.file }
+                    : { schema: api_data.schema }),
             }
         };
 
@@ -1576,6 +1578,28 @@ class API extends Resource {
                 {
                     requestBody: {
                         file,
+                    }
+                },
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+        return promised_validationResponse;
+    }
+
+    static validateGraphQL(url, params = { useIntrospection: false }) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const promised_validationResponse = apiClient.then(client => {
+            return client.apis['Validation'].validateGraphQLSchema(
+                {
+                    type: 'GraphQL',
+                    'Content-Type': 'multipart/form-data',
+                    ...params
+                },
+                {
+                    requestBody: {
+                        url,
                     }
                 },
                 this._requestMetaData({
