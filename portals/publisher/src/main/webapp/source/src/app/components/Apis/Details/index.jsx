@@ -24,10 +24,11 @@ import AuthManager, { isRestricted } from 'AppData/AuthManager';
 import LifeCycleIcon from '@mui/icons-material/Autorenew';
 import StoreIcon from '@mui/icons-material/Store';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import PolicyIcon from '@mui/icons-material/Policy';
 import CodeIcon from '@mui/icons-material/Code';
 import PersonPinCircleOutlinedIcon from '@mui/icons-material/PersonPinCircleOutlined';
 import ResourcesIcon from '@mui/icons-material/VerticalSplit';
-import { injectIntl, defineMessages , FormattedMessage} from 'react-intl';
+import { injectIntl, defineMessages, FormattedMessage } from 'react-intl';
 import {
     Redirect, Route, Switch, Link, matchPath,
 } from 'react-router-dom';
@@ -78,6 +79,7 @@ import ExternalStores from './ExternalStores/ExternalStores';
 import { APIProvider } from './components/ApiContext';
 import CreateNewVersion from './NewVersion/NewVersion';
 import TryOutConsole from './TryOut/TryOutConsole';
+import Compliance from './APICompliance/Compliance';
 
 const PREFIX = 'index';
 
@@ -784,6 +786,16 @@ class Details extends Component {
                                 head='valueOnly'
                                 id='left-menu-overview'
                             />
+                            <LeftMenuItem
+                                text={intl.formatMessage({
+                                    id: 'Apis.Details.index.compliance',
+                                    defaultMessage: 'compliance',
+                                })}
+                                to={pathPrefix + 'compliance'}
+                                Icon={<PolicyIcon />}
+                                head='valueOnly'
+                                id='left-menu-compliance'
+                            />
                             <Typography className={classes.headingText}>
                                 <FormattedMessage id='Apis.Details.index.develop.title' defaultMessage='Develop' />
                             </Typography>
@@ -1084,6 +1096,10 @@ class Details extends Component {
                                         path={Details.subPaths.POLICIES}
                                         component={() => <Policies api={api} />}
                                     />
+                                    <Route
+                                        path={Details.subPaths.COMPLIANCE}
+                                        component={() => <Compliance api={api} />}
+                                    />
                                 </Switch>
                             </div>
                         </RevisionContextProvider>
@@ -1143,6 +1159,7 @@ Details.subPaths = {
     TOPICS: '/apis/:api_uuid/topics',
     ASYNCAPI_DEFINITION: '/apis/:api_uuid/asyncApi-definition',
     POLICIES: '/apis/:api_uuid/policies',
+    COMPLIANCE: '/apis/:api_uuid/compliance',
 };
 
 // To make sure that paths will not change by outsiders, Basically an enum

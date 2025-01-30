@@ -217,6 +217,25 @@ class Utils {
     }
 
     /**
+     * Get governance swagger definition URL
+     * @static
+     * @returns
+     * @memberof Utils
+     */
+    static getGovernanceSwaggerURL() {
+        if (Configurations.app.proxy_context_path) {
+            return 'https://'
+                + Utils.getCurrentEnvironment().host
+                + Configurations.app.proxy_context_path
+                + Utils.CONST.GOVERNANCE_SWAGGER_JSON;
+        } else {
+            return 'https://'
+                + Utils.getCurrentEnvironment().host
+                + Utils.CONST.GOVERNANCE_SWAGGER_JSON;
+        }
+    }
+
+    /**
      * Generate UUID V4 Source https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
      */
     static generateUUID() {
@@ -651,6 +670,7 @@ Utils.CONST = {
     INTROSPECT: '/services/auth/introspect',
     SERVICE_CATALOG_SWAGGER_YAML: '/api/am/service-catalog/v1/oas.yaml',
     SWAGGER_YAML: '/api/am/publisher/v4/swagger.yaml',
+    GOVERNANCE_SWAGGER_JSON: '/api/am/governance/v0/swagger.yaml',
     PROTOCOL: 'https://',
     API_CLIENT: 'apiClient',
     SERVICE_CATALOG_CLIENT: 'serviceCatalogClient',
