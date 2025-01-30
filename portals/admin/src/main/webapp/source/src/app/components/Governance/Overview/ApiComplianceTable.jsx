@@ -26,6 +26,7 @@ import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
 import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import { useIntl } from 'react-intl';
 
 /**
  * API call to get Policies
@@ -45,6 +46,7 @@ function apiCall() {
 
 
 export default function ApiComplianceTable() {
+    const intl = useIntl();
 
     const renderProgress = (followed, total) => {
         const percentage = (followed / total) * 100;
@@ -54,7 +56,10 @@ export default function ApiComplianceTable() {
             <Box sx={{ width: '100%' }}>
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="textSecondary">
-                        {`${followed}/${total} Followed`}
+                        {intl.formatMessage({
+                            id: 'Governance.Overview.APICompliance.followed.count',
+                            defaultMessage: '{followed}/{total} Followed',
+                        }, { followed, total })}
                     </Typography>
                 </Box>
                 <LinearProgress
@@ -123,7 +128,10 @@ export default function ApiComplianceTable() {
         },
         {
             name: 'artifactName',
-            label: 'API',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.column.api',
+                defaultMessage: 'API',
+            }),
             options: {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -150,7 +158,10 @@ export default function ApiComplianceTable() {
         },
         {
             name: 'status',
-            label: 'Status',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.column.status',
+                defaultMessage: 'Status',
+            }),
             options: {
                 customBodyRender: (value) => (
                     <Chip
@@ -187,7 +198,10 @@ export default function ApiComplianceTable() {
         },
         {
             name: 'policies',
-            label: 'Policies',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.column.policies',
+                defaultMessage: 'Policies',
+            }),
             options: {
                 customBodyRender: (value, tableMeta) => {
                     const followed = tableMeta.rowData[3]?.followedPolicies || 0;
@@ -238,8 +252,14 @@ export default function ApiComplianceTable() {
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                title: 'No APIs Found',
-                content: 'There are no APIs to display',
+                title: intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.empty.title',
+                    defaultMessage: 'No APIs Found',
+                }),
+                content: intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.empty.content',
+                    defaultMessage: 'There are no APIs to display',
+                }),
             }}
             addButtonProps={false}
             showActionColumn={false}

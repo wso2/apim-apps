@@ -24,10 +24,12 @@ import { TableRow, TableCell } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import { useIntl } from 'react-intl';
 
 import GovernanceAPI from 'AppData/GovernanceAPI';
 
 export default function PolicyAdherenceSummaryTable({ artifactId }) {
+    const intl = useIntl();
 
     /**
      * API call to get Policies
@@ -53,7 +55,10 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             <Box sx={{ width: '100%' }}>
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="textSecondary">
-                        {`${followed}/${total} Followed`}
+                        {intl.formatMessage({
+                            id: 'Governance.Overview.APICompliance.PolicyAdherence.followed.count',
+                            defaultMessage: '{followed}/{total} Followed',
+                        }, { followed, total })}
                     </Typography>
                 </Box>
                 <LinearProgress
@@ -111,7 +116,10 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         },
         {
             name: 'policyName',
-            label: 'Policy',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.policy',
+                defaultMessage: 'Policy',
+            }),
             options: {
                 width: '30%',
                 customBodyRender: (value) => (
@@ -134,7 +142,10 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         },
         {
             name: 'status',
-            label: 'Status',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.status',
+                defaultMessage: 'Status',
+            }),
             options: {
                 setCellProps: () => ({
                     style: { width: '20%' },
@@ -165,7 +176,10 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         },
         {
             name: 'rulesetsList',
-            label: 'Rulesets',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.rulesets',
+                defaultMessage: 'Rulesets',
+            }),
             options: {
                 customBodyRender: (value, tableMeta) => {
                     const rulesets = tableMeta.rowData[3];
@@ -193,8 +207,14 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                title: 'No Policies Found',
-                content: 'There are no policies to display',
+                title: intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.title',
+                    defaultMessage: 'No Policies Found',
+                }),
+                content: intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.content',
+                    defaultMessage: 'There are no policies to display',
+                }),
             }}
             addButtonProps={false}
             showActionColumn={false}

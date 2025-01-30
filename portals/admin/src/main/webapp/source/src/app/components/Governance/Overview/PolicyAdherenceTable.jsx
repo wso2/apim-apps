@@ -26,6 +26,7 @@ import Stack from '@mui/material/Stack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import { useIntl } from 'react-intl';
 
 /**
  * API call to get Policies
@@ -64,6 +65,7 @@ function apiCall() {
 }
 
 export default function PolicyAdherenceTable() {
+    const intl = useIntl();
 
     // TODO: reuse this function in other components
     // TODO: Handle empty data scenario
@@ -75,7 +77,10 @@ export default function PolicyAdherenceTable() {
             <Box sx={{ width: '100%' }}>
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="textSecondary">
-                        {`${followed}/${total} Compliant`}
+                        {intl.formatMessage({
+                            id: 'Governance.Overview.PolicyAdherence.compliant.count',
+                            defaultMessage: '{followed}/{total} Compliant',
+                        }, { followed, total })}
                     </Typography>
                 </Box>
                 <LinearProgress
@@ -102,7 +107,10 @@ export default function PolicyAdherenceTable() {
         },
         {
             name: 'policyName',
-            label: 'Policy',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.PolicyAdherence.column.policy',
+                defaultMessage: 'Policy',
+            }),
             options: {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
@@ -133,7 +141,10 @@ export default function PolicyAdherenceTable() {
         },
         {
             name: 'status',
-            label: 'Status',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.PolicyAdherence.column.status',
+                defaultMessage: 'Status',
+            }),
             options: {
                 customBodyRender: (value) => (
                     <Chip
@@ -168,7 +179,10 @@ export default function PolicyAdherenceTable() {
         },
         {
             name: 'progress',
-            label: 'APIs',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.PolicyAdherence.column.apis',
+                defaultMessage: 'APIs',
+            }),
             options: {
                 customBodyRender: (value, tableMeta) => {
                     const followed = tableMeta.rowData[3]?.compliantArtifacts || 0;
@@ -235,8 +249,14 @@ export default function PolicyAdherenceTable() {
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                title: 'No Policies Found',
-                content: 'There are no policies to display',
+                title: intl.formatMessage({
+                    id: 'Governance.Overview.PolicyAdherence.empty.title',
+                    defaultMessage: 'No Policies Found',
+                }),
+                content: intl.formatMessage({
+                    id: 'Governance.Overview.PolicyAdherence.empty.content',
+                    defaultMessage: 'There are no policies to display',
+                }),
             }}
             addButtonProps={false}
             showActionColumn={false}
