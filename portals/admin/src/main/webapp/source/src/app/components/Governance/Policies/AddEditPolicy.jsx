@@ -372,7 +372,7 @@ function AddEditPolicy(props) {
                     id: 'Governance.Policies.AddEdit.title.new',
                     defaultMessage: 'Governance Policy - Create new',
                 })}
-            help={<div>Help Button</div>}
+            help={<div>TODO: Link Doc</div>}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
@@ -515,7 +515,10 @@ function AddEditPolicy(props) {
                                 startIcon={<AddIcon />}
                                 onClick={handleAddAction}
                             >
-                                Add Action Configuration
+                                {intl.formatMessage({
+                                    id: 'Governance.Policies.AddEdit.action.add',
+                                    defaultMessage: 'Add Action Configuration'
+                                })}
                             </Button>
                         </Box>
                         <Box component='div' m={1}>
@@ -524,11 +527,36 @@ function AddEditPolicy(props) {
                                     <Table>
                                         <TableHead>
                                             <TableRow>
-                                                <TableCell>State</TableCell>
-                                                <TableCell>On Error</TableCell>
-                                                <TableCell>On Warn</TableCell>
-                                                <TableCell>On Info</TableCell>
-                                                <TableCell align="right">Actions</TableCell>
+                                                <TableCell>
+                                                    {intl.formatMessage({
+                                                        id: 'Governance.Policies.AddEdit.action.table.state',
+                                                        defaultMessage: 'State'
+                                                    })}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {intl.formatMessage({
+                                                        id: 'Governance.Policies.AddEdit.action.table.onError',
+                                                        defaultMessage: 'On Error'
+                                                    })}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {intl.formatMessage({
+                                                        id: 'Governance.Policies.AddEdit.action.table.onWarn',
+                                                        defaultMessage: 'On Warn'
+                                                    })}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {intl.formatMessage({
+                                                        id: 'Governance.Policies.AddEdit.action.table.onInfo',
+                                                        defaultMessage: 'On Info'
+                                                    })}
+                                                </TableCell>
+                                                <TableCell align="right">
+                                                    {intl.formatMessage({
+                                                        id: 'Governance.Policies.AddEdit.action.table.actions',
+                                                        defaultMessage: 'Actions'
+                                                    })}
+                                                </TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
