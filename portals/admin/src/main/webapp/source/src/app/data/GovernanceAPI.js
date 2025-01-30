@@ -124,7 +124,6 @@ class GovernanceAPI extends Resource {
      * @returns {Promise} Promise resolving to API response
      */
     updatePolicy(policy) {
-        console.log(policy);
         return this.client.then((client) => {
             return client.apis['Governance Policies'].updateGovernancePolicyById(
                 {
@@ -264,12 +263,67 @@ class GovernanceAPI extends Resource {
     /**
      * Get artifact compliance by id
      * @param {string} artifactId Artifact id
+     * @param {Object} options Optional parameters including signal for AbortController
      * @returns {Promise} Promised artifact compliance response
      */
-    getArtifactCompliance(artifactId) {
+    getArtifactComplianceByArtifactId(artifactId, options = {}) {
         return this.client.then((client) => {
-            return client.apis['Artifact Compliance'].getArtifactCompliance(
+            return client.apis['Artifact Compliance'].getArtifactComplianceByArtifactId(
                 { artifactId: artifactId },
+                { ...this._requestMetaData(), signal: options.signal }
+            );
+        });
+    }
+
+    /**
+     * Get policy adherence summary
+     * @returns {Promise} Promised policy adherence summary response
+     */
+    getPolicyAdherenceSummary() {
+        return this.client.then((client) => {
+            return client.apis['Policy Adherence'].getPolicyAdherenceSummary(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get artifact compliance summary
+     * @returns {Promise} Promised artifact compliance summary response
+     */
+    getArtifactComplianceSummary() {
+        return this.client.then((client) => {
+            return client.apis['Artifact Compliance'].getArtifactComplianceSummary(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get policy adherence by id
+     * @param {string} policyId Policy id
+     * @returns {Promise} Promised policy adherence response
+     */
+    getPolicyAdherenceByPolicyId(policyId) {
+        return this.client.then((client) => {
+            return client.apis['Policy Adherence'].getPolicyAdherenceByPolicyId(
+                { policyId: policyId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    // getRulesetValidationResultsByArtifactId (input artifactId, rulesetId)
+    /**
+     * Get ruleset validation results by artifact id
+     * @param {string} artifactId Artifact id
+     * @param {string} rulesetId Ruleset id
+     * @returns {Promise} Promised validation results response
+     */
+    getRulesetValidationResultsByArtifactId(artifactId, rulesetId) {
+        return this.client.then((client) => {
+            return client.apis['Artifact Compliance'].getRulesetValidationResultsByArtifactId(
+                { artifactId: artifactId, rulesetId: rulesetId },
                 this._requestMetaData(),
             );
         });

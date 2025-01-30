@@ -50,17 +50,14 @@ class APIClientFactory {
         const key = environment.label + '_' + clientType;
         let client = this._APIClientMap.get(key);
 
-        console.log('client', clientType);
         if (client) {
             return client;
         }
 
         if (clientType === Utils.CONST.API_CLIENT) {
             client = new APIClient(environment);
-            console.log('api client created', client);
         } else if (clientType === Utils.CONST.GOVERNANCE_CLIENT) {
             client = new GovernanceAPIClient(environment);
-            console.log('governance client created', client);
         }
 
         this._APIClientMap.set(key, client);
