@@ -49,6 +49,17 @@ export default function ApiComplianceTable() {
     const intl = useIntl();
 
     const renderProgress = (followed, total) => {
+        if (total === 0) {
+            return (
+                <Typography variant="body2" color="textSecondary">
+                    {intl.formatMessage({
+                        id: 'Governance.Overview.APICompliance.no.policies',
+                        defaultMessage: 'N/A - No policies to evaluate',
+                    })}
+                </Typography>
+            );
+        }
+
         const percentage = (followed / total) * 100;
         const isComplete = followed === total;
 

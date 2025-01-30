@@ -68,8 +68,18 @@ export default function PolicyAdherenceTable() {
     const intl = useIntl();
 
     // TODO: reuse this function in other components
-    // TODO: Handle empty data scenario
     const renderProgress = (followed, total) => {
+        if (total === 0) {
+            return (
+                <Typography variant="body2" color="textSecondary">
+                    {intl.formatMessage({
+                        id: 'Governance.Overview.PolicyAdherence.no.apis',
+                        defaultMessage: 'N/A - No APIs to evaluate',
+                    })}
+                </Typography>
+            );
+        }
+
         const percentage = (followed / total) * 100;
         const isComplete = followed === total;
 
