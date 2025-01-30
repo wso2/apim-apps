@@ -27,6 +27,7 @@ import WarningIcon from '@mui/icons-material/Warning';
 import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
+import ApiIcon from '@mui/icons-material/Api';
 
 /**
  * API call to get Policies
@@ -257,20 +258,53 @@ export default function ApiComplianceTable() {
         },
     ];
 
+    const emptyStateContent = (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 3
+            }}
+        >
+            <ApiIcon
+                sx={{
+                    fontSize: 60,
+                    color: 'action.disabled',
+                    mb: 2
+                }}
+            />
+            <Typography
+                variant="h6"
+                color="text.secondary"
+                gutterBottom
+                sx={{ fontWeight: 'medium' }}
+            >
+                {intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.empty.content',
+                    defaultMessage: 'No APIs Available',
+                })}
+            </Typography>
+            <Typography
+                variant="body2"
+                color="text.secondary"
+                align="center"
+            >
+                {intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.empty.helper',
+                    defaultMessage: 'Create APIs to start evaluating their compliance.',
+                })}
+            </Typography>
+        </Box>
+    );
+
     return (
         <ListBase
             columProps={columProps}
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                title: intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.empty.title',
-                    defaultMessage: 'No APIs Found',
-                }),
-                content: intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.empty.content',
-                    defaultMessage: 'There are no APIs to display',
-                }),
+                content: emptyStateContent
             }}
             addButtonProps={false}
             showActionColumn={false}

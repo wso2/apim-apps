@@ -166,6 +166,10 @@ export default function ListPolicies() {
             id: 'Governance.Policies.List.title',
             defaultMessage: 'Governance Policies',
         }),
+        pageDescription: intl.formatMessage({
+            id: 'Governance.Policies.List.description',
+            defaultMessage: 'Create governance policies using rulesets from the catalog to standardize and regulate your APls effectively',
+        }),
     };
 
     const addButtonProps = {
@@ -189,15 +193,17 @@ export default function ListPolicies() {
 
     const emptyBoxProps = {
         content: (
-            <Typography variant="body2" color="textSecondary">
+            <Typography variant='body2' color='textSecondary' component='p'>
                 <FormattedMessage
                     id='Governance.Policies.List.empty.content'
-                    defaultMessage='You can create a new policy.'
+                    defaultMessage={'Governance policies help you enforce standards'
+                        + ' and compliance across your APIs. Click the Create button'
+                        + ' to add your first policy.'}
                 />
             </Typography>
         ),
         title: (
-            <Typography variant="h5" component="h2">
+            <Typography gutterBottom variant='h5' component='h2'>
                 <FormattedMessage
                     id='Governance.Policies.List.empty.title'
                     defaultMessage='Governance Policies'
@@ -233,7 +239,10 @@ export default function ListPolicies() {
             DeleteComponent={DeletePolicy}
             editComponentProps={{
                 icon: <EditIcon />,
-                title: 'Edit Policy',
+                title: intl.formatMessage({
+                    id: 'Governance.Policies.List.edit.title',
+                    defaultMessage: 'Edit Policy',
+                }),
                 routeTo: '/governance/policies/',
             }}
             addButtonOverride={addButtonOverride}
