@@ -141,10 +141,10 @@ function AddEditGWEnvironment(props) {
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [roleValidity, setRoleValidity] = useState(true);
     const { gatewayTypes } = settings;
+    const initialPermissions = dataRow && dataRow.permissions
+        ? dataRow.permissions
+        : { roles: [], permissionType: 'PUBLIC' };
     const [initialState, setInitialState] = useState(() => {
-        const initialPermissions = dataRow && dataRow.permissions
-            ? dataRow.permissions
-            : { roles: [], permissionType: 'PUBLIC' };
         return {
             displayName: '',
             description: '',
@@ -180,6 +180,8 @@ function AddEditGWEnvironment(props) {
             if (invalidRolesArray.length === 0) {
                 setRoleValidity(true);
             }
+        } else if (roles.includes(role)) {
+            setRoles(roles.filter((existingRole) => existingRole !== role));
         } else {
             setValidRoles(validRoles.filter((existingRole) => existingRole !== role));
         }
