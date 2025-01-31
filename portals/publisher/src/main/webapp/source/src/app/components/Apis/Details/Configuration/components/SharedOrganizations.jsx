@@ -63,33 +63,14 @@ const checkedIcon = <CheckBoxIcon fontSize='small' />;
  * @returns {JSX} Render the organizations drop down.
  */
 function SharedOrganizations(props) {
-    const [organizations, setOrganizations] = useState({
-        count: 2,
-        list: [
-            {
-                organizationId: "ece92bdc-e1e6-325c-b6f4-656208a041e9",
-                externalOrganizationId: "external-org-1",
-                parentOrganizationId: "ece92bdc-e1e6-325c-b6f4-656208a041e1",
-                displayName: "Mock Organization 1",
-                description: "This is a mock organization 1",
-            },
-            {
-                organizationId: "b123fca4-9dcd-432d-88e2-456708bca90e",
-                externalOrganizationId: "external-org-2",
-                parentOrganizationId: "ece92bdc-e1e6-325c-b6f4-656208a041e1",
-                displayName: "Mock Organization 2",
-                description: "This is a mock organization 2",
-            },
-        ],
-    });
+    const [organizations, setOrganizations] = useState({});
     const { api, configDispatcher } = props;
 
     const [apiFromContext] = useAPI();
     const intl = useIntl();
 
     useEffect(() => {
-        // currently using mock data for organizations
-        // API.getOrganizations().then((response) => setOrganizations(response.body));
+        API.getOrganizations().then((response) => setOrganizations(response.body));
     }, []);
 
     if (organizations && !organizations.list) {
