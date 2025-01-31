@@ -104,7 +104,7 @@ describe("Depricate old versions of api before publishing", () => {
             timeout: Cypress.config().largeTimeout,
           }).click();
           cy.wait(3000);
-          cy.get(`div[data-testid="card-action-${apiName}1.0.0"]>div>span`, {
+          cy.get(`div[data-testid="card-action-${apiName}1.0.0"]>div>div>span`, {
             timeout: Cypress.config().largeTimeout,
           })
             .contains("DEPRECATED")

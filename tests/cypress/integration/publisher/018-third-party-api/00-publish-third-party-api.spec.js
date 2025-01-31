@@ -97,6 +97,7 @@ describe("Publish thirdparty api", () => {
                 cy.get('#left-menu-itemsubscriptions').click();
                 cy.get('[name="Unlimited"]').click();
                 cy.get('#subscriptions-save-btn').click();
+                cy.get('#disable-sub-validation-yes-btn').click();
                 cy.get('#itest-api-details-portal-config-acc').click();
                 cy.get('#itest-api-details-api-config-acc').click();
                 cy.get('#left-menu-itemRuntimeConfigurations').should('exist');
@@ -129,7 +130,7 @@ describe("Publish thirdparty api", () => {
                 cy.get(`div[data-testid="card-action-${apiName}1.0.0"]`, {timeout: Cypress.config().largeTimeout})
                     .click();
                 cy.wait(3000)
-                cy.get(`div[data-testid="card-action-${apiName}1.0.0"]>div>span`,
+                cy.get(`div[data-testid="card-action-${apiName}1.0.0"]>div>div>span`,
                     {timeout: Cypress.config().largeTimeout})
                     .contains('PUBLISHED').should('exist');
 

@@ -300,6 +300,7 @@ export default function ListSubscriptionThrottlingPolicies() {
                 color='primary'
                 endIcon={<ArrowDropDownIcon />}
                 onClick={handleClick}
+                data-testid='throttling-subscription-add-button'
             >
                 <FormattedMessage
                     id='Throttling.Subscription.Policy.List.addButtonProps.title'
@@ -316,6 +317,7 @@ export default function ListSubscriptionThrottlingPolicies() {
                     onClick={() => handleMenuItemClick(false)}
                     component={RouterLink}
                     to={{ pathname: '/throttling/subscription/add', state: { isAI: false } }}
+                    data-testid='throttling-subscription-add-policy-menu-item'
                 >
                     Add Policy
                 </MenuItem>
@@ -323,6 +325,7 @@ export default function ListSubscriptionThrottlingPolicies() {
                     onClick={() => handleMenuItemClick(true)}
                     component={RouterLink}
                     to={{ pathname: '/throttling/subscription/add', state: { isAI: true } }}
+                    data-testid='throttling-subscription-add-ai-policy-menu-item'
                 >
                     Add AI Policy
                 </MenuItem>

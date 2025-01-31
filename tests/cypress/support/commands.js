@@ -466,7 +466,7 @@ Cypress.Commands.add('modifyGraphqlSchemaDefinition', (filepath) => {
     cy.get('#import-open-api-btn').click();
     cy.get('#import-open-api-btn').should('not.exist')
     const searchCmd = Cypress.platform === 'darwin' ? '{cmd}f' : '{ctrl}f'
-    cy.get('.react-monaco-editor-container', { timeout: 30000 }).get('.monaco-editor textarea:first')
+    cy.get('.monaco-scrollable-element', { timeout: 30000 }).get('.monaco-editor textarea:first')
         .type(searchCmd, { force: true });
     cy.get('.find-part .input').type('modified schema file');
     cy.contains('.find-actions', '1 of').should('be.visible');

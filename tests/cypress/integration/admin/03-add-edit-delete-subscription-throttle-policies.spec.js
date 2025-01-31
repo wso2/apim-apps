@@ -27,6 +27,7 @@ describe("Add Edit Delete subscription throttle policies", () => {
         const policyName = 'Platinum';
         cy.get('[data-testid="Subscription Policies-child-link"]').click();
         cy.get('[data-testid="throttling-subscription-add-button"]').contains('Add Policy').click();
+        cy.get('[data-testid="throttling-subscription-add-policy-menu-item"]').click();
         cy.get('input[name="policyName"]').type(policyName);
         cy.get('textarea[name="description"]').type('Allows 10k requests per minute');
         cy.get('input[name="requestCount"]').type('10000');
