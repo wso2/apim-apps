@@ -42,6 +42,7 @@ function FormDialogBase({
     formSaveCallback,
     dialogOpenCallback,
     triggerIconProps,
+    saveButtonDisabled,
 }) {
     const [open, setOpen] = React.useState(false);
     const [saving, setSaving] = useState(false);
@@ -104,7 +105,7 @@ function FormDialogBase({
                         onClick={saveTriggerd}
                         color='primary'
                         variant='contained'
-                        disabled={saving}
+                        disabled={saving || saveButtonDisabled}
                         data-testid='form-dialog-base-save-btn'
                     >
                         {saving ? (<CircularProgress size={16} />) : (<>{saveButtonText}</>)}
@@ -124,6 +125,7 @@ FormDialogBase.defaultProps = {
         color: 'primary',
         component: 'span',
     },
+    saveButtonDisabled: false,
 };
 
 FormDialogBase.propTypes = {
@@ -142,6 +144,7 @@ FormDialogBase.propTypes = {
     triggerIconProps: PropTypes.shape({}),
     formSaveCallback: PropTypes.func.isRequired,
     dialogOpenCallback: PropTypes.func,
+    saveButtonDisabled: PropTypes.bool,
 };
 
 export default FormDialogBase;
