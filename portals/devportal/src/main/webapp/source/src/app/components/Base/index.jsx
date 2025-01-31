@@ -601,34 +601,6 @@ class LayoutLegacy extends React.Component {
                                 {user ? (
                                     <>
                                         <div className={classes.linkWrapper}>
-                                            {organization && (
-                                                <>
-                                                    <Icon
-                                                        className={classes.icons}
-                                                        sx={{
-                                                            color: 'black',
-                                                            marginTop: '8px',
-                                                        }}
-                                                    >
-                                                        business
-                                                    </Icon>
-                                                    <Typography
-                                                        variant='body1'
-                                                        className={classes.organizationLabel}
-                                                        sx={{
-                                                            marginLeft: '1px',
-                                                            marginRight: '8px',
-                                                            color: 'black',
-                                                            textTransform: 'uppercase',
-                                                            fontWeight: 'bold',
-                                                            paddingTop: '8px',
-                                                            fontSize: '12px',
-                                                        }}
-                                                    >
-                                                        {organization}
-                                                    </Typography>
-                                                </>
-                                            )}
                                             <Button
                                                 aria-owns={this.openUserMenu ? 'menu-list-grow' : null}
                                                 aria-haspopup='true'
@@ -668,6 +640,32 @@ class LayoutLegacy extends React.Component {
                                                         <Paper>
                                                             <ClickAwayListener onClickAway={this.handleCloseUserMenu}>
                                                                 <MenuList>
+                                                                    {organization && (
+                                                                        <MenuItem style={{ pointerEvents: 'none' }}>
+                                                                            <>
+                                                                                <Icon
+                                                                                    className={classes.icons}
+                                                                                    sx={{
+                                                                                        color: 'black',
+                                                                                    }}
+                                                                                >
+                                                                                    business
+                                                                                </Icon>
+                                                                                <Typography
+                                                                                    variant='body1'
+                                                                                    className={classes.organizationLabel}
+                                                                                    sx={{
+                                                                                        color: 'black',
+                                                                                        textTransform: 'uppercase',
+                                                                                        fontWeight: 'bold',
+                                                                                        fontSize: '12px',
+                                                                                    }}
+                                                                                >
+                                                                                    {organization}
+                                                                                </Typography>
+                                                                            </>
+                                                                        </MenuItem>
+                                                                    )}
                                                                     {this.getPasswordChangeEnabled()
                                                                         ? (
                                                                             <MenuItem className={classes.logoutLink}>
