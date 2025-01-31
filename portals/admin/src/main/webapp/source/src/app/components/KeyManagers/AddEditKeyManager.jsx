@@ -57,10 +57,16 @@ import base64url from 'base64url';
 import Error from '@mui/icons-material/Error';
 import InputAdornment from '@mui/material/InputAdornment';
 import { red } from '@mui/material/colors/';
+import Autocomplete from '@mui/material/Autocomplete';
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
+
+const checkedIcon = <CheckBoxIcon fontSize='small' />;
+const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
 
 const StyledExpandMoreIcon = styled(ExpandMoreIcon)(({ theme }) => ({
     '&.expand': {
@@ -161,7 +167,6 @@ function AddEditKeyManager(props) {
     const { isGlobal } = (location && location.state) || false;
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
     const [validOrgs, setValidOrgs] = useState([]);
-    const [orgValidity, setOrgValidity] = useState(true);
 
     const defaultKMType = (settings.keyManagerConfiguration
         && settings.keyManagerConfiguration.length > 0)
@@ -239,6 +244,7 @@ function AddEditKeyManager(props) {
     const [keymanagerConnectorConfigurations, setKeyManagerConfiguration] = useState([]);
     const [enableExchangeToken, setEnableExchangeToken] = useState(false);
     const [enableDirectToken, setEnableDirectToken] = useState(true);
+    const [organizations, setOrganizations] = useState([]);
 
     const restApi = new API();
     const handleRoleAddition = (role) => {
@@ -260,6 +266,17 @@ function AddEditKeyManager(props) {
                     Alert.error('Error when validating role: ' + role);
                     console.error('Error when validating role ' + error);
                 }
+            });
+    };
+    const getOrganizations = () => {
+        const promise = restApi.organizationsListGet();
+        promise
+            .then((result) => {
+                setOrganizations(result.body.list);
+            })
+            .catch((error) => {
+                Alert.error('Error when fetching organizations');
+                console.error('Error when fetching organizations: ' + error);
             });
     };
     const updateKeyManagerConnectorConfiguration = (keyManagerType) => {
@@ -325,6 +342,7 @@ function AddEditKeyManager(props) {
                     : []);
                 dispatch({ field: 'all', value: editState });
                 updateKeyManagerConnectorConfiguration(editState.type);
+                getOrganizations();
             });
         } else {
             updateKeyManagerConnectorConfiguration(defaultKMType);
@@ -599,13 +617,8 @@ function AddEditKeyManager(props) {
         });
     }
 
-    const handleOrganizationAddition = (org) => {
-        setValidOrgs(validOrgs.concat(org));
-        setOrgValidity(true);
-    };
-
-    const handleOrgDeletion = (org) => {
-        setValidOrgs(validOrgs.filter((existingOrg) => existingOrg !== org));
+    const handleOrganizationAddition = (event, newValue) => {
+        setValidOrgs(newValue);
     };
 
     return (
@@ -1920,45 +1933,55 @@ function AddEditKeyManager(props) {
                                 </Grid>
                                 <Grid item xs={12} md={12} lg={9}>
                                     <Box display='flex' flexDirection='row' alignItems='center'>
-                                        <MuiChipsInput
+                                        <Autocomplete
+                                            disabled={organizations.length === 0}
+                                            multiple
                                             fullWidth
-                                            label='Organizations'
-                                            InputLabelProps={{
-                                                shrink: true,
-                                            }}
-                                            variant='outlined'
+                                            limitTags={5}
+                                            options={organizations.map((org) => org.displayName)}
+                                            noOptionsText='No registered organizations'
+                                            disableCloseOnSelect
                                             value={validOrgs}
-                                            placeholder='Type organizations and press Enter'
-                                            clearInputOnBlur
-                                            InputProps={{
-                                                endAdornment: !orgValidity && (
-                                                    <InputAdornment
-                                                        position='end'
-                                                        sx={{ position: 'absolute', right: '25px', top: '50%' }}
-                                                    >
-                                                        <Error color='error' />
-                                                    </InputAdornment>
-                                                ),
-                                            }}
-                                            onAddChip={handleOrganizationAddition}
-                                            error={!orgValidity}
-                                            helperText={
-                                                !orgValidity ? (
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Scopes.Roles.Invalid'
-                                                        defaultMessage='A Role is invalid'
-                                                    />
-                                                ) : []
-                                            }
-                                            renderChip={(ChipComponent, key, ChipProps) => (
-                                                <ChipComponent
-                                                    key={ChipProps.label}
-                                                    label={ChipProps.label}
-                                                    onDelete={() => handleOrgDeletion(ChipProps.label)}
-                                                    style={{
-                                                        margin: '8px 8px 8px 0',
-                                                        float: 'left',
-                                                    }}
+                                            onChange={handleOrganizationAddition}
+                                            renderOption={(options, organization, { selected }) => (
+                                                <div>
+                                                    <li {...options}>
+                                                        <Checkbox
+                                                            id={organization}
+                                                            key={organization}
+                                                            icon={icon}
+                                                            checkedIcon={checkedIcon}
+                                                            style={{ marginRight: 8 }}
+                                                            checked={selected}
+                                                        />
+                                                        {organization}
+                                                    </li>
+                                                </div>
+                                            )}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    disabled={organizations.length === 0}
+                                                    fullWidth
+                                                    label={organizations.length !== 0 ? (
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Configurations.organizations'
+                                                            defaultMessage='Organizations'
+                                                        />
+                                                    ) : (
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Configurations.organizations.empty'
+                                                            defaultMessage='No Organizations Registered.'
+                                                        />
+                                                    )}
+                                                    placeholder={intl.formatMessage({
+                                                        id:
+                                                        'Apis.Details.Configurations.organizations.placeholder.text',
+                                                        defaultMessage: 'Search Organizations',
+                                                    })}
+                                                    margin='normal'
+                                                    variant='outlined'
+                                                    id='Organizations'
                                                 />
                                             )}
                                         />
