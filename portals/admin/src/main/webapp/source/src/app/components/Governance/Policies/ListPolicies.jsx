@@ -60,7 +60,6 @@ export default function ListPolicies() {
                 defaultMessage: 'Policy',
             }),
             options: {
-                filter: true,
                 sort: true,
                 customBodyRender: (value, tableMeta) => {
                     const dataRow = tableMeta.rowData;
@@ -96,7 +95,6 @@ export default function ListPolicies() {
                 defaultMessage: 'Applies when',
             }),
             options: {
-                filter: true,
                 sort: false,
                 customBodyRender: (value) => {
                     if (!value?.length) return null;
@@ -144,7 +142,6 @@ export default function ListPolicies() {
                 defaultMessage: 'Applies to',
             }),
             options: {
-                filter: true,
                 sort: false,
                 customBodyRender: (value) => {
                     if (!value?.length) return null;
