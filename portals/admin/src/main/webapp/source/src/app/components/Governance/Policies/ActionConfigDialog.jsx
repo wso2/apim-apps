@@ -36,19 +36,16 @@ import {
     Grid,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-
-// TODO: load these from backend
-const GOVERNED_STATES = ['API_CREATE', 'API_UPDATE', 'API_DEPLOY', 'API_PUBLISH'];
-const SEVERITY_LEVELS = ['Error', 'Warn', 'Info'];
+import CONSTS from 'AppData/Constants';
 
 export default function ActionConfigDialog({ open, onClose, onSave, editAction }) {
     const intl = useIntl();
     const [formState, setFormState] = useState(editAction || {
         governedState: '',
         actions: {
-            Error: 'notify',
-            Warn: 'notify',
-            Info: 'notify'
+            error: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+            warn: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+            info: CONSTS.GOVERNANCE_ACTIONS.NOTIFY
         }
     });
 
@@ -56,14 +53,22 @@ export default function ActionConfigDialog({ open, onClose, onSave, editAction }
         setFormState(editAction || {
             governedState: '',
             actions: {
-                Error: 'notify',
-                Warn: 'notify',
-                Info: 'notify'
+                error: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+                warn: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+                info: CONSTS.GOVERNANCE_ACTIONS.NOTIFY
             }
         });
     }, [editAction]);
 
     const handleClose = () => {
+        setFormState({
+            governedState: '',
+            actions: {
+                error: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+                warn: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+                info: CONSTS.GOVERNANCE_ACTIONS.NOTIFY
+            }
+        });
         onClose();
     };
 
@@ -77,9 +82,9 @@ export default function ActionConfigDialog({ open, onClose, onSave, editAction }
     };
 
     return (
-        <Dialog 
-            open={open} 
-            onClose={handleClose} 
+        <Dialog
+            open={open}
+            onClose={handleClose}
             maxWidth="sm"
             fullWidth
         >
@@ -90,7 +95,7 @@ export default function ActionConfigDialog({ open, onClose, onSave, editAction }
                 />
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
-                <Box mb={3}>
+                <Box mb={3} mt={1}>
                     <FormControl fullWidth size="small">
                         <InputLabel>
                             <FormattedMessage
@@ -112,9 +117,9 @@ export default function ActionConfigDialog({ open, onClose, onSave, editAction }
                             }
                             disabled={!!editAction} // Disable in edit mode
                         >
-                            {GOVERNED_STATES.map((s) => (
-                                <MenuItem key={s} value={s}>
-                                    {s}
+                            {CONSTS.GOVERNABLE_STATES.map((s) => (
+                                <MenuItem key={s.value} value={s.value}>
+                                    {s.label}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -141,31 +146,28 @@ export default function ActionConfigDialog({ open, onClose, onSave, editAction }
                                 </Typography>
                             </Grid>
                         </Grid>
-                        {SEVERITY_LEVELS.map((level) => (
-                            <Box key={level} sx={{ mb: 2 }}>
+                        {CONSTS.SEVERITY_LEVELS.map((level) => (
+                            <Box key={level.value} sx={{ mb: 2 }}>
                                 <Grid container spacing={2} alignItems="center">
                                     <Grid item xs={5}>
                                         <Typography variant="body2">
-                                            {intl.formatMessage({
-                                                id: `Governance.Policies.AddEdit.action.severity.${level.toLowerCase()}`,
-                                                defaultMessage: level
-                                            })}
+                                            {level.label}
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={7}>
                                         <RadioGroup
                                             row
-                                            value={formState.actions[level]}
+                                            value={formState.actions[level.value.toLowerCase()]}
                                             onChange={(e) => setFormState({
                                                 ...formState,
                                                 actions: {
                                                     ...formState.actions,
-                                                    [level]: e.target.value
+                                                    [level.value.toLowerCase()]: e.target.value
                                                 }
                                             })}
                                         >
                                             <FormControlLabel
-                                                value="notify"
+                                                value={CONSTS.GOVERNANCE_ACTIONS.NOTIFY}
                                                 control={<Radio size="small" />}
                                                 label={<Typography variant="body2">
                                                     {intl.formatMessage({
@@ -175,8 +177,9 @@ export default function ActionConfigDialog({ open, onClose, onSave, editAction }
                                                 </Typography>}
                                             />
                                             <FormControlLabel
-                                                value="block"
+                                                value={CONSTS.GOVERNANCE_ACTIONS.BLOCK}
                                                 control={<Radio size="small" />}
+                                                disabled={formState.governedState === 'API_CREATE' || formState.governedState === 'API_UPDATE'}
                                                 label={<Typography variant="body2">
                                                     {intl.formatMessage({
                                                         id: 'Governance.Policies.AddEdit.action.block',

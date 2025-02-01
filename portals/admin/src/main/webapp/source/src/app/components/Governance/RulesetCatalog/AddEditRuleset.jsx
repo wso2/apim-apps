@@ -38,6 +38,7 @@ import cloneDeep from 'lodash.clonedeep';
 import PropTypes from 'prop-types';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import CONSTS from 'AppData/Constants';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
@@ -60,46 +61,6 @@ const EditorContainer = styled(Box)(({ theme }) => ({
         overflow: 'hidden'
     }
 }));
-
-// TODO: should load from backend
-const RULE_TYPES = [
-    {
-        value: 'API_DEFINITION',
-        label: <FormattedMessage
-            id='Governance.Rulesets.AddEdit.type.api.definition'
-            defaultMessage='API Definition'
-        />
-    },
-    {
-        value: 'API_METADATA',
-        label: <FormattedMessage
-            id='Governance.Rulesets.AddEdit.type.api.metadata'
-            defaultMessage='API Metadata'
-        />
-    },
-    {
-        value: 'DOCUMENTATION', label: <FormattedMessage
-            id='Governance.Rulesets.AddEdit.type.documentation'
-            defaultMessage='Documentation'
-        />
-    },
-];
-
-// TODO: should load from backend
-const ARTIFACT_TYPES = [
-    {
-        value: 'REST_API', label: <FormattedMessage
-            id='Governance.Rulesets.AddEdit.artifact.rest'
-            defaultMessage='REST API'
-        />
-    },
-    {
-        value: 'ASYNC_API', label: <FormattedMessage
-            id='Governance.Rulesets.AddEdit.artifact.async'
-            defaultMessage='Async API'
-        />
-    },
-];
 
 function reducer(state, { field, value }) {
     const nextState = cloneDeep(state);
@@ -373,7 +334,7 @@ function AddEditRuleset(props) {
                                         required
                                         variant='outlined'
                                     >
-                                        {RULE_TYPES.map((option) => (
+                                        {CONSTS.RULESET_TYPES.map((option) => (
                                             <MenuItem key={option.value} value={option.value}>
                                                 {option.label}
                                             </MenuItem>
@@ -395,7 +356,7 @@ function AddEditRuleset(props) {
                                         required
                                         variant='outlined'
                                     >
-                                        {ARTIFACT_TYPES.map((option) => (
+                                        {CONSTS.ARTIFACT_TYPES.map((option) => (
                                             <MenuItem key={option.value} value={option.value}>
                                                 {option.label}
                                             </MenuItem>

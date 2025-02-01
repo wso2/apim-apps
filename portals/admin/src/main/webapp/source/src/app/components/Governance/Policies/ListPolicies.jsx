@@ -21,13 +21,13 @@ import React from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import DeletePolicy from './DeletePolicy';
-import { Box, Chip, Stack } from '@mui/material';
+import { Chip, Stack, Tooltip } from '@mui/material';
 import { Button } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
-
+import Utils from 'AppData/Utils';
 
 /**
  * API call to get Policies
@@ -44,16 +44,6 @@ function apiCall() {
             throw error;
         });
 }
-
-const TruncatedCell = ({ children }) => {
-    return (
-        <Box sx={{ maxWidth: '200px' }}>
-            <Typography noWrap>
-                {children}
-            </Typography>
-        </Box>
-    );
-};
 
 /**
  * Render a list of policies
@@ -75,14 +65,24 @@ export default function ListPolicies() {
                 customBodyRender: (value, tableMeta) => {
                     const dataRow = tableMeta.rowData;
                     return (
-                        <TruncatedCell>
-                            {value}
-                            <Typography variant="caption" display="block">
+                        <>
+                            {/* TODO: Add text wrapping */}
+                            <Typography>{value}</Typography>
+                            <Typography
+                                variant="caption"
+                                display="block"
+                                color="textSecondary"
+                            >
                                 {dataRow[1]}
                             </Typography>
-                        </TruncatedCell>
+                        </>
                     );
                 },
+                setCellProps: () => ({
+                    style: {
+                        width: '35%',
+                    },
+                }),
             },
         },
         {
@@ -98,27 +98,41 @@ export default function ListPolicies() {
             options: {
                 filter: true,
                 sort: false,
-                customBodyRender: (value) => (
-                    <Stack direction="row" spacing={0.5}>
-                        {value?.map((label) => (
-                            <Chip
-                                key={label}
-                                label={label}
-                                size="small"
-                                variant="outlined"
-                                color="primary"
-                            />
-                        ))}
-                    </Stack>
-                ),
+                customBodyRender: (value) => {
+                    if (!value?.length) return null;
+                    const displayItems = value.slice(0, 2);
+                    const remainingCount = value.length - 2;
+
+                    return (
+                        <Tooltip
+                            title={value.map(label => Utils.mapGovernableStateToLabel(label)).join(', ')}
+                            arrow
+                        >
+                            <Stack direction="row" spacing={0.5} alignItems="center">
+                                {displayItems.map((label) => (
+                                    <Chip
+                                        key={label}
+                                        label={Utils.mapGovernableStateToLabel(label)}
+                                        size="small"
+                                        variant="outlined"
+                                        color="primary"
+                                    />
+                                ))}
+                                {remainingCount > 0 && (
+                                    <Typography
+                                        variant="caption"
+                                        color="primary"
+                                    >
+                                        +{remainingCount}
+                                    </Typography>
+                                )}
+                            </Stack>
+                        </Tooltip>
+                    );
+                },
                 setCellProps: () => ({
                     style: {
-                        justifyItems: 'center',
-                    },
-                }),
-                setCellHeaderProps: () => ({
-                    style: {
-                        textAlign: 'center',
+                        width: '25%',
                     },
                 }),
             },
@@ -132,27 +146,41 @@ export default function ListPolicies() {
             options: {
                 filter: true,
                 sort: false,
-                customBodyRender: (value) => (
-                    <Stack direction="row" spacing={0.5}>
-                        {value?.map((label) => (
-                            <Chip
-                                key={label}
-                                label={label}
-                                size="small"
-                                variant="outlined"
-                                color="info"
-                            />
-                        ))}
-                    </Stack>
-                ),
+                customBodyRender: (value) => {
+                    if (!value?.length) return null;
+                    const displayItems = value.slice(0, 2);
+                    const remainingCount = value.length - 2;
+
+                    return (
+                        <Tooltip
+                            title={value.join(', ')}
+                            arrow
+                        >
+                            <Stack direction="row" spacing={0.5} alignItems="center">
+                                {displayItems.map((label) => (
+                                    <Chip
+                                        key={label}
+                                        label={label}
+                                        size="small"
+                                        variant="outlined"
+                                        color="info"
+                                    />
+                                ))}
+                                {remainingCount > 0 && (
+                                    <Typography
+                                        variant="caption"
+                                        color="info.main"
+                                    >
+                                        +{remainingCount}
+                                    </Typography>
+                                )}
+                            </Stack>
+                        </Tooltip>
+                    );
+                },
                 setCellProps: () => ({
                     style: {
-                        justifyItems: 'center',
-                    },
-                }),
-                setCellHeaderProps: () => ({
-                    style: {
-                        textAlign: 'center',
+                        width: '25%',
                     },
                 }),
             },
