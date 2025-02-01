@@ -28,6 +28,7 @@ import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import CreateOptionsModal from './CreateOptionsModal';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import Utils from 'AppData/Utils';
 
 /**
  * API call to get Rulesets
@@ -93,14 +94,17 @@ export default function ListRulesets() {
         {
             name: 'artifactType',
             label: intl.formatMessage({
-                id: 'Governance.Rulesets.List.column.apiType',
+                id: 'Governance.Rulesets.List.column.artifactType',
                 defaultMessage: 'Artifact Type',
             }),
             options: {
                 filter: true,
                 sort: false,
                 customBodyRender: (value) => (
-                    <Chip label={value} size="small" />
+                    <Chip
+                        label={Utils.mapArtifactTypeToLabel(value)}
+                        size="small"
+                    />
                 ),
                 setCellProps: () => ({
                     style: {
@@ -125,7 +129,10 @@ export default function ListRulesets() {
                 filter: true,
                 sort: false,
                 customBodyRender: (value) => (
-                    <Chip label={value} size="small" />
+                    <Chip
+                        label={Utils.mapRuleTypeToLabel(value)}
+                        size="small"
+                    />
                 ),
                 setCellProps: () => ({
                     style: {

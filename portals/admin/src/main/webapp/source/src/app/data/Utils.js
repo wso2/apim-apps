@@ -16,6 +16,7 @@
  * under the License.
  */
 import Configurations from 'Config';
+import CONSTS from 'AppData/Constants';
 /**
  * Utility class for Admin Portal application
  */
@@ -309,6 +310,37 @@ class Utils {
         } else {
             return 'rgb(' + r + ', ' + g + ', ' + b + ')';
         }
+    }
+
+    /**
+     * Maps a governable state value to its label
+     * @param {string} stateValue The value of the governable state
+     * @returns {string} The label of the governable state
+     * @memberof Utils
+     */
+    static mapGovernableStateToLabel(value) {
+        const state = CONSTS.GOVERNABLE_STATES.find((t) => t.value === value);
+        return state?.label || value;
+    }
+
+    /**
+     * Maps rule type value to its label
+     * @param {String} value - The value to be mapped
+     * @returns {String} The corresponding label
+     */
+    static mapRuleTypeToLabel(value) {
+        const ruleType = CONSTS.RULESET_TYPES.find((t) => t.value === value);
+        return ruleType?.label || value;
+    }
+
+    /**
+     * Maps artifact type value to its label
+     * @param {String} value - The value to be mapped
+     * @returns {String} The corresponding label
+     */
+    static mapArtifactTypeToLabel(value) {
+        const artifactType = CONSTS.ARTIFACT_TYPES.find((t) => t.value === value);
+        return artifactType?.label || value;
     }
 
     /**

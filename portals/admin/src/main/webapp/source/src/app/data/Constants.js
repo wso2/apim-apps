@@ -44,6 +44,30 @@ const CONSTS = {
     },
     DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
     DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
+    GOVERNABLE_STATES: [
+        { value: 'API_CREATE', label: 'API Create' },
+        { value: 'API_UPDATE', label: 'API Update' },
+        { value: 'API_DEPLOY', label: 'API Deploy' },
+        { value: 'API_PUBLISH', label: 'API Publish' },
+    ],
+    RULESET_TYPES: [
+        { value: 'API_DEFINITION', label: 'API Definition' },
+        { value: 'API_METADATA', label: 'API Metadata' },
+        { value: 'DOCUMENTATION', label: 'Documentation' },
+    ],
+    ARTIFACT_TYPES: [
+        { value: 'REST_API', label: 'REST API' },
+        { value: 'ASYNC_API', label: 'Async API' },
+    ],
+    SEVERITY_LEVELS: [
+        { value: 'ERROR', label: 'Error' },
+        { value: 'WARN', label: 'Warn' },
+        { value: 'INFO', label: 'Info' },
+    ],
+    GOVERNANCE_ACTIONS: {
+        BLOCK: 'BLOCK',
+        NOTIFY: 'NOTIFY',
+    },
 };
 
 export default CONSTS;

@@ -53,6 +53,8 @@ import ActionConfigDialog from './ActionConfigDialog';
 import PropTypes from 'prop-types';
 import cloneDeep from 'lodash.clonedeep';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import Utils from 'AppData/Utils';
+import CONSTS from 'AppData/Constants';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
@@ -296,14 +298,24 @@ function AddEditPolicy(props) {
             if (existingStateIndex === -1) {
                 acc.push({
                     state: action.state,
-                    Error: action.ruleSeverity === 'ERROR' ? action.type : null,
-                    Warn: action.ruleSeverity === 'WARN' ? action.type : null,
-                    Info: action.ruleSeverity === 'INFO' ? action.type : null
+                    error: action.ruleSeverity === 'ERROR' ? action.type : null,
+                    warn: action.ruleSeverity === 'WARN' ? action.type : null,
+                    info: action.ruleSeverity === 'INFO' ? action.type : null
                 });
             } else {
-                if (action.ruleSeverity === 'ERROR') acc[existingStateIndex].Error = action.type;
-                if (action.ruleSeverity === 'WARN') acc[existingStateIndex].Warn = action.type;
-                if (action.ruleSeverity === 'INFO') acc[existingStateIndex].Info = action.type;
+                switch (action.ruleSeverity) {
+                    case 'ERROR':
+                        acc[existingStateIndex].error = action.type;
+                        break;
+                    case 'WARN':
+                        acc[existingStateIndex].warn = action.type;
+                        break;
+                    case 'INFO':
+                        acc[existingStateIndex].info = action.type;
+                        break;
+                    default:
+                        break;
+                }
             }
             return acc;
         }, []);
@@ -318,7 +330,7 @@ function AddEditPolicy(props) {
                 newActions.push({
                     state: governedState,
                     ruleSeverity: severity.toUpperCase(),
-                    type: action.toUpperCase()
+                    type: action
                 });
             }
         });
@@ -343,9 +355,9 @@ function AddEditPolicy(props) {
         const actionConfig = {
             governedState: groupedAction.state,
             actions: {
-                Error: groupedAction.Error?.toLowerCase() || 'notify',
-                Warn: groupedAction.Warn?.toLowerCase() || 'notify',
-                Info: groupedAction.Info?.toLowerCase() || 'notify'
+                error: groupedAction.error || GOVERNANCE_ACTIONS.NOTIFY,
+                warn: groupedAction.warn || GOVERNANCE_ACTIONS.NOTIFY,
+                info: groupedAction.info || GOVERNANCE_ACTIONS.NOTIFY,
             }
         };
         setDialogConfig({
@@ -562,43 +574,40 @@ function AddEditPolicy(props) {
                                         <TableBody>
                                             {groupActionsByState(actions).map((groupedAction, index) => (
                                                 <TableRow key={groupedAction.state}>
-                                                    <TableCell>{groupedAction.state}</TableCell>
+                                                    <TableCell>{Utils.mapGovernableStateToLabel(groupedAction.state)}</TableCell>
                                                     <TableCell>
                                                         <Chip
-                                                            label={groupedAction.Error || 'Not Set'}
-                                                            color={groupedAction.Error === 'BLOCK' ? 'error' : 'primary'}
+                                                            label={groupedAction.error || 'Not Set'}
+                                                            color={groupedAction.error === CONSTS.GOVERNANCE_ACTIONS.BLOCK ? 'error' : 'primary'}
                                                             variant="outlined"
                                                             size="small"
                                                             sx={{
-                                                                borderColor: groupedAction.Error === 'BLOCK' ? 'error.main' : 'primary.main',
-                                                                backgroundColor: groupedAction.Error === 'BLOCK' ? 'error.lighter' : 'primary.lighter',
-                                                                opacity: groupedAction.Error ? 1 : 0.5
+                                                                borderColor: groupedAction.error === CONSTS.GOVERNANCE_ACTIONS.BLOCK ? 'error.main' : 'primary.main',
+                                                                backgroundColor: groupedAction.error === CONSTS.GOVERNANCE_ACTIONS.BLOCK ? 'error.lighter' : 'primary.lighter',
                                                             }}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
                                                         <Chip
-                                                            label={groupedAction.Warn || 'Not Set'}
-                                                            color={groupedAction.Warn === 'BLOCK' ? 'error' : 'primary'}
+                                                            label={groupedAction.warn || 'Not Set'}
+                                                            color={groupedAction.warn === CONSTS.GOVERNANCE_ACTIONS.BLOCK ? 'error' : 'primary'}
                                                             variant="outlined"
                                                             size="small"
                                                             sx={{
-                                                                borderColor: groupedAction.Warn === 'BLOCK' ? 'error.main' : 'primary.main',
-                                                                backgroundColor: groupedAction.Warn === 'BLOCK' ? 'error.lighter' : 'primary.lighter',
-                                                                opacity: groupedAction.Warn ? 1 : 0.5
+                                                                borderColor: groupedAction.warn === CONSTS.GOVERNANCE_ACTIONS.BLOCK ? 'error.main' : 'primary.main',
+                                                                backgroundColor: groupedAction.warn === CONSTS.GOVERNANCE_ACTIONS.BLOCK ? 'error.lighter' : 'primary.lighter',
                                                             }}
                                                         />
                                                     </TableCell>
                                                     <TableCell>
                                                         <Chip
-                                                            label={groupedAction.Info || 'Not Set'}
-                                                            color={groupedAction.Info === 'BLOCK' ? 'error' : 'primary'}
+                                                            label={groupedAction.info || 'Not Set'}
+                                                            color={groupedAction.info === CONSTS.GOVERNANCE_ACTIONS.BLOCK ? 'error' : 'primary'}
                                                             variant="outlined"
                                                             size="small"
                                                             sx={{
-                                                                borderColor: groupedAction.Info === 'BLOCK' ? 'error.main' : 'primary.main',
-                                                                backgroundColor: groupedAction.Info === 'BLOCK' ? 'error.lighter' : 'primary.lighter',
-                                                                opacity: groupedAction.Info ? 1 : 0.5
+                                                                borderColor: groupedAction.info === CONSTS.GOVERNANCE_ACTIONS.BLOCK ? 'error.main' : 'primary.main',
+                                                                backgroundColor: groupedAction.info === CONSTS.GOVERNANCE_ACTIONS.BLOCK ? 'error.lighter' : 'primary.lighter',
                                                             }}
                                                         />
                                                     </TableCell>
