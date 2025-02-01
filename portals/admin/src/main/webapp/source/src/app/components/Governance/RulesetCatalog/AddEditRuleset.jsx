@@ -39,6 +39,7 @@ import PropTypes from 'prop-types';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import CONSTS from 'AppData/Constants';
+import AuthManager from 'AppData/AuthManager';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
@@ -73,6 +74,7 @@ function reducer(state, { field, value }) {
         case 'artifactType':
         case 'provider':
         case 'rulesetContent':
+        case 'documentationLink':
             nextState[field] = value;
             return nextState;
         default:
@@ -93,7 +95,8 @@ function AddEditRuleset(props) {
         ruleType: '',
         artifactType: '',
         provider: '',
-        rulesetContent: ''
+        rulesetContent: '',
+        documentationLink: ''
     };
     const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -102,8 +105,8 @@ function AddEditRuleset(props) {
         description,
         ruleType,
         artifactType,
-        provider,
-        rulesetContent
+        rulesetContent,
+        documentationLink
     } = state;
 
     useEffect(() => {
@@ -204,6 +207,7 @@ function AddEditRuleset(props) {
         const file = new File([rulesetContent], `${name}.yaml`);
         const body = {
             ...state,
+            provider: AuthManager.getUser().name,
             rulesetContent: file
         }
 
@@ -316,6 +320,18 @@ function AddEditRuleset(props) {
                                 fullWidth
                                 multiline
                                 rows={3}
+                                variant='outlined'
+                            />
+                            <TextField
+                                margin='dense'
+                                name='documentationLink'
+                                value={documentationLink}
+                                onChange={onChange}
+                                label={<FormattedMessage
+                                    id='Governance.Rulesets.AddEdit.form.documentation'
+                                    defaultMessage='Documentation Link'
+                                />}
+                                fullWidth
                                 variant='outlined'
                             />
                             <Grid container spacing={2}>
