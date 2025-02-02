@@ -53,7 +53,7 @@ const CONSTS = {
     RULESET_TYPES: [
         { value: 'API_DEFINITION', label: 'API Definition' },
         { value: 'API_METADATA', label: 'API Metadata' },
-        { value: 'DOCUMENTATION', label: 'Documentation' },
+        { value: 'API_DOCUMENTATION', label: 'Documentation' },
     ],
     ARTIFACT_TYPES: [
         { value: 'REST_API', label: 'REST API' },
