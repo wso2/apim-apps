@@ -37,15 +37,19 @@ import {
     TableRow,
     Paper,
     CircularProgress,
+    Autocomplete,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { styled } from '@mui/material/styles';
-import { MuiChipsInput } from 'mui-chips-input';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import PropTypes from 'prop-types';
 import cloneDeep from 'lodash.clonedeep';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import API from 'AppData/api';
 import Utils from 'AppData/Utils';
 import CONSTS from 'AppData/Constants';
 import ActionConfigDialog from './ActionConfigDialog';
@@ -152,6 +156,8 @@ function AddEditPolicy(props) {
     const [saving, setSaving] = useState(false);
     const [availableRulesets, setAvailableRulesets] = useState([]);
     const [selectedRulesets, setSelectedRulesets] = useState([]); // Store full ruleset objects for UI
+    const [availableLabels, setAvailableLabels] = useState([]);
+    const [labelMode, setLabelMode] = useState('all');
     const intl = useIntl();
     const { match: { params: { id: policyId } }, history } = props;
     const editMode = policyId !== undefined;
@@ -180,6 +186,21 @@ function AddEditPolicy(props) {
 
     useEffect(() => {
         const restApi = new GovernanceAPI();
+        const adminApi = new API();
+
+        // Fetch available labels
+        adminApi.labelsListGet()
+            .then((response) => {
+                const labelList = response.body.list || [];
+                setAvailableLabels(labelList.map((label) => label.name));
+            })
+            .catch((error) => {
+                console.error('Error loading labels:', error);
+                Alert.error(intl.formatMessage({
+                    id: 'Governance.Policies.AddEdit.error.loading.labels',
+                    defaultMessage: 'Error loading labels',
+                }));
+            });
 
         restApi.getRulesetsList()
             .then((response) => {
@@ -254,6 +275,14 @@ function AddEditPolicy(props) {
                     });
                 }
                 break;
+            case 'labels':
+                if (labelMode === 'specific' && (!fieldValue || fieldValue.length === 0)) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Policies.AddEdit.form.labels.required',
+                        defaultMessage: 'At least one label is required when applying to specific APIs',
+                    });
+                }
+                break;
             default:
                 break;
         }
@@ -262,11 +291,11 @@ function AddEditPolicy(props) {
 
     const formHasErrors = (validatingActive = false) => {
         if (hasErrors('name', name, validatingActive)
-            || hasErrors('description', description, validatingActive)) {
+            || hasErrors('description', description, validatingActive)
+            || hasErrors('labels', labels, validatingActive)) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     };
 
     const formSave = () => {
@@ -507,44 +536,82 @@ function AddEditPolicy(props) {
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.labels.title'
-                                defaultMessage='Applicable Labels'
+                                defaultMessage='Applicability'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.labels.description'
-                                defaultMessage='Specify the API labels to associate the governance policy'
+                                defaultMessage={'Choose whether to apply this policy to'
+                                    + ' all APIs or only to APIs with specific labels'}
                             />
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
-                            <MuiChipsInput
-                                variant='outlined'
-                                fullWidth
-                                value={labels}
-                                onAddChip={(label) => {
-                                    labels.push(label);
-                                }}
-                                onDeleteChip={(labelToDelete) => {
-                                    const filteredLabels = labels.filter(
-                                        (label) => label !== labelToDelete,
-                                    );
-                                    dispatch({ field: 'labels', value: filteredLabels });
-                                }}
-                                placeholder={intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.labels.placeholder',
-                                    defaultMessage: 'Type labels and press Enter',
-                                })}
-                                helperText={(
-                                    <div className={classes.helperText}>
-                                        {intl.formatMessage({
-                                            id: 'Governance.Policies.AddEdit.labels.helper',
-                                            defaultMessage: 'Type labels and press Enter to add them',
+                            <Box mb={2}>
+                                <RadioGroup
+                                    row
+                                    value={labelMode}
+                                    onChange={(e) => {
+                                        setLabelMode(e.target.value);
+                                        if (e.target.value === 'all') {
+                                            dispatch({ field: 'labels', value: [] });
+                                        }
+                                    }}
+                                >
+                                    <FormControlLabel
+                                        value='all'
+                                        control={<Radio />}
+                                        label={intl.formatMessage({
+                                            id: 'Governance.Policies.AddEdit.labels.applyAll',
+                                            defaultMessage: 'Apply to all APIs',
                                         })}
-                                    </div>
-                                )}
-                            />
+                                    />
+                                    <FormControlLabel
+                                        value='specific'
+                                        control={<Radio />}
+                                        label={intl.formatMessage({
+                                            id: 'Governance.Policies.AddEdit.labels.applySpecific',
+                                            defaultMessage: 'Apply to APIs with specific labels',
+                                        })}
+                                    />
+                                </RadioGroup>
+                            </Box>
+                            {labelMode === 'specific' && (
+                                <Autocomplete
+                                    multiple
+                                    id='governance-policy-labels'
+                                    options={availableLabels}
+                                    value={labels}
+                                    onChange={(event, newValue) => {
+                                        dispatch({ field: 'labels', value: newValue });
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            variant='outlined'
+                                            label={intl.formatMessage({
+                                                id: 'Governance.Policies.AddEdit.labels.input',
+                                                defaultMessage: 'Select Labels',
+                                            })}
+                                            error={hasErrors('labels', labels, validating)}
+                                            helperText={hasErrors('labels', labels, validating) || intl.formatMessage({
+                                                id: 'Governance.Policies.AddEdit.labels.helper',
+                                                defaultMessage:
+                                                    'Select one or more labels to determine'
+                                                    + ' which APIs this policy applies to',
+                                            })}
+                                        />
+                                    )}
+                                    renderTags={(value, getTagProps) => value.map((option, index) => (
+                                        <Chip
+                                            label={option}
+                                            {...getTagProps({ index })}
+                                        />
+                                    ))}
+                                />
+                            )}
                         </Box>
                     </Grid>
 
