@@ -35,6 +35,7 @@ import LoadingDots from './components/LoadingDots';
  * @returns {JSX} Create API with AI page to render.
  */
 const ApiCreateWithAI = () => {
+    const [sessionId, setSessionId] = useState(null);
     const [inputQuery, setInputQuery] = useState('');
     const [lastQuery, setLastQuery] = useState('');
     const [finalOutcome, setFinalOutcome] = useState('');
@@ -76,7 +77,14 @@ const ApiCreateWithAI = () => {
                 ...prevMessages,
                 { role: 'user', content: query },
             ]);
-            sendInitialRequest(query);
+
+            if (!sessionId) {
+                const newSessionId = generateSessionId();
+                setSessionId(newSessionId);
+                sendInitialRequest(query, newSessionId);
+            } else {
+                sendInitialRequest(query, sessionId);
+            }
         }
     };
 
@@ -89,11 +97,18 @@ const ApiCreateWithAI = () => {
             ...prevMessages,
             { role: 'user', content: query }
         ]);
-        sendInitialRequest(query);
+
+        if (!sessionId) {
+            const newSessionId = generateSessionId();
+            setSessionId(newSessionId);
+            sendInitialRequest(query, newSessionId);
+        } else {
+            sendInitialRequest(query, sessionId);
+        }
     };
 
-    const generateTaskId = () => {
-        return `task-${Date.now()}`;
+    const generateSessionId = () => {
+        return `${Date.now()}`;
     };
 
     const handleSelectedTitles = (titles) => { 
@@ -107,20 +122,17 @@ const ApiCreateWithAI = () => {
             ...prevMessages,
             { role: 'user', content: titlesString }
         ]);
-        sendInitialRequest(titlesString);
+
+        sendInitialRequest(titlesString, sessionId);
     };
 
-    const sendInitialRequest = async (query) => {
+    const sendInitialRequest = async (query, currentSessionId) => {
         setFinalOutcome('');
         setLoading(true);
 
-        const newTaskId = 1728534776568;
-        // const newTaskId = `task-${Date.now()}`;
-        setTaskId(newTaskId);
-        console.log(newTaskId);
-
         try {
             console.log("Sending to backend:", query);
+            console.log("Session ID:", currentSessionId);
             
             const response = await fetch('http://127.0.0.1:5000/api-design', {
                 method: 'POST',
@@ -129,7 +141,7 @@ const ApiCreateWithAI = () => {
                 },
                 body: JSON.stringify({
                     text: query,
-                    task_id: newTaskId
+                    session_id: currentSessionId
                 }),
             });
             
@@ -138,15 +150,16 @@ const ApiCreateWithAI = () => {
             }
 
             const jsonResponse = await response.json();
-
-            const backendResponse = jsonResponse.backendResponse;
-            const isSuggestions = jsonResponse.isSuggestions;
-            const typeOfApi = jsonResponse.typeOfApi;
-            const code = jsonResponse.code;
-            const paths = jsonResponse.paths;
-            const apiTypeSuggestion = jsonResponse.apiTypeSuggestion;
-            const missingValues = jsonResponse.missingValues;
-            const state = jsonResponse.state;
+            const {
+                backendResponse,
+                isSuggestions,
+                typeOfApi,
+                code,
+                paths,
+                apiTypeSuggestion,
+                missingValues,
+                state
+            } = jsonResponse;
 
             setFinalOutcome(backendResponse);
             setIsSuggestion(isSuggestions);
