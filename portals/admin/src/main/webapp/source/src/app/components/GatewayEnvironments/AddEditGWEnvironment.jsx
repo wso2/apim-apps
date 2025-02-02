@@ -31,55 +31,19 @@ import FormControl from '@mui/material/FormControl';
 import MenuItem from '@mui/material/MenuItem';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 import Alert from 'AppComponents/Shared/Alert';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import Typography from '@mui/material/Typography';
-import FormControlLabel from '@mui/material/FormControlLabel';
+// import Radio from '@mui/material/Radio';
+// import RadioGroup from '@mui/material/RadioGroup';
+// import Typography from '@mui/material/Typography';
+// import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
-import FormLabel from '@mui/material/FormLabel';
+// import FormLabel from '@mui/material/FormLabel';
 import { MuiChipsInput } from 'mui-chips-input';
 import Error from '@mui/icons-material/Error';
 import InputAdornment from '@mui/material/InputAdornment';
 import { red } from '@mui/material/colors/';
 import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
-
-const styles = {
-    radioOutline: (theme) => ({
-        display: 'flex',
-        alignItems: 'center',
-        width: '200px', // Set your desired width
-        height: '125px', // Set your desired height
-        padding: '4px', // Adjust the padding for the desired outline size
-        marginRight: '30px',
-        marginLeft: '10px',
-        marginTop: '10px',
-        marginBottom: '10px',
-        border: '2px solid gray', // Initial border color
-        borderRadius: '8px', // Adjust the border-radius for a square outline
-        transition: 'border 0.3s', // Add transition for a smooth color change
-        '&:hover': {
-            border: '2px solid gray', // Keep the gray color on hover
-        },
-        '&.Mui-checked': {
-            border: `2px solid ${theme.palette.primary.main}`, // Change to blue when selected
-        },
-    }),
-    label: {
-        marginLeft: '10px', // Adjust as needed for spacing between the radio button and label
-    },
-    newLabel: {
-        backgroundColor: 'green', // Blue color
-        color: 'white',
-        fontWeight: 'bold',
-        fontSize: '0.6rem',
-        padding: '2px 4px', // Adjust padding as needed
-        borderRadius: '4px', // Adjust border-radius for rounded corners
-        marginLeft: '10px', // Adjust margin as needed
-        display: 'inline-block', // Ensure inline display
-    },
-};
-
-const StyledLabel = styled('span')({ ...styles.label, ...styles.newLabel });
+import GatewayConfiguration from 'AppComponents/GatewayEnvironments/GatewayConfiguration';
+import cloneDeep from 'lodash.clonedeep';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
@@ -107,6 +71,7 @@ function reducer(state, { field, value }) {
         case 'description':
         case 'type':
         case 'roles':
+        case 'additionalProperties':
         case 'vhosts':
             return { ...state, [field]: value };
         case 'editDetails':
@@ -140,23 +105,26 @@ function AddEditGWEnvironment(props) {
     const [validRoles, setValidRoles] = useState([]);
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [roleValidity, setRoleValidity] = useState(true);
+    const [gatewayConfigurations, setGatewayConfiguration] = useState([]);
     const { gatewayTypes } = settings;
     const [initialState, setInitialState] = useState({
         displayName: '',
         description: '',
-        gatewayType: gatewayTypes && gatewayTypes.length > 1 ? 'Regular' : gatewayTypes[0],
+        gatewayType: gatewayTypes && gatewayTypes.length > 1 && gatewayTypes.includes('Regular') ? 'Regular'
+            : gatewayTypes[0],
         type: 'hybrid',
         vhosts: [defaultVhost],
         permissions: {
             roles: [],
             permissionType: 'PUBLIC',
         },
+        additionalProperties: {},
     });
     const [editMode, setIsEditMode] = useState(false);
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
-        name, displayName, description, vhosts, type, gatewayType, permissions,
+        name, displayName, description, vhosts, type, gatewayType, permissions, additionalProperties,
     } = state;
 
     let permissionType = '';
@@ -197,19 +165,43 @@ function AddEditGWEnvironment(props) {
                 }
             });
     };
+
+    const updateGatewayConfiguration = (gatewayType2) => {
+        if (settings.federatedGatewayConfiguration) {
+            settings.federatedGatewayConfiguration.map(({
+                type: key, configurations,
+            }) => {
+                if (key === gatewayType2) {
+                    setGatewayConfiguration(configurations);
+                    return true;
+                } else {
+                    return false;
+                }
+            });
+        }
+    };
+
+    const setAdditionalProperties = (key, value) => {
+        const clonedAdditionalProperties = cloneDeep(additionalProperties);
+        clonedAdditionalProperties[key] = value;
+        dispatch({ field: 'additionalProperties', value: clonedAdditionalProperties });
+    };
+
     const onChange = (e) => {
         if (e.target.name === 'GatewayPermissionRestrict') {
             permissionType = e.target.value;
             dispatch({ field: 'permissionType', value: permissionType });
+        } else if (e.target.name === 'gatewayType') {
+            updateGatewayConfiguration(e.target.value);
         }
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
-    const getBorderColor = (gatewayTypeNew) => {
+    /* const getBorderColor = (gatewayTypeNew) => {
         return gatewayType === gatewayTypeNew
             ? '2px solid #1976D2'
             : '2px solid gray';
-    };
+    }; */
 
     useEffect(() => {
         setInitialState({
@@ -222,6 +214,7 @@ function AddEditGWEnvironment(props) {
                 roles: [],
                 permissionType: 'PUBLIC',
             },
+            additionalProperties: {},
         });
     }, []);
 
@@ -387,7 +380,7 @@ function AddEditGWEnvironment(props) {
                     wssPort: vhost.wssPort,
                 });
             });
-        } else if (gatewayType === 'APK') {
+        } else if (gatewayType === 'APK' || gatewayType === 'AWS') {
             vhosts.forEach((vhost) => {
                 vhostDto.push({
                     host: vhost.host,
@@ -399,16 +392,27 @@ function AddEditGWEnvironment(props) {
         }
         permissions.permissionType = state.permissions.permissionType;
         permissions.roles = validRoles;
+
+        const additionalPropertiesArrayDTO = [];
+        Object.keys(state.additionalProperties).forEach((key) => {
+            additionalPropertiesArrayDTO.push({ key, value: state.additionalProperties[key] });
+        });
+
         let promiseAPICall;
         if (dataRow) {
             // assign the update promise to the promiseAPICall
             promiseAPICall = restApi.updateGatewayEnvironment(
                 dataRow.id, name.trim(), displayName, type, description, gatewayType, vhostDto, permissions,
+                additionalPropertiesArrayDTO,
             );
         } else {
             // assign the create promise to the promiseAPICall
+            let provider = 'wso2';
+            if (gatewayType === 'AWS') {
+                provider = 'external';
+            }
             promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, type, description,
-                gatewayType, vhostDto, permissions);
+                gatewayType, vhostDto, permissions, additionalPropertiesArrayDTO, provider);
         }
 
         return promiseAPICall.then(() => {
@@ -448,6 +452,7 @@ function AddEditGWEnvironment(props) {
                 vhosts: originalVhosts,
                 gatewayType: originalGatewayType,
                 permissions: originalPermissions,
+                additionalProperties: originalAdditionalProperties,
             } = dataRow;
             setIsEditMode(true);
             dispatch({
@@ -460,6 +465,7 @@ function AddEditGWEnvironment(props) {
                     description: originalDescription,
                     vhosts: originalVhosts,
                     permissions: originalPermissions,
+                    additionalProperties: originalAdditionalProperties,
                 },
             });
         }
@@ -559,86 +565,47 @@ function AddEditGWEnvironment(props) {
                     )}
                     variant='outlined'
                 />
-                {gatewayTypes && gatewayTypes.length > 1 && (
-                    <FormControl component='fieldset'>
-                        <FormLabel style={{ marginTop: '10px' }}>
+                <FormControl
+                    component='fieldset'
+                    variant='outlined'
+                    margin='dense'
+                    style={{ marginTop: '10px', marginBottom: '10px' }}
+                >
+                    <InputLabel id='demo-simple-select-label'>
+                        <FormattedMessage
+                            id='GatewayEnvironments.AddEditGWEnvironment.form.gateway.type.label'
+                            defaultMessage='Gateway Type'
+                        />
+                    </InputLabel>
+                    <Select
+                        labelId='demo-simple-select-label'
+                        id='demo-simple-select'
+                        value={gatewayType}
+                        name='gatewayType'
+                        label={(
                             <FormattedMessage
-                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
-                                    + 'gateway.type.label'}
-                                defaultMessage='Select Gateway type'
+                                id='GatewayEnvironments.AddEditGWEnvironment.form.gateway.type.label'
+                                defaultMessage='Gateway Type'
                             />
-                        </FormLabel>
-                        <RadioGroup
-                            row
-                            aria-label='gateway-type'
-                            name='gateway-type'
-                            value={gatewayType}
-                            onChange={onChange}
-                        >
-                            <FormControlLabel
-                                value='Regular'
-                                name='gatewayType'
-                                sx={styles.radioOutline}
-                                control={<Radio />}
-                                disabled={editMode}
-                                label={(
-                                    <div>
-                                        <span>
-                                            <FormattedMessage
-                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
-                                                    + 'gateway.type.regular'}
-                                                defaultMessage='Regular Gateway'
-                                            />
-                                        </span>
-                                        <Typography variant='body2' color='textSecondary'>
-                                            <FormattedMessage
-                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
-                                                    + 'gateway.type.regular.description'}
-                                                defaultMessage={'API gateway embedded in APIM runtime.'
-                                                    + ' Connect directly to an existing APIManager.'}
-                                            />
-                                        </Typography>
-                                    </div>
-                                )}
-                                style={{ border: getBorderColor('Regular') }}
-                            />
-                            <FormControlLabel
-                                value='APK'
-                                name='gatewayType'
-                                sx={styles.radioOutline}
-                                control={<Radio />}
-                                disabled={editMode}
-                                label={(
-                                    <div>
-                                        <span>
-                                            <FormattedMessage
-                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
-                                                        + 'gateway.type.apk'}
-                                                defaultMessage='APK Gateway'
-                                            />
-                                        </span>
-                                        <StyledLabel>
-                                            <FormattedMessage
-                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
-                                                    + 'gateway.type.apk.new.label'}
-                                                defaultMessage='New'
-                                            />
-                                        </StyledLabel>
-                                        <Typography variant='body2' color='textSecondary'>
-                                            <FormattedMessage
-                                                id={'GatewayEnvironments.AddEditGWEnvironment.form.'
-                                                    + 'gateway.type.apk.description'}
-                                                defaultMessage={'Fast API gateway running on kubernetes '
-                                                    + 'designed to manage and secure APIs.'}
-                                            />
-                                        </Typography>
-                                    </div>
-                                )}
-                                style={{ border: getBorderColor('APK') }}
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                )}
+                        )}
+                        onChange={onChange}
+                        disabled={editMode}
+                    >
+                        {settings.federatedGatewayConfiguration
+                            .sort((a, b) => a.displayName.localeCompare(b.displayName))
+                            .map((gateway) => (
+                                <MenuItem key={gateway.type} value={gateway.type}>
+                                    {gateway.displayName || gateway.type}
+                                </MenuItem>
+                            ))}
+                    </Select>
+                    <FormHelperText>
+                        <FormattedMessage
+                            id='GatewayEnvironments.AddEditGWEnvironment.form.type.helper.text'
+                            defaultMessage='Select Gateway Type'
+                        />
+                    </FormHelperText>
+                </FormControl>
                 <FormControl
                     component='fieldset'
                     variant='outlined'
@@ -832,6 +799,18 @@ function AddEditGWEnvironment(props) {
                             )
                         }
                     </Box>
+                </FormControl>
+                <FormControl
+                    component='fieldset'
+                    variant='outlined'
+                    margin='dense'
+                    style={{ marginTop: '10px', marginBottom: '10px' }}
+                >
+                    <GatewayConfiguration
+                        gatewayConfigurations={gatewayConfigurations}
+                        additionalProperties={cloneDeep(additionalProperties)}
+                        setAdditionalProperties={setAdditionalProperties}
+                    />
                 </FormControl>
                 <AddEditVhost
                     initialVhosts={vhosts}
