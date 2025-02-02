@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -20,14 +19,15 @@
 import React from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import DeletePolicy from './DeletePolicy';
-import { Chip, Stack, Tooltip } from '@mui/material';
-import { Button } from '@mui/material';
+import {
+    Chip, Stack, Tooltip, Button,
+} from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import Utils from 'AppData/Utils';
+import DeletePolicy from './DeletePolicy';
 
 /**
  * API call to get Policies
@@ -68,9 +68,9 @@ export default function ListPolicies() {
                             {/* TODO: Add text wrapping */}
                             <Typography>{value}</Typography>
                             <Typography
-                                variant="caption"
-                                display="block"
-                                color="textSecondary"
+                                variant='caption'
+                                display='block'
+                                color='textSecondary'
                             >
                                 {dataRow[1]}
                             </Typography>
@@ -86,7 +86,7 @@ export default function ListPolicies() {
         },
         {
             name: 'description',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'governableStates',
@@ -97,31 +97,32 @@ export default function ListPolicies() {
             options: {
                 sort: false,
                 customBodyRender: (value) => {
-                    if (!value?.length) return null;
+                    if (!value?.length) return 'Not set';
                     const displayItems = value.slice(0, 2);
                     const remainingCount = value.length - 2;
 
                     return (
                         <Tooltip
-                            title={value.map(label => Utils.mapGovernableStateToLabel(label)).join(', ')}
+                            title={value.map((label) => Utils.mapGovernableStateToLabel(label)).join(', ')}
                             arrow
                         >
-                            <Stack direction="row" spacing={0.5} alignItems="center">
+                            <Stack direction='row' spacing={0.5} alignItems='center'>
                                 {displayItems.map((label) => (
                                     <Chip
                                         key={label}
                                         label={Utils.mapGovernableStateToLabel(label)}
-                                        size="small"
-                                        variant="outlined"
-                                        color="primary"
+                                        size='small'
+                                        variant='outlined'
+                                        color='primary'
                                     />
                                 ))}
                                 {remainingCount > 0 && (
                                     <Typography
-                                        variant="caption"
-                                        color="primary"
+                                        variant='caption'
+                                        color='primary'
                                     >
-                                        +{remainingCount}
+                                        +
+                                        {remainingCount}
                                     </Typography>
                                 )}
                             </Stack>
@@ -144,7 +145,7 @@ export default function ListPolicies() {
             options: {
                 sort: false,
                 customBodyRender: (value) => {
-                    if (!value?.length) return null;
+                    if (!value?.length) return 'All';
                     const displayItems = value.slice(0, 2);
                     const remainingCount = value.length - 2;
 
@@ -153,22 +154,23 @@ export default function ListPolicies() {
                             title={value.join(', ')}
                             arrow
                         >
-                            <Stack direction="row" spacing={0.5} alignItems="center">
+                            <Stack direction='row' spacing={0.5} alignItems='center'>
                                 {displayItems.map((label) => (
                                     <Chip
                                         key={label}
                                         label={label}
-                                        size="small"
-                                        variant="outlined"
-                                        color="info"
+                                        size='small'
+                                        variant='outlined'
+                                        color='info'
                                     />
                                 ))}
                                 {remainingCount > 0 && (
                                     <Typography
-                                        variant="caption"
-                                        color="info.main"
+                                        variant='caption'
+                                        color='info.main'
                                     >
-                                        +{remainingCount}
+                                        +
+                                        {remainingCount}
                                     </Typography>
                                 )}
                             </Stack>
@@ -182,7 +184,10 @@ export default function ListPolicies() {
                 }),
             },
         },
-        { name: 'id', options: { display: false } }, // Id column has to be always the last since it is used in the actions.
+        {
+            name: 'id',
+            options: { display: false },
+        }, // Id column has to be always the last since it is used in the actions.
     ];
 
     const pageProps = {
@@ -193,7 +198,8 @@ export default function ListPolicies() {
         }),
         pageDescription: intl.formatMessage({
             id: 'Governance.Policies.List.description',
-            defaultMessage: 'Create governance policies using rulesets from the catalog to standardize and regulate your APls effectively',
+            defaultMessage: 'Create governance policies using rulesets from the catalog'
+                + ' to standardize and regulate your APls effectively',
         }),
     };
 

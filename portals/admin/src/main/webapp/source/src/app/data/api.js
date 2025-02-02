@@ -285,6 +285,17 @@ class API extends Resource {
     }
 
     /**
+     * Get list of labels
+     */
+    labelsListGet() {
+        return this.client.then((client) => {
+            return client.apis['Labels (Collection)'].getAllLabels(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Get Application Throttling Policies
      */
     applicationThrottlingPoliciesGet() {
