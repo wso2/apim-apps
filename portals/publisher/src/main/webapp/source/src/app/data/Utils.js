@@ -670,7 +670,7 @@ Utils.CONST = {
     INTROSPECT: '/services/auth/introspect',
     SERVICE_CATALOG_SWAGGER_YAML: '/api/am/service-catalog/v1/oas.yaml',
     SWAGGER_YAML: '/api/am/publisher/v4/swagger.yaml',
-    GOVERNANCE_SWAGGER_JSON: '/api/am/governance/v0/swagger.yaml',
+    GOVERNANCE_SWAGGER_JSON: '/api/am/governance/v1/swagger.yaml',
     PROTOCOL: 'https://',
     API_CLIENT: 'apiClient',
     SERVICE_CATALOG_CLIENT: 'serviceCatalogClient',

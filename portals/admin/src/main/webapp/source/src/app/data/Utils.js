@@ -397,7 +397,7 @@ Utils.CONST = {
     LOGOUT_CALLBACK: '/services/auth/callback/logout',
     INTROSPECT: '/services/auth/introspect',
     SWAGGER_JSON: '/api/am/admin/v4/swagger.yaml',
-    GOVERNANCE_SWAGGER_JSON: '/api/am/governance/v0/swagger.yaml',
+    GOVERNANCE_SWAGGER_JSON: '/api/am/governance/v1/swagger.yaml',
     PROTOCOL: 'https://',
     API_CLIENT: 'API_CLIENT',
     GOVERNANCE_CLIENT: 'GOVERNANCE_CLIENT',
