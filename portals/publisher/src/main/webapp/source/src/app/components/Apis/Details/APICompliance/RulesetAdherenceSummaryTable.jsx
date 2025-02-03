@@ -31,7 +31,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
 
     const apiCall = () => {
         const restApi = new GovernanceAPI();
-        return restApi.getArtifactComplianceByArtifactId(artifactId)
+        return restApi.getComplianceByAPIId(artifactId)
             .then((response) => {
                 // Get unique ruleset IDs from all policies
                 const rulesetIds = [...new Set(
@@ -43,7 +43,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 // Get validation results for each ruleset
                 return Promise.all(
                     rulesetIds.map(rulesetId =>
-                        restApi.getRulesetValidationResultsByArtifactId(artifactId, rulesetId)
+                        restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
                             .then((result) => result.body)
                     )
                 );

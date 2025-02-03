@@ -83,10 +83,10 @@ class GovernanceAPI extends Resource {
      * @param {Object} options Optional parameters including signal for AbortController
      * @returns {Promise} Promised artifact compliance response
      */
-    getArtifactComplianceByArtifactId(artifactId, options = {}) {
+    getComplianceByAPIId(artifactId, options = {}) {
         return this.client.then((client) => {
-            return client.apis['Artifact Compliance'].getArtifactComplianceByArtifactId(
-                { artifactId: artifactId },
+            return client.apis['Artifact Compliance'].getComplianceByAPIId(
+                { apiId: artifactId },
                 { ...this._requestMetaData(), signal: options.signal }
             );
         });
@@ -95,15 +95,15 @@ class GovernanceAPI extends Resource {
     /**
      * Get ruleset validation results by artifact id
      * @param {string} artifactId Artifact id
-     * @param {string} rulesetId Ruleset id 
+     * @param {string} rulesetId Ruleset id
      * @param {Object} options Optional parameters including signal for AbortController
      * @returns {Promise} Promised validation results response
      */
-    getRulesetValidationResultsByArtifactId(artifactId, rulesetId, options = {}) {
+    getRulesetValidationResultsByAPIId(artifactId, rulesetId) {
         return this.client.then((client) => {
-            return client.apis['Artifact Compliance'].getRulesetValidationResultsByArtifactId(
-                { artifactId: artifactId, rulesetId: rulesetId },
-                { ...this._requestMetaData(), signal: options.signal }
+            return client.apis['Artifact Compliance'].getRulesetValidationResultsByAPIId(
+                { apiId: artifactId, rulesetId: rulesetId },
+                this._requestMetaData(),
             );
         });
     }
