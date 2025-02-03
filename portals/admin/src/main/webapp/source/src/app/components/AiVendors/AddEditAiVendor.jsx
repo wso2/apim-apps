@@ -302,33 +302,12 @@ export default function AddEditAiVendor(props) {
                     defaultMessage: ' - AI/LLM Vendor edited successfully.',
                 })}`);
             } else {
-                // const aiVendorBody = new FormData();
-                // Object.entries(newState).forEach(([key, value]) => {
-                //     if (key === 'modelList' && Array.isArray(value)) {
-                //         value.forEach((model) => {
-                //             console.log('key', key);
-                //             console.log('model', model);
-                //             aiVendorBody.append(key, model);
-                //         });
-                //     } else {
-                //         aiVendorBody.append(key, value);
-                //     }
-                // });
-                // if (file) {
-                //     aiVendorBody.append('apiDefinition', file);
-                // }
-                // console.log('aiVendorBody', aiVendorBody);
-                // await new API().addAiVendor(aiVendorBody);
-                // // await new API().addAiVendor({ ...newState, apiDefinition: file });
                 await new API().addAiVendor({ ...newState, apiDefinition: file });
                 Alert.success(`${state.name} ${intl.formatMessage({
                     id: 'AiVendor.add.success.msg',
                     defaultMessage: ' - AI/LLM Vendor added successfully.',
                 })}`);
             }
-
-            // const modelListAsArray = state.modelList.split(',');
-            // dispatch({ field: 'modelList', value: modelListAsArray });
 
             setSaving(false);
             history.push('/settings/ai-vendors/');

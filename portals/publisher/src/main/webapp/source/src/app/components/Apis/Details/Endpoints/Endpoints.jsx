@@ -34,6 +34,7 @@ import { Alert } from 'AppComponents/Shared';
 
 import API from 'AppData/api';
 import EndpointOverview from './EndpointOverview';
+import AIEndpoints from './AIEndpoints';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
 import { API_SECURITY_KEY_TYPE_PRODUCTION, 
     API_SECURITY_KEY_TYPE_SANDBOX } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
@@ -735,87 +736,108 @@ function Endpoints(props) {
                                 defaultMessage='Endpoints'
                             />
                         </Typography>
-                        <div>
-                            <Grid container>
-                                <Grid item xs={12} className={classes.endpointsContainer}>
-                                    <EndpointOverview
-                                        swaggerDef={swagger}
-                                        updateSwagger={changeSwagger}
-                                        api={apiObject}
-                                        onChangeAPI={apiDispatcher}
-                                        endpointsDispatcher={apiDispatcher}
-                                        saveAndRedirect={saveAndRedirect}
-                                        sandBoxBackendList={sandBoxBackendList}
-                                        setSandBoxBackendList={setSandBoxBackendList}
-                                        productionBackendList={productionBackendList}
-                                        setProductionBackendList={setProductionBackendList}
-                                        isValidSequenceBackend={isValidSequenceBackend}
-                                        setIsValidSequenceBackend={setIsValidSequenceBackend}
-                                        isCustomBackendSelected={isCustomBackendSelected} 
-                                        setIsCustomBackendSelected={setIsCustomBackendSelected}
-                                        apiKeyParamConfig={apiKeyParamConfig}
-                                    />
-                                </Grid>
-                            </Grid>
-                            {
-                                endpointValidity.isValid
-                                    ? <div />
-                                    : (
-                                        <Grid item className={classes.errorMessageContainer}>
-                                            <Typography className={classes.endpointValidityMessage}>
-                                                {endpointValidity.message}
-                                            </Typography>
-                                        </Grid>
-                                    )
-                            }
-                            <Grid
-                                container
-                                direction='row'
-                                alignItems='flex-start'
-                                spacing={1}
-                                className={classes.buttonSection}
-                            >
-                                <Grid item>
-                                    {api.isRevision || !endpointValidity.isValid
-                                        || (settings && settings.portalConfigurationOnlyModeEnabled)
-                                        || isRestricted(['apim:api_create'], api) ? (
-                                            <Button
-                                                disabled
-                                                type='submit'
-                                                variant='contained'
-                                                color='primary'
-                                            >
-                                                <FormattedMessage
-                                                    id='Apis.Details.Configuration.Configuration.save'
-                                                    defaultMessage='Save'
-                                                />
-                                            </Button>
-                                        ) : (
-                                            <CustomSplitButton
-                                                advertiseInfo={api.advertiseInfo}
-                                                api={api}
-                                                handleSave={handleSave}
-                                                handleSaveAndDeploy={handleSaveAndDeploy}
-                                                isUpdating={isUpdating}
-                                                id='endpoint-save-btn'
-                                                isValidSequenceBackend={isValidSequenceBackend}
-                                                isCustomBackendSelected
-                                            />
-                                        )}
-                                </Grid>
-                                <Grid item>
-                                    <Button
-                                        component={Link}
-                                        to={'/apis/' + api.id + '/overview'}
-                                    >
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.Endpoints.cancel'
-                                            defaultMessage='Cancel'
+                        {(api.subtypeConfiguration?.subtype === 'AIAPI' && (
+                            <AIEndpoints
+                                swaggerDef={swagger}
+                                updateSwagger={changeSwagger}
+                                api={apiObject}
+                                onChangeAPI={apiDispatcher}
+                                endpointsDispatcher={apiDispatcher}
+                                saveAndRedirect={saveAndRedirect}
+                                sandBoxBackendList={sandBoxBackendList}
+                                setSandBoxBackendList={setSandBoxBackendList}
+                                productionBackendList={productionBackendList}
+                                setProductionBackendList={setProductionBackendList}
+                                isValidSequenceBackend={isValidSequenceBackend}
+                                setIsValidSequenceBackend={setIsValidSequenceBackend}
+                                isCustomBackendSelected={isCustomBackendSelected} 
+                                setIsCustomBackendSelected={setIsCustomBackendSelected}
+                                apiKeyParamConfig={apiKeyParamConfig}
+                            />
+                        ))}
+                        {(api.subtypeConfiguration?.subtype !== 'AIAPI') && (
+                            <div>
+                                <Grid container>
+                                    <Grid item xs={12} className={classes.endpointsContainer}>
+                                        <EndpointOverview
+                                            swaggerDef={swagger}
+                                            updateSwagger={changeSwagger}
+                                            api={apiObject}
+                                            onChangeAPI={apiDispatcher}
+                                            endpointsDispatcher={apiDispatcher}
+                                            saveAndRedirect={saveAndRedirect}
+                                            sandBoxBackendList={sandBoxBackendList}
+                                            setSandBoxBackendList={setSandBoxBackendList}
+                                            productionBackendList={productionBackendList}
+                                            setProductionBackendList={setProductionBackendList}
+                                            isValidSequenceBackend={isValidSequenceBackend}
+                                            setIsValidSequenceBackend={setIsValidSequenceBackend}
+                                            isCustomBackendSelected={isCustomBackendSelected} 
+                                            setIsCustomBackendSelected={setIsCustomBackendSelected}
+                                            apiKeyParamConfig={apiKeyParamConfig}
                                         />
-                                    </Button>
+                                    </Grid>
                                 </Grid>
-                            </Grid>
-                        </div>
+                                {
+                                    endpointValidity.isValid
+                                        ? <div />
+                                        : (
+                                            <Grid item className={classes.errorMessageContainer}>
+                                                <Typography className={classes.endpointValidityMessage}>
+                                                    {endpointValidity.message}
+                                                </Typography>
+                                            </Grid>
+                                        )
+                                }
+                                <Grid
+                                    container
+                                    direction='row'
+                                    alignItems='flex-start'
+                                    spacing={1}
+                                    className={classes.buttonSection}
+                                >
+                                    <Grid item>
+                                        {api.isRevision || !endpointValidity.isValid
+                                            || (settings && settings.portalConfigurationOnlyModeEnabled)
+                                            || isRestricted(['apim:api_create'], api) ? (
+                                                <Button
+                                                    disabled
+                                                    type='submit'
+                                                    variant='contained'
+                                                    color='primary'
+                                                >
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Configuration.Configuration.save'
+                                                        defaultMessage='Save'
+                                                    />
+                                                </Button>
+                                            ) : (
+                                                <CustomSplitButton
+                                                    advertiseInfo={api.advertiseInfo}
+                                                    api={api}
+                                                    handleSave={handleSave}
+                                                    handleSaveAndDeploy={handleSaveAndDeploy}
+                                                    isUpdating={isUpdating}
+                                                    id='endpoint-save-btn'
+                                                    isValidSequenceBackend={isValidSequenceBackend}
+                                                    isCustomBackendSelected
+                                                />
+                                            )}
+                                    </Grid>
+                                    <Grid item>
+                                        <Button
+                                            component={Link}
+                                            to={'/apis/' + api.id + '/overview'}
+                                        >
+                                            <FormattedMessage
+                                                id='Apis.Details.Endpoints.Endpoints.cancel'
+                                                defaultMessage='Cancel'
+                                            />
+                                        </Button>
+                                    </Grid>
+                                </Grid>
+                            </div>
+                        )}
                     </div>
                 )}
         </Root>)
