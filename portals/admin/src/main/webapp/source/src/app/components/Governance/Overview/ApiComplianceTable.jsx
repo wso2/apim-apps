@@ -220,8 +220,8 @@ export default function ApiComplianceTable() {
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    const followed = tableMeta.rowData[4]?.followedPolicies || 0;
-                    const violated = tableMeta.rowData[4]?.violatedPolicies || 0;
+                    const followed = tableMeta.rowData[4]?.followed || 0;
+                    const violated = tableMeta.rowData[4]?.violated || 0;
                     const total = followed + violated;
                     return renderProgress(followed, total);
                 },

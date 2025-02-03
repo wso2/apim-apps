@@ -44,7 +44,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 // Get validation results for each ruleset
                 return Promise.all(
                     rulesetIds.map(rulesetId =>
-                        restApi.getRulesetValidationResultsByArtifactId(artifactId, rulesetId)
+                        restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
                             .then((result) => result.body)
                     )
                 );

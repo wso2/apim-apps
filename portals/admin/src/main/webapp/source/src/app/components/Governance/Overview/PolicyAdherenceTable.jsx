@@ -196,8 +196,8 @@ export default function PolicyAdherenceTable() {
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    const followed = tableMeta.rowData[3]?.compliantArtifacts || 0;
-                    const total = (tableMeta.rowData[3]?.nonCompliantArtifacts + followed) || 0;
+                    const followed = tableMeta.rowData[3]?.compliant || 0;
+                    const total = (tableMeta.rowData[3]?.nonCompliant + followed) || 0;
                     return renderProgress(followed, total);
                 },
                 setCellHeaderProps: () => ({
@@ -223,7 +223,7 @@ export default function PolicyAdherenceTable() {
                         {/* TODO: Find a better way to display all those */}
                         {rowData[4].map((artifact) => (
                             <Box
-                                key={artifact.artifactId}
+                                key={artifact.id}
                                 sx={{
                                     display: 'flex',
                                     alignItems: 'center',
@@ -235,7 +235,7 @@ export default function PolicyAdherenceTable() {
                                     <CancelIcon color="error" sx={{ fontSize: 16 }} />
                                 }
                                 <RouterLink
-                                    to={`/governance/overview/api/${artifact.artifactId}`}
+                                    to={`/governance/overview/api/${artifact.id}`}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -243,7 +243,7 @@ export default function PolicyAdherenceTable() {
                                         color: 'inherit'
                                     }}
                                 >
-                                    {artifact.artifactName}
+                                    {artifact.info.name}
                                     <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
                                 </RouterLink>
                             </Box>
