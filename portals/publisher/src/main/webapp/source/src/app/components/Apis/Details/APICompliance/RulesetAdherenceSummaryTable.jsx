@@ -25,6 +25,8 @@ import WarningIcon from '@mui/icons-material/Warning';
 import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import Utils from 'AppData/Utils';
 
 export default function RulesetAdherenceSummaryTable({ artifactId }) {
     const intl = useIntl();
@@ -97,7 +99,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 }),
                 customBodyRender: (value) => (
                     <Chip
-                        label={value}
+                        label={Utils.mapRulesetValidationStateToLabel(value)}
                         color={value === 'PASSED' ? 'success' : 'error'}
                         size="small"
                         variant="outlined"
@@ -194,20 +196,53 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         );
     };
 
+    const emptyStateContent = (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 3
+            }}
+        >
+            <AssignmentIcon
+                sx={{
+                    fontSize: 60,
+                    color: 'action.disabled',
+                    mb: 2
+                }}
+            />
+            <Typography
+                variant="h6"
+                color="text.secondary"
+                gutterBottom
+                sx={{ fontWeight: 'medium' }}
+            >
+                {intl.formatMessage({
+                    id: 'Apis.Details.Compliance.RulesetAdherence.empty.title',
+                    defaultMessage: 'No Rulesets Found',
+                })}
+            </Typography>
+            <Typography
+                variant="body2"
+                color="text.secondary"
+                align="center"
+            >
+                {intl.formatMessage({
+                    id: 'Apis.Details.Compliance.RulesetAdherence.empty.helper',
+                    defaultMessage: 'No governance rulesets have been applied for this API.',
+                })}
+            </Typography>
+        </Box>
+    );
+
     return (
         <ListBase
             columnProps={RulesetColumnProps}
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                title: intl.formatMessage({
-                    id: 'Apis.Details.Compliance.RulesetAdherence.empty.title',
-                    defaultMessage: 'No Policies Found',
-                }),
-                content: intl.formatMessage({
-                    id: 'Apis.Details.Compliance.RulesetAdherence.empty.content',
-                    defaultMessage: 'There are no policies to display',
-                }),
+                content: emptyStateContent
             }}
             addButtonProps={false}
             showActionColumn={false}

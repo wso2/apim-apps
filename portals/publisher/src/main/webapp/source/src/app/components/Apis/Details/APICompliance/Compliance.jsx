@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -20,13 +19,13 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Grid, Card, CardContent, Typography } from '@mui/material';
-import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
-import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
-import RuleViolationSummary from './RuleViolationSummary';
-import { PieChart } from '@mui/x-charts';
+import DonutChart from 'AppComponents/Shared/DonutChart';
 import { FormattedMessage, useIntl } from 'react-intl';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import PropTypes from 'prop-types';
+import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
+import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
+import RuleViolationSummary from './RuleViolationSummary';
 
 const PREFIX = 'Compliance';
 
@@ -54,6 +53,7 @@ export default function Compliance(props) {
 
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
+                // TODO: should only take unique ruleset IDs
                 // Get ruleset statuses and count them
                 const rulesetStatuses = response.body.governedPolicies.flatMap(policy =>
                     policy.rulesetValidationResults.map(result => result.status)
@@ -133,37 +133,26 @@ export default function Compliance(props) {
                                     defaultMessage='Ruleset Adherence'
                                 />
                             </Typography>
-                            <PieChart
+                            <DonutChart
                                 colors={['#2E96FF', '#FF5252']}
-                                series={[{
-                                    data: [
-                                        {
-                                            id: 0,
-                                            value: statusCounts.passed,
-                                            label: `${intl.formatMessage({
-                                                id: 'Apis.Details.Compliance.passed',
-                                                defaultMessage: 'Passed'
-                                            })} (${statusCounts.passed})`
-                                        },
-                                        {
-                                            id: 1,
-                                            value: statusCounts.failed,
-                                            label: `${intl.formatMessage({
-                                                id: 'Apis.Details.Compliance.failed',
-                                                defaultMessage: 'Failed'
-                                            })} (${statusCounts.failed})`
-                                        },
-                                    ],
-                                    innerRadius: 50,
-                                    outerRadius: 100,
-                                    paddingAngle: 5,
-                                    cornerRadius: 5,
-                                    cx: 100,
-                                    startAngle: 90,
-                                    endAngle: 470
-                                }]}
-                                width={400}
-                                height={200}
+                                data={[
+                                    {
+                                        id: 0,
+                                        value: statusCounts.passed,
+                                        label: `${intl.formatMessage({
+                                            id: 'Apis.Details.Compliance.passed',
+                                            defaultMessage: 'Passed'
+                                        })} (${statusCounts.passed})`
+                                    },
+                                    {
+                                        id: 1,
+                                        value: statusCounts.failed,
+                                        label: `${intl.formatMessage({
+                                            id: 'Apis.Details.Compliance.failed',
+                                            defaultMessage: 'Failed'
+                                        })} (${statusCounts.failed})`
+                                    },
+                                ]}
                             />
                         </CardContent>
                     </Card>
