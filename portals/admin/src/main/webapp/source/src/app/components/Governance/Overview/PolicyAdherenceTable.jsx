@@ -28,6 +28,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
 import PolicyIcon from '@mui/icons-material/Policy';
+import Utils from 'AppData/Utils';
 
 /**
  * API call to get Policies
@@ -45,13 +46,13 @@ function apiCall() {
             return Promise.all(
                 policies.map(async (policy) => {
                     try {
-                        const adherenceDetails = await restApi.getPolicyAdherenceByPolicyId(policy.policyId);
+                        const adherenceDetails = await restApi.getPolicyAdherenceByPolicyId(policy.id);
                         return {
                             ...policy,
                             evaluatedArtifacts: adherenceDetails.body.evaluatedArtifacts || []
                         };
                     } catch (error) {
-                        console.error(`Error fetching adherence for policy ${policy.policyId}:`, error);
+                        console.error(`Error fetching adherence for policy ${policy.id}:`, error);
                         return {
                             ...policy,
                             evaluatedArtifacts: []
@@ -113,11 +114,11 @@ export default function PolicyAdherenceTable() {
 
     const policyColumProps = [
         {
-            name: 'policyId',
+            name: 'id',
             options: { display: false }
         },
         {
-            name: 'policyName',
+            name: 'name',
             label: intl.formatMessage({
                 id: 'Governance.Overview.PolicyAdherence.column.policy',
                 defaultMessage: 'Policy',
@@ -125,9 +126,12 @@ export default function PolicyAdherenceTable() {
             options: {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <RouterLink to={
-                            `/governance/policies/${tableMeta.rowData[0]}`
-                        } style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+                        <RouterLink
+                            to={`/governance/policies/${tableMeta.rowData[0]}`}
+                            style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
                             {value}
                             <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
                         </RouterLink>
@@ -159,7 +163,7 @@ export default function PolicyAdherenceTable() {
             options: {
                 customBodyRender: (value) => (
                     <Chip
-                        label={value}
+                        label={Utils.mapPolicyAdherenceStateToLabel(value)}
                         color={value === 'FOLLOWED' ? 'success' : value === 'VIOLATED' ? 'error' : 'default'}
                         size="small"
                         variant="outlined"
@@ -196,8 +200,8 @@ export default function PolicyAdherenceTable() {
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    const followed = tableMeta.rowData[3]?.compliantArtifacts || 0;
-                    const total = (tableMeta.rowData[3]?.nonCompliantArtifacts + followed) || 0;
+                    const followed = tableMeta.rowData[3]?.compliant || 0;
+                    const total = (tableMeta.rowData[3]?.nonCompliant + followed) || 0;
                     return renderProgress(followed, total);
                 },
                 setCellHeaderProps: () => ({
@@ -223,7 +227,7 @@ export default function PolicyAdherenceTable() {
                         {/* TODO: Find a better way to display all those */}
                         {rowData[4].map((artifact) => (
                             <Box
-                                key={artifact.artifactId}
+                                key={artifact.id}
                                 sx={{
                                     display: 'flex',
                                     alignItems: 'center',
@@ -235,7 +239,7 @@ export default function PolicyAdherenceTable() {
                                     <CancelIcon color="error" sx={{ fontSize: 16 }} />
                                 }
                                 <RouterLink
-                                    to={`/governance/overview/api/${artifact.artifactId}`}
+                                    to={`/governance/overview/api/${artifact.id}`}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -243,7 +247,7 @@ export default function PolicyAdherenceTable() {
                                         color: 'inherit'
                                     }}
                                 >
-                                    {artifact.artifactName}
+                                    {artifact.info.name}
                                     <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
                                 </RouterLink>
                             </Box>

@@ -25,11 +25,10 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
 import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
 import RuleViolationSummary from './RuleViolationSummary';
-import { PieChart } from '@mui/x-charts';
 import { Box } from '@mui/system';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { FormattedMessage, useIntl } from 'react-intl';
-import RuleIcon from '@mui/icons-material/Rule';
+import DonutChart from 'AppComponents/Shared/DonutChart';
 
 export default function Compliance(props) {
     const intl = useIntl();
@@ -41,10 +40,10 @@ export default function Compliance(props) {
         const abortController = new AbortController();
         const restApi = new GovernanceAPI();
 
-        restApi.getArtifactComplianceByArtifactId(artifactId, { signal: abortController.signal })
+        restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
                 // Set the artifact name
-                setArtifactName(response.body.artifactName);
+                setArtifactName(response.body.info.name);
 
                 // TODO: should only take unique ruleset IDs
 
@@ -73,37 +72,6 @@ export default function Compliance(props) {
             abortController.abort();
         };
     }, [artifactId]);
-
-    // TODO: create a separate pie chart component with all these options
-    const renderEmptyChart = () => (
-        <Box
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: 200,
-                width: '100%'
-            }}
-        >
-            <RuleIcon
-                sx={{
-                    fontSize: 60,
-                    color: 'action.disabled',
-                    mb: 2
-                }}
-            />
-            <Typography
-                color="text.secondary"
-                align="center"
-            >
-                {intl.formatMessage({
-                    id: 'Governance.Overview.Compliance.no.ruleset.data',
-                    defaultMessage: 'No ruleset data available'
-                })}
-            </Typography>
-        </Box>
-    );
 
     return (
         <ContentBase
@@ -173,42 +141,27 @@ export default function Compliance(props) {
                                     defaultMessage='Ruleset Adherence'
                                 />
                             </Typography>
-                            {statusCounts.passed === 0 && statusCounts.failed === 0 ? (
-                                renderEmptyChart()
-                            ) : (
-                                <PieChart
-                                    colors={['#2E96FF', '#FF5252']}
-                                    series={[{
-                                        data: [
-                                            {
-                                                id: 0,
-                                                value: statusCounts.passed,
-                                                label: `${intl.formatMessage({
-                                                    id: 'Governance.Overview.Compliance.passed',
-                                                    defaultMessage: 'Passed'
-                                                })} (${statusCounts.passed})`
-                                            },
-                                            {
-                                                id: 1,
-                                                value: statusCounts.failed,
-                                                label: `${intl.formatMessage({
-                                                    id: 'Governance.Overview.Compliance.failed',
-                                                    defaultMessage: 'Failed'
-                                                })} (${statusCounts.failed})`
-                                            },
-                                        ],
-                                        innerRadius: 50,
-                                        outerRadius: 100,
-                                        paddingAngle: 5,
-                                        cornerRadius: 5,
-                                        cx: 100,
-                                        startAngle: 90,
-                                        endAngle: 470
-                                    }]}
-                                    width={400}
-                                    height={200}
-                                />
-                            )}
+                            <DonutChart
+                                colors={['#2E96FF', '#FF5252']}
+                                data={[
+                                    {
+                                        id: 0,
+                                        value: statusCounts.passed,
+                                        label: `${intl.formatMessage({
+                                            id: 'Governance.Overview.Compliance.passed',
+                                            defaultMessage: 'Passed'
+                                        })} (${statusCounts.passed})`
+                                    },
+                                    {
+                                        id: 1,
+                                        value: statusCounts.failed,
+                                        label: `${intl.formatMessage({
+                                            id: 'Governance.Overview.Compliance.failed',
+                                            defaultMessage: 'Failed'
+                                        })} (${statusCounts.failed})`
+                                    },
+                                ]}
+                            />
                         </CardContent>
                     </Card>
                 </Grid>

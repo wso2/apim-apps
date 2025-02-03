@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -29,10 +28,7 @@ import {
     TextField,
     Typography,
     Chip,
-    FormControl,
     IconButton,
-    Card,
-    CardContent,
     Table,
     TableBody,
     TableCell,
@@ -41,22 +37,80 @@ import {
     TableRow,
     Paper,
     CircularProgress,
+    Autocomplete,
+    RadioGroup,
+    FormControlLabel,
+    Radio,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { styled } from '@mui/material/styles';
-import { MuiChipsInput } from 'mui-chips-input';
-import Autocomplete from '@mui/material/Autocomplete';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import LaunchIcon from '@mui/icons-material/Launch';
-import ActionConfigDialog from './ActionConfigDialog';
 import PropTypes from 'prop-types';
 import cloneDeep from 'lodash.clonedeep';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import API from 'AppData/api';
+import Utils from 'AppData/Utils';
+import CONSTS from 'AppData/Constants';
+import ActionConfigDialog from './ActionConfigDialog';
+import RulesetSelector from './RulesetSelector';
 
-const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
+// Keep these styled components
+const StyledSpan = styled('span')(({ theme }) => ({
+    color: theme.palette.error.dark,
+}));
 
-const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
+const StyledHr = styled('hr')({
+    border: 'solid 1px #efefef',
+});
+
+const PREFIX = 'AddEditPolicy';
+
+const classes = {
+    root: `${PREFIX}-root`,
+    formContainer: `${PREFIX}-formContainer`,
+    helperText: `${PREFIX}-helperText`,
+    divider: `${PREFIX}-divider`,
+    actionButton: `${PREFIX}-actionButton`,
+    actionButtonContainer: `${PREFIX}-actionButtonContainer`,
+    tableContainer: `${PREFIX}-tableContainer`,
+    actionChip: `${PREFIX}-actionChip`,
+    buttonWrapper: `${PREFIX}-buttonWrapper`,
+    requiredStar: `${PREFIX}-requiredStar`,
+};
+
+const StyledContentBase = styled(ContentBase)(({ theme }) => ({
+    [`& .${classes.formContainer}`]: {
+        margin: theme.spacing(1),
+    },
+    [`& .${classes.helperText}`]: {
+        position: 'absolute',
+        marginTop: '10px',
+    },
+    [`& .${classes.divider}`]: {
+        margin: `${theme.spacing(2)} 0`,
+        borderTop: `1px solid ${theme.palette.divider}`,
+    },
+    [`& .${classes.actionButton}`]: {
+        margin: theme.spacing(1),
+    },
+    [`& .${classes.actionButtonContainer}`]: {
+        margin: theme.spacing(1),
+    },
+    [`& .${classes.tableContainer}`]: {
+        margin: theme.spacing(1),
+    },
+    [`& .${classes.actionChip}`]: {
+        borderColor: (props) => (props.isBlock ? theme.palette.error.main : theme.palette.primary.main),
+        backgroundColor: (props) => (props.isBlock ? theme.palette.error.lighter : theme.palette.primary.lighter),
+    },
+    [`& .${classes.buttonWrapper}`]: {
+        margin: theme.spacing(2),
+    },
+    [`& .${classes.requiredStar}`]: {
+        color: theme.palette.error.dark,
+    },
+}));
 
 function reducer(state, { field, value }) {
     const nextState = cloneDeep(state);
@@ -102,14 +156,16 @@ function AddEditPolicy(props) {
     const [saving, setSaving] = useState(false);
     const [availableRulesets, setAvailableRulesets] = useState([]);
     const [selectedRulesets, setSelectedRulesets] = useState([]); // Store full ruleset objects for UI
+    const [availableLabels, setAvailableLabels] = useState([]);
+    const [labelMode, setLabelMode] = useState('all');
     const intl = useIntl();
-    const { match: { params: { id } }, history } = props;
-    const editMode = id !== undefined;
+    const { match: { params: { id: policyId } }, history } = props;
+    const editMode = policyId !== undefined;
 
     const initialState = {
         name: '',
         description: '',
-        labels: [],
+        labels: ['GLOBAL'],
         actions: [],
         rulesets: [], // Store only IDs
     };
@@ -123,57 +179,65 @@ function AddEditPolicy(props) {
         rulesets,
     } = state;
 
-    const [autocompleteInput, setAutocompleteInput] = useState('');
     const [dialogConfig, setDialogConfig] = useState({
         open: false,
-        editAction: null
+        editAction: null,
     });
 
     useEffect(() => {
         const restApi = new GovernanceAPI();
-        if (id) {
-            restApi
-                .getPolicy(id)
-                .then((result) => {
-                    const { body } = result;
-                    // Store the full ruleset objects for display
-                    setSelectedRulesets(body.rulesets.map(rulesetId => ({
-                        id: rulesetId,
-                        name: 'Loading...' // Will be updated when rulesets load
-                    })));
-                    return body;
-                })
-                .then((data) => {
-                    dispatch({
-                        field: 'all', value: {
-                            ...data,
-                            rulesets: data.rulesets.map(ruleset =>
-                                typeof ruleset === 'object' ? ruleset.id : ruleset
-                            )
-                        }
-                    });
-                })
-                .catch((error) => {
-                    throw error;
-                });
-        }
+        const adminApi = new API();
 
-        // Load available rulesets as full objects
-        restApi
-            .getRulesetsList()
-            .then((result) => {
-                const rulesetList = result.body.list.map(ruleset => ({
-                    id: ruleset.id,
-                    name: ruleset.name
+        // Fetch available labels
+        adminApi.labelsListGet()
+            .then((response) => {
+                const labelList = response.body.list || [];
+                setAvailableLabels(labelList.map((label) => label.name));
+            })
+            .catch((error) => {
+                console.error('Error loading labels:', error);
+                Alert.error(intl.formatMessage({
+                    id: 'Governance.Policies.AddEdit.error.loading.labels',
+                    defaultMessage: 'Error loading labels',
                 }));
+            });
+
+        restApi.getRulesetsList()
+            .then((response) => {
+                const rulesetList = response.body.list;
                 setAvailableRulesets(rulesetList);
-                // Update selected rulesets with names if in edit mode
-                if (id) {
-                    setSelectedRulesets(prev => prev.map(selected => {
-                        const foundRuleset = rulesetList.find(r => r.id === selected.id);
-                        return foundRuleset || selected;
-                    }));
+
+                if (policyId) {
+                    return restApi.getPolicy(policyId)
+                        .then((policyResponse) => {
+                            const { body } = policyResponse;
+                            const fullRulesets = body.rulesets.map((rulesetId) => {
+                                const foundRuleset = rulesetList.find((r) => r.id === rulesetId);
+                                return foundRuleset || { id: rulesetId, name: 'Unknown Ruleset' };
+                            });
+                            setSelectedRulesets(fullRulesets);
+
+                            // Set the correct label mode based on the policy data
+                            if (body.labels.length === 1 && body.labels[0] === 'GLOBAL') {
+                                setLabelMode('all');
+                            } else if (body.labels.length === 0) {
+                                setLabelMode('none');
+                            } else {
+                                setLabelMode('specific');
+                            }
+
+                            return dispatch({
+                                field: 'all',
+                                value: {
+                                    ...body,
+                                    rulesets: body.rulesets.map(
+                                        (ruleset) => (typeof ruleset === 'object' ? ruleset.id : ruleset),
+                                    ),
+                                },
+                            });
+                        });
                 }
+                return null;
             })
             .catch((error) => {
                 console.error('Error loading rulesets:', error);
@@ -182,10 +246,28 @@ function AddEditPolicy(props) {
                     defaultMessage: 'Error loading rulesets',
                 }));
             });
-    }, [id]);
+    }, [policyId]);
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
+    };
+
+    const handleLabelModeChange = (e) => {
+        setLabelMode(e.target.value);
+        switch (e.target.value) {
+            case 'all':
+                dispatch({ field: 'labels', value: ['GLOBAL'] });
+                break;
+            case 'none':
+                dispatch({ field: 'labels', value: [] });
+                break;
+            case 'specific':
+                // TODO: should load the saved labels instead of clearing
+                dispatch({ field: 'labels', value: [] });
+                break;
+            default:
+                break;
+        }
     };
 
     const hasErrors = (fieldName, fieldValue, validatingActive) => {
@@ -220,6 +302,14 @@ function AddEditPolicy(props) {
                     });
                 }
                 break;
+            case 'labels':
+                if (labelMode === 'specific' && (!fieldValue || fieldValue.length === 0)) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Policies.AddEdit.form.labels.required',
+                        defaultMessage: 'At least one label is required when applying to specific APIs',
+                    });
+                }
+                break;
             default:
                 break;
         }
@@ -228,11 +318,11 @@ function AddEditPolicy(props) {
 
     const formHasErrors = (validatingActive = false) => {
         if (hasErrors('name', name, validatingActive)
-            || hasErrors('description', description, validatingActive)) {
+            || hasErrors('description', description, validatingActive)
+            || hasErrors('labels', labels, validatingActive)) {
             return true;
-        } else {
-            return false;
         }
+        return false;
     };
 
     const formSave = () => {
@@ -248,14 +338,14 @@ function AddEditPolicy(props) {
         setSaving(true);
         const body = {
             ...state,
-            governableStates: [...new Set(actions.map(action => action.state))],
+            governableStates: [...new Set(actions.map((action) => action.state))],
         };
 
         // Do the API call
         const restApi = new GovernanceAPI();
         let promiseAPICall = null;
 
-        if (id) {
+        if (policyId) {
             promiseAPICall = restApi
                 .updatePolicy(body).then(() => {
                     return intl.formatMessage({
@@ -290,20 +380,30 @@ function AddEditPolicy(props) {
         return true;
     };
 
-    const groupActionsByState = (actions) => {
-        return actions.reduce((acc, action) => {
-            const existingStateIndex = acc.findIndex(item => item.state === action.state);
+    const groupActionsByState = (actionsList) => {
+        return actionsList.reduce((acc, action) => {
+            const existingStateIndex = acc.findIndex((item) => item.state === action.state);
             if (existingStateIndex === -1) {
                 acc.push({
                     state: action.state,
-                    Error: action.ruleSeverity === 'ERROR' ? action.type : null,
-                    Warn: action.ruleSeverity === 'WARN' ? action.type : null,
-                    Info: action.ruleSeverity === 'INFO' ? action.type : null
+                    error: action.ruleSeverity === 'ERROR' ? action.type : null,
+                    warn: action.ruleSeverity === 'WARN' ? action.type : null,
+                    info: action.ruleSeverity === 'INFO' ? action.type : null,
                 });
             } else {
-                if (action.ruleSeverity === 'ERROR') acc[existingStateIndex].Error = action.type;
-                if (action.ruleSeverity === 'WARN') acc[existingStateIndex].Warn = action.type;
-                if (action.ruleSeverity === 'INFO') acc[existingStateIndex].Info = action.type;
+                switch (action.ruleSeverity) {
+                    case 'ERROR':
+                        acc[existingStateIndex].error = action.type;
+                        break;
+                    case 'WARN':
+                        acc[existingStateIndex].warn = action.type;
+                        break;
+                    case 'INFO':
+                        acc[existingStateIndex].info = action.type;
+                        break;
+                    default:
+                        break;
+                }
             }
             return acc;
         }, []);
@@ -311,31 +411,31 @@ function AddEditPolicy(props) {
 
     const handleActionSave = (actionConfig) => {
         const newActions = [];
-        const { governedState, actions: configActions } = actionConfig;
+        const { governedState, actions: configuredActions } = actionConfig;
 
-        Object.entries(configActions).forEach(([severity, action]) => {
+        Object.entries(configuredActions).forEach(([severity, action]) => {
             if (action) {
                 newActions.push({
                     state: governedState,
                     ruleSeverity: severity.toUpperCase(),
-                    type: action.toUpperCase()
+                    type: action,
                 });
             }
         });
 
         // Remove existing actions for this governedState
-        const filteredActions = actions.filter(action => action.state !== governedState);
+        const filteredActions = actions.filter((action) => action.state !== governedState);
         dispatch({ field: 'actions', value: [...filteredActions, ...newActions] });
         setDialogConfig({
             open: false,
-            editAction: null
+            editAction: null,
         });
     };
 
     const handleAddAction = () => {
         setDialogConfig({
             open: true,
-            editAction: null
+            editAction: null,
         });
     };
 
@@ -343,35 +443,52 @@ function AddEditPolicy(props) {
         const actionConfig = {
             governedState: groupedAction.state,
             actions: {
-                Error: groupedAction.Error?.toLowerCase() || 'notify',
-                Warn: groupedAction.Warn?.toLowerCase() || 'notify',
-                Info: groupedAction.Info?.toLowerCase() || 'notify'
-            }
+                error: groupedAction.error || CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+                warn: groupedAction.warn || CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+                info: groupedAction.info || CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+            },
         };
         setDialogConfig({
             open: true,
-            editAction: actionConfig
+            editAction: actionConfig,
         });
     };
 
     const handleCloseDialog = () => {
         setDialogConfig({
             open: false,
-            editAction: null
+            editAction: null,
         });
     };
 
+    const handleRulesetSelect = (ruleset) => {
+        dispatch({
+            field: 'rulesets',
+            value: [...rulesets, ruleset.id],
+        });
+        setSelectedRulesets([...selectedRulesets, ruleset]);
+    };
+
+    const handleRulesetDeselect = (ruleset) => {
+        dispatch({
+            field: 'rulesets',
+            value: rulesets.filter((id) => id !== ruleset.id),
+        });
+        setSelectedRulesets(selectedRulesets.filter((r) => r.id !== ruleset.id));
+    };
+
     return (
-        <ContentBase
+        <StyledContentBase
             pageStyle='half'
             title={
-                id ? `${intl.formatMessage({
+                policyId ? `${intl.formatMessage({
                     id: 'Governance.Policies.AddEdit.title.edit',
                     defaultMessage: 'Governance Policy - Edit ',
                 })} ${name}` : intl.formatMessage({
                     id: 'Governance.Policies.AddEdit.title.new',
                     defaultMessage: 'Governance Policy - Create new',
-                })}
+                })
+            }
             help={<div>TODO: Link Doc</div>}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
@@ -445,45 +562,86 @@ function AddEditPolicy(props) {
                     <Grid item xs={12} md={12} lg={3}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id="Governance.Policies.AddEdit.labels.title"
-                                defaultMessage="Applicable Labels"
+                                id='Governance.Policies.AddEdit.labels.title'
+                                defaultMessage='Applicability'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id="Governance.Policies.AddEdit.labels.description"
-                                defaultMessage="Specify the API labels to associate the governance policy"
+                                id='Governance.Policies.AddEdit.labels.description'
+                                defaultMessage={'Choose whether to apply this policy to'
+                                    + ' all APIs or only to APIs with specific labels'}
                             />
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
-                            <MuiChipsInput
-                                variant='outlined'
-                                fullWidth
-                                value={labels}
-                                onAddChip={(label) => {
-                                    labels.push(label);
-                                }}
-                                onDeleteChip={(labelToDelete) => {
-                                    const filteredLabels = labels.filter(
-                                        (label) => label !== labelToDelete,
-                                    );
-                                    dispatch({ field: 'labels', value: filteredLabels });
-                                }}
-                                placeholder={intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.labels.placeholder',
-                                    defaultMessage: 'Type labels and press Enter',
-                                })}
-                                helperText={(
-                                    <div style={{ position: 'absolute', marginTop: '10px' }}>
-                                        {intl.formatMessage({
-                                            id: 'Governance.Policies.AddEdit.labels.helper',
-                                            defaultMessage: 'Type labels and press Enter to add them',
+                            <Box mb={2}>
+                                <RadioGroup
+                                    row
+                                    value={labelMode}
+                                    onChange={handleLabelModeChange}
+                                >
+                                    <FormControlLabel
+                                        value='all'
+                                        control={<Radio />}
+                                        label={intl.formatMessage({
+                                            id: 'Governance.Policies.AddEdit.labels.applyAll',
+                                            defaultMessage: 'Apply to all APIs',
                                         })}
-                                    </div>
-                                )}
-                            />
+                                    />
+                                    <FormControlLabel
+                                        value='specific'
+                                        control={<Radio />}
+                                        label={intl.formatMessage({
+                                            id: 'Governance.Policies.AddEdit.labels.applySpecific',
+                                            defaultMessage: 'Apply to APIs with specific labels',
+                                        })}
+                                    />
+                                    <FormControlLabel
+                                        value='none'
+                                        control={<Radio />}
+                                        label={intl.formatMessage({
+                                            id: 'Governance.Policies.AddEdit.labels.applyNone',
+                                            defaultMessage: 'Apply to none',
+                                        })}
+                                    />
+                                </RadioGroup>
+                            </Box>
+                            {labelMode === 'specific' && (
+                                <Autocomplete
+                                    multiple
+                                    id='governance-policy-labels'
+                                    options={availableLabels}
+                                    value={labels}
+                                    onChange={(event, newValue) => {
+                                        dispatch({ field: 'labels', value: newValue });
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            variant='outlined'
+                                            label={intl.formatMessage({
+                                                id: 'Governance.Policies.AddEdit.labels.input',
+                                                defaultMessage: 'Select Labels',
+                                            })}
+                                            error={hasErrors('labels', labels, validating)}
+                                            helperText={hasErrors('labels', labels, validating) || intl.formatMessage({
+                                                id: 'Governance.Policies.AddEdit.labels.helper',
+                                                defaultMessage:
+                                                    'Select one or more labels to determine'
+                                                    + ' which APIs this policy applies to',
+                                            })}
+                                        />
+                                    )}
+                                    renderTags={(value, getTagProps) => value.map((option, index) => (
+                                        <Chip
+                                            label={option}
+                                            {...getTagProps({ index })}
+                                        />
+                                    ))}
+                                />
+                            )}
                         </Box>
                     </Grid>
 
@@ -496,28 +654,28 @@ function AddEditPolicy(props) {
                     <Grid item xs={12} md={12} lg={3}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id="Governance.Policies.AddEdit.enforcement.title"
-                                defaultMessage="Enforcement Details"
+                                id='Governance.Policies.AddEdit.enforcement.title'
+                                defaultMessage='Enforcement Details'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id="Governance.Policies.AddEdit.enforcement.description"
-                                defaultMessage="Provide details of when the policy will be applied"
+                                id='Governance.Policies.AddEdit.enforcement.description'
+                                defaultMessage='Provide details of when the policy will be applied'
                             />
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
                             <Button
-                                variant="outlined"
-                                color="primary"
+                                variant='outlined'
+                                color='primary'
                                 startIcon={<AddIcon />}
                                 onClick={handleAddAction}
                             >
                                 {intl.formatMessage({
                                     id: 'Governance.Policies.AddEdit.action.add',
-                                    defaultMessage: 'Add Action Configuration'
+                                    defaultMessage: 'Add Action Configuration',
                                 })}
                             </Button>
                         </Box>
@@ -530,92 +688,102 @@ function AddEditPolicy(props) {
                                                 <TableCell>
                                                     {intl.formatMessage({
                                                         id: 'Governance.Policies.AddEdit.action.table.state',
-                                                        defaultMessage: 'State'
+                                                        defaultMessage: 'State',
                                                     })}
                                                 </TableCell>
                                                 <TableCell>
                                                     {intl.formatMessage({
                                                         id: 'Governance.Policies.AddEdit.action.table.onError',
-                                                        defaultMessage: 'On Error'
+                                                        defaultMessage: 'On Error',
                                                     })}
                                                 </TableCell>
                                                 <TableCell>
                                                     {intl.formatMessage({
                                                         id: 'Governance.Policies.AddEdit.action.table.onWarn',
-                                                        defaultMessage: 'On Warn'
+                                                        defaultMessage: 'On Warn',
                                                     })}
                                                 </TableCell>
                                                 <TableCell>
                                                     {intl.formatMessage({
                                                         id: 'Governance.Policies.AddEdit.action.table.onInfo',
-                                                        defaultMessage: 'On Info'
+                                                        defaultMessage: 'On Info',
                                                     })}
                                                 </TableCell>
-                                                <TableCell align="right">
+                                                <TableCell align='right'>
                                                     {intl.formatMessage({
                                                         id: 'Governance.Policies.AddEdit.action.table.actions',
-                                                        defaultMessage: 'Actions'
+                                                        defaultMessage: 'Actions',
                                                     })}
                                                 </TableCell>
                                             </TableRow>
                                         </TableHead>
                                         <TableBody>
-                                            {groupActionsByState(actions).map((groupedAction, index) => (
+                                            {groupActionsByState(actions).map((groupedAction) => (
                                                 <TableRow key={groupedAction.state}>
-                                                    <TableCell>{groupedAction.state}</TableCell>
+                                                    <TableCell>
+                                                        {Utils.mapGovernableStateToLabel(groupedAction.state)}
+                                                    </TableCell>
                                                     <TableCell>
                                                         <Chip
-                                                            label={groupedAction.Error || 'Not Set'}
-                                                            color={groupedAction.Error === 'BLOCK' ? 'error' : 'primary'}
-                                                            variant="outlined"
-                                                            size="small"
-                                                            sx={{
-                                                                borderColor: groupedAction.Error === 'BLOCK' ? 'error.main' : 'primary.main',
-                                                                backgroundColor: groupedAction.Error === 'BLOCK' ? 'error.lighter' : 'primary.lighter',
-                                                                opacity: groupedAction.Error ? 1 : 0.5
-                                                            }}
+                                                            label={groupedAction.error || 'Not Set'}
+                                                            color={
+                                                                groupedAction.error === CONSTS.GOVERNANCE_ACTIONS.BLOCK
+                                                                    ? 'error' : 'primary'
+                                                            }
+                                                            variant='outlined'
+                                                            size='small'
+                                                            className={classes.actionChip}
+                                                            isBlock={
+                                                                groupedAction.error === CONSTS.GOVERNANCE_ACTIONS.BLOCK
+                                                            }
                                                         />
                                                     </TableCell>
                                                     <TableCell>
                                                         <Chip
-                                                            label={groupedAction.Warn || 'Not Set'}
-                                                            color={groupedAction.Warn === 'BLOCK' ? 'error' : 'primary'}
-                                                            variant="outlined"
-                                                            size="small"
-                                                            sx={{
-                                                                borderColor: groupedAction.Warn === 'BLOCK' ? 'error.main' : 'primary.main',
-                                                                backgroundColor: groupedAction.Warn === 'BLOCK' ? 'error.lighter' : 'primary.lighter',
-                                                                opacity: groupedAction.Warn ? 1 : 0.5
-                                                            }}
+                                                            label={groupedAction.warn || 'Not Set'}
+                                                            color={
+                                                                groupedAction.warn === CONSTS.GOVERNANCE_ACTIONS.BLOCK
+                                                                    ? 'error' : 'primary'
+                                                            }
+                                                            variant='outlined'
+                                                            size='small'
+                                                            className={classes.actionChip}
+                                                            isBlock={
+                                                                groupedAction.warn === CONSTS.GOVERNANCE_ACTIONS.BLOCK
+                                                            }
                                                         />
                                                     </TableCell>
                                                     <TableCell>
                                                         <Chip
-                                                            label={groupedAction.Info || 'Not Set'}
-                                                            color={groupedAction.Info === 'BLOCK' ? 'error' : 'primary'}
-                                                            variant="outlined"
-                                                            size="small"
-                                                            sx={{
-                                                                borderColor: groupedAction.Info === 'BLOCK' ? 'error.main' : 'primary.main',
-                                                                backgroundColor: groupedAction.Info === 'BLOCK' ? 'error.lighter' : 'primary.lighter',
-                                                                opacity: groupedAction.Info ? 1 : 0.5
-                                                            }}
+                                                            label={groupedAction.info || 'Not Set'}
+                                                            color={
+                                                                groupedAction.info === CONSTS.GOVERNANCE_ACTIONS.BLOCK
+                                                                    ? 'error' : 'primary'
+                                                            }
+                                                            variant='outlined'
+                                                            size='small'
+                                                            className={classes.actionChip}
+                                                            isBlock={
+                                                                groupedAction.info === CONSTS.GOVERNANCE_ACTIONS.BLOCK
+                                                            }
                                                         />
                                                     </TableCell>
-                                                    <TableCell align="right">
+                                                    <TableCell align='right'>
                                                         <IconButton
                                                             onClick={() => handleEditAction(groupedAction)}
-                                                            size="small"
+                                                            size='small'
                                                             sx={{ mr: 1 }}
                                                         >
                                                             <EditIcon />
                                                         </IconButton>
                                                         <IconButton
                                                             onClick={() => {
-                                                                const newActions = actions.filter(a => a.state !== groupedAction.state);
+                                                                const newActions = actions.filter(
+                                                                    (a) => a.state !== groupedAction.state,
+                                                                );
                                                                 dispatch({ field: 'actions', value: newActions });
                                                             }}
-                                                            size="small"
+                                                            size='small'
                                                         >
                                                             <DeleteIcon />
                                                         </IconButton>
@@ -635,96 +803,29 @@ function AddEditPolicy(props) {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={12} lg={3}>
+                    <Grid item xs={12} md={12} lg={12}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id="Governance.Policies.AddEdit.rulesets.title"
-                                defaultMessage="Rulesets"
+                                id='Governance.Policies.AddEdit.rulesets.title'
+                                defaultMessage='Rulesets'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id="Governance.Policies.AddEdit.rulesets.description"
-                                defaultMessage="Search for a ruleset from the dropdown menu and select"
+                                id='Governance.Policies.AddEdit.rulesets.description'
+                                defaultMessage={'Search and select rulesets to include in the policy. '
+                                    + 'Selected rulesets will appear above the search bar.'}
                             />
                         </Typography>
                     </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
+                    <Grid item xs={12} md={12} lg={12}>
                         <Box component='div' m={1}>
-                            <FormControl fullWidth>
-                                <Autocomplete
-                                    id="ruleset-select"
-                                    options={availableRulesets}
-                                    inputValue={autocompleteInput}
-                                    getOptionLabel={(option) => option.name}
-                                    onInputChange={(event, newInputValue, reason) => {
-                                        setAutocompleteInput(newInputValue);
-                                    }}
-                                    onChange={(event, newValue) => {
-                                        if (newValue && !rulesets.includes(newValue.id)) {
-                                            dispatch({
-                                                field: 'rulesets',
-                                                value: [...rulesets, newValue.id]
-                                            });
-                                            setSelectedRulesets([...selectedRulesets, newValue]);
-                                            setAutocompleteInput('');
-                                        }
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant="outlined"
-                                            label={intl.formatMessage({
-                                                id: 'Governance.Policies.AddEdit.rulesets.select',
-                                                defaultMessage: 'Select Ruleset',
-                                            })}
-                                            required
-                                        />
-                                    )}
-                                    value={null}
-                                />
-                            </FormControl>
-
-                            {selectedRulesets.length > 0 && (
-                                <Box mt={2}>
-                                    {selectedRulesets.map((ruleset, index) => (
-                                        <Card key={ruleset.id} variant="outlined" sx={{ mb: 1 }}>
-                                            <CardContent sx={{
-                                                display: 'flex',
-                                                justifyContent: 'space-between',
-                                                alignItems: 'center',
-                                                pt: 1,
-                                                '&:last-child': { pb: 1 },
-                                            }}>
-                                                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                                                    <Typography variant="subtitle2">
-                                                        {ruleset.name}
-                                                    </Typography>
-                                                    <IconButton
-                                                        href={`/governance/ruleset-catalog/${ruleset.id}`}
-                                                        target="_blank"
-                                                        size="small"
-                                                        sx={{ ml: 0.5 }}
-                                                    >
-                                                        <LaunchIcon fontSize="small" />
-                                                    </IconButton>
-                                                </Box>
-                                                <IconButton
-                                                    onClick={() => {
-                                                        const newRulesets = rulesets.filter(id => id !== ruleset.id);
-                                                        const newSelectedRulesets = selectedRulesets.filter(r => r.id !== ruleset.id);
-                                                        dispatch({ field: 'rulesets', value: newRulesets });
-                                                        setSelectedRulesets(newSelectedRulesets);
-                                                    }}
-                                                    size="small"
-                                                >
-                                                    <DeleteIcon />
-                                                </IconButton>
-                                            </CardContent>
-                                        </Card>
-                                    ))}
-                                </Box>
-                            )}
+                            <RulesetSelector
+                                availableRulesets={availableRulesets}
+                                selectedRulesets={selectedRulesets}
+                                onRulesetSelect={handleRulesetSelect}
+                                onRulesetDeselect={handleRulesetDeselect}
+                            />
                         </Box>
                     </Grid>
 
@@ -743,7 +844,7 @@ function AddEditPolicy(props) {
                             >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
-                                        {id ? (
+                                        {policyId ? (
                                             <FormattedMessage
                                                 id='Governance.Policies.AddEdit.form.update.btn'
                                                 defaultMessage='Update'
@@ -777,9 +878,9 @@ function AddEditPolicy(props) {
                 onSave={handleActionSave}
                 editAction={dialogConfig.editAction}
             />
-        </ContentBase>);
+        </StyledContentBase>
+    );
 }
-
 
 AddEditPolicy.propTypes = {
     match: PropTypes.shape({}).isRequired,

@@ -28,6 +28,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
 import ApiIcon from '@mui/icons-material/Api';
+import Utils from 'AppData/Utils';
 
 /**
  * API call to get Policies
@@ -36,7 +37,7 @@ import ApiIcon from '@mui/icons-material/Api';
 function apiCall() {
     const restApi = new GovernanceAPI();
     return restApi
-        .getArtifactComplianceForAllArtifacts()
+        .getComplianceStatusListOfAPIs()
         .then((result) => {
             return result.body.list;
         })
@@ -135,11 +136,15 @@ export default function ApiComplianceTable() {
 
     const columProps = [
         {
-            name: 'artifactId',
+            name: 'id',
             options: { display: false }
         },
         {
-            name: 'artifactName',
+            name: 'info',
+            options: { display: false }
+        },
+        {
+            name: 'name',
             label: intl.formatMessage({
                 id: 'Governance.Overview.APICompliance.column.api',
                 defaultMessage: 'API',
@@ -148,7 +153,7 @@ export default function ApiComplianceTable() {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <RouterLink to={`/governance/overview/api/${tableMeta.rowData[0]}`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-                            {value}
+                            {tableMeta.rowData[1].name}
                             <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
                         </RouterLink>
                     </Box>
@@ -177,8 +182,7 @@ export default function ApiComplianceTable() {
             options: {
                 customBodyRender: (value) => (
                     <Chip
-                        label={value}
-                        // status can be NOT_APPLICABLE, COMPLIANT, NON_COMPLIANT
+                        label={Utils.mapComplianceStateToLabel(value)}
                         color={value === 'COMPLIANT' ? 'success' :
                             value === 'NON_COMPLIANT' ? 'error' : 'default'}
                         size="small"
@@ -216,8 +220,8 @@ export default function ApiComplianceTable() {
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    const followed = tableMeta.rowData[3]?.followedPolicies || 0;
-                    const violated = tableMeta.rowData[3]?.violatedPolicies || 0;
+                    const followed = tableMeta.rowData[4]?.followed || 0;
+                    const violated = tableMeta.rowData[4]?.violated || 0;
                     const total = followed + violated;
                     return renderProgress(followed, total);
                 },
@@ -241,7 +245,7 @@ export default function ApiComplianceTable() {
             label: ' ',
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    const severityBasedRuleViolationSummary = tableMeta.rowData[4] || [];
+                    const severityBasedRuleViolationSummary = tableMeta.rowData[5] || [];
                     return renderComplianceIcons(severityBasedRuleViolationSummary);
                 },
                 setCellHeaderProps: () => ({

@@ -16,6 +16,7 @@
  * under the License.
  */
 import Configurations from 'Config';
+import CONSTS from 'AppData/Constants';
 /**
  * Utility class for Admin Portal application
  */
@@ -312,6 +313,69 @@ class Utils {
     }
 
     /**
+     * Maps a governable state value to its label
+     * @param {string} stateValue The value of the governable state
+     * @returns {string} The label of the governable state
+     * @memberof Utils
+     */
+    static mapGovernableStateToLabel(value) {
+        const state = CONSTS.GOVERNABLE_STATES.find((t) => t.value === value);
+        return state?.label || value;
+    }
+
+    /**
+     * Maps rule type value to its label
+     * @param {String} value - The value to be mapped
+     * @returns {String} The corresponding label
+     */
+    static mapRuleTypeToLabel(value) {
+        const ruleType = CONSTS.RULESET_TYPES.find((t) => t.value === value);
+        return ruleType?.label || value;
+    }
+
+    /**
+     * Maps artifact type value to its label
+     * @param {String} value - The value to be mapped
+     * @returns {String} The corresponding label
+     */
+    static mapArtifactTypeToLabel(value) {
+        const artifactType = CONSTS.ARTIFACT_TYPES.find((t) => t.value === value);
+        return artifactType?.label || value;
+    }
+
+    /**
+     * Maps a compliance state to its display label
+     * @param {string} state The compliance state value
+     * @returns {string} The display label
+     */
+    static mapComplianceStateToLabel(state) {
+        const complianceState = CONSTS.COMPLIANCE_STATES.find((t) => t.value === state);
+        return complianceState?.label || state;
+    }
+
+    /**
+     * Maps a policy adherence state value to its label
+     * @param {string} state The value of the policy adherence state
+     * @returns {string} The label of the policy adherence state
+     * @memberof Utils
+     */
+    static mapPolicyAdherenceStateToLabel(state) {
+        const policyState = CONSTS.POLICY_ADHERENCE_STATES.find((t) => t.value === state);
+        return policyState?.label || state;
+    }
+
+    /**
+     * Maps a ruleset validation state value to its label
+     * @param {string} state The value of the ruleset validation state
+     * @returns {string} The label of the ruleset validation state
+     * @memberof Utils
+     */
+    static mapRulesetValidationStateToLabel(state) {
+        const validationState = CONSTS.RULESET_VALIDATION_STATES.find((t) => t.value === state);
+        return validationState?.label || state;
+    }
+
+    /**
      * Force file download in browser
      *
      * @static
@@ -365,7 +429,7 @@ Utils.CONST = {
     LOGOUT_CALLBACK: '/services/auth/callback/logout',
     INTROSPECT: '/services/auth/introspect',
     SWAGGER_JSON: '/api/am/admin/v4/swagger.yaml',
-    GOVERNANCE_SWAGGER_JSON: '/api/am/governance/v0/swagger.yaml',
+    GOVERNANCE_SWAGGER_JSON: '/api/am/governance/v1/swagger.yaml',
     PROTOCOL: 'https://',
     API_CLIENT: 'API_CLIENT',
     GOVERNANCE_CLIENT: 'GOVERNANCE_CLIENT',

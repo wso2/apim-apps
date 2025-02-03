@@ -26,13 +26,14 @@ import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import Utils from 'AppData/Utils';
 
 export default function RulesetAdherenceSummaryTable({ artifactId }) {
     const intl = useIntl();
-    
+
     const apiCall = () => {
         const restApi = new GovernanceAPI();
-        return restApi.getArtifactComplianceByArtifactId(artifactId)
+        return restApi.getComplianceByAPIId(artifactId)
             .then((response) => {
                 // Get unique ruleset IDs from all policies
                 const rulesetIds = [...new Set(
@@ -44,7 +45,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 // Get validation results for each ruleset
                 return Promise.all(
                     rulesetIds.map(rulesetId =>
-                        restApi.getRulesetValidationResultsByArtifactId(artifactId, rulesetId)
+                        restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
                             .then((result) => result.body)
                     )
                 );
@@ -98,7 +99,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 }),
                 customBodyRender: (value) => (
                     <Chip
-                        label={value}
+                        label={Utils.mapRulesetValidationStateToLabel(value)}
                         color={value === 'PASSED' ? 'success' : 'error'}
                         size="small"
                         variant="outlined"
