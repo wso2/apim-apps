@@ -94,7 +94,7 @@ class GovernanceAPIClient {
     static getScopeForResource(resourcePath, resourceMethod) {
         if (!GovernanceAPIClient.spec) {
             SwaggerClient.http.withCredentials = true;
-            GovernanceAPIClient.spec = SwaggerClient.resolve({ url: Utils.getSwaggerURL() });
+            GovernanceAPIClient.spec = SwaggerClient.resolve({ url: Utils.getGovernanceSwaggerURL() });
         }
         return GovernanceAPIClient.spec.then((resolved) => {
             return (

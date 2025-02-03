@@ -19,9 +19,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useIntl } from 'react-intl';
-import { PieChart } from '@mui/x-charts/PieChart';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import { Grid, Card, CardContent, Typography } from '@mui/material';
+import DonutChart from 'AppComponents/Shared/DonutChart';
 import ApiComplianceTable from './ApiComplianceTable';
 import PolicyAdherenceTable from './PolicyAdherenceTable';
 import GovernanceAPI from 'AppData/GovernanceAPI';
@@ -44,21 +44,21 @@ export default function Summary() {
 
         Promise.all([
             restApi.getPolicyAdherenceSummary(),
-            restApi.getArtifactComplianceSummary()
+            restApi.getComplianceSummaryForAPIs()
         ])
             .then(([policyResponse, artifactResponse]) => {
                 // Set Policy Adherence
                 setPolicyAdherence({
-                    followedPolicies: policyResponse.body.followedPolicies || 0,
-                    violatedPolicies: policyResponse.body.violatedPolicies || 0,
-                    unAppliedPolicies: policyResponse.body.unAppliedPolicies || 0
+                    followedPolicies: policyResponse.body.followed || 0,
+                    violatedPolicies: policyResponse.body.violated || 0,
+                    unAppliedPolicies: policyResponse.body.unApplied || 0
                 });
 
                 // Set API compliance
                 setApiCompliance({
-                    compliantArtifacts: artifactResponse.body.compliantArtifacts || 0,
-                    nonCompliantArtifacts: artifactResponse.body.nonCompliantArtifacts || 0,
-                    notApplicableArtifacts: artifactResponse.body.notApplicableArtifacts || 0
+                    compliantArtifacts: artifactResponse.body.compliant || 0,
+                    nonCompliantArtifacts: artifactResponse.body.nonCompliant || 0,
+                    notApplicableArtifacts: artifactResponse.body.notApplicable || 0
                 });
             })
             .catch((error) => {
@@ -76,7 +76,7 @@ export default function Summary() {
             pageStyle='paperLess'
         >
             <Grid container spacing={4} alignItems='left'>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6} lg={4}>
                     <Card elevation={3}>
                         <CardContent>
                             <Typography
@@ -88,50 +88,38 @@ export default function Summary() {
                                     defaultMessage: 'Policy Adherence',
                                 })}
                             </Typography>
-                            <PieChart
-                                colors={['#2E96FF', '#FF5252', 'grey']}
-                                series={[{
-                                    data: [
-                                        { 
-                                            id: 0, 
-                                            value: policyAdherence.followedPolicies, 
-                                            label: intl.formatMessage({
-                                                id: 'Governance.Overview.Summary.policy.followed',
-                                                defaultMessage: 'Followed ({count})',
-                                            }, { count: policyAdherence.followedPolicies })
-                                        },
-                                        {
-                                            id: 1,
-                                            value: policyAdherence.violatedPolicies,
-                                            label: intl.formatMessage({
-                                                id: 'Governance.Overview.Summary.policy.violated',
-                                                defaultMessage: 'Violated ({count})',
-                                            }, { count: policyAdherence.violatedPolicies })
-                                        },
-                                        {
-                                            id: 2,
-                                            value: policyAdherence.unAppliedPolicies,
-                                            label: intl.formatMessage({
-                                                id: 'Governance.Overview.Summary.policy.not.applied',
-                                                defaultMessage: 'Not Applied ({count})',
-                                            }, { count: policyAdherence.unAppliedPolicies })
-                                        },
-                                    ],
-                                    innerRadius: 50,
-                                    outerRadius: 100,
-                                    paddingAngle: 5,
-                                    cornerRadius: 5,
-                                    cx: 100,
-                                    startAngle: 90,
-                                    endAngle: 470
-                                }]}
-                                width={400}
-                                height={200}
+                            <DonutChart
+                                data={[
+                                    {
+                                        id: 0,
+                                        value: policyAdherence.followedPolicies,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.policy.followed',
+                                            defaultMessage: 'Followed ({count})',
+                                        }, { count: policyAdherence.followedPolicies })
+                                    },
+                                    {
+                                        id: 1,
+                                        value: policyAdherence.violatedPolicies,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.policy.violated',
+                                            defaultMessage: 'Violated ({count})',
+                                        }, { count: policyAdherence.violatedPolicies })
+                                    },
+                                    {
+                                        id: 2,
+                                        value: policyAdherence.unAppliedPolicies,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.policy.not.applied',
+                                            defaultMessage: 'Not Applied ({count})',
+                                        }, { count: policyAdherence.unAppliedPolicies })
+                                    }
+                                ]}
                             />
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6} lg={4}>
                     <Card elevation={3}>
                         <CardContent>
                             <Typography
@@ -143,45 +131,33 @@ export default function Summary() {
                                     defaultMessage: 'API Compliance',
                                 })}
                             </Typography>
-                            <PieChart
-                                colors={['#2E96FF', '#FF5252', 'grey']}
-                                series={[{
-                                    data: [
-                                        {
-                                            id: 0,
-                                            value: apiCompliance.compliantArtifacts,
-                                            label: intl.formatMessage({
-                                                id: 'Governance.Overview.Summary.api.compliant',
-                                                defaultMessage: 'Compliant ({count})',
-                                            }, { count: apiCompliance.compliantArtifacts })
-                                        },
-                                        {
-                                            id: 1,
-                                            value: apiCompliance.nonCompliantArtifacts,
-                                            label: intl.formatMessage({
-                                                id: 'Governance.Overview.Summary.api.non.compliant',
-                                                defaultMessage: 'Non-Compliant ({count})',
-                                            }, { count: apiCompliance.nonCompliantArtifacts })
-                                        },
-                                        {
-                                            id: 2,
-                                            value: apiCompliance.notApplicableArtifacts,
-                                            label: intl.formatMessage({
-                                                id: 'Governance.Overview.Summary.api.not.applicable',
-                                                defaultMessage: 'Not Applicable ({count})',
-                                            }, { count: apiCompliance.notApplicableArtifacts })
-                                        },
-                                    ],
-                                    innerRadius: 50,
-                                    outerRadius: 100,
-                                    paddingAngle: 5,
-                                    cornerRadius: 5,
-                                    cx: 100,
-                                    startAngle: 90,
-                                    endAngle: 470
-                                }]}
-                                width={400}
-                                height={200}
+                            <DonutChart
+                                data={[
+                                    {
+                                        id: 0,
+                                        value: apiCompliance.compliantArtifacts,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.api.compliant',
+                                            defaultMessage: 'Compliant ({count})',
+                                        }, { count: apiCompliance.compliantArtifacts })
+                                    },
+                                    {
+                                        id: 1,
+                                        value: apiCompliance.nonCompliantArtifacts,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.api.non.compliant',
+                                            defaultMessage: 'Non-Compliant ({count})',
+                                        }, { count: apiCompliance.nonCompliantArtifacts })
+                                    },
+                                    {
+                                        id: 2,
+                                        value: apiCompliance.notApplicableArtifacts,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.api.not.applicable',
+                                            defaultMessage: 'Not Applicable ({count})',
+                                        }, { count: apiCompliance.notApplicableArtifacts })
+                                    }
+                                ]}
                             />
                         </CardContent>
                     </Card>

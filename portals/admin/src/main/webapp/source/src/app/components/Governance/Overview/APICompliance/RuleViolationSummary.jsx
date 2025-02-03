@@ -26,6 +26,7 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import LabelIcon from '@mui/icons-material/Label';
+import RuleIcon from '@mui/icons-material/Rule';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
@@ -34,6 +35,8 @@ import { useIntl } from 'react-intl';
 export default function RuleViolationSummary({ artifactId }) {
     const intl = useIntl();
     const [selectedTab, setSelectedTab] = React.useState(0);
+    const [expandedItems, setExpandedItems] = React.useState([]);
+
     // To store expanded state per tab (TODO: Remove this and simplify the component)
     const [expandedCards, setExpandedCards] = React.useState({
         errors: {},
@@ -45,7 +48,7 @@ export default function RuleViolationSummary({ artifactId }) {
     // TODO: Optimize + simplify
     const apiCall = () => {
         const restApi = new GovernanceAPI();
-        return restApi.getArtifactComplianceByArtifactId(artifactId)
+        return restApi.getComplianceByAPIId(artifactId)
             .then((response) => {
                 // Get unique ruleset IDs from all policies
                 const rulesetIds = [...new Set(
@@ -57,7 +60,7 @@ export default function RuleViolationSummary({ artifactId }) {
                 // Get validation results for each ruleset
                 return Promise.all(
                     rulesetIds.map(rulesetId =>
-                        restApi.getRulesetValidationResultsByArtifactId(artifactId, rulesetId)
+                        restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
                             .then((result) => result.body)
                     )
                 ).then((rulesets) => {
@@ -135,19 +138,30 @@ export default function RuleViolationSummary({ artifactId }) {
         apiCall().then(setComplianceData);
     }, [artifactId]);
 
-    const handleExpandClick = (index, tabType) => {
-        setExpandedCards(prev => ({
-            ...prev,
-            [tabType]: {
-                ...prev[tabType],
-                [index]: !prev[tabType][index]
-            }
-        }));
+    const handleTabChange = (e, newValue) => {
+        setSelectedTab(newValue);
+        setExpandedItems([]); // Reset expanded items when tab changes
+    };
+
+    const handleExpandClick = (index) => {
+        setExpandedItems(prev => {
+            const isExpanded = prev.includes(index);
+            return isExpanded
+                ? prev.filter(i => i !== index)
+                : [...prev, index];
+        });
     };
 
     const getRuleData = (rules) => {
         return Promise.resolve(
             rules.map(rule => [rule.name, rule.violatedPath, rule.message])
+        );
+    };
+
+    // Add new function for passed rules data
+    const getPassedRuleData = (rules) => {
+        return Promise.resolve(
+            rules.map(rule => [rule.name, rule.description])
         );
     };
 
@@ -190,7 +204,35 @@ export default function RuleViolationSummary({ artifactId }) {
         },
     ];
 
-    const renderComplianceCards = (rulesets, tabType) => {
+    // Add new column props for passed rules
+    const passedRuleColumnProps = [
+        {
+            name: 'name',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.RuleViolation.column.rule',
+                defaultMessage: 'Rule',
+            }),
+            options: {
+                customBodyRender: (value) => (
+                    <Typography variant="body2">{value}</Typography>
+                ),
+            },
+        },
+        {
+            name: 'description',
+            label: intl.formatMessage({
+                id: 'Governance.Overview.APICompliance.RuleViolation.column.description',
+                defaultMessage: 'Description',
+            }),
+            options: {
+                customBodyRender: (value) => (
+                    <Typography variant="body2">{value}</Typography>
+                ),
+            },
+        },
+    ];
+
+    const renderComplianceCards = (rulesets, isPassed = false) => {
         return (
             <>
                 <Grid container spacing={2}>
@@ -216,15 +258,15 @@ export default function RuleViolationSummary({ artifactId }) {
                                             /> */}
                                         </Box>
                                         <IconButton
-                                            onClick={() => handleExpandClick(index, tabType)}
-                                            aria-expanded={expandedCards[tabType][index]}
+                                            onClick={() => handleExpandClick(index)}
+                                            aria-expanded={expandedItems.includes(index)}
                                             aria-label="show more"
                                         >
-                                            {expandedCards[tabType][index] ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                            {expandedItems.includes(index) ? <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
                                         </IconButton>
                                     </Box>
                                 </CardContent>
-                                <Collapse in={expandedCards[tabType][index]} timeout="auto" unmountOnExit>
+                                <Collapse in={expandedItems.includes(index)} timeout="auto" unmountOnExit>
                                     <CardContent sx={{
                                         pt: 0,
                                         '& .MuiTableCell-footer': {
@@ -232,14 +274,13 @@ export default function RuleViolationSummary({ artifactId }) {
                                         },
                                     }}>
                                         <ListBase
-                                            columProps={ruleColumProps}
-                                            apiCall={() => getRuleData(item.rules)}
+                                            columProps={isPassed ? passedRuleColumnProps : ruleColumProps}
+                                            apiCall={() => isPassed ? getPassedRuleData(item.rules) : getRuleData(item.rules)}
                                             searchProps={false}
                                             addButtonProps={false}
                                             showActionColumn={false}
                                             useContentBase={false}
                                             emptyBoxProps={{
-                                                title: 'No Rules Found',
                                                 content: 'There are no rules to display',
                                             }}
                                             options={{
@@ -265,11 +306,65 @@ export default function RuleViolationSummary({ artifactId }) {
         return rulesets.reduce((sum, ruleset) => sum + ruleset.rules.length, 0);
     };
 
+    const renderEmptyContent = (message) => (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 3
+            }}
+        >
+            <RuleIcon
+                sx={{
+                    fontSize: 60,
+                    color: 'action.disabled',
+                    mb: 2
+                }}
+            />
+            <Typography
+                variant="h6"
+                color="text.secondary"
+                gutterBottom
+                sx={{ fontWeight: 'medium' }}
+            >
+                {message}
+            </Typography>
+        </Box>
+    );
+
+    const getEmptyMessage = (tabIndex) => {
+        switch (tabIndex) {
+            case 0:
+                return intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.errors',
+                    defaultMessage: 'No Error violations found',
+                });
+            case 1:
+                return intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.warnings',
+                    defaultMessage: 'No Warning violations found',
+                });
+            case 2:
+                return intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.info',
+                    defaultMessage: 'No Info violations found',
+                });
+            case 3:
+                return intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.passed',
+                    defaultMessage: 'No Passed rules found',
+                });
+            default:
+                return '';
+        }
+    };
+
     return (
         <>
             <Tabs
                 value={selectedTab}
-                onChange={(e, newValue) => setSelectedTab(newValue)}
+                onChange={handleTabChange}
                 sx={{
                     borderBottom: 1,
                     borderColor: 'divider',
@@ -349,10 +444,26 @@ export default function RuleViolationSummary({ artifactId }) {
                     }, { count: getTotalRuleCount(complianceData.passed) })}
                 />
             </Tabs>
-            {selectedTab === 0 && renderComplianceCards(complianceData.errors, 'errors')}
-            {selectedTab === 1 && renderComplianceCards(complianceData.warnings, 'warnings')}
-            {selectedTab === 2 && renderComplianceCards(complianceData.info, 'info')}
-            {selectedTab === 3 && renderComplianceCards(complianceData.passed, 'passed')}
+            {selectedTab === 0 && (
+                complianceData.errors.length > 0
+                    ? renderComplianceCards(complianceData.errors)
+                    : renderEmptyContent(getEmptyMessage(0))
+            )}
+            {selectedTab === 1 && (
+                complianceData.warnings.length > 0
+                    ? renderComplianceCards(complianceData.warnings)
+                    : renderEmptyContent(getEmptyMessage(1))
+            )}
+            {selectedTab === 2 && (
+                complianceData.info.length > 0
+                    ? renderComplianceCards(complianceData.info)
+                    : renderEmptyContent(getEmptyMessage(2))
+            )}
+            {selectedTab === 3 && (
+                complianceData.passed.length > 0
+                    ? renderComplianceCards(complianceData.passed, true)
+                    : renderEmptyContent(getEmptyMessage(3))
+            )}
         </>
     );
 }

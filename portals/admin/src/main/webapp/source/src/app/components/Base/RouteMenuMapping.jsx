@@ -286,10 +286,10 @@ const RouteMenuMapping = (intl) => [
                 icon: <BarChartIcon />,
             },
             {
-                id: 'Governance Policies',
+                id: 'Policies',
                 displayText: intl.formatMessage({
                     id: 'Base.RouteMenuMapping.governance.policies',
-                    defaultMessage: 'Governance Policies',
+                    defaultMessage: 'Policies',
                 }),
                 path: '/governance/policies',
                 component: Policies,

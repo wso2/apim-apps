@@ -141,7 +141,7 @@
             response.addCookie(cookie);
 
             cookie = new Cookie("AM_ACC_TOKEN_DEFAULT_P2", accessTokenPart2);
-            cookie.setPath(proxyContext != null ? proxyContext + "/api/am/governance/v0/" : "/api/am/governance/v0/");
+            cookie.setPath(proxyContext != null ? proxyContext + "/api/am/governance/" : "/api/am/governance/");
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
             cookie.setMaxAge((int) expiresIn);

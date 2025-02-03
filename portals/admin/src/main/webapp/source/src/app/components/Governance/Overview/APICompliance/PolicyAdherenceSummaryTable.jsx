@@ -25,8 +25,10 @@ import Stack from '@mui/material/Stack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useIntl } from 'react-intl';
+import PolicyIcon from '@mui/icons-material/Policy';
 
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import Utils from 'AppData/Utils';
 
 export default function PolicyAdherenceSummaryTable({ artifactId }) {
     const intl = useIntl();
@@ -38,7 +40,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
     function apiCall() {
         const restApi = new GovernanceAPI();
         return restApi
-            .getArtifactComplianceByArtifactId(artifactId)
+            .getComplianceByAPIId(artifactId)
             .then((result) => {
                 return result.body.governedPolicies;
             })
@@ -111,11 +113,11 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
 
     const policyColumProps = [
         {
-            name: 'policyId',
+            name: 'id',
             options: { display: false }
         },
         {
-            name: 'policyName',
+            name: 'name',
             label: intl.formatMessage({
                 id: 'Governance.Overview.APICompliance.PolicyAdherence.column.policy',
                 defaultMessage: 'Policy',
@@ -152,7 +154,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 }),
                 customBodyRender: (value) => (
                     <Chip
-                        label={value}
+                        label={Utils.mapPolicyAdherenceStateToLabel(value)}
                         color={value === 'FOLLOWED' ? 'success' : value === 'VIOLATED' ? 'error' : 'default'}
                         size="small"
                         variant="outlined"
@@ -201,20 +203,53 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         },
     ];
 
+    const emptyStateContent = (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 3
+            }}
+        >
+            <PolicyIcon
+                sx={{
+                    fontSize: 60,
+                    color: 'action.disabled',
+                    mb: 2
+                }}
+            />
+            <Typography
+                variant="h6"
+                color="text.secondary"
+                gutterBottom
+                sx={{ fontWeight: 'medium' }}
+            >
+                {intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.title',
+                    defaultMessage: 'No Policies Applied',
+                })}
+            </Typography>
+            <Typography
+                variant="body2"
+                color="text.secondary"
+                align="center"
+            >
+                {intl.formatMessage({
+                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.helper',
+                    defaultMessage: 'No governance policies have been applied to this API.',
+                })}
+            </Typography>
+        </Box>
+    );
+
     return (
         <ListBase
             columProps={policyColumProps}
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                title: intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.title',
-                    defaultMessage: 'No Policies Found',
-                }),
-                content: intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.content',
-                    defaultMessage: 'There are no policies to display',
-                }),
+                content: emptyStateContent
             }}
             addButtonProps={false}
             showActionColumn={false}
