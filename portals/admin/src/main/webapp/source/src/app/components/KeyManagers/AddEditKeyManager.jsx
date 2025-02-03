@@ -618,7 +618,7 @@ function AddEditKeyManager(props) {
     }
 
     const handleOrganizationAddition = (event, newValue) => {
-        setValidOrgs(newValue);
+        setValidOrgs(newValue.map((org) => org.organizationId));
     };
 
     return (
@@ -1938,23 +1938,26 @@ function AddEditKeyManager(props) {
                                             multiple
                                             fullWidth
                                             limitTags={5}
-                                            options={organizations.map((org) => org.displayName)}
+                                            options={organizations}
+                                            getOptionLabel={(option) => option.displayName}
                                             noOptionsText='No registered organizations'
                                             disableCloseOnSelect
-                                            value={validOrgs}
+                                            value={
+                                                organizations.filter((org) => validOrgs.includes(org.organizationId))
+                                            }
                                             onChange={handleOrganizationAddition}
                                             renderOption={(options, organization, { selected }) => (
                                                 <div>
                                                     <li {...options}>
                                                         <Checkbox
-                                                            id={organization}
-                                                            key={organization}
+                                                            id={organization.organizationId}
+                                                            key={organization.organizationId}
                                                             icon={icon}
                                                             checkedIcon={checkedIcon}
                                                             style={{ marginRight: 8 }}
                                                             checked={selected}
                                                         />
-                                                        {organization}
+                                                        {organization.displayName}
                                                     </li>
                                                 </div>
                                             )}

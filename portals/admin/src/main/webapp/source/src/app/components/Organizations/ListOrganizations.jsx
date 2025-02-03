@@ -102,11 +102,8 @@ export default function ListOrganizations() {
             <Typography variant='body2' color='textSecondary' component='p'>
                 <FormattedMessage
                     id='AdminPages.Organizations.List.empty.content.organization'
-                    defaultMessage={
-                        'You can register organizations here to map the organizations '
-                        + 'that are created in an External Identity Provider. '
-                        + ' You should belong to an organization to access this feature.'
-                    }
+                    defaultMessage={'Manage your organizations by registering new'
+                    + ' organizations or updating existing entries.'}
                 />
             </Typography>
         ),

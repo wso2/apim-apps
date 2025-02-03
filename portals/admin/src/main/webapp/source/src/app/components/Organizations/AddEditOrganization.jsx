@@ -251,7 +251,29 @@ function AddEditOrganization(props) {
             dialogOpenCallback={dialogOpenCallback}
         >
             <Box style={{ paddingRight: '20px' }}>
-                <StyledBox style={{ position: 'relative', marginTop: 10 }}>
+                <TextField
+                    margin='dense'
+                    name='displayName'
+                    value={displayName}
+                    onChange={onChange}
+                    label={(
+                        <span>
+                            <FormattedMessage id='AdminPages.Organizations.AddEdit.form.name' defaultMessage='Name' />
+                            <StyledSpan>*</StyledSpan>
+                        </span>
+                    )}
+                    fullWidth
+                    error={hasErrors('displayName', displayName)}
+                    variant='outlined'
+                />
+                <StyledBox
+                    style={{
+                        position: 'relative',
+                        marginTop: 10,
+                        marginBottom: 10,
+                        minWidth: 400,
+                    }}
+                >
                     <TextField
                         autoFocus
                         margin='dense'
@@ -284,28 +306,12 @@ function AddEditOrganization(props) {
                             </>
                         )}
                         aria-label='Organization'
-                        placement='right-end'
                         interactive
                         className={classes.tooltip}
                     >
                         <HelpOutline />
                     </Tooltip>
                 </StyledBox>
-                <TextField
-                    margin='dense'
-                    name='displayName'
-                    value={displayName}
-                    onChange={onChange}
-                    label={(
-                        <span>
-                            <FormattedMessage id='AdminPages.Organizations.AddEdit.form.name' defaultMessage='Name' />
-                            <StyledSpan>*</StyledSpan>
-                        </span>
-                    )}
-                    fullWidth
-                    error={hasErrors('displayName', displayName)}
-                    variant='outlined'
-                />
                 <TextField
                     margin='dense'
                     name='description'
