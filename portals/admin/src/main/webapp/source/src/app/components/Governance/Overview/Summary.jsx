@@ -19,9 +19,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { useIntl } from 'react-intl';
-import { PieChart } from '@mui/x-charts/PieChart';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import { Grid, Card, CardContent, Typography, Box } from '@mui/material';
+import { Grid, Card, CardContent, Typography } from '@mui/material';
+import DonutChart from 'AppComponents/Shared/DonutChart';
 import ApiComplianceTable from './ApiComplianceTable';
 import PolicyAdherenceTable from './PolicyAdherenceTable';
 import GovernanceAPI from 'AppData/GovernanceAPI';
@@ -66,30 +66,6 @@ export default function Summary() {
             });
     }, []);
 
-    const renderEmptyChart = (message) => (
-        <Box
-            sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: 200,
-                width: '100%'
-            }}
-        >
-            <Typography color="text.secondary">
-                {message}
-            </Typography>
-        </Box>
-    );
-
-    const hasPolicyData = policyAdherence.followedPolicies > 0 
-        || policyAdherence.violatedPolicies > 0 
-        || policyAdherence.unAppliedPolicies > 0;
-
-    const hasApiData = apiCompliance.compliantArtifacts > 0 
-        || apiCompliance.nonCompliantArtifacts > 0 
-        || apiCompliance.notApplicableArtifacts > 0;
-
     return (
         <ContentBase
             width='full'
@@ -100,7 +76,7 @@ export default function Summary() {
             pageStyle='paperLess'
         >
             <Grid container spacing={4} alignItems='left'>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6} lg={4}>
                     <Card elevation={3}>
                         <CardContent>
                             <Typography
@@ -112,55 +88,38 @@ export default function Summary() {
                                     defaultMessage: 'Policy Adherence',
                                 })}
                             </Typography>
-                            {hasPolicyData ? (
-                                <PieChart
-                                    colors={['#2E96FF', '#FF5252', 'grey']}
-                                    series={[{
-                                        data: [
-                                            { 
-                                                id: 0, 
-                                                value: policyAdherence.followedPolicies, 
-                                                label: intl.formatMessage({
-                                                    id: 'Governance.Overview.Summary.policy.followed',
-                                                    defaultMessage: 'Followed ({count})',
-                                                }, { count: policyAdherence.followedPolicies })
-                                            },
-                                            {
-                                                id: 1,
-                                                value: policyAdherence.violatedPolicies,
-                                                label: intl.formatMessage({
-                                                    id: 'Governance.Overview.Summary.policy.violated',
-                                                    defaultMessage: 'Violated ({count})',
-                                                }, { count: policyAdherence.violatedPolicies })
-                                            },
-                                            {
-                                                id: 2,
-                                                value: policyAdherence.unAppliedPolicies,
-                                                label: intl.formatMessage({
-                                                    id: 'Governance.Overview.Summary.policy.not.applied',
-                                                    defaultMessage: 'Not Applied ({count})',
-                                                }, { count: policyAdherence.unAppliedPolicies })
-                                            },
-                                        ],
-                                        innerRadius: 50,
-                                        outerRadius: 100,
-                                        paddingAngle: 5,
-                                        cornerRadius: 5,
-                                        cx: 100,
-                                        startAngle: 90,
-                                        endAngle: 470
-                                    }]}
-                                    width={400}
-                                    height={200}
-                                />
-                            ) : renderEmptyChart(intl.formatMessage({
-                                id: 'Governance.Overview.Summary.no.policy.data',
-                                defaultMessage: 'No policy data available'
-                            }))}
+                            <DonutChart
+                                data={[
+                                    {
+                                        id: 0,
+                                        value: policyAdherence.followedPolicies,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.policy.followed',
+                                            defaultMessage: 'Followed ({count})',
+                                        }, { count: policyAdherence.followedPolicies })
+                                    },
+                                    {
+                                        id: 1,
+                                        value: policyAdherence.violatedPolicies,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.policy.violated',
+                                            defaultMessage: 'Violated ({count})',
+                                        }, { count: policyAdherence.violatedPolicies })
+                                    },
+                                    {
+                                        id: 2,
+                                        value: policyAdherence.unAppliedPolicies,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.policy.not.applied',
+                                            defaultMessage: 'Not Applied ({count})',
+                                        }, { count: policyAdherence.unAppliedPolicies })
+                                    }
+                                ]}
+                            />
                         </CardContent>
                     </Card>
                 </Grid>
-                <Grid item xs={12} md={4}>
+                <Grid item xs={12} md={6} lg={4}>
                     <Card elevation={3}>
                         <CardContent>
                             <Typography
@@ -172,51 +131,34 @@ export default function Summary() {
                                     defaultMessage: 'API Compliance',
                                 })}
                             </Typography>
-                            {hasApiData ? (
-                                <PieChart
-                                    colors={['#2E96FF', '#FF5252', 'grey']}
-                                    series={[{
-                                        data: [
-                                            {
-                                                id: 0,
-                                                value: apiCompliance.compliantArtifacts,
-                                                label: intl.formatMessage({
-                                                    id: 'Governance.Overview.Summary.api.compliant',
-                                                    defaultMessage: 'Compliant ({count})',
-                                                }, { count: apiCompliance.compliantArtifacts })
-                                            },
-                                            {
-                                                id: 1,
-                                                value: apiCompliance.nonCompliantArtifacts,
-                                                label: intl.formatMessage({
-                                                    id: 'Governance.Overview.Summary.api.non.compliant',
-                                                    defaultMessage: 'Non-Compliant ({count})',
-                                                }, { count: apiCompliance.nonCompliantArtifacts })
-                                            },
-                                            {
-                                                id: 2,
-                                                value: apiCompliance.notApplicableArtifacts,
-                                                label: intl.formatMessage({
-                                                    id: 'Governance.Overview.Summary.api.not.applicable',
-                                                    defaultMessage: 'Not Applicable ({count})',
-                                                }, { count: apiCompliance.notApplicableArtifacts })
-                                            },
-                                        ],
-                                        innerRadius: 50,
-                                        outerRadius: 100,
-                                        paddingAngle: 5,
-                                        cornerRadius: 5,
-                                        cx: 100,
-                                        startAngle: 90,
-                                        endAngle: 470
-                                    }]}
-                                    width={400}
-                                    height={200}
-                                />
-                            ) : renderEmptyChart(intl.formatMessage({
-                                id: 'Governance.Overview.Summary.no.api.data',
-                                defaultMessage: 'No API data available'
-                            }))}
+                            <DonutChart
+                                data={[
+                                    {
+                                        id: 0,
+                                        value: apiCompliance.compliantArtifacts,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.api.compliant',
+                                            defaultMessage: 'Compliant ({count})',
+                                        }, { count: apiCompliance.compliantArtifacts })
+                                    },
+                                    {
+                                        id: 1,
+                                        value: apiCompliance.nonCompliantArtifacts,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.api.non.compliant',
+                                            defaultMessage: 'Non-Compliant ({count})',
+                                        }, { count: apiCompliance.nonCompliantArtifacts })
+                                    },
+                                    {
+                                        id: 2,
+                                        value: apiCompliance.notApplicableArtifacts,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.api.not.applicable',
+                                            defaultMessage: 'Not Applicable ({count})',
+                                        }, { count: apiCompliance.notApplicableArtifacts })
+                                    }
+                                ]}
+                            />
                         </CardContent>
                     </Card>
                 </Grid>

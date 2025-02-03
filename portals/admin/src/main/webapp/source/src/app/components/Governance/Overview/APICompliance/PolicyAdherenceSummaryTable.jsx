@@ -28,6 +28,7 @@ import { useIntl } from 'react-intl';
 import PolicyIcon from '@mui/icons-material/Policy';
 
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import Utils from 'AppData/Utils';
 
 export default function PolicyAdherenceSummaryTable({ artifactId }) {
     const intl = useIntl();
@@ -153,7 +154,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 }),
                 customBodyRender: (value) => (
                     <Chip
-                        label={value}
+                        label={Utils.mapPolicyAdherenceStateToLabel(value)}
                         color={value === 'FOLLOWED' ? 'success' : value === 'VIOLATED' ? 'error' : 'default'}
                         size="small"
                         variant="outlined"

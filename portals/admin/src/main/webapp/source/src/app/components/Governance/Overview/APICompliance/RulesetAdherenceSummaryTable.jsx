@@ -26,10 +26,11 @@ import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
 import AssignmentIcon from '@mui/icons-material/Assignment';
+import Utils from 'AppData/Utils';
 
 export default function RulesetAdherenceSummaryTable({ artifactId }) {
     const intl = useIntl();
-    
+
     const apiCall = () => {
         const restApi = new GovernanceAPI();
         return restApi.getComplianceByAPIId(artifactId)
@@ -98,7 +99,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 }),
                 customBodyRender: (value) => (
                     <Chip
-                        label={value}
+                        label={Utils.mapRulesetValidationStateToLabel(value)}
                         color={value === 'PASSED' ? 'success' : 'error'}
                         size="small"
                         variant="outlined"
