@@ -1,4 +1,4 @@
-/* eslint-disable */
+/*eslint-disable*/
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com) All Rights Reserved.
  *
@@ -104,14 +104,31 @@ function OrganizationSubscriptionPoliciesManage(props) {
     }, [organizations, visibleOrganizations]);
 
     const handlePolicyChange = (organizationId, selectedPolicies) => {
-        
         const selectedPolicyNames = selectedPolicies.map(policy => policy.name);
-        const updatedOrganizationPolicies = organizationPolicies.map(orgPolicy =>
-            orgPolicy.organizationID === organizationId
-                ? { ...orgPolicy, policies: selectedPolicyNames }
-                : orgPolicy
+        const existingOrgPolicyIndex = organizationPolicies.findIndex(
+            orgPolicy => orgPolicy.organizationID === organizationId
         );
-    
+        let updatedOrganizationPolicies;
+
+        if (existingOrgPolicyIndex !== -1) {
+            updatedOrganizationPolicies = organizationPolicies.map(orgPolicy =>
+                orgPolicy.organizationID === organizationId
+                    ? { ...orgPolicy, policies: selectedPolicyNames }
+                    : orgPolicy
+            );
+        } else {
+            const organizationName = organizations.find(org => org.organizationId === organizationId).displayName;
+            updatedOrganizationPolicies = [
+                ...organizationPolicies,
+                { 
+                    organizationID: organizationId,
+                    organizationName,
+                    policies: selectedPolicyNames
+                }
+            ];
+        }
+        updatedOrganizationPolicies = updatedOrganizationPolicies.filter(orgPolicy => orgPolicy.policies.length > 0);
+
         setOrganizationPolicies(updatedOrganizationPolicies);
     };
 
@@ -143,7 +160,7 @@ function OrganizationSubscriptionPoliciesManage(props) {
 
     return (
         <>
-        <Typography variant="h6" style={{ marginTop: '20px' }}>Organization Specific Business Plans</Typography>
+        <Typography variant='h6' style={{ marginTop: '20px' }}>Organization Specific Business Plans</Typography>
         <Paper>
             <TableContainer>
                 <Table>
@@ -206,8 +223,8 @@ function OrganizationSubscriptionPoliciesManage(props) {
                                         renderInput={(params) => (
                                             <TextField
                                                 {...params}
-                                                variant="outlined"
-                                                placeholder="Select Policies"
+                                                variant='outlined'
+                                                placeholder='Select Policies'
                                             />
                                         )}
                                     />
