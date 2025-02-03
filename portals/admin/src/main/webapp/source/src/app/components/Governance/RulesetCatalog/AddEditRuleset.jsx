@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -31,9 +30,14 @@ import {
     MenuItem,
     Paper,
     CircularProgress,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    DialogContentText,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
-import Editor from "@monaco-editor/react";
+import Editor from '@monaco-editor/react';
 import cloneDeep from 'lodash.clonedeep';
 import PropTypes from 'prop-types';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
@@ -59,8 +63,8 @@ const EditorContainer = styled(Box)(({ theme }) => ({
     '& .monaco-editor': {
         borderBottomLeftRadius: theme.shape.borderRadius,
         borderBottomRightRadius: theme.shape.borderRadius,
-        overflow: 'hidden'
-    }
+        overflow: 'hidden',
+    },
 }));
 
 function reducer(state, { field, value }) {
@@ -85,6 +89,8 @@ function reducer(state, { field, value }) {
 function AddEditRuleset(props) {
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [pendingFile, setPendingFile] = useState(null);
     const intl = useIntl();
     const { match: { params: { id } }, history } = props;
     const editMode = id !== undefined;
@@ -96,7 +102,7 @@ function AddEditRuleset(props) {
         artifactType: '',
         provider: '',
         rulesetContent: '',
-        documentationLink: ''
+        documentationLink: '',
     };
     const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -106,7 +112,7 @@ function AddEditRuleset(props) {
         ruleType,
         artifactType,
         rulesetContent,
-        documentationLink
+        documentationLink,
     } = state;
 
     useEffect(() => {
@@ -150,21 +156,48 @@ function AddEditRuleset(props) {
         dispatch({ field: 'rulesetContent', value });
     };
 
+    const processFile = (file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            dispatch({ field: 'rulesetContent', value: e.target.result });
+        };
+        reader.onerror = () => {
+            Alert.error(intl.formatMessage({
+                id: 'Governance.Rulesets.AddEdit.file.read.error',
+                defaultMessage: 'Error reading file',
+            }));
+        };
+        reader.readAsText(file);
+    };
+
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                dispatch({ field: 'rulesetContent', value: e.target.result });
-            };
-            reader.onerror = () => {
-                Alert.error(intl.formatMessage({
-                    id: 'Governance.Rulesets.AddEdit.file.read.error',
-                    defaultMessage: 'Error reading file',
-                }));
-            };
-            reader.readAsText(file);
+            if (rulesetContent.trim()) {
+                setPendingFile(file);
+                setOpenConfirmDialog(true);
+            } else {
+                processFile(file);
+            }
         }
+        // Clone the event target before modifying
+        const input = event.target;
+        setTimeout(() => {
+            input.value = '';
+        }, 0);
+    };
+
+    const handleConfirmOverwrite = () => {
+        if (pendingFile) {
+            processFile(pendingFile);
+            setPendingFile(null);
+        }
+        setOpenConfirmDialog(false);
+    };
+
+    const handleCancelOverwrite = () => {
+        setPendingFile(null);
+        setOpenConfirmDialog(false);
     };
 
     const hasErrors = (fieldName, fieldValue, validatingActive) => {
@@ -208,8 +241,8 @@ function AddEditRuleset(props) {
         const body = {
             ...state,
             provider: AuthManager.getUser().name,
-            rulesetContent: file
-        }
+            rulesetContent: file,
+        };
 
         // Do the API call
         const restApi = new GovernanceAPI();
@@ -253,18 +286,20 @@ function AddEditRuleset(props) {
     return (
         <ContentBase
             pageStyle='half'
-            title={id ? (
-                <FormattedMessage
-                    id='Governance.Rulesets.AddEdit.title.edit'
-                    defaultMessage='Edit Ruleset - {name}'
-                    values={{ name }}
-                />
-            ) : (
-                <FormattedMessage
-                    id='Governance.Rulesets.AddEdit.title.new'
-                    defaultMessage='Create New Ruleset'
-                />
-            )}
+            title={
+                id ? (
+                    <FormattedMessage
+                        id='Governance.Rulesets.AddEdit.title.edit'
+                        defaultMessage='Edit Ruleset - {name}'
+                        values={{ name }}
+                    />
+                ) : (
+                    <FormattedMessage
+                        id='Governance.Rulesets.AddEdit.title.new'
+                        defaultMessage='Create New Ruleset'
+                    />
+                )
+            }
             help={<div>TODO: Link Doc</div>}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
@@ -313,10 +348,12 @@ function AddEditRuleset(props) {
                                 name='description'
                                 value={description}
                                 onChange={onChange}
-                                label={<FormattedMessage
-                                    id='Governance.Rulesets.AddEdit.form.description'
-                                    defaultMessage='Description'
-                                />}
+                                label={(
+                                    <FormattedMessage
+                                        id='Governance.Rulesets.AddEdit.form.description'
+                                        defaultMessage='Description'
+                                    />
+                                )}
                                 fullWidth
                                 multiline
                                 rows={3}
@@ -327,10 +364,12 @@ function AddEditRuleset(props) {
                                 name='documentationLink'
                                 value={documentationLink}
                                 onChange={onChange}
-                                label={<FormattedMessage
-                                    id='Governance.Rulesets.AddEdit.form.documentation'
-                                    defaultMessage='Documentation Link'
-                                />}
+                                label={(
+                                    <FormattedMessage
+                                        id='Governance.Rulesets.AddEdit.form.documentation'
+                                        defaultMessage='Documentation Link'
+                                    />
+                                )}
                                 fullWidth
                                 variant='outlined'
                             />
@@ -342,10 +381,12 @@ function AddEditRuleset(props) {
                                         name='ruleType'
                                         value={ruleType}
                                         onChange={onChange}
-                                        label={<FormattedMessage
-                                            id='Governance.Rulesets.AddEdit.form.ruleset.type'
-                                            defaultMessage='Ruleset Type'
-                                        />}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Governance.Rulesets.AddEdit.form.ruleset.type'
+                                                defaultMessage='Ruleset Type'
+                                            />
+                                        )}
                                         fullWidth
                                         required
                                         variant='outlined'
@@ -364,10 +405,12 @@ function AddEditRuleset(props) {
                                         name='artifactType'
                                         value={artifactType}
                                         onChange={onChange}
-                                        label={<FormattedMessage
-                                            id='Governance.Rulesets.AddEdit.form.artifact.type'
-                                            defaultMessage='Artifact Type'
-                                        />}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Governance.Rulesets.AddEdit.form.artifact.type'
+                                                defaultMessage='Artifact Type'
+                                            />
+                                        )}
                                         fullWidth
                                         required
                                         variant='outlined'
@@ -400,40 +443,40 @@ function AddEditRuleset(props) {
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
                                 id='Governance.Rulesets.AddEdit.content.description'
-                                defaultMessage='Define the ruleset content in YAML format'
+                                defaultMessage='Define the ruleset content in YAML or JSON format'
                             />
                         </Typography>
                     </Grid>
 
                     <Grid item xs={12} md={12} lg={12}>
                         <Box component='div' m={1}>
-                            <Paper variant="outlined">
+                            <Paper variant='outlined'>
                                 <EditorToolbar>
                                     <Button
-                                        component="label"
-                                        variant="contained"
+                                        component='label'
+                                        variant='contained'
                                         startIcon={<CloudUploadIcon />}
-                                        size="small"
+                                        size='small'
                                     >
                                         <FormattedMessage
                                             id='Governance.Rulesets.AddEdit.button.upload'
                                             defaultMessage='Upload File'
                                         />
                                         <input
-                                            type="file"
+                                            type='file'
                                             hidden
-                                            accept=".yaml,.yml"
+                                            accept='.yaml,.yml,.json'
                                             onChange={handleFileUpload}
                                         />
                                     </Button>
                                 </EditorToolbar>
                                 <EditorContainer>
                                     <Editor
-                                        height="100%"
-                                        defaultLanguage="yaml"
+                                        height='100%'
+                                        defaultLanguage='yaml'
                                         value={rulesetContent}
                                         onChange={handleEditorChange}
-                                        theme="light"
+                                        theme='light'
                                         options={{
                                             minimap: { enabled: false },
                                             lineNumbers: 'on',
@@ -454,19 +497,25 @@ function AddEditRuleset(props) {
                                 onClick={formSave}
                                 disabled={saving}
                             >
-                                {saving ? <CircularProgress size={16} /> : (
-                                    id ? (
-                                        <FormattedMessage
-                                            id='Governance.Rulesets.AddEdit.button.update'
-                                            defaultMessage='Update'
-                                        />
-                                    ) : (
-                                        <FormattedMessage
-                                            id='Governance.Rulesets.AddEdit.button.create'
-                                            defaultMessage='Create'
-                                        />
-                                    )
-                                )}
+                                {(() => {
+                                    if (saving) {
+                                        return <CircularProgress size={16} />;
+                                    } else if (id) {
+                                        return (
+                                            <FormattedMessage
+                                                id='Governance.Rulesets.AddEdit.button.update'
+                                                defaultMessage='Update'
+                                            />
+                                        );
+                                    } else {
+                                        return (
+                                            <FormattedMessage
+                                                id='Governance.Rulesets.AddEdit.button.create'
+                                                defaultMessage='Create'
+                                            />
+                                        );
+                                    }
+                                })()}
                             </Button>
                         </Box>
                         <RouterLink to='/governance/ruleset-catalog'>
@@ -480,6 +529,44 @@ function AddEditRuleset(props) {
                     </Grid>
                 </Grid>
             </Box>
+
+            {/* Add the confirmation dialog */}
+            <Dialog
+                open={openConfirmDialog}
+                onClose={handleCancelOverwrite}
+                aria-labelledby='overwrite-dialog-title'
+                aria-describedby='overwrite-dialog-description'
+            >
+                <DialogTitle id='overwrite-dialog-title'>
+                    <FormattedMessage
+                        id='Governance.Rulesets.AddEdit.confirm.overwrite.title'
+                        defaultMessage='Confirm Overwrite'
+                    />
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id='overwrite-dialog-description'>
+                        <FormattedMessage
+                            id='Governance.Rulesets.AddEdit.confirm.overwrite.message'
+                            defaultMessage={'The editor contains existing content.'
+                                + ' Do you want to overwrite it with the uploaded file?'}
+                        />
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelOverwrite} color='primary'>
+                        <FormattedMessage
+                            id='Governance.Rulesets.AddEdit.confirm.overwrite.cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                    <Button onClick={handleConfirmOverwrite} color='primary' autoFocus>
+                        <FormattedMessage
+                            id='Governance.Rulesets.AddEdit.confirm.overwrite.ok'
+                            defaultMessage='Overwrite'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
         </ContentBase>
     );
 }
