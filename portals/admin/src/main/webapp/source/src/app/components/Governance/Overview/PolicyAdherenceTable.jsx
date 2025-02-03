@@ -45,13 +45,13 @@ function apiCall() {
             return Promise.all(
                 policies.map(async (policy) => {
                     try {
-                        const adherenceDetails = await restApi.getPolicyAdherenceByPolicyId(policy.policyId);
+                        const adherenceDetails = await restApi.getPolicyAdherenceByPolicyId(policy.id);
                         return {
                             ...policy,
                             evaluatedArtifacts: adherenceDetails.body.evaluatedArtifacts || []
                         };
                     } catch (error) {
-                        console.error(`Error fetching adherence for policy ${policy.policyId}:`, error);
+                        console.error(`Error fetching adherence for policy ${policy.id}:`, error);
                         return {
                             ...policy,
                             evaluatedArtifacts: []
@@ -113,11 +113,11 @@ export default function PolicyAdherenceTable() {
 
     const policyColumProps = [
         {
-            name: 'policyId',
+            name: 'id',
             options: { display: false }
         },
         {
-            name: 'policyName',
+            name: 'name',
             label: intl.formatMessage({
                 id: 'Governance.Overview.PolicyAdherence.column.policy',
                 defaultMessage: 'Policy',

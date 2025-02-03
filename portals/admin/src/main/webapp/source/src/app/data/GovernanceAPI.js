@@ -252,9 +252,9 @@ class GovernanceAPI extends Resource {
      * Get artifact compliance for all artifacts
      * @returns {Promise} Promised artifact compliance response
      */
-    getArtifactComplianceForAllArtifacts() {
+    getComplianceStatusListOfAPIs() {
         return this.client.then((client) => {
-            return client.apis['Artifact Compliance'].getArtifactComplianceForAllArtifacts(
+            return client.apis['Artifact Compliance'].getComplianceStatusListOfAPIs(
                 this._requestMetaData(),
             );
         });
@@ -266,10 +266,10 @@ class GovernanceAPI extends Resource {
      * @param {Object} options Optional parameters including signal for AbortController
      * @returns {Promise} Promised artifact compliance response
      */
-    getArtifactComplianceByArtifactId(artifactId, options = {}) {
+    getComplianceByAPIId(artifactId, options = {}) {
         return this.client.then((client) => {
-            return client.apis['Artifact Compliance'].getArtifactComplianceByArtifactId(
-                { artifactId: artifactId },
+            return client.apis['Artifact Compliance'].getComplianceByAPIId(
+                { apiId: artifactId },
                 { ...this._requestMetaData(), signal: options.signal }
             );
         });
@@ -291,9 +291,9 @@ class GovernanceAPI extends Resource {
      * Get artifact compliance summary
      * @returns {Promise} Promised artifact compliance summary response
      */
-    getArtifactComplianceSummary() {
+    getComplianceSummaryForAPIs() {
         return this.client.then((client) => {
-            return client.apis['Artifact Compliance'].getArtifactComplianceSummary(
+            return client.apis['Artifact Compliance'].getComplianceSummaryForAPIs(
                 this._requestMetaData(),
             );
         });
