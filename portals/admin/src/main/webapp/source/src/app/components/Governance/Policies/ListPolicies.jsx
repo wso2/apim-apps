@@ -145,7 +145,7 @@ export default function ListPolicies() {
             options: {
                 sort: false,
                 customBodyRender: (value) => {
-                    if (!value?.length) return 'All';
+                    if (!value?.length) return 'None';
                     const displayItems = value.slice(0, 2);
                     const remainingCount = value.length - 2;
 

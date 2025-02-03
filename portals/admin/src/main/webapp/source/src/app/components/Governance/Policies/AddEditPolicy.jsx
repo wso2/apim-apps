@@ -165,7 +165,7 @@ function AddEditPolicy(props) {
     const initialState = {
         name: '',
         description: '',
-        labels: [],
+        labels: ['GLOBAL'],
         actions: [],
         rulesets: [], // Store only IDs
     };
@@ -217,6 +217,15 @@ function AddEditPolicy(props) {
                             });
                             setSelectedRulesets(fullRulesets);
 
+                            // Set the correct label mode based on the policy data
+                            if (body.labels.length === 1 && body.labels[0] === 'GLOBAL') {
+                                setLabelMode('all');
+                            } else if (body.labels.length === 0) {
+                                setLabelMode('none');
+                            } else {
+                                setLabelMode('specific');
+                            }
+
                             return dispatch({
                                 field: 'all',
                                 value: {
@@ -241,6 +250,24 @@ function AddEditPolicy(props) {
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
+    };
+
+    const handleLabelModeChange = (e) => {
+        setLabelMode(e.target.value);
+        switch (e.target.value) {
+            case 'all':
+                dispatch({ field: 'labels', value: ['GLOBAL'] });
+                break;
+            case 'none':
+                dispatch({ field: 'labels', value: [] });
+                break;
+            case 'specific':
+                // TODO: should load the saved labels instead of clearing
+                dispatch({ field: 'labels', value: [] });
+                break;
+            default:
+                break;
+        }
     };
 
     const hasErrors = (fieldName, fieldValue, validatingActive) => {
@@ -553,12 +580,7 @@ function AddEditPolicy(props) {
                                 <RadioGroup
                                     row
                                     value={labelMode}
-                                    onChange={(e) => {
-                                        setLabelMode(e.target.value);
-                                        if (e.target.value === 'all') {
-                                            dispatch({ field: 'labels', value: [] });
-                                        }
-                                    }}
+                                    onChange={handleLabelModeChange}
                                 >
                                     <FormControlLabel
                                         value='all'
@@ -574,6 +596,14 @@ function AddEditPolicy(props) {
                                         label={intl.formatMessage({
                                             id: 'Governance.Policies.AddEdit.labels.applySpecific',
                                             defaultMessage: 'Apply to APIs with specific labels',
+                                        })}
+                                    />
+                                    <FormControlLabel
+                                        value='none'
+                                        control={<Radio />}
+                                        label={intl.formatMessage({
+                                            id: 'Governance.Policies.AddEdit.labels.applyNone',
+                                            defaultMessage: 'Apply to none',
                                         })}
                                     />
                                 </RadioGroup>

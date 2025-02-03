@@ -313,17 +313,16 @@ class GovernanceAPI extends Resource {
         });
     }
 
-    // getRulesetValidationResultsByArtifactId (input artifactId, rulesetId)
     /**
      * Get ruleset validation results by artifact id
      * @param {string} artifactId Artifact id
      * @param {string} rulesetId Ruleset id
      * @returns {Promise} Promised validation results response
      */
-    getRulesetValidationResultsByArtifactId(artifactId, rulesetId) {
+    getRulesetValidationResultsByAPIId(artifactId, rulesetId) {
         return this.client.then((client) => {
-            return client.apis['Artifact Compliance'].getRulesetValidationResultsByArtifactId(
-                { artifactId: artifactId, rulesetId: rulesetId },
+            return client.apis['Artifact Compliance'].getRulesetValidationResultsByAPIId(
+                { apiId: artifactId, rulesetId: rulesetId },
                 this._requestMetaData(),
             );
         });
