@@ -52,7 +52,7 @@ export default function Compliance(props) {
         const abortController = new AbortController();
         const restApi = new GovernanceAPI();
 
-        restApi.getArtifactComplianceByArtifactId(artifactId, { signal: abortController.signal })
+        restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
                 // Get ruleset statuses and count them
                 const rulesetStatuses = response.body.governedPolicies.flatMap(policy =>
