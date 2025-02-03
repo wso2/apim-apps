@@ -28,6 +28,7 @@ import CancelIcon from '@mui/icons-material/Cancel';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
 import PolicyIcon from '@mui/icons-material/Policy';
+import Utils from 'AppData/Utils';
 
 /**
  * API call to get Policies
@@ -125,9 +126,12 @@ export default function PolicyAdherenceTable() {
             options: {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <RouterLink to={
-                            `/governance/policies/${tableMeta.rowData[0]}`
-                        } style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+                        <RouterLink
+                            to={`/governance/policies/${tableMeta.rowData[0]}`}
+                            style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
                             {value}
                             <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
                         </RouterLink>
@@ -159,7 +163,7 @@ export default function PolicyAdherenceTable() {
             options: {
                 customBodyRender: (value) => (
                     <Chip
-                        label={value}
+                        label={Utils.mapPolicyAdherenceStateToLabel(value)}
                         color={value === 'FOLLOWED' ? 'success' : value === 'VIOLATED' ? 'error' : 'default'}
                         size="small"
                         variant="outlined"

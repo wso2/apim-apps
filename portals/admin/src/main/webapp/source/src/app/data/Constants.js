@@ -64,6 +64,20 @@ const CONSTS = {
         { value: 'WARN', label: 'Warn' },
         { value: 'INFO', label: 'Info' },
     ],
+    COMPLIANCE_STATES: [
+        { value: 'NOT_APPLICABLE', label: 'Not Applicable' },
+        { value: 'COMPLIANT', label: 'Compliant' },
+        { value: 'NON_COMPLIANT', label: 'Non Compliant' },
+    ],
+    POLICY_ADHERENCE_STATES: [
+        { value: 'FOLLOWED', label: 'Followed' },
+        { value: 'VIOLATED', label: 'Violated' },
+        { value: 'UNAPPLIED', label: 'Unapplied' },
+    ],
+    RULESET_VALIDATION_STATES: [
+        { value: 'PASSED', label: 'Passed' },
+        { value: 'FAILED', label: 'Failed' },
+    ],
     GOVERNANCE_ACTIONS: {
         BLOCK: 'BLOCK',
         NOTIFY: 'NOTIFY',

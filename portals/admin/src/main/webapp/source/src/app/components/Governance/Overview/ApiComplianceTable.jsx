@@ -28,6 +28,7 @@ import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
 import ApiIcon from '@mui/icons-material/Api';
+import Utils from 'AppData/Utils';
 
 /**
  * API call to get Policies
@@ -181,8 +182,7 @@ export default function ApiComplianceTable() {
             options: {
                 customBodyRender: (value) => (
                     <Chip
-                        label={value}
-                        // status can be NOT_APPLICABLE, COMPLIANT, NON_COMPLIANT
+                        label={Utils.mapComplianceStateToLabel(value)}
                         color={value === 'COMPLIANT' ? 'success' :
                             value === 'NON_COMPLIANT' ? 'error' : 'default'}
                         size="small"
