@@ -1,4 +1,3 @@
-/*eslint-disable*/
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com) All Rights Reserved.
  *
@@ -17,33 +16,24 @@
  * under the License.
  */
 
-import { useEffect, useState } from 'react';
-import React, { Component } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
-import { FormattedMessage, injectIntl } from 'react-intl';
-import PropTypes from 'prop-types';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
-import FormControl from '@mui/material/FormControl';
-import FormGroup from '@mui/material/FormGroup';
-import Box from '@mui/material/Box';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import Paper from '@mui/material/Paper';
+import PropTypes from 'prop-types';
 import API from 'AppData/api';
-import { isRestricted } from 'AppData/AuthManager';
 import Configurations from 'Config';
 import CONSTS from 'AppData/Constants';
 import Tooltip from '@mui/material/Tooltip';
 import InfoIcon from '@mui/icons-material/Info';
-import { Table, TableRow, Chip } from '@mui/material';
+import { Table, TableRow, Chip, Autocomplete, TextField, ListItem } from '@mui/material';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableContainer from '@mui/material/TableContainer';
-import { Autocomplete, TextField, ListItem } from "@mui/material";
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
-
 
 const PREFIX = 'OrganizationSubscriptionPoliciesManage';
 
@@ -53,7 +43,6 @@ const classes = {
     gridLabel: `${PREFIX}-gridLabel`,
     mainTitle: `${PREFIX}-mainTitle`
 };
-
 
 const Root = styled('div')((
     {
@@ -78,6 +67,17 @@ const Root = styled('div')((
     }
 }));
 
+/**
+ * Manage organization based subscription policies of the API
+ * 
+ * @param {Object} props - The properties passed to the component
+ * @param {Object} props.api - The API object
+ * @param {Array} props.organizations - The list of all organizations
+ * @param {Array} props.visibleOrganizations - The list of visible organizations
+ * @param {Array} props.organizationPolicies - The list of organization policies
+ * @param {Function} props.setOrganizationPolicies - The function to set organization policies
+ * @returns {JSX.Element} The rendered component
+ */
 function OrganizationSubscriptionPoliciesManage(props) {
     const { api, organizations, visibleOrganizations, organizationPolicies, setOrganizationPolicies } = props;
     const [filteredOrganizations, setFilteredOrganizations] = useState([]);
@@ -132,8 +132,8 @@ function OrganizationSubscriptionPoliciesManage(props) {
         setOrganizationPolicies(updatedOrganizationPolicies);
     };
 
-    const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
-    const checkedIcon = <CheckBoxIcon fontSize="small" />;
+    const icon = <CheckBoxOutlineBlankIcon fontSize='small' />;
+    const checkedIcon = <CheckBoxIcon fontSize='small' />;
 
     const getPolicyDetails = (policy) => {
         const details = [];
@@ -159,84 +159,103 @@ function OrganizationSubscriptionPoliciesManage(props) {
     };
 
     return (
-        <>
-        <Typography variant='h6' style={{ marginTop: '20px' }}>Organization Specific Business Plans</Typography>
-        <Paper>
-            <TableContainer>
-                <Table>
-                    <TableHead>
-                        <TableRow>
-                            <TableCell>Organization</TableCell>
-                            <TableCell>Policies</TableCell>
-                        </TableRow>
-                    </TableHead>
-                    <TableBody>
-                        {filteredOrganizations.map(org => (
-                            <TableRow key={org.organizationId}>
-                                <TableCell>{org.displayName}</TableCell>
-                                <TableCell>
-                                    <Autocomplete
-                                        multiple
-                                        disableCloseOnSelect
-                                        options={subscriptionPolicies}
-                                        getOptionLabel={(option) => 
-                                            option?.displayName ? `${option.displayName} - ${option.description}` : String(option)
-                                        }
-                                        value={subscriptionPolicies.filter(policy => 
-                                            organizationPolicies.find(op => op.organizationID === org.organizationId)?.policies.includes(policy.name)
-                                        ) || []}
-                                        onChange={(event, value) => handlePolicyChange(org.organizationId, value)}
-                                        renderOption={(props, option, { selected }) => {
-                                            const { key, ...optionProps } = props;
-                                            if (option.displayName.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)) {
-                                                return null;
-                                            }
-                                            return (
-                                                <ListItem key={key} {...optionProps}>
-                                                    <Checkbox
-                                                        icon={icon}
-                                                        checkedIcon={checkedIcon}
-                                                        style={{ marginRight: 8 }}
-                                                        checked={selected}
-                                                    />
-                                                    {option.displayName} - {option.description} 
-                                                    <Tooltip title={getPolicyDetails(option)}>
-                                                        <InfoIcon
-                                                            color='action'
-                                                            style={{ marginLeft: 5, fontSize: 20, cursor: 'default' }}
-                                                        />
-                                                    </Tooltip>
-                                                </ListItem>
-                                            );
-                                        }}
-                                        renderTags={(selected, getTagProps) =>
-                                            selected
-                                                .filter(option => !option.displayName.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN))
-                                                .map((option, index) => (
-                                                    <Chip
-                                                        {...getTagProps({ index })}
-                                                        key={option.name}
-                                                        label={option.displayName}
-                                                    />
-                                                ))
-                                        }
-                                        renderInput={(params) => (
-                                            <TextField
-                                                {...params}
-                                                variant='outlined'
-                                                placeholder='Select Policies'
-                                            />
-                                        )}
-                                    />
-                                </TableCell>
+        <Root>
+            <Typography variant='h6' style={{ marginTop: '20px' }}>Organization Specific Business Plans</Typography>
+            <Paper>
+                <TableContainer>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>Organization</TableCell>
+                                <TableCell>Policies</TableCell>
                             </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
-            </TableContainer>
-        </Paper>
-        </>
+                        </TableHead>
+                        <TableBody>
+                            {filteredOrganizations.map(org => (
+                                <TableRow key={org.organizationId}>
+                                    <TableCell>{org.displayName}</TableCell>
+                                    <TableCell>
+                                        <Autocomplete
+                                            multiple
+                                            disableCloseOnSelect
+                                            options={subscriptionPolicies}
+                                            getOptionLabel={(option) =>
+                                                option?.displayName ?
+                                                    `${option.displayName} - ${option.description}` : String(option)
+                                            }
+                                            value={subscriptionPolicies.filter(policy => 
+                                                organizationPolicies.find(
+                                                    op => op.organizationID === org.organizationId)?.
+                                                    policies.includes(policy.name)
+                                            ) || []}
+                                            onChange={(event, value) => handlePolicyChange(org.organizationId, value)}
+                                            renderOption={(optionProps, option, { selected }) => {
+                                                const { key, ...restOptionProps } = optionProps;
+                                                if (option.displayName.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)) {
+                                                    return null;
+                                                }
+                                                return (
+                                                    <ListItem key={key} {...restOptionProps}>
+                                                        <Checkbox
+                                                            icon={icon}
+                                                            checkedIcon={checkedIcon}
+                                                            style={{ marginRight: 8 }}
+                                                            checked={selected}
+                                                        />
+                                                        {option.displayName} - {option.description} 
+                                                        <Tooltip title={getPolicyDetails(option)}>
+                                                            <InfoIcon
+                                                                color='action'
+                                                                style={{
+                                                                    marginLeft: 5, fontSize: 20, cursor: 'default'
+                                                                }}
+                                                            />
+                                                        </Tooltip>
+                                                    </ListItem>
+                                                );
+                                            }}
+                                            renderTags={(selected, getTagProps) =>
+                                                selected
+                                                    .filter(option => !option.displayName
+                                                        .includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN))
+                                                    .map((option, index) => (
+                                                        <Chip
+                                                            {...getTagProps({ index })}
+                                                            key={option.name}
+                                                            label={option.displayName}
+                                                        />
+                                                    ))
+                                            }
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    variant='outlined'
+                                                    placeholder='Select Policies'
+                                                />
+                                            )}
+                                        />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </TableContainer>
+            </Paper>
+        </Root>
     );
 }
+
+OrganizationSubscriptionPoliciesManage.propTypes = {
+    api: PropTypes.shape({ policies: PropTypes.arrayOf(PropTypes.shape({})) }).isRequired,
+    organizations: PropTypes.arrayOf(PropTypes.shape({
+        organizationId: PropTypes.string.isRequired,
+    })).isRequired,
+    visibleOrganizations: PropTypes.arrayOf(PropTypes.string).isRequired,
+    organizationPolicies: PropTypes.arrayOf(PropTypes.shape({
+        organizationID: PropTypes.string.isRequired,
+        policies: PropTypes.arrayOf(PropTypes.string).isRequired,
+    })).isRequired,
+    setOrganizationPolicies: PropTypes.func.isRequired,
+};
 
 export default OrganizationSubscriptionPoliciesManage;

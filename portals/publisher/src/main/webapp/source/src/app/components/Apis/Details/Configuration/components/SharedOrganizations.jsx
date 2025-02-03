@@ -1,4 +1,3 @@
-/*eslint-disable*/
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com) All Rights Reserved.
  *
@@ -21,7 +20,7 @@ import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -30,8 +29,6 @@ import Box from '@mui/material/Box';
 import Tooltip from '@mui/material/Tooltip';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import API from 'AppData/api';
-import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { isRestricted } from 'AppData/AuthManager';
 
 const PREFIX = 'SharedOrganizations';
 
@@ -66,9 +63,6 @@ function SharedOrganizations(props) {
     const [organizations, setOrganizations] = useState({});
     const { api, configDispatcher } = props;
 
-    const [apiFromContext] = useAPI();
-    const intl = useIntl();
-
     useEffect(() => {
         API.getOrganizations().then((response) => setOrganizations(response.body));
     }, []);
@@ -81,6 +75,8 @@ function SharedOrganizations(props) {
         const handleChange = (event, newValue) => {
             if (newValue.some((org) => org.organizationId === "all")) {
                 configDispatcher({ action: "visibleOrganizations", value: ["all"] });
+            } else if (newValue.length === 0) {
+                configDispatcher({ action: "visibleOrganizations", value: [] });
             } else {
                 configDispatcher({
                     action: "visibleOrganizations",
@@ -94,9 +90,9 @@ function SharedOrganizations(props) {
                     multiple
                     fullWidth
                     limitTags={5}
-                    id="SharedOrganizations-autocomplete"
+                    id='SharedOrganizations-autocomplete'
                     options={optionsList}
-                    noOptionsText="No Organizations selected"
+                    noOptionsText='No Organizations selected'
                     disableCloseOnSelect
                     getOptionLabel={(option) => option.displayName}
                     isOptionEqualToValue={(option, value) => option.organizationId === value.organizationId}
@@ -106,8 +102,8 @@ function SharedOrganizations(props) {
                             : organizations.list.filter((org) => api.visibleOrganizations.includes(org.organizationId))
                     }
                     onChange={handleChange}
-                    renderOption={(props, option, { selected }) => (
-                        <li {...props}>
+                    renderOption={(optionProps, option, { selected }) => (
+                        <li {...optionProps}>
                             <Checkbox
                                 key={option.organizationId}
                                 icon={icon}
@@ -122,11 +118,11 @@ function SharedOrganizations(props) {
                         <TextField
                             {...params}
                             fullWidth
-                            label="Shared Organizations"
-                            placeholder="Search Organizations"
-                            helperText="Select organizations for sharing the API"
-                            margin="normal"
-                            variant="outlined"
+                            label='Shared Organizations'
+                            placeholder='Add Organizations'
+                            helperText='Select organizations for sharing the API'
+                            margin='normal'
+                            variant='outlined'
                         />
                     )}
                 />

@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -86,9 +85,7 @@ function Subscriptions(props) {
     const { settings } = useAppContext();
     const isSubValidationDisabled = api.policies && api.policies.length === 1 
     && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
-    const isOrganizationAccessControlEnabled = true;
     const [organizationPolicies, setOrganizationPolicies] = useState([]);
-    const [originalOrganizationPolicies, setOriginalOrganizationPolicies] = useState([]);
     const [organizations, setOrganizations] = useState({});
     const [visibleOrganizations, setVisibleOrganizations] = useState(api.visibleOrganizations);
 
@@ -141,7 +138,6 @@ function Subscriptions(props) {
         setPolices([...api.policies]);
         setOriginalPolicies([...api.policies]);
         setOrganizationPolicies([...api.organizationPolicies]);
-        setOriginalOrganizationPolicies([...api.organizationPolicies]);
         setVisibleOrganizations([...api.visibleOrganizations]);
     }, []);
 
@@ -176,7 +172,8 @@ function Subscriptions(props) {
     return (
         (<Root>
             {(api.gatewayVendor === 'wso2') &&
-            (   <>
+            (   
+                <>
                     <SubscriptionPoliciesManage
                         api={api}
                         policies={policies}
