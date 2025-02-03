@@ -44,21 +44,21 @@ export default function Summary() {
 
         Promise.all([
             restApi.getPolicyAdherenceSummary(),
-            restApi.getArtifactComplianceSummary()
+            restApi.getComplianceSummaryForAPIs()
         ])
             .then(([policyResponse, artifactResponse]) => {
                 // Set Policy Adherence
                 setPolicyAdherence({
-                    followedPolicies: policyResponse.body.followedPolicies || 0,
-                    violatedPolicies: policyResponse.body.violatedPolicies || 0,
-                    unAppliedPolicies: policyResponse.body.unAppliedPolicies || 0
+                    followedPolicies: policyResponse.body.followed || 0,
+                    violatedPolicies: policyResponse.body.violated || 0,
+                    unAppliedPolicies: policyResponse.body.unApplied || 0
                 });
 
                 // Set API compliance
                 setApiCompliance({
-                    compliantArtifacts: artifactResponse.body.compliantArtifacts || 0,
-                    nonCompliantArtifacts: artifactResponse.body.nonCompliantArtifacts || 0,
-                    notApplicableArtifacts: artifactResponse.body.notApplicableArtifacts || 0
+                    compliantArtifacts: artifactResponse.body.compliant || 0,
+                    nonCompliantArtifacts: artifactResponse.body.nonCompliant || 0,
+                    notApplicableArtifacts: artifactResponse.body.notApplicable || 0
                 });
             })
             .catch((error) => {

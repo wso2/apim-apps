@@ -39,7 +39,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
     function apiCall() {
         const restApi = new GovernanceAPI();
         return restApi
-            .getArtifactComplianceByArtifactId(artifactId)
+            .getComplianceByAPIId(artifactId)
             .then((result) => {
                 return result.body.governedPolicies;
             })
@@ -112,11 +112,11 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
 
     const policyColumProps = [
         {
-            name: 'policyId',
+            name: 'id',
             options: { display: false }
         },
         {
-            name: 'policyName',
+            name: 'name',
             label: intl.formatMessage({
                 id: 'Governance.Overview.APICompliance.PolicyAdherence.column.policy',
                 defaultMessage: 'Policy',

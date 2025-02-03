@@ -41,10 +41,10 @@ export default function Compliance(props) {
         const abortController = new AbortController();
         const restApi = new GovernanceAPI();
 
-        restApi.getArtifactComplianceByArtifactId(artifactId, { signal: abortController.signal })
+        restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
                 // Set the artifact name
-                setArtifactName(response.body.artifactName);
+                setArtifactName(response.body.info.name);
 
                 // TODO: should only take unique ruleset IDs
 
