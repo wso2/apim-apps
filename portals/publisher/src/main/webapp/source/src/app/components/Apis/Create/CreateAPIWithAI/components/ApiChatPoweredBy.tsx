@@ -26,11 +26,7 @@ import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import SettingsOutlinedIcon from '@mui/icons-material/SettingsOutlined';
 
 interface ApiChatPoweredByProps {
-    // openConfigureKey: any;
     showSampleQueries?: boolean;
-    // goBack: () => void;
-    // disableGoBack: boolean;
-    // disableConfigureKey: boolean;
 }
 
 /**
@@ -38,16 +34,11 @@ interface ApiChatPoweredByProps {
  * @returns {TSX} API Chat powered by section to render.
  */
 const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
-    // openConfigureKey,
-    // goBack,
-    // disableGoBack,
-    // disableConfigureKey,
 }) => {
     return (
         <Box display='flex' width='100%' m={3}>
             <Box display='flex' flexDirection='column' flexGrow={1}>
                 <Box display='flex'>
-                    {/* <Typography id='itest-api-details-api-chat-title' variant='h3' component='h3'> */}
                     <Typography
                         id='itest-api-details-api-chat-title'
                         component='h3'
@@ -68,45 +59,9 @@ const ApiChatPoweredBy: React.FC<ApiChatPoweredByProps> = ({
                         }}
                     />
                 </Box>
-                {/* <Typography variant='body2' color='textSecondary' component='p' alignItems='flex-start'>
-                    <FormattedMessage
-                        id='Apis.Details.ApiChat.components.ApiChatPoweredBy.poweredByText'
-                        defaultMessage='Powered by Azure OpenAI'
-                    />
-                </Typography> */}
             </Box>
             <Box>
                 <Box display='flex' pr={4}>
-                    {/* <Box mr={3}>
-                        <Button
-                            startIcon={<KeyboardBackspaceIcon />}
-                            id='go-back'
-                            variant='text'
-                            size='small'
-                            // onClick={goBack}
-                            // disabled={disableGoBack}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.ApiChat.components.ApiChatPoweredBy.goBack'
-                                defaultMessage='Go Back'
-                            />
-                        </Button>
-                    </Box> */}
-                    {/* <Box>
-                        <Button
-                            startIcon={<SettingsOutlinedIcon />}
-                            id='view-sample-queries'
-                            variant='text'
-                            size='small'
-                            // onClick={openConfigureKey}
-                            // disabled={disableConfigureKey}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.ApiChat.components.ApiChatPoweredBy.configureKey'
-                                defaultMessage='Configure Key'
-                            />
-                        </Button>
-                    </Box> */}
                 </Box>
             </Box>
         </Box>

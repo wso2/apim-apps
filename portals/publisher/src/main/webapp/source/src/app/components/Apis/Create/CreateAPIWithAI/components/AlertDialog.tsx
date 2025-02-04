@@ -25,12 +25,13 @@ import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 import CreateAPISuccessDialog from './CreateAPISuccessDialog';
 import LinearProgress from '@mui/material/LinearProgress';
+import API from 'AppData/api';
 
 interface AlertDialogProps {
-  finalOutcomeCode: string;
+  sessionId: string;
 }
 
-const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
+const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId }) => {
   const [open, setOpen] = React.useState(false);
   const [showProgress, setShowProgress] = React.useState(false);
   const [successDialogOpen, setSuccessDialogOpen] = React.useState(false);
@@ -47,18 +48,32 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
     setOpen(false);
   };
 
+  function createAPI(data: any) {
+    const apiData = {
+      ...data
+    };
+    console.log('apiData', apiData);
+
+    const newAPI = new API(apiData);
+    const promisedCreatedAPI = newAPI
+        .saveAPI()
+    return promisedCreatedAPI.then((response:any) => {
+         console.log(response.body)
+    });
+  }
+
   const handleCreate = async () => {
     handleClose();
     setShowProgress(true);
 
     try {
-      const response = await fetch('http://127.0.0.1:5000/create-api', {
+      const response = await fetch('http://127.0.0.1:8000/create-api', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          text: finalOutcomeCode,
+          session_id: sessionId,
         }),
       });
 
@@ -73,8 +88,10 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ finalOutcomeCode }) => {
         throw new Error('Failed to create API');
       }
 
-      const data = await response.json();
+      const data = await response.json();    
+
       console.log('API creation response:', data);
+      createAPI(data);
 
       setDialogTitle('API Creation Successful!');
       setDialogContentText('API created successfully in the Publisher Portal!');

@@ -26,7 +26,7 @@ import 'swagger-ui-react/swagger-ui.css';
 const disableAuthorizeAndInfoPlugin = function () {
     return {
         wrapComponents: {
-            info: () => () => null,       // Disable "info" section
+            info: () => () => null,         // Disable "info" section
             authorizeBtn: () => () => null, // Disable "Authorize" button
         },
     };
@@ -53,20 +53,18 @@ const disableTryItOutPlugin = function () {
 const SwaggerUI = ({ spec }) => {
     const componentProps = {
         spec,
-        validatorUrl: null,               // Disable spec validator
-        docExpansion: 'list',             // Expand operations in the UI by default
-        defaultModelsExpandDepth: -1,     // Don't expand models by default
-        plugins: [disableAuthorizeAndInfoPlugin, disableTryItOutPlugin],  // Disable specific plugins
+        validatorUrl: null,
+        docExpansion: 'list',
+        defaultModelsExpandDepth: -1,
+        plugins: [disableAuthorizeAndInfoPlugin, disableTryItOutPlugin],
     };
 
-    // return <SwaggerUILib {...componentProps} />;
-// };
     return (
         <div
             style={{
-                height: '100%',         // Set container height
-                maxHeight: '70vh',       // Max height for SwaggerUI (adjust as needed)
-                overflowY: 'auto',       // Enable vertical scrolling
+                height: '100%',
+                maxHeight: '70vh',
+                overflowY: 'auto',
             }}
         >
             <SwaggerUILib {...componentProps} />
@@ -74,9 +72,8 @@ const SwaggerUI = ({ spec }) => {
     );
 };
 
-// Define PropTypes for the component
 SwaggerUI.propTypes = {
-    spec: PropTypes.object.isRequired,    // The OpenAPI spec must be provided as an object
+    spec: PropTypes.object.isRequired,
 };
 
 export default SwaggerUI;

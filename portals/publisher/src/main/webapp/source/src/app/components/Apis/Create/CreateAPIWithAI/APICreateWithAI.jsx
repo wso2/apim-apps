@@ -134,7 +134,7 @@ const ApiCreateWithAI = () => {
             console.log("Sending to backend:", query);
             console.log("Session ID:", currentSessionId);
             
-            const response = await fetch('http://127.0.0.1:5000/api-design', {
+            const response = await fetch('http://127.0.0.1:8000/api-design', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -223,7 +223,6 @@ const ApiCreateWithAI = () => {
                     }}
                 >
                     <Stack direction="column" spacing={1} sx={{ width: '100%', height: '100%' }}>
-                        {/* <Box><ApiChatPoweredBy sx={{ textAlign: 'left', alignItems: 'flex-start' }} /></Box> */}
                         {!lastQuery && (
                             <Box>
                                 <WelcomeMessage/>
@@ -278,6 +277,7 @@ const ApiCreateWithAI = () => {
                         <DisplayCode 
                             finalOutcomeCode={finalOutcomeCode}
                             apiType={apiType}
+                            sessionId={sessionId}
                         />
                     ) : (
                         <ApiChatBanner />

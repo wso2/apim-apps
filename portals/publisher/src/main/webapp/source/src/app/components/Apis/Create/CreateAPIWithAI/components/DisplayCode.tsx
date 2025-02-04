@@ -29,9 +29,10 @@ import 'swagger-ui-react/swagger-ui.css';
 interface DisplayCodeProps {
   finalOutcomeCode: string;
   apiType: string;
+  sessionId: string;
 }
 
-const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType }) => {
+const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType, sessionId }) => {
   const [showCode, setShowCode] = useState(false);
 
   const handleClickOpenCode = () => {
@@ -66,7 +67,6 @@ const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType }) 
           </Stack>
         </Box>
 
-        {/* Conditionally render SwaggerUI or MonacoEditor based on apiType and showCode state */}
         {apiType === 'REST' ? (
           showCode ? (
             <Box sx={{ height: '76%', display: 'flex', backgroundColor: backgroundColor }}>
@@ -116,7 +116,9 @@ const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType }) 
             alignItems: 'center',
           }}
         >
-          <AlertDialog finalOutcomeCode={finalOutcomeCode} />
+          <AlertDialog 
+            sessionId={sessionId}
+          />
         </Box>
       </Stack>
     </Box>

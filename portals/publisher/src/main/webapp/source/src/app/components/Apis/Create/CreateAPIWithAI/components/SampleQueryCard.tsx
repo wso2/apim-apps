@@ -60,16 +60,12 @@ interface SampleQueryCardProps {
   onExecuteClick: (query: string) => void;
   queryHeading: string;
   queryData: string;
-//   onCopyClick: (query: string) => void;
-//   disabled: boolean;
 }
 
 const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
     onExecuteClick,
     queryHeading,
     queryData,
-    // onCopyClick,
-    // disabled,
 }) => {
     const intl = useIntl();
 
@@ -90,47 +86,7 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
 
     const handleCopyClick = (query: string) => {
         setCopyBtnText(copiedText);
-        // onCopyClick(query);
     };
-
-    // return (
-    //     <Root>
-    //         <Card className={classes.sampleQueryCard}>
-    //             <CardActionArea
-    //                 // disabled={disabled}
-    //                 // onClick={() => onExecuteClick(queryData.query)}
-    //             >
-    //                 <CardContent>
-    //                     <Box display='flex' flexDirection='column' height={1} alignItems='flex-start' >
-    //                         <Box mb={2}>
-    //                             <Typography variant='body1'>
-    //                                 {queryHeading}
-    //                             </Typography>
-    //                             <Typography variant='body2' color='textSecondary' component='p' className={classes.sampleQuery}>
-    //                                 {queryData}
-    //                             </Typography>
-    //                         </Box>
-    //                         <Box mt='auto'>
-    //                             <Box>
-    //                                 <Button
-    //                                     size='small'
-    //                                     id='sample-query-execute'
-    //                                     variant='outlined'
-    //                                     onClick={() => onExecuteClick(queryData)}
-    //                                 >
-    //                                     {intl.formatMessage({
-    //                                         id: 'Apis.Details.ApiChat.components.SampleQueryCard.executeButton',
-    //                                         defaultMessage: 'EXECUTE',
-    //                                     })}
-    //                                 </Button>
-    //                             </Box>
-    //                         </Box>
-    //                     </Box>
-    //                 </CardContent>
-    //             </CardActionArea>
-    //         </Card>
-    //     </Root>
-    // );
 
     return (
         <Root>
@@ -141,7 +97,7 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
                         backgroundColor: 'transparent',
                         cursor: 'default'
                     },
-                    border: 'none', // Remove border
+                    border: 'none',
                 }}
             >
                 <CardContent>

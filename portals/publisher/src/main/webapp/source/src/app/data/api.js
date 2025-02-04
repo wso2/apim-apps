@@ -392,6 +392,28 @@ class API extends Resource {
         });
     }
 
+    saveAPI() {
+        const promisedAPIResponse = this.client.then(client => {
+            const properties = client.spec.components.schemas.API.properties;
+            const data = {};
+            Object.keys(this).forEach(apiAttribute => {
+                if (apiAttribute in properties) {
+                    data[apiAttribute] = this[apiAttribute];
+                }
+            });
+            const payload = {
+                'Content-Type': 'application/json'
+            };
+            const requestBody = {
+                'requestBody': data,
+            };
+            return client.apis['APIs'].createAPI(payload, requestBody, this._requestMetaData());
+        });
+        return promisedAPIResponse.then(response => {
+            return new API(response.body);
+        });
+    }
+
     saveProduct() {
         const promisedAPIResponse = this.client.then(client => {
             const properties = client.spec.definitions.APIProduct.properties;
