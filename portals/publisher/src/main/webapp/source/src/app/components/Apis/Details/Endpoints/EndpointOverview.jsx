@@ -54,9 +54,6 @@ import EndpointSecurity from './GeneralConfiguration/EndpointSecurity';
 import Credentials from './AWSLambda/Credentials.jsx';
 import ServiceEndpoint from './ServiceEndpoint';
 import CustomBackend from './CustomBackend';
-import { API_SECURITY_KEY_TYPE_PRODUCTION } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
-import { API_SECURITY_KEY_TYPE_SANDBOX } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
-import AIEndpointAuth from './AIEndpointAuth';
 
 const PREFIX = 'EndpointOverview';
 
@@ -381,10 +378,6 @@ function EndpointOverview(props) {
         }
         return '';
     };
-
-    const updateEndpointConfig = (type) => {
-
-    }
 
     const handleOnChangeEndpointCategoryChange = (category) => {
         let endpointConfigCopy = cloneDeep(endpointConfig);
@@ -1075,7 +1068,6 @@ function EndpointOverview(props) {
                                                                         </InlineMessage>
                                                                     )
                                                                     : (
-                                                                        <>
                                                                         <GenericEndpoint
                                                                             autoFocus
                                                                             name={endpointType.key === 'prototyped'
@@ -1106,17 +1098,8 @@ function EndpointOverview(props) {
                                                                             setAdvancedConfigOpen={toggleAdvanceConfig}
                                                                             esCategory='production'
                                                                             setESConfigOpen={toggleEndpointSecurityConfig}
-                                                                            ap
-                                                                            iId={api.id}
+                                                                            apiId={api.id}
                                                                         />
-                                                                        {api.subtypeConfiguration?.subtype === 'AIAPI' && // eslint-disable-line
-                                                                            (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
-                                                                            (<AIEndpointAuth
-                                                                                api={api}
-                                                                                saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
-                                                                                apiKeyParamConfig={apiKeyParamConfig}
-                                                                                isProduction
-                                                                        />)}</>
                                                                     )}
                                                             </Collapse>
                                                             {endpointType.key === 'prototyped' ? <div />
@@ -1233,7 +1216,7 @@ function EndpointOverview(props) {
                                                                                     </InlineMessage>
                                                                                 )
                                                                                 : (
-                                                                                   <> <GenericEndpoint
+                                                                                   <GenericEndpoint
                                                                                         autoFocus
                                                                                         name={(
                                                                                             <FormattedMessage
@@ -1265,14 +1248,6 @@ function EndpointOverview(props) {
                                                                                             {toggleEndpointSecurityConfig}
                                                                                         apiId={api.id}
                                                                                     />
-                                                                                    {endpointCategory.sandbox && // eslint-disable-line
-                                                                                        api.subtypeConfiguration?.subtype === 'AIAPI' && // eslint-disable-line
-                                                                                        (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
-                                                                                        (<AIEndpointAuth
-                                                                                            api={api}
-                                                                                            saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
-                                                                                            apiKeyParamConfig={apiKeyParamConfig} // eslint-disable-line
-                                                                                    />)}</> // eslint-disable-line
                                                                                 )}
                                                                         </Collapse>
                                                                     </div>

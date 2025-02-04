@@ -744,14 +744,6 @@ function Endpoints(props) {
                                 onChangeAPI={apiDispatcher}
                                 endpointsDispatcher={apiDispatcher}
                                 saveAndRedirect={saveAndRedirect}
-                                sandBoxBackendList={sandBoxBackendList}
-                                setSandBoxBackendList={setSandBoxBackendList}
-                                productionBackendList={productionBackendList}
-                                setProductionBackendList={setProductionBackendList}
-                                isValidSequenceBackend={isValidSequenceBackend}
-                                setIsValidSequenceBackend={setIsValidSequenceBackend}
-                                isCustomBackendSelected={isCustomBackendSelected} 
-                                setIsCustomBackendSelected={setIsCustomBackendSelected}
                                 apiKeyParamConfig={apiKeyParamConfig}
                             />
                         ))}

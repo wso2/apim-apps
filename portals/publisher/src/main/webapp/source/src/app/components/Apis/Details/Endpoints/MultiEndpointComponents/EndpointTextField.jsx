@@ -18,15 +18,16 @@
 
 import React from 'react';
 import { styled } from '@mui/material/styles';
-import {
-    // Grid,
-    Tooltip,
-    InputAdornment,
-    IconButton, Icon,
-} from '@mui/material';
+// import {
+//     // Grid,
+//     Tooltip,
+//     InputAdornment,
+//     IconButton, Icon,
+// } from '@mui/material';
 // import PropTypes from 'prop-types';
-import { FormattedMessage, useIntl } from 'react-intl';
-import TextField from '@mui/material/TextField';
+// import { FormattedMessage, useIntl } from 'react-intl';
+// import TextField from '@mui/material/TextField';
+import GeneralEndpointConfigurations from './GeneralEndpointConfigurations';
 // import Autocomplete from 'AppComponents/Shared/Autocomplete';
 // import { isRestricted } from 'AppData/AuthManager';
 
@@ -65,71 +66,11 @@ const Root = styled('div')((
 }));
 
 const EndpointTextField = () => {
-    const intl = useIntl();
+    // const intl = useIntl();
 
     return (
         <Root className={classes.endpointInputWrapper}>
-            <TextField
-                disabled
-                className={classes.textField}
-                // value='https://api.ai.com'
-                placeholder={intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoint.textfield.placeholder',
-                    defaultMessage: 'Endpoint',
-                })}
-                variant='outlined'
-                margin='normal'
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position='end'>
-                            <>
-                                <IconButton
-                                    className={classes.iconButton}
-                                    aria-label='Settings'
-                                    // onClick={() => setAdvancedConfigOpen(index, type, category)}
-                                    // disabled={(isRestricted(['apim:api_create'], api))}
-                                    size='large'>
-                                    <Tooltip
-                                        placement='top-start'
-                                        interactive
-                                        title={(
-                                            <FormattedMessage
-                                                id='Apis.Details.Endpoints.GenericEndpoint.config.endpoint'
-                                                defaultMessage='Endpoint configurations'
-                                            />
-                                        )}
-                                    >
-                                        <Icon>
-                                            settings
-                                        </Icon>
-                                    </Tooltip>
-                                </IconButton>
-                                {/* <IconButton
-                                    className={classes.iconButton}
-                                    aria-label='Security'
-                                    // onClick={() => setESConfigOpen(type, esCategory)}
-                                    // disabled={(isRestricted(['apim:api_create'], api))}
-                                    size='large'>
-                                    <Tooltip
-                                        placement='top-start'
-                                        interactive
-                                        title={(
-                                            <FormattedMessage
-                                                id='Apis.Details.Endpoints.GenericEndpoint.security.endpoint'
-                                                defaultMessage='Endpoint security'
-                                            />
-                                        )}
-                                    >
-                                        <Icon>
-                                            security
-                                        </Icon>
-                                    </Tooltip>
-                                </IconButton> */}
-                            </>
-                        </InputAdornment>
-                    ),
-                }}
-            />
+            <GeneralEndpointConfigurations />
         </Root>
     );
 };
