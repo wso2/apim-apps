@@ -20,18 +20,23 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Icon, TextField, InputAdornment, IconButton } from '@mui/material';
+import { Icon, TextField, InputAdornment, IconButton, Grid } from '@mui/material';
 import CONSTS from 'AppData/Constants';
 
+/**
+ * AI Endpoint Auth component
+ * @param {*} props properties
+ * @returns {JSX} AI Endpoint Auth component
+ */
 export default function AIEndpointAuth(props) {
-    const { api, saveEndpointSecurityConfig, apiKeyParamConfig, isProduction } = props;
+    const { api, endpoint, apiKeyParamConfig, isProduction, saveEndpointSecurityConfig } = props;
     const intl = useIntl();
 
     const [apiKeyIdentifier] = useState(apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParam);
     const [apiKeyIdentifierType] = useState(apiKeyParamConfig.authHeader ? 'HEADER' : 'QUERY_PARAMETER');
 
     const [apiKeyValue, setApiKeyValue] = useState(
-        api.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue === ''
+        endpoint.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue === ''
             ? '********'
             : null
     );
@@ -43,7 +48,7 @@ export default function AIEndpointAuth(props) {
 
     useEffect(() => {
 
-        let newApiKeyValue = api.endpointConfig?.endpoint_security?.[isProduction ? 
+        let newApiKeyValue = endpoint.endpointConfig?.endpoint_security?.[isProduction ?
             'production' : 'sandbox']?.apiKeyValue === '' ? '' : null;
 
         if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') &&
@@ -98,65 +103,69 @@ export default function AIEndpointAuth(props) {
 
     return (
         <>
-            <TextField
-                disabled
-                label={isHeaderParameter ? (
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.Security.api.key.header'
-                        defaultMessage='Authorization Header'
-                    />
-                ) : (
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.Security.api.key.query.param'
-                        defaultMessage='Authorization Query Param'
-                    />
-                )}
-                id={'api-key-id-' + (isProduction ? '-production' : '-sandbox')}
-                sx={{ width: '49%', mr: 2 }}
-                value={apiKeyIdentifier}
-                placeholder={apiKeyIdentifier}
-                variant='outlined'
-                margin='normal'
-                required
-            />
-            <TextField
-                disabled={isRestricted(['apim:api_create'], api)}
-                label={<FormattedMessage
-                    id='Apis.Details.Endpoints.Security.api.key.value.value'
-                    defaultMessage='API Key'
-                />}
-                id={'api-key-value' + (isProduction ? '-production' : '-sandbox')}
-                sx={{ width: '49%' }}
-                value={apiKeyValue}
-                placeholder={intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.Security.api.key.value.placeholder',
-                    defaultMessage: 'Enter API Key',
-                })}
-                onChange={handleApiKeyChange}
-                onBlur={handleApiKeyBlur}
-                error={!apiKeyValue}
-                helperText={!apiKeyValue ? (
-                    <FormattedMessage
-                        id='Apis.Details.Endpoints.Security.no.api.key.value.error'
-                        defaultMessage='API Key should not be empty'
-                    />
-                ) : ''}
-                variant='outlined'
-                margin='normal'
-                required
-                type={showApiKey ? 'text' : 'password'}
-                InputProps={{
-                    endAdornment: (
-                        <InputAdornment position='end'>
-                            <IconButton onClick={handleToggleApiKeyVisibility} edge='end'>
-                                <Icon>
-                                    {showApiKey ? 'visibility' : 'visibility_off'}
-                                </Icon>
-                            </IconButton>
-                        </InputAdornment>
-                    ),
-                }}
-            />
+            <Grid item xs={6}>
+                <TextField
+                    disabled
+                    label={isHeaderParameter ? (
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.Security.api.key.header'
+                            defaultMessage='Authorization Header'
+                        />
+                    ) : (
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.Security.api.key.query.param'
+                            defaultMessage='Authorization Query Param'
+                        />
+                    )}
+                    id={'api-key-id-' + endpoint.id}
+                    value={apiKeyIdentifier}
+                    placeholder={apiKeyIdentifier}
+                    sx={{ width: '100%', minHeight: '80px' }}
+                    variant='outlined'
+                    margin='normal'
+                    required
+                />
+            </Grid>
+            <Grid item xs={6}>
+                <TextField
+                    disabled={isRestricted(['apim:api_create'], api)}
+                    label={<FormattedMessage
+                        id='Apis.Details.Endpoints.Security.api.key.value.value'
+                        defaultMessage='API Key'
+                    />}
+                    id={'api-key-value' + endpoint.id}
+                    value={apiKeyValue}
+                    placeholder={intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Security.api.key.value.placeholder',
+                        defaultMessage: 'Enter API Key',
+                    })}
+                    sx={{ width: '100%', minHeight: '80px'  }}
+                    onChange={handleApiKeyChange}
+                    onBlur={handleApiKeyBlur}
+                    error={!apiKeyValue}
+                    helperText={!apiKeyValue ? (
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.Security.no.api.key.value.error'
+                            defaultMessage='API Key should not be empty'
+                        />
+                    ) : ''}
+                    variant='outlined'
+                    margin='normal'
+                    required
+                    type={showApiKey ? 'text' : 'password'}
+                    InputProps={{
+                        endAdornment: (
+                            <InputAdornment position='end'>
+                                <IconButton onClick={handleToggleApiKeyVisibility} edge='end'>
+                                    <Icon>
+                                        {showApiKey ? 'visibility' : 'visibility_off'}
+                                    </Icon>
+                                </IconButton>
+                            </InputAdornment>
+                        ),
+                    }}
+                />
+            </Grid>
         </>
     );
 }

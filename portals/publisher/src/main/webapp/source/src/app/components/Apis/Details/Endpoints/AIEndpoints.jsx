@@ -27,7 +27,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
-import EndpointSection from './MultiEndpointComponents/EndpointSection';
+import EndpointCard from './MultiEndpointComponents/EndpointCard';
 
 const PREFIX = 'AIEndpoints';
 
@@ -153,12 +153,14 @@ const Root = styled('div')((
 
 
 const AIEndpoints = ({
-    api
+    api,
+    apiKeyParamConfig,
+    editEndpoint,
 }) => {
     const [productionEndpoints, setProductionEndpoints] = useState([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+    // const [saving, setSaving] = useState(false);
 
     const intl = useIntl();
 
@@ -190,99 +192,33 @@ const AIEndpoints = ({
         fetchEndpoints();
     }, []);
 
-    const addEndpoint = (endpointBody) => {
-        setSaving(true);
-        const addEndpointPromise = API.addEndpoint(api.id, endpointBody);
-        addEndpointPromise
-            .then((response) => {
-                const newEndpoint = response.body;
+    // const addEndpoint = (endpointBody) => {
+    //     setSaving(true);
+    //     const addEndpointPromise = API.addEndpoint(api.id, endpointBody);
+    //     addEndpointPromise
+    //         .then((response) => {
+    //             const newEndpoint = response.body;
 
-                if (newEndpoint.environment === 'PRODUCTION') {
-                    setProductionEndpoints(prev => [...prev, newEndpoint]);
-                } else if (newEndpoint.environment === 'SANDBOX') {
-                    setSandboxEndpoints(prev => [...prev, newEndpoint]);
-                }
+    //             if (newEndpoint.environment === 'PRODUCTION') {
+    //                 setProductionEndpoints(prev => [...prev, newEndpoint]);
+    //             } else if (newEndpoint.environment === 'SANDBOX') {
+    //                 setSandboxEndpoints(prev => [...prev, newEndpoint]);
+    //             }
 
-                Alert.success(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoints.add.success',
-                    defaultMessage: 'Endpoint added successfully!',
-                }));
-            }).catch((error) => {
-                console.error(error);
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoints.add.error',
-                    defaultMessage: 'Something went wrong while adding the endpoint',
-                }));
-            }).finally(() => {
-                setSaving(false);
-            });
-    };
-
-    const updateEndpoint = (endpointId, endpointBody) => {
-        setSaving(true);
-        const updateEndpointPromise = API.updateEndpoint(api.id, endpointId, endpointBody);
-        updateEndpointPromise
-            .then((response) => {
-                const updatedEndpoint = response.body;
-                
-                if (updatedEndpoint.environment === 'PRODUCTION') {
-                    setProductionEndpoints(prev =>
-                        prev.map(endpoint => (
-                            endpoint.id === endpointId 
-                                ? { ...endpoint, ...updatedEndpoint } 
-                                : endpoint
-                        ))
-                    );
-                } else if (updatedEndpoint.environment === 'SANDBOX') {
-                    setSandboxEndpoints(prev =>
-                        prev.map(endpoint => (
-                            endpoint.id === endpointId 
-                                ? { ...endpoint, ...updatedEndpoint } 
-                                : endpoint
-                        ))
-                    );
-                }
-                
-                Alert.success(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoints.update.success',
-                    defaultMessage: 'Endpoint updated successfully!',
-                }));
-            }).catch((error) => {
-                console.error(error);
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoints.update.error',
-                    defaultMessage: 'Something went wrong while updating the endpoint',
-                }));
-            }).finally(() => {
-                setSaving(false);
-            });
-    };
-
-    const deleteEndpoint = (endpointId, environment) => {
-        setSaving(true);
-        const deleteEndpointPromise = API.deleteEndpoint(api.id, endpointId);
-        deleteEndpointPromise
-            .then(() => {
-                if (environment === 'PRODUCTION') {
-                    setProductionEndpoints(prev => prev.filter(endpoint => endpoint.id !== endpointId));
-                } else if (environment === 'SANDBOX') {
-                    setSandboxEndpoints(prev => prev.filter(endpoint => endpoint.id !== endpointId));
-                }
-
-                Alert.success(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoints.delete.success',
-                    defaultMessage: 'Endpoint deleted successfully!',
-                }));
-            }).catch((error) => {
-                console.error(error);
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoints.delete.error',
-                    defaultMessage: 'Something went wrong while deleting the endpoint',
-                }));
-            }).finally(() => {
-                setSaving(false);
-            });
-    };
+    //             Alert.success(intl.formatMessage({
+    //                 id: 'Apis.Details.Endpoints.endpoints.add.success',
+    //                 defaultMessage: 'Endpoint added successfully!',
+    //             }));
+    //         }).catch((error) => {
+    //             console.error(error);
+    //             Alert.error(intl.formatMessage({
+    //                 id: 'Apis.Details.Endpoints.endpoints.add.error',
+    //                 defaultMessage: 'Something went wrong while adding the endpoint',
+    //             }));
+    //         }).finally(() => {
+    //             setSaving(false);
+    //         });
+    // };
 
     if (loading) {
         return <Progress per={90} message='Loading Endpoints ...' />;
@@ -290,7 +226,7 @@ const AIEndpoints = ({
 
     return (
         <Root className={classes.overviewWrapper}>
-            <Grid container spacing={2}>
+            <Grid container rowSpacing={2}>
                 <Grid item xs={12}>
                     <Paper className={classes.endpointContainer}>
                         <Typography id='itest-primary-endpoints-heading' variant='h6' component='h6'>
@@ -299,7 +235,12 @@ const AIEndpoints = ({
                                 defaultMessage='Primary Endpoints'
                             />
                         </Typography>
-                        <EndpointSection />
+                        {console.log('productionEndpoints', productionEndpoints)}
+                        {console.log('sandboxEndpoints', sandboxEndpoints)}
+                        {/* <EndpointCard
+                            api={api}
+                            apiKeyParamConfig={apiKeyParamConfig}
+                        /> */}
                     </Paper>
                 </Grid>
                 <Grid item xs={12}>
@@ -310,7 +251,18 @@ const AIEndpoints = ({
                                 defaultMessage='Production Endpoints'
                             />
                         </Typography>
-
+                        {productionEndpoints.map((endpoint) => (
+                            <EndpointCard
+                                key={endpoint.id}
+                                endpoint={endpoint}
+                                api={api}
+                                apiKeyParamConfig={apiKeyParamConfig}
+                                editEndpoint={editEndpoint}
+                                category='production_endpoints'
+                                name='Production Endpoint'
+                                productionEndpoints={productionEndpoints}
+                            />
+                        ))}
                     </Paper>
                 </Grid>
                 <Grid item xs={12}>
@@ -321,7 +273,30 @@ const AIEndpoints = ({
                                 defaultMessage='Sandbox Endpoints'
                             />
                         </Typography>
+                        {sandboxEndpoints.map((endpoint) => (
+                            <EndpointCard
+                                key={endpoint.id}
+                                endpoint={endpoint}
+                                api={api}
+                                apiKeyParamConfig={apiKeyParamConfig}
+                                editEndpoint={editEndpoint}
+                                category='sandbox_endpoints'
+                                name='Sandbox Endpoint'
+                                sandboxEndpoints={sandboxEndpoints}
+                            />
+                        ))}
                     </Paper>
+                </Grid>
+                <Grid item xs={12}>
+                    <Typography variant='h4' align='left' className={classes.titleWrapper} gutterBottom>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.AIEndpoints.general.config.header'
+                            defaultMessage='General Endpoint Configurations'
+                        />
+                    </Typography>
+                    {/* <GeneralEndpointConfigurations
+                        
+                    /> */}
                 </Grid>
             </Grid>
         </Root>
