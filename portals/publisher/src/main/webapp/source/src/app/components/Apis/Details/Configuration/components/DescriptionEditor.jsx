@@ -31,14 +31,8 @@ import { Toolbar } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 import Grid from '@mui/material/Grid';
-import TextField from '@mui/material/TextField';
 import CircularProgress from '@mui/material/CircularProgress';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import FormControl from '@mui/material/FormControl';
 import { isRestricted } from 'AppData/AuthManager';
-import CONSTS from 'AppData/Constants';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import remarkGfm from 'remark-gfm';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
@@ -92,7 +86,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
 
     [`& .${classes.button}`]: {
         height: 30,
-        marginLeft: 30,
+        marginLeft: 10,
     }
 }));
 
@@ -117,9 +111,7 @@ export default function DescriptionEditor(props) {
     const {
         api,
         updateContent,
-        descriptionType,
         overview,
-        handleChange,
     } = props;
     const [open, setOpen] = useState(false);
     const [content, setContent] = useState(null);
@@ -128,20 +120,12 @@ export default function DescriptionEditor(props) {
 
     const toggleOpen = () => {
         if (!open) {
-            if (descriptionType === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {
-                setContent(api.description);
-            } else if (descriptionType === CONSTS.DESCRIPTION_TYPES.OVERVIEW) {
-                setContent(overview);
-            }
+            setContent(overview);
         }
         setOpen(!open);
     };
     const setNewContent = (newContent) => {
         setContent(newContent);
-    };
-    const handleTextChange = (event) => {
-        const { value } = event.currentTarget;
-        setContent(value);
     };
     const modifyContent = () => {
         setIsUpdating(true);
@@ -178,7 +162,7 @@ export default function DescriptionEditor(props) {
             >
                 <FormattedMessage
                     id='Apis.Details.Configuration.components.DescriptionEditor.edit.content.button'
-                    defaultMessage='Edit description'
+                    defaultMessage='Edit overview markdown'
                 />
             </Button>
             <StyledDialog fullScreen open={open} onClose={toggleOpen} TransitionComponent={Transition}>
@@ -190,8 +174,8 @@ export default function DescriptionEditor(props) {
                             justifyContent='space-between'
                             alignItems='center'
                         >
-                            <Grid item xs={8}>
-                                <Box display='flex'>
+                            <Grid item xs={10}>
+                                <Box display='flex' alignItems='center'>
                                     <IconButton
                                         edge='start'
                                         color='inherit'
@@ -218,45 +202,29 @@ export default function DescriptionEditor(props) {
                                         fontSize='h4.fontSize'
                                         color='primary.main'
                                     >
-                                        <Typography variant='h5' className={classes.editorHeader}>
+                                        <Typography
+                                            variant='h5'
+                                            className={classes.editorHeader}
+                                            style={{ flexShrink: 0 }}
+                                        >
                                             <FormattedMessage
                                                 id={'Apis.Details.Configuration.components.DescriptionEditor'
                                                     + '.edit.description.of'}
-                                                defaultMessage='Description :'
+                                                defaultMessage='Overview :'
                                             />
                                         </Typography>
                                     </Box>
-                                    <Box ml={2}>
-                                        <FormControl component='fieldset'>
-                                            <RadioGroup
-                                                row
-                                                aria-label='description-type'
-                                                value={descriptionType}
-                                                onChange={handleChange}
-                                            >
-                                                <FormControlLabel
-                                                    value={CONSTS.DESCRIPTION_TYPES.DESCRIPTION}
-                                                    control={<Radio />}
-                                                    label='Text'
-                                                />
-                                                <FormControlLabel
-                                                    value={CONSTS.DESCRIPTION_TYPES.OVERVIEW}
-                                                    control={<Radio />}
-                                                    label='Markdown'
-                                                />
-                                            </RadioGroup>
-                                        </FormControl>
-                                        <Box>
-                                            { descriptionType !== CONSTS.DESCRIPTION_TYPES.DESCRIPTION && (
-                                                <Typography variant='caption'>
-                                                    <FormattedMessage
-                                                    // eslint-disable-next-line max-len
-                                                        id='Apis.Details.Configuration.components.DescriptionEditor.markdown.help'
-                                                        // eslint-disable-next-line max-len
-                                                        defaultMessage='The Markdown option allows you to replace the content of the Overview page in devportal with the content given below.'
-                                                    />
-                                                </Typography>)}
-                                        </Box>
+                                    <Box display='flex' alignItems='center' flexGrow={1} ml={1}>
+                                        <Typography variant='body2' style={{ wordBreak: 'break-word' }}>
+                                            <FormattedMessage
+                                                // eslint-disable-next-line max-len
+                                                id='Apis.Details.Configuration.components.DescriptionEditor.markdown.help'
+                                                // eslint-disable-next-line max-len
+                                                defaultMessage='The option allows you to replace the content of the Overview page in devportal with the content given below.
+                                                To reset to the default overview content, clear all the text below, 
+                                                click `Update Content,` and save your changes.'
+                                            />
+                                        </Typography>
                                     </Box>
                                 </Box>
                             </Grid>
@@ -280,71 +248,54 @@ export default function DescriptionEditor(props) {
                 </AppBar>
                 <div className={classes.splitWrapper}>
                     <Grid container>
-                        { descriptionType === CONSTS.DESCRIPTION_TYPES.DESCRIPTION
-                            ? (
-                                <Grid item xs={12}>
-                                    <Box display='flex' m={2}>
-                                        <TextField
-                                            id='itest-description-textfield'
-                                            multiline
-                                            fullWidth
-                                            rows={4}
-                                            variant='outlined'
-                                            onChange={handleTextChange}
-                                            value={content}
-                                        />
-                                    </Box>
-                                </Grid>
-                            ) : (
-                                <>
-                                    <Grid item xs={6}>
-                                        <Suspense fallback={<CircularProgress />}>
-                                            <MonacoEditor
-                                                width='100%'
-                                                language='markdown'
-                                                theme='vs-dark'
-                                                value={content}
-                                                options={{ selectOnLineNumbers: true }}
-                                                onChange={setNewContent}
-                                                onMount={editorDidMount}
-                                            />
-                                        </Suspense>
-                                    </Grid>
-                                    <Grid item xs={6} className='markdown-content-wrapper'>
-                                        <div className={classes.markdownViewWrapper}>
-                                            <Suspense fallback={<CircularProgress />}>
-                                                <ReactMarkdown
-                                                    skipHtml={skipHtml}
-                                                    // eslint-disable-next-line react/no-children-prop
-                                                    children={markdownWithApiData}
-                                                    remarkPlugins={[remarkGfm]}
-                                                    components={{
-                                                        code({ node, inline, className, children, ...propsInner }) {
-                                                            const match = /language-(\w+)/.exec(className || '')
-                                                            return !inline && match ? (
-                                                                <SyntaxHighlighter
-                                                                    // eslint-disable-next-line react/no-children-prop
-                                                                    children={String(children).replace(/\n$/, '')}
-                                                                    style={syntaxHighlighterDarkTheme ? 
-                                                                        vscDarkPlus : vs}
-                                                                    language={match[1]}
-                                                                    PreTag='div'
-                                                                    {...propsInner}
-                                                                    {...markdownSyntaxHighlighterProps}
-                                                                />
-                                                            ) : (
-                                                                <code className={className} {...propsInner}>
-                                                                    {children}
-                                                                </code>
-                                                            );
-                                                        }
-                                                    }}
-                                                />                                                
-                                            </Suspense>
-                                        </div>
-                                    </Grid>
-                                </>
-                            )}
+                        <>
+                            <Grid item xs={6}>
+                                <Suspense fallback={<CircularProgress />}>
+                                    <MonacoEditor
+                                        width='100%'
+                                        language='markdown'
+                                        theme='vs-dark'
+                                        value={content}
+                                        options={{ selectOnLineNumbers: true }}
+                                        onChange={setNewContent}
+                                        onMount={editorDidMount}
+                                    />
+                                </Suspense>
+                            </Grid>
+                            <Grid item xs={6} className='markdown-content-wrapper'>
+                                <div className={classes.markdownViewWrapper}>
+                                    <Suspense fallback={<CircularProgress />}>
+                                        <ReactMarkdown
+                                            skipHtml={skipHtml}
+                                            // eslint-disable-next-line react/no-children-prop
+                                            children={markdownWithApiData}
+                                            remarkPlugins={[remarkGfm]}
+                                            components={{
+                                                code({ node, inline, className, children, ...propsInner }) {
+                                                    const match = /language-(\w+)/.exec(className || '')
+                                                    return !inline && match ? (
+                                                        <SyntaxHighlighter
+                                                            // eslint-disable-next-line react/no-children-prop
+                                                            children={String(children).replace(/\n$/, '')}
+                                                            style={syntaxHighlighterDarkTheme ? 
+                                                                vscDarkPlus : vs}
+                                                            language={match[1]}
+                                                            PreTag='div'
+                                                            {...propsInner}
+                                                            {...markdownSyntaxHighlighterProps}
+                                                        />
+                                                    ) : (
+                                                        <code className={className} {...propsInner}>
+                                                            {children}
+                                                        </code>
+                                                    );
+                                                }
+                                            }}
+                                        />                                                
+                                    </Suspense>
+                                </div>
+                            </Grid>
+                        </>
                     </Grid>
                 </div>
             </StyledDialog>
@@ -355,6 +306,5 @@ export default function DescriptionEditor(props) {
 DescriptionEditor.propTypes = {
     api: PropTypes.shape({}).isRequired,
     updateContent: PropTypes.func.isRequired,
-    descriptionType: PropTypes.string.isRequired,
     overview: PropTypes.string.isRequired,
 };

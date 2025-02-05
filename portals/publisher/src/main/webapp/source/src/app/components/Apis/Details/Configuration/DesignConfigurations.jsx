@@ -51,6 +51,7 @@ import StoreVisibility from './components/StoreVisibility';
 import Tags from './components/Tags';
 import Social from './components/Social';
 import APICategories from './components/APICategories';
+import APIDescription from './components/APIDescription';
 
 const PREFIX = 'DesignConfigurations';
 
@@ -316,7 +317,6 @@ export default function DesignConfigurations() {
     const [errorInExternalEndpoints, setErrorInExternalEndpoints] = useState(false);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
 
-    const [descriptionType, setDescriptionType] = useState('');
     const [overview, setOverview] = useState('');
     const [overviewDocument, setOverviewDocument] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -329,26 +329,8 @@ export default function DesignConfigurations() {
         return (/([~!@#;%^&*+=|\\<>"'/,])/.test(tag)) || (tag.length > 30);
     });
     const intl = useIntl();
-    const handleChange = (event) => {
-        const type = event.target.value;
-        if (type === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {
-            if (apiConfig.description === null) {
-                configDispatcher({ action: CONSTS.DESCRIPTION_TYPES.DESCRIPTION, value: overview });
-            }
-        } else if (type === CONSTS.DESCRIPTION_TYPES.OVERVIEW) {
-            if (overviewDocument === null) {
-                setOverview(apiConfig.description);
-            }
-        }
-        setDescriptionType(type);
-    };
     const updateContent = (content) => {
-        if (descriptionType === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {
-            configDispatcher({ action: CONSTS.DESCRIPTION_TYPES.DESCRIPTION, value: content });
-        } else if (descriptionType === CONSTS.DESCRIPTION_TYPES.OVERVIEW) {
-            configDispatcher({ action: CONSTS.DESCRIPTION_TYPES.DESCRIPTION, value: null });
-            setOverview(content);
-        }
+        setOverview(content);
     };
     const loadContentForDoc = (documentId) => {
         const { apiType } = api.apiType;
@@ -421,9 +403,6 @@ export default function DesignConfigurations() {
                     const doc = overviewDoc[0];
                     setOverviewDocument(doc);
                     loadContentForDoc(doc.documentId);
-                    setDescriptionType(CONSTS.DESCRIPTION_TYPES.OVERVIEW); // Only one doc we can render
-                } else {
-                    setDescriptionType(CONSTS.DESCRIPTION_TYPES.DESCRIPTION);
                 }
             })
             .catch((error) => {
@@ -457,13 +436,13 @@ export default function DesignConfigurations() {
                     }));
                 }
             });
-        if (descriptionType === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {
+        if (overview.trim() === '') {
             if (overviewDocument) {
                 deleteOverviewDocument();
             }
         }
 
-        if (descriptionType === CONSTS.DESCRIPTION_TYPES.OVERVIEW) {
+        else {
             let document = overviewDocument;
             if (document === null) {
                 document = await addDocument();
@@ -574,12 +553,16 @@ export default function DesignConfigurations() {
                                                 <DescriptionEditor
                                                     api={apiConfig}
                                                     updateContent={updateContent}
-                                                    descriptionType={descriptionType}
-                                                    handleChange={handleChange}
                                                     overview={overview}
                                                 />
                                             </Grid>
                                         </Grid>
+                                    </Box>
+                                    <Box py={1}>
+                                        <APIDescription
+                                            api={apiConfig}
+                                            configDispatcher={configDispatcher}                                        
+                                        />
                                     </Box>
                                     <Box py={1}>
                                         <AccessControl api={apiConfig} configDispatcher={configDispatcher}
