@@ -137,7 +137,7 @@ function Subscriptions(props) {
             })
         setPolices([...api.policies]);
         setOriginalPolicies([...api.policies]);
-        setOrganizationPolicies([...api.organizationPolicies]);
+        setOrganizationPolicies(api.organizationPolicies ? [...api.organizationPolicies] : []);
         setVisibleOrganizations([...api.visibleOrganizations]);
     }, []);
 
