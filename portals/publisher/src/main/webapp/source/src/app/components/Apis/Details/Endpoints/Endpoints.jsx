@@ -740,7 +740,7 @@ function Endpoints(props) {
                             <AIEndpoints
                                 swaggerDef={swagger}
                                 updateSwagger={changeSwagger}
-                                api={apiObject}
+                                apiObject={apiObject}
                                 onChangeAPI={apiDispatcher}
                                 endpointsDispatcher={apiDispatcher}
                                 saveAndRedirect={saveAndRedirect}

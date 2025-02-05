@@ -120,7 +120,8 @@ export default function AIEndpointAuth(props) {
                     id={'api-key-id-' + endpoint.id}
                     value={apiKeyIdentifier}
                     placeholder={apiKeyIdentifier}
-                    sx={{ width: '100%', minHeight: '80px' }}
+                    helperText=' '
+                    sx={{ width: '100%' }}
                     variant='outlined'
                     margin='normal'
                     required
@@ -139,7 +140,7 @@ export default function AIEndpointAuth(props) {
                         id: 'Apis.Details.Endpoints.Security.api.key.value.placeholder',
                         defaultMessage: 'Enter API Key',
                     })}
-                    sx={{ width: '100%', minHeight: '80px'  }}
+                    sx={{ width: '100%' }}
                     onChange={handleApiKeyChange}
                     onBlur={handleApiKeyBlur}
                     error={!apiKeyValue}
@@ -148,7 +149,7 @@ export default function AIEndpointAuth(props) {
                             id='Apis.Details.Endpoints.Security.no.api.key.value.error'
                             defaultMessage='API Key should not be empty'
                         />
-                    ) : ''}
+                    ) : ' '}
                     variant='outlined'
                     margin='normal'
                     required
