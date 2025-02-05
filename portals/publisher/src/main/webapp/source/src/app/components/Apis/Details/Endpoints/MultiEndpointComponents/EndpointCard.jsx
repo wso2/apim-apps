@@ -36,19 +36,17 @@ import {
 } from '@mui/material';
 import API from 'AppData/api';
 import CircularProgress from '@mui/material/CircularProgress';
-// import EndpointTextField from './EndpointTextField';
 import CONSTS from 'AppData/Constants';
 import { green } from '@mui/material/colors';
 import Alert from 'AppComponents/Shared/Alert';
 import AIEndpointAuth from '../AIEndpointAuth';
-// import GenericEndpoint from '../GenericEndpoint';
+import AdvanceEndpointConfig from '../AdvancedConfig/AdvanceEndpointConfig';
 
 const PREFIX = 'EndpointCard';
 
 const classes = {
     endpointCardWrapper: `${PREFIX}-endpointCardWrapper`,
     textField: `${PREFIX}-textField`,
-    urlTextField: `${PREFIX}-urlTextField`,
     btn: `${PREFIX}-btn`,
     iconButton: `${PREFIX}-iconButton`,
     iconButtonValid: `${PREFIX}-iconButtonValid`,
@@ -66,7 +64,6 @@ const Root = styled(Grid)(({ theme }) => ({
 
     [`& .${classes.textField}`]: {
         width: '100%',
-        minHeight: '80px',
     },
 
     [`& .${classes.btn}`]: {
@@ -135,28 +132,55 @@ function endpointReducer(state, { field, value }) {
                     },
                 },
             }
+        case 'updateProductionAdvancedConfiguration':
+            return {
+                ...state,
+                endpointConfig: {
+                    ...state.endpointConfig,
+                    production_endpoints: {
+                        ...state.endpointConfig.production_endpoints,
+                        ...value
+                    },
+                },
+            }
+        case 'updateSandboxAdvancedConfiguration':
+            return {
+                ...state,
+                endpointConfig: {
+                    ...state.endpointConfig,
+                    sandbox_endpoints: {
+                        ...state.endpointConfig.sandbox_endpoints,
+                        ...value
+                    },
+                },
+            }
+        case 'reset':
+            return value;
         default:
             return state;
     }
 }
 
 const EndpointCard = ({
-    api,
+    apiObject,
     endpoint,
-    name,
     apiKeyParamConfig,
-    category,
     setProductionEndpoints,
     setSandboxEndpoints,
+    showAddEndpoint,
+    setShowAddEndpoint,
 }) => {
+    const [category, setCategory] = useState('');
     const [isEndpointValid, setIsEndpointValid] = useState();
     const [statusCode, setStatusCode] = useState('');
     const [isUpdating, setUpdating] = useState(false);
     const [isErrorCode, setIsErrorCode] = useState(false);
     const [endpointUrl, setEndpointUrl] = useState('');
     const [advancedConfigOpen, setAdvancedConfigOpen] = useState(false);
+    const [isEndpointSaving, setEndpointSaving] = useState(false);
     const [isEndpointUpdating, setEndpointUpdating] = useState(false);
     const [isEndpointDeleting, setEndpointDeleting] = useState(false);
+    const [advanceConfig, setAdvancedConfig] = useState({});
     const [state, dispatch] = useReducer(endpointReducer, endpoint || CONSTS.DEFAULT_ENDPOINT);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
     const intl = useIntl();
@@ -164,23 +188,76 @@ const EndpointCard = ({
     useEffect(() => {
         try {
             if (state.environment === CONSTS.ENVIRONMENTS.production) {
+                setCategory('production_endpoints');
                 setEndpointUrl(state.endpointConfig.production_endpoints?.url);
+                setAdvancedConfig(state.endpointConfig.production_endpoints?.config ?
+                    state.endpointConfig.production_endpoints.config : {}
+                );
             } else if (state.environment === CONSTS.ENVIRONMENTS.sandbox) {
+                setCategory('sandbox_endpoints');
                 setEndpointUrl(state.endpointConfig.sandbox_endpoints?.url);
+                setAdvancedConfig(state.endpointConfig.sandbox_endpoints?.config ?
+                    state.endpointConfig.sandbox_endpoints.config : {}
+                );
             }
         } catch (error) {
             console.error('Failed to extract endpoint URL from the endpoint object', error);
         }
     }, [state]);
 
+    const addEndpoint = (endpointBody) => {
+        setEndpointSaving(true);
+        const addEndpointPromise = API.addApiEndpoint(apiObject.id, endpointBody);
+        addEndpointPromise
+            .then((response) => {
+                const newEndpoint = response.body;
+
+                if (newEndpoint.environment === 'PRODUCTION') {
+                    setProductionEndpoints(prev => [...prev, newEndpoint]);
+                    dispatch({
+                        field: 'reset',
+                        value: {
+                            ...CONSTS.DEFAULT_ENDPOINT,
+                            environment: CONSTS.ENVIRONMENTS.production,
+                        }
+                    });
+                } else if (newEndpoint.environment === 'SANDBOX') {
+                    setSandboxEndpoints(prev => [...prev, newEndpoint]);
+                    dispatch({
+                        field: 'reset',
+                        value: {
+                            ...CONSTS.DEFAULT_ENDPOINT,
+                            environment: CONSTS.ENVIRONMENTS.sandbox,
+                        }
+                    });
+                }
+
+                Alert.success(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.endpoints.add.success',
+                    defaultMessage: 'Endpoint added successfully!',
+                }));
+            }).catch((error) => {
+                console.error(error);
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.endpoints.add.error',
+                    defaultMessage: 'Something went wrong while adding the endpoint',
+                }));
+            }).finally(() => {
+                setEndpointSaving(false);
+            });
+    };
+
     const updateEndpoint = (endpointId, endpointBody) => {
         setEndpointUpdating(true);
-        const updateEndpointPromise = API.updateEndpoint(api.id, endpointId, endpointBody);
+        // If primary default or sandbox default is edited, perform an API save and then send the endpoint update call
+
+        const updateEndpointPromise = API.updateApiEndpoint(apiObject.id, endpointId, endpointBody);
         updateEndpointPromise
             .then((response) => {
                 const updatedEndpoint = response.body;
                 
                 if (updatedEndpoint.environment === 'PRODUCTION') {
+                    
                     setProductionEndpoints(prev =>
                         prev.map(endpointObj => (
                             endpointObj.id === endpointId 
@@ -215,7 +292,9 @@ const EndpointCard = ({
 
     const deleteEndpoint = (endpointId, environment) => {
         setEndpointDeleting(true);
-        const deleteEndpointPromise = API.deleteEndpoint(api.id, endpointId);
+        // if primary endpoint, show alert saying that this endpoint is treated as a primary endpoint 
+        // and hence cannot be deleted.
+        const deleteEndpointPromise = API.deleteApiEndpoint(apiObject.id, endpointId);
         deleteEndpointPromise
             .then(() => {
                 if (environment === 'PRODUCTION') {
@@ -238,55 +317,6 @@ const EndpointCard = ({
                 setEndpointDeleting(false);
             });
     };
-
-    // /**
-    //  * Method to get the advance configuration from the selected endpoint.
-    //  *
-    //  * @param {number} index The selected endpoint index
-    //  * @param {string} epType The type of the endpoint. (loadbalance/ failover)
-    //  * @param {string} category The endpoint category (Production/ sandbox)
-    //  * @return {object} The advance config object of the endpoint.
-    //  * */
-    // const getAdvanceConfig = (index, epType, category) => {
-    //     const endpointTypeProperty = getEndpointTypeProperty(epType, category);
-    //     let advanceConfig = {};
-    //     if (index > 0) {
-    //         if (epConfig.endpoint_type === 'failover') {
-    //             advanceConfig = epConfig[endpointTypeProperty][index - 1].config;
-    //         } else {
-    //             advanceConfig = epConfig[endpointTypeProperty][index].config;
-    //         }
-    //     } else {
-    //         const endpointInfo = epConfig[endpointTypeProperty];
-    //         if (Array.isArray(endpointInfo)) {
-    //             advanceConfig = endpointInfo[0].config;
-    //         } else {
-    //             advanceConfig = endpointInfo.config;
-    //         }
-    //     }
-    //     return advanceConfig;
-    // };
-
-    // /**
-    //  * Method to open/ close the advance configuration dialog. This method also sets some information about the
-    //  * seleted endpoint type/ category and index.
-    //  *
-    //  * @param {number} index The index of the selected endpoint.
-    //  * @param {string} type The endpoint type
-    //  * @param {string} category The endpoint category.
-    //  * */
-    // const toggleAdvanceConfig = (index, type, category) => {
-    //     const advanceEPConfig = getAdvanceConfig(index, type, category);
-    //     setAdvancedConfigOptions(() => {
-    //         return ({
-    //             open: !advanceConfigOptions.open,
-    //             index,
-    //             type,
-    //             category,
-    //             config: advanceEPConfig === undefined ? {} : advanceEPConfig,
-    //         });
-    //     });
-    // };
 
     const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
         const { type } = endpointSecurityObj;
@@ -358,21 +388,51 @@ const EndpointCard = ({
         }
     };
 
+    /**
+     * Method to open the advanced configuration dialog box.
+     */
     const handleAdvancedConfigOpen = () => {
         setAdvancedConfigOpen(true);
     };
     
+    /**
+     * Method to close the advanced configurations dialog box.
+     */
     const handleAdvancedConfigClose = () => {
         setAdvancedConfigOpen(false);
     };
 
+    /**
+     * Method to save the advance configurations.
+     *
+     * @param {object} advanceConfigObj The advance configuration object
+     * */
+    const saveAdvanceConfig = (advanceConfigObj) => {
+        setAdvancedConfig(advanceConfigObj);
+        if (category === CONSTS.ENVIRONMENTS.production) {
+            dispatch({
+                field: 'updateProductionAdvancedConfiguration',
+                value: {
+                    config: advanceConfigObj,
+                },
+            });
+        } else if (category === CONSTS.ENVIRONMENTS.sandbox) {
+            dispatch({
+                field: 'updateSandboxAdvancedConfiguration',
+                value: {
+                    config: advanceConfigObj,
+                },
+            });
+        }
+        handleAdvancedConfigClose();
+    };
+
     return (
-        <Root>
-            {/* <EndpointTextField /> */}
-            <Grid container spacing={2} className={classes.endpointCardWrapper}>
+        <Root className={classes.endpointCardWrapper}>
+            <Grid container rowSpacing={0} columnSpacing={2} className={classes.endpointCardWrapper}>
                 <Grid item xs={6}>
                     <TextField
-                        disabled={isRestricted(['apim:api_create'], api)}
+                        disabled={isRestricted(['apim:api_create'], apiObject)}
                         label='Endpoint Name'
                         id={state.id + '-name'}
                         className={classes.textField}
@@ -387,19 +447,19 @@ const EndpointCard = ({
                                     id='Apis.Details.Endpoints.endpoint.name.helper.text'
                                     defaultMessage='Endpoint name should not be empty'
                                 />
-                            ) : ''
+                            ) : ' '
                         }
                         required
                     />
                 </Grid>
                 <Grid item xs={6}>
                     <TextField
-                        disabled={isRestricted(['apim:api_create'], api)}
-                        label={name}
+                        disabled={isRestricted(['apim:api_create'], apiObject)}
+                        label='Endpoint URL'
                         id={state.id + '-url'}
                         className={classes.textField}
                         value={endpointUrl}
-                        placeholder={!endpointUrl ? 'https://ai.com/production' : ''}
+                        // placeholder={!endpointUrl ? 'https://ai.com/production' : ''}
                         onChange={(e) => setEndpointUrl(e.target.value)}
                         onBlur={handleEndpointBlur}
                         variant='outlined'
@@ -411,7 +471,7 @@ const EndpointCard = ({
                                     id='Apis.Details.Endpoints.endpoint.url.helper.text'
                                     defaultMessage='Endpoint URL should not be empty'
                                 />
-                            ) : ''
+                            ) : ' '
                         }
                         required
                         InputProps={{
@@ -431,8 +491,8 @@ const EndpointCard = ({
                                     <IconButton
                                         className={isEndpointValid ? classes.iconButtonValid : classes.iconButton}
                                         aria-label='TestEndpoint'
-                                        onClick={() => testEndpoint(endpointUrl, api.id)}
-                                        disabled={(isRestricted(['apim:api_create'], api)) || isUpdating}
+                                        onClick={() => testEndpoint(endpointUrl, apiObject.id)}
+                                        disabled={(isRestricted(['apim:api_create'], apiObject)) || isUpdating}
                                         id={state.id + '-endpoint-test-icon-btn'}
                                         size='large'>
                                         {isUpdating
@@ -459,7 +519,7 @@ const EndpointCard = ({
                                         className={classes.iconButton}
                                         aria-label='Settings'
                                         onClick={handleAdvancedConfigOpen}
-                                        disabled={(isRestricted(['apim:api_create'], api))}
+                                        disabled={(isRestricted(['apim:api_create'], apiObject))}
                                         id={state.id + '-endpoint-configuration-icon-btn'}
                                         size='large'>
                                         <Tooltip
@@ -483,96 +543,125 @@ const EndpointCard = ({
                     />
                 </Grid>
                 <AIEndpointAuth
-                    api={api}
+                    api={apiObject}
                     endpoint={endpoint}
                     apiKeyParamConfig={apiKeyParamConfig}
                     isProduction={state.environment === CONSTS.ENVIRONMENTS.production}
                     saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                 />
-                <Grid item xs={12} justifyContent='flex-end' display='flex'>
-                    <Button
-                        variant='outlined'
-                        color='primary'
-                        type='submit'
-                        onClick={() => updateEndpoint(state.id, state)}
-                        className={classes.btn}
-                        disable={ endpointHasErrors() || isRestricted(['apim:api_create'], api) }
-                    >
-                        {isEndpointUpdating
-                            ? <>
-                                <CircularProgress size='small' />
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.endpoint.updating'
-                                    defaultMessage='Updating'
-                                />
+                <Grid item xs={12} justifyContent='flex-start' display='flex' pt={0}>
+                    {showAddEndpoint
+                        ? (
+                            <>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    type='submit'
+                                    onClick={() => addEndpoint(state)}
+                                    className={classes.btn}
+                                    disable={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
+                                >
+                                    {isEndpointSaving
+                                        ? <CircularProgress size='small' />
+                                        :
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.endpoint.add'
+                                            defaultMessage='Add'
+                                        />
+                                    }
+                                </Button>
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    data-testid='policy-attached-details-save'
+                                    onClick={() => setShowAddEndpoint(false)}
+                                    disabled={ isRestricted(['apim:api_create'], apiObject) }
+                                >
+                                    {isEndpointDeleting
+                                        ? <CircularProgress size='small' />
+                                        :
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.endpoint.cancel'
+                                            defaultMessage='Cancel'
+                                        />
+                                    }
+                                </Button>
                             </>
-                            :
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.endpoint.update'
-                                defaultMessage='Update'
-                            />
-                        }
-                    </Button>
-                    <Button
-                        variant='outlined'
-                        color='primary'
-                        data-testid='policy-attached-details-save'
-                        onClick={() => deleteEndpoint(state.id, state.environment)}
-                        disabled={ endpointHasErrors() || isRestricted(['apim:api_create'], api) }
-                    >
-                        {isEndpointDeleting
-                            ? <>
-                                <CircularProgress size='small' />
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.endpoint.deleting'
-                                    defaultMessage='Deleting'
-                                />
+                        ) : (
+                            <>
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    type='submit'
+                                    onClick={() => updateEndpoint(state.id, state)}
+                                    className={classes.btn}
+                                    disable={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
+                                >
+                                    {isEndpointUpdating
+                                        ? <>
+                                            <CircularProgress size='small' />
+                                            <FormattedMessage
+                                                id='Apis.Details.Endpoints.endpoint.updating'
+                                                defaultMessage='Updating'
+                                            />
+                                        </>
+                                        :
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.endpoint.update'
+                                            defaultMessage='Update'
+                                        />
+                                    }
+                                </Button>
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    data-testid='policy-attached-details-save'
+                                    onClick={() => deleteEndpoint(state.id, state.environment)}
+                                    disabled={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
+                                >
+                                    {isEndpointDeleting
+                                        ? <>
+                                            <CircularProgress size='small' />
+                                            <FormattedMessage
+                                                id='Apis.Details.Endpoints.endpoint.deleting'
+                                                defaultMessage='Deleting'
+                                            />
+                                        </>
+                                        :
+                                        <FormattedMessage
+                                            id='Apis.Details.Endpoints.endpoint.delete'
+                                            defaultMessage='Delete'
+                                        />
+                                    }
+                                </Button>
                             </>
-                            :
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.endpoint.delete'
-                                defaultMessage='Delete'
-                            />
-                        }
-                    </Button>
+                        )}
                 </Grid>
             </Grid>
-            <Dialog
-                open={advancedConfigOpen}
-                aria-labelledby='advanced-configurations-dialog-title'
-                onClose={handleAdvancedConfigClose}
-            >
-                <DialogTitle>
-                    <Typography className={classes.configDialogHeader}>
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.EndpointOverview.endpoint.security.configuration'
-                            defaultMessage='Endpoint Security Configurations'
+            {apiObject.gatewayType !== 'wso2/apk' && (
+                <Dialog
+                    open={advancedConfigOpen}
+                    aria-labelledby='advanced-configurations-dialog-title'
+                    onClose={handleAdvancedConfigClose}
+                >
+                    <DialogTitle>
+                        <Typography className={classes.configDialogHeader}>
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.endpoint.advanced.configuration'
+                                defaultMessage='Advanced Configurations'
+                            />
+                        </Typography>
+                    </DialogTitle>
+                    <DialogContent>
+                        <AdvanceEndpointConfig
+                            isSOAPEndpoint={false}
+                            advanceConfig={advanceConfig}
+                            onSaveAdvanceConfig={saveAdvanceConfig}
+                            onCancel={handleAdvancedConfigClose}
                         />
-                    </Typography>
-                </DialogTitle>
-                <DialogContent>
-                    {/* {endpointSecurityConfig.category === 'production' ? (
-                        <EndpointSecurity
-                            securityInfo={endpointSecurityInfo
-                                && (endpointSecurityInfo.production
-                                    ? endpointSecurityInfo.production : endpointSecurityInfo)}
-                            onChangeEndpointAuth={handleEndpointSecurityChange}
-                            saveEndpointSecurityConfig={saveEndpointSecurityConfig}
-                            closeEndpointSecurityConfig={closeEndpointSecurityConfig}
-                            isProduction
-                        />
-                    ) : (
-                        <EndpointSecurity
-                            securityInfo={endpointSecurityInfo
-                                && (endpointSecurityInfo.sandbox
-                                    ? endpointSecurityInfo.sandbox : endpointSecurityInfo)}
-                            onChangeEndpointAuth={handleEndpointSecurityChange}
-                            saveEndpointSecurityConfig={saveEndpointSecurityConfig}
-                            closeEndpointSecurityConfig={closeEndpointSecurityConfig}
-                        />
-                    )} */}
-                </DialogContent>
-            </Dialog>
+                    </DialogContent>
+                </Dialog>
+            )}
         </Root>
     );
 };

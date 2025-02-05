@@ -22,11 +22,16 @@ import {
     Grid,
     Paper,
     Typography,
+    // Box,
+    Button,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
+import { isRestricted } from 'AppData/AuthManager';
 import Alert from 'AppComponents/Shared/Alert';
+import AddCircle from '@mui/icons-material/AddCircle';
+import CONSTS from 'AppData/Constants';
 import EndpointCard from './MultiEndpointComponents/EndpointCard';
 
 const PREFIX = 'AIEndpoints';
@@ -153,20 +158,19 @@ const Root = styled('div')((
 
 
 const AIEndpoints = ({
-    api,
+    apiObject,
     apiKeyParamConfig,
-    editEndpoint,
 }) => {
     const [productionEndpoints, setProductionEndpoints] = useState([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState([]);
+    const [showAddEndpoint, setShowAddEndpoint] = useState(false);
     const [loading, setLoading] = useState(true);
-    // const [saving, setSaving] = useState(false);
 
     const intl = useIntl();
 
     const fetchEndpoints = () => {
         setLoading(true);
-        const endpointsPromise = API.getApiEndpoints(api.id);
+        const endpointsPromise = API.getApiEndpoints(apiObject.id);
         endpointsPromise
             .then((response) => {
                 const endpoints = response.body.list;
@@ -192,33 +196,16 @@ const AIEndpoints = ({
         fetchEndpoints();
     }, []);
 
-    // const addEndpoint = (endpointBody) => {
-    //     setSaving(true);
-    //     const addEndpointPromise = API.addEndpoint(api.id, endpointBody);
-    //     addEndpointPromise
-    //         .then((response) => {
-    //             const newEndpoint = response.body;
+    const toggleAddEndpoint = () => {
+        setShowAddEndpoint(!showAddEndpoint);
+    };
 
-    //             if (newEndpoint.environment === 'PRODUCTION') {
-    //                 setProductionEndpoints(prev => [...prev, newEndpoint]);
-    //             } else if (newEndpoint.environment === 'SANDBOX') {
-    //                 setSandboxEndpoints(prev => [...prev, newEndpoint]);
-    //             }
-
-    //             Alert.success(intl.formatMessage({
-    //                 id: 'Apis.Details.Endpoints.endpoints.add.success',
-    //                 defaultMessage: 'Endpoint added successfully!',
-    //             }));
-    //         }).catch((error) => {
-    //             console.error(error);
-    //             Alert.error(intl.formatMessage({
-    //                 id: 'Apis.Details.Endpoints.endpoints.add.error',
-    //                 defaultMessage: 'Something went wrong while adding the endpoint',
-    //             }));
-    //         }).finally(() => {
-    //             setSaving(false);
-    //         });
-    // };
+    const getDefaultEndpoint = (environment) => {
+        return {
+            ...CONSTS.DEFAULT_ENDPOINT,
+            environment,
+        }
+    };
 
     if (loading) {
         return <Progress per={90} message='Loading Endpoints ...' />;
@@ -235,32 +222,53 @@ const AIEndpoints = ({
                                 defaultMessage='Primary Endpoints'
                             />
                         </Typography>
-                        {console.log('productionEndpoints', productionEndpoints)}
-                        {console.log('sandboxEndpoints', sandboxEndpoints)}
-                        {/* <EndpointCard
-                            api={api}
-                            apiKeyParamConfig={apiKeyParamConfig}
-                        /> */}
                     </Paper>
                 </Grid>
                 <Grid item xs={12}>
                     <Paper className={classes.endpointContainer}>
-                        <Typography id='itest-production-endpoints-heading' variant='h6' component='h6'>
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.AIEndpoints.production.endpoints.label'
-                                defaultMessage='Production Endpoints'
+                        <Grid container justifyContent='flex-start'>
+                            <Typography id='itest-production-endpoints-heading' variant='h6' component='h6'>
+                                <FormattedMessage
+                                    id='Apis.Details.Endpoints.AIEndpoints.production.endpoints.label'
+                                    defaultMessage='Production Endpoints'
+                                />
+                            </Typography>
+                            <Grid ml={1}>
+                                <Button
+                                    id='add-new-endpoint'
+                                    variant='outlined'
+                                    color='primary'
+                                    size='small'
+                                    onClick={toggleAddEndpoint}
+                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiObject)}
+                                >
+                                    <AddCircle className={classes.buttonIcon} />
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.AIEndpoints.add.new.endpoint'
+                                        defaultMessage='Add New Endpoint'
+                                    />
+                                </Button>
+                            </Grid>
+                        </Grid>
+                        {showAddEndpoint && (
+                            <EndpointCard
+                                key='add-new-production-endpoint'
+                                endpoint={getDefaultEndpoint(CONSTS.ENVIRONMENTS.production)}
+                                apiObject={apiObject}
+                                apiKeyParamConfig={apiKeyParamConfig}
+                                setProductionEndpoints={setProductionEndpoints}
+                                showAddEndpoint
+                                setShowAddEndpoint={setShowAddEndpoint}
                             />
-                        </Typography>
+                        )}
                         {productionEndpoints.map((endpoint) => (
                             <EndpointCard
                                 key={endpoint.id}
                                 endpoint={endpoint}
-                                api={api}
+                                apiObject={apiObject}
                                 apiKeyParamConfig={apiKeyParamConfig}
-                                editEndpoint={editEndpoint}
-                                category='production_endpoints'
-                                name='Production Endpoint'
-                                productionEndpoints={productionEndpoints}
+                                setProductionEndpoints={setProductionEndpoints}
+                                showAddEndpoint={false}
                             />
                         ))}
                     </Paper>
@@ -273,16 +281,25 @@ const AIEndpoints = ({
                                 defaultMessage='Sandbox Endpoints'
                             />
                         </Typography>
+                        {showAddEndpoint && (
+                            <EndpointCard
+                                key='add-new-sandbox-endpoint'
+                                endpoint={getDefaultEndpoint(CONSTS.ENVIRONMENTS.sandbox)}
+                                apiObject={apiObject}
+                                apiKeyParamConfig={apiKeyParamConfig}
+                                setSandboxEndpoints={setSandboxEndpoints}
+                                showAddEndpoint
+                                setShowAddEndpoint={setShowAddEndpoint}
+                            />
+                        )}
                         {sandboxEndpoints.map((endpoint) => (
                             <EndpointCard
                                 key={endpoint.id}
                                 endpoint={endpoint}
-                                api={api}
+                                apiObject={apiObject}
                                 apiKeyParamConfig={apiKeyParamConfig}
-                                editEndpoint={editEndpoint}
-                                category='sandbox_endpoints'
-                                name='Sandbox Endpoint'
-                                sandboxEndpoints={sandboxEndpoints}
+                                setSandboxEndpoints={setSandboxEndpoints}
+                                showAddEndpoint={false}
                             />
                         ))}
                     </Paper>
@@ -301,340 +318,6 @@ const AIEndpoints = ({
             </Grid>
         </Root>
     );
-
-    // const { endpointConfig } = api;
-    // const [endpointSecurityInfo, setEndpointSecurityInfo] = useState(null);
-    // const [advanceConfigOptions, setAdvancedConfigOptions] = useState({
-    //     open: false,
-    //     index: 0,
-    //     type: '',
-    //     category: '',
-    //     config: undefined,
-    // });
-    // const [endpointSecurityConfig, setEndpointSecurityConfig] = useState({
-    //     open: false,
-    //     type: '',
-    //     category: '',
-    //     config: undefined,
-    // });
-
-    // /**
-    //  * Method to modify the endpoint represented by the given parameters.
-    //  *
-    //  * If url is null, remove the endpoint from the endpoint config.
-    //  *
-    //  * @param {number} index The index of the endpoint in the listing.
-    //  * @param {string} category The endpoint category. (production/ sand box)
-    //  * @param {string} url The new endpoint url.
-    //  * */
-    // const editEndpoint = (index, category, url) => {
-    //     let modifiedEndpoint = null;
-    //     // Make a copy of the endpoint config.
-    //     const endpointConfigCopy = cloneDeep(epConfig);
-    //     /*
-    //     * If the index > 0, it means that the endpoint is load balance or fail over.
-    //     * Otherwise it is the default endpoint. (index = 0)
-    //     * */
-    //     if (index > 0) {
-    //         const endpointTypeProperty = getEndpointTypeProperty(endpointConfigCopy.endpoint_type, category);
-    //         modifiedEndpoint = endpointConfigCopy[endpointTypeProperty];
-    //         /*
-    //         * In failover case, the failover endpoints are a separate object. But in endpoint listing, since we
-    //         *  consider all the endpoints as a single list, to get the real index of the failover endpoint we use
-    //         *  index - 1.
-    //         * */
-    //         if (endpointConfigCopy.endpoint_type === 'failover') {
-    //             modifiedEndpoint[index - 1].url = url.trim();
-    //         } else {
-    //             modifiedEndpoint[index].url = url.trim();
-    //         }
-    //         endpointConfigCopy[endpointTypeProperty] = modifiedEndpoint;
-    //     } else if (url !== '') {
-    //         modifiedEndpoint = endpointConfigCopy[category];
-
-    //         /*
-    //         * In this case, we are editing the default endpoint.
-    //         * If the endpoint type is load balance, the production_endpoints or the sandbox_endpoint object is an
-    //         *  array. Otherwise, in failover mode, the default endpoint is an object.
-    //         *
-    //         * So, we check whether the endpoints is an array or an object.
-    //         *
-    //         * If This is the first time a user creating an endpoint endpoint config object does not have
-    //         *  production_endpoints or sandbox_endpoints object.
-    //         * Therefore create new object and add to the endpoint config.
-    //         * */
-    //         if (!modifiedEndpoint) {
-    //             modifiedEndpoint = getEndpointTemplate(endpointConfigCopy.endpoint_type);
-    //             modifiedEndpoint.url = url.trim();
-    //         } else if (Array.isArray(modifiedEndpoint)) {
-    //             if (url === '') {
-    //                 modifiedEndpoint.splice(0, 1);
-    //             } else {
-    //                 modifiedEndpoint[0].url = url.trim();
-    //             }
-    //         } else {
-    //             modifiedEndpoint.url = url.trim();
-    //         }
-    //         endpointConfigCopy[category] = modifiedEndpoint;
-    //     } else {
-    //         /*
-    //         * If the url is empty, delete the respective endpoint object.
-    //         * */
-    //         delete endpointConfigCopy[category];
-    //     }
-    //     endpointsDispatcher({ action: category, value: modifiedEndpoint });
-
-    // };
-
-    // /**
-    //  * Method to get the advance configuration from the selected endpoint.
-    //  *
-    //  * @param {number} index The selected endpoint index
-    //  * @param {string} epType The type of the endpoint. (loadbalance/ failover)
-    //  * @param {string} category The endpoint category (Production/ sandbox)
-    //  * @return {object} The advance config object of the endpoint.
-    //  * */
-    // const getAdvanceConfig = (index, epType, category) => {
-    //     const endpointTypeProperty = getEndpointTypeProperty(epType, category);
-    //     let advanceConfig = {};
-    //     if (index > 0) {
-    //         if (epConfig.endpoint_type === 'failover') {
-    //             advanceConfig = epConfig[endpointTypeProperty][index - 1].config;
-    //         } else {
-    //             advanceConfig = epConfig[endpointTypeProperty][index].config;
-    //         }
-    //     } else {
-    //         const endpointInfo = epConfig[endpointTypeProperty];
-    //         if (Array.isArray(endpointInfo)) {
-    //             advanceConfig = endpointInfo[0].config;
-    //         } else {
-    //             advanceConfig = endpointInfo.config;
-    //         }
-    //     }
-    //     return advanceConfig;
-    // };
-
-    // /**
-    //  * Method to open/ close the advance configuration dialog. This method also sets some information about the
-    //  * seleted endpoint type/ category and index.
-    //  *
-    //  * @param {number} index The index of the selected endpoint.
-    //  * @param {string} type The endpoint type
-    //  * @param {string} category The endpoint category.
-    //  * */
-    // const toggleAdvanceConfig = (index, type, category) => {
-    //     const advanceEPConfig = getAdvanceConfig(index, type, category);
-    //     setAdvancedConfigOptions(() => {
-    //         return ({
-    //             open: !advanceConfigOptions.open,
-    //             index,
-    //             type,
-    //             category,
-    //             config: advanceEPConfig === undefined ? {} : advanceEPConfig,
-    //         });
-    //     });
-    // };
-
-    // const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
-    //     const { type } = endpointSecurityObj;
-    //     let newEndpointSecurityObj = endpointSecurityObj;
-    //     const secretPlaceholder = '******';
-    //     newEndpointSecurityObj.clientSecret = newEndpointSecurityObj.clientSecret
-    //         === secretPlaceholder ? '' : newEndpointSecurityObj.clientSecret;
-    //     newEndpointSecurityObj.password = newEndpointSecurityObj.password
-    //         === secretPlaceholder ? '' : newEndpointSecurityObj.password;
-    //     if (type === 'NONE') {
-    //         newEndpointSecurityObj = { ...CONSTS.DEFAULT_ENDPOINT_SECURITY, type };
-    //     } else {
-    //         newEndpointSecurityObj.enabled = true;
-    //     }
-    //     endpointsDispatcher({
-    //         action: 'endpointSecurity',
-    //         value: {
-    //             ...endpointSecurityInfo,
-    //             [enType]: newEndpointSecurityObj,
-    //         },
-    //     });
-    //     setEndpointSecurityConfig({ open: false });
-    // };
-
-    // /**
-    //  * Method to save the advance configurations.
-    //  *
-    //  * @param {object} advanceConfig The advance configuration object.
-    //  * */
-    // const saveAdvanceConfig = (advanceConfig) => {
-    //     const config = cloneDeep(epConfig);
-    //     const endpointConfigProperty = getEndpointTypeProperty(
-    //         advanceConfigOptions.type, advanceConfigOptions.category,
-    //     );
-    //     const selectedEndpoints = config[endpointConfigProperty];
-    //     if (Array.isArray(selectedEndpoints)) {
-    //         if (advanceConfigOptions.type === 'failover') {
-    //             selectedEndpoints[advanceConfigOptions.index - 1].config = advanceConfig;
-    //         } else {
-    //             selectedEndpoints[advanceConfigOptions.index].config = advanceConfig;
-    //         }
-    //     } else {
-    //         selectedEndpoints.config = advanceConfig;
-    //     }
-    //     setAdvancedConfigOptions({ open: false });
-    //     endpointsDispatcher({
-    //         action: 'set_advance_config',
-    //         value: { ...config, [endpointConfigProperty]: selectedEndpoints },
-    //     });
-    // };
-
-    // /**
-    //  * Method to close the advance configuration dialog box.
-    //  * */
-    // const closeAdvanceConfig = () => {
-    //     setAdvancedConfigOptions({ open: false });
-    // };
-
-    // return (
-    //     <Root className={classes.overviewWrapper}>
-    //         <Grid container spacing={2}>
-    //             <h2>Hello</h2>
-    //             <Grid item xs={12}>
-    //                 <Paper className={classes.endpointContainer}>
-    //                     <>
-    //                         <Typography>
-    //                             <FormattedMessage
-    //                                 id={'Apis.Details.'
-    //                                     + 'Endpoints.EndpointOverview'
-    //                                     + '.production.endpoint'
-    //                                     + '.production.label'}
-    //                                 defaultMessage='Production Endpoint'
-    //                             />
-    //                         </Typography>
-    //                         <GenericEndpoint
-    //                             autoFocus
-    //                             name={endpointType.key === 'prototyped'
-    //                                 ? (
-    //                                     <FormattedMessage
-    //                                         id={'Apis.Details.Endpoints.'
-    //                                             + 'EndpointOverview.prototype'
-    //                                             + '.endpoint.prototype.header'}
-    //                                         defaultMessage='Prototype Endpoint'
-    //                                     />
-    //                                 ) : (
-    //                                     <FormattedMessage
-    //                                         id={'Apis.Details.Endpoints.'
-    //                                             + 'EndpointOverview.production'
-    //                                             + '.endpoint.production.header'}
-    //                                         defaultMessage='Production Endpoint'
-    //                                     />
-    //                                 )}
-    //                             className={classes.defaultEndpointWrapper}
-    //                             endpointURL={getEndpoints
-    //                                 (
-    //                                     'production_endpoints'
-    //                                 )}
-    //                             type=''
-    //                             index={0}
-    //                             category='production_endpoints'
-    //                             editEndpoint={editEndpoint}
-    //                             setAdvancedConfigOpen={toggleAdvanceConfig}
-    //                             esCategory='production'
-    //                             setESConfigOpen={toggleEndpointSecurityConfig}
-    //                             ap
-    //                             iId={api.id}
-    //                         />
-    //                         {api.subtypeConfiguration?.subtype === 'AIAPI' && // eslint-disable-line
-    //                             (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) &&
-    //                             (<AIEndpointAuth
-    //                                 api={api}
-    //                                 saveEndpointSecurityConfig={savfeEndpointSecurityConfig}
-    //                                 apiKeyParamConfig={apiKeyParamConfig}
-    //                                 isProduction
-    //                             />)}
-    //                         {/* <div>
-    //                             <FormattedMessage
-    //                                 id={'Apis.Details.Endpoints.'
-    //                                     + 'EndpointOverview.sandbox'
-    //                                     + '.endpoint'}
-    //                                 defaultMessage='Sandbox Endpoint'
-    //                             />
-    //                             <GenericEndpoint
-    //                                 autoFocus
-    //                                 name={(
-    //                                     <FormattedMessage
-    //                                         id={'Apis.Details.'
-    //                                             + 'Endpoints.'
-    //                                             + 'EndpointOverview.'
-    //                                             + 'sandbox.'
-    //                                             + 'endpoint.sandbox.'
-    //                                             + 'header'}
-    //                                         defaultMessage={
-    //                                             'Sandbox '
-    //                                             + 'Endpoint'}
-    //                                     />
-    //                                 )}
-    //                                 className={classes.
-    //                                     defaultEndpointWrapper}
-    //                                 endpointURL={getEndpoints
-    //                                     (
-    //                                         'sandbox_endpoints'
-    //                                     )}
-    //                                 type=''
-    //                                 index={0}
-    //                                 category='sandbox_endpoints'
-    //                                 editEndpoint={editEndpoint}
-    //                                 esCategory='sandbox'
-    //                                 setAdvancedConfigOpen=
-    //                                 {toggleAdvanceConfig}
-    //                                 setESConfigOpen=
-    //                                 {toggleEndpointSecurityConfig}
-    //                                 apiId={api.id}
-    //                             />
-    //                             {endpointCategory.sandbox && // eslint-disable-line
-    //   (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
-    //                                 (<AIEndpointAuth
-    //                                     api={api}
-    //    saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
-    //                                     apiKeyParamConfig={apiKeyParamConfig} // eslint-disable-line
-    //                                 />)}
-    //                         </div> */}
-    //                     </>
-    //                 </Paper>
-    //             </Grid>
-    //             <Grid item xs={12}>
-    //                 <Typography variant='h4' align='left' className={classes.titleWrapper} gutterBottom>
-    //                     <FormattedMessage
-    //                         id='Apis.Details.Endpoints.EndpointOverview.general.config.header'
-    //                         defaultMessage='General Endpoint Configurations'
-    //                     />
-    //                 </Typography>
-    //                 <GeneralConfiguration
-    //                     epConfig={(cloneDeep(epConfig))}
-    //                     endpointType={endpointType}
-    //                     endpointsDispatcher={endpointsDispatcher}
-    //                 />
-    //             </Grid>
-    //         </Grid>
-    //         {api.gatewayType !== 'wso2/apk' && (
-    //             <Dialog open={advanceConfigOptions.open}>
-    //                 <DialogTitle>
-    //                     <Typography className={classes.configDialogHeader}>
-    //                         <FormattedMessage
-    //                             id='Apis.Details.Endpoints.EndpointOverview.advance.endpoint.configuration'
-    //                             defaultMessage='Advanced Configurations'
-    //                         />
-    //                     </Typography>
-    //                 </DialogTitle>
-    //                 <DialogContent>
-    //                     <AdvanceEndpointConfig
-    //                         isSOAPEndpoint={endpointType.key === 'address'}
-    //                         advanceConfig={advanceConfigOptions.config}
-    //                         onSaveAdvanceConfig={saveAdvanceConfig}
-    //                         onCancel={closeAdvanceConfig}
-    //                     />
-    //                 </DialogContent>
-    //             </Dialog>
-    //         )}
-    //     </Root>
-    // );
 }
 
 export default AIEndpoints;
