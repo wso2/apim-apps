@@ -173,7 +173,7 @@
             cookie.setMaxAge((int) expiresIn);
             response.addCookie(cookie);
 
-            cookie = new Cookie("AM_PUBLISHER_GOV_ACC_TOKEN_DEFAULT_P2", accessTokenPart2);
+            cookie = new Cookie("AM_PUBLISHER_ACC_TOKEN_DEFAULT_P2", accessTokenPart2);
             cookie.setPath(proxyContext != null ? proxyContext + "/api/am/governance/" : "/api/am/governance/");
             cookie.setHttpOnly(true);
             cookie.setSecure(true);
