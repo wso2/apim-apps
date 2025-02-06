@@ -259,7 +259,7 @@
         cookie.setMaxAge((int) expiresIn);
         response.addCookie(cookie);
 
-        cookie = new Cookie("devportal_session_state", request.getParameter("session_state"));
+        cookie = new Cookie("DEVPORTAL_SESSION_STATE", request.getParameter("session_state"));
         cookie.setPath(context + "/");
         cookie.setSecure(true);
         cookie.setMaxAge(-1);
@@ -269,7 +269,7 @@
         if (encodedOrg != null) {
             encodedOrg = URLEncoder.encode(organization, "UTF-8");
         }
-        cookie = new Cookie("ORGANIZATION_Default", encodedOrg);
+        cookie = new Cookie("ORGANIZATION_DEFAULT", encodedOrg);
         cookie.setPath(context + "/");
         cookie.setSecure(true);
         cookie.setMaxAge((int) expiresIn);

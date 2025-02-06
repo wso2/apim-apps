@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, WSO2 LLc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -34,17 +34,14 @@ function Delete({ updateList, dataRow }) {
     const intl = useIntl();
 
     const formSaveCallback = () => {
-        const restApi = new API();
-        return restApi
+        new API()
             .deleteOrganization(organizationId, externalOrganizationId)
-            .then(() => {
-                return (
-                    <FormattedMessage
-                        id='AdminPages.Organizations.Delete.form.delete.successful'
-                        defaultMessage='Organization deleted successfully'
-                    />
-                );
-            })
+            .then(() => (
+                <FormattedMessage
+                    id='AdminPages.Organizations.Delete.form.delete.successful'
+                    defaultMessage='Organization deleted successfully'
+                />
+            ))
             .catch((error) => {
                 throw error.response.body.description;
             })

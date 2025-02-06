@@ -269,8 +269,7 @@ function AddEditKeyManager(props) {
             });
     };
     const getOrganizations = () => {
-        const promise = restApi.organizationsListGet();
-        promise
+        restApi.organizationsListGet()
             .then((result) => {
                 setOrganizations(result.body.list);
             })

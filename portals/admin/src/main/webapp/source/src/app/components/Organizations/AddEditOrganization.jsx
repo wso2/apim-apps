@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2025, WSO2 LLc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 Inc. licenses this file to you under the Apache License,
  * Version 2.0 (the 'License'); you may not use this file except
@@ -182,14 +182,15 @@ function AddEditOrganization(props) {
             Alert.error(formErrors);
             return false;
         }
-        const restApi = new API();
-        let promiseAPICall;
-        if (dataRow) {
-            promiseAPICall = restApi.updateOrganization(dataRow.externalOrganizationId, dataRow.organizationId,
-                displayName, description);
-        } else {
-            promiseAPICall = restApi.createOrganization(referenceId, displayName, description);
-        }
+
+        const promiseAPICall = dataRow
+            ? new API().updateOrganization(
+                dataRow.externalOrganizationId,
+                dataRow.organizationId,
+                displayName,
+                description,
+            )
+            : new API().createOrganization(referenceId, displayName, description);
 
         return promiseAPICall
             .then(() => {

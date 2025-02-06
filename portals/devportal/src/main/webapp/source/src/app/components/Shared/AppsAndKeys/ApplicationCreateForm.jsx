@@ -110,11 +110,7 @@ const ApplicationCreate = (props) => {
         const isChecked = event.target.checked;
         const { applicationRequest, updateApplicationRequest } = props;
         const newRequest = { ...applicationRequest };
-        if (isChecked === true) {
-            newRequest.visibility = 'SHARED_WITH_ORG';
-        } else {
-            newRequest.visibility = 'PRIVATE';
-        }
+        newRequest.visibility = isChecked ? 'SHARED_WITH_ORG' : 'PRIVATE';
         updateApplicationRequest(newRequest);
         // Update the state of the switch
         setSwitchOn(isChecked);
