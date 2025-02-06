@@ -212,9 +212,72 @@ function AddEditRuleset(props) {
                         id: 'Governance.Rulesets.AddEdit.form.name.required',
                         defaultMessage: 'Ruleset name is required',
                     });
+                } else if (fieldValue.length > 255) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Rulesets.AddEdit.form.name.too.long',
+                        defaultMessage: 'Ruleset name cannot exceed 255 characters',
+                    });
+                } else if (!/^[a-zA-Z0-9-_ ]+$/.test(fieldValue)) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Rulesets.AddEdit.form.name.invalid',
+                        defaultMessage: 'Ruleset name can only contain alphanumeric characters,'
+                            + ' spaces, hyphens and underscores.',
+                    });
                 }
                 break;
-            // Add other validation cases as needed
+
+            case 'description':
+                if (fieldValue && fieldValue.length > 1000) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Rulesets.AddEdit.form.description.too.long',
+                        defaultMessage: 'Description cannot exceed 1000 characters',
+                    });
+                }
+                break;
+
+            case 'ruleType':
+                if (!fieldValue) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Rulesets.AddEdit.form.ruletype.required',
+                        defaultMessage: 'Rule type is required',
+                    });
+                }
+                break;
+
+            case 'artifactType':
+                if (!fieldValue) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Rulesets.AddEdit.form.artifacttype.required',
+                        defaultMessage: 'Artifact type is required',
+                    });
+                }
+                break;
+
+            case 'documentationLink':
+                if (fieldValue) {
+                    if (fieldValue.length > 500) {
+                        error = intl.formatMessage({
+                            id: 'Governance.Rulesets.AddEdit.form.doclink.too.long',
+                            defaultMessage: 'Documentation link cannot exceed 500 characters',
+                        });
+                    } else if (!/^https?:\/\/.+/.test(fieldValue)) {
+                        error = intl.formatMessage({
+                            id: 'Governance.Rulesets.AddEdit.form.doclink.invalid',
+                            defaultMessage: 'Documentation link must be a valid HTTP/HTTPS URL',
+                        });
+                    }
+                }
+                break;
+
+            case 'rulesetContent':
+                if (!fieldValue || fieldValue.trim().length === 0) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Rulesets.AddEdit.form.rulesetcontent.required',
+                        defaultMessage: 'Ruleset content is required',
+                    });
+                }
+                break;
+
             default:
                 break;
         }
@@ -222,7 +285,15 @@ function AddEditRuleset(props) {
     };
 
     const formHasErrors = (validatingActive = false) => {
-        return hasErrors('name', name, validatingActive);
+        if (hasErrors('name', name, validatingActive)
+            || hasErrors('description', description, validatingActive)
+            || hasErrors('ruleType', ruleType, validatingActive)
+            || hasErrors('artifactType', artifactType, validatingActive)
+            || hasErrors('documentationLink', documentationLink, validatingActive)
+            || hasErrors('rulesetContent', rulesetContent, validatingActive)) {
+            return true;
+        }
+        return false;
     };
 
     const formSave = () => {
@@ -355,6 +426,8 @@ function AddEditRuleset(props) {
                                     />
                                 )}
                                 fullWidth
+                                error={hasErrors('description', description, validating)}
+                                helperText={hasErrors('description', description, validating)}
                                 multiline
                                 rows={3}
                                 variant='outlined'
@@ -371,6 +444,8 @@ function AddEditRuleset(props) {
                                     />
                                 )}
                                 fullWidth
+                                error={hasErrors('documentationLink', documentationLink, validating)}
+                                helperText={hasErrors('documentationLink', documentationLink, validating)}
                                 variant='outlined'
                             />
                             <Grid container spacing={2}>
@@ -388,6 +463,8 @@ function AddEditRuleset(props) {
                                             />
                                         )}
                                         fullWidth
+                                        error={hasErrors('ruleType', ruleType, validating)}
+                                        helperText={hasErrors('ruleType', ruleType, validating)}
                                         required
                                         variant='outlined'
                                     >
@@ -412,6 +489,8 @@ function AddEditRuleset(props) {
                                             />
                                         )}
                                         fullWidth
+                                        error={hasErrors('artifactType', artifactType, validating)}
+                                        helperText={hasErrors('artifactType', artifactType, validating)}
                                         required
                                         variant='outlined'
                                     >
@@ -433,7 +512,7 @@ function AddEditRuleset(props) {
                     </Grid>
 
                     {/* Ruleset Content Section */}
-                    <Grid item xs={12} md={12} lg={3}>
+                    <Grid item xs={12} md={12} lg={5}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Rulesets.AddEdit.content.title'
@@ -486,6 +565,11 @@ function AddEditRuleset(props) {
                                 </EditorContainer>
                             </Paper>
                         </Box>
+                        {validating && hasErrors('rulesetContent', rulesetContent, true) && (
+                            <Box sx={{ color: 'error.main', pl: 2, pb: 1 }}>
+                                {hasErrors('rulesetContent', rulesetContent, true)}
+                            </Box>
+                        )}
                     </Grid>
 
                     {/* Action Buttons */}

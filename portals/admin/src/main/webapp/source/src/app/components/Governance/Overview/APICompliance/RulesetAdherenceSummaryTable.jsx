@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -18,7 +17,9 @@
  */
 
 import React from 'react';
-import { Typography, Chip, Box, Tooltip } from '@mui/material';
+import {
+    Typography, Chip, Box, Tooltip,
+} from '@mui/material';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -37,17 +38,15 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             .then((response) => {
                 // Get unique ruleset IDs from all policies
                 const rulesetIds = [...new Set(
-                    response.body.governedPolicies.flatMap(policy =>
-                        policy.rulesetValidationResults.map(result => result.id)
-                    )
+                    response.body.governedPolicies.flatMap(
+                        (policy) => policy.rulesetValidationResults.map((result) => result.id),
+                    ),
                 )];
 
                 // Get validation results for each ruleset
                 return Promise.all(
-                    rulesetIds.map(rulesetId =>
-                        restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
-                            .then((result) => result.body)
-                    )
+                    rulesetIds.map((rulesetId) => restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
+                        .then((result) => result.body)),
                 );
             })
             .catch((error) => {
@@ -56,10 +55,47 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             });
     };
 
+    const renderComplianceIcons = (violations) => {
+        const { error, warn, info } = violations;
+        return (
+            <Tooltip title={
+                intl.formatMessage(
+                    {
+                        id: 'Governance.Overview.APICompliance.RulesetAdherence.violations.tooltip',
+                        defaultMessage: 'Errors: {error}, Warnings: {warn}, Info: {info}',
+                    },
+                    { error, warn, info },
+                )
+            }
+            >
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Box key='error' sx={{ display: 'flex', alignItems: 'center' }}>
+                        <ErrorIcon color='error' sx={{ fontSize: 16 }} />
+                        <Typography variant='caption' sx={{ ml: 0.5 }}>
+                            {error}
+                        </Typography>
+                    </Box>
+                    <Box key='warn' sx={{ display: 'flex', alignItems: 'center' }}>
+                        <WarningIcon color='warning' sx={{ fontSize: 16 }} />
+                        <Typography variant='caption' sx={{ ml: 0.5 }}>
+                            {warn}
+                        </Typography>
+                    </Box>
+                    <Box key='info' sx={{ display: 'flex', alignItems: 'center' }}>
+                        <InfoIcon color='info' sx={{ fontSize: 16 }} />
+                        <Typography variant='caption' sx={{ ml: 0.5 }}>
+                            {info}
+                        </Typography>
+                    </Box>
+                </Box>
+            </Tooltip>
+        );
+    };
+
     const RulesetColumProps = [
         {
             name: 'id',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'name',
@@ -70,7 +106,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             options: {
                 width: '40%',
                 customBodyRender: (value) => (
-                    <Typography variant="body2">{value}</Typography>
+                    <Typography variant='body2'>{value}</Typography>
                 ),
                 setCellProps: () => ({
                     style: { width: '30%' },
@@ -81,7 +117,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
                     },
                 }),
@@ -101,8 +137,8 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                     <Chip
                         label={Utils.mapRulesetValidationStateToLabel(value)}
                         color={value === 'PASSED' ? 'success' : 'error'}
-                        size="small"
-                        variant="outlined"
+                        size='small'
+                        variant='outlined'
                     />
                 ),
                 setCellHeaderProps: () => ({
@@ -111,7 +147,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
                     },
                 }),
@@ -119,11 +155,11 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         },
         {
             name: 'violatedRules',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'followedRules',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'violationsSummary',
@@ -143,7 +179,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                     return renderComplianceIcons({
                         error: counts.error,
                         warn: counts.warn,
-                        info: counts.info
+                        info: counts.info,
                     });
                 },
                 setCellHeaderProps: () => ({
@@ -152,49 +188,13 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
-                    }
+                    },
                 }),
-            }
+            },
         },
     ];
-
-    const renderComplianceIcons = (violations) => {
-        const { error, warn, info } = violations;
-        return (
-            <Tooltip title={
-                intl.formatMessage(
-                    {
-                        id: 'Governance.Overview.APICompliance.RulesetAdherence.violations.tooltip',
-                        defaultMessage: 'Errors: {error}, Warnings: {warn}, Info: {info}',
-                    },
-                    { error, warn, info }
-                )
-            }>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Box key="error" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <ErrorIcon color='error' sx={{ fontSize: 16 }} />
-                        <Typography variant="caption" sx={{ ml: 0.5 }}>
-                            {error}
-                        </Typography>
-                    </Box>
-                    <Box key="warn" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <WarningIcon color='warning' sx={{ fontSize: 16 }} />
-                        <Typography variant="caption" sx={{ ml: 0.5 }}>
-                            {warn}
-                        </Typography>
-                    </Box>
-                    <Box key="info" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <InfoIcon color='info' sx={{ fontSize: 16 }} />
-                        <Typography variant="caption" sx={{ ml: 0.5 }}>
-                            {info}
-                        </Typography>
-                    </Box>
-                </Box>
-            </Tooltip>
-        );
-    };
 
     const emptyStateContent = (
         <Box
@@ -202,19 +202,19 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                padding: 3
+                padding: 3,
             }}
         >
             <AssignmentIcon
                 sx={{
                     fontSize: 60,
                     color: 'action.disabled',
-                    mb: 2
+                    mb: 2,
                 }}
             />
             <Typography
-                variant="h6"
-                color="text.secondary"
+                variant='h6'
+                color='text.secondary'
                 gutterBottom
                 sx={{ fontWeight: 'medium' }}
             >
@@ -224,9 +224,9 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 })}
             </Typography>
             <Typography
-                variant="body2"
-                color="text.secondary"
-                align="center"
+                variant='body2'
+                color='text.secondary'
+                align='center'
             >
                 {intl.formatMessage({
                     id: 'Governance.Overview.APICompliance.RulesetAdherence.empty.helper',
@@ -242,7 +242,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                content: emptyStateContent
+                content: emptyStateContent,
             }}
             addButtonProps={false}
             showActionColumn={false}
