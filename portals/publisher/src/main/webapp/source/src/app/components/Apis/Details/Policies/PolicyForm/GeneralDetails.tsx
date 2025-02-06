@@ -414,6 +414,22 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                         label='SOAPTOREST'
                                         data-testid='soaptorest-flow'
                                     />
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                name='AI'
+                                                color='primary'
+                                                // disabled
+                                                checked={supportedApiTypes.includes(
+                                                    'AI',
+                                                )}
+                                                id='ai-select-check-box'
+                                                onChange={handleApiTypeChange}
+                                            />
+                                        }
+                                        label='AI'
+                                        data-testid='ai-flow'
+                                    />
                                 </FormGroup>
                                 <FormHelperText>
                                     {supportedApiTypesError
