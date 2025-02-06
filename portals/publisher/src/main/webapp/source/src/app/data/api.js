@@ -3622,25 +3622,6 @@ class API extends Resource {
         });
     }
 
-    // /**
-    //  * Retrieve an endpoint of the API
-    //  * @param {String} apiId UUID of the API
-    //  * @param {String} endpointId UUID of the endpoint
-    //  * @returns {Promise} Promise containing the requested endpoint
-    //  */
-    // static getApiEndpoint(apiId, endpointId) {
-    //     const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
-    //     return restApiClient.then(client => {
-    //         return client.apis['API Endpoints'].getApiEndpoint(
-    //             {
-    //                 apiId: apiId,
-    //                 endpointId: endpointId,
-    //             },
-    //             this._requestMetaData(),
-    //         );
-    //     });
-    // }
-
     /**
      * Update an endpoint of the API
      * @param {String} apiId UUID of the API

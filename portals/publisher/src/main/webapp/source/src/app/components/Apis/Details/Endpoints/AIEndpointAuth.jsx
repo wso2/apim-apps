@@ -35,11 +35,7 @@ export default function AIEndpointAuth(props) {
     const [apiKeyIdentifier] = useState(apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParam);
     const [apiKeyIdentifierType] = useState(apiKeyParamConfig.authHeader ? 'HEADER' : 'QUERY_PARAMETER');
 
-    const [apiKeyValue, setApiKeyValue] = useState(
-        endpoint.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue === ''
-            ? '********'
-            : null
-    );
+    const [apiKeyValue, setApiKeyValue] = useState(null);
     const [isHeaderParameter] = useState(!!apiKeyParamConfig.authHeader);
     const [showApiKey, setShowApiKey] = useState(false);
 
@@ -47,24 +43,31 @@ export default function AIEndpointAuth(props) {
     const llmProviderName = subtypeConfig ? subtypeConfig.llmProviderName : null;
 
     useEffect(() => {
-
-        let newApiKeyValue = endpoint.endpointConfig?.endpoint_security?.[isProduction ?
-            'production' : 'sandbox']?.apiKeyValue === '' ? '' : null;
-
-        if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') &&
-            newApiKeyValue != null && newApiKeyValue !== '') {
-            newApiKeyValue = `Bearer ${newApiKeyValue}`;
-        }
-
-        saveEndpointSecurityConfig({
-            ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
-            type: 'apikey',
-            apiKeyIdentifier,
-            apiKeyIdentifierType,
-            apiKeyValue: newApiKeyValue,
-            enabled: true,
-        }, isProduction ? 'production' : 'sandbox');
+        setApiKeyValue(
+            endpoint.endpointConfig?.endpoint_security?.[isProduction ? 'production' : 'sandbox']?.apiKeyValue === ''
+                ? '********'
+                : null
+        );
     }, []);
+
+    // useEffect(() => {
+    //     let newApiKeyValue = endpoint.endpointConfig?.endpoint_security?.[isProduction ?
+    //         'production' : 'sandbox']?.apiKeyValue === '' ? '' : null;
+
+    //     if ((llmProviderName === 'MistralAI' || llmProviderName === 'OpenAI') &&
+    //         newApiKeyValue != null && newApiKeyValue !== '') {
+    //         newApiKeyValue = `Bearer ${newApiKeyValue}`;
+    //     }
+
+    //     saveEndpointSecurityConfig({
+    //         ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+    //         type: 'apikey',
+    //         apiKeyIdentifier,
+    //         apiKeyIdentifierType,
+    //         apiKeyValue: newApiKeyValue,
+    //         enabled: true,
+    //     }, isProduction ? 'production' : 'sandbox');
+    // }, []);
 
     const handleApiKeyChange = (event) => {
         let apiKeyVal = event.target.value;
