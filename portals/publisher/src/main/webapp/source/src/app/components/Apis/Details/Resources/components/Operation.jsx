@@ -132,6 +132,7 @@ function Operation(props) {
         setFocusOperationLevel,
         expandedResource,
         setExpandedResource,
+        componentValidator,
     } = props;
     const apiOperation = api.operations[target] && api.operations[target][verb.toUpperCase()];
     const isUsedInAPIProduct = apiOperation && Array.isArray(
@@ -342,6 +343,7 @@ function Operation(props) {
                             verb={verb}
                             sharedScopes={sharedScopes}
                             setFocusOperationLevel={setFocusOperationLevel}
+                            componentValidator={componentValidator}
                         />
                         {!hideParameters && (
                             <Parameters

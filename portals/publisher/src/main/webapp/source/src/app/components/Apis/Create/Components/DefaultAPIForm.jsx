@@ -20,7 +20,7 @@ import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
 import Grid from '@mui/material/Grid';
-import { InputAdornment, IconButton, Icon } from '@mui/material';
+import { InputAdornment, IconButton, Icon, Select, MenuItem } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import Chip from '@mui/material/Chip';
 import Typography from '@mui/material/Typography';
@@ -29,9 +29,6 @@ import APIValidation from 'AppData/APIValidation';
 import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
 import API from 'AppData/api';
 import { green } from '@mui/material/colors';
 
@@ -169,12 +166,6 @@ export default function DefaultAPIForm(props) {
     const [isUpdating, setUpdating] = useState(false);
     const [isErrorCode, setIsErrorCode] = useState(false);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
-
-    const getBorderColor = (gatewayType) => {
-        return api.gatewayType === gatewayType
-            ? '2px solid #1976D2'
-            : '2px solid gray';
-    };
 
     // Check the provided API validity on mount, TODO: Better to use Joi schema here ~tmkb
     useEffect(() => {
@@ -655,87 +646,54 @@ export default function DefaultAPIForm(props) {
                         }}
                     />
                 )}
-                {multiGateway  &&
+                {multiGateway && 
                     <Grid container spacing={2}>
-                        <FormControl component='fieldset'>
+                        <FormControl component='fieldset' fullWidth>
                             <FormLabel sx={{ marginLeft: '15px', marginTop: '20px' }}>
                                 <FormattedMessage
                                     id='Apis.Create.Components.DefaultAPIForm.select.gateway.type'
                                     defaultMessage='Select Gateway type'
                                 />
+                                <sup className={classes.mandatoryStar}>*</sup>
                             </FormLabel>
-                            <RadioGroup
-                                row
-                                aria-label='gateway-type'
-                                name='gatewayType'
+                            <Select
+                                id='gateway-type-select'
                                 value={api.gatewayType}
                                 onChange={onChange}
+                                fullWidth
+                                sx={{ marginLeft: '15px', marginTop: '10px', minWidth: 200 }}
+                                inputProps={{ name: 'gatewayType', id: 'gateway-type-select' }}
                             >
-                                <Grid item xs={6}>
-                                    <FormControlLabel
-                                        value='wso2/synapse'
-                                        className={classes.radioOutline}
-                                        control={<Radio />}
-                                        label={(
-                                            <div>
-                                                <span>
-                                                    <FormattedMessage
-                                                        id={'Apis.Create.Components.DefaultAPIForm.'
-                                                            + 'regular.gateway.type'}
-                                                        defaultMessage='Regular Gateway'
-                                                    />
-                                                </span>
-                                                <Typography variant='body2' color='textSecondary'>
-                                                    <FormattedMessage
-                                                        id={'Apis.Create.Components.DefaultAPIForm.'
-                                                            + 'regular.gateway.type.text'}
-                                                        defaultMessage={'API gateway embedded in APIM '
-                                                            + 'runtime. Connect directly APIManager.'}
-                                                    />
-                                                </Typography>
-                                            </div>
-                                        )}
-                                        sx={{ border: getBorderColor('wso2/synapse') }}
+                                <MenuItem disabled value=''>
+                                    <FormattedMessage
+                                        id='Apis.Create.Components.DefaultAPIForm.select.gateway.type.placeholder'
+                                        defaultMessage='Please select a gateway type'
                                     />
-                                </Grid>
-                                <Grid item xs={6}>
-                                    <FormControlLabel
-                                        value='wso2/apk'
-                                        className={classes.radioOutline}
-                                        control={<Radio />}
-                                        label={(
-                                            <div>
-                                                <span>
-                                                    <FormattedMessage
-                                                        id={'Apis.Create.Components.DefaultAPIForm.'
-                                                            + 'apk.gateway.type'}
-                                                        defaultMessage='APK Gateway'
-                                                    />
-                                                </span>
+                                </MenuItem>
+                                {multiGateway.map((gateway) => 
+                                    <MenuItem key={gateway.value} value={gateway.value}>
+                                        <div>
+                                            {gateway.name}
+                                            {gateway.isNew && 
                                                 <span className={`${classes.label} ${classes.newLabel}`}>New</span>
-                                                <Typography variant='body2' color='textSecondary'>
-                                                    <FormattedMessage
-                                                        id={'Apis.Create.Components.DefaultAPIForm.'
-                                                            + 'apk.gateway.type.text'}
-                                                        defaultMessage={'Fast API gateway running on kubernetes'
-                                                            + ' designed to manage and secure APIs.'}
-                                                    />
-                                                </Typography>
-                                            </div>
-                                        )}
-                                        sx={{ border: getBorderColor('wso2/apk') }}
-                                    />
-                                </Grid>
-                            </RadioGroup>
-                            <FormHelperText sx={{ marginLeft: '15px' }}><FormattedMessage
-                                id={'Apis.Create.Components.DefaultAPIForm.'
-                                    + 'select.gateway.type.helper.text'}
-                                defaultMessage='Select the gateway type where your API will run.'
-                            />
+                                            }
+                                            <Typography variant='body2' color='textSecondary'>
+                                                {gateway.description}
+                                            </Typography>
+                                        </div>
+                                    </MenuItem>
+                                )}
+                            </Select>
+                            <FormHelperText sx={{ marginLeft: '15px' }}>
+                                <FormattedMessage
+                                    id={'Apis.Create.Components.DefaultAPIForm.'
+                                        + 'select.gateway.type.helper.text'}
+                                    defaultMessage='Select the gateway type where your API will run.'
+                                />
                             </FormHelperText>
                         </FormControl>
                     </Grid>
-                }   
+                }
                 {!appendChildrenBeforeEndpoint && !!children && children}
             </form>
             <Grid container direction='row' justifyContent='flex-end' alignItems='center'>
@@ -762,7 +720,7 @@ DefaultAPIForm.defaultProps = {
 };
 DefaultAPIForm.propTypes = {
     api: PropTypes.shape({}),
-    multiGateway: PropTypes.string.isRequired,
+    multiGateway: PropTypes.isRequired,
     isAPIProduct: PropTypes.shape({}).isRequired,
     isWebSocket: PropTypes.shape({}),
     onChange: PropTypes.func.isRequired,

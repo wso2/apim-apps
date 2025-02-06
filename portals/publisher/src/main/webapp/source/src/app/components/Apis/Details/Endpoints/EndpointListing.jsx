@@ -116,6 +116,7 @@ function EndpointListing(props) {
         setAdvancedConfigOpen,
         setESConfigOpen,
         apiId,
+        componentValidator,
     } = props;
     const [endpointType, setEndpointType] = useState(epType);
     const [endpoints, setEndpoints] = useState([{ url: 'http://myservice/endpoint' }]);
@@ -172,6 +173,7 @@ function EndpointListing(props) {
                                         setAdvancedConfigOpen={setAdvancedConfigOpen}
                                         setESConfigOpen={setESConfigOpen}
                                         apiId={apiId}
+                                        componentValidator={componentValidator}
                                     />
                                 );
                             }

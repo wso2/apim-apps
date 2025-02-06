@@ -54,6 +54,7 @@ export default function Topics(props) {
     const {
         disableUpdate,
         disableAddOperation,
+        componentValidator,
     } = props;
 
     const [api, updateAPI] = useAPI();
@@ -541,6 +542,7 @@ export default function Topics(props) {
                                                         && markedOperations[target].subscribe)}
                                                 onMarkAsDelete={onMarkAsDelete}
                                                 disableDelete={api.gatewayVendor === 'solace'}
+                                                componentValidator={componentValidator}
                                             />
                                         </Grid>
                                     )}
@@ -559,6 +561,7 @@ export default function Topics(props) {
                                                         && markedOperations[target].publish)}
                                                 onMarkAsDelete={onMarkAsDelete}
                                                 disableDelete={api.gatewayVendor === 'solace'}
+                                                componentValidator={componentValidator}
                                             />
                                         </Grid>
                                     )}
