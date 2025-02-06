@@ -45,7 +45,7 @@
         if ("AM_ID_TOKEN_DEFAULT_P2".equals(cookieName)) {
             idTokenP2Cookie = cookies[i].getValue();;
         }
-        if ("publisher_session_state".equals(cookieName)) {
+        if ("PUBLISHER_SESSION_STATE".equals(cookieName)) {
             sessionState = cookies[i].getValue();;
         }
         if (!idTokenP1Cookie.isEmpty() && !idTokenP2Cookie.isEmpty() && !sessionState.isEmpty()) {

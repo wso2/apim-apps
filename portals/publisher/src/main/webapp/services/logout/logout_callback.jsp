@@ -72,7 +72,7 @@
     cookie.setMaxAge(2);
     response.addCookie(cookie);
 
-    cookie = new Cookie("publisher_session_state", "");
+    cookie = new Cookie("PUBLISHER_SESSION_STATE", "");
     cookie.setPath(context + "/");
     cookie.setSecure(true);
     cookie.setMaxAge(2);
