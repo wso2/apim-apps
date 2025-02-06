@@ -171,6 +171,7 @@ const EndpointCard = ({
     setShowAddEndpoint,
 }) => {
     const [category, setCategory] = useState('');
+    const [isProduction, setProduction] = useState(false);
     const [isEndpointValid, setIsEndpointValid] = useState();
     const [statusCode, setStatusCode] = useState('');
     const [isUpdating, setUpdating] = useState(false);
@@ -186,6 +187,7 @@ const EndpointCard = ({
     const intl = useIntl();
 
     useEffect(() => {
+        setProduction(state.environment === CONSTS.ENVIRONMENTS.production);
         try {
             if (state.environment === CONSTS.ENVIRONMENTS.production) {
                 setCategory('production_endpoints');
@@ -231,6 +233,8 @@ const EndpointCard = ({
                         }
                     });
                 }
+                setEndpointUrl('');
+                setAdvancedConfig({});
 
                 Alert.success(intl.formatMessage({
                     id: 'Apis.Details.Endpoints.endpoints.add.success',
@@ -249,7 +253,10 @@ const EndpointCard = ({
 
     const updateEndpoint = (endpointId, endpointBody) => {
         setEndpointUpdating(true);
-        // If primary default or sandbox default is edited, perform an API save and then send the endpoint update call
+        // TODO
+        // If primary default or sandbox default is edited && primaryID is not in apiDTO,
+        // perform an API save and then send the endpoint update call OR block update and ask
+        // to set primary endpoints first.
 
         const updateEndpointPromise = API.updateApiEndpoint(apiObject.id, endpointId, endpointBody);
         updateEndpointPromise
@@ -292,6 +299,7 @@ const EndpointCard = ({
 
     const deleteEndpoint = (endpointId, environment) => {
         setEndpointDeleting(true);
+        // TODO
         // if primary endpoint, show alert saying that this endpoint is treated as a primary endpoint 
         // and hence cannot be deleted.
         const deleteEndpointPromise = API.deleteApiEndpoint(apiObject.id, endpointId);
@@ -319,18 +327,13 @@ const EndpointCard = ({
     };
 
     const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
-        const { type } = endpointSecurityObj;
-        let newEndpointSecurityObj = endpointSecurityObj;
+        const newEndpointSecurityObj = endpointSecurityObj;
         const secretPlaceholder = '******';
         newEndpointSecurityObj.clientSecret = newEndpointSecurityObj.clientSecret 
                 === secretPlaceholder ? '' : newEndpointSecurityObj.clientSecret;
         newEndpointSecurityObj.password = newEndpointSecurityObj.password 
                 === secretPlaceholder ? '' : newEndpointSecurityObj.password;
-        if (type === 'NONE') {
-            newEndpointSecurityObj = { ...CONSTS.DEFAULT_ENDPOINT_SECURITY, type };
-        } else {
-            newEndpointSecurityObj.enabled = true;
-        }
+        newEndpointSecurityObj.enabled = true;
 
         dispatch({
             field: 'updateEndpointSecurity',
@@ -382,6 +385,7 @@ const EndpointCard = ({
      */
     const endpointHasErrors = () => {
         if (!state.name || !endpointUrl) {
+            // TODO: check apikey textfield error
             return true;
         } else {
             return false;
@@ -409,14 +413,14 @@ const EndpointCard = ({
      * */
     const saveAdvanceConfig = (advanceConfigObj) => {
         setAdvancedConfig(advanceConfigObj);
-        if (category === CONSTS.ENVIRONMENTS.production) {
+        if (category === 'production_endpoints') {
             dispatch({
                 field: 'updateProductionAdvancedConfiguration',
                 value: {
                     config: advanceConfigObj,
                 },
             });
-        } else if (category === CONSTS.ENVIRONMENTS.sandbox) {
+        } else if (category === 'sandbox_endpoints') {
             dispatch({
                 field: 'updateSandboxAdvancedConfiguration',
                 value: {
@@ -459,7 +463,6 @@ const EndpointCard = ({
                         id={state.id + '-url'}
                         className={classes.textField}
                         value={endpointUrl}
-                        // placeholder={!endpointUrl ? 'https://ai.com/production' : ''}
                         onChange={(e) => setEndpointUrl(e.target.value)}
                         onBlur={handleEndpointBlur}
                         variant='outlined'
@@ -544,9 +547,9 @@ const EndpointCard = ({
                 </Grid>
                 <AIEndpointAuth
                     api={apiObject}
-                    endpoint={endpoint}
+                    endpoint={state}
                     apiKeyParamConfig={apiKeyParamConfig}
-                    isProduction={state.environment === CONSTS.ENVIRONMENTS.production}
+                    isProduction={isProduction}
                     saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                 />
                 <Grid item xs={12} justifyContent='flex-start' display='flex' pt={0}>
@@ -557,6 +560,7 @@ const EndpointCard = ({
                                     variant='contained'
                                     color='primary'
                                     type='submit'
+                                    size='small'
                                     onClick={() => addEndpoint(state)}
                                     className={classes.btn}
                                     disable={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
@@ -573,6 +577,7 @@ const EndpointCard = ({
                                 <Button
                                     variant='outlined'
                                     color='primary'
+                                    size='small'
                                     data-testid='policy-attached-details-save'
                                     onClick={() => setShowAddEndpoint(false)}
                                     disabled={ isRestricted(['apim:api_create'], apiObject) }
@@ -593,6 +598,7 @@ const EndpointCard = ({
                                     variant='contained'
                                     color='primary'
                                     type='submit'
+                                    size='small'
                                     onClick={() => updateEndpoint(state.id, state)}
                                     className={classes.btn}
                                     disable={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
@@ -615,6 +621,7 @@ const EndpointCard = ({
                                 <Button
                                     variant='outlined'
                                     color='primary'
+                                    size='small'
                                     data-testid='policy-attached-details-save'
                                     onClick={() => deleteEndpoint(state.id, state.environment)}
                                     disabled={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
