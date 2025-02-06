@@ -141,16 +141,18 @@ function AddEditGWEnvironment(props) {
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [roleValidity, setRoleValidity] = useState(true);
     const { gatewayTypes } = settings;
-    const [initialState, setInitialState] = useState({
-        displayName: '',
-        description: '',
-        gatewayType: gatewayTypes && gatewayTypes.length > 1 ? 'Regular' : gatewayTypes[0],
-        type: 'hybrid',
-        vhosts: [defaultVhost],
-        permissions: {
-            roles: [],
-            permissionType: 'PUBLIC',
-        },
+    const initialPermissions = dataRow && dataRow.permissions
+        ? dataRow.permissions
+        : { roles: [], permissionType: 'PUBLIC' };
+    const [initialState, setInitialState] = useState(() => {
+        return {
+            displayName: '',
+            description: '',
+            gatewayType: gatewayTypes && gatewayTypes.length > 1 ? 'Regular' : gatewayTypes[0],
+            type: 'hybrid',
+            vhosts: [defaultVhost],
+            permissions: initialPermissions,
+        };
     });
     const [editMode, setIsEditMode] = useState(false);
 
@@ -158,6 +160,14 @@ function AddEditGWEnvironment(props) {
     const {
         name, displayName, description, vhosts, type, gatewayType, permissions,
     } = state;
+
+    const [roles, setRoles] = useState([]);
+
+    useEffect(() => {
+        if (permissions && permissions.roles) {
+            setRoles(permissions.roles);
+        }
+    }, [permissions]);
 
     let permissionType = '';
     if (permissions) {
@@ -170,6 +180,8 @@ function AddEditGWEnvironment(props) {
             if (invalidRolesArray.length === 0) {
                 setRoleValidity(true);
             }
+        } else if (roles.includes(role)) {
+            setRoles(roles.filter((existingRole) => existingRole !== role));
         } else {
             setValidRoles(validRoles.filter((existingRole) => existingRole !== role));
         }
@@ -180,6 +192,12 @@ function AddEditGWEnvironment(props) {
         const promise = restApi.validateSystemRole(base64url.encode(role));
         promise
             .then(() => {
+                // Check if the role is already added
+                if (roles.includes(role) || validRoles.includes(role) || invalidRoles.includes(role)) {
+                    Alert.error('Role already added: ' + role);
+                    return;
+                }
+
                 setValidRoles(validRoles.concat(role));
                 if (invalidRoles.length === 0) {
                     setRoleValidity(true);
@@ -197,6 +215,7 @@ function AddEditGWEnvironment(props) {
                 }
             });
     };
+
     const onChange = (e) => {
         if (e.target.name === 'GatewayPermissionRestrict') {
             permissionType = e.target.value;
@@ -398,7 +417,7 @@ function AddEditGWEnvironment(props) {
             });
         }
         permissions.permissionType = state.permissions.permissionType;
-        permissions.roles = validRoles;
+        permissions.roles = roles.concat(validRoles);
         let promiseAPICall;
         if (dataRow) {
             // assign the update promise to the promiseAPICall
@@ -479,6 +498,7 @@ function AddEditGWEnvironment(props) {
             triggerButtonText={triggerButtonText}
             formSaveCallback={formSaveCallback}
             dialogOpenCallback={dialogOpenCallback}
+            saveButtonDisabled={!roleValidity}
         >
             <FormControl
                 variant='standard'
@@ -761,7 +781,7 @@ function AddEditGWEnvironment(props) {
                                         }}
                                         name='GatewayEnvironmentPermissions'
                                         variant='outlined'
-                                        value={validRoles.concat(invalidRoles)}
+                                        value={roles.concat(validRoles, invalidRoles)}
                                         alwaysShowPlaceholder={false}
                                         placeholder='Enter roles and press Enter'
                                         blurBehavior='clear'
