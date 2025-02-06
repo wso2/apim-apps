@@ -163,7 +163,7 @@ const setResponseSessionCookies = (res, accessToken, refreshToken, idToken, sess
         maxAge,
     });
 
-    res.cookie('publisher_session_state', sessionState, {
+    res.cookie('PUBLISHER_SESSION_STATE', sessionState, {
         path: '/publisher',
         secure: true,
         maxAge: 14400000,

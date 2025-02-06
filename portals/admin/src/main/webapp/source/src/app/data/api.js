@@ -1163,6 +1163,72 @@ class API extends Resource {
             );
         });
     }
+
+    /**
+     * Get list of organizations
+     */
+    organizationsListGet() {
+        return this.client.then((client) => {
+            return client.apis['Organizations'].get_organizations(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add an organization
+     */
+    createOrganization(referenceId, name, description) {
+        return this.client.then((client) => {
+            const data = {
+                externalOrganizationId: referenceId,
+                displayName: name,
+                description: description,
+            };
+            const payload = {
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Organizations'].post_organizations(
+                payload,
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update an organization
+     */
+    updateOrganization(referenceId, orgId, name, description) {
+        return this.client.then((client) => {
+            const data = {
+                externalOrganizationId: referenceId,
+                displayName: name,
+                description: description,
+            };
+            return client.apis[
+                'Organizations'
+            ].put_organizations__organizationId_(
+                { organizationId: orgId },
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete an organization
+     */
+    deleteOrganization(orgId, referenceId) {
+        return this.client.then((client) => {
+            return client.apis[
+                'Organizations'
+            ].delete_organizations__organizationId_(
+                { externalOrganizationId: referenceId, organizationId: orgId },
+                this._requestMetaData(),
+            );
+        });
+    }
 }
 
 API.CONSTS = {

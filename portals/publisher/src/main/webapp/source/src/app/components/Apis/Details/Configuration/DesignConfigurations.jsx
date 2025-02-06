@@ -51,6 +51,7 @@ import StoreVisibility from './components/StoreVisibility';
 import Tags from './components/Tags';
 import Social from './components/Social';
 import APICategories from './components/APICategories';
+import SharedOrganizations from './components/SharedOrganizations';
 
 const PREFIX = 'DesignConfigurations';
 
@@ -197,6 +198,7 @@ function copyAPIConfig(api) {
         enableSchemaValidation: api.enableSchemaValidation,
         accessControlRoles: [...api.accessControlRoles],
         visibleRoles: [...api.visibleRoles],
+        visibleOrganizations: [...(api?.visibleOrganizations || [])],
         tags: [...api.tags],
         maxTps: api.maxTps,
         transport: [...api.transport],
@@ -248,6 +250,7 @@ function configReducer(state, configAction) {
         case 'enableSchemaValidation':
         case 'maxTps':
         case 'categories':
+        case 'visibleOrganizations':
         case 'tags':
             nextState[action] = value;
             return nextState;
@@ -598,6 +601,13 @@ export default function DesignConfigurations() {
                                             api={apiConfig}
                                             configDispatcher={configDispatcher}
                                             categories={api.categories}
+                                        />
+                                    </Box>
+                                    <Box py={1}>
+                                        <SharedOrganizations
+                                            api={apiConfig}
+                                            configDispatcher={configDispatcher}
+                                            organizations={api.visibleOrganizations}
                                         />
                                     </Box>
                                     <Box py={1}>

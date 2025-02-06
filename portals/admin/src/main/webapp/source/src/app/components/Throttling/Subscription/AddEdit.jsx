@@ -130,6 +130,7 @@ function AddEdit(props) {
     const [roleValidity, setRoleValidity] = useState(true);
     const location = useLocation();
     const isAI = location.state?.isAI || false;
+
     const [initialState, setInitialState] = useState({
         policyName: '',
         description: '',
