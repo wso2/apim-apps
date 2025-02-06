@@ -659,6 +659,28 @@ class Utils {
                 )
         }));
     }
+
+    /**
+     * Maps a policy adherence state value to its label
+     * @param {string} state The value of the policy adherence state
+     * @returns {string} The label of the policy adherence state
+     * @memberof Utils
+     */
+    static mapPolicyAdherenceStateToLabel(state) {
+        const policyState = CONSTS.POLICY_ADHERENCE_STATES.find((t) => t.value === state);
+        return policyState?.label || state;
+    }
+
+    /**
+     * Maps a ruleset validation state value to its label
+     * @param {string} state The value of the ruleset validation state
+     * @returns {string} The label of the ruleset validation state
+     * @memberof Utils
+     */
+    static mapRulesetValidationStateToLabel(state) {
+        const validationState = CONSTS.RULESET_VALIDATION_STATES.find((t) => t.value === state);
+        return validationState?.label || state;
+    }
 }
 
 Utils.CONST = {

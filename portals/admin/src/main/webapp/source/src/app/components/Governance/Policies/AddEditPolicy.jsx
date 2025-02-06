@@ -282,26 +282,67 @@ function AddEditPolicy(props) {
                         id: 'Governance.Policies.AddEdit.form.name.required',
                         defaultMessage: 'Policy name is required',
                     });
-                } else if (fieldValue.length > 30) {
+                } else if (fieldValue.length < 1) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Policies.AddEdit.form.name.too.short',
+                        defaultMessage: 'Policy name cannot be empty',
+                    });
+                } else if (fieldValue.length > 255) {
                     error = intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.form.name.too.long',
-                        defaultMessage: 'Policy name cannot exceed 30 characters',
+                        defaultMessage: 'Policy name cannot exceed 255 characters',
+                    });
+                } else if (!/^[a-zA-Z0-9-_ ]+$/.test(fieldValue)) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Policies.AddEdit.form.name.invalid',
+                        defaultMessage: 'Policy name can only contain alphanumeric characters,'
+                            + ' hyphens, underscores, and spaces',
                     });
                 }
                 break;
             case 'description':
-                if (!fieldValue) {
-                    error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.description.required',
-                        defaultMessage: 'Description is required',
-                    });
-                } else if (fieldValue.length > 256) {
+                if (fieldValue && fieldValue.length > 1024) {
                     error = intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.form.description.too.long',
-                        defaultMessage: 'Description cannot exceed 512 characters',
+                        defaultMessage: 'Description cannot exceed 1024 characters',
                     });
                 }
                 break;
+            case 'rulesets':
+                if (!fieldValue || !Array.isArray(fieldValue) || fieldValue.length === 0) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Policies.AddEdit.form.rulesets.required',
+                        defaultMessage: 'At least one ruleset is required',
+                    });
+                } else if (new Set(fieldValue).size !== fieldValue.length) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Policies.AddEdit.form.rulesets.duplicate',
+                        defaultMessage: 'Duplicate rulesets are not allowed',
+                    });
+                }
+                break;
+            case 'actions': {
+                if (!fieldValue || !Array.isArray(fieldValue) || fieldValue.length === 0) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Policies.AddEdit.form.actions.invalid',
+                        defaultMessage: 'Actions must be properly configured',
+                    });
+                    break;
+                }
+
+                // Check for invalid BLOCK actions
+                const invalidBlockActions = fieldValue.filter((action) => (
+                    action.state === 'API_CREATE' || action.state === 'API_UPDATE')
+                    && action.type === CONSTS.GOVERNANCE_ACTIONS.BLOCK);
+                if (invalidBlockActions.length > 0) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Policies.AddEdit.form.actions.invalid.block',
+                        defaultMessage: 'BLOCK action is not allowed for API_CREATE and API_UPDATE states',
+                    });
+                    break;
+                }
+                break;
+            }
             case 'labels':
                 if (labelMode === 'specific' && (!fieldValue || fieldValue.length === 0)) {
                     error = intl.formatMessage({
@@ -319,7 +360,9 @@ function AddEditPolicy(props) {
     const formHasErrors = (validatingActive = false) => {
         if (hasErrors('name', name, validatingActive)
             || hasErrors('description', description, validatingActive)
-            || hasErrors('labels', labels, validatingActive)) {
+            || hasErrors('labels', labels, validatingActive)
+            || hasErrors('rulesets', rulesets, validatingActive)
+            || hasErrors('actions', actions, validatingActive)) {
             return true;
         }
         return false;
@@ -544,7 +587,8 @@ function AddEditPolicy(props) {
                                 })}
                                 fullWidth
                                 multiline
-                                helperText={intl.formatMessage({
+                                error={hasErrors('description', description, validating)}
+                                helperText={hasErrors('description', description, validating) || intl.formatMessage({
                                     id: 'Governance.Policies.AddEdit.form.description.help',
                                     defaultMessage: 'Description of the governance policy.',
                                 })}
@@ -795,6 +839,11 @@ function AddEditPolicy(props) {
                                 </TableContainer>
                             )}
                         </Box>
+                        {validating && hasErrors('actions', actions, true) && (
+                            <Box sx={{ color: 'error.main', pl: 2, pb: 1 }}>
+                                {hasErrors('actions', actions, true)}
+                            </Box>
+                        )}
                     </Grid>
 
                     <Grid item xs={12}>
@@ -827,6 +876,11 @@ function AddEditPolicy(props) {
                                 onRulesetDeselect={handleRulesetDeselect}
                             />
                         </Box>
+                        {validating && hasErrors('rulesets', rulesets, true) && (
+                            <Box sx={{ color: 'error.main', pl: 2, pb: 1 }}>
+                                {hasErrors('rulesets', rulesets, true)}
+                            </Box>
+                        )}
                     </Grid>
 
                     <Grid item xs={12}>

@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -20,15 +19,13 @@
 import React from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import DeleteRuleset from './DeleteRuleset';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
-import { Box, Chip, Stack } from '@mui/material';
-import { Button } from '@mui/material';
+import { Chip, Button } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
-import CreateOptionsModal from './CreateOptionsModal';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import Utils from 'AppData/Utils';
+import DeleteRuleset from './DeleteRuleset';
 
 /**
  * API call to get Rulesets
@@ -52,7 +49,6 @@ function apiCall() {
  */
 export default function ListRulesets() {
     const intl = useIntl();
-    const [isModalOpen, setIsModalOpen] = React.useState(false);
 
     const columProps = [
         {
@@ -71,9 +67,9 @@ export default function ListRulesets() {
                         <>
                             <Typography>{value}</Typography>
                             <Typography
-                                variant="caption"
-                                display="block"
-                                color="textSecondary"
+                                variant='caption'
+                                display='block'
+                                color='textSecondary'
                             >
                                 {dataRow[1]}
                             </Typography>
@@ -89,7 +85,7 @@ export default function ListRulesets() {
         },
         {
             name: 'description',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'artifactType',
@@ -103,7 +99,7 @@ export default function ListRulesets() {
                 customBodyRender: (value) => (
                     <Chip
                         label={Utils.mapArtifactTypeToLabel(value)}
-                        size="small"
+                        size='small'
                     />
                 ),
                 setCellProps: () => ({
@@ -131,7 +127,7 @@ export default function ListRulesets() {
                 customBodyRender: (value) => (
                     <Chip
                         label={Utils.mapRuleTypeToLabel(value)}
-                        size="small"
+                        size='small'
                     />
                 ),
                 setCellProps: () => ({
@@ -210,7 +206,7 @@ export default function ListRulesets() {
             </Typography>
         ),
         title: (
-            <Typography gutterBottom variant="h5" component="h2">
+            <Typography gutterBottom variant='h5' component='h2'>
                 <FormattedMessage
                     id='Governance.Rulesets.List.empty.title'
                     defaultMessage='Ruleset Catalog'
@@ -233,18 +229,6 @@ export default function ListRulesets() {
                 />
             </Button>
         </RouterLink>
-        // <Button
-        //     variant='contained'
-        //     color='primary'
-        //     size='small'
-        //     role='button'
-        //     onClick={() => setIsModalOpen(true)}
-        // >
-        //     <FormattedMessage
-        //         id='Governance.Rulesets.List.add.new.ruleset'
-        //         defaultMessage='Create Ruleset'
-        //     />
-        // </Button>
     );
 
     return (
@@ -257,7 +241,7 @@ export default function ListRulesets() {
                 searchProps={{
                     searchPlaceholder: intl.formatMessage({
                         id: 'Governance.Rulesets.List.search.placeholder',
-                        defaultMessage: 'Search rulesets by name or type'
+                        defaultMessage: 'Search rulesets by name or type',
                     }),
                     active: true,
                 }}
@@ -267,16 +251,12 @@ export default function ListRulesets() {
                     icon: <EditIcon />,
                     title: intl.formatMessage({
                         id: 'Governance.Rulesets.List.edit.title',
-                        defaultMessage: 'Edit Ruleset'
+                        defaultMessage: 'Edit Ruleset',
                     }),
                     routeTo: '/governance/ruleset-catalog/',
                 }}
                 addButtonOverride={addButtonOverride}
             />
-            {/* <CreateOptionsModal
-                open={isModalOpen}
-                handleClose={() => setIsModalOpen(false)}
-            /> */}
         </>
     );
 }

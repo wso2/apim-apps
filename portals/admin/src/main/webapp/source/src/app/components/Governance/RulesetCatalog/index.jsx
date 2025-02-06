@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -16,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';

@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -18,15 +17,16 @@
  */
 
 import React from 'react';
-import { Typography, Chip, Box, LinearProgress } from '@mui/material';
+import { Typography, Chip, Box, LinearProgress , TableRow, TableCell } from '@mui/material';
 import ListBase from 'AppComponents/Addons/Addons/ListBase';
-import { TableRow, TableCell } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import { useIntl } from 'react-intl';
+import PolicyIcon from '@mui/icons-material/Policy';
 
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import Utils from 'AppData/Utils';
 
 export default function PolicyAdherenceSummaryTable({ artifactId }) {
     const intl = useIntl();
@@ -43,6 +43,9 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 return result.body.governedPolicies;
             })
             .catch((error) => {
+                if (error.status === 404) {
+                    return [];
+                }
                 throw error;
             });
     }
@@ -54,7 +57,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         return (
             <Box sx={{ width: '100%' }}>
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="textSecondary">
+                    <Typography variant='body2' sx={{ fontWeight: 'bold' }} color='textSecondary'>
                         {intl.formatMessage({
                             id: 'Apis.Details.Compliance.PolicyAdherence.followed.count',
                             defaultMessage: '{followed}/{total} Followed',
@@ -62,7 +65,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                     </Typography>
                 </Box>
                 <LinearProgress
-                    variant="determinate"
+                    variant='determinate'
                     value={percentage}
                     sx={{
                         height: 4,
@@ -84,7 +87,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             <TableRow>
                 <TableCell colSpan={3} />
                 <TableCell>
-                    <Stack direction="column" spacing={2} sx={{ flexWrap: 'wrap' }}>
+                    <Stack direction='column' spacing={2} sx={{ flexWrap: 'wrap' }}>
                         {rulesets.map((ruleset) => (
                             <Box
                                 key={ruleset.id}
@@ -95,10 +98,10 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                                 }}
                             >
                                 {ruleset.status === 'PASSED' ?
-                                    <CheckCircleIcon color="success" sx={{ fontSize: 16 }} /> :
-                                    <CancelIcon color="error" sx={{ fontSize: 16 }} />
+                                    <CheckCircleIcon color='success' sx={{ fontSize: 16 }} /> :
+                                    <CancelIcon color='error' sx={{ fontSize: 16 }} />
                                 }
-                                <Typography variant="body2">
+                                <Typography variant='body2'>
                                     {ruleset.name}
                                 </Typography>
                             </Box>
@@ -123,7 +126,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             options: {
                 width: '30%',
                 customBodyRender: (value) => (
-                    <Typography variant="body2">{value}</Typography>
+                    <Typography variant='body2'>{value}</Typography>
                 ),
                 setCellProps: () => ({
                     style: { width: '30%' },
@@ -150,14 +153,21 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 setCellProps: () => ({
                     style: { width: '20%' },
                 }),
-                customBodyRender: (value) => (
-                    <Chip
-                        label={value}
-                        color={value === 'FOLLOWED' ? 'success' : value === 'VIOLATED' ? 'error' : 'default'}
-                        size="small"
-                        variant="outlined"
-                    />
-                ),
+                customBodyRender: (value) => {
+                    const getChipColor = (status) => {
+                        if (status === 'FOLLOWED') return 'success';
+                        if (status === 'VIOLATED') return 'error';
+                        return 'default';
+                    };
+                    return (
+                        <Chip
+                            label={Utils.mapPolicyAdherenceStateToLabel(value)}
+                            color={getChipColor(value)}
+                            size='small'
+                            variant='outlined'
+                        />
+                    );
+                },
                 setCellHeaderProps: () => ({
                     sx: {
                         paddingTop: 0,
@@ -201,20 +211,53 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         },
     ];
 
+    const emptyStateContent = (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 3
+            }}
+        >
+            <PolicyIcon
+                sx={{
+                    fontSize: 60,
+                    color: 'action.disabled',
+                    mb: 2
+                }}
+            />
+            <Typography
+                variant='h6'
+                color='text.secondary'
+                gutterBottom
+                sx={{ fontWeight: 'medium' }}
+            >
+                {intl.formatMessage({
+                    id: 'Apis.Details.Compliance.PolicyAdherence.empty.title',
+                    defaultMessage: 'No Policies Applied',
+                })}
+            </Typography>
+            <Typography
+                variant='body2'
+                color='text.secondary'
+                align='center'
+            >
+                {intl.formatMessage({
+                    id: 'Apis.Details.Compliance.PolicyAdherence.empty.helper',
+                    defaultMessage: 'No governance policies have been applied to this API.',
+                })}
+            </Typography>
+        </Box>
+    );
+
     return (
         <ListBase
             columnProps={policyColumnProps}
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                title: intl.formatMessage({
-                    id: 'Apis.Details.Compliance.PolicyAdherence.empty.title',
-                    defaultMessage: 'No Policies Found',
-                }),
-                content: intl.formatMessage({
-                    id: 'Apis.Details.Compliance.PolicyAdherence.empty.content',
-                    defaultMessage: 'There are no policies to display',
-                }),
+                content: emptyStateContent
             }}
             addButtonProps={false}
             showActionColumn={false}
@@ -222,7 +265,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             options={{
                 elevation: 0,
             }}
-            enableCollapsable={true}
+            enableCollapsable
             renderExpandableRow={renderExpandableRow}
         />
     );

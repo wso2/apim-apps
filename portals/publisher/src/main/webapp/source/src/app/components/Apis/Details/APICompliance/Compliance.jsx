@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -20,13 +19,13 @@
 import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Grid, Card, CardContent, Typography } from '@mui/material';
+import DonutChart from 'AppComponents/Shared/DonutChart';
+import { FormattedMessage, useIntl } from 'react-intl';
+import GovernanceAPI from 'AppData/GovernanceAPI';
+import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
 import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
 import RuleViolationSummary from './RuleViolationSummary';
-import { PieChart } from '@mui/x-charts';
-import { FormattedMessage, useIntl } from 'react-intl';
-import GovernanceAPI from 'AppData/GovernanceAPI';
-import PropTypes from 'prop-types';
 
 const PREFIX = 'Compliance';
 
@@ -42,11 +41,49 @@ const Root = styled('div')(({ theme }) => ({
     },
 }));
 
-export default function Compliance(props) {
+export default function Compliance() {
     const intl = useIntl();
-    const { api } = props;
+    const [api] = useAPI();
     const artifactId = api.id;
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0 });
+
+    if (api.isRevision) {
+        return (
+            <Root>
+                <Typography variant='h4' component='h2' align='left'>
+                    <FormattedMessage
+                        id='Apis.Details.Compliance.topic.header'
+                        defaultMessage='Compliance Summary'
+                    />
+                </Typography>
+                <Grid container spacing={4}>
+                    {/* Rule Violation Summary section */}
+                    <Grid item xs={12}>
+                        <Card elevation={3}
+
+                            sx={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                minHeight: 200,
+                                backgroundColor: 'background.paper',
+                                padding: 2,
+                                borderRadius: 1,
+                            }}
+                        >
+                            <Typography variant='h5' component='div' color='text.secondary'>
+                                <FormattedMessage
+                                    id='Apis.Details.Compliance.revision.message'
+                                    defaultMessage={'Compliance summary is not available for API revisions.'
+                                        + ' Please navigate to the current API version to view the compliance summary.'}
+                                />
+                            </Typography>
+                        </Card>
+                    </Grid>
+                </Grid>
+            </Root>
+        );
+    }
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -54,14 +91,21 @@ export default function Compliance(props) {
 
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
-                // Get ruleset statuses and count them
-                const rulesetStatuses = response.body.governedPolicies.flatMap(policy =>
-                    policy.rulesetValidationResults.map(result => result.status)
-                );
+                const rulesetMap = new Map();
 
-                const counts = rulesetStatuses.reduce((acc, status) => {
-                    if (status === 'PASSED') acc.passed += 1;
-                    if (status === 'FAILED') acc.failed += 1;
+                response.body.governedPolicies.forEach(policy => {
+                    policy.rulesetValidationResults.forEach(result => {
+                        // If ruleset not in map or if existing result is older, update the map
+                        if (!rulesetMap.has(result.id)) {
+                            rulesetMap.set(result.id, result);
+                        }
+                    });
+                });
+
+                // Count statuses from unique rulesets
+                const counts = Array.from(rulesetMap.values()).reduce((acc, result) => {
+                    if (result.status === 'PASSED') acc.passed += 1;
+                    if (result.status === 'FAILED') acc.failed += 1;
                     return acc;
                 }, { passed: 0, failed: 0 });
 
@@ -133,37 +177,26 @@ export default function Compliance(props) {
                                     defaultMessage='Ruleset Adherence'
                                 />
                             </Typography>
-                            <PieChart
+                            <DonutChart
                                 colors={['#2E96FF', '#FF5252']}
-                                series={[{
-                                    data: [
-                                        {
-                                            id: 0,
-                                            value: statusCounts.passed,
-                                            label: `${intl.formatMessage({
-                                                id: 'Apis.Details.Compliance.passed',
-                                                defaultMessage: 'Passed'
-                                            })} (${statusCounts.passed})`
-                                        },
-                                        {
-                                            id: 1,
-                                            value: statusCounts.failed,
-                                            label: `${intl.formatMessage({
-                                                id: 'Apis.Details.Compliance.failed',
-                                                defaultMessage: 'Failed'
-                                            })} (${statusCounts.failed})`
-                                        },
-                                    ],
-                                    innerRadius: 50,
-                                    outerRadius: 100,
-                                    paddingAngle: 5,
-                                    cornerRadius: 5,
-                                    cx: 100,
-                                    startAngle: 90,
-                                    endAngle: 470
-                                }]}
-                                width={400}
-                                height={200}
+                                data={[
+                                    {
+                                        id: 0,
+                                        value: statusCounts.passed,
+                                        label: `${intl.formatMessage({
+                                            id: 'Apis.Details.Compliance.passed',
+                                            defaultMessage: 'Passed'
+                                        })} (${statusCounts.passed})`
+                                    },
+                                    {
+                                        id: 1,
+                                        value: statusCounts.failed,
+                                        label: `${intl.formatMessage({
+                                            id: 'Apis.Details.Compliance.failed',
+                                            defaultMessage: 'Failed'
+                                        })} (${statusCounts.failed})`
+                                    },
+                                ]}
                             />
                         </CardContent>
                     </Card>
@@ -193,7 +226,3 @@ export default function Compliance(props) {
         </Root>
     );
 }
-
-Compliance.propTypes = {
-    api: PropTypes.shape({}).isRequired,
-};
