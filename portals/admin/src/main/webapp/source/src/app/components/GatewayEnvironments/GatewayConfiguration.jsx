@@ -1,25 +1,15 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
-// import Checkbox from '@mui/material/Checkbox';
-// import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
-// import FormLabel from '@mui/material/FormLabel';
-// import FormControl from '@mui/material/FormControl';
-// import FormGroup from '@mui/material/FormGroup';
-// import Radio from '@mui/material/Radio';
-// import RadioGroup from '@mui/material/RadioGroup';
 import { FormattedMessage } from 'react-intl';
-// import InputLabel from '@mui/material/InputLabel';
-// import FormHelperText from '@mui/material/FormHelperText';
-// import CustomInputField from 'AppComponents/KeyManagers/CustomInputField';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
 /**
  * @export
- * @param {*} props sksk
+ * @param {*} props
  * @returns {React.Component}
  */
 /**
@@ -38,10 +28,9 @@ export default function GatewayConfiguration(props) {
     };
 
     const getComponent = (gatewayConfiguration) => {
-        let value = '';
-        if (additionalProperties[gatewayConfiguration.name]) {
-            value = additionalProperties[gatewayConfiguration.name];
-        }
+        const { value } = additionalProperties.length > 0
+            ? additionalProperties.filter((t) => t.key === gatewayConfiguration.name)[0] : '';
+
         return (
             <TextField
                 id={gatewayConfiguration.name}
