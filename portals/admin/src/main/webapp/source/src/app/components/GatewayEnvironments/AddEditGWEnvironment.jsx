@@ -118,7 +118,7 @@ function AddEditGWEnvironment(props) {
             roles: [],
             permissionType: 'PUBLIC',
         },
-        additionalProperties: {},
+        additionalProperties: [],
     });
     const [editMode, setIsEditMode] = useState(false);
 
@@ -166,21 +166,6 @@ function AddEditGWEnvironment(props) {
             });
     };
 
-    const updateGatewayConfiguration = (gatewayType2) => {
-        if (settings.federatedGatewayConfiguration) {
-            settings.federatedGatewayConfiguration.map(({
-                type: key, configurations,
-            }) => {
-                if (key === gatewayType2) {
-                    setGatewayConfiguration(configurations);
-                    return true;
-                } else {
-                    return false;
-                }
-            });
-        }
-    };
-
     const setAdditionalProperties = (key, value) => {
         const clonedAdditionalProperties = cloneDeep(additionalProperties);
         clonedAdditionalProperties[key] = value;
@@ -192,7 +177,9 @@ function AddEditGWEnvironment(props) {
             permissionType = e.target.value;
             dispatch({ field: 'permissionType', value: permissionType });
         } else if (e.target.name === 'gatewayType') {
-            updateGatewayConfiguration(e.target.value);
+            setGatewayConfiguration(
+                settings.federatedGatewayConfiguration.filter((t) => t.type === e.target.value)[0].configurations,
+            );
         }
         dispatch({ field: e.target.name, value: e.target.value });
     };
@@ -214,7 +201,7 @@ function AddEditGWEnvironment(props) {
                 roles: [],
                 permissionType: 'PUBLIC',
             },
-            additionalProperties: {},
+            additionalProperties: [],
         });
     }, []);
 
@@ -380,13 +367,21 @@ function AddEditGWEnvironment(props) {
                     wssPort: vhost.wssPort,
                 });
             });
-        } else if (gatewayType === 'APK' || gatewayType === 'AWS') {
+        } else if (gatewayType === 'APK') {
             vhosts.forEach((vhost) => {
                 vhostDto.push({
                     host: vhost.host,
                     httpContext: vhost.httpContext,
                     httpPort: vhost.httpPort,
                     httpsPort: vhost.httpsPort,
+                });
+            });
+        } else if (gatewayType === 'AWS') {
+            vhosts.forEach((vhost) => {
+                vhostDto.push({
+                    host: vhost.host,
+                    httpPort: 80,
+                    httpsPort: 443,
                 });
             });
         }
@@ -444,6 +439,9 @@ function AddEditGWEnvironment(props) {
 
     const dialogOpenCallback = () => {
         if (dataRow) {
+            setGatewayConfiguration(
+                settings.federatedGatewayConfiguration.filter((t) => t.type === dataRow.gatewayType)[0].configurations,
+            );
             const {
                 name: originalName,
                 displayName: originalDisplayName,
