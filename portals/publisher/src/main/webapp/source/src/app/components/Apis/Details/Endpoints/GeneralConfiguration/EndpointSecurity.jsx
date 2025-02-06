@@ -104,10 +104,11 @@ function EndpointSecurity(props) {
     const { settings } = useAppContext();
     const {
         intl, securityInfo, onChangeEndpointAuth, isProduction, saveEndpointSecurityConfig, closeEndpointSecurityConfig,
+        endpointSecurityTypes,
     } = props;
     const [endpointSecurityInfo, setEndpointSecurityInfo] = useState(CONSTS.DEFAULT_ENDPOINT_SECURITY);
 
-    if (!(securityInfo?.proxyConfigs != null)) {
+    if (securityInfo && securityInfo.proxyConfigs == null) {
         securityInfo.proxyConfigs = {
             proxyEnabled: false,
             proxyHost: '',
@@ -127,30 +128,9 @@ function EndpointSecurity(props) {
     const endpointType = isProduction ? 'production' : 'sandbox';
 
     const authTypes = () => {
-        const { gatewayType } = api; // Access gatewayType directly from api
-
-        if (gatewayType === 'wso2/apk') {
-            return [
-                {
-                    key: 'NONE',
-                    value: intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.none',
-                        defaultMessage: 'None',
-                    }),
-                },
-                {
-                    key: 'BASIC',
-                    value: intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.basic',
-                        defaultMessage: 'Basic Auth',
-                    }),
-                },
-            ];
-        }
-
-        // Default authTypes for other gateway types
-        return [
+        const types = [
             {
+                id: 'none',
                 key: 'NONE',
                 value: intl.formatMessage({
                     id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.none',
@@ -158,6 +138,7 @@ function EndpointSecurity(props) {
                 }),
             },
             {
+                id: 'basicAuth',
                 key: 'BASIC',
                 value: intl.formatMessage({
                     id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.basic',
@@ -165,6 +146,7 @@ function EndpointSecurity(props) {
                 }),
             },
             {
+                id: 'digest',
                 key: 'DIGEST',
                 value: intl.formatMessage({
                     id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.digest.auth',
@@ -172,6 +154,7 @@ function EndpointSecurity(props) {
                 }),
             },
             {
+                id: 'oauth2',
                 key: 'OAUTH',
                 value: intl.formatMessage({
                     id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.oauth',
@@ -179,6 +162,10 @@ function EndpointSecurity(props) {
                 }),
             },
         ];
+
+        const selectedTypes = [types[0]];
+
+        return selectedTypes.concat(types.filter((type) => endpointSecurityTypes?.includes(type.id)));
     };
 
     const grantTypes = [

@@ -23,15 +23,14 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import Button from '@mui/material/Button';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
+import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { Link, withRouter } from 'react-router-dom';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import NewEndpointCreate from 'AppComponents/Apis/Details/Endpoints/NewEndpointCreate';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import cloneDeep from 'lodash.clonedeep';
 import { isRestricted } from 'AppData/AuthManager';
-import { Alert } from 'AppComponents/Shared';
-
+import { Alert, Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import EndpointOverview from './EndpointOverview';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
@@ -100,6 +99,7 @@ const defaultSwagger = { paths: {} };
  */
 function Endpoints(props) {
     const {  intl, history } = props;
+    const { data: publisherSettings, isLoading } = usePublisherSettings();
     const { api, updateAPI } = useContext(APIContext);
     const { settings } = useAppContext();
     const [swagger, setSwagger] = useState(defaultSwagger);
@@ -113,6 +113,8 @@ function Endpoints(props) {
         authHeader: null,
         authQueryParameter: null
     });
+    const [componentValidator, setComponentValidator] = useState([]);
+    const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
 
     useEffect(() => {
         if (api.subtypeConfiguration?.subtype === 'AIAPI') {
@@ -125,6 +127,15 @@ function Endpoints(props) {
                 });
         }
     }, []);
+
+    useEffect(() => {
+        if (!isLoading) {
+            setComponentValidator(JSON.parse(publisherSettings.gatewayFeatureCatalog)
+                .gatewayFeatures[api.gatewayType].endpoints);
+            setEndpointSecurityTypes(JSON.parse(publisherSettings.gatewayFeatureCatalog)
+                .gatewayFeatures[api.gatewayType].endpointSecurity);
+        }
+    }, [isLoading]);
 
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
@@ -716,11 +727,17 @@ function Endpoints(props) {
         apiDispatcher({ action: 'endpointImplementationType', value: { endpointType, implementationType } });
     };
 
+    if (isLoading) {
+        return <Progress per={80} message='Loading app settings ...' />;
+    }
+
     return (
         (<Root>
             {/* Since the api is set to the state in component did mount, check both the api and the apiObject. */}
-            {(api.endpointConfig === null && apiObject.endpointConfig === null)
-                ? <NewEndpointCreate generateEndpointConfig={generateEndpointConfig} apiType={apiObject.type} />
+            {(api.endpointConfig === null && apiObject.endpointConfig === null) ? 
+                <NewEndpointCreate generateEndpointConfig={generateEndpointConfig} apiType={apiObject.type}
+                    componentValidator={componentValidator} 
+                />
                 : (
                     <div className={classes.root}>
                         <Typography
@@ -754,6 +771,8 @@ function Endpoints(props) {
                                         isCustomBackendSelected={isCustomBackendSelected} 
                                         setIsCustomBackendSelected={setIsCustomBackendSelected}
                                         apiKeyParamConfig={apiKeyParamConfig}
+                                        componentValidator={componentValidator}
+                                        endpointSecurityTypes={endpointSecurityTypes}
                                     />
                                 </Grid>
                             </Grid>

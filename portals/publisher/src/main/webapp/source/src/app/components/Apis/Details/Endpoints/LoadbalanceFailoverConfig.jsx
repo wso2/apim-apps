@@ -134,6 +134,7 @@ function LoadbalanceFailoverConfig(props) {
         toggleESConfig,
         globalEpType,
         handleEndpointCategorySelect,
+        componentValidator,
     } = props;
     const { api } = useContext(APIContext);
     const [isConfigExpanded, setConfigExpand] = useState(false);
@@ -377,6 +378,7 @@ function LoadbalanceFailoverConfig(props) {
                                                 setESConfigOpen={toggleESConfig}
                                                 category='production_endpoints'
                                                 apiId={api.id}
+                                                componentValidator={componentValidator}
                                             />
                                         </Grid>
                                     )}
@@ -412,6 +414,7 @@ function LoadbalanceFailoverConfig(props) {
                                                 setESConfigOpen={toggleESConfig}
                                                 category='sandbox_endpoints'
                                                 apiId={api.id}
+                                                componentValidator={componentValidator}
                                             />
                                         </Grid>
                                     )}
