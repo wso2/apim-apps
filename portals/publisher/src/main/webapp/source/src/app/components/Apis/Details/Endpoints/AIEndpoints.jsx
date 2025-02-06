@@ -22,7 +22,6 @@ import {
     Grid,
     Paper,
     Typography,
-    // Box,
     Button,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
