@@ -346,6 +346,7 @@ function AddEditKeyManager(props) {
             });
         } else {
             updateKeyManagerConnectorConfiguration(defaultKMType);
+            getOrganizations();
         }
     }, []);
 
