@@ -217,7 +217,7 @@ function AddEditGWEnvironment(props) {
                 roles: [],
                 permissionType: 'PUBLIC',
             },
-            additionalProperties: [],
+            additionalProperties: {},
         });
     }, []);
 
@@ -234,18 +234,18 @@ function AddEditGWEnvironment(props) {
             );
         }
         // same pattern used in admin Rest API
-        const hostPattern = '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9]'
-            + '[A-Za-z0-9\\-]*[A-Za-z0-9])$';
-        const hostRegex = new RegExp(hostPattern, 'g');
-        const validHost = vhost.host && vhost.host.match(hostRegex);
-        if (!validHost) {
-            return (
-                intl.formatMessage({
-                    id: 'GatewayEnvironments.AddEditGWEnvironment.form.vhost.host.invalid',
-                    defaultMessage: 'Invalid Host',
-                })
-            );
-        }
+        //    const hostPattern = '^(([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9\\-]*[a-zA-Z0-9])\\.)*([A-Za-z0-9]|[A-Za-z0-9]'
+        //             + '[A-Za-z0-9\\-]*[A-Za-z0-9])$';
+        //         const hostRegex = new RegExp(hostPattern, 'g');
+        //         const validHost = vhost.host && vhost.host.match(hostRegex);
+        //         if (!validHost) {
+        //             return (
+        //                 intl.formatMessage({
+        //                     id: 'GatewayEnvironments.AddEditGWEnvironment.form.vhost.host.invalid',
+        //                     defaultMessage: 'Invalid Host',
+        //                 })
+        //             );
+        //         }
 
         // same pattern used in admin Rest API
         const httpContextRegex = /^\/?([a-zA-Z0-9]|[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9])*$/g;
