@@ -70,6 +70,7 @@ import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Utils from 'AppData/Utils';
 import { Parser } from '@asyncapi/parser';
 import { upperCaseString } from 'AppData/stringFormatter';
+import GovernanceViolations from 'AppComponents/Shared/Governance/GovernanceViolations';
 import DisplayDevportal from './DisplayDevportal';
 import DeploymentOnbording from './DeploymentOnbording';
 import Permission from './Permission';
@@ -542,6 +543,8 @@ export default function Environments() {
     const [currentLength, setCurrentLength] = useState(0);
     const [openDeployPopup, setOpenDeployPopup] = useState(history.location.state === 'deploy');
     const [externalEnvEndpoints, setExternalEnvEndpoints] = useState(null);
+    const [isGovernanceViolation, setIsGovernanceViolation] = useState(false);
+    const [governanceError, setGovernanceError] = useState('');
 
     const allExternalGatewaysMap = [];
     const allExternalGateways = [];
@@ -794,10 +797,26 @@ export default function Environments() {
                         id: 'Apis.Details.Environments.Environments.revision.create.success',
                         defaultMessage: 'Revision Created Successfully',
                     }));
+                    getRevision();
                 })
                 .catch((error) => {
                     if (error.response) {
-                        Alert.error(error.response.body.description);
+                        // TODO: Use the error code to identify the errors thrown by governance violation
+                        if (error.response.body.description.toLowerCase().includes('rule')) {
+                            setGovernanceError(
+                                JSON.parse(error.response.body.description)
+                            );
+                            setIsGovernanceViolation(true);
+                            Alert.error(
+                                intl.formatMessage({
+                                    id: 'Apis.Details.Environments.Environments.revision.create.error.governance',
+                                    defaultMessage: 'Revision Creation failed. Governance policy violations found',
+                                }),
+                            );
+                            return;
+                        } else {
+                            Alert.error(error.response.body.description);
+                        }
                     } else {
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.Environments.Environments.revision.create.error',
@@ -805,7 +824,6 @@ export default function Environments() {
                         }));
                     }
                     console.error(error);
-                }).finally(() => {
                     getRevision();
                 });
         }
@@ -1084,7 +1102,22 @@ export default function Environments() {
                         })
                         .catch((error) => {
                             if (error.response) {
-                                Alert.error(error.response.body.description);
+                                // TODO: Use the error code to identify the errors thrown by governance violation
+                                if (error.response.body.description.toLowerCase().includes('rule')) {
+                                    setGovernanceError(
+                                        JSON.parse(error.response.body.description)
+                                    );
+                                    setIsGovernanceViolation(true);
+                                    Alert.error(
+                                        intl.formatMessage({
+                                            id: 'Apis.Details.Environments.Environments.revision.create.error.governance',
+                                            defaultMessage: 'Revision Deployment failed. Governance policy violations found',
+                                        }),
+                                    );
+                                    return;
+                                } else {
+                                    Alert.error(error.response.body.description);
+                                }
                             } else {
                                 Alert.error(intl.formatMessage({
                                     id: 'Apis.Details.Environments.Environments.revision.deploy.error',
@@ -1100,7 +1133,22 @@ export default function Environments() {
                 })
                 .catch((error) => {
                     if (error.response) {
-                        Alert.error(error.response.body.description);
+                        // TODO: Use the error code to identify the errors thrown by governance violation
+                        if (error.response.body.description.toLowerCase().includes('rule')) {
+                            setGovernanceError(
+                                JSON.parse(error.response.body.description)
+                            );
+                            setIsGovernanceViolation(true);
+                            Alert.error(
+                                intl.formatMessage({
+                                    id: 'Apis.Details.Environments.Environments.revision.create.error.governance',
+                                    defaultMessage: 'Revision Creation failed. Governance policy violations found',
+                                }),
+                            );
+                            return;
+                        } else {
+                            Alert.error(error.response.body.description);
+                        }
                     } else {
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.Environments.Environments.revision.create.error',
@@ -2731,6 +2779,9 @@ export default function Environments() {
                     </DialogActions>
                 </StyledDialog>
             </Grid>
+            {isGovernanceViolation && (
+                <GovernanceViolations violations={governanceError} />
+            )}
             {api.lifeCycleStatus !== 'RETIRED' 
             &&  allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
                 <Box mx='auto' mt={5}>
