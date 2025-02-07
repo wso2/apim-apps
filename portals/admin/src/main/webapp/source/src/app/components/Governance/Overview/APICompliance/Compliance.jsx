@@ -43,19 +43,21 @@ export default function Compliance(props) {
 
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
-                // Set the artifact name
-                setArtifactName(response.body.info.name);
+                const rulesetMap = new Map();
 
-                // TODO: should only take unique ruleset IDs
+                response.body.governedPolicies.forEach(policy => {
+                    policy.rulesetValidationResults.forEach(result => {
+                        // If ruleset not in map or if existing result is older, update the map
+                        if (!rulesetMap.has(result.id)) {
+                            rulesetMap.set(result.id, result);
+                        }
+                    });
+                });
 
-                // Get ruleset statuses and count them
-                const rulesetStatuses = response.body.governedPolicies.flatMap(
-                    (policy) => policy.rulesetValidationResults.map((result) => result.status),
-                );
-
-                const counts = rulesetStatuses.reduce((acc, status) => {
-                    if (status === 'PASSED') acc.passed += 1;
-                    if (status === 'FAILED') acc.failed += 1;
+                // Count statuses from unique rulesets
+                const counts = Array.from(rulesetMap.values()).reduce((acc, result) => {
+                    if (result.status === 'PASSED') acc.passed += 1;
+                    if (result.status === 'FAILED') acc.failed += 1;
                     return acc;
                 }, { passed: 0, failed: 0 });
 
