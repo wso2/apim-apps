@@ -111,6 +111,7 @@ function GovernanceViolations({ violations }) {
                                     {filteredViolations
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                                         .map((violation, index) => (
+                                            // eslint-disable-next-line react/no-array-index-key
                                             <TableRow hover key={index}>
                                                 <TableCell>{violationSeverityMap[violation.severity]}</TableCell>
                                                 <TableCell>{violation.ruleCode}</TableCell>
