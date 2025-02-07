@@ -176,11 +176,11 @@ class API extends Resource {
         return this.client.then((client) => {
             return client.apis['Workflow (Collection)'].get_workflows(
                 { workflowType: workflowType, limit: limit },
-                this._requestMetaData(),
+                    this._requestMetaData(),
             );
         });
     }
-
+    
     /**
     * Get workflow pending request according to external workflow reference
     */
@@ -192,11 +192,11 @@ class API extends Resource {
             );
         });
     }
-
+    
     /**
     * Update workflow request according to external workflow reference
     */
-    updateWorkflow(workflowReferenceId, body) {
+    updateWorkflow(workflowReferenceId,body) {
         return this.client.then((client) => {
             const payload = {
                 workflowReferenceId: workflowReferenceId,
@@ -209,7 +209,7 @@ class API extends Resource {
             );
         });
     }
-
+    
     static validateOpenAPIByFile(openAPIData) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         let payload, promisedValidate;
@@ -579,7 +579,7 @@ class API extends Resource {
      * @param callback {function} A callback function to invoke after receiving successful response.
      * @returns {promise} With given callback attached to the success chain else API Product invoke promise.
      */
-    createNewAPIProductVersion(apiProductId, version, isDefaultVersion, callback = null) {
+     createNewAPIProductVersion(apiProductId, version, isDefaultVersion, callback = null) {
         const promise_copy_api_products = this.client.then(client => {
             return client.apis['API Products'].createNewAPIProductVersion(
                 {
@@ -866,7 +866,7 @@ class API extends Resource {
      * @param api {Object} Updated API object(JSON) which needs to be updated
      *
      */
-    validateSwagger(swagger) {
+     validateSwagger(swagger) {
         const promised_update = this.client.then(client => {
             const payload = {
                 file: swagger,
@@ -924,11 +924,11 @@ class API extends Resource {
                     apiId: apiId,
                 },
                 this._requestMetaData({
-
+                
                 }),
             );
         });
-        return promised_delete;
+        return promised_delete; 
     }
 
     getSequenceBackends(apiId) {
@@ -938,11 +938,11 @@ class API extends Resource {
                     apiId: apiId,
                 },
                 this._requestMetaData({
-
+                
                 }),
             );
         });
-        return promised_get;
+        return promised_get; 
     }
 
     getSequenceBackendContentByAPIID(apiId, keyType) {
@@ -953,11 +953,11 @@ class API extends Resource {
                     apiId: apiId,
                 },
                 this._requestMetaData({
-
+                
                 }),
             );
         });
-        return promised_get;
+        return promised_get; 
     }
 
     uploadCustomBackend(customBackend, keyType, apiId) {
@@ -2209,7 +2209,7 @@ class API extends Resource {
     /**
      * Get settings of an API
      */
-    static getLinterCustomRules() {
+     static getLinterCustomRules() {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         const promisedLinterCustomeRules = apiClient.then(client => {
             return client.apis['Linter Custom Rules'].getLinterCustomRules();
@@ -2688,8 +2688,8 @@ class API extends Resource {
             client => {
                 return client.apis['Client Certificates'].getAPIClientCertificatesByKeyType(
                     {
-                        keyType: keyType,
-                        apiId: apiId
+                    keyType: keyType,
+                    apiId: apiId
                     },
                     this._requestMetaData(),
                 );
@@ -2771,7 +2771,7 @@ class API extends Resource {
      * @param {string} limit number of replies to retrieve
      * @param {string} offset the starting point of replies
      * */
-    static getEndpointCertificateUsage(alias, limit = null, offset = null) {
+     static getEndpointCertificateUsage(alias, limit=null, offset=null) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
             return client.apis['Endpoint Certificates'].getCertificateUsageByAlias({
@@ -3161,8 +3161,8 @@ class API extends Resource {
             const requestBody = {
                 requestBody: {
                     policySpecFile: JSON.stringify(policySpec),
-                    ...(synapsePolicyDefinition !== null ? { synapsePolicyDefinitionFile: synapsePolicyDefinition } : {}),
-                    ...(ccPolicyDefinition !== null ? { ccPolicyDefinitionFile: ccPolicyDefinition } : {}),
+                    ...(synapsePolicyDefinition !== null ? {synapsePolicyDefinitionFile: synapsePolicyDefinition} : {}),
+                    ...(ccPolicyDefinition !== null ? {ccPolicyDefinitionFile: ccPolicyDefinition} : {}),
                 },
             }
             return client.apis['Operation Policies'].addCommonOperationPolicy(
@@ -3285,8 +3285,8 @@ class API extends Resource {
                 {
                     requestBody: {
                         policySpecFile: JSON.stringify(policySpec),
-                        ...(synapsePolicyDefinition !== null ? { synapsePolicyDefinitionFile: synapsePolicyDefinition } : {}),
-                        ...(ccPolicyDefinition !== null ? { ccPolicyDefinitionFile: ccPolicyDefinition } : {}),
+                        ...(synapsePolicyDefinition !== null ? {synapsePolicyDefinitionFile: synapsePolicyDefinition} : {}),
+                        ...(ccPolicyDefinition !== null ? {ccPolicyDefinitionFile: ccPolicyDefinition} : {}),
                     },
                 },
                 this._requestMetaData({
@@ -3360,7 +3360,7 @@ class API extends Resource {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
             return client.apis['Gateway Policies'].deleteGatewayPolicyByPolicyId(
-                { gatewayPolicyMappingId },
+                {gatewayPolicyMappingId},
                 this._requestMetaData(),
             );
         });
@@ -3375,7 +3375,7 @@ class API extends Resource {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
             return client.apis['Gateway Policies'].getGatewayPolicyMappingContentByPolicyMappingId(
-                { gatewayPolicyMappingId },
+                {gatewayPolicyMappingId},
                 this._requestMetaData(),
             );
         });
@@ -3394,7 +3394,7 @@ class API extends Resource {
         };
         return restApiClient.then(client => {
             return client.apis['Gateway Policies'].updateGatewayPoliciesToFlows(
-                { gatewayPolicyMappingId },
+                {gatewayPolicyMappingId},
                 requestBody,
                 this._requestMetaData(),
             );
@@ -3414,7 +3414,7 @@ class API extends Resource {
         };
         return restApiClient.then(client => {
             return client.apis['Gateway Policies'].engageGlobalPolicy(
-                { gatewayPolicyMappingId },
+                {gatewayPolicyMappingId},
                 requestBody,
                 this._requestMetaData(),
             );
@@ -3441,7 +3441,7 @@ class API extends Resource {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
             return client.apis['LLMProvider'].getLLMProvider(
-                { llmProviderId },
+                {llmProviderId},
                 this._requestMetaData(),
             );
         });
