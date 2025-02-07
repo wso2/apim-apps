@@ -38,6 +38,8 @@ import KeyManagers from 'AppComponents/KeyManagers';
 import AiVendors from 'AppComponents/AiVendors';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
+import BusinessIcon from '@mui/icons-material/Business';
+import Organizations from 'AppComponents/Organizations/ListOrganizations';
 
 import GamesIcon from '@mui/icons-material/Games';
 import CategoryIcon from '@mui/icons-material/Category';
@@ -206,6 +208,16 @@ const RouteMenuMapping = (intl) => [
         path: '/settings/api-categories',
         component: APICategories,
         icon: <CategoryIcon />,
+    },
+    {
+        id: 'Organizations',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.organizations',
+            defaultMessage: 'Organizations',
+        }),
+        path: '/settings/organizations',
+        component: Organizations,
+        icon: <BusinessIcon />,
     },
     {
         id: 'Key Managers',

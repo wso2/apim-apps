@@ -72,7 +72,13 @@
     cookie.setMaxAge(2);
     response.addCookie(cookie);
 
-    cookie = new Cookie("devportal_session_state", "");
+    cookie = new Cookie("DEVPORTAL_SESSION_STATE", "");
+    cookie.setPath(context + "/");
+    cookie.setSecure(true);
+    cookie.setMaxAge(2);
+    response.addCookie(cookie);
+
+    cookie = new Cookie("ORGANIZATION_DEFAULT", "");
     cookie.setPath(context + "/");
     cookie.setSecure(true);
     cookie.setMaxAge(2);

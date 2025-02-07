@@ -1356,6 +1356,19 @@ class API extends Resource {
         return promise_subscription;
     }
 
+    /**
+     * Get all Organizations of the given tenant
+     * @return {Promise}
+     * */
+    organizations() {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis["Organizations"].get_organizations(
+                this._requestMetaData(),
+            );
+        });
+    }
+
     addDocument(api_id, body) {
         const promised_addDocument = this.client.then(client => {
             const payload = {
@@ -2564,7 +2577,7 @@ class API extends Resource {
      * @returns {Promise}
      *
      */
-    static policies(policyLevel, limit, isAiApi ) {
+    static policies(policyLevel, limit, isAiApi, organizationId ) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
             return client.apis['Throttling Policies'].getAllThrottlingPolicies(
@@ -2572,6 +2585,7 @@ class API extends Resource {
                     policyLevel: policyLevel,
                     limit,
                     isAiApi,
+                    organizationId,
                 },
                 this._requestMetaData(),
             );
@@ -2846,6 +2860,21 @@ class API extends Resource {
             );
         });
     }
+
+    /**
+     * @static
+     * Get all Organizations of the given tenant
+     * @return {Promise}
+     * */
+    static getOrganizations() {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis["Organizations"].get_organizations(
+                this._requestMetaData(),
+            );
+        });
+    }
+
     static keyManagers() {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {

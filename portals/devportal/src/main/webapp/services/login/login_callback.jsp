@@ -22,6 +22,7 @@
 <%@page import="org.wso2.carbon.apimgt.impl.dto.SystemApplicationDTO"%>
 <%@page import="com.google.gson.GsonBuilder"%>
 <%@page import="java.net.URLDecoder"%>
+<%@page import="java.net.URLEncoder" %>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="com.google.gson.JsonObject"%>
 <%@page import="java.net.URI"%>
@@ -170,6 +171,24 @@
         int tokenLength = accessToken.length();
 
         String idToken = (String) tokenResponse.get("id_token");
+
+        String organization = "";
+        String[] idTokenParts = idToken.split("\\.");
+        if (idTokenParts.length == 3) {
+            String encodedBody = idTokenParts[1];
+            byte[] decodedBytes = Base64.getDecoder().decode(encodedBody);
+            String body = new String(decodedBytes);
+            Map idTokeBody;
+            try {
+                idTokeBody = gson.fromJson(body, Map.class);
+                String orgClaim = "org_name"; // get from settings
+                organization = (String) idTokeBody.get(orgClaim);
+
+            } catch (Exception e) {
+                log.error("Error while parsing id token", e);
+            }
+        }
+
         int idTokenLength = idToken.length();
 
         String idTokenPart1 = idToken.substring(0, idTokenLength / 2);
@@ -240,10 +259,20 @@
         cookie.setMaxAge((int) expiresIn);
         response.addCookie(cookie);
 
-        cookie = new Cookie("devportal_session_state", request.getParameter("session_state"));
+        cookie = new Cookie("DEVPORTAL_SESSION_STATE", request.getParameter("session_state"));
         cookie.setPath(context + "/");
         cookie.setSecure(true);
         cookie.setMaxAge(-1);
+        response.addCookie(cookie);
+
+        String encodedOrg = organization;
+        if (encodedOrg != null) {
+            encodedOrg = URLEncoder.encode(organization, "UTF-8");
+        }
+        cookie = new Cookie("ORGANIZATION_DEFAULT", encodedOrg);
+        cookie.setPath(context + "/");
+        cookie.setSecure(true);
+        cookie.setMaxAge((int) expiresIn);
         response.addCookie(cookie);
 
         String reqState = request.getParameter("state");

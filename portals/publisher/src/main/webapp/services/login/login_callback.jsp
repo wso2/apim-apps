@@ -204,7 +204,7 @@
             cookie.setMaxAge((int) expiresIn);
             response.addCookie(cookie);
 
-            cookie = new Cookie("publisher_session_state", request.getParameter("session_state"));
+            cookie = new Cookie("PUBLISHER_SESSION_STATE", request.getParameter("session_state"));
             cookie.setPath(context + "/");
             cookie.setSecure(true);
             cookie.setMaxAge(-1);
