@@ -37,6 +37,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import AddCircle from '@mui/icons-material/AddCircle';
 import CONSTS from 'AppData/Constants';
 import EndpointCard from './MultiEndpointComponents/EndpointCard';
+import GeneralEndpointConfigurations from './MultiEndpointComponents/GeneralEndpointConfigurations';
 
 const PREFIX = 'AIEndpoints';
 
@@ -176,6 +177,7 @@ const AIEndpoints = ({
     const [showAddSandboxEndpoint, setShowAddSandboxEndpoint] = useState(false);
     const [primaryProductionEndpoint, setPrimaryProductionEndpoint] = useState(null);
     const [primarySandboxEndpoint, setPrimarySandboxEndpoint] = useState(null);
+    const [endpointList, setEndpointList] = useState([]);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
@@ -194,6 +196,16 @@ const AIEndpoints = ({
                 const sandEndpointList = endpoints.filter((endpoint) => endpoint.environment === 'SANDBOX');
                 setProductionEndpoints(prodEndpointList);
                 setSandboxEndpoints(sandEndpointList);
+
+                // Loop through endpoints and add endpointList
+                const tempEndpointUrlList = [];
+                for (const prodEndpoint of prodEndpointList) {
+                    tempEndpointUrlList.push(prodEndpoint.endpointConfig?.production_endpoints);
+                }
+                for (const sandEndpoint of sandEndpointList) {
+                    tempEndpointUrlList.push(sandEndpoint.endpointConfig?.sandbox_endpoints);
+                }
+                setEndpointList(tempEndpointUrlList);
 
             }).catch((error) => {
                 console.error(error);
@@ -522,15 +534,17 @@ const AIEndpoints = ({
                     </Paper>
                 </Grid>
                 <Grid item xs={12}>
-                    <Typography variant='h4' align='left' className={classes.titleWrapper} gutterBottom>
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.AIEndpoints.general.config.header'
-                            defaultMessage='General Endpoint Configurations'
+                    <Paper className={classes.endpointContainer}>
+                        <Typography id='itest-sandbox-endpoints-heading' variant='h6' component='h6'>
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.AIEndpoints.general.config.header'
+                                defaultMessage='General Endpoint Configurations'
+                            />
+                        </Typography>
+                        <GeneralEndpointConfigurations
+                            endpointList={endpointList}
                         />
-                    </Typography>
-                    {/* <GeneralEndpointConfigurations
-                        
-                    /> */}
+                    </Paper>
                 </Grid>
             </Grid>
         </Root>
