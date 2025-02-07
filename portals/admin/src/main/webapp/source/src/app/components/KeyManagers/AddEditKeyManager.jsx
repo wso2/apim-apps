@@ -2275,7 +2275,7 @@ function AddEditKeyManager(props) {
                                 variant='contained'
                                 color='primary'
                                 onClick={formSaveCallback}
-                                disabled={isGlobal && !isSuperAdmin}
+                                disabled={(isGlobal && !isSuperAdmin) || !roleValidity}
                             >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>

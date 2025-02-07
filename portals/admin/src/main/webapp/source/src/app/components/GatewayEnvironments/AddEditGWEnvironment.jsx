@@ -498,6 +498,7 @@ function AddEditGWEnvironment(props) {
             triggerButtonText={triggerButtonText}
             formSaveCallback={formSaveCallback}
             dialogOpenCallback={dialogOpenCallback}
+            saveButtonDisabled={!roleValidity}
         >
             <FormControl
                 variant='standard'
