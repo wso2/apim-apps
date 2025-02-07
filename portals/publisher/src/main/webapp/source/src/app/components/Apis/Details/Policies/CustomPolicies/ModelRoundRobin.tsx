@@ -26,6 +26,7 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
+import AddCircle from '@mui/icons-material/AddCircle';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -38,21 +39,20 @@ interface RoundRobinConfig {
     suspendDuration?: number;
 }
 
-const ModelRoundRobin: FC = () => {
+interface ModelRoundRobinProps {
+    setManualPolicyConfig: React.Dispatch<React.SetStateAction<string>>;
+    manualPolicyConfig: string;
+}
+
+const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
+    setManualPolicyConfig,
+    manualPolicyConfig,
+}) => {
     const [apiFromContext] = useAPI();
     const [config, setConfig] = useState<RoundRobinConfig>({
-        production: [
-            { model: "gpt-4", endpointId: "8e3bd85a-e21b-4dd5-a1d2-88a539c45dc3", weight: 0.5 },
-            { model: "gpt-35-turbo", endpointId: "8e3bd85a-e21b-4dd5-a1d2-88a539c45dc3" }, // No weight initially
-        ],
-        sandbox: [
-            // { model: "gpt-4", endpointId: "8e3bd85a-e21b-4dd5-a1d2-88a539c45dc3", weight: 0.5 },
-            // { model: "gpt-35-turbo", endpointId: "8e3bd85a-e21b-4dd5-a1d2-88a539c45dc3" }, // No weight initially
-        ],
-        suspendDuration: 60,
-        // production: [],
-        // sandbox: [],
-        // suspendDuration: 0,
+        production: [],
+        sandbox: [],
+        suspendDuration: 0,
     });
     const [modelList, setModelList] = useState<string[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
@@ -83,6 +83,16 @@ const ModelRoundRobin: FC = () => {
         setModelList(['gpt-35-turbo', 'gpt-4', 'gpt-4o', 'gpt-4o-mini']);
         fetchEndpoints();
     }, []);
+
+    useEffect(() => {
+        if (manualPolicyConfig !== '') {
+            setConfig(JSON.parse(manualPolicyConfig));
+        }
+    }, [manualPolicyConfig]);
+
+    useEffect(() => {
+        setManualPolicyConfig(JSON.stringify(config));
+    }, [config]);
 
     const handleAddModel = (env: 'production' | 'sandbox') => {
         const newModel: ModelData = {
@@ -132,15 +142,16 @@ const ModelRoundRobin: FC = () => {
                     </AccordionSummary>
                     <AccordionDetails>
                         <Button
-                            variant='contained'
-                            type='submit'
+                            variant='outlined'
                             color='primary'
                             data-testid='add-production-model'
+                            sx={{ ml: 1 }}
                             onClick={() => handleAddModel('production')}
                         >
+                            <AddCircle sx={{ mr: 1 }} />
                             <FormattedMessage
                                 id='Apis.Details.Policies.Custom.Policies.model.add'
-                                defaultMessage='Add'
+                                defaultMessage='Add Model'
                             />
                         </Button>
                         {config.production.map((model, index) => (
@@ -169,6 +180,18 @@ const ModelRoundRobin: FC = () => {
                         </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            data-testid='add-sandbox-model'
+                            sx={{ ml: 1 }}
+                            onClick={() => handleAddModel('sandbox')}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Policies.Custom.Policies.model.add'
+                                defaultMessage='Add New Model'
+                            />
+                        </Button>
                         {config.sandbox.map((model, index) => (
                             <ModelCard
                                 key={index}
@@ -179,25 +202,13 @@ const ModelRoundRobin: FC = () => {
                                 onDelete={() => handleDelete('sandbox', index)}
                             />
                         ))}
-                        <Button
-                            variant='contained'
-                            type='submit'
-                            color='primary'
-                            data-testid='add-sandbox-model'
-                            onClick={() => handleAddModel('sandbox')}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Policies.Custom.Policies.model.add'
-                                defaultMessage='Add'
-                            />
-                        </Button>
                     </AccordionDetails>
                 </Accordion>
                 <TextField
                     id='suspend-duration-production'
                     label='Suspend Duration (s)'
                     size='small'
-                    sx={{ pt: 2 }}
+                    sx={{ pt: 2, mt: 2 }}
                     // helperText={getError(spec) === '' ? spec.description : getError(spec)}
                     // error={getError(spec) !== ''}
                     variant='outlined'
@@ -205,7 +216,6 @@ const ModelRoundRobin: FC = () => {
                     type='number'
                     value={config.suspendDuration}
                     onChange={(e: any) => setConfig({ ...config, suspendDuration: e.target.value })}
-                    // onChange={(e: any) => onInputChange(e, spec.type)}
                     fullWidth
                 />
             </Grid>
