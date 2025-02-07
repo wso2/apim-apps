@@ -182,7 +182,7 @@ export default function RuleViolationSummary({ artifactId }) {
             }),
             options: {
                 customBodyRender: (value) => (
-                    <Typography variant='body2'>{value}</Typography>
+                    <Typography variant='body2'>{value.path}</Typography>
                 ),
             },
         },
