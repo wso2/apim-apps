@@ -604,13 +604,6 @@ export default function DesignConfigurations() {
                                         />
                                     </Box>
                                     <Box py={1}>
-                                        <SharedOrganizations
-                                            api={apiConfig}
-                                            configDispatcher={configDispatcher}
-                                            organizations={api.visibleOrganizations}
-                                        />
-                                    </Box>
-                                    <Box py={1}>
                                         <Social
                                             slackURL={slackURLProperty && slackURLProperty.value}
                                             githubURL={githubURLProperty && githubURLProperty.value}
@@ -628,6 +621,15 @@ export default function DesignConfigurations() {
                                             />
                                         )}
                                     </Box>
+                                    { settings && settings.orgAccessControlEnabled && (
+                                        <Box py={1}>
+                                            <SharedOrganizations
+                                                api={apiConfig}
+                                                configDispatcher={configDispatcher}
+                                                organizations={api.visibleOrganizations}
+                                            />
+                                        </Box>
+                                    )}
                                     { settings && !settings.portalConfigurationOnlyModeEnabled && (
                                         <Box py={1}>
                                             <DefaultVersion api={apiConfig} configDispatcher={configDispatcher} />
