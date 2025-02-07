@@ -81,7 +81,7 @@ const StyledAPICreateBase = styled(APICreateBase)((
  */
 export default function ApiCreateAsyncAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
-    const { history } = props;
+    const { history, multiGateway } = props;
     // eslint-disable-next-line no-use-before-define
 
     const [hideEndpoint, setHideEndpoint] = useState(true);
@@ -355,6 +355,7 @@ export default function ApiCreateAsyncAPI(props) {
                             hideEndpoint={hideEndpoint}
                             endpointPlaceholderText='Streaming Provider'
                             appendChildrenBeforeEndpoint
+                            multiGateway={multiGateway}
                         >
                             <Grid container spacing={2}>
                                 {apiInputs.gatewayVendor === 'solace'

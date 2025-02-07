@@ -54,7 +54,7 @@ const StyledAPICreateBase = styled(APICreateBase)((
 
 const APICreateStreamingAPI = (props) => {
     // const theme = useTheme();
-    const { history } = props;
+    const { history, multiGateway } = props;
     const intl = useIntl();
     const { data: settings, isLoading, error: settingsError } = usePublisherSettings();
     const [pageError, setPageError] = useState(null);
@@ -437,6 +437,7 @@ const APICreateStreamingAPI = (props) => {
                         endpointPlaceholderText='Streaming Provider'
                         appendChildrenBeforeEndpoint
                         hideEndpoint={hideEndpoint}
+                        multiGateway={multiGateway}
                         isWebSocket={(apiType && apiType === protocolKeys.WebSocket)
                             || apiInputs.protocol === protocolKeys.WebSocket}
                     >

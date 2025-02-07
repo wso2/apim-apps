@@ -96,7 +96,7 @@ const Policies: React.FC = () => {
     const [policies, setPolicies] = useState<Policy[]>([]);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
-    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/apk');
+    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType !== 'wso2/synapse');
     const { showMultiVersionPolicies } = Configurations.apis;
     const [selectedTab, setSelectedTab] = useState((api.apiPolicies != null) ? 0 : 1);
 
@@ -203,10 +203,21 @@ const Policies: React.FC = () => {
             commonPolicyByPolicyDisplayName.sort(
                 (a: Policy, b: Policy) => a.name.localeCompare(b.name))
 
+            let gatewayType;
+            if (isChoreoConnectEnabled) {
+                // Get CC gateway supported policies
+                gatewayType = 'ChoreoConnect';
+            } else if (api.gatewayType === "aws") {
+                // Get AWS gateway supported policies
+                gatewayType = 'AWS';
+            } else {
+                // Get synpase gateway supported policies
+                gatewayType = 'Synapse';
+            }
+
             let filteredApiPolicyByGatewayTypeList = null;
             let filteredCommonPolicyByGatewayTypeList = null;
             
-            let gatewayType = isChoreoConnectEnabled ? 'ChoreoConnect' : 'Synapse';
             // Get relevant gateway supported policies
             filteredApiPolicyByGatewayTypeList = apiPolicyByPolicyDisplayName.filter(
                 (policy: Policy) => policy.supportedGateways.includes(gatewayType));
