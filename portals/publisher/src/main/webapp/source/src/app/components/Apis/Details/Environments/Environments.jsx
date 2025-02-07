@@ -1110,8 +1110,10 @@ export default function Environments() {
                                     setIsGovernanceViolation(true);
                                     Alert.error(
                                         intl.formatMessage({
-                                            id: 'Apis.Details.Environments.Environments.revision.create.error.governance',
-                                            defaultMessage: 'Revision Deployment failed. Governance policy violations found',
+                                            id: 'Apis.Details.Environments.Environments.'
+                                                + 'revision.create.error.governance',
+                                            defaultMessage: 'Revision Deployment failed.'
+                                                + ' Governance policy violations found',
                                         }),
                                     );
                                     return;
