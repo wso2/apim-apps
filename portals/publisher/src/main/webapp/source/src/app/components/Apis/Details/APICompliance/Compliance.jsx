@@ -47,6 +47,49 @@ export default function Compliance() {
     const artifactId = api.id;
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0 });
 
+    useEffect(() => {
+        // Skip the API call if this is a revision
+        if (api.isRevision) {
+            return undefined;
+        }
+
+        const abortController = new AbortController();
+        const restApi = new GovernanceAPI();
+
+        restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
+            .then((response) => {
+                const rulesetMap = new Map();
+
+                response.body.governedPolicies.forEach(policy => {
+                    policy.rulesetValidationResults.forEach(result => {
+                        // If ruleset not in map or if existing result is older, update the map
+                        if (!rulesetMap.has(result.id)) {
+                            rulesetMap.set(result.id, result);
+                        }
+                    });
+                });
+
+                // Count statuses from unique rulesets
+                const counts = Array.from(rulesetMap.values()).reduce((acc, result) => {
+                    if (result.status === 'PASSED') acc.passed += 1;
+                    if (result.status === 'FAILED') acc.failed += 1;
+                    return acc;
+                }, { passed: 0, failed: 0 });
+
+                setStatusCounts(counts);
+            })
+            .catch((error) => {
+                if (!abortController.signal.aborted) {
+                    console.error('Error fetching ruleset adherence data:', error);
+                    setStatusCounts({ passed: 0, failed: 0 });
+                }
+            });
+
+        return () => {
+            abortController.abort();
+        };
+    }, [artifactId, api.isRevision]);
+
     if (api.isRevision) {
         return (
             <Root>
@@ -84,44 +127,6 @@ export default function Compliance() {
             </Root>
         );
     }
-
-    useEffect(() => {
-        const abortController = new AbortController();
-        const restApi = new GovernanceAPI();
-
-        restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
-            .then((response) => {
-                const rulesetMap = new Map();
-
-                response.body.governedPolicies.forEach(policy => {
-                    policy.rulesetValidationResults.forEach(result => {
-                        // If ruleset not in map or if existing result is older, update the map
-                        if (!rulesetMap.has(result.id)) {
-                            rulesetMap.set(result.id, result);
-                        }
-                    });
-                });
-
-                // Count statuses from unique rulesets
-                const counts = Array.from(rulesetMap.values()).reduce((acc, result) => {
-                    if (result.status === 'PASSED') acc.passed += 1;
-                    if (result.status === 'FAILED') acc.failed += 1;
-                    return acc;
-                }, { passed: 0, failed: 0 });
-
-                setStatusCounts(counts);
-            })
-            .catch((error) => {
-                if (!abortController.signal.aborted) {
-                    console.error('Error fetching ruleset adherence data:', error);
-                    setStatusCounts({ passed: 0, failed: 0 });
-                }
-            });
-
-        return () => {
-            abortController.abort();
-        };
-    }, [artifactId]);
 
     return (
         <Root>
