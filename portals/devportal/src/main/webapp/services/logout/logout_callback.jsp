@@ -78,7 +78,7 @@
     cookie.setMaxAge(2);
     response.addCookie(cookie);
 
-    cookie = new Cookie("ORGANIZATION_DEFAULT", "");
+    cookie = new Cookie("ORGANIZATION_Default", "");
     cookie.setPath(context + "/");
     cookie.setSecure(true);
     cookie.setMaxAge(2);

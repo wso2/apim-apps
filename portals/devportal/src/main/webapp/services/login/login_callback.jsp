@@ -269,7 +269,7 @@
         if (encodedOrg != null) {
             encodedOrg = URLEncoder.encode(organization, "UTF-8");
         }
-        cookie = new Cookie("ORGANIZATION_DEFAULT", encodedOrg);
+        cookie = new Cookie("ORGANIZATION_Default", encodedOrg);
         cookie.setPath(context + "/");
         cookie.setSecure(true);
         cookie.setMaxAge((int) expiresIn);
