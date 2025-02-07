@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -25,6 +24,8 @@ import WarningIcon from '@mui/icons-material/Warning';
 import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import Utils from 'AppData/Utils';
 
 export default function RulesetAdherenceSummaryTable({ artifactId }) {
     const intl = useIntl();
@@ -54,6 +55,42 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             });
     };
 
+    const renderComplianceIcons = (violations) => {
+        const { error, warn, info } = violations;
+        return (
+            <Tooltip title={
+                intl.formatMessage(
+                    {
+                        id: 'Apis.Details.Compliance.RulesetAdherence.violations.tooltip',
+                        defaultMessage: 'Errors: {error}, Warnings: {warn}, Info: {info}',
+                    },
+                    { error, warn, info }
+                )
+            }>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Box key='error' sx={{ display: 'flex', alignItems: 'center' }}>
+                        <ErrorIcon color='error' sx={{ fontSize: 16 }} />
+                        <Typography variant='caption' sx={{ ml: 0.5 }}>
+                            {error}
+                        </Typography>
+                    </Box>
+                    <Box key='warn' sx={{ display: 'flex', alignItems: 'center' }}>
+                        <WarningIcon color='warning' sx={{ fontSize: 16 }} />
+                        <Typography variant='caption' sx={{ ml: 0.5 }}>
+                            {warn}
+                        </Typography>
+                    </Box>
+                    <Box key='info' sx={{ display: 'flex', alignItems: 'center' }}>
+                        <InfoIcon color='info' sx={{ fontSize: 16 }} />
+                        <Typography variant='caption' sx={{ ml: 0.5 }}>
+                            {info}
+                        </Typography>
+                    </Box>
+                </Box>
+            </Tooltip>
+        );
+    };
+
     const RulesetColumnProps = [
         {
             name: 'id',
@@ -68,7 +105,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             options: {
                 width: '40%',
                 customBodyRender: (value) => (
-                    <Typography variant="body2">{value}</Typography>
+                    <Typography variant='body2'>{value}</Typography>
                 ),
                 setCellProps: () => ({
                     style: { width: '30%' },
@@ -97,10 +134,10 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 }),
                 customBodyRender: (value) => (
                     <Chip
-                        label={value}
+                        label={Utils.mapRulesetValidationStateToLabel(value)}
                         color={value === 'PASSED' ? 'success' : 'error'}
-                        size="small"
-                        variant="outlined"
+                        size='small'
+                        variant='outlined'
                     />
                 ),
                 setCellHeaderProps: () => ({
@@ -158,41 +195,45 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         },
     ];
 
-    const renderComplianceIcons = (violations) => {
-        const { error, warn, info } = violations;
-        return (
-            <Tooltip title={
-                intl.formatMessage(
-                    {
-                        id: 'Apis.Details.Compliance.RulesetAdherence.violations.tooltip',
-                        defaultMessage: 'Errors: {error}, Warnings: {warn}, Info: {info}',
-                    },
-                    { error, warn, info }
-                )
-            }>
-                <Box sx={{ display: 'flex', gap: 1 }}>
-                    <Box key="error" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <ErrorIcon color='error' sx={{ fontSize: 16 }} />
-                        <Typography variant="caption" sx={{ ml: 0.5 }}>
-                            {error}
-                        </Typography>
-                    </Box>
-                    <Box key="warn" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <WarningIcon color='warning' sx={{ fontSize: 16 }} />
-                        <Typography variant="caption" sx={{ ml: 0.5 }}>
-                            {warn}
-                        </Typography>
-                    </Box>
-                    <Box key="info" sx={{ display: 'flex', alignItems: 'center' }}>
-                        <InfoIcon color='info' sx={{ fontSize: 16 }} />
-                        <Typography variant="caption" sx={{ ml: 0.5 }}>
-                            {info}
-                        </Typography>
-                    </Box>
-                </Box>
-            </Tooltip>
-        );
-    };
+    const emptyStateContent = (
+        <Box
+            sx={{
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                padding: 3
+            }}
+        >
+            <AssignmentIcon
+                sx={{
+                    fontSize: 60,
+                    color: 'action.disabled',
+                    mb: 2
+                }}
+            />
+            <Typography
+                variant='h6'
+                color='text.secondary'
+                gutterBottom
+                sx={{ fontWeight: 'medium' }}
+            >
+                {intl.formatMessage({
+                    id: 'Apis.Details.Compliance.RulesetAdherence.empty.title',
+                    defaultMessage: 'No Rulesets Found',
+                })}
+            </Typography>
+            <Typography
+                variant='body2'
+                color='text.secondary'
+                align='center'
+            >
+                {intl.formatMessage({
+                    id: 'Apis.Details.Compliance.RulesetAdherence.empty.helper',
+                    defaultMessage: 'No governance rulesets have been applied for this API.',
+                })}
+            </Typography>
+        </Box>
+    );
 
     return (
         <ListBase
@@ -200,14 +241,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                title: intl.formatMessage({
-                    id: 'Apis.Details.Compliance.RulesetAdherence.empty.title',
-                    defaultMessage: 'No Policies Found',
-                }),
-                content: intl.formatMessage({
-                    id: 'Apis.Details.Compliance.RulesetAdherence.empty.content',
-                    defaultMessage: 'There are no policies to display',
-                }),
+                content: emptyStateContent
             }}
             addButtonProps={false}
             showActionColumn={false}

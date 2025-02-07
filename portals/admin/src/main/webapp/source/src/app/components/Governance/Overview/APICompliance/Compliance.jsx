@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -20,15 +19,17 @@
 import React, { useEffect, useState } from 'react';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import { Link as RouterLink } from 'react-router-dom';
-import { Grid, Card, CardContent, Typography } from '@mui/material';
+import {
+    Grid, Card, CardContent, Typography,
+} from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
-import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
-import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
-import RuleViolationSummary from './RuleViolationSummary';
 import { Box } from '@mui/system';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DonutChart from 'AppComponents/Shared/DonutChart';
+import RuleViolationSummary from './RuleViolationSummary';
+import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
+import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
 
 export default function Compliance(props) {
     const intl = useIntl();
@@ -42,19 +43,21 @@ export default function Compliance(props) {
 
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
-                // Set the artifact name
-                setArtifactName(response.body.info.name);
+                const rulesetMap = new Map();
 
-                // TODO: should only take unique ruleset IDs
+                response.body.governedPolicies.forEach((policy) => {
+                    policy.rulesetValidationResults.forEach((result) => {
+                        // If ruleset not in map or if existing result is older, update the map
+                        if (!rulesetMap.has(result.id)) {
+                            rulesetMap.set(result.id, result);
+                        }
+                    });
+                });
 
-                // Get ruleset statuses and count them
-                const rulesetStatuses = response.body.governedPolicies.flatMap(policy =>
-                    policy.rulesetValidationResults.map(result => result.status)
-                );
-
-                const counts = rulesetStatuses.reduce((acc, status) => {
-                    if (status === 'PASSED') acc.passed += 1;
-                    if (status === 'FAILED') acc.failed += 1;
+                // Count statuses from unique rulesets
+                const counts = Array.from(rulesetMap.values()).reduce((acc, result) => {
+                    if (result.status === 'PASSED') acc.passed += 1;
+                    if (result.status === 'FAILED') acc.failed += 1;
                     return acc;
                 }, { passed: 0, failed: 0 });
 
@@ -76,17 +79,22 @@ export default function Compliance(props) {
     return (
         <ContentBase
             width='full'
-            title={
+            title={(
                 <FormattedMessage
                     id='Governance.Overview.Compliance.title'
                     defaultMessage='Compliance Summary - {artifactName}'
                     values={{ artifactName }}
                 />
-            }
+            )}
             pageStyle='paperLess'
         >
             <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: 4 }}>
-                <RouterLink to={`/governance/overview`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+                <RouterLink
+                    to='/governance/overview'
+                    style={{
+                        display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit',
+                    }}
+                >
                     <ArrowBackIcon />
                     <FormattedMessage
                         id='Governance.Overview.Compliance.back.to.overview'
@@ -107,12 +115,14 @@ export default function Compliance(props) {
 
                 {/* Policy Adherence Summary section */}
                 <Grid item xs={12}>
-                    <Card elevation={3}
+                    <Card
+                        elevation={3}
                         sx={{
                             '& .MuiTableCell-footer': {
-                                border: 0
+                                border: 0,
                             },
-                        }}>
+                        }}
+                    >
                         <CardContent>
                             <Typography
                                 variant='body1'
@@ -149,16 +159,16 @@ export default function Compliance(props) {
                                         value: statusCounts.passed,
                                         label: `${intl.formatMessage({
                                             id: 'Governance.Overview.Compliance.passed',
-                                            defaultMessage: 'Passed'
-                                        })} (${statusCounts.passed})`
+                                            defaultMessage: 'Passed',
+                                        })} (${statusCounts.passed})`,
                                     },
                                     {
                                         id: 1,
                                         value: statusCounts.failed,
                                         label: `${intl.formatMessage({
                                             id: 'Governance.Overview.Compliance.failed',
-                                            defaultMessage: 'Failed'
-                                        })} (${statusCounts.failed})`
+                                            defaultMessage: 'Failed',
+                                        })} (${statusCounts.failed})`,
                                     },
                                 ]}
                             />
@@ -167,11 +177,14 @@ export default function Compliance(props) {
                 </Grid>
 
                 <Grid item xs={12} md={8}>
-                    <Card elevation={3} sx={{
-                        '& .MuiTableCell-footer': {
-                            border: 0
-                        },
-                    }}>
+                    <Card
+                        elevation={3}
+                        sx={{
+                            '& .MuiTableCell-footer': {
+                                border: 0,
+                            },
+                        }}
+                    >
                         <CardContent>
                             <Typography
                                 variant='body1'

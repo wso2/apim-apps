@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -18,9 +17,10 @@
  */
 
 import React from 'react';
-import { Typography, Chip, Box, LinearProgress } from '@mui/material';
+import {
+    Typography, Chip, Box, LinearProgress, TableRow, TableCell,
+} from '@mui/material';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
-import { TableRow, TableCell } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -56,7 +56,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         return (
             <Box sx={{ width: '100%' }}>
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
-                    <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="textSecondary">
+                    <Typography variant='body2' sx={{ fontWeight: 'bold' }} color='textSecondary'>
                         {intl.formatMessage({
                             id: 'Governance.Overview.APICompliance.PolicyAdherence.followed.count',
                             defaultMessage: '{followed}/{total} Followed',
@@ -64,7 +64,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                     </Typography>
                 </Box>
                 <LinearProgress
-                    variant="determinate"
+                    variant='determinate'
                     value={percentage}
                     sx={{
                         height: 4,
@@ -86,21 +86,20 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             <TableRow>
                 <TableCell colSpan={3} />
                 <TableCell>
-                    <Stack direction="column" spacing={2} sx={{ flexWrap: 'wrap' }}>
+                    <Stack direction='column' spacing={2} sx={{ flexWrap: 'wrap' }}>
                         {rulesets.map((ruleset) => (
                             <Box
                                 key={ruleset.id}
                                 sx={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: 1
+                                    gap: 1,
                                 }}
                             >
-                                {ruleset.status === 'PASSED' ?
-                                    <CheckCircleIcon color="success" sx={{ fontSize: 16 }} /> :
-                                    <CancelIcon color="error" sx={{ fontSize: 16 }} />
-                                }
-                                <Typography variant="body2">
+                                {ruleset.status === 'PASSED'
+                                    ? <CheckCircleIcon color='success' sx={{ fontSize: 16 }} />
+                                    : <CancelIcon color='error' sx={{ fontSize: 16 }} />}
+                                <Typography variant='body2'>
                                     {ruleset.name}
                                 </Typography>
                             </Box>
@@ -114,7 +113,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
     const policyColumProps = [
         {
             name: 'id',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'name',
@@ -125,7 +124,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             options: {
                 width: '30%',
                 customBodyRender: (value) => (
-                    <Typography variant="body2">{value}</Typography>
+                    <Typography variant='body2'>{value}</Typography>
                 ),
                 setCellProps: () => ({
                     style: { width: '30%' },
@@ -136,7 +135,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
                     },
                 }),
@@ -152,21 +151,28 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 setCellProps: () => ({
                     style: { width: '20%' },
                 }),
-                customBodyRender: (value) => (
-                    <Chip
-                        label={Utils.mapPolicyAdherenceStateToLabel(value)}
-                        color={value === 'FOLLOWED' ? 'success' : value === 'VIOLATED' ? 'error' : 'default'}
-                        size="small"
-                        variant="outlined"
-                    />
-                ),
+                customBodyRender: (value) => {
+                    const getChipColor = (status) => {
+                        if (status === 'FOLLOWED') return 'success';
+                        if (status === 'VIOLATED') return 'error';
+                        return 'default';
+                    };
+                    return (
+                        <Chip
+                            label={Utils.mapPolicyAdherenceStateToLabel(value)}
+                            color={getChipColor(value)}
+                            size='small'
+                            variant='outlined'
+                        />
+                    );
+                },
                 setCellHeaderProps: () => ({
                     sx: {
                         paddingTop: 0,
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
                     },
                 }),
@@ -174,7 +180,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         },
         {
             name: 'rulesetValidationResults',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'rulesetsList',
@@ -195,11 +201,11 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
-                    }
+                    },
                 }),
-            }
+            },
         },
     ];
 
@@ -209,19 +215,19 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                padding: 3
+                padding: 3,
             }}
         >
             <PolicyIcon
                 sx={{
                     fontSize: 60,
                     color: 'action.disabled',
-                    mb: 2
+                    mb: 2,
                 }}
             />
             <Typography
-                variant="h6"
-                color="text.secondary"
+                variant='h6'
+                color='text.secondary'
                 gutterBottom
                 sx={{ fontWeight: 'medium' }}
             >
@@ -231,9 +237,9 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 })}
             </Typography>
             <Typography
-                variant="body2"
-                color="text.secondary"
-                align="center"
+                variant='body2'
+                color='text.secondary'
+                align='center'
             >
                 {intl.formatMessage({
                     id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.helper',
@@ -249,7 +255,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                content: emptyStateContent
+                content: emptyStateContent,
             }}
             addButtonProps={false}
             showActionColumn={false}
@@ -257,7 +263,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             options={{
                 elevation: 0,
             }}
-            enableCollapsable={true}
+            enableCollapsable
             renderExpandableRow={renderExpandableRow}
         />
     );
