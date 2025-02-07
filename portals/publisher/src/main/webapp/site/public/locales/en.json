@@ -1207,6 +1207,8 @@
   "Apis.Details.Policies.AttachedPolicyForm.General.reset": "Reset",
   "Apis.Details.Policies.AttachedPolicyForm.General.save": "Save",
   "Apis.Details.Policies.AttachedPolicyForm.General.saving": "Saving",
+  "Apis.Details.Policies.Components.TabPanel.Components.API.Policy.List": "API Policies",
+  "Apis.Details.Policies.Components.TabPanel.Components.Common.Policy.List": "Common Policies",
   "Apis.Details.Policies.CreatePolicy.create.new.policy": "Create New Policy",
   "Apis.Details.Policies.CreatePolicy.create.new.policy.link": "Want to create a common policy that will be visible to all APIs instead?",
   "Apis.Details.Policies.DeletePolicy.cancel": "Cancel",

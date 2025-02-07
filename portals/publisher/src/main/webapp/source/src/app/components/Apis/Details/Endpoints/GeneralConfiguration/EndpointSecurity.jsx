@@ -107,7 +107,7 @@ function EndpointSecurity(props) {
     } = props;
     const [endpointSecurityInfo, setEndpointSecurityInfo] = useState(CONSTS.DEFAULT_ENDPOINT_SECURITY);
 
-    if (!(securityInfo?.proxyConfigs != null)) {
+    if (securityInfo && securityInfo.proxyConfigs == null) {
         securityInfo.proxyConfigs = {
             proxyEnabled: false,
             proxyHost: '',

@@ -82,7 +82,7 @@ export default function ExternalStores() {
     const [isUpdating, setUpdating] = useState(false);
 
     const intl = useIntl();
-    if (!settings.externalStoresEnabled) {
+    if (settings && !settings.externalStoresEnabled) {
         const resourceNotFoundMessageText = defineMessages({
             titleMessage: {
                 id: 'Apis.Details.ExternalStores.ExternalStores.external.stores.not.found.title',

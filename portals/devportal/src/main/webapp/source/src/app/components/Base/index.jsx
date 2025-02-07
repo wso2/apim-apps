@@ -414,9 +414,11 @@ class LayoutLegacy extends React.Component {
         const user = AuthManager.getUser();
         // TODO: Refer to fix: https://github.com/mui-org/material-ui/issues/10076#issuecomment-361232810 ~tmkb
         let username = null;
+        let organization = null;
 
         if (user) {
             username = user.name;
+            organization = user.getOrganizationName();
             const count = (username.match(/@/g) || []).length;
             if (user.name.endsWith('@carbon.super') && count <= 1) {
                 username = user.name.replace('@carbon.super', '');
@@ -638,6 +640,32 @@ class LayoutLegacy extends React.Component {
                                                         <Paper>
                                                             <ClickAwayListener onClickAway={this.handleCloseUserMenu}>
                                                                 <MenuList>
+                                                                    {organization && (
+                                                                        <MenuItem style={{ pointerEvents: 'none' }}>
+                                                                            <>
+                                                                                <Icon
+                                                                                    className={classes.icons}
+                                                                                    sx={{
+                                                                                        color: 'black',
+                                                                                    }}
+                                                                                >
+                                                                                    business
+                                                                                </Icon>
+                                                                                <Typography
+                                                                                    variant='body1'
+                                                                                    className={classes.organizationLabel}
+                                                                                    sx={{
+                                                                                        color: 'black',
+                                                                                        textTransform: 'uppercase',
+                                                                                        fontWeight: 'bold',
+                                                                                        fontSize: '12px',
+                                                                                    }}
+                                                                                >
+                                                                                    {organization}
+                                                                                </Typography>
+                                                                            </>
+                                                                        </MenuItem>
+                                                                    )}
                                                                     {this.getPasswordChangeEnabled()
                                                                         ? (
                                                                             <MenuItem className={classes.logoutLink}>
