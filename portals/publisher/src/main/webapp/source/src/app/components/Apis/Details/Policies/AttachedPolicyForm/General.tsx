@@ -112,9 +112,10 @@ const General: FC<GeneralProps> = ({
     policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
     const [isManual, setManual] = useState(false);
+    const [manualPolicyConfig, setManualPolicyConfig] = useState<string>('');
 
     useEffect(() => {
-        if (policyObj && policyObj.name === 'AModelRoundRobin') {
+        if (policyObj && policyObj.name === 'ModelRoundRobin') {
             setManual(true);
         }
     }, [policyObj]);
@@ -160,6 +161,10 @@ const General: FC<GeneralProps> = ({
                 updateCandidates[key] = value;
             }
         });
+
+        if (policyObj.name === 'ModelRoundRobin') {
+            updateCandidates[policySpec.policyAttributes[0].name] = manualPolicyConfig;
+        }
 
         // Saving field changes to backend
         const apiPolicyToSave = {...apiPolicy};
@@ -313,7 +318,7 @@ const General: FC<GeneralProps> = ({
             <form onSubmit={submitForm}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} className={classes.drawerInfo}>
-                        {hasAttributes && (
+                        {(hasAttributes && !isManual) && (
                             <div className={classes.resetBtn}>
                                 <Button variant='outlined' color='primary' disabled={resetDisabled} onClick={resetAll}>
                                     <FormattedMessage
@@ -349,8 +354,11 @@ const General: FC<GeneralProps> = ({
                             </Typography>
                         </div>
                     </Grid>
-                    {(isManual && policyObj.name === 'AModelRoundRobin') && (
-                        <ModelRoundRobin />
+                    {(isManual && policyObj.name === 'ModelRoundRobin') && (
+                        <ModelRoundRobin
+                            setManualPolicyConfig={setManualPolicyConfig}
+                            manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                        />
                     )}
                     {!isManual && policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
                         <Grid item xs={12}>
@@ -486,7 +494,7 @@ const General: FC<GeneralProps> = ({
                             type='submit'
                             color='primary'
                             data-testid='policy-attached-details-save'
-                            disabled={ isSaveDisabled() || formHasErrors() || saving}
+                            disabled={!isManual && (isSaveDisabled() || formHasErrors() || saving)}
                         >
                             {saving
                                 ? <>
