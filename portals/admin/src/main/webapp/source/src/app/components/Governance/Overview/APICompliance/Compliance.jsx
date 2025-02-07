@@ -45,8 +45,8 @@ export default function Compliance(props) {
             .then((response) => {
                 const rulesetMap = new Map();
 
-                response.body.governedPolicies.forEach(policy => {
-                    policy.rulesetValidationResults.forEach(result => {
+                response.body.governedPolicies.forEach((policy) => {
+                    policy.rulesetValidationResults.forEach((result) => {
                         // If ruleset not in map or if existing result is older, update the map
                         if (!rulesetMap.has(result.id)) {
                             rulesetMap.set(result.id, result);
