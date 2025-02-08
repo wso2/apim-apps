@@ -70,7 +70,7 @@ const Apis = () => {
             />
             <Route path='/apis/search' render={(props) => <Listing {...props} isAPIProduct={false} />} />
             <Route path='/apis/create' component={DeferredAPICreateRoutes} />
-            <Route path='/apis/create-ai' component={DefferedAIApiCreateRoutes} />
+            <Route path='/apis/design-assistant' component={DefferedAIApiCreateRoutes} />
             <Route
                 path='/api-products/create'
                 render={() => {

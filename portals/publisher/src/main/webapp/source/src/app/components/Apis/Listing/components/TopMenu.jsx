@@ -197,7 +197,7 @@ function TopMenu(props) {
                         variant='contained'
                         color='primary'
                         component={Link}
-                        to='/apis/create-ai'
+                        to='/apis/design-assistant'
                         sx={{ marginLeft: '10px' }}
                     >
                         <FormattedMessage
