@@ -139,6 +139,13 @@
                 cookie.setMaxAge((int) expiresIn);
                 response.addCookie(cookie);
 
+                cookie = new Cookie("AM_ADMIN_ACC_TOKEN_DEFAULT_P2", accessTokenPart2);
+                cookie.setPath("/api/am/governance/");
+                cookie.setHttpOnly(true);
+                cookie.setSecure(true);
+                cookie.setMaxAge((int) expiresIn);
+                response.addCookie(cookie);
+
                 cookie = new Cookie("AM_REF_TOKEN_DEFAULT_P2", refreshTokenPart2);
                 cookie.setPath(context + "/");
                 cookie.setHttpOnly(true);
