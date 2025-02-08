@@ -37,6 +37,7 @@ import PublishWithoutDeployProduct from 'AppComponents/Apis/Details/LifeCycle/Co
 import Configurations from 'Config';
 import APIProduct from 'AppData/APIProduct';
 import Progress from 'AppComponents/Shared/Progress';
+import GovernanceViolations from 'AppComponents/Shared/Governance/GovernanceViolations';
 import LifeCycleImage from './LifeCycleImage';
 import CheckboxLabels from './CheckboxLabels';
 import LifecyclePending from './LifecyclePending';
@@ -119,6 +120,8 @@ class LifeCycleUpdate extends Component {
             message: null,
             openMenu: false,
             selectedTransitionState: null,
+            isGovernanceViolation: false,
+            governanceError: null,
         };
         this.setIsOpen = this.setIsOpen.bind(this);
         this.handleClick = this.handleClick.bind(this);
@@ -271,8 +274,22 @@ class LifeCycleUpdate extends Component {
             })
             .catch((error) => {
                 if (error.response) {
-                    Alert.error(error.response.body.description);
-                    this.setState({ pageError: error.response.body });
+                    if (error.response.body.code === 903300) {
+                        // Handle governance violation
+                        const errorDescription = error.response.body.description
+                            .replace('Compliance violation error.', '');
+                        this.setState({
+                            governanceError: JSON.parse(errorDescription),
+                            isGovernanceViolation: true,
+                        });
+                        Alert.error(intl.formatMessage({
+                            id: 'Apis.Details.LifeCycle.LifeCycleUpdate.error.governance',
+                            defaultMessage: 'Lifecycle update failed. Governance policy violations found',
+                        }));
+                    } else {
+                        Alert.error(error.response.body.description);
+                        this.setState({ pageError: error.response.body });
+                    }
                 } else {
                     // TODO add i18n ~tmkb
                     const message = intl.formatMessage({
@@ -356,7 +373,7 @@ class LifeCycleUpdate extends Component {
         const version = ' - ' + api.version;
         const lifecycleStates = [...lcState.availableTransitions];
         const { newState, pageError, isOpen, deploymentsAvailable, isMandatoryPropertiesAvailable,
-            isMandatoryPropertiesConfigured } = this.state;
+            isMandatoryPropertiesConfigured, governanceError, isGovernanceViolation } = this.state;
         const isWorkflowPending = api.workflowStatus && api.workflowStatus === this.WORKFLOW_STATUS.CREATED;
         const lcMap = new Map();
         lcMap.set('Published', 'Publish');
@@ -586,7 +603,11 @@ class LifeCycleUpdate extends Component {
                     </ScopeValidation>
                 </Grid>
                 {/* Page error banner */}
-                {pageError && (
+                {isGovernanceViolation ? (
+                    <Grid item xs={11}>
+                        <GovernanceViolations violations={governanceError} />
+                    </Grid>
+                ) : pageError && (
                     <Grid item xs={11}>
                         <Banner
                             onClose={() => this.setState({ pageError: null })}

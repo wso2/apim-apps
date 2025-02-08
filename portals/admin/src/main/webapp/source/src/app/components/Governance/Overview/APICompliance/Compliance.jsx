@@ -43,6 +43,7 @@ export default function Compliance(props) {
 
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
+                setArtifactName(response.body.info.name);
                 const rulesetMap = new Map();
 
                 response.body.governedPolicies.forEach((policy) => {
