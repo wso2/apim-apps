@@ -392,7 +392,7 @@ class API extends Resource {
         });
     }
 
-    saveAPI() {
+    saveAPIDesignAssistant() {
         const promisedAPIResponse = this.client.then(client => {
             const properties = client.spec.components.schemas.API.properties;
             const data = {};
@@ -414,6 +414,49 @@ class API extends Resource {
         });
     }
 
+    sendChatAPIDesignAssistant(query, sessionId) {
+        return this.client.then(client => {
+            const data = {
+                text: query,
+                sessionId: sessionId
+            };
+            const payload = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            const requestBody = {
+                requestBody: data
+            };
+            return client.apis['APIs'].designAssistantChat(payload, requestBody, this._requestMetaData());
+        }).then(response => {
+            return response.body;
+        }).catch(error => {
+            throw error;
+        });
+    }
+
+    payloadGenAPIDesignAssistant(sessionId) {
+        return this.client.then(client => {
+            const data = {
+                sessionId: sessionId
+            };
+            const payload = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            const requestBody = {
+                requestBody: data
+            };
+            return client.apis['APIs'].designAssistantApiPayloadGen(payload, requestBody, this._requestMetaData());
+        }).then(response => {
+            return response.body;
+        }).catch(error => {
+            throw error;
+        });
+    }
+    
     saveProduct() {
         const promisedAPIResponse = this.client.then(client => {
             const properties = client.spec.definitions.APIProduct.properties;

@@ -29,6 +29,7 @@ import LinearDeterminate from './components/LinearDeterminate';
 import DisplayCode from './components/DisplayCode';
 import WelcomeMessage from './components/WelcomeMessage';
 import LoadingDots from './components/LoadingDots';
+import API from 'AppData/api';
 
 /**
  * Renders the Create API with AI UI.
@@ -125,31 +126,30 @@ const ApiCreateWithAI = () => {
 
         sendInitialRequest(titlesString, sessionId);
     };
-
+    
+    async function sendQuery(query, sessionId) { 
+        try {
+            const queryDesignAssistant = new API();
+            const response = await queryDesignAssistant.sendChatAPIDesignAssistant(query, sessionId);
+    
+            if (!response || typeof response !== 'object') {
+                throw new Error("Invalid response received from API.");
+            }
+    
+            return response;
+        } catch (error) {
+            console.error("Error in sendQuery:", error);
+            throw error;
+        }
+    }
+    
     const sendInitialRequest = async (query, currentSessionId) => {
         setFinalOutcome('');
         setLoading(true);
 
         try {
-            console.log("Sending to backend:", query);
-            console.log("Session ID:", currentSessionId);
+            const jsonResponse = await sendQuery(query, currentSessionId);
             
-            const response = await fetch('http://127.0.0.1:8000/api-design', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    text: query,
-                    session_id: currentSessionId
-                }),
-            });
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const jsonResponse = await response.json();
             const {
                 backendResponse,
                 isSuggestions,
@@ -232,8 +232,8 @@ const ApiCreateWithAI = () => {
                                     justifyContent="center"
                                     marginTop= '40px'
                                 >
-                                    <SampleQueryCard onExecuteClick={handleExecuteSampleQuery} queryHeading={'Invoke an action to create a REST API'} queryData={'Create an API for a banking transaction'} sx={{ textAlign: 'left' }} />
-                                    <SampleQueryCard onExecuteClick={handleExecuteSampleQuery} queryHeading={'Invoke an action to create a SSE API'} queryData={'Create an API for live sports scores'} sx={{ textAlign: 'left' }} />
+                                    <SampleQueryCard onExecuteClick={handleExecuteSampleQuery} queryHeading={'Create a REST API'} queryData={'Create an API for a banking transaction'} sx={{ textAlign: 'left' }} />
+                                    <SampleQueryCard onExecuteClick={handleExecuteSampleQuery} queryHeading={'Create a SSE API'} queryData={'Create an API for live sports scores'} sx={{ textAlign: 'left' }} />
                                 </Stack>
                             </Box>
                         )}

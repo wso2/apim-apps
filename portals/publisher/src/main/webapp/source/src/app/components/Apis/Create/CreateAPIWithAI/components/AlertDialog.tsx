@@ -47,16 +47,28 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId }) => {
   const handleClose = () => {
     setOpen(false);
   };
+    
+  async function genPayload(sessionId: any) { 
+      try {
+          const genPayloadDesignAssistant = new API();
+          const response = await genPayloadDesignAssistant.payloadGenAPIDesignAssistant(sessionId);
+          if (!response || typeof response !== 'object') {
+              throw new Error("Invalid response received from API.");
+          }
+          return response;
+      } catch (error) {
+          console.error("Error in sendQuery:", error);
+          throw error;
+      }
+  }
 
   function createAPI(data: any) {
     const apiData = {
       ...data
     };
-    console.log('apiData', apiData);
-
     const newAPI = new API(apiData);
     const promisedCreatedAPI = newAPI
-        .saveAPI()
+        .saveAPIDesignAssistant()
     return promisedCreatedAPI.then((response:any) => {
          console.log(response.body)
     });
@@ -65,34 +77,24 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId }) => {
   const handleCreate = async () => {
     handleClose();
     setShowProgress(true);
-
+  
     try {
-      const response = await fetch('http://127.0.0.1:8000/create-api', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          session_id: sessionId,
-        }),
-      });
-
+      const payloadResponse = await genPayload(sessionId);
+      const { generatedPayload } = payloadResponse;
+      const parsedPayload = JSON.parse(generatedPayload);
+      
+      createAPI(parsedPayload);
       setShowProgress(false);
 
-      if (!response.ok) {
-        setDialogTitle('API Creation Unsuccessful');
-        setDialogContentText('API creation was unsuccessful');
-        setFirstDialogAction('');
-        setSecondDialogAction('CLOSE');
+      // if (!response.ok) {
+      //   setDialogTitle('API Creation Unsuccessful');
+      //   setDialogContentText('API creation was unsuccessful');
+      //   setFirstDialogAction('');
+      //   setSecondDialogAction('CLOSE');
 
-        throw new Error('Failed to create API');
-      }
-
-      const data = await response.json();    
-
-      console.log('API creation response:', data);
-      createAPI(data);
-
+      //   throw new Error('Failed to create API');
+      // }
+      
       setDialogTitle('API Creation Successful!');
       setDialogContentText('API created successfully in the Publisher Portal!');
       setFirstDialogAction('CLOSE');
