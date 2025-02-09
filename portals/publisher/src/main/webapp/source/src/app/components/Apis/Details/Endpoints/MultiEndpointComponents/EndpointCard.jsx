@@ -33,6 +33,7 @@ import {
     DialogTitle,
     DialogContent,
     Typography,
+    Paper,
 } from '@mui/material';
 import API from 'AppData/api';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -433,218 +434,220 @@ const EndpointCard = ({
 
     return (
         <Root className={classes.endpointCardWrapper}>
-            <Grid container rowSpacing={0} columnSpacing={2} className={classes.endpointCardWrapper}>
-                <Grid item xs={6}>
-                    <TextField
-                        disabled={isRestricted(['apim:api_create'], apiObject)}
-                        label='Endpoint Name'
-                        id={state.id + '-name'}
-                        className={classes.textField}
-                        value={state.name}
-                        onChange={(e) => dispatch({ field: 'name', value: e.target.value })}
-                        variant='outlined'
-                        margin='normal'
-                        error={!state.name}
-                        helperText={!state.name
-                            ? (
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.endpoint.name.helper.text'
-                                    defaultMessage='Endpoint name should not be empty'
-                                />
-                            ) : ' '
-                        }
-                        required
-                    />
-                </Grid>
-                <Grid item xs={6}>
-                    <TextField
-                        disabled={isRestricted(['apim:api_create'], apiObject)}
-                        label='Endpoint URL'
-                        id={state.id + '-url'}
-                        className={classes.textField}
-                        value={endpointUrl}
-                        onChange={(e) => setEndpointUrl(e.target.value)}
-                        onBlur={handleEndpointBlur}
-                        variant='outlined'
-                        margin='normal'
-                        error={!endpointUrl}
-                        helperText={!endpointUrl
-                            ? (
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.endpoint.url.helper.text'
-                                    defaultMessage='Endpoint URL should not be empty'
-                                />
-                            ) : ' '
-                        }
-                        required
-                        InputProps={{
-                            endAdornment: (
-                                <InputAdornment position='end'>
-                                    {statusCode && (
-                                        <Chip
-                                            id={state.id + '-endpoint-test-status'}
-                                            label={statusCode}
-                                            className={isEndpointValid ? classes.endpointValidChip : iff(
-                                                isErrorCode,
-                                                classes.endpointErrorChip, classes.endpointInvalidChip,
-                                            )}
-                                            variant='outlined'
-                                        />
-                                    )}
-                                    <IconButton
-                                        className={isEndpointValid ? classes.iconButtonValid : classes.iconButton}
-                                        aria-label='TestEndpoint'
-                                        onClick={() => testEndpoint(endpointUrl, apiObject.id)}
-                                        disabled={(isRestricted(['apim:api_create'], apiObject)) || isUpdating}
-                                        id={state.id + '-endpoint-test-icon-btn'}
-                                        size='large'>
-                                        {isUpdating
-                                            ? <CircularProgress size={20} />
-                                            : (
-                                                <Tooltip
-                                                    placement='top-start'
-                                                    interactive
-                                                    title={(
-                                                        <FormattedMessage
-                                                            id='Apis.Details.Endpoints.endpoint.check.status'
-                                                            defaultMessage='Check endpoint status'
-                                                        />
-                                                    )}
-                                                >
-                                                    <Icon>
-                                                        check_circle
-                                                    </Icon>
-                                                </Tooltip>
+            <Paper elevation={2} sx={{ p: 1, m: 2 }}>
+                <Grid container rowSpacing={0} columnSpacing={2} className={classes.endpointCardWrapper}>
+                    <Grid item xs={6}>
+                        <TextField
+                            disabled={isRestricted(['apim:api_create'], apiObject)}
+                            label='Endpoint Name'
+                            id={state.id + '-name'}
+                            className={classes.textField}
+                            value={state.name}
+                            onChange={(e) => dispatch({ field: 'name', value: e.target.value })}
+                            variant='outlined'
+                            margin='normal'
+                            error={!state.name}
+                            helperText={!state.name
+                                ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.endpoint.name.helper.text'
+                                        defaultMessage='Endpoint name should not be empty'
+                                    />
+                                ) : ' '
+                            }
+                            required
+                        />
+                    </Grid>
+                    <Grid item xs={6}>
+                        <TextField
+                            disabled={isRestricted(['apim:api_create'], apiObject)}
+                            label='Endpoint URL'
+                            id={state.id + '-url'}
+                            className={classes.textField}
+                            value={endpointUrl}
+                            onChange={(e) => setEndpointUrl(e.target.value)}
+                            onBlur={handleEndpointBlur}
+                            variant='outlined'
+                            margin='normal'
+                            error={!endpointUrl}
+                            helperText={!endpointUrl
+                                ? (
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.endpoint.url.helper.text'
+                                        defaultMessage='Endpoint URL should not be empty'
+                                    />
+                                ) : ' '
+                            }
+                            required
+                            InputProps={{
+                                endAdornment: (
+                                    <InputAdornment position='end'>
+                                        {statusCode && (
+                                            <Chip
+                                                id={state.id + '-endpoint-test-status'}
+                                                label={statusCode}
+                                                className={isEndpointValid ? classes.endpointValidChip : iff(
+                                                    isErrorCode,
+                                                    classes.endpointErrorChip, classes.endpointInvalidChip,
+                                                )}
+                                                variant='outlined'
+                                            />
+                                        )}
+                                        <IconButton
+                                            className={isEndpointValid ? classes.iconButtonValid : classes.iconButton}
+                                            aria-label='TestEndpoint'
+                                            onClick={() => testEndpoint(endpointUrl, apiObject.id)}
+                                            disabled={(isRestricted(['apim:api_create'], apiObject)) || isUpdating}
+                                            id={state.id + '-endpoint-test-icon-btn'}
+                                            size='large'>
+                                            {isUpdating
+                                                ? <CircularProgress size={20} />
+                                                : (
+                                                    <Tooltip
+                                                        placement='top-start'
+                                                        interactive
+                                                        title={(
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Endpoints.endpoint.check.status'
+                                                                defaultMessage='Check endpoint status'
+                                                            />
+                                                        )}
+                                                    >
+                                                        <Icon>
+                                                            check_circle
+                                                        </Icon>
+                                                    </Tooltip>
 
-                                            )}
-                                    </IconButton>
-                                    <IconButton
-                                        className={classes.iconButton}
-                                        aria-label='Settings'
-                                        onClick={handleAdvancedConfigOpen}
-                                        disabled={(isRestricted(['apim:api_create'], apiObject))}
-                                        id={state.id + '-endpoint-configuration-icon-btn'}
-                                        size='large'>
-                                        <Tooltip
-                                            placement='top-start'
-                                            interactive
-                                            title={(
-                                                <FormattedMessage
-                                                    id='Apis.Details.Endpoints.endpoint.configurations.tooltip'
-                                                    defaultMessage='Endpoint configurations'
-                                                />
-                                            )}
-                                        >
-                                            <Icon>
-                                                settings
-                                            </Icon>
-                                        </Tooltip>
-                                    </IconButton>
-                                </InputAdornment>
-                            ),
-                        }}
+                                                )}
+                                        </IconButton>
+                                        <IconButton
+                                            className={classes.iconButton}
+                                            aria-label='Settings'
+                                            onClick={handleAdvancedConfigOpen}
+                                            disabled={(isRestricted(['apim:api_create'], apiObject))}
+                                            id={state.id + '-endpoint-configuration-icon-btn'}
+                                            size='large'>
+                                            <Tooltip
+                                                placement='top-start'
+                                                interactive
+                                                title={(
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Endpoints.endpoint.configurations.tooltip'
+                                                        defaultMessage='Endpoint configurations'
+                                                    />
+                                                )}
+                                            >
+                                                <Icon>
+                                                    settings
+                                                </Icon>
+                                            </Tooltip>
+                                        </IconButton>
+                                    </InputAdornment>
+                                ),
+                            }}
+                        />
+                    </Grid>
+                    <AIEndpointAuth
+                        api={apiObject}
+                        endpoint={state}
+                        apiKeyParamConfig={apiKeyParamConfig}
+                        isProduction={isProduction}
+                        saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                     />
-                </Grid>
-                <AIEndpointAuth
-                    api={apiObject}
-                    endpoint={state}
-                    apiKeyParamConfig={apiKeyParamConfig}
-                    isProduction={isProduction}
-                    saveEndpointSecurityConfig={saveEndpointSecurityConfig}
-                />
-                <Grid item xs={12} justifyContent='flex-start' display='flex' pt={0}>
-                    {showAddEndpoint
-                        ? (
-                            <>
-                                <Button
-                                    variant='contained'
-                                    color='primary'
-                                    type='submit'
-                                    size='small'
-                                    onClick={() => addEndpoint(state)}
-                                    className={classes.btn}
-                                    disable={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
-                                >
-                                    {isEndpointSaving
-                                        ? <CircularProgress size='small' />
-                                        :
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.endpoint.add'
-                                            defaultMessage='Add'
-                                        />
-                                    }
-                                </Button>
-                                <Button
-                                    variant='outlined'
-                                    color='primary'
-                                    size='small'
-                                    data-testid='policy-attached-details-save'
-                                    onClick={() => setShowAddEndpoint(false)}
-                                    disabled={ isRestricted(['apim:api_create'], apiObject) }
-                                >
-                                    {isEndpointDeleting
-                                        ? <CircularProgress size='small' />
-                                        :
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.endpoint.cancel'
-                                            defaultMessage='Cancel'
-                                        />
-                                    }
-                                </Button>
-                            </>
-                        ) : (
-                            <>
-                                <Button
-                                    variant='contained'
-                                    color='primary'
-                                    type='submit'
-                                    size='small'
-                                    onClick={() => updateEndpoint(state.id, state)}
-                                    className={classes.btn}
-                                    disable={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
-                                >
-                                    {isEndpointUpdating
-                                        ? <>
-                                            <CircularProgress size='small' />
+                    <Grid item xs={12} justifyContent='flex-start' display='flex' pt={0}>
+                        {showAddEndpoint
+                            ? (
+                                <>
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        type='submit'
+                                        size='small'
+                                        onClick={() => addEndpoint(state)}
+                                        className={classes.btn}
+                                        disable={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
+                                    >
+                                        {isEndpointSaving
+                                            ? <CircularProgress size='small' />
+                                            :
                                             <FormattedMessage
-                                                id='Apis.Details.Endpoints.endpoint.updating'
-                                                defaultMessage='Updating'
+                                                id='Apis.Details.Endpoints.endpoint.add'
+                                                defaultMessage='Add'
                                             />
-                                        </>
-                                        :
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.endpoint.update'
-                                            defaultMessage='Update'
-                                        />
-                                    }
-                                </Button>
-                                <Button
-                                    variant='outlined'
-                                    color='primary'
-                                    size='small'
-                                    data-testid='policy-attached-details-save'
-                                    onClick={() => deleteEndpoint(state.id, state.environment)}
-                                    disabled={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
-                                >
-                                    {isEndpointDeleting
-                                        ? <>
-                                            <CircularProgress size='small' />
+                                        }
+                                    </Button>
+                                    <Button
+                                        variant='outlined'
+                                        color='primary'
+                                        size='small'
+                                        data-testid='policy-attached-details-save'
+                                        onClick={() => setShowAddEndpoint(false)}
+                                        disabled={ isRestricted(['apim:api_create'], apiObject) }
+                                    >
+                                        {isEndpointDeleting
+                                            ? <CircularProgress size='small' />
+                                            :
                                             <FormattedMessage
-                                                id='Apis.Details.Endpoints.endpoint.deleting'
-                                                defaultMessage='Deleting'
+                                                id='Apis.Details.Endpoints.endpoint.cancel'
+                                                defaultMessage='Cancel'
                                             />
-                                        </>
-                                        :
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.endpoint.delete'
-                                            defaultMessage='Delete'
-                                        />
-                                    }
-                                </Button>
-                            </>
-                        )}
+                                        }
+                                    </Button>
+                                </>
+                            ) : (
+                                <>
+                                    <Button
+                                        variant='contained'
+                                        color='primary'
+                                        type='submit'
+                                        size='small'
+                                        onClick={() => updateEndpoint(state.id, state)}
+                                        className={classes.btn}
+                                        disable={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
+                                    >
+                                        {isEndpointUpdating
+                                            ? <>
+                                                <CircularProgress size='small' />
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.endpoint.updating'
+                                                    defaultMessage='Updating'
+                                                />
+                                            </>
+                                            :
+                                            <FormattedMessage
+                                                id='Apis.Details.Endpoints.endpoint.update'
+                                                defaultMessage='Update'
+                                            />
+                                        }
+                                    </Button>
+                                    <Button
+                                        variant='outlined'
+                                        color='primary'
+                                        size='small'
+                                        data-testid='policy-attached-details-save'
+                                        onClick={() => deleteEndpoint(state.id, state.environment)}
+                                        disabled={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
+                                    >
+                                        {isEndpointDeleting
+                                            ? <>
+                                                <CircularProgress size='small' />
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.endpoint.deleting'
+                                                    defaultMessage='Deleting'
+                                                />
+                                            </>
+                                            :
+                                            <FormattedMessage
+                                                id='Apis.Details.Endpoints.endpoint.delete'
+                                                defaultMessage='Delete'
+                                            />
+                                        }
+                                    </Button>
+                                </>
+                            )}
+                    </Grid>
                 </Grid>
-            </Grid>
+            </Paper>
             {apiObject.gatewayType !== 'wso2/apk' && (
                 <Dialog
                     open={advancedConfigOpen}
