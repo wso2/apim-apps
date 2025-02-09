@@ -292,7 +292,7 @@ export default function AddEditAiVendor(props) {
             const newState = {
                 ...state,
                 configurations: updatedConfigurations,
-                modelList: state.modelList.join(','),
+                modelList: JSON.stringify(state.modelList),
             };
 
             if (id) {
