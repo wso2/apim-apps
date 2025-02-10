@@ -67,6 +67,7 @@ const CONSTS = {
     COMPLIANCE_STATES: [
         { value: 'NOT_APPLICABLE', label: 'Not Applicable' },
         { value: 'COMPLIANT', label: 'Compliant' },
+        { value: 'PENDING', label: 'Pending' },
         { value: 'NON_COMPLIANT', label: 'Non Compliant' },
     ],
     POLICY_ADHERENCE_STATES: [

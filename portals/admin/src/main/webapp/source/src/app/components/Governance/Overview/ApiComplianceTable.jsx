@@ -184,7 +184,8 @@ export default function ApiComplianceTable() {
                     <Chip
                         label={Utils.mapComplianceStateToLabel(value)}
                         color={value === 'COMPLIANT' ? 'success' :
-                            value === 'NON_COMPLIANT' ? 'error' : 'default'}
+                            value === 'NON_COMPLIANT' ? 'error' :
+                                value === 'PENDING' ? 'warning' : 'default'}
                         size="small"
                         variant="outlined"
                     />

@@ -23,6 +23,7 @@ import DonutChart from 'AppComponents/Shared/DonutChart';
 import { FormattedMessage, useIntl } from 'react-intl';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
 import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
 import RuleViolationSummary from './RuleViolationSummary';
@@ -46,6 +47,7 @@ export default function Compliance() {
     const [api] = useAPI();
     const artifactId = api.id;
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0 });
+    const [complianceStatus, setComplianceStatus] = useState('');
 
     useEffect(() => {
         // Skip the API call if this is a revision
@@ -58,6 +60,7 @@ export default function Compliance() {
 
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
+                setComplianceStatus(response.body.status);
                 const rulesetMap = new Map();
 
                 response.body.governedPolicies.forEach(policy => {
@@ -124,6 +127,58 @@ export default function Compliance() {
                         </Card>
                     </Grid>
                 </Grid>
+            </Root>
+        );
+    }
+
+    if (complianceStatus === 'PENDING') {
+        return (
+            <Root>
+                <Typography variant='h4' component='h2' align='left'>
+                    <FormattedMessage
+                        id='Apis.Details.Compliance.topic.header'
+                        defaultMessage='Compliance Summary'
+                    />
+                </Typography>
+                <Card 
+                    elevation={3}
+                    sx={{
+                        mt: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        padding: 4,
+                    }}
+                >
+                    <HourglassEmptyIcon
+                        sx={{
+                            fontSize: 60,
+                            color: 'action.disabled',
+                            mb: 2,
+                        }}
+                    />
+                    <Typography
+                        variant='h5'
+                        color='text.secondary'
+                        gutterBottom
+                        sx={{ fontWeight: 'medium' }}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Compliance.check.progress'
+                            defaultMessage='Compliance Check in Progress'
+                        />
+                    </Typography>
+                    <Typography
+                        variant='body1'
+                        color='text.secondary'
+                        align='center'
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Compliance.check.progress.message'
+                            defaultMessage='The compliance check is currently in progress. This may take a few moments.'
+                        />
+                    </Typography>
+                </Card>
             </Root>
         );
     }

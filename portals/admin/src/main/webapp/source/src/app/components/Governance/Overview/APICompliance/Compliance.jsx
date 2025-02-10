@@ -27,6 +27,7 @@ import { Box } from '@mui/system';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DonutChart from 'AppComponents/Shared/DonutChart';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import RuleViolationSummary from './RuleViolationSummary';
 import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
 import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
@@ -36,6 +37,7 @@ export default function Compliance(props) {
     const { match: { params: { id: artifactId } } } = props;
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0 });
     const [artifactName, setArtifactName] = useState('');
+    const [complianceStatus, setComplianceStatus] = useState('');
 
     useEffect(() => {
         const abortController = new AbortController();
@@ -44,6 +46,7 @@ export default function Compliance(props) {
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
                 setArtifactName(response.body.info.name);
+                setComplianceStatus(response.body.status);
                 const rulesetMap = new Map();
 
                 response.body.governedPolicies.forEach((policy) => {
@@ -76,6 +79,76 @@ export default function Compliance(props) {
             abortController.abort();
         };
     }, [artifactId]);
+
+    if (complianceStatus === 'PENDING') {
+        return (
+            <ContentBase
+                width='full'
+                title={(
+                    <FormattedMessage
+                        id='Governance.Overview.Compliance.title'
+                        defaultMessage='Compliance Summary - {artifactName}'
+                        values={{ artifactName }}
+                    />
+                )}
+                pageStyle='paperLess'
+            >
+                <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: 4 }}>
+                    <RouterLink
+                        to='/governance/overview'
+                        style={{
+                            display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit',
+                        }}
+                    >
+                        <ArrowBackIcon />
+                        <FormattedMessage
+                            id='Governance.Overview.Compliance.back.to.overview'
+                            defaultMessage='Back to Overview'
+                        />
+                    </RouterLink>
+                </Box>
+                <Card
+                    elevation={3}
+                    sx={{
+                        mt: 2,
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'center',
+                        padding: 4,
+                    }}
+                >
+                    <HourglassEmptyIcon
+                        sx={{
+                            fontSize: 60,
+                            color: 'action.disabled',
+                            mb: 2,
+                        }}
+                    />
+                    <Typography
+                        variant='h5'
+                        color='text.secondary'
+                        gutterBottom
+                        sx={{ fontWeight: 'medium' }}
+                    >
+                        <FormattedMessage
+                            id='Governance.Overview.Compliance.check.progress'
+                            defaultMessage='Compliance Check in Progress'
+                        />
+                    </Typography>
+                    <Typography
+                        variant='body1'
+                        color='text.secondary'
+                        align='center'
+                    >
+                        <FormattedMessage
+                            id='Governance.Overview.Compliance.check.progress.message'
+                            defaultMessage='The compliance check is currently in progress. This may take a few moments.'
+                        />
+                    </Typography>
+                </Card>
+            </ContentBase>
+        );
+    }
 
     return (
         <ContentBase
