@@ -428,7 +428,7 @@ class API extends Resource {
             const requestBody = {
                 requestBody: data
             };
-            return client.apis['APIs'].designAssistantChat(payload, requestBody, this._requestMetaData());
+            return client.apis['API Design Assistant'].designAssistantChat(payload, requestBody, this._requestMetaData());
         }).then(response => {
             return response.body;
         }).catch(error => {
@@ -449,7 +449,7 @@ class API extends Resource {
             const requestBody = {
                 requestBody: data
             };
-            return client.apis['APIs'].designAssistantApiPayloadGen(payload, requestBody, this._requestMetaData());
+            return client.apis['API Design Assistant'].designAssistantApiPayloadGen(payload, requestBody, this._requestMetaData());
         }).then(response => {
             return response.body;
         }).catch(error => {
