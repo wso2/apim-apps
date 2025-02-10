@@ -38,6 +38,7 @@ import { Progress } from 'AppComponents/Shared';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
 import ModelRoundRobin from '../CustomPolicies/ModelRoundRobin';
+import ModelWeightedRoundRobin from '../CustomPolicies/ModelWeightedRoundRobin';
 
 const PREFIX = 'General';
 
@@ -115,7 +116,7 @@ const General: FC<GeneralProps> = ({
     const [manualPolicyConfig, setManualPolicyConfig] = useState<string>('');
 
     useEffect(() => {
-        if (policyObj && policyObj.name === 'ModelRoundRobin') {
+        if (policyObj && policyObj.name === 'modelRoundRobin' || policyObj && policyObj.name === 'modelWeightedRoundRobin') {
             setManual(true);
         }
     }, [policyObj]);
@@ -162,7 +163,7 @@ const General: FC<GeneralProps> = ({
             }
         });
 
-        if (policyObj.name === 'ModelRoundRobin') {
+        if (policyObj.name === 'modelRoundRobin') {
             updateCandidates[policySpec.policyAttributes[0].name] = manualPolicyConfig;
         }
 
@@ -354,8 +355,14 @@ const General: FC<GeneralProps> = ({
                             </Typography>
                         </div>
                     </Grid>
-                    {(isManual && policyObj.name === 'ModelRoundRobin') && (
+                    {(isManual && policyObj.name === 'modelRoundRobin') && (
                         <ModelRoundRobin
+                            setManualPolicyConfig={setManualPolicyConfig}
+                            manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                        />
+                    )}
+                    {(isManual && policyObj.name === 'modelWeightedRoundRobin') && (
+                        <ModelWeightedRoundRobin
                             setManualPolicyConfig={setManualPolicyConfig}
                             manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
                         />

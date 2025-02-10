@@ -1204,7 +1204,10 @@ class API extends Resource {
             };
             return client.apis['LLMProviders'].addLLMProvider(
                 payload,
-                { requestBody: aiVendorBody },
+                { requestBody: {
+                    ...aiVendorBody,
+                    modelList: JSON.stringify(aiVendorBody.modelList)
+                }},
                 this._requestMetaData(),
             );
         });
@@ -1223,7 +1226,8 @@ class API extends Resource {
                 payload,
                 { requestBody: {
                     ...aiVendorBody,
-                    llmProviderId: aiVendorId
+                    llmProviderId: aiVendorId,
+                    modelList: JSON.stringify(aiVendorBody.modelList)
                 }},
                 this._requestMetaData(),
             );

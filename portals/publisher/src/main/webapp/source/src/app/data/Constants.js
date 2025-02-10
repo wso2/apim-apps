@@ -67,7 +67,6 @@ const CONSTS = {
     DEFAULT_ENDPOINT: {
         id: null,
         name: '',
-        endpointType: 'REST',
         environment: '',
         endpointConfig: {},
     },
