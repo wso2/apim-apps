@@ -160,7 +160,6 @@ function AddEditPolicy(props) {
     const [labelMode, setLabelMode] = useState('all');
     const intl = useIntl();
     const { match: { params: { id: policyId } }, history } = props;
-    const editMode = policyId !== undefined;
 
     const initialState = {
         name: '',
@@ -536,7 +535,7 @@ function AddEditPolicy(props) {
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} md={12} lg={3}>
+                    <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px', paddingTop: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.general.details'
@@ -556,7 +555,6 @@ function AddEditPolicy(props) {
                                 autoFocus
                                 margin='dense'
                                 name='name'
-                                disabled={editMode}
                                 value={name}
                                 onChange={onChange}
                                 label={(
@@ -593,6 +591,9 @@ function AddEditPolicy(props) {
                                     defaultMessage: 'Description of the governance policy.',
                                 })}
                                 variant='outlined'
+                                InputProps={{
+                                    style: { padding: 0 },
+                                }}
                             />
                         </Box>
                     </Grid>
@@ -603,7 +604,7 @@ function AddEditPolicy(props) {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={12} lg={3}>
+                    <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.labels.title'
@@ -695,7 +696,7 @@ function AddEditPolicy(props) {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={12} lg={3}>
+                    <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.enforcement.title'
@@ -852,7 +853,7 @@ function AddEditPolicy(props) {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={12} lg={12}>
+                    <Grid item xs={12} md={12} lg={12} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.rulesets.title'
