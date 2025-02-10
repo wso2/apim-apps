@@ -161,6 +161,7 @@
   "Apis.Details.Credentials.Credentials.subscribe.to.application.sign.in": "Sign In to Subscribe",
   "Apis.Details.Credentials.Credentials.subscribed.successfully": "Subscribed successfully",
   "Apis.Details.Credentials.Credentials.subscription.deleted.successfully": "Subscription deleted successfully!",
+  "Apis.Details.Credentials.Credentials.subscription.request.created": "Subscription Deletion Request Created!",
   "Apis.Details.Credentials.Credentials.visit.original.developer.portal": "Visit Original Developer Portal",
   "Apis.Details.Credentials.OriginalDevportalDetails.original.developer.portal.title": "Original Developer Portal",
   "Apis.Details.Credentials.OriginalDevportalDetails.visit.original.developer.portal": "Visit Original Developer Portal",

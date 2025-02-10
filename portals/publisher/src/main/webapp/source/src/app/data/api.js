@@ -598,6 +598,94 @@ class API extends Resource {
     }
 
     /**
+     * Get attached labels to an API
+     *
+     * @param apiId
+     */
+    getAPILabels(apiId) {
+        const promise_api_labels = this.client.then(client => {
+            const payload = {
+                apiId: apiId,
+                'Content-Type': 'multipart/form-data',
+            };
+            return client.apis['API Labels'].getLabelsOfAPI(
+                payload,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+        return promise_api_labels
+    }
+
+    /**
+     * Attach labels to the given API
+     *
+     * @param apiId
+     * @param addList
+     */
+    attachLabels(apiId, addList) {
+
+        let promise_updated_labels;
+        if (addList && addList.length !== 0) {
+            promise_updated_labels = this.client.then(client => {
+                const payload = {
+                    apiId: apiId,
+                    'Content-Type': 'multipart/form-data',
+                };
+                const requestBody = {
+                    requestBody: {
+                        labels: addList.map(label => label.id)
+                    }
+                }
+                return client.apis['API Labels Attach'].attachLabelsToAPI(
+                    payload,
+                    requestBody,
+                    this._requestMetaData({
+                        'Content-Type': 'multipart/form-data',
+                    }),
+                );
+            });
+        }
+
+        return promise_updated_labels;
+    }
+
+    /**
+     * Detach labels to the given API
+     *
+     * @param apiId
+     * @param deleteList
+     */
+    detachLabels(apiId, deleteList) {
+
+        let promise_updated_labels;
+
+        if (deleteList && deleteList.length !== 0) {
+            promise_updated_labels = this.client.then(client => {
+                const payload = {
+                    apiId: apiId,
+                    'Content-Type': 'multipart/form-data',
+                };
+                const requestBody = {
+                    requestBody: {
+                        labels: deleteList.map(label => label.id)
+                    }
+                }
+                return client.apis['API Labels Detach'].detachLabelsFromAPI(
+                    payload,
+                    requestBody,
+                    this._requestMetaData({
+                        'Content-Type': 'multipart/form-data',
+                    }),
+                );
+            });
+        }
+
+        return promise_updated_labels;
+    }
+
+    /**
      * Mock sample responses for Inline Prototyping
      * of a swagger OAS defintion
      *
@@ -1354,6 +1442,19 @@ class API extends Resource {
             );
         });
         return promise_subscription;
+    }
+
+    /**
+     * Get all Organizations of the given tenant
+     * @return {Promise}
+     * */
+    organizations() {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis["Organizations"].get_organizations(
+                this._requestMetaData(),
+            );
+        });
     }
 
     addDocument(api_id, body) {
@@ -2564,7 +2665,7 @@ class API extends Resource {
      * @returns {Promise}
      *
      */
-    static policies(policyLevel, limit, isAiApi ) {
+    static policies(policyLevel, limit, isAiApi, organizationId ) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
             return client.apis['Throttling Policies'].getAllThrottlingPolicies(
@@ -2572,6 +2673,7 @@ class API extends Resource {
                     policyLevel: policyLevel,
                     limit,
                     isAiApi,
+                    organizationId,
                 },
                 this._requestMetaData(),
             );
@@ -2846,6 +2948,36 @@ class API extends Resource {
             );
         });
     }
+
+    /**
+     * @static
+     * Get all Labels of the given tenant
+     * @return {Promise}
+     * */
+    static labels() {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis["Labels (Collection)"].getAllLabels(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+
+    /**
+     * @static
+     * Get all Organizations of the given tenant
+     * @return {Promise}
+     * */
+    static getOrganizations() {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis["Organizations"].get_organizations(
+                this._requestMetaData(),
+            );
+        });
+    }
+
     static keyManagers() {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {

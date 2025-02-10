@@ -285,6 +285,82 @@ class API extends Resource {
     }
 
     /**
+     * Get list of labels
+     */
+       labelsListGet() {
+        return this.client.then((client) => {
+            return client.apis['Labels (Collection)'].getAllLabels(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update an Labels
+     */
+    updateLabel(id, name, description) {
+        return this.client.then((client) => {
+            const data = {
+                name: name,
+                description: description,
+            };
+            return client.apis[
+                'Label (Individual)'
+            ].updateLabel(
+                { labelId: id },
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete an Labels
+     */
+    deleteLabel(id) {
+        return this.client.then((client) => {
+            return client.apis[
+                'Label (Individual)'
+            ].deleteLabel(
+                { labelId: id },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add an Labels
+     */
+    createLabel(name, description) {
+        return this.client.then((client) => {
+            const data = {
+                name: name,
+                description: description,
+            };
+            const payload = {
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Label (Individual)'].createLabel(
+                payload,
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get Label api usages
+     */
+    getLabelApiUsages(labelId) {
+        return this.client.then((client) => {
+            return client.apis['Label (Individual)'].getLabelUsage(
+                { labelId: labelId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Get Application Throttling Policies
      */
     applicationThrottlingPoliciesGet() {
@@ -1160,6 +1236,72 @@ class API extends Resource {
         return this.client.then((client) => {
             return client.apis['Transaction Records'].get_transaction_count(
                 params, this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get list of organizations
+     */
+    organizationsListGet() {
+        return this.client.then((client) => {
+            return client.apis['Organizations'].get_organizations(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add an organization
+     */
+    createOrganization(referenceId, name, description) {
+        return this.client.then((client) => {
+            const data = {
+                externalOrganizationId: referenceId,
+                displayName: name,
+                description: description,
+            };
+            const payload = {
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Organizations'].post_organizations(
+                payload,
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update an organization
+     */
+    updateOrganization(referenceId, orgId, name, description) {
+        return this.client.then((client) => {
+            const data = {
+                externalOrganizationId: referenceId,
+                displayName: name,
+                description: description,
+            };
+            return client.apis[
+                'Organizations'
+            ].put_organizations__organizationId_(
+                { organizationId: orgId },
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete an organization
+     */
+    deleteOrganization(orgId, referenceId) {
+        return this.client.then((client) => {
+            return client.apis[
+                'Organizations'
+            ].delete_organizations__organizationId_(
+                { externalOrganizationId: referenceId, organizationId: orgId },
+                this._requestMetaData(),
             );
         });
     }

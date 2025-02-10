@@ -15,6 +15,7 @@
             "enabled": true,
             "timeout": 4000
         },
+        "logoutSessionStateAppender" : "OIDC" ,
         "propertyDisplaySuffix": "__display",
         "markdown": {
             "skipHtml": true,

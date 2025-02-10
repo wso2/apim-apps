@@ -268,7 +268,7 @@ User.CONST = {
     PUBLISHER_CLIENT_ID: 'CLIENT_ID',
     LOCAL_STORAGE_USER: 'wso2_user_publisher',
     USER_EXPIRY_TIME: 'user_expiry_time',
-    PUBLISHER_SESSION_STATE: 'publisher_session_state',
+    PUBLISHER_SESSION_STATE: 'PUBLISHER_SESSION_STATE',
     PROPERTY_PREFIX: 'wso2_pub_user_',
 };
 

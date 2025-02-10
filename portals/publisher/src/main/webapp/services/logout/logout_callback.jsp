@@ -41,6 +41,13 @@
     cookie.setMaxAge(2);
     response.addCookie(cookie);
 
+    cookie = new Cookie("AM_PUBLISHER_ACC_TOKEN_DEFAULT_P2", "");
+    cookie.setPath("/api/am/governance/");
+    cookie.setHttpOnly(true);
+    cookie.setSecure(true);
+    cookie.setMaxAge(2);
+    response.addCookie(cookie);
+
     cookie = new Cookie("AM_REF_TOKEN_DEFAULT_P2", "");
     cookie.setPath(context + "/");
     cookie.setHttpOnly(true);
@@ -72,7 +79,7 @@
     cookie.setMaxAge(2);
     response.addCookie(cookie);
 
-    cookie = new Cookie("publisher_session_state", "");
+    cookie = new Cookie("PUBLISHER_SESSION_STATE", "");
     cookie.setPath(context + "/");
     cookie.setSecure(true);
     cookie.setMaxAge(2);

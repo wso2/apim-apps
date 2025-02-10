@@ -34,6 +34,7 @@
 
     String idTokenP1Cookie = "";
     String idTokenP2Cookie = "";
+    String sessionState = "";
     Cookie[] cookies = request.getCookies();
     for (int i = 0; i < cookies.length; i++) {
         String cookieName = cookies[i].getName();
@@ -44,7 +45,10 @@
         if ("AM_ID_TOKEN_DEFAULT_P2".equals(cookieName)) {
             idTokenP2Cookie = cookies[i].getValue();;
         }
-        if (!idTokenP1Cookie.isEmpty() && !idTokenP2Cookie.isEmpty()) {
+        if ("DEVPORTAL_SESSION_STATE".equals(cookieName)) {
+            sessionState = cookies[i].getValue();;
+        }
+        if (!idTokenP1Cookie.isEmpty() && !idTokenP2Cookie.isEmpty() && !sessionState.isEmpty()) {
             break;
         }
     }
@@ -76,7 +80,13 @@
         postLogoutRedirectURI = serverUrl + appContext + LOGOUT_CALLBACK_URL_SUFFIX;
     }
     String idTokenParam = !idToken.isEmpty() ? "?id_token_hint=" + idToken + "&" : "?";
-    String url = logoutEndpoint + idTokenParam + "post_logout_redirect_uri=" + postLogoutRedirectURI;
+    String appender = (String) Util.readJsonObj(settings, "app.logoutSessionStateAppender");
+    String sessionStateParam = sessionState.isEmpty() ? "" : "&state=" + sessionState;
+    if (!sessionState.isEmpty() && !appender.isEmpty()) {
+        sessionStateParam += "," + appender;
+    }
+
+    String url = logoutEndpoint + idTokenParam + "post_logout_redirect_uri=" + postLogoutRedirectURI + sessionStateParam;
 
     log.debug("Redirecting to = " + url);
     response.sendRedirect(url);
