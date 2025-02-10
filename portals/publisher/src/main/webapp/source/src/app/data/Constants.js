@@ -64,6 +64,16 @@ const CONSTS = {
             proxyProtocol: '',
         },
     },
+    DEFAULT_ENDPOINT: {
+        id: null,
+        name: '',
+        environment: '',
+        endpointConfig: {},
+    },
+    ENVIRONMENTS: {
+        production: 'PRODUCTION',
+        sandbox: 'SANDBOX',
+    },
     GATEWAY_TYPE: {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
