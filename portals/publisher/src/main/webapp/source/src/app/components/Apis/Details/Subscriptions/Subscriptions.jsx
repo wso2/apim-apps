@@ -131,16 +131,16 @@ function Subscriptions(props) {
             .then((result) => {
                 setSubscriptions(result.body.count);
             });
-        if (settings && settings.orgAccessControlEnabled ) {
+        if (settings && settings.orgAccessControlEnabled && api.apiType !== API.CONSTS.APIProduct) {
             restApi.organizations()
                 .then((result) => {
                     setOrganizations(result.body.list);
                 })
+            setOrganizationPolicies(api.organizationPolicies ? [...api.organizationPolicies] : []);
+            setVisibleOrganizations([...api.visibleOrganizations]);
         }
         setPolices([...api.policies]);
         setOriginalPolicies([...api.policies]);
-        setOrganizationPolicies(api.organizationPolicies ? [...api.organizationPolicies] : []);
-        setVisibleOrganizations([...api.visibleOrganizations]);
     }, []);
 
     const handleSubscriptionSave = () => {

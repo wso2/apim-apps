@@ -818,7 +818,8 @@ export default function DesignConfigurations() {
                                             />
                                         )}
                                     </Box>
-                                    { settings && settings.orgAccessControlEnabled && (
+                                    { api.apiType !== API.CONSTS.APIProduct
+                                    && settings && settings.orgAccessControlEnabled && (
                                         <Box py={1}>
                                             <SharedOrganizations
                                                 api={apiConfig}
