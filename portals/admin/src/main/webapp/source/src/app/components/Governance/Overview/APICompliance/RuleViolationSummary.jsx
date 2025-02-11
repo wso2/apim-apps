@@ -43,26 +43,26 @@ export default function RuleViolationSummary({ artifactId }) {
         const restApi = new GovernanceAPI();
         return restApi.getComplianceByAPIId(artifactId)
             .then((response) => {
-                // Get unique ruleset IDs from all policy attachments
-                const rulesetIds = [...new Set(
+                // Get unique policy IDs from all policy attachments
+                const policyIds = [...new Set(
                     response.body.governedPolicies.flatMap(
                         (policyAttachment) => policyAttachment.rulesetValidationResults.map((result) => result.id),
                     ),
                 )];
 
-                // Get validation results for each ruleset
+                // Get validation results for each policy
                 return Promise.all(
-                    rulesetIds.map((rulesetId) => restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
+                    policyIds.map((policyId) => restApi.getRulesetValidationResultsByAPIId(artifactId, policyId)
                         .then((result) => result.body)),
-                ).then((rulesets) => {
-                    // Create rulesets array with severities catagorized
-                    const rulesetCategories = rulesets.map((ruleset) => ({
-                        id: ruleset.id,
-                        rulesetName: ruleset.name,
-                        error: ruleset.violatedRules.filter((rule) => rule.severity === 'ERROR'),
-                        warn: ruleset.violatedRules.filter((rule) => rule.severity === 'WARN'),
-                        info: ruleset.violatedRules.filter((rule) => rule.severity === 'INFO'),
-                        passed: ruleset.followedRules,
+                ).then((policies) => {
+                    // Create policies array with severities catagorized
+                    const policyCategories = policies.map((policy) => ({
+                        id: policy.id,
+                        policyName: policy.name,
+                        error: policy.violatedRules.filter((rule) => rule.severity === 'ERROR'),
+                        warn: policy.violatedRules.filter((rule) => rule.severity === 'WARN'),
+                        info: policy.violatedRules.filter((rule) => rule.severity === 'INFO'),
+                        passed: policy.followedRules,
                     }));
 
                     // Group by severity level
@@ -73,37 +73,37 @@ export default function RuleViolationSummary({ artifactId }) {
                         passed: [],
                     };
 
-                    rulesetCategories.forEach((ruleset) => {
-                        if (ruleset.error.length > 0) {
+                    policyCategories.forEach((policy) => {
+                        if (policy.error.length > 0) {
                             severityGroups.errors.push({
-                                id: ruleset.id,
-                                rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
-                                rules: ruleset.error,
+                                id: policy.id,
+                                policyName: policy.policyName,
+                                // tag: policy.tag,
+                                rules: policy.error,
                             });
                         }
-                        if (ruleset.warn.length > 0) {
+                        if (policy.warn.length > 0) {
                             severityGroups.warnings.push({
-                                id: ruleset.id,
-                                rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
-                                rules: ruleset.warn,
+                                id: policy.id,
+                                policyName: policy.policyName,
+                                // tag: policy.tag,
+                                rules: policy.warn,
                             });
                         }
-                        if (ruleset.info.length > 0) {
+                        if (policy.info.length > 0) {
                             severityGroups.info.push({
-                                id: ruleset.id,
-                                rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
-                                rules: ruleset.info,
+                                id: policy.id,
+                                policyName: policy.policyName,
+                                // tag: policy.tag,
+                                rules: policy.info,
                             });
                         }
-                        if (ruleset.passed.length > 0) {
+                        if (policy.passed.length > 0) {
                             severityGroups.passed.push({
-                                id: ruleset.id,
-                                rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
-                                rules: ruleset.passed,
+                                id: policy.id,
+                                policyName: policy.policyName,
+                                // tag: policy.tag,
+                                rules: policy.passed,
                             });
                         }
                     });
@@ -112,7 +112,7 @@ export default function RuleViolationSummary({ artifactId }) {
                 });
             })
             .catch((error) => {
-                console.error('Error fetching ruleset adherence data:', error);
+                console.error('Error fetching policy adherence data:', error);
                 return {
                     errors: [],
                     warnings: [],
@@ -228,11 +228,11 @@ export default function RuleViolationSummary({ artifactId }) {
         },
     ];
 
-    const renderComplianceCards = (rulesets, isPassed = false) => {
+    const renderComplianceCards = (policies, isPassed = false) => {
         return (
             <>
                 <Grid container spacing={2}>
-                    {rulesets.map((item) => (
+                    {policies.map((item) => (
                         <Grid item xs={12} key={item.id}>
                             <Card>
                                 <CardContent sx={{
@@ -248,7 +248,7 @@ export default function RuleViolationSummary({ artifactId }) {
                                             <LabelIcon sx={{ fontSize: 16, mr: 1 }} />
                                             <Typography variant='body1' sx={{ fontWeight: 'bold' }}>
                                                 {/* {item.provider} /  */}
-                                                {item.rulesetName}
+                                                {item.policyName}
                                                 {' '}
                                                 (
                                                 {item.rules.length}
@@ -309,8 +309,8 @@ export default function RuleViolationSummary({ artifactId }) {
     };
 
     // Add this new function to calculate total rules
-    const getTotalRuleCount = (rulesets) => {
-        return rulesets.reduce((sum, ruleset) => sum + ruleset.rules.length, 0);
+    const getTotalRuleCount = (policies) => {
+        return policies.reduce((sum, policy) => sum + policy.rules.length, 0);
     };
 
     const renderEmptyContent = (message) => (

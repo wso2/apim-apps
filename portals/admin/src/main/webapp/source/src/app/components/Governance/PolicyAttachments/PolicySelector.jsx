@@ -60,10 +60,10 @@ const getChipStyles = (type) => {
     }
 };
 
-const PREFIX = 'RulesetSelector';
+const PREFIX = 'PolicySelector';
 
 const classes = {
-    selectedRulesets: `${PREFIX}-selectedRulesets`,
+    selectedPolicies: `${PREFIX}-selectedPolicies`,
     searchField: `${PREFIX}-searchField`,
     card: `${PREFIX}-card`,
     cardContent: `${PREFIX}-cardContent`,
@@ -78,7 +78,7 @@ const classes = {
 };
 
 const StyledBox = styled(Box)(({ theme }) => ({
-    [`& .${classes.selectedRulesets}`]: {
+    [`& .${classes.selectedPolicies}`]: {
         marginBottom: theme.spacing(2),
         display: 'flex',
         flexWrap: 'wrap',
@@ -156,47 +156,47 @@ const StyledBox = styled(Box)(({ theme }) => ({
     },
 }));
 
-function RulesetSelector({
-    availableRulesets,
-    selectedRulesets,
-    onRulesetSelect,
-    onRulesetDeselect,
+function PolicySelector({
+    availablePolicies,
+    selectedPolicies,
+    onPolicySelect,
+    onPolicyDeselect,
 }) {
     const [searchQuery, setSearchQuery] = useState('');
     const [page, setPage] = useState(1);
     const itemsPerPage = 6;
 
-    const filteredRulesets = availableRulesets.filter(
-        (ruleset) => (
-            ruleset.name.toLowerCase().includes(searchQuery.toLowerCase())
-            || ruleset.description.toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredPolicies = availablePolicies.filter(
+        (policy) => (
+            policy.name.toLowerCase().includes(searchQuery.toLowerCase())
+            || policy.description.toLowerCase().includes(searchQuery.toLowerCase())
         ),
     );
 
-    const paginatedRulesets = filteredRulesets.slice(
+    const paginatedPolicies = filteredPolicies.slice(
         (page - 1) * itemsPerPage,
         page * itemsPerPage,
     );
 
-    const handleRulesetToggle = (ruleset) => {
-        const isSelected = selectedRulesets.some((r) => r.id === ruleset.id);
+    const handlePolicyToggle = (policy) => {
+        const isSelected = selectedPolicies.some((r) => r.id === policy.id);
         if (isSelected) {
-            onRulesetDeselect(ruleset);
+            onPolicyDeselect(policy);
         } else {
-            onRulesetSelect(ruleset);
+            onPolicySelect(policy);
         }
     };
 
     return (
         <StyledBox className={classes.root}>
-            {/* Selected Rulesets */}
-            {selectedRulesets.length > 0 && (
-                <Box className={classes.selectedRulesets}>
-                    {selectedRulesets.map((ruleset) => (
+            {/* Selected Policies */}
+            {selectedPolicies.length > 0 && (
+                <Box className={classes.selectedPolicies}>
+                    {selectedPolicies.map((policy) => (
                         <Chip
-                            key={ruleset.id}
-                            label={ruleset.name}
-                            onDelete={() => onRulesetDeselect(ruleset)}
+                            key={policy.id}
+                            label={policy.name}
+                            onDelete={() => onPolicyDeselect(policy)}
                             color='primary'
                             variant='outlined'
                         />
@@ -208,7 +208,7 @@ function RulesetSelector({
             <TextField
                 fullWidth
                 variant='outlined'
-                placeholder='Search rulesets...'
+                placeholder='Search policies...'
                 value={searchQuery}
                 onChange={(e) => {
                     setSearchQuery(e.target.value);
@@ -224,17 +224,17 @@ function RulesetSelector({
                 }}
             />
 
-            {/* Rulesets Grid */}
+            {/* Policies Grid */}
             <Grid container spacing={2}>
-                {paginatedRulesets.map((ruleset) => (
-                    <Grid item xs={12} lg={4} key={ruleset.id}>
+                {paginatedPolicies.map((policy) => (
+                    <Grid item xs={12} lg={4} key={policy.id}>
                         <Card
                             variant='outlined'
                             className={classes.card}
-                            onClick={() => handleRulesetToggle(ruleset)}
+                            onClick={() => handlePolicyToggle(policy)}
                             sx={{
                                 border: (theme) => (
-                                    selectedRulesets.some((r) => r.id === ruleset.id)
+                                    selectedPolicies.some((r) => r.id === policy.id)
                                         ? `2px solid ${theme.palette.primary.main}`
                                         : '1px solid rgba(0, 0, 0, 0.12)'
                                 ),
@@ -243,32 +243,32 @@ function RulesetSelector({
                             <CardContent className={classes.cardContent}>
                                 <Box className={classes.checkboxWrapper}>
                                     <Checkbox
-                                        checked={selectedRulesets.some((r) => r.id === ruleset.id)}
+                                        checked={selectedPolicies.some((r) => r.id === policy.id)}
                                         onClick={(e) => e.stopPropagation()}
                                         onChange={(e) => {
                                             if (e.target.checked) {
-                                                onRulesetSelect(ruleset);
+                                                onPolicySelect(policy);
                                             } else {
-                                                onRulesetDeselect(ruleset);
+                                                onPolicyDeselect(policy);
                                             }
                                         }}
                                     />
                                 </Box>
                                 <Typography variant='subtitle1' component='div' sx={{ fontWeight: 500, mb: 0.5 }}>
-                                    {ruleset.name}
+                                    {policy.name}
                                 </Typography>
                                 <Box sx={{ mb: 1.5, display: 'flex', gap: 1 }}>
                                     <Chip
-                                        label={Utils.mapRuleTypeToLabel(ruleset.ruleType)}
+                                        label={Utils.mapPolicyTypeToLabel(policy.ruleType)}
                                         size='small'
                                         variant='outlined'
                                         className={classes.chip}
                                         sx={{
-                                            ...getChipStyles(ruleset.ruleType),
+                                            ...getChipStyles(policy.ruleType),
                                         }}
                                     />
                                     <Chip
-                                        label={Utils.mapArtifactTypeToLabel(ruleset.artifactType)}
+                                        label={Utils.mapArtifactTypeToLabel(policy.artifactType)}
                                         size='small'
                                         className={classes.chip}
                                     />
@@ -278,7 +278,7 @@ function RulesetSelector({
                                     color='text.secondary'
                                     className={classes.description}
                                 >
-                                    {ruleset.description}
+                                    {policy.description}
                                 </Typography>
                                 <Box sx={{ mt: 'auto' }}>
                                     <Box className={classes.providerWrapper}>
@@ -290,14 +290,14 @@ function RulesetSelector({
                                             variant='body2'
                                             component='span'
                                         >
-                                            {ruleset.provider}
+                                            {policy.provider}
                                         </Typography>
                                     </Box>
-                                    {ruleset.documentationLink && (
+                                    {policy.documentationLink && (
                                         <>
                                             <Box className={classes.documentationDivider} />
                                             <Link
-                                                href={ruleset.documentationLink}
+                                                href={policy.documentationLink}
                                                 target='_blank'
                                                 rel='noopener'
                                                 onClick={(e) => e.stopPropagation()}
@@ -316,10 +316,10 @@ function RulesetSelector({
             </Grid>
 
             {/* Pagination */}
-            {filteredRulesets.length > itemsPerPage && (
+            {filteredPolicies.length > itemsPerPage && (
                 <Box className={classes.pagination}>
                     <Pagination
-                        count={Math.ceil(filteredRulesets.length / itemsPerPage)}
+                        count={Math.ceil(filteredPolicies.length / itemsPerPage)}
                         page={page}
                         onChange={(event, value) => setPage(value)}
                         color='primary'
@@ -327,17 +327,17 @@ function RulesetSelector({
                 </Box>
             )}
 
-            {filteredRulesets.length === 0 && (
+            {filteredPolicies.length === 0 && (
                 <Typography variant='body1' color='text.secondary' align='center'>
                     {searchQuery ? (
                         <FormattedMessage
-                            id='Governance.PolicyAttachments.AddEdit.rulesets.noSearchResults'
-                            defaultMessage='No rulesets found matching your search'
+                            id='Governance.PolicyAttachments.AddEdit.policies.noSearchResults'
+                            defaultMessage='No policies found matching your search'
                         />
                     ) : (
                         <FormattedMessage
-                            id='Governance.PolicyAttachments.AddEdit.rulesets.empty'
-                            defaultMessage='No rulesets available'
+                            id='Governance.PolicyAttachments.AddEdit.policies.empty'
+                            defaultMessage='No policies available'
                         />
                     )}
                 </Typography>
@@ -346,8 +346,8 @@ function RulesetSelector({
     );
 }
 
-RulesetSelector.propTypes = {
-    availableRulesets: PropTypes.arrayOf(PropTypes.shape({
+PolicySelector.propTypes = {
+    availablePolicies: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
@@ -356,12 +356,12 @@ RulesetSelector.propTypes = {
         provider: PropTypes.string.isRequired,
         documentationLink: PropTypes.string,
     })).isRequired,
-    selectedRulesets: PropTypes.arrayOf(PropTypes.shape({
+    selectedPolicies: PropTypes.arrayOf(PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
     })).isRequired,
-    onRulesetSelect: PropTypes.func.isRequired,
-    onRulesetDeselect: PropTypes.func.isRequired,
+    onPolicySelect: PropTypes.func.isRequired,
+    onPolicyDeselect: PropTypes.func.isRequired,
 };
 
-export default RulesetSelector;
+export default PolicySelector;

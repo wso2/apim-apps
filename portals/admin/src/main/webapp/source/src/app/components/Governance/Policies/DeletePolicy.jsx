@@ -29,7 +29,7 @@ import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
  * @param {JSON} props component properties
  * @returns {JSX} Delete dialog box
  */
-function DeleteRuleset({ updateList, dataRow }) {
+function DeletePolicy({ updateList, dataRow }) {
     const { id } = dataRow;
     const intl = useIntl();
 
@@ -38,8 +38,8 @@ function DeleteRuleset({ updateList, dataRow }) {
             .deleteRuleset(id)
             .then(() => (
                 <FormattedMessage
-                    id='AdminPages.Governance.Ruleset.Delete.form.delete.successful'
-                    defaultMessage='Ruleset deleted successfully'
+                    id='AdminPages.Governance.Policies.Delete.form.delete.successful'
+                    defaultMessage='Policy deleted successfully'
                 />
             ))
             .catch((error) => {
@@ -53,11 +53,11 @@ function DeleteRuleset({ updateList, dataRow }) {
     return (
         <FormDialogBase
             title={intl.formatMessage({
-                id: 'AdminPages.Governance.Ruleset.Delete.form.delete.dialog.title',
-                defaultMessage: 'Delete Ruleset?',
+                id: 'AdminPages.Governance.Policy.Delete.form.delete.dialog.title',
+                defaultMessage: 'Delete Policy?',
             })}
             saveButtonText={intl.formatMessage({
-                id: 'AdminPages.Governance.Ruleset.Delete.form.delete.dialog.btn',
+                id: 'AdminPages.Governance.Policy.Delete.form.delete.dialog.btn',
                 defaultMessage: 'Delete',
             })}
             icon={<DeleteForeverIcon />}
@@ -65,19 +65,19 @@ function DeleteRuleset({ updateList, dataRow }) {
         >
             <DialogContentText>
                 <FormattedMessage
-                    id='AdminPages.Governance.Ruleset.Delete.form.delete.confirmation.message'
-                    defaultMessage='Are you sure you want to delete this Ruleset?'
+                    id='AdminPages.Governance.Policy.Delete.form.delete.confirmation.message'
+                    defaultMessage='Are you sure you want to delete this Policy?'
                 />
             </DialogContentText>
         </FormDialogBase>
     );
 }
 
-DeleteRuleset.propTypes = {
+DeletePolicy.propTypes = {
     updateList: PropTypes.func.isRequired,
     dataRow: PropTypes.shape({
         id: PropTypes.string.isRequired,
     }).isRequired,
 };
 
-export default DeleteRuleset;
+export default DeletePolicy;

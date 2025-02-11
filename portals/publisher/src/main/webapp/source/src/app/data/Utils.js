@@ -672,13 +672,13 @@ class Utils {
     }
 
     /**
-     * Maps a ruleset validation state value to its label
-     * @param {string} state The value of the ruleset validation state
-     * @returns {string} The label of the ruleset validation state
+     * Maps a policy validation state value to its label
+     * @param {string} state The value of the policy validation state
+     * @returns {string} The label of the policy validation state
      * @memberof Utils
      */
-    static mapRulesetValidationStateToLabel(state) {
-        const validationState = CONSTS.RULESET_VALIDATION_STATES.find((t) => t.value === state);
+    static mapPolicyValidationStateToLabel(state) {
+        const validationState = CONSTS.POLICY_VALIDATION_STATES.find((t) => t.value === state);
         return validationState?.label || state;
     }
 }

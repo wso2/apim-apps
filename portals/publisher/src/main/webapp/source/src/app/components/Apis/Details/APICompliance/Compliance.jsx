@@ -25,7 +25,7 @@ import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import PolicyAttachmentAdherenceSummaryTable from './PolicyAttachmentAdherenceSummaryTable';
-import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
+import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
 import RuleViolationSummary from './RuleViolationSummary';
 
 const PREFIX = 'Compliance';
@@ -61,19 +61,19 @@ export default function Compliance() {
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
                 setComplianceStatus(response.body.status);
-                const rulesetMap = new Map();
+                const policyMap = new Map();
 
                 response.body.governedPolicies.forEach(policyAttachment => {
                     policyAttachment.rulesetValidationResults.forEach(result => {
-                        // If ruleset not in map or if existing result is older, update the map
-                        if (!rulesetMap.has(result.id)) {
-                            rulesetMap.set(result.id, result);
+                        // If policy not in map or if existing result is older, update the map
+                        if (!policyMap.has(result.id)) {
+                            policyMap.set(result.id, result);
                         }
                     });
                 });
 
-                // Count statuses from unique rulesets
-                const counts = Array.from(rulesetMap.values()).reduce((acc, result) => {
+                // Count statuses from unique policies
+                const counts = Array.from(policyMap.values()).reduce((acc, result) => {
                     if (result.status === 'PASSED') acc.passed += 1;
                     if (result.status === 'FAILED') acc.failed += 1;
                     return acc;
@@ -83,7 +83,7 @@ export default function Compliance() {
             })
             .catch((error) => {
                 if (!abortController.signal.aborted) {
-                    console.error('Error fetching ruleset adherence data:', error);
+                    console.error('Error fetching policy adherence data:', error);
                     setStatusCounts({ passed: 0, failed: 0 });
                 }
             });
@@ -224,7 +224,7 @@ export default function Compliance() {
                     </Card>
                 </Grid>
 
-                {/* Ruleset Adherence Summary section */}
+                {/* Policy Adherence Summary section */}
                 <Grid item xs={12} md={4}>
                     <Card elevation={3}>
                         <CardContent>
@@ -233,8 +233,8 @@ export default function Compliance() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 <FormattedMessage
-                                    id='Apis.Details.Compliance.ruleset.adherence'
-                                    defaultMessage='Ruleset Adherence'
+                                    id='Apis.Details.Compliance.policy.adherence'
+                                    defaultMessage='Policy Adherence'
                                 />
                             </Typography>
                             <DonutChart
@@ -274,11 +274,11 @@ export default function Compliance() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 <FormattedMessage
-                                    id='Apis.Details.Compliance.ruleset.adherence.summary'
-                                    defaultMessage='Ruleset Adherence Summary'
+                                    id='Apis.Details.Compliance.policy.adherence.summary'
+                                    defaultMessage='Policy Adherence Summary'
                                 />
                             </Typography>
-                            <RulesetAdherenceSummaryTable artifactId={artifactId} />
+                            <PolicyAdherenceSummaryTable artifactId={artifactId} />
                         </CardContent>
                     </Card>
                 </Grid>

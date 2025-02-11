@@ -17,8 +17,10 @@
  */
 
 import React from 'react';
-import { Typography, Chip, Box, Tooltip } from '@mui/material';
-import ListBase from 'AppComponents/Addons/Addons/ListBase';
+import {
+    Typography, Chip, Box, Tooltip,
+} from '@mui/material';
+import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
 import InfoIcon from '@mui/icons-material/Info';
@@ -27,30 +29,28 @@ import { useIntl } from 'react-intl';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import Utils from 'AppData/Utils';
 
-export default function RulesetAdherenceSummaryTable({ artifactId }) {
+export default function PolicyAdherenceSummaryTable({ artifactId }) {
     const intl = useIntl();
 
     const apiCall = () => {
         const restApi = new GovernanceAPI();
         return restApi.getComplianceByAPIId(artifactId)
             .then((response) => {
-                // Get unique ruleset IDs from all policy attachments
-                const rulesetIds = [...new Set(
-                    response.body.governedPolicies.flatMap(policyAttachment =>
-                        policyAttachment.rulesetValidationResults.map(result => result.id)
-                    )
+                // Get unique policy IDs from all policy attachments
+                const policyIds = [...new Set(
+                    response.body.governedPolicies.flatMap(
+                        (policyAttachment) => policyAttachment.rulesetValidationResults.map((result) => result.id),
+                    ),
                 )];
 
-                // Get validation results for each ruleset
+                // Get validation results for each policy
                 return Promise.all(
-                    rulesetIds.map(rulesetId =>
-                        restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
-                            .then((result) => result.body)
-                    )
+                    policyIds.map((policyId) => restApi.getRulesetValidationResultsByAPIId(artifactId, policyId)
+                        .then((result) => result.body)),
                 );
             })
             .catch((error) => {
-                console.error('Error fetching ruleset adherence data:', error);
+                console.error('Error fetching policy adherence data:', error);
                 return [];
             });
     };
@@ -61,12 +61,13 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             <Tooltip title={
                 intl.formatMessage(
                     {
-                        id: 'Apis.Details.Compliance.RulesetAdherence.violations.tooltip',
+                        id: 'Governance.Overview.APICompliance.PolicyAdherence.violations.tooltip',
                         defaultMessage: 'Errors: {error}, Warnings: {warn}, Info: {info}',
                     },
-                    { error, warn, info }
+                    { error, warn, info },
                 )
-            }>
+            }
+            >
                 <Box sx={{ display: 'flex', gap: 1 }}>
                     <Box key='error' sx={{ display: 'flex', alignItems: 'center' }}>
                         <ErrorIcon color='error' sx={{ fontSize: 16 }} />
@@ -91,16 +92,16 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         );
     };
 
-    const RulesetColumnProps = [
+    const policyColumProps = [
         {
             name: 'id',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Apis.Details.Compliance.RulesetAdherence.column.ruleset',
-                defaultMessage: 'Ruleset',
+                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.policy',
+                defaultMessage: 'Policy',
             }),
             options: {
                 width: '40%',
@@ -116,7 +117,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
                     },
                 }),
@@ -125,7 +126,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         {
             name: 'status',
             label: intl.formatMessage({
-                id: 'Apis.Details.Compliance.RulesetAdherence.column.status',
+                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.status',
                 defaultMessage: 'Status',
             }),
             options: {
@@ -134,7 +135,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 }),
                 customBodyRender: (value) => (
                     <Chip
-                        label={Utils.mapRulesetValidationStateToLabel(value)}
+                        label={Utils.mapPolicyValidationStateToLabel(value)}
                         color={value === 'PASSED' ? 'success' : 'error'}
                         size='small'
                         variant='outlined'
@@ -146,7 +147,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
                     },
                 }),
@@ -154,16 +155,16 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         },
         {
             name: 'violatedRules',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'followedRules',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'violationsSummary',
             label: intl.formatMessage({
-                id: 'Apis.Details.Compliance.RulesetAdherence.column.violations',
+                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.violations',
                 defaultMessage: 'Violations',
             }),
             options: {
@@ -178,7 +179,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                     return renderComplianceIcons({
                         error: counts.error,
                         warn: counts.warn,
-                        info: counts.info
+                        info: counts.info,
                     });
                 },
                 setCellHeaderProps: () => ({
@@ -187,11 +188,11 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
-                    }
+                    },
                 }),
-            }
+            },
         },
     ];
 
@@ -201,14 +202,14 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                padding: 3
+                padding: 3,
             }}
         >
             <AssignmentIcon
                 sx={{
                     fontSize: 60,
                     color: 'action.disabled',
-                    mb: 2
+                    mb: 2,
                 }}
             />
             <Typography
@@ -218,8 +219,8 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 sx={{ fontWeight: 'medium' }}
             >
                 {intl.formatMessage({
-                    id: 'Apis.Details.Compliance.RulesetAdherence.empty.title',
-                    defaultMessage: 'No Rulesets Found',
+                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.title',
+                    defaultMessage: 'No Policies Found',
                 })}
             </Typography>
             <Typography
@@ -228,8 +229,8 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 align='center'
             >
                 {intl.formatMessage({
-                    id: 'Apis.Details.Compliance.RulesetAdherence.empty.helper',
-                    defaultMessage: 'No governance rulesets have been applied for this API.',
+                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.helper',
+                    defaultMessage: 'No governance policies have been applied for this API.',
                 })}
             </Typography>
         </Box>
@@ -237,11 +238,11 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
 
     return (
         <ListBase
-            columnProps={RulesetColumnProps}
+            columProps={policyColumProps}
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                content: emptyStateContent
+                content: emptyStateContent,
             }}
             addButtonProps={false}
             showActionColumn={false}

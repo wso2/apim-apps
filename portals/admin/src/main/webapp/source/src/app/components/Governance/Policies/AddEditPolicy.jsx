@@ -74,10 +74,10 @@ function reducer(state, { field, value }) {
             return value;
         case 'name':
         case 'description':
-        case 'ruleType':
+        case 'policyType':
         case 'artifactType':
         case 'provider':
-        case 'rulesetContent':
+        case 'policyContent':
         case 'documentationLink':
             nextState[field] = value;
             return nextState;
@@ -86,7 +86,7 @@ function reducer(state, { field, value }) {
     }
 }
 
-function AddEditRuleset(props) {
+function AddEditPolicy(props) {
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
@@ -97,10 +97,10 @@ function AddEditRuleset(props) {
     const initialState = {
         name: '',
         description: '',
-        ruleType: '',
+        policyType: '',
         artifactType: '',
         provider: '',
-        rulesetContent: '',
+        policyContent: '',
         documentationLink: '',
     };
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -108,16 +108,16 @@ function AddEditRuleset(props) {
     const {
         name,
         description,
-        ruleType,
+        policyType,
         artifactType,
-        rulesetContent,
+        policyContent,
         documentationLink,
     } = state;
 
     useEffect(() => {
         const restApi = new GovernanceAPI();
         if (id) {
-            // Get ruleset metadata
+            // Get policy metadata
             restApi
                 .getRuleset(id)
                 .then((result) => {
@@ -126,12 +126,13 @@ function AddEditRuleset(props) {
                 })
                 .then((data) => {
                     dispatch({ field: 'all', value: data });
-                    // After getting metadata, fetch the ruleset content
+                    dispatch({ field: 'policyType', value: data.ruleType }); // TODO: Remove this after backend changes
+                    // After getting metadata, fetch the policy content
                     return restApi.getRulesetContent(id);
                 })
                 .then((contentResult) => {
                     const { text } = contentResult;
-                    dispatch({ field: 'rulesetContent', value: text });
+                    dispatch({ field: 'policyContent', value: text });
                 })
                 .catch((error) => {
                     const { response } = error;
@@ -139,8 +140,8 @@ function AddEditRuleset(props) {
                         Alert.error(response.body.description);
                     } else {
                         Alert.error(intl.formatMessage({
-                            id: 'Governance.Rulesets.AddEdit.error.loading',
-                            defaultMessage: 'Error loading ruleset',
+                            id: 'Governance.Policies.AddEdit.error.loading',
+                            defaultMessage: 'Error loading policy',
                         }));
                     }
                 });
@@ -152,17 +153,17 @@ function AddEditRuleset(props) {
     };
 
     const handleEditorChange = (value) => {
-        dispatch({ field: 'rulesetContent', value });
+        dispatch({ field: 'policyContent', value });
     };
 
     const processFile = (file) => {
         const reader = new FileReader();
         reader.onload = (e) => {
-            dispatch({ field: 'rulesetContent', value: e.target.result });
+            dispatch({ field: 'policyContent', value: e.target.result });
         };
         reader.onerror = () => {
             Alert.error(intl.formatMessage({
-                id: 'Governance.Rulesets.AddEdit.file.read.error',
+                id: 'Governance.Policies.AddEdit.file.read.error',
                 defaultMessage: 'Error reading file',
             }));
         };
@@ -172,7 +173,7 @@ function AddEditRuleset(props) {
     const handleFileUpload = (event) => {
         const file = event.target.files[0];
         if (file) {
-            if (rulesetContent.trim()) {
+            if (policyContent.trim()) {
                 setPendingFile(file);
                 setOpenConfirmDialog(true);
             } else {
@@ -208,18 +209,18 @@ function AddEditRuleset(props) {
             case 'name':
                 if (!fieldValue) {
                     error = intl.formatMessage({
-                        id: 'Governance.Rulesets.AddEdit.form.name.required',
-                        defaultMessage: 'Ruleset name is required',
+                        id: 'Governance.Policies.AddEdit.form.name.required',
+                        defaultMessage: 'Policy name is required',
                     });
                 } else if (fieldValue.length > 255) {
                     error = intl.formatMessage({
-                        id: 'Governance.Rulesets.AddEdit.form.name.too.long',
-                        defaultMessage: 'Ruleset name cannot exceed 255 characters',
+                        id: 'Governance.Policies.AddEdit.form.name.too.long',
+                        defaultMessage: 'Policy name cannot exceed 255 characters',
                     });
                 } else if (!/^[a-zA-Z0-9-_ ]+$/.test(fieldValue)) {
                     error = intl.formatMessage({
-                        id: 'Governance.Rulesets.AddEdit.form.name.invalid',
-                        defaultMessage: 'Ruleset name can only contain alphanumeric characters,'
+                        id: 'Governance.Policies.AddEdit.form.name.invalid',
+                        defaultMessage: 'Policy name can only contain alphanumeric characters,'
                             + ' spaces, hyphens and underscores.',
                     });
                 }
@@ -228,17 +229,17 @@ function AddEditRuleset(props) {
             case 'description':
                 if (fieldValue && fieldValue.length > 1000) {
                     error = intl.formatMessage({
-                        id: 'Governance.Rulesets.AddEdit.form.description.too.long',
+                        id: 'Governance.Policies.AddEdit.form.description.too.long',
                         defaultMessage: 'Description cannot exceed 1000 characters',
                     });
                 }
                 break;
 
-            case 'ruleType':
+            case 'policyType':
                 if (!fieldValue) {
                     error = intl.formatMessage({
-                        id: 'Governance.Rulesets.AddEdit.form.ruletype.required',
-                        defaultMessage: 'Rule type is required',
+                        id: 'Governance.Policies.AddEdit.form.policyType.required',
+                        defaultMessage: 'Policy type is required',
                     });
                 }
                 break;
@@ -246,7 +247,7 @@ function AddEditRuleset(props) {
             case 'artifactType':
                 if (!fieldValue) {
                     error = intl.formatMessage({
-                        id: 'Governance.Rulesets.AddEdit.form.artifacttype.required',
+                        id: 'Governance.Policies.AddEdit.form.artifacttype.required',
                         defaultMessage: 'Artifact type is required',
                     });
                 }
@@ -256,23 +257,23 @@ function AddEditRuleset(props) {
                 if (fieldValue) {
                     if (fieldValue.length > 500) {
                         error = intl.formatMessage({
-                            id: 'Governance.Rulesets.AddEdit.form.doclink.too.long',
+                            id: 'Governance.Policies.AddEdit.form.doclink.too.long',
                             defaultMessage: 'Documentation link cannot exceed 500 characters',
                         });
                     } else if (!/^https?:\/\/.+/.test(fieldValue)) {
                         error = intl.formatMessage({
-                            id: 'Governance.Rulesets.AddEdit.form.doclink.invalid',
+                            id: 'Governance.Policies.AddEdit.form.doclink.invalid',
                             defaultMessage: 'Documentation link must be a valid HTTP/HTTPS URL',
                         });
                     }
                 }
                 break;
 
-            case 'rulesetContent':
+            case 'policyContent':
                 if (!fieldValue || fieldValue.trim().length === 0) {
                     error = intl.formatMessage({
-                        id: 'Governance.Rulesets.AddEdit.form.rulesetcontent.required',
-                        defaultMessage: 'Ruleset content is required',
+                        id: 'Governance.Policies.AddEdit.form.policyContent.required',
+                        defaultMessage: 'Policy content is required',
                     });
                 }
                 break;
@@ -286,10 +287,10 @@ function AddEditRuleset(props) {
     const formHasErrors = (validatingActive = false) => {
         if (hasErrors('name', name, validatingActive)
             || hasErrors('description', description, validatingActive)
-            || hasErrors('ruleType', ruleType, validatingActive)
+            || hasErrors('policyType', policyType, validatingActive)
             || hasErrors('artifactType', artifactType, validatingActive)
             || hasErrors('documentationLink', documentationLink, validatingActive)
-            || hasErrors('rulesetContent', rulesetContent, validatingActive)) {
+            || hasErrors('policyContent', policyContent, validatingActive)) {
             return true;
         }
         return false;
@@ -299,7 +300,7 @@ function AddEditRuleset(props) {
         setValidating(true);
         if (formHasErrors(true)) {
             Alert.error(intl.formatMessage({
-                id: 'Governance.Rulesets.AddEdit.form.has.errors',
+                id: 'Governance.Policies.AddEdit.form.has.errors',
                 defaultMessage: 'One or more fields contain errors.',
             }));
             return false;
@@ -307,11 +308,13 @@ function AddEditRuleset(props) {
 
         setSaving(true);
 
-        const file = new File([rulesetContent], `${name}.yaml`);
+        const file = new File([policyContent], `${name}.yaml`);
         const body = {
             ...state,
             provider: AuthManager.getUser().name,
-            rulesetContent: file,
+            ruleType: state.policyType, // TODO: Remove this after backend changes
+            rulesetContent: file, // TODO: Remove this after backend changes
+            // policyContent: file,
         };
 
         // Do the API call
@@ -322,23 +325,23 @@ function AddEditRuleset(props) {
             promiseAPICall = restApi.updateRuleset(id, body)
                 .then(() => {
                     return intl.formatMessage({
-                        id: 'Governance.Rulesets.AddEdit.edit.success',
-                        defaultMessage: 'Ruleset Updated Successfully',
+                        id: 'Governance.Policies.AddEdit.edit.success',
+                        defaultMessage: 'Policy Updated Successfully',
                     });
                 });
         } else {
             promiseAPICall = restApi.addRuleset(body)
                 .then(() => {
                     return intl.formatMessage({
-                        id: 'Governance.Rulesets.AddEdit.add.success',
-                        defaultMessage: 'Ruleset Added Successfully',
+                        id: 'Governance.Policies.AddEdit.add.success',
+                        defaultMessage: 'Policy Added Successfully',
                     });
                 });
         }
 
         promiseAPICall.then((msg) => {
             Alert.success(`${name} ${msg}`);
-            history.push('/governance/ruleset-catalog/');
+            history.push('/governance/policies/');
         }).catch((error) => {
             const { response, message } = error;
             if (response && response.body) {
@@ -359,14 +362,14 @@ function AddEditRuleset(props) {
             title={
                 id ? (
                     <FormattedMessage
-                        id='Governance.Rulesets.AddEdit.title.edit'
-                        defaultMessage='Edit Ruleset - {name}'
+                        id='Governance.Policies.AddEdit.title.edit'
+                        defaultMessage='Edit Policy - {name}'
                         values={{ name }}
                     />
                 ) : (
                     <FormattedMessage
-                        id='Governance.Rulesets.AddEdit.title.new'
-                        defaultMessage='Create New Ruleset'
+                        id='Governance.Policies.AddEdit.title.new'
+                        defaultMessage='Create New Policy'
                     />
                 )
             }
@@ -378,14 +381,14 @@ function AddEditRuleset(props) {
                     <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px', paddingTop: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id='Governance.Rulesets.AddEdit.general.details'
+                                id='Governance.Policies.AddEdit.general.details'
                                 defaultMessage='General Details'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id='Governance.Rulesets.AddEdit.general.details.description'
-                                defaultMessage='Provide name and description of the ruleset.'
+                                id='Governance.Policies.AddEdit.general.details.description'
+                                defaultMessage='Provide name and description of the policy.'
                             />
                         </Typography>
                     </Grid>
@@ -401,7 +404,7 @@ function AddEditRuleset(props) {
                                 label={(
                                     <span>
                                         <FormattedMessage
-                                            id='Governance.Rulesets.AddEdit.form.name'
+                                            id='Governance.Policies.AddEdit.form.name'
                                             defaultMessage='Name'
                                         />
                                         <StyledSpan>*</StyledSpan>
@@ -419,7 +422,7 @@ function AddEditRuleset(props) {
                                 onChange={onChange}
                                 label={(
                                     <FormattedMessage
-                                        id='Governance.Rulesets.AddEdit.form.description'
+                                        id='Governance.Policies.AddEdit.form.description'
                                         defaultMessage='Description'
                                     />
                                 )}
@@ -440,7 +443,7 @@ function AddEditRuleset(props) {
                                 onChange={onChange}
                                 label={(
                                     <FormattedMessage
-                                        id='Governance.Rulesets.AddEdit.form.documentation'
+                                        id='Governance.Policies.AddEdit.form.documentation'
                                         defaultMessage='Documentation Link'
                                     />
                                 )}
@@ -454,22 +457,22 @@ function AddEditRuleset(props) {
                                     <TextField
                                         select
                                         margin='dense'
-                                        name='ruleType'
-                                        value={ruleType}
+                                        name='policyType'
+                                        value={policyType}
                                         onChange={onChange}
                                         label={(
                                             <FormattedMessage
-                                                id='Governance.Rulesets.AddEdit.form.ruleset.type'
-                                                defaultMessage='Ruleset Type'
+                                                id='Governance.Policies.AddEdit.form.policy.type'
+                                                defaultMessage='Policy Type'
                                             />
                                         )}
                                         fullWidth
-                                        error={hasErrors('ruleType', ruleType, validating)}
-                                        helperText={hasErrors('ruleType', ruleType, validating)}
+                                        error={hasErrors('policyType', policyType, validating)}
+                                        helperText={hasErrors('policyType', policyType, validating)}
                                         required
                                         variant='outlined'
                                     >
-                                        {CONSTS.RULESET_TYPES.map((option) => (
+                                        {CONSTS.POLICY_TYPES.map((option) => (
                                             <MenuItem key={option.value} value={option.value}>
                                                 {option.label}
                                             </MenuItem>
@@ -485,7 +488,7 @@ function AddEditRuleset(props) {
                                         onChange={onChange}
                                         label={(
                                             <FormattedMessage
-                                                id='Governance.Rulesets.AddEdit.form.artifact.type'
+                                                id='Governance.Policies.AddEdit.form.artifact.type'
                                                 defaultMessage='Artifact Type'
                                             />
                                         )}
@@ -512,18 +515,18 @@ function AddEditRuleset(props) {
                         </Box>
                     </Grid>
 
-                    {/* Ruleset Content Section */}
+                    {/* Policy Content Section */}
                     <Grid item xs={12} md={12} lg={5} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id='Governance.Rulesets.AddEdit.content.title'
-                                defaultMessage='Ruleset Content'
+                                id='Governance.Policies.AddEdit.content.title'
+                                defaultMessage='Policy Content'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id='Governance.Rulesets.AddEdit.content.description'
-                                defaultMessage='Define the ruleset content in YAML or JSON format'
+                                id='Governance.Policies.AddEdit.content.description'
+                                defaultMessage='Define the Policy content in YAML or JSON format'
                             />
                         </Typography>
                     </Grid>
@@ -539,7 +542,7 @@ function AddEditRuleset(props) {
                                         size='small'
                                     >
                                         <FormattedMessage
-                                            id='Governance.Rulesets.AddEdit.button.upload'
+                                            id='Governance.Policies.AddEdit.button.upload'
                                             defaultMessage='Upload File'
                                         />
                                         <input
@@ -554,7 +557,7 @@ function AddEditRuleset(props) {
                                     <Editor
                                         height='100%'
                                         defaultLanguage='yaml'
-                                        value={rulesetContent}
+                                        value={policyContent}
                                         onChange={handleEditorChange}
                                         theme='light'
                                         options={{
@@ -566,9 +569,9 @@ function AddEditRuleset(props) {
                                 </EditorContainer>
                             </Paper>
                         </Box>
-                        {validating && hasErrors('rulesetContent', rulesetContent, true) && (
+                        {validating && hasErrors('policyContent', policyContent, true) && (
                             <Box sx={{ color: 'error.main', pl: 2, pb: 1 }}>
-                                {hasErrors('rulesetContent', rulesetContent, true)}
+                                {hasErrors('policyContent', policyContent, true)}
                             </Box>
                         )}
                     </Grid>
@@ -588,14 +591,14 @@ function AddEditRuleset(props) {
                                     } else if (id) {
                                         return (
                                             <FormattedMessage
-                                                id='Governance.Rulesets.AddEdit.button.update'
+                                                id='Governance.Policies.AddEdit.button.update'
                                                 defaultMessage='Update'
                                             />
                                         );
                                     } else {
                                         return (
                                             <FormattedMessage
-                                                id='Governance.Rulesets.AddEdit.button.create'
+                                                id='Governance.Policies.AddEdit.button.create'
                                                 defaultMessage='Create'
                                             />
                                         );
@@ -603,10 +606,10 @@ function AddEditRuleset(props) {
                                 })()}
                             </Button>
                         </Box>
-                        <RouterLink to='/governance/ruleset-catalog'>
+                        <RouterLink to='/governance/policies'>
                             <Button variant='outlined'>
                                 <FormattedMessage
-                                    id='Governance.Rulesets.AddEdit.form.cancel'
+                                    id='Governance.Policies.AddEdit.form.cancel'
                                     defaultMessage='Cancel'
                                 />
                             </Button>
@@ -624,14 +627,14 @@ function AddEditRuleset(props) {
             >
                 <DialogTitle id='overwrite-dialog-title'>
                     <FormattedMessage
-                        id='Governance.Rulesets.AddEdit.confirm.overwrite.title'
+                        id='Governance.Policies.AddEdit.confirm.overwrite.title'
                         defaultMessage='Confirm Overwrite'
                     />
                 </DialogTitle>
                 <DialogContent>
                     <DialogContentText id='overwrite-dialog-description'>
                         <FormattedMessage
-                            id='Governance.Rulesets.AddEdit.confirm.overwrite.message'
+                            id='Governance.Policies.AddEdit.confirm.overwrite.message'
                             defaultMessage={'The editor contains existing content.'
                                 + ' Do you want to overwrite it with the uploaded file?'}
                         />
@@ -640,13 +643,13 @@ function AddEditRuleset(props) {
                 <DialogActions>
                     <Button onClick={handleCancelOverwrite} color='primary'>
                         <FormattedMessage
-                            id='Governance.Rulesets.AddEdit.confirm.overwrite.cancel'
+                            id='Governance.Policies.AddEdit.confirm.overwrite.cancel'
                             defaultMessage='Cancel'
                         />
                     </Button>
                     <Button onClick={handleConfirmOverwrite} color='primary' autoFocus>
                         <FormattedMessage
-                            id='Governance.Rulesets.AddEdit.confirm.overwrite.ok'
+                            id='Governance.Policies.AddEdit.confirm.overwrite.ok'
                             defaultMessage='Overwrite'
                         />
                     </Button>
@@ -656,7 +659,7 @@ function AddEditRuleset(props) {
     );
 }
 
-AddEditRuleset.propTypes = {
+AddEditPolicy.propTypes = {
     match: PropTypes.shape({
         params: PropTypes.shape({
             id: PropTypes.string,
@@ -667,4 +670,4 @@ AddEditRuleset.propTypes = {
     }).isRequired,
 };
 
-export default AddEditRuleset;
+export default AddEditPolicy;

@@ -19,22 +19,22 @@
 import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import ListRulesets from './ListRulesets';
-import AddEditRuleset from './AddEditRuleset';
+import ListPolicies from './ListPolicies';
+import AddEditPolicy from './AddEditPolicy';
 
 /**
- * Render ruleset routes
- * @returns {JSX} Ruleset routing component
+ * Render policy routes
+ * @returns {JSX} Policy routing component
  */
-function RulesetCatalog() {
+function Policies() {
     return (
         <Switch>
-            <Route exact path='/governance/ruleset-catalog' component={ListRulesets} />
-            <Route exact path='/governance/ruleset-catalog/create' component={AddEditRuleset} />
-            <Route exact path='/governance/ruleset-catalog/:id' component={AddEditRuleset} />
+            <Route exact path='/governance/policies' component={ListPolicies} />
+            <Route exact path='/governance/policies/create' component={AddEditPolicy} />
+            <Route exact path='/governance/policies/:id' component={AddEditPolicy} />
             <Route component={ResourceNotFound} />
         </Switch>
     );
 }
 
-export default withRouter(RulesetCatalog);
+export default withRouter(Policies);

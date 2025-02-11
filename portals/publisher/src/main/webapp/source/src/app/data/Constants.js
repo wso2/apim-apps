@@ -79,7 +79,7 @@ const CONSTS = {
         { value: 'VIOLATED', label: 'Violated' },
         { value: 'UNAPPLIED', label: 'Unapplied' },
     ],
-    RULESET_VALIDATION_STATES: [
+    POLICY_VALIDATION_STATES: [
         { value: 'PASSED', label: 'Passed' },
         { value: 'FAILED', label: 'Failed' },
     ],

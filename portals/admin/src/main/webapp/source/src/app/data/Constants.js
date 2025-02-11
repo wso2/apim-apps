@@ -52,7 +52,7 @@ const CONSTS = {
         { value: 'API_DEPLOY', label: 'API Deploy' },
         { value: 'API_PUBLISH', label: 'API Publish' },
     ],
-    RULESET_TYPES: [
+    POLICY_TYPES: [
         { value: 'API_DEFINITION', label: 'API Definition' },
         { value: 'API_METADATA', label: 'API Metadata' },
         { value: 'API_DOCUMENTATION', label: 'Documentation' },
@@ -77,7 +77,7 @@ const CONSTS = {
         { value: 'VIOLATED', label: 'Violated' },
         { value: 'UNAPPLIED', label: 'Unapplied' },
     ],
-    RULESET_VALIDATION_STATES: [
+    POLICY_VALIDATION_STATES: [
         { value: 'PASSED', label: 'Passed' },
         { value: 'FAILED', label: 'Failed' },
     ],

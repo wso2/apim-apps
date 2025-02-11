@@ -53,7 +53,7 @@ import API from 'AppData/api';
 import Utils from 'AppData/Utils';
 import CONSTS from 'AppData/Constants';
 import ActionConfigDialog from './ActionConfigDialog';
-import RulesetSelector from './RulesetSelector';
+import PolicySelector from './PolicySelector';
 
 // Keep these styled components
 const StyledSpan = styled('span')(({ theme }) => ({
@@ -126,9 +126,9 @@ function reducer(state, { field, value }) {
                 nextState.labels = value;
             }
             return nextState;
-        case 'rulesets':
+        case 'policies':
             if (Array.isArray(value)) {
-                nextState.rulesets = value;
+                nextState.policies = value;
             }
             return nextState;
         case 'actions':
@@ -154,8 +154,8 @@ function reducer(state, { field, value }) {
 function AddEditPolicyAttachment(props) {
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [availableRulesets, setAvailableRulesets] = useState([]);
-    const [selectedRulesets, setSelectedRulesets] = useState([]); // Store full ruleset objects for UI
+    const [availablePolicies, setAvailablePolicies] = useState([]);
+    const [selectedPolicies, setSelectedPolicies] = useState([]); // Store full policy objects for UI
     const [availableLabels, setAvailableLabels] = useState([]);
     const [labelMode, setLabelMode] = useState('all');
     const intl = useIntl();
@@ -166,7 +166,7 @@ function AddEditPolicyAttachment(props) {
         description: '',
         labels: ['GLOBAL'],
         actions: [],
-        rulesets: [], // Store only IDs
+        policies: [], // Store only IDs
     };
     const [state, dispatch] = useReducer(reducer, initialState);
 
@@ -175,7 +175,7 @@ function AddEditPolicyAttachment(props) {
         description,
         labels,
         actions,
-        rulesets,
+        policies,
     } = state;
 
     const [dialogConfig, setDialogConfig] = useState({
@@ -203,18 +203,18 @@ function AddEditPolicyAttachment(props) {
 
         restApi.getRulesetsList()
             .then((response) => {
-                const rulesetList = response.body.list;
-                setAvailableRulesets(rulesetList);
+                const policyList = response.body.list;
+                setAvailablePolicies(policyList);
 
                 if (policyAttachmentId) {
                     return restApi.getPolicy(policyAttachmentId)
                         .then((policyAttachmentResponse) => {
                             const { body } = policyAttachmentResponse;
-                            const fullRulesets = body.rulesets.map((rulesetId) => {
-                                const foundRuleset = rulesetList.find((r) => r.id === rulesetId);
-                                return foundRuleset || { id: rulesetId, name: 'Unknown Ruleset' };
+                            const fullPolicies = body.rulesets.map((policyId) => {
+                                const foundPolicy = policyList.find((r) => r.id === policyId);
+                                return foundPolicy || { id: policyId, name: 'Unknown Policy' };
                             });
-                            setSelectedRulesets(fullRulesets);
+                            setSelectedPolicies(fullPolicies);
 
                             // Set the correct label mode based on the policy attachment data
                             if (body.labels.length === 1 && body.labels[0] === 'GLOBAL') {
@@ -229,8 +229,8 @@ function AddEditPolicyAttachment(props) {
                                 field: 'all',
                                 value: {
                                     ...body,
-                                    rulesets: body.rulesets.map(
-                                        (ruleset) => (typeof ruleset === 'object' ? ruleset.id : ruleset),
+                                    policies: body.rulesets.map( // Change to policies
+                                        (policy) => (typeof policy === 'object' ? policy.id : policy),
                                     ),
                                 },
                             });
@@ -239,10 +239,10 @@ function AddEditPolicyAttachment(props) {
                 return null;
             })
             .catch((error) => {
-                console.error('Error loading rulesets:', error);
+                console.error('Error loading policies:', error);
                 Alert.error(intl.formatMessage({
-                    id: 'Governance.PolicyAttachments.AddEdit.error.loading.rulesets',
-                    defaultMessage: 'Error loading rulesets',
+                    id: 'Governance.PolicyAttachments.AddEdit.error.loading.policies',
+                    defaultMessage: 'Error loading policies',
                 }));
             });
     }, [policyAttachmentId]);
@@ -307,16 +307,16 @@ function AddEditPolicyAttachment(props) {
                     });
                 }
                 break;
-            case 'rulesets':
+            case 'policies':
                 if (!fieldValue || !Array.isArray(fieldValue) || fieldValue.length === 0) {
                     error = intl.formatMessage({
-                        id: 'Governance.PolicyAttachments.AddEdit.form.rulesets.required',
-                        defaultMessage: 'At least one ruleset is required',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.policies.required',
+                        defaultMessage: 'At least one policy is required',
                     });
                 } else if (new Set(fieldValue).size !== fieldValue.length) {
                     error = intl.formatMessage({
-                        id: 'Governance.PolicyAttachments.AddEdit.form.rulesets.duplicate',
-                        defaultMessage: 'Duplicate rulesets are not allowed',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.policies.duplicate',
+                        defaultMessage: 'Duplicate policies are not allowed',
                     });
                 }
                 break;
@@ -360,7 +360,7 @@ function AddEditPolicyAttachment(props) {
         if (hasErrors('name', name, validatingActive)
             || hasErrors('description', description, validatingActive)
             || hasErrors('labels', labels, validatingActive)
-            || hasErrors('rulesets', rulesets, validatingActive)
+            || hasErrors('policies', policies, validatingActive)
             || hasErrors('actions', actions, validatingActive)) {
             return true;
         }
@@ -378,8 +378,10 @@ function AddEditPolicyAttachment(props) {
         }
 
         setSaving(true);
+        const { policies: policyList, ...rest } = state;
         const body = {
-            ...state,
+            ...rest, // TODO: should be ...state, when backend is ready
+            rulesets: state.policies,
             governableStates: [...new Set(actions.map((action) => action.state))],
         };
 
@@ -503,20 +505,20 @@ function AddEditPolicyAttachment(props) {
         });
     };
 
-    const handleRulesetSelect = (ruleset) => {
+    const handlePolicySelect = (policy) => {
         dispatch({
-            field: 'rulesets',
-            value: [...rulesets, ruleset.id],
+            field: 'policies',
+            value: [...policies, policy.id],
         });
-        setSelectedRulesets([...selectedRulesets, ruleset]);
+        setSelectedPolicies([...selectedPolicies, policy]);
     };
 
-    const handleRulesetDeselect = (ruleset) => {
+    const handlePolicyDeselect = (policy) => {
         dispatch({
-            field: 'rulesets',
-            value: rulesets.filter((id) => id !== ruleset.id),
+            field: 'policies',
+            value: policies.filter((id) => id !== policy.id),
         });
-        setSelectedRulesets(selectedRulesets.filter((r) => r.id !== ruleset.id));
+        setSelectedPolicies(selectedPolicies.filter((r) => r.id !== policy.id));
     };
 
     return (
@@ -856,30 +858,30 @@ function AddEditPolicyAttachment(props) {
                     <Grid item xs={12} md={12} lg={12} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id='Governance.PolicyAttachments.AddEdit.rulesets.title'
-                                defaultMessage='Rulesets'
+                                id='Governance.PolicyAttachments.AddEdit.policies.title'
+                                defaultMessage='Policies'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id='Governance.PolicyAttachments.AddEdit.rulesets.description'
-                                defaultMessage={'Search and select rulesets to include in the policy attachment. '
-                                    + 'Selected rulesets will appear above the search bar.'}
+                                id='Governance.PolicyAttachments.AddEdit.policies.description'
+                                defaultMessage={'Search and select policies to include in the policy attachment. '
+                                    + 'Selected policies will appear above the search bar.'}
                             />
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={12}>
                         <Box component='div' m={1}>
-                            <RulesetSelector
-                                availableRulesets={availableRulesets}
-                                selectedRulesets={selectedRulesets}
-                                onRulesetSelect={handleRulesetSelect}
-                                onRulesetDeselect={handleRulesetDeselect}
+                            <PolicySelector
+                                availablePolicies={availablePolicies}
+                                selectedPolicies={selectedPolicies}
+                                onPolicySelect={handlePolicySelect}
+                                onPolicyDeselect={handlePolicyDeselect}
                             />
                         </Box>
-                        {validating && hasErrors('rulesets', rulesets, true) && (
+                        {validating && hasErrors('policies', policies, true) && (
                             <Box sx={{ color: 'error.main', pl: 2, pb: 1 }}>
-                                {hasErrors('rulesets', rulesets, true)}
+                                {hasErrors('policies', policies, true)}
                             </Box>
                         )}
                     </Grid>

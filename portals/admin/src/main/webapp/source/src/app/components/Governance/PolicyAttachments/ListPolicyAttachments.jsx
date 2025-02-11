@@ -198,7 +198,7 @@ export default function ListPolicyAttachments() {
         }),
         pageDescription: intl.formatMessage({
             id: 'Governance.PolicyAttachments.List.description',
-            defaultMessage: 'Create governance policy attachments using rulesets from the catalog'
+            defaultMessage: 'Create governance policy attachments using policies from the catalog'
                 + ' to standardize and regulate your APls effectively',
         }),
     };

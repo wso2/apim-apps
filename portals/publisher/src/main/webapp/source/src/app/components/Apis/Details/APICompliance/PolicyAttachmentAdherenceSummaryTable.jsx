@@ -82,27 +82,27 @@ export default function PolicyAttachmentAdherenceSummaryTable({ artifactId }) {
     };
 
     const renderExpandableRow = (rowData) => {
-        const rulesets = rowData[3];
+        const policies = rowData[3];
         return (
             <TableRow>
                 <TableCell colSpan={3} />
                 <TableCell>
                     <Stack direction='column' spacing={2} sx={{ flexWrap: 'wrap' }}>
-                        {rulesets.map((ruleset) => (
+                        {policies.map((policy) => (
                             <Box
-                                key={ruleset.id}
+                                key={policy.id}
                                 sx={{
                                     display: 'flex',
                                     alignItems: 'center',
                                     gap: 1
                                 }}
                             >
-                                {ruleset.status === 'PASSED' ?
+                                {policy.status === 'PASSED' ?
                                     <CheckCircleIcon color='success' sx={{ fontSize: 16 }} /> :
                                     <CancelIcon color='error' sx={{ fontSize: 16 }} />
                                 }
                                 <Typography variant='body2'>
-                                    {ruleset.name}
+                                    {policy.name}
                                 </Typography>
                             </Box>
                         ))}
@@ -185,16 +185,16 @@ export default function PolicyAttachmentAdherenceSummaryTable({ artifactId }) {
             options: { display: false }
         },
         {
-            name: 'rulesetsList',
+            name: 'policiesList',
             label: intl.formatMessage({
-                id: 'Apis.Details.Compliance.PolicyAttachmentAdherence.column.rulesets',
-                defaultMessage: 'Rulesets',
+                id: 'Apis.Details.Compliance.PolicyAttachmentAdherence.column.policies',
+                defaultMessage: 'Policies',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    const rulesets = tableMeta.rowData[3];
-                    const total = rulesets.length;
-                    const followed = rulesets.filter((ruleset) => ruleset.status === 'PASSED').length;
+                    const policies = tableMeta.rowData[3];
+                    const total = policies.length;
+                    const followed = policies.filter((policy) => policy.status === 'PASSED').length;
                     return renderProgress(followed, total);
                 },
                 setCellHeaderProps: () => ({
