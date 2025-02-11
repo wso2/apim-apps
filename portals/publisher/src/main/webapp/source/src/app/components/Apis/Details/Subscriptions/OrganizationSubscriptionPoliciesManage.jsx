@@ -117,12 +117,10 @@ function OrganizationSubscriptionPoliciesManage(props) {
                     : orgPolicy
             );
         } else {
-            const organizationName = organizations.find(org => org.organizationId === organizationId).displayName;
             updatedOrganizationPolicies = [
                 ...organizationPolicies,
                 { 
                     organizationID: organizationId,
-                    organizationName,
                     policies: selectedPolicyNames
                 }
             ];
