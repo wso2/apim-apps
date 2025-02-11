@@ -117,12 +117,10 @@ function OrganizationSubscriptionPoliciesManage(props) {
                     : orgPolicy
             );
         } else {
-            const organizationName = organizations.find(org => org.organizationId === organizationId).displayName;
             updatedOrganizationPolicies = [
                 ...organizationPolicies,
                 { 
                     organizationID: organizationId,
-                    organizationName,
                     policies: selectedPolicyNames
                 }
             ];
@@ -161,7 +159,9 @@ function OrganizationSubscriptionPoliciesManage(props) {
     return (
         <Root>
             <div className={classes.heading}>
-                <Typography variant='h6' style={{ marginTop: '20px' }}>Organization Specific Business Plans</Typography>
+                <Typography variant='h6' style={{ marginTop: '20px' }}>
+                    Business Plans for Shared Organizations
+                </Typography>
             </div>
             <Paper>
                 <TableContainer>
@@ -176,7 +176,7 @@ function OrganizationSubscriptionPoliciesManage(props) {
                             {filteredOrganizations.map(org => (
                                 <TableRow key={org.organizationId}>
                                     <TableCell>{org.displayName}</TableCell>
-                                    <TableCell>
+                                    <TableCell style={{ width: '80%' }}>
                                         <Autocomplete
                                             multiple
                                             disableCloseOnSelect
