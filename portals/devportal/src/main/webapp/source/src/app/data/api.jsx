@@ -84,6 +84,19 @@ export default class API extends Resource {
         return promised_getDocContent;
     }
 
+    /*
+     * Get the markdown overview content of an API
+     */
+    getMarkdownContentOfAPI(api_id) {
+        const promiseGetMarkdDownContent = this.client.then((client) => {
+            const payload = {
+                apiId: api_id,
+            };
+            return client.apis.APIs.getMarkdownContentOfAPI(payload);
+        });
+        return promiseGetMarkdDownContent;
+    }
+
     /**
      * Get the Documents of an API
      * @param id {String} UUID of the API in which the documents needed

@@ -49,7 +49,7 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Progress from 'AppComponents/Shared/Progress';
 import API from 'AppData/api';
 import CONSTANTS from 'AppData/Constants';
-import View from 'AppComponents/Apis/Details/Documents/View';
+import OverviewMarkdown from 'AppComponents/Apis/Details/Documents/OverviewMarkdown';
 import SolaceEndpoints from './SolaceEndpoints';
 import Environments from './Environments';
 import Comments from './Comments/Comments';
@@ -191,7 +191,6 @@ function Overview() {
     const [isLoading, setIsLoading] = useState(false);
     const [notFound, setNotFound] = useState(false);
     const [allDocuments, setAllDocuments] = useState(null);
-    const [overviewDocOverride, setOverviewDocOverride] = useState(null);
     const [swaggerDescription, setSwaggerDescription] = useState(null);
     const [allPolicies, setAllPolicies] = useState(null);
     const [rating, setRating] = useState({
@@ -293,11 +292,6 @@ function Overview() {
         const restApi = new API();
         return restApi.getDocumentsByAPIId(api.id)
             .then((response) => {
-                const overviewDoc = response.body.list.filter((item) => item.otherTypeName === '_overview');
-                if (overviewDoc.length > 0) {
-                    // We can override the UI with this content
-                    setOverviewDocOverride(overviewDoc[0]); // Only one doc we can render
-                }
                 setAllDocuments(response.body.list);
             })
             .catch((error) => {
@@ -430,11 +424,11 @@ function Overview() {
             />
         );
     }
-    if (overviewDocOverride) {
+    if (api.isMarkdownOverview) {
         return (
             <Root>
                 <Paper className={classes.paperWithDoc} elevation={0}>
-                    <View doc={overviewDocOverride} apiId={api.id} fullScreen dontShowName />
+                    <OverviewMarkdown apiId={api.id} fullScreen dontShowName />
                 </Paper>
             </Root>
         );
