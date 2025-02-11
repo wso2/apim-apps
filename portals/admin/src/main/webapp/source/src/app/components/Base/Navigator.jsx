@@ -117,6 +117,7 @@ function Navigator(props) {
     const iskeyManagers = hasPermission(CONSTS.Roles.KEY_MANAGER);
     const isAPICategory = hasPermission(CONSTS.Roles.CATEGORY_MANAGER);
     const isGatewayManager = hasPermission(CONSTS.Roles.GATEWAY_MANAGER);
+    const isGovernanceManager = hasPermission(CONSTS.Roles.GOVERNANCE_MANAGER);
 
     const entireArray = [];
     const checkRouteMenuMapping = routeMenuMapping;
@@ -154,6 +155,12 @@ function Navigator(props) {
             const gatewayObj = checkRouteMenuMapping[i];
             if (isGatewayManager) {
                 entireArray.push(gatewayObj);
+            }
+        }
+        if (checkRouteMenuMapping[i].id === 'Governance') {
+            const governanceObj = checkRouteMenuMapping[i];
+            if (isGovernanceManager) {
+                entireArray.push(governanceObj);
             }
         }
         if (checkRouteMenuMapping[i].id === 'Settings') {
