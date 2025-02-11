@@ -38,7 +38,6 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import Utils from 'AppData/Utils';
 import { styled } from '@mui/material/styles';
 
-// Move getChipStyles from AddEditPolicy
 const getChipStyles = (type) => {
     switch (type) {
         case 'API_DEFINITION':
@@ -332,12 +331,12 @@ function RulesetSelector({
                 <Typography variant='body1' color='text.secondary' align='center'>
                     {searchQuery ? (
                         <FormattedMessage
-                            id='Governance.Policies.AddEdit.rulesets.noSearchResults'
+                            id='Governance.PolicyAttachments.AddEdit.rulesets.noSearchResults'
                             defaultMessage='No rulesets found matching your search'
                         />
                     ) : (
                         <FormattedMessage
-                            id='Governance.Policies.AddEdit.rulesets.empty'
+                            id='Governance.PolicyAttachments.AddEdit.rulesets.empty'
                             defaultMessage='No rulesets available'
                         />
                     )}

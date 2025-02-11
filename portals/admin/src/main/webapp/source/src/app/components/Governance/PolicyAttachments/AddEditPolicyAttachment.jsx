@@ -64,7 +64,7 @@ const StyledHr = styled('hr')({
     border: 'solid 1px #efefef',
 });
 
-const PREFIX = 'AddEditPolicy';
+const PREFIX = 'AddEditPolicyAttachment';
 
 const classes = {
     root: `${PREFIX}-root`,
@@ -151,7 +151,7 @@ function reducer(state, { field, value }) {
     }
 }
 
-function AddEditPolicy(props) {
+function AddEditPolicyAttachment(props) {
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
     const [availableRulesets, setAvailableRulesets] = useState([]);
@@ -159,7 +159,7 @@ function AddEditPolicy(props) {
     const [availableLabels, setAvailableLabels] = useState([]);
     const [labelMode, setLabelMode] = useState('all');
     const intl = useIntl();
-    const { match: { params: { id: policyId } }, history } = props;
+    const { match: { params: { id: policyAttachmentId } }, history } = props;
 
     const initialState = {
         name: '',
@@ -196,7 +196,7 @@ function AddEditPolicy(props) {
             .catch((error) => {
                 console.error('Error loading labels:', error);
                 Alert.error(intl.formatMessage({
-                    id: 'Governance.Policies.AddEdit.error.loading.labels',
+                    id: 'Governance.PolicyAttachments.AddEdit.error.loading.labels',
                     defaultMessage: 'Error loading labels',
                 }));
             });
@@ -206,17 +206,17 @@ function AddEditPolicy(props) {
                 const rulesetList = response.body.list;
                 setAvailableRulesets(rulesetList);
 
-                if (policyId) {
-                    return restApi.getPolicy(policyId)
-                        .then((policyResponse) => {
-                            const { body } = policyResponse;
+                if (policyAttachmentId) {
+                    return restApi.getPolicy(policyAttachmentId)
+                        .then((policyAttachmentResponse) => {
+                            const { body } = policyAttachmentResponse;
                             const fullRulesets = body.rulesets.map((rulesetId) => {
                                 const foundRuleset = rulesetList.find((r) => r.id === rulesetId);
                                 return foundRuleset || { id: rulesetId, name: 'Unknown Ruleset' };
                             });
                             setSelectedRulesets(fullRulesets);
 
-                            // Set the correct label mode based on the policy data
+                            // Set the correct label mode based on the policy attachment data
                             if (body.labels.length === 1 && body.labels[0] === 'GLOBAL') {
                                 setLabelMode('all');
                             } else if (body.labels.length === 0) {
@@ -241,11 +241,11 @@ function AddEditPolicy(props) {
             .catch((error) => {
                 console.error('Error loading rulesets:', error);
                 Alert.error(intl.formatMessage({
-                    id: 'Governance.Policies.AddEdit.error.loading.rulesets',
+                    id: 'Governance.PolicyAttachments.AddEdit.error.loading.rulesets',
                     defaultMessage: 'Error loading rulesets',
                 }));
             });
-    }, [policyId]);
+    }, [policyAttachmentId]);
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
@@ -278,23 +278,23 @@ function AddEditPolicy(props) {
             case 'name':
                 if (!fieldValue) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.name.required',
-                        defaultMessage: 'Policy name is required',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.name.required',
+                        defaultMessage: 'Policy Attachment name is required',
                     });
                 } else if (fieldValue.length < 1) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.name.too.short',
-                        defaultMessage: 'Policy name cannot be empty',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.name.too.short',
+                        defaultMessage: 'Policy Attachment name cannot be empty',
                     });
                 } else if (fieldValue.length > 255) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.name.too.long',
-                        defaultMessage: 'Policy name cannot exceed 255 characters',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.name.too.long',
+                        defaultMessage: 'Policy Attachment name cannot exceed 255 characters',
                     });
                 } else if (!/^[a-zA-Z0-9-_ ]+$/.test(fieldValue)) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.name.invalid',
-                        defaultMessage: 'Policy name can only contain alphanumeric characters,'
+                        id: 'Governance.PolicyAttachments.AddEdit.form.name.invalid',
+                        defaultMessage: 'Policy Attachment name can only contain alphanumeric characters,'
                             + ' hyphens, underscores, and spaces',
                     });
                 }
@@ -302,7 +302,7 @@ function AddEditPolicy(props) {
             case 'description':
                 if (fieldValue && fieldValue.length > 1024) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.description.too.long',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.description.too.long',
                         defaultMessage: 'Description cannot exceed 1024 characters',
                     });
                 }
@@ -310,12 +310,12 @@ function AddEditPolicy(props) {
             case 'rulesets':
                 if (!fieldValue || !Array.isArray(fieldValue) || fieldValue.length === 0) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.rulesets.required',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.rulesets.required',
                         defaultMessage: 'At least one ruleset is required',
                     });
                 } else if (new Set(fieldValue).size !== fieldValue.length) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.rulesets.duplicate',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.rulesets.duplicate',
                         defaultMessage: 'Duplicate rulesets are not allowed',
                     });
                 }
@@ -323,7 +323,7 @@ function AddEditPolicy(props) {
             case 'actions': {
                 if (!fieldValue || !Array.isArray(fieldValue) || fieldValue.length === 0) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.actions.invalid',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.actions.invalid',
                         defaultMessage: 'Actions must be properly configured',
                     });
                     break;
@@ -335,7 +335,7 @@ function AddEditPolicy(props) {
                     && action.type === CONSTS.GOVERNANCE_ACTIONS.BLOCK);
                 if (invalidBlockActions.length > 0) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.actions.invalid.block',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.actions.invalid.block',
                         defaultMessage: 'BLOCK action is not allowed for API_CREATE and API_UPDATE states',
                     });
                     break;
@@ -345,7 +345,7 @@ function AddEditPolicy(props) {
             case 'labels':
                 if (labelMode === 'specific' && (!fieldValue || fieldValue.length === 0)) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.labels.required',
+                        id: 'Governance.PolicyAttachments.AddEdit.form.labels.required',
                         defaultMessage: 'At least one label is required when applying to specific APIs',
                     });
                 }
@@ -371,7 +371,7 @@ function AddEditPolicy(props) {
         setValidating(true);
         if (formHasErrors(true)) {
             Alert.error(intl.formatMessage({
-                id: 'Governance.Policies.AddEdit.form.has.errors',
+                id: 'Governance.PolicyAttachments.AddEdit.form.has.errors',
                 defaultMessage: 'One or more fields contain errors.',
             }));
             return false;
@@ -387,27 +387,27 @@ function AddEditPolicy(props) {
         const restApi = new GovernanceAPI();
         let promiseAPICall = null;
 
-        if (policyId) {
+        if (policyAttachmentId) {
             promiseAPICall = restApi
                 .updatePolicy(body).then(() => {
                     return intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.edit.success',
-                        defaultMessage: 'Policy Updated Successfully',
+                        id: 'Governance.PolicyAttachments.AddEdit.edit.success',
+                        defaultMessage: 'Policy Attachment Updated Successfully',
                     });
                 });
         } else {
             promiseAPICall = restApi
                 .addPolicy(body).then(() => {
                     return intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.add.success',
-                        defaultMessage: 'Policy Added Successfully',
+                        id: 'Governance.PolicyAttachments.AddEdit.add.success',
+                        defaultMessage: 'Policy Attachment Added Successfully',
                     });
                 });
         }
 
         promiseAPICall.then((msg) => {
             Alert.success(`${name} ${msg}`);
-            history.push('/governance/policies/');
+            history.push('/governance/policy-attachments/');
         }).catch((error) => {
             const { response, message } = error;
             if (response && response.body) {
@@ -523,12 +523,12 @@ function AddEditPolicy(props) {
         <StyledContentBase
             pageStyle='half'
             title={
-                policyId ? `${intl.formatMessage({
-                    id: 'Governance.Policies.AddEdit.title.edit',
-                    defaultMessage: 'Governance Policy - Edit ',
+                policyAttachmentId ? `${intl.formatMessage({
+                    id: 'Governance.PolicyAttachments.AddEdit.title.edit',
+                    defaultMessage: 'Governance Policy Attachment - Edit ',
                 })} ${name}` : intl.formatMessage({
-                    id: 'Governance.Policies.AddEdit.title.new',
-                    defaultMessage: 'Governance Policy - Create new',
+                    id: 'Governance.PolicyAttachments.AddEdit.title.new',
+                    defaultMessage: 'Governance Policy Attachment - Create new',
                 })
             }
             help={<div>TODO: Link Doc</div>}
@@ -538,14 +538,14 @@ function AddEditPolicy(props) {
                     <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px', paddingTop: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.general.details'
+                                id='Governance.PolicyAttachments.AddEdit.general.details'
                                 defaultMessage='General Details'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.general.details.description'
-                                defaultMessage='Provide name and description of the policy.'
+                                id='Governance.PolicyAttachments.AddEdit.general.details.description'
+                                defaultMessage='Provide name and description of the policy attachment.'
                             />
                         </Typography>
                     </Grid>
@@ -560,7 +560,7 @@ function AddEditPolicy(props) {
                                 label={(
                                     <span>
                                         <FormattedMessage
-                                            id='Governance.Policies.AddEdit.form.name'
+                                            id='Governance.PolicyAttachments.AddEdit.form.name'
                                             defaultMessage='Name'
                                         />
                                         <StyledSpan>*</StyledSpan>
@@ -569,8 +569,8 @@ function AddEditPolicy(props) {
                                 fullWidth
                                 error={hasErrors('name', name, validating)}
                                 helperText={hasErrors('name', name, validating) || intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.form.name.help',
-                                    defaultMessage: 'Name of the governance policy.',
+                                    id: 'Governance.PolicyAttachments.AddEdit.form.name.help',
+                                    defaultMessage: 'Name of the governance policy attachment.',
                                 })}
                                 variant='outlined'
                             />
@@ -580,15 +580,15 @@ function AddEditPolicy(props) {
                                 value={description}
                                 onChange={onChange}
                                 label={intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.form.description',
+                                    id: 'Governance.PolicyAttachments.AddEdit.form.description',
                                     defaultMessage: 'Description',
                                 })}
                                 fullWidth
                                 multiline
                                 error={hasErrors('description', description, validating)}
                                 helperText={hasErrors('description', description, validating) || intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.form.description.help',
-                                    defaultMessage: 'Description of the governance policy.',
+                                    id: 'Governance.PolicyAttachments.AddEdit.form.description.help',
+                                    defaultMessage: 'Description of the governance policy attachment.',
                                 })}
                                 variant='outlined'
                                 InputProps={{
@@ -607,14 +607,14 @@ function AddEditPolicy(props) {
                     <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.labels.title'
+                                id='Governance.PolicyAttachments.AddEdit.labels.title'
                                 defaultMessage='Applicability'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.labels.description'
-                                defaultMessage={'Choose whether to apply this policy to'
+                                id='Governance.PolicyAttachments.AddEdit.labels.description'
+                                defaultMessage={'Choose whether to apply this policy attachment to'
                                     + ' all APIs or only to APIs with specific labels'}
                             />
                         </Typography>
@@ -631,7 +631,7 @@ function AddEditPolicy(props) {
                                         value='all'
                                         control={<Radio />}
                                         label={intl.formatMessage({
-                                            id: 'Governance.Policies.AddEdit.labels.applyAll',
+                                            id: 'Governance.PolicyAttachments.AddEdit.labels.applyAll',
                                             defaultMessage: 'Apply to all APIs',
                                         })}
                                     />
@@ -639,7 +639,7 @@ function AddEditPolicy(props) {
                                         value='specific'
                                         control={<Radio />}
                                         label={intl.formatMessage({
-                                            id: 'Governance.Policies.AddEdit.labels.applySpecific',
+                                            id: 'Governance.PolicyAttachments.AddEdit.labels.applySpecific',
                                             defaultMessage: 'Apply to APIs with specific labels',
                                         })}
                                     />
@@ -647,7 +647,7 @@ function AddEditPolicy(props) {
                                         value='none'
                                         control={<Radio />}
                                         label={intl.formatMessage({
-                                            id: 'Governance.Policies.AddEdit.labels.applyNone',
+                                            id: 'Governance.PolicyAttachments.AddEdit.labels.applyNone',
                                             defaultMessage: 'Apply to none',
                                         })}
                                     />
@@ -667,15 +667,15 @@ function AddEditPolicy(props) {
                                             {...params}
                                             variant='outlined'
                                             label={intl.formatMessage({
-                                                id: 'Governance.Policies.AddEdit.labels.input',
+                                                id: 'Governance.PolicyAttachments.AddEdit.labels.input',
                                                 defaultMessage: 'Select Labels',
                                             })}
                                             error={hasErrors('labels', labels, validating)}
                                             helperText={hasErrors('labels', labels, validating) || intl.formatMessage({
-                                                id: 'Governance.Policies.AddEdit.labels.helper',
+                                                id: 'Governance.PolicyAttachments.AddEdit.labels.helper',
                                                 defaultMessage:
                                                     'Select one or more labels to determine'
-                                                    + ' which APIs this policy applies to',
+                                                    + ' which APIs this policy attachment applies to',
                                             })}
                                         />
                                     )}
@@ -699,14 +699,14 @@ function AddEditPolicy(props) {
                     <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.enforcement.title'
+                                id='Governance.PolicyAttachments.AddEdit.enforcement.title'
                                 defaultMessage='Enforcement Details'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.enforcement.description'
-                                defaultMessage='Provide details of when the policy will be applied'
+                                id='Governance.PolicyAttachments.AddEdit.enforcement.description'
+                                defaultMessage='Provide details of when the policy attachment will be applied'
                             />
                         </Typography>
                     </Grid>
@@ -719,7 +719,7 @@ function AddEditPolicy(props) {
                                 onClick={handleAddAction}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.action.add',
+                                    id: 'Governance.PolicyAttachments.AddEdit.action.add',
                                     defaultMessage: 'Add Action Configuration',
                                 })}
                             </Button>
@@ -732,31 +732,31 @@ function AddEditPolicy(props) {
                                             <TableRow>
                                                 <TableCell>
                                                     {intl.formatMessage({
-                                                        id: 'Governance.Policies.AddEdit.action.table.state',
+                                                        id: 'Governance.PolicyAttachments.AddEdit.action.table.state',
                                                         defaultMessage: 'State',
                                                     })}
                                                 </TableCell>
                                                 <TableCell>
                                                     {intl.formatMessage({
-                                                        id: 'Governance.Policies.AddEdit.action.table.onError',
+                                                        id: 'Governance.PolicyAttachments.AddEdit.action.table.onError',
                                                         defaultMessage: 'On Error',
                                                     })}
                                                 </TableCell>
                                                 <TableCell>
                                                     {intl.formatMessage({
-                                                        id: 'Governance.Policies.AddEdit.action.table.onWarn',
+                                                        id: 'Governance.PolicyAttachments.AddEdit.action.table.onWarn',
                                                         defaultMessage: 'On Warn',
                                                     })}
                                                 </TableCell>
                                                 <TableCell>
                                                     {intl.formatMessage({
-                                                        id: 'Governance.Policies.AddEdit.action.table.onInfo',
+                                                        id: 'Governance.PolicyAttachments.AddEdit.action.table.onInfo',
                                                         defaultMessage: 'On Info',
                                                     })}
                                                 </TableCell>
                                                 <TableCell align='right'>
                                                     {intl.formatMessage({
-                                                        id: 'Governance.Policies.AddEdit.action.table.actions',
+                                                        id: 'Governance.PolicyAttachments.AddEdit.action.table.actions',
                                                         defaultMessage: 'Actions',
                                                     })}
                                                 </TableCell>
@@ -856,14 +856,14 @@ function AddEditPolicy(props) {
                     <Grid item xs={12} md={12} lg={12} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.rulesets.title'
+                                id='Governance.PolicyAttachments.AddEdit.rulesets.title'
                                 defaultMessage='Rulesets'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.rulesets.description'
-                                defaultMessage={'Search and select rulesets to include in the policy. '
+                                id='Governance.PolicyAttachments.AddEdit.rulesets.description'
+                                defaultMessage={'Search and select rulesets to include in the policy attachment. '
                                     + 'Selected rulesets will appear above the search bar.'}
                             />
                         </Typography>
@@ -899,14 +899,14 @@ function AddEditPolicy(props) {
                             >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
-                                        {policyId ? (
+                                        {policyAttachmentId ? (
                                             <FormattedMessage
-                                                id='Governance.Policies.AddEdit.form.update.btn'
+                                                id='Governance.PolicyAttachments.AddEdit.form.update.btn'
                                                 defaultMessage='Update'
                                             />
                                         ) : (
                                             <FormattedMessage
-                                                id='Governance.Policies.AddEdit.form.add.btn'
+                                                id='Governance.PolicyAttachments.AddEdit.form.add.btn'
                                                 defaultMessage='Create'
                                             />
                                         )}
@@ -915,10 +915,10 @@ function AddEditPolicy(props) {
 
                             </Button>
                         </Box>
-                        <RouterLink to='/governance/policies'>
+                        <RouterLink to='/governance/policy-attachments'>
                             <Button variant='outlined'>
                                 <FormattedMessage
-                                    id='Governance.Policies.AddEdit.form.cancel'
+                                    id='Governance.PolicyAttachments.AddEdit.form.cancel'
                                     defaultMessage='Cancel'
                                 />
                             </Button>
@@ -937,9 +937,9 @@ function AddEditPolicy(props) {
     );
 }
 
-AddEditPolicy.propTypes = {
+AddEditPolicyAttachment.propTypes = {
     match: PropTypes.shape({}).isRequired,
     history: PropTypes.shape({}).isRequired,
 };
 
-export default AddEditPolicy;
+export default AddEditPolicyAttachment;

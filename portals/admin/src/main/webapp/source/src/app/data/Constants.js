@@ -72,7 +72,7 @@ const CONSTS = {
         { value: 'PENDING', label: 'Pending' },
         { value: 'NON_COMPLIANT', label: 'Non Compliant' },
     ],
-    POLICY_ADHERENCE_STATES: [
+    POLICY_ATTACHMENT_ADHERENCE_STATES: [
         { value: 'FOLLOWED', label: 'Followed' },
         { value: 'VIOLATED', label: 'Violated' },
         { value: 'UNAPPLIED', label: 'Unapplied' },

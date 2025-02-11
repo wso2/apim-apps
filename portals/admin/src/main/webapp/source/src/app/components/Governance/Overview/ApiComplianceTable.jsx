@@ -31,7 +31,7 @@ import ApiIcon from '@mui/icons-material/Api';
 import Utils from 'AppData/Utils';
 
 /**
- * API call to get Policies
+ * API call to get Policy Attachments
  * @returns {Promise}.
  */
 function apiCall() {
@@ -55,8 +55,8 @@ export default function ApiComplianceTable() {
             return (
                 <Typography variant="body2" color="textSecondary">
                     {intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.no.policies',
-                        defaultMessage: 'N/A - No policies to evaluate',
+                        id: 'Governance.Overview.APICompliance.no.policyAttachments',
+                        defaultMessage: 'N/A - No policy attachments to evaluate',
                     })}
                 </Typography>
             );
@@ -206,7 +206,7 @@ export default function ApiComplianceTable() {
             },
         },
         {
-            name: 'policyAdherenceSummary',
+            name: 'policyAttachmentAdherenceSummary',
             options: { display: false }
         },
         {
@@ -214,10 +214,10 @@ export default function ApiComplianceTable() {
             options: { display: false }
         },
         {
-            name: 'policies',
+            name: 'policyAttachments',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.column.policies',
-                defaultMessage: 'Policies',
+                id: 'Governance.Overview.APICompliance.column.policyAttachments',
+                defaultMessage: 'Policy Attachments',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {

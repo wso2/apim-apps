@@ -23,15 +23,15 @@ import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import { Grid, Card, CardContent, Typography } from '@mui/material';
 import DonutChart from 'AppComponents/Shared/DonutChart';
 import ApiComplianceTable from './ApiComplianceTable';
-import PolicyAdherenceTable from './PolicyAdherenceTable';
+import PolicyAttachmentAdherenceTable from './PolicyAttachmentAdherenceTable';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 
 export default function Summary() {
     const intl = useIntl();
-    const [policyAdherence, setPolicyAdherence] = useState({
-        followedPolicies: 0,
-        violatedPolicies: 0,
-        unAppliedPolicies: 0
+    const [policyAttachmentAdherence, setPolicyAttachmentAdherence] = useState({
+        followedPolicyAttachments: 0,
+        violatedPolicyAttachments: 0,
+        unAppliedPolicyAttachments: 0
     });
     const [apiCompliance, setApiCompliance] = useState({
         compliantArtifacts: 0,
@@ -47,12 +47,12 @@ export default function Summary() {
             restApi.getPolicyAdherenceSummary(),
             restApi.getComplianceSummaryForAPIs()
         ])
-            .then(([policyResponse, artifactResponse]) => {
+            .then(([policyAttachmentResponse, artifactResponse]) => {
                 // Set Policy Adherence
-                setPolicyAdherence({
-                    followedPolicies: policyResponse.body.followed || 0,
-                    violatedPolicies: policyResponse.body.violated || 0,
-                    unAppliedPolicies: policyResponse.body.unApplied || 0
+                setPolicyAttachmentAdherence({
+                    followedPolicyAttachments: policyAttachmentResponse.body.followed || 0,
+                    violatedPolicyAttachments: policyAttachmentResponse.body.violated || 0,
+                    unAppliedPolicyAttachments: policyAttachmentResponse.body.unApplied || 0
                 });
 
                 // Set API compliance
@@ -86,35 +86,35 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Overview.Summary.policy.adherence',
-                                    defaultMessage: 'Policy Adherence',
+                                    id: 'Governance.Overview.Summary.policyAttachment.adherence',
+                                    defaultMessage: 'Policy Attachment Adherence',
                                 })}
                             </Typography>
                             <DonutChart
                                 data={[
                                     {
                                         id: 0,
-                                        value: policyAdherence.followedPolicies,
+                                        value: policyAttachmentAdherence.followedPolicyAttachments,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.policy.followed',
+                                            id: 'Governance.Overview.Summary.policyAttachment.followed',
                                             defaultMessage: 'Followed ({count})',
-                                        }, { count: policyAdherence.followedPolicies })
+                                        }, { count: policyAttachmentAdherence.followedPolicyAttachments })
                                     },
                                     {
                                         id: 1,
-                                        value: policyAdherence.violatedPolicies,
+                                        value: policyAttachmentAdherence.violatedPolicyAttachments,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.policy.violated',
+                                            id: 'Governance.Overview.Summary.policyAttachment.violated',
                                             defaultMessage: 'Violated ({count})',
-                                        }, { count: policyAdherence.violatedPolicies })
+                                        }, { count: policyAttachmentAdherence.violatedPolicyAttachments })
                                     },
                                     {
                                         id: 2,
-                                        value: policyAdherence.unAppliedPolicies,
+                                        value: policyAttachmentAdherence.unAppliedPolicyAttachments,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.policy.not.applied',
+                                            id: 'Governance.Overview.Summary.policyAttachment.not.applied',
                                             defaultMessage: 'Not Applied ({count})',
-                                        }, { count: policyAdherence.unAppliedPolicies })
+                                        }, { count: policyAttachmentAdherence.unAppliedPolicyAttachments })
                                     }
                                 ]}
                             />
@@ -207,11 +207,11 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Overview.Summary.policy.adherence.details',
-                                    defaultMessage: 'Policy Adherence Details',
+                                    id: 'Governance.Overview.Summary.policyAttachment.adherence.details',
+                                    defaultMessage: 'Policy Attachment Adherence Details',
                                 })}
                             </Typography>
-                            <PolicyAdherenceTable />
+                            <PolicyAttachmentAdherenceTable />
                         </CardContent>
                     </Card>
                 </Grid>

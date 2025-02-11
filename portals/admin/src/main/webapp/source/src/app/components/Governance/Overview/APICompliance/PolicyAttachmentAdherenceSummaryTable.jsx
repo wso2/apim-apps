@@ -17,8 +17,10 @@
  */
 
 import React from 'react';
-import { Typography, Chip, Box, LinearProgress , TableRow, TableCell } from '@mui/material';
-import ListBase from 'AppComponents/Addons/Addons/ListBase';
+import {
+    Typography, Chip, Box, LinearProgress, TableRow, TableCell,
+} from '@mui/material';
+import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import Stack from '@mui/material/Stack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
@@ -28,11 +30,11 @@ import PolicyIcon from '@mui/icons-material/Policy';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import Utils from 'AppData/Utils';
 
-export default function PolicyAdherenceSummaryTable({ artifactId }) {
+export default function PolicyAttachmentAdherenceSummaryTable({ artifactId }) {
     const intl = useIntl();
 
     /**
-     * API call to get Policies
+     * API call to get Compliance by API Id
      * @returns {Promise}.
      */
     function apiCall() {
@@ -43,9 +45,6 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 return result.body.governedPolicies;
             })
             .catch((error) => {
-                if (error.status === 404) {
-                    return [];
-                }
                 throw error;
             });
     }
@@ -59,7 +58,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant='body2' sx={{ fontWeight: 'bold' }} color='textSecondary'>
                         {intl.formatMessage({
-                            id: 'Apis.Details.Compliance.PolicyAdherence.followed.count',
+                            id: 'Governance.Overview.APICompliance.PolicyAttachmentAdherence.followed.count',
                             defaultMessage: '{followed}/{total} Followed',
                         }, { followed, total })}
                     </Typography>
@@ -94,13 +93,12 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                                 sx={{
                                     display: 'flex',
                                     alignItems: 'center',
-                                    gap: 1
+                                    gap: 1,
                                 }}
                             >
-                                {ruleset.status === 'PASSED' ?
-                                    <CheckCircleIcon color='success' sx={{ fontSize: 16 }} /> :
-                                    <CancelIcon color='error' sx={{ fontSize: 16 }} />
-                                }
+                                {ruleset.status === 'PASSED'
+                                    ? <CheckCircleIcon color='success' sx={{ fontSize: 16 }} />
+                                    : <CancelIcon color='error' sx={{ fontSize: 16 }} />}
                                 <Typography variant='body2'>
                                     {ruleset.name}
                                 </Typography>
@@ -112,16 +110,16 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         );
     };
 
-    const policyColumnProps = [
+    const policyAttachmentColumProps = [
         {
             name: 'id',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Apis.Details.Compliance.PolicyAdherence.column.policy',
-                defaultMessage: 'Policy',
+                id: 'Governance.Overview.APICompliance.PolicyAttachmentAdherence.column.policyAttachment',
+                defaultMessage: 'Policy Attachment',
             }),
             options: {
                 width: '30%',
@@ -137,7 +135,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
                     },
                 }),
@@ -146,7 +144,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         {
             name: 'status',
             label: intl.formatMessage({
-                id: 'Apis.Details.Compliance.PolicyAdherence.column.status',
+                id: 'Governance.Overview.APICompliance.PolicyAttachmentAdherence.column.status',
                 defaultMessage: 'Status',
             }),
             options: {
@@ -161,7 +159,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                     };
                     return (
                         <Chip
-                            label={Utils.mapPolicyAdherenceStateToLabel(value)}
+                            label={Utils.mapPolicyAttachmentAdherenceStateToLabel(value)}
                             color={getChipColor(value)}
                             size='small'
                             variant='outlined'
@@ -174,7 +172,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
                     },
                 }),
@@ -182,12 +180,12 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         },
         {
             name: 'rulesetValidationResults',
-            options: { display: false }
+            options: { display: false },
         },
         {
             name: 'rulesetsList',
             label: intl.formatMessage({
-                id: 'Apis.Details.Compliance.PolicyAdherence.column.rulesets',
+                id: 'Governance.Overview.APICompliance.PolicyAttachmentAdherence.column.rulesets',
                 defaultMessage: 'Rulesets',
             }),
             options: {
@@ -203,11 +201,11 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                         paddingBottom: 0,
                         '& .MuiButton-root': {
                             fontWeight: 'bold',
-                            fontSize: 'small'
+                            fontSize: 'small',
                         },
-                    }
+                    },
                 }),
-            }
+            },
         },
     ];
 
@@ -217,14 +215,14 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 display: 'flex',
                 flexDirection: 'column',
                 alignItems: 'center',
-                padding: 3
+                padding: 3,
             }}
         >
             <PolicyIcon
                 sx={{
                     fontSize: 60,
                     color: 'action.disabled',
-                    mb: 2
+                    mb: 2,
                 }}
             />
             <Typography
@@ -234,8 +232,8 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 sx={{ fontWeight: 'medium' }}
             >
                 {intl.formatMessage({
-                    id: 'Apis.Details.Compliance.PolicyAdherence.empty.title',
-                    defaultMessage: 'No Policies Applied',
+                    id: 'Governance.Overview.APICompliance.PolicyAttachmentAdherence.empty.title',
+                    defaultMessage: 'No Policy Attachments Applied',
                 })}
             </Typography>
             <Typography
@@ -244,8 +242,8 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 align='center'
             >
                 {intl.formatMessage({
-                    id: 'Apis.Details.Compliance.PolicyAdherence.empty.helper',
-                    defaultMessage: 'No governance policies have been applied to this API.',
+                    id: 'Governance.Overview.APICompliance.PolicyAttachmentAdherence.empty.helper',
+                    defaultMessage: 'No governance policy attachments have been applied to this API.',
                 })}
             </Typography>
         </Box>
@@ -253,11 +251,11 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
 
     return (
         <ListBase
-            columnProps={policyColumnProps}
+            columProps={policyAttachmentColumProps}
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
-                content: emptyStateContent
+                content: emptyStateContent,
             }}
             addButtonProps={false}
             showActionColumn={false}

@@ -30,7 +30,7 @@ import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
  * @param {JSON} props component props.
  * @returns {JSX} Loading animation.
  */
-function DeletePolicy({ updateList, dataRow }) {
+function DeletePolicyAttachment({ updateList, dataRow }) {
     const { id } = dataRow;
     const intl = useIntl();
     const formSaveCallback = () => {
@@ -38,8 +38,8 @@ function DeletePolicy({ updateList, dataRow }) {
             .deletePolicy(id)
             .then(() => (
                 <FormattedMessage
-                    id='AdminPages.Governance.Policy.Delete.form.delete.successful'
-                    defaultMessage='Policy deleted successfully'
+                    id='AdminPages.Governance.PolicyAttachments.Delete.form.delete.successful'
+                    defaultMessage='Policy Attachment deleted successfully'
                 />
             ))
             .catch((error) => {
@@ -53,11 +53,11 @@ function DeletePolicy({ updateList, dataRow }) {
     return (
         <FormDialogBase
             title={intl.formatMessage({
-                id: 'AdminPages.Governance.Policy.Delete.form.delete.dialog.title',
-                defaultMessage: 'Delete Policy?',
+                id: 'AdminPages.Governance.PolicyAttachments.Delete.form.delete.dialog.title',
+                defaultMessage: 'Delete Policy Attachment?',
             })}
             saveButtonText={intl.formatMessage({
-                id: 'AdminPages.Governance.Policy.Delete.form.delete.dialog.btn',
+                id: 'AdminPages.Governance.PolicyAttachments.Delete.form.delete.dialog.btn',
                 defaultMessage: 'Delete',
             })}
             icon={<DeleteForeverIcon />}
@@ -65,19 +65,19 @@ function DeletePolicy({ updateList, dataRow }) {
         >
             <DialogContentText>
                 <FormattedMessage
-                    id='AdminPages.Governance.Policy.Delete.form.delete.confirmation.message'
-                    defaultMessage='Are you sure you want to delete this Policy?'
+                    id='AdminPages.Governance.PolicyAttachments.Delete.form.delete.confirmation.message'
+                    defaultMessage='Are you sure you want to delete this Policy Attachment?'
                 />
             </DialogContentText>
         </FormDialogBase>
     );
 }
 
-DeletePolicy.propTypes = {
+DeletePolicyAttachment.propTypes = {
     updateList: PropTypes.func.isRequired,
     dataRow: PropTypes.shape({
         id: PropTypes.string.isRequired,
     }).isRequired,
 };
 
-export default DeletePolicy;
+export default DeletePolicyAttachment;

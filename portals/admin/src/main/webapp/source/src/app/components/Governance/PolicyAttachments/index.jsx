@@ -20,22 +20,22 @@
 import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import ListPolicies from './ListPolicies';
-import AddEditPolicy from './AddEditPolicy';
+import ListPolicyAttachments from './ListPolicyAttachments';
+import AddEditPolicyAttachment from './AddEditPolicyAttachment';
 
 /**
  * Render a list
  * @returns {JSX} Header AppBar components.
  */
-function Policies() {
+function PolicyAttachments() {
     return (
         <Switch>
-            <Route exact path='/governance/policies' component={ListPolicies} />
-            <Route exact path='/governance/policies/create' component={AddEditPolicy} />
-            <Route exact path='/governance/policies/:id' component={AddEditPolicy} />
+            <Route exact path='/governance/policy-attachments' component={ListPolicyAttachments} />
+            <Route exact path='/governance/policy-attachments/create' component={AddEditPolicyAttachment} />
+            <Route exact path='/governance/policy-attachments/:id' component={AddEditPolicyAttachment} />
             <Route component={ResourceNotFound} />
         </Switch>
     );
 }
 
-export default withRouter(Policies);
+export default withRouter(PolicyAttachments);

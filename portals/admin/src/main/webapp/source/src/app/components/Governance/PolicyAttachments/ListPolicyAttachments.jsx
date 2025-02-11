@@ -27,10 +27,10 @@ import EditIcon from '@mui/icons-material/Edit';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import Utils from 'AppData/Utils';
-import DeletePolicy from './DeletePolicy';
+import DeletePolicyAttachment from './DeletePolicyAttachment';
 
 /**
- * API call to get Policies
+ * API call to get Policy Attachments
  * @returns {Promise}.
  */
 function apiCall() {
@@ -46,18 +46,18 @@ function apiCall() {
 }
 
 /**
- * Render a list of policies
+ * Render a list of policy attachments
  * @returns {JSX} List component
  */
-export default function ListPolicies() {
+export default function ListPolicyAttachments() {
     const intl = useIntl();
 
     const columProps = [
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Policies.List.column.policy',
-                defaultMessage: 'Policy',
+                id: 'Governance.PolicyAttachments.List.column.policyAttachment',
+                defaultMessage: 'Policy Attachment',
             }),
             options: {
                 sort: true,
@@ -91,7 +91,7 @@ export default function ListPolicies() {
         {
             name: 'governableStates',
             label: intl.formatMessage({
-                id: 'Governance.Policies.List.column.appliesWhen',
+                id: 'Governance.PolicyAttachments.List.column.appliesWhen',
                 defaultMessage: 'Applies when',
             }),
             options: {
@@ -139,7 +139,7 @@ export default function ListPolicies() {
         {
             name: 'labels',
             label: intl.formatMessage({
-                id: 'Governance.Policies.List.column.appliesTo',
+                id: 'Governance.PolicyAttachments.List.column.appliesTo',
                 defaultMessage: 'Applies to',
             }),
             options: {
@@ -193,31 +193,31 @@ export default function ListPolicies() {
     const pageProps = {
         pageStyle: 'paperLess',
         title: intl.formatMessage({
-            id: 'Governance.Policies.List.title',
-            defaultMessage: 'Governance Policies',
+            id: 'Governance.PolicyAttachments.List.title',
+            defaultMessage: 'Governance Policy Attachments',
         }),
         pageDescription: intl.formatMessage({
-            id: 'Governance.Policies.List.description',
-            defaultMessage: 'Create governance policies using rulesets from the catalog'
+            id: 'Governance.PolicyAttachments.List.description',
+            defaultMessage: 'Create governance policy attachments using rulesets from the catalog'
                 + ' to standardize and regulate your APls effectively',
         }),
     };
 
     const addButtonProps = {
         triggerButtonText: intl.formatMessage({
-            id: 'Governance.Policies.List.addPolicy.triggerButtonText',
-            defaultMessage: 'Create Governance Policy',
+            id: 'Governance.PolicyAttachments.List.addPolicyAttachment.triggerButtonText',
+            defaultMessage: 'Create Governance Policy Attachment',
         }),
         title: intl.formatMessage({
-            id: 'Governance.Policies.List.addPolicy.title',
-            defaultMessage: 'Create Governance Policy',
+            id: 'Governance.PolicyAttachments.List.addPolicyAttachment.title',
+            defaultMessage: 'Create Governance Policy Attachment',
         }),
     };
 
     const searchProps = {
         searchPlaceholder: intl.formatMessage({
-            id: 'Governance.Policies.List.search.default',
-            defaultMessage: 'Search policies by name or label',
+            id: 'Governance.PolicyAttachments.List.search.default',
+            defaultMessage: 'Search policy attachments by name or label',
         }),
         active: true,
     };
@@ -226,25 +226,25 @@ export default function ListPolicies() {
         content: (
             <Typography variant='body2' color='textSecondary' component='p'>
                 <FormattedMessage
-                    id='Governance.Policies.List.empty.content'
-                    defaultMessage={'Governance policies help you enforce standards'
+                    id='Governance.PolicyAttachments.List.empty.content'
+                    defaultMessage={'Governance policy attachments help you enforce standards'
                         + ' and compliance across your APIs. Click the Create button'
-                        + ' to add your first policy.'}
+                        + ' to add your first policy attachment.'}
                 />
             </Typography>
         ),
         title: (
             <Typography gutterBottom variant='h5' component='h2'>
                 <FormattedMessage
-                    id='Governance.Policies.List.empty.title'
-                    defaultMessage='Governance Policies'
+                    id='Governance.PolicyAttachments.List.empty.title'
+                    defaultMessage='Governance Policy Attachments'
                 />
             </Typography>
         ),
     };
 
     const addButtonOverride = (
-        <RouterLink to='/governance/policies/create'>
+        <RouterLink to='/governance/policy-attachments/create'>
             <Button
                 variant='contained'
                 color='primary'
@@ -252,8 +252,8 @@ export default function ListPolicies() {
                 role='button'
             >
                 <FormattedMessage
-                    id='Governance.Policies.List.add.new.policy'
-                    defaultMessage='Create Policy'
+                    id='Governance.PolicyAttachments.List.add.new.policyAttachments'
+                    defaultMessage='Create Policy Attachment'
                 />
             </Button>
         </RouterLink>
@@ -267,14 +267,14 @@ export default function ListPolicies() {
             searchProps={searchProps}
             emptyBoxProps={emptyBoxProps}
             apiCall={apiCall}
-            DeleteComponent={DeletePolicy}
+            DeleteComponent={DeletePolicyAttachment}
             editComponentProps={{
                 icon: <EditIcon />,
                 title: intl.formatMessage({
-                    id: 'Governance.Policies.List.edit.title',
-                    defaultMessage: 'Edit Policy',
+                    id: 'Governance.PolicyAttachments.List.edit.title',
+                    defaultMessage: 'Edit Policy Attachment',
                 }),
-                routeTo: '/governance/policies/',
+                routeTo: '/governance/policy-attachments/',
             }}
             addButtonOverride={addButtonOverride}
         />

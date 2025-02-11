@@ -38,7 +38,7 @@ import KeyManagers from 'AppComponents/KeyManagers';
 import AiVendors from 'AppComponents/AiVendors';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
-import Policies from 'AppComponents/Governance/Policies';
+import PolicyAttachments from 'AppComponents/Governance/PolicyAttachments';
 import RulesetCatalog from 'AppComponents/Governance/RulesetCatalog';
 import Overview from 'AppComponents/Governance/Overview';
 import BusinessIcon from '@mui/icons-material/Business';
@@ -310,13 +310,13 @@ const RouteMenuMapping = (intl) => [
                 icon: <BarChartIcon />,
             },
             {
-                id: 'Policies',
+                id: 'Policy Attachments',
                 displayText: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.governance.policies',
-                    defaultMessage: 'Policies',
+                    id: 'Base.RouteMenuMapping.governance.policyAttachments',
+                    defaultMessage: 'Policy Attachments',
                 }),
-                path: '/governance/policies',
-                component: Policies,
+                path: '/governance/policy-attachments',
+                component: PolicyAttachments,
                 icon: <PolicyIcon />,
             },
             {

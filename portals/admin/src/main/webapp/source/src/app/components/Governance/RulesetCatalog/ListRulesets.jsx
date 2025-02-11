@@ -199,7 +199,7 @@ export default function ListRulesets() {
                 <FormattedMessage
                     id='Governance.Rulesets.List.empty.content'
                     defaultMessage={'Rulesets are the building blocks for creating'
-                        + ' governance policies. They contain predefined rules and'
+                        + ' governance policy attachments. They contain predefined rules and'
                         + ' validations that can be used to enforce standards across your APIs.'
                         + ' Click Create Ruleset to get started.'}
                 />

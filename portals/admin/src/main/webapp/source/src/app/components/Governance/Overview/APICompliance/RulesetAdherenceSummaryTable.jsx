@@ -36,10 +36,10 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         const restApi = new GovernanceAPI();
         return restApi.getComplianceByAPIId(artifactId)
             .then((response) => {
-                // Get unique ruleset IDs from all policies
+                // Get unique ruleset IDs from all policy attachments
                 const rulesetIds = [...new Set(
                     response.body.governedPolicies.flatMap(
-                        (policy) => policy.rulesetValidationResults.map((result) => result.id),
+                        (policyAttachment) => policyAttachment.rulesetValidationResults.map((result) => result.id),
                     ),
                 )];
 

@@ -31,7 +31,7 @@ import PolicyIcon from '@mui/icons-material/Policy';
 import Utils from 'AppData/Utils';
 
 /**
- * API call to get Policies
+ * API call to get Policy Attachments
  * @returns {Promise}.
  */
 function apiCall() {
@@ -39,22 +39,22 @@ function apiCall() {
     return restApi
         .getPolicyAdherenceForAllPolicies()
         .then((result) => {
-            const policies = result.body.list;
+            const policyAttachments = result.body.list;
 
-            // Fetch policy adherence details for each policy
+            // Fetch policy attachment adherence details for each policy attachment
             // TODO: optimize
             return Promise.all(
-                policies.map(async (policy) => {
+                policyAttachments.map(async (policyAttachment) => {
                     try {
-                        const adherenceDetails = await restApi.getPolicyAdherenceByPolicyId(policy.id);
+                        const adherenceDetails = await restApi.getPolicyAdherenceByPolicyId(policyAttachment.id);
                         return {
-                            ...policy,
+                            ...policyAttachment,
                             evaluatedArtifacts: adherenceDetails.body.evaluatedArtifacts || []
                         };
                     } catch (error) {
-                        console.error(`Error fetching adherence for policy ${policy.id}:`, error);
+                        console.error(`Error fetching adherence for policy attachment ${policyAttachment.id}:`, error);
                         return {
-                            ...policy,
+                            ...policyAttachment,
                             evaluatedArtifacts: []
                         };
                     }
@@ -66,7 +66,7 @@ function apiCall() {
         });
 }
 
-export default function PolicyAdherenceTable() {
+export default function PolicyAttachmentAdherenceTable() {
     const intl = useIntl();
 
     // TODO: reuse this function in other components
@@ -75,7 +75,7 @@ export default function PolicyAdherenceTable() {
             return (
                 <Typography variant="body2" color="textSecondary">
                     {intl.formatMessage({
-                        id: 'Governance.Overview.PolicyAdherence.no.apis',
+                        id: 'Governance.Overview.PolicyAttachmentAdherence.no.apis',
                         defaultMessage: 'N/A - No APIs to evaluate',
                     })}
                 </Typography>
@@ -90,7 +90,7 @@ export default function PolicyAdherenceTable() {
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="textSecondary">
                         {intl.formatMessage({
-                            id: 'Governance.Overview.PolicyAdherence.compliant.count',
+                            id: 'Governance.Overview.PolicyAttachmentAdherence.compliant.count',
                             defaultMessage: '{followed}/{total} Compliant',
                         }, { followed, total })}
                     </Typography>
@@ -112,7 +112,7 @@ export default function PolicyAdherenceTable() {
         );
     };
 
-    const policyColumProps = [
+    const policyAttachmentColumProps = [
         {
             name: 'id',
             options: { display: false }
@@ -120,14 +120,14 @@ export default function PolicyAdherenceTable() {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.policy',
-                defaultMessage: 'Policy',
+                id: 'Governance.Overview.PolicyAttachmentAdherence.column.policyAttachment',
+                defaultMessage: 'Policy Attachment',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <RouterLink
-                            to={`/governance/policies/${tableMeta.rowData[0]}`}
+                            to={`/governance/policy-attachments/${tableMeta.rowData[0]}`}
                             style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
                             target="_blank"
                             rel="noopener noreferrer"
@@ -157,13 +157,13 @@ export default function PolicyAdherenceTable() {
         {
             name: 'status',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.status',
+                id: 'Governance.Overview.PolicyAttachmentAdherence.column.status',
                 defaultMessage: 'Status',
             }),
             options: {
                 customBodyRender: (value) => (
                     <Chip
-                        label={Utils.mapPolicyAdherenceStateToLabel(value)}
+                        label={Utils.mapPolicyAttachmentAdherenceStateToLabel(value)}
                         color={value === 'FOLLOWED' ? 'success' : value === 'VIOLATED' ? 'error' : 'default'}
                         size="small"
                         variant="outlined"
@@ -195,7 +195,7 @@ export default function PolicyAdherenceTable() {
         {
             name: 'progress',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.apis',
+                id: 'Governance.Overview.PolicyAttachmentAdherence.column.apis',
                 defaultMessage: 'APIs',
             }),
             options: {
@@ -281,8 +281,8 @@ export default function PolicyAdherenceTable() {
                 sx={{ fontWeight: 'medium' }}
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.PolicyAdherence.empty.content',
-                    defaultMessage: 'No Governance Policies Available',
+                    id: 'Governance.Overview.PolicyAttachmentAdherence.empty.content',
+                    defaultMessage: 'No Governance Policy Attachments Available',
                 })}
             </Typography>
             <Typography
@@ -291,8 +291,8 @@ export default function PolicyAdherenceTable() {
                 align="center"
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.PolicyAdherence.empty.helper',
-                    defaultMessage: 'Create a new governance policy to start governing the APIs.',
+                    id: 'Governance.Overview.PolicyAttachmentAdherence.empty.helper',
+                    defaultMessage: 'Create a new governance policy attachment to start governing the APIs.',
                 })}
             </Typography>
         </Box>
@@ -300,7 +300,7 @@ export default function PolicyAdherenceTable() {
 
     return (
         <ListBase
-            columProps={policyColumProps}
+            columProps={policyAttachmentColumProps}
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{

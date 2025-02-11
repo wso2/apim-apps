@@ -30,7 +30,7 @@ import DonutChart from 'AppComponents/Shared/DonutChart';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import RuleViolationSummary from './RuleViolationSummary';
 import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
-import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
+import PolicyAttachmentAdherenceSummaryTable from './PolicyAttachmentAdherenceSummaryTable';
 
 export default function Compliance(props) {
     const intl = useIntl();
@@ -49,8 +49,8 @@ export default function Compliance(props) {
                 setComplianceStatus(response.body.status);
                 const rulesetMap = new Map();
 
-                response.body.governedPolicies.forEach((policy) => {
-                    policy.rulesetValidationResults.forEach((result) => {
+                response.body.governedPolicies.forEach((policyAttachment) => {
+                    policyAttachment.rulesetValidationResults.forEach((result) => {
                         // If ruleset not in map or if existing result is older, update the map
                         if (!rulesetMap.has(result.id)) {
                             rulesetMap.set(result.id, result);
@@ -187,7 +187,7 @@ export default function Compliance(props) {
                     </Card>
                 </Grid>
 
-                {/* Policy Adherence Summary section */}
+                {/* Policy Attachment Adherence Summary section */}
                 <Grid item xs={12}>
                     <Card
                         elevation={3}
@@ -203,11 +203,11 @@ export default function Compliance(props) {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 <FormattedMessage
-                                    id='Governance.Overview.Compliance.policy.adherence.summary'
-                                    defaultMessage='Policy Adherence Summary'
+                                    id='Governance.Overview.Compliance.policyAttachment.adherence.summary'
+                                    defaultMessage='Policy Attachment Adherence Summary'
                                 />
                             </Typography>
-                            <PolicyAdherenceSummaryTable artifactId={artifactId} />
+                            <PolicyAttachmentAdherenceSummaryTable artifactId={artifactId} />
                         </CardContent>
                     </Card>
                 </Grid>

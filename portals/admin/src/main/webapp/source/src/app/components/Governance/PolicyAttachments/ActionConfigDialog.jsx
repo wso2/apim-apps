@@ -91,7 +91,7 @@ export default function ActionConfigDialog({
         >
             <DialogTitle>
                 <FormattedMessage
-                    id='Governance.Policies.AddEdit.action.config.title'
+                    id='Governance.PolicyAttachments.AddEdit.action.config.title'
                     defaultMessage='Action Configuration'
                 />
             </DialogTitle>
@@ -100,7 +100,7 @@ export default function ActionConfigDialog({
                     <FormControl fullWidth size='small'>
                         <InputLabel>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.action.governedState'
+                                id='Governance.PolicyAttachments.AddEdit.action.governedState'
                                 defaultMessage='Governed State'
                             />
                         </InputLabel>
@@ -112,7 +112,7 @@ export default function ActionConfigDialog({
                             })}
                             label={(
                                 <FormattedMessage
-                                    id='Governance.Policies.AddEdit.action.governedState'
+                                    id='Governance.PolicyAttachments.AddEdit.action.governedState'
                                     defaultMessage='Governed State'
                                 />
                             )}
@@ -133,7 +133,7 @@ export default function ActionConfigDialog({
                             <Grid item xs={5}>
                                 <Typography variant='subtitle2' sx={{ mb: 2 }}>
                                     <FormattedMessage
-                                        id='Governance.Policies.AddEdit.action.severity.levels'
+                                        id='Governance.PolicyAttachments.AddEdit.action.severity.levels'
                                         defaultMessage='Severity Levels'
                                     />
                                 </Typography>
@@ -141,7 +141,7 @@ export default function ActionConfigDialog({
                             <Grid item xs={7}>
                                 <Typography variant='subtitle2' sx={{ mb: 2 }}>
                                     <FormattedMessage
-                                        id='Governance.Policies.AddEdit.action.actions'
+                                        id='Governance.PolicyAttachments.AddEdit.action.actions'
                                         defaultMessage='Actions'
                                     />
                                 </Typography>
@@ -173,7 +173,7 @@ export default function ActionConfigDialog({
                                                 label={(
                                                     <Typography variant='body2'>
                                                         {intl.formatMessage({
-                                                            id: 'Governance.Policies.AddEdit.action.notify',
+                                                            id: 'Governance.PolicyAttachments.AddEdit.action.notify',
                                                             defaultMessage: 'Notify',
                                                         })}
                                                     </Typography>
@@ -187,7 +187,7 @@ export default function ActionConfigDialog({
                                                 label={(
                                                     <Typography variant='body2'>
                                                         {intl.formatMessage({
-                                                            id: 'Governance.Policies.AddEdit.action.block',
+                                                            id: 'Governance.PolicyAttachments.AddEdit.action.block',
                                                             defaultMessage: 'Block',
                                                         })}
                                                     </Typography>
@@ -204,7 +204,7 @@ export default function ActionConfigDialog({
             <DialogActions sx={{ px: 3, pb: 2 }}>
                 <Button onClick={handleClose} size='small'>
                     <FormattedMessage
-                        id='Governance.Policies.AddEdit.action.cancel'
+                        id='Governance.PolicyAttachments.AddEdit.action.cancel'
                         defaultMessage='Cancel'
                     />
                 </Button>
@@ -216,7 +216,7 @@ export default function ActionConfigDialog({
                     size='small'
                 >
                     <FormattedMessage
-                        id='Governance.Policies.AddEdit.action.save'
+                        id='Governance.PolicyAttachments.AddEdit.action.save'
                         defaultMessage='Save'
                     />
                 </Button>
