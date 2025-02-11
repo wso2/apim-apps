@@ -1,6 +1,6 @@
 /* eslint-disable */
 /*
- * Copyright (c) 2024, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
  * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
@@ -85,15 +85,6 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId }) => {
       
       createAPI(parsedPayload);
       setShowProgress(false);
-
-      // if (!response.ok) {
-      //   setDialogTitle('API Creation Unsuccessful');
-      //   setDialogContentText('API creation was unsuccessful');
-      //   setFirstDialogAction('');
-      //   setSecondDialogAction('CLOSE');
-
-      //   throw new Error('Failed to create API');
-      // }
       
       setDialogTitle('API Creation Successful!');
       setDialogContentText('API created successfully in the Publisher Portal!');
