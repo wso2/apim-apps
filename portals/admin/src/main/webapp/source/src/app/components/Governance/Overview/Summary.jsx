@@ -36,7 +36,8 @@ export default function Summary() {
     const [apiCompliance, setApiCompliance] = useState({
         compliantArtifacts: 0,
         nonCompliantArtifacts: 0,
-        notApplicableArtifacts: 0
+        notApplicableArtifacts: 0,
+        pendingArtifacts: 0
     });
 
     useEffect(() => {
@@ -58,7 +59,8 @@ export default function Summary() {
                 setApiCompliance({
                     compliantArtifacts: artifactResponse.body.compliant || 0,
                     nonCompliantArtifacts: artifactResponse.body.nonCompliant || 0,
-                    notApplicableArtifacts: artifactResponse.body.notApplicable || 0
+                    notApplicableArtifacts: artifactResponse.body.notApplicable || 0,
+                    pendingArtifacts: artifactResponse.body.pending || 0
                 });
             })
             .catch((error) => {
@@ -151,6 +153,14 @@ export default function Summary() {
                                     },
                                     {
                                         id: 2,
+                                        value: apiCompliance.pendingArtifacts,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.Overview.Summary.api.pending',
+                                            defaultMessage: 'Pending ({count})',
+                                        }, { count: apiCompliance.pendingArtifacts })
+                                    },
+                                    {
+                                        id: 3,
                                         value: apiCompliance.notApplicableArtifacts,
                                         label: intl.formatMessage({
                                             id: 'Governance.Overview.Summary.api.not.applicable',
@@ -158,6 +168,7 @@ export default function Summary() {
                                         }, { count: apiCompliance.notApplicableArtifacts })
                                     }
                                 ]}
+                                colors={['#2E96FF', '#FF5252', '#FFC107', 'grey']}
                             />
                         </CardContent>
                     </Card>

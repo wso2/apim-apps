@@ -93,7 +93,6 @@ function AddEditRuleset(props) {
     const [pendingFile, setPendingFile] = useState(null);
     const intl = useIntl();
     const { match: { params: { id } }, history } = props;
-    const editMode = id !== undefined;
 
     const initialState = {
         name: '',
@@ -376,7 +375,7 @@ function AddEditRuleset(props) {
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
                     {/* General Details Section */}
-                    <Grid item xs={12} md={12} lg={3}>
+                    <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px', paddingTop: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Rulesets.AddEdit.general.details'
@@ -412,7 +411,6 @@ function AddEditRuleset(props) {
                                 error={hasErrors('name', name, validating)}
                                 helperText={hasErrors('name', name, validating)}
                                 variant='outlined'
-                                disabled={editMode}
                             />
                             <TextField
                                 margin='dense'
@@ -431,6 +429,9 @@ function AddEditRuleset(props) {
                                 multiline
                                 rows={3}
                                 variant='outlined'
+                                InputProps={{
+                                    style: { padding: 0 },
+                                }}
                             />
                             <TextField
                                 margin='dense'
@@ -512,7 +513,7 @@ function AddEditRuleset(props) {
                     </Grid>
 
                     {/* Ruleset Content Section */}
-                    <Grid item xs={12} md={12} lg={5}>
+                    <Grid item xs={12} md={12} lg={5} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Rulesets.AddEdit.content.title'

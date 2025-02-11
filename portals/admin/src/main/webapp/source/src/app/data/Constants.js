@@ -38,6 +38,8 @@ const CONSTS = {
         CATEGORY_MANAGER: ['apim:api_category', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
         KEY_MANAGER: ['apim:keymanagers_manage', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
         GATEWAY_MANAGER: ['apim:environment_manage', 'openid', 'apim:admin_settings', 'apim:environment_read'],
+        GOVERNANCE_MANAGER: ['apim:gov_policy_read', 'apim:gov_policy_manage', 'apim:gov_result_read',
+            'apim:gov_rule_read', 'apim:gov_rule_manage'],
         SETTINGS_MANAGER: ['apim:app_owner_change', 'apim:admin_application_view',
             'apim:scope_manage', 'openid', 'apim:admin_settings', 'apim:tenantInfo', 'apim:api_provider_change',
         ],
@@ -67,6 +69,7 @@ const CONSTS = {
     COMPLIANCE_STATES: [
         { value: 'NOT_APPLICABLE', label: 'Not Applicable' },
         { value: 'COMPLIANT', label: 'Compliant' },
+        { value: 'PENDING', label: 'Pending' },
         { value: 'NON_COMPLIANT', label: 'Non Compliant' },
     ],
     POLICY_ADHERENCE_STATES: [
