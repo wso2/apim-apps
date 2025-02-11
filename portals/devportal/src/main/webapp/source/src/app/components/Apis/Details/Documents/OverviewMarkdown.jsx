@@ -37,14 +37,10 @@ const classes = {
     root: `${PREFIX}-root`,
 };
 
-const Root = styled('div')((
-    {
-        theme,
-    },
-) => ({
+const Root = styled('div')(({ theme }) => ({
     [`& .${classes.root}`]: {
-        paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
+        paddingTop: theme.spacing(2),
     },
 }));
 
@@ -52,30 +48,23 @@ const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "M
 
 function OverviewMarkdown({ apiId }) {
     const { api } = useContext(ApiContext);
-    const [code, setCode] = useState('');
+    const [content, setContent] = useState('');
     const restAPI = new API();
     const { skipHtml, syntaxHighlighterProps = {}, syntaxHighlighterDarkTheme } = Settings.app.markdown;
 
-    const loadContentForDoc = () => {
+    useEffect(() => {
         restAPI.getMarkdownContentOfAPI(apiId)
-            .then((dataDoc) => {
-                let { text } = dataDoc;
-                Object.keys(api).forEach((fieldName) => {
-                    // eslint-disable-next-line no-useless-escape
-                    const regex = new RegExp('\_\_\_' + fieldName + '\_\_\_', 'g');
-                    text = text.replace(regex, api[fieldName]);
-                });
-                setCode(text);
+            .then(({ text }) => {
+                const updatedText = Object.entries(api).reduce((acc, [fieldName, value]) => {
+                    return acc.replace(new RegExp(`___${fieldName}___`, 'g'), value);
+                }, text);
+                setContent(updatedText);
             })
             .catch((error) => {
                 if (process.env.NODE_ENV !== 'production') {
-                    console.log(error);
+                    console.error(error);
                 }
             });
-    };
-
-    useEffect(() => {
-        loadContentForDoc();
     }, [apiId]);
 
     return (
@@ -83,31 +72,33 @@ function OverviewMarkdown({ apiId }) {
             <div className='markdown-content-wrapper'>
                 <Suspense fallback={<CircularProgress />}>
                     <ReactMarkdown
-                        skipHtml={skipHtml}
-                        children={code}
                         remarkPlugins={[remarkGfm]}
+                        skipHtml={skipHtml}
                         components={{
                             code({
-                                node, inline, className, children, ...propsInner
+                                inline, className = '', children, ...propsInner
                             }) {
-                                const match = /language-(\w+)/.exec(className || '');
-                                return !inline && match ? (
-                                    <SyntaxHighlighter
-                                        children={String(children).replace(/\n$/, '')}
-                                        style={syntaxHighlighterDarkTheme ? vscDarkPlus : vs}
-                                        language={match[1]}
-                                        PreTag='div'
-                                        {...propsInner}
-                                        {...syntaxHighlighterProps}
-                                    />
-                                ) : (
-                                    <code className={className} {...propsInner}>
-                                        {children}
-                                    </code>
-                                );
+                                const match = /language-(\w+)/.exec(className);
+                                const codeContent = String(children).replace(/\n$/, '');
+                                if (inline || !match) {
+                                    return (
+                                        <code className={className} {...propsInner}>{children}</code>
+                                    );
+                                }
+
+                                const syntaxProps = {
+                                    style: syntaxHighlighterDarkTheme ? vscDarkPlus : vs,
+                                    language: match[1],
+                                    PreTag: 'div',
+                                    ...propsInner,
+                                    ...syntaxHighlighterProps,
+                                };
+                                return <SyntaxHighlighter {...syntaxProps}>{codeContent}</SyntaxHighlighter>;
                             },
                         }}
-                    />
+                    >
+                        {content}
+                    </ReactMarkdown>
                 </Suspense>
             </div>
         </Root>
@@ -115,7 +106,6 @@ function OverviewMarkdown({ apiId }) {
 }
 
 OverviewMarkdown.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
     apiId: PropTypes.string.isRequired,
 };
 
