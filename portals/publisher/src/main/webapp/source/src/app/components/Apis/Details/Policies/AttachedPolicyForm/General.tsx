@@ -163,7 +163,7 @@ const General: FC<GeneralProps> = ({
             }
         });
 
-        if (policyObj.name === 'modelRoundRobin') {
+        if (policyObj.name === 'modelRoundRobin' || policyObj.name === 'modelWeightedRoundRobin') {
             updateCandidates[policySpec.policyAttributes[0].name] = manualPolicyConfig;
         }
 

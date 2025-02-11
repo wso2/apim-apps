@@ -96,12 +96,12 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
 
     useEffect(() => {
         if (manualPolicyConfig !== '') {
-            setConfig(JSON.parse(manualPolicyConfig));
+            setConfig(JSON.parse(manualPolicyConfig.replace(/'/g, '"')));
         }
     }, [manualPolicyConfig]);
 
     useEffect(() => {
-        setManualPolicyConfig(JSON.stringify(config));
+        setManualPolicyConfig(JSON.stringify(config).replace(/"/g, "'"));
     }, [config]);
 
     const handleAddModel = (env: 'production' | 'sandbox') => {
