@@ -97,7 +97,7 @@ function Subscriptions(props) {
         const { subscriptionAvailability } = availability;
         const newApi = {
             policies,
-            organizationPolicies,
+            ...(settings?.orgAccessControlEnabled && api.apiType !== API.CONSTS.APIProduct && { organizationPolicies }),
             subscriptionAvailability,
             subscriptionAvailableTenants: tenantList,
         };
