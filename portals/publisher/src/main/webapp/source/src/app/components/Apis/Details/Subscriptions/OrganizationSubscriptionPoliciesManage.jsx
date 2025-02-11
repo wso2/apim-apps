@@ -38,7 +38,7 @@ import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 const PREFIX = 'OrganizationSubscriptionPoliciesManage';
 
 const classes = {
-    subscriptionPoliciesPaper: `${PREFIX}-subscriptionPoliciesPaper`,
+    heading: `${PREFIX}-heading`,
     grid: `${PREFIX}-grid`,
     gridLabel: `${PREFIX}-gridLabel`,
     mainTitle: `${PREFIX}-mainTitle`
@@ -49,9 +49,9 @@ const Root = styled('div')((
         theme
     }
 ) => ({
-    [`& .${classes.subscriptionPoliciesPaper}`]: {
-        marginTop: theme.spacing(2),
-        padding: theme.spacing(2),
+    [`& .${classes.heading}`]: {
+        marginTop: theme.spacing(3),
+        marginBottom: theme.spacing(2),
     },
 
     [`& .${classes.grid}`]: {
@@ -160,7 +160,9 @@ function OrganizationSubscriptionPoliciesManage(props) {
 
     return (
         <Root>
-            <Typography variant='h6' style={{ marginTop: '20px' }}>Organization Specific Business Plans</Typography>
+            <div className={classes.heading}>
+                <Typography variant='h6' style={{ marginTop: '20px' }}>Organization Specific Business Plans</Typography>
+            </div>
             <Paper>
                 <TableContainer>
                     <Table>
@@ -178,6 +180,7 @@ function OrganizationSubscriptionPoliciesManage(props) {
                                         <Autocomplete
                                             multiple
                                             disableCloseOnSelect
+                                            limitTags={5}
                                             options={subscriptionPolicies}
                                             getOptionLabel={(option) =>
                                                 option?.displayName ?

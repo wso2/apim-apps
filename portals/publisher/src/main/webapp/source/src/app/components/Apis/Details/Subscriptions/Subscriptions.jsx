@@ -131,10 +131,12 @@ function Subscriptions(props) {
             .then((result) => {
                 setSubscriptions(result.body.count);
             });
-        restApi.organizations()
-            .then((result) => {
-                setOrganizations(result.body.list);
-            })
+        if (settings && settings.orgAccessControlEnabled ) {
+            restApi.organizations()
+                .then((result) => {
+                    setOrganizations(result.body.list);
+                })
+        }
         setPolices([...api.policies]);
         setOriginalPolicies([...api.policies]);
         setOrganizationPolicies(api.organizationPolicies ? [...api.organizationPolicies] : []);
