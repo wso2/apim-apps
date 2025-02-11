@@ -3581,6 +3581,22 @@ class API extends Resource {
     }
 
     /**
+     * Get the LLM provider model list
+     * 
+     * @param {String} llmProviderId LLM Provider ID
+     * @returns {Promise} Promise containing the list of LLM provider models
+     */
+    static getLLMProviderModelList(llmProviderId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProviderModels(
+                { llmProviderId },
+                this._requestMetaData(),
+            )
+        });
+    }
+
+    /**
      * Get all endpoints of the API
      * @param {String} apiId UUID of the API
      * @param {number} limit Limit of the endpoints list which needs to be retrieved

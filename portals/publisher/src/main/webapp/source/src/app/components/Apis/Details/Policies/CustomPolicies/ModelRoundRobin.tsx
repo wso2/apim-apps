@@ -78,9 +78,19 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                 setLoading(false);
             });
     }
+
+    const fetchModelList = () => {
+        const modelListPromise = API.getLLMProviderModelList(JSON.parse(apiFromContext.subtypeConfiguration.configuration).llmProviderId);
+        modelListPromise
+            .then((response) => {
+                setModelList(response.body);
+            }).catch((error) => {
+                console.error(error);
+            });
+    }
     
     useEffect(() => {
-        setModelList(['gpt-35-turbo', 'gpt-4', 'gpt-4o', 'gpt-4o-mini']);
+        fetchModelList();
         fetchEndpoints();
     }, []);
 
@@ -160,6 +170,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                                 modelData={model}
                                 modelList={modelList}
                                 endpointList={productionEndpoints}
+                                isWeightedRoundRobinPolicy={false}
                                 onUpdate={(updatedModel) => handleUpdate('production', index, updatedModel)}
                                 onDelete={() => handleDelete('production', index)}
                             />
@@ -181,15 +192,16 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                     </AccordionSummary>
                     <AccordionDetails>
                         <Button
-                            variant='contained'
+                            variant='outlined'
                             color='primary'
                             data-testid='add-sandbox-model'
                             sx={{ ml: 1 }}
                             onClick={() => handleAddModel('sandbox')}
                         >
+                            <AddCircle sx={{ mr: 1 }} />
                             <FormattedMessage
                                 id='Apis.Details.Policies.Custom.Policies.model.add'
-                                defaultMessage='Add New Model'
+                                defaultMessage='Add Model'
                             />
                         </Button>
                         {config.sandbox.map((model, index) => (
@@ -198,6 +210,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                                 modelData={model}
                                 modelList={modelList}
                                 endpointList={sandboxEndpoints}
+                                isWeightedRoundRobinPolicy={false}
                                 onUpdate={(updatedModel) => handleUpdate('sandbox', index, updatedModel)}
                                 onDelete={() => handleDelete('sandbox', index)}
                             />

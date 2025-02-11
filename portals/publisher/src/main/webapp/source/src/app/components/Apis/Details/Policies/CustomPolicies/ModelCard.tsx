@@ -16,9 +16,9 @@
  * under the License.
  */
 
-import React, { FC, useState, useEffect } from 'react';
+import React, { FC } from 'react';
 
-import { FormattedMessage, useIntl } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
 import TextField from '@mui/material/TextField';
 import InputLabel from '@mui/material/InputLabel';
@@ -26,13 +26,14 @@ import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import Button from '@mui/material/Button';
-import { Checkbox, FormControlLabel, Paper } from '@mui/material';
+import { Paper } from '@mui/material';
 import { Endpoint, ModelData } from './Types';
 
 interface ModelCardProps {
     modelData: ModelData;
     modelList: string[];
     endpointList: Endpoint[];
+    isWeightedRoundRobinPolicy: boolean;
     onUpdate: (updatedModel: ModelData) => void;
     onDelete: () => void;
 }
@@ -41,33 +42,17 @@ const ModelCard: FC<ModelCardProps> = ({
     modelData,
     modelList,
     endpointList,
+    isWeightedRoundRobinPolicy,
     onUpdate,
     onDelete,
 }) => {
     const { model, endpointId, weight } = modelData;
-    const [useWeight, setUseWeight] = useState(weight !== undefined);
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
         const updatedModel = { ...modelData, [name]: name === "weight" ? parseFloat(value) : value };
 
-        // Remove weight if it is not used
-        if (!useWeight && name === "weight") {
-            delete updatedModel.weight;
-        }
-
         onUpdate(updatedModel);
-    }
-
-    const handleIsWeightedChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-        setUseWeight(!useWeight);
-
-        if (useWeight) {
-            const { weight, ...updatedModel } = modelData;
-            onUpdate(updatedModel);
-        } else {
-            onUpdate({ ...modelData, weight: 0.5 });
-        }
     }
 
     return (
@@ -120,20 +105,9 @@ const ModelCard: FC<ModelCardProps> = ({
                             ))}
                         </Select>
                     </FormControl>
-                    <FormControlLabel
-                        control={
-                            <Checkbox
-                                size='small'
-                                checked={useWeight}
-                                onChange={(e: any) => handleIsWeightedChange(e)}
-                                sx={{ margin: '5px 0' }}
-                            />
-                        }
-                        label='Is Weighted?'
-                    />
-                    {useWeight && (
+                    {isWeightedRoundRobinPolicy && (
                         <TextField
-                            id='weight-production'
+                            id='endpoint-weight'
                             label='Weight'
                             size='small'
                             // helperText={getError(spec) === '' ? spec.description : getError(spec)}
