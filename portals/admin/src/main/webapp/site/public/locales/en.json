@@ -354,22 +354,9 @@
   "Base.RouteMenuMapping.keymanagers": "Key Managers",
   "Base.RouteMenuMapping.keymanagers.items.Adding": "Add Key Manager",
   "Base.RouteMenuMapping.keymanagers.items.Editing": "Edit Key Manager",
-<<<<<<< HEAD
-  "Base.RouteMenuMapping.overview": "Overview",
-  "Base.RouteMenuMapping.organizations": "Organizations",
-=======
-<<<<<<< HEAD
-<<<<<<< HEAD
-  "Base.RouteMenuMapping.organizations": "Organizations",
-=======
-  "Base.RouteMenuMapping.overview": "Overview",
->>>>>>> bb70152a46b (Fix issue in loading governance in across portals)
-=======
   "Base.RouteMenuMapping.labels": "Labels",
   "Base.RouteMenuMapping.organizations": "Organizations",
   "Base.RouteMenuMapping.overview": "Overview",
->>>>>>> 0f5552064e9 (Improve admin portal gw environment page)
->>>>>>> 2f05e783a73 (Improve admin portal gw environment page)
   "Base.RouteMenuMapping.role.permissions": "Scope Assignments",
   "Base.RouteMenuMapping.ruleset.catalog": "Ruleset Catalog",
   "Base.RouteMenuMapping.settings": "Settings",
