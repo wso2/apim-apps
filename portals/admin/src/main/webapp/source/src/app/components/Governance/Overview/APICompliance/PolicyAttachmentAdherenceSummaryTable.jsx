@@ -42,7 +42,7 @@ export default function PolicyAttachmentAdherenceSummaryTable({ artifactId }) {
         return restApi
             .getComplianceByAPIId(artifactId)
             .then((result) => {
-                return result.body.governedPolicies;
+                return result.body.governedPolicyAttachments;
             })
             .catch((error) => {
                 throw error;
@@ -179,7 +179,7 @@ export default function PolicyAttachmentAdherenceSummaryTable({ artifactId }) {
             },
         },
         {
-            name: 'rulesetValidationResults',
+            name: 'policyValidationResults',
             options: { display: false },
         },
         {

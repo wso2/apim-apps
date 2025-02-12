@@ -201,16 +201,16 @@ function AddEditPolicyAttachment(props) {
                 }));
             });
 
-        restApi.getRulesetsList()
+        restApi.getPolicies()
             .then((response) => {
                 const policyList = response.body.list;
                 setAvailablePolicies(policyList);
 
                 if (policyAttachmentId) {
-                    return restApi.getPolicy(policyAttachmentId)
+                    return restApi.getGovernancePolicyAttachmentById(policyAttachmentId)
                         .then((policyAttachmentResponse) => {
                             const { body } = policyAttachmentResponse;
-                            const fullPolicies = body.rulesets.map((policyId) => {
+                            const fullPolicies = body.policies.map((policyId) => {
                                 const foundPolicy = policyList.find((r) => r.id === policyId);
                                 return foundPolicy || { id: policyId, name: 'Unknown Policy' };
                             });
@@ -229,7 +229,7 @@ function AddEditPolicyAttachment(props) {
                                 field: 'all',
                                 value: {
                                     ...body,
-                                    policies: body.rulesets.map( // Change to policies
+                                    policies: body.policies.map(
                                         (policy) => (typeof policy === 'object' ? policy.id : policy),
                                     ),
                                 },
@@ -378,10 +378,8 @@ function AddEditPolicyAttachment(props) {
         }
 
         setSaving(true);
-        const { policies: policyList, ...rest } = state;
         const body = {
-            ...rest, // TODO: should be ...state, when backend is ready
-            rulesets: state.policies,
+            ...state,
             governableStates: [...new Set(actions.map((action) => action.state))],
         };
 
@@ -391,7 +389,7 @@ function AddEditPolicyAttachment(props) {
 
         if (policyAttachmentId) {
             promiseAPICall = restApi
-                .updatePolicy(body).then(() => {
+                .updateGovernancePolicyAttachmentById(body).then(() => {
                     return intl.formatMessage({
                         id: 'Governance.PolicyAttachments.AddEdit.edit.success',
                         defaultMessage: 'Policy Attachment Updated Successfully',
@@ -399,7 +397,7 @@ function AddEditPolicyAttachment(props) {
                 });
         } else {
             promiseAPICall = restApi
-                .addPolicy(body).then(() => {
+                .createGovernancePolicyAttachment(body).then(() => {
                     return intl.formatMessage({
                         id: 'Governance.PolicyAttachments.AddEdit.add.success',
                         defaultMessage: 'Policy Attachment Added Successfully',

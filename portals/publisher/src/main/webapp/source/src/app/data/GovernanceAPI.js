@@ -93,16 +93,16 @@ class GovernanceAPI extends Resource {
     }
 
     /**
-     * Get ruleset validation results by artifact id
+     * Get policy validation results by artifact id
      * @param {string} artifactId Artifact id
-     * @param {string} rulesetId Ruleset id
+     * @param {string} policyId Policy id
      * @param {Object} options Optional parameters including signal for AbortController
      * @returns {Promise} Promised validation results response
      */
-    getRulesetValidationResultsByAPIId(artifactId, rulesetId) {
+    getPolicyValidationResultsByAPIId(artifactId, policyId) {
         return this.client.then((client) => {
-            return client.apis['Artifact Compliance'].getRulesetValidationResultsByAPIId(
-                { apiId: artifactId, rulesetId: rulesetId },
+            return client.apis['Artifact Compliance'].getPolicyValidationResultsByAPIId(
+                { apiId: artifactId, policyId: policyId },
                 this._requestMetaData(),
             );
         });

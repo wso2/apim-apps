@@ -259,12 +259,12 @@ function PolicySelector({
                                 </Typography>
                                 <Box sx={{ mb: 1.5, display: 'flex', gap: 1 }}>
                                     <Chip
-                                        label={Utils.mapPolicyTypeToLabel(policy.ruleType)}
+                                        label={Utils.mapPolicyTypeToLabel(policy.policyType)}
                                         size='small'
                                         variant='outlined'
                                         className={classes.chip}
                                         sx={{
-                                            ...getChipStyles(policy.ruleType),
+                                            ...getChipStyles(policy.policyType),
                                         }}
                                     />
                                     <Chip
@@ -351,7 +351,7 @@ PolicySelector.propTypes = {
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,
         description: PropTypes.string.isRequired,
-        ruleType: PropTypes.string.isRequired,
+        policyType: PropTypes.string.isRequired,
         artifactType: PropTypes.string.isRequired,
         provider: PropTypes.string.isRequired,
         documentationLink: PropTypes.string,

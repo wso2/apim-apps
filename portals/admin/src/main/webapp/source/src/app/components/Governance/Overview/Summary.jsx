@@ -44,7 +44,7 @@ export default function Summary() {
         const restApi = new GovernanceAPI();
 
         Promise.all([
-            restApi.getPolicyAdherenceSummary(),
+            restApi.getPolicyAttachmentAdherenceSummary(),
             restApi.getComplianceSummaryForAPIs()
         ])
             .then(([policyAttachmentResponse, artifactResponse]) => {

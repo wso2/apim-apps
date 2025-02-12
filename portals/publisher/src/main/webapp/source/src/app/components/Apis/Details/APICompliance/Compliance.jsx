@@ -63,8 +63,8 @@ export default function Compliance() {
                 setComplianceStatus(response.body.status);
                 const policyMap = new Map();
 
-                response.body.governedPolicies.forEach(policyAttachment => {
-                    policyAttachment.rulesetValidationResults.forEach(result => {
+                response.body.governedPolicyAttachments.forEach(policyAttachment => {
+                    policyAttachment.policyValidationResults.forEach(result => {
                         // If policy not in map or if existing result is older, update the map
                         if (!policyMap.has(result.id)) {
                             policyMap.set(result.id, result);

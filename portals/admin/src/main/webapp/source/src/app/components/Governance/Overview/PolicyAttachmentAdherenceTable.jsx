@@ -37,7 +37,7 @@ import Utils from 'AppData/Utils';
 function apiCall() {
     const restApi = new GovernanceAPI();
     return restApi
-        .getPolicyAdherenceForAllPolicies()
+        .getPolicyAttachmentAdherenceForAllPolicyAttachments()
         .then((result) => {
             const policyAttachments = result.body.list;
 
@@ -46,7 +46,7 @@ function apiCall() {
             return Promise.all(
                 policyAttachments.map(async (policyAttachment) => {
                     try {
-                        const adherenceDetails = await restApi.getPolicyAdherenceByPolicyId(policyAttachment.id);
+                        const adherenceDetails = await restApi.getPolicyAttachmentAdherenceByPolicyAttachmentId(policyAttachment.id);
                         return {
                             ...policyAttachment,
                             evaluatedArtifacts: adherenceDetails.body.evaluatedArtifacts || []

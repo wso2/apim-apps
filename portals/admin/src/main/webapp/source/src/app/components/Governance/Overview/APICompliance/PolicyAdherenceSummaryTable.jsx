@@ -38,14 +38,14 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             .then((response) => {
                 // Get unique policy IDs from all policy attachments
                 const policyIds = [...new Set(
-                    response.body.governedPolicies.flatMap(
-                        (policyAttachment) => policyAttachment.rulesetValidationResults.map((result) => result.id),
+                    response.body.governedPolicyAttachments.flatMap(
+                        (policyAttachment) => policyAttachment.policyValidationResults.map((result) => result.id),
                     ),
                 )];
 
                 // Get validation results for each policy
                 return Promise.all(
-                    policyIds.map((policyId) => restApi.getRulesetValidationResultsByAPIId(artifactId, policyId)
+                    policyIds.map((policyId) => restApi.getPolicyValidationResultsByAPIId(artifactId, policyId)
                         .then((result) => result.body)),
                 );
             })

@@ -35,7 +35,7 @@ function DeletePolicy({ updateList, dataRow }) {
 
     const formSaveCallback = () => {
         return new GovernanceAPI()
-            .deleteRuleset(id)
+            .deletePolicy(id)
             .then(() => (
                 <FormattedMessage
                     id='AdminPages.Governance.Policies.Delete.form.delete.successful'

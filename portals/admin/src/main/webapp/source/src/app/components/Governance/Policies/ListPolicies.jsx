@@ -34,7 +34,7 @@ import DeletePolicy from './DeletePolicy';
 function apiCall() {
     const restApi = new GovernanceAPI();
     return restApi
-        .getRulesetsList()
+        .getPolicies()
         .then((result) => {
             return result.body.list;
         })
@@ -116,7 +116,7 @@ export default function ListPolicies() {
             },
         },
         {
-            name: 'ruleType',
+            name: 'policyType',
             label: intl.formatMessage({
                 id: 'Governance.Policies.List.column.policyType',
                 defaultMessage: 'Policy Type',

@@ -36,7 +36,7 @@ import DeletePolicyAttachment from './DeletePolicyAttachment';
 function apiCall() {
     const restApi = new GovernanceAPI();
     return restApi
-        .getPoliciesList()
+        .getGovernancePolicyAttachments()
         .then((result) => {
             return result.body.list;
         })

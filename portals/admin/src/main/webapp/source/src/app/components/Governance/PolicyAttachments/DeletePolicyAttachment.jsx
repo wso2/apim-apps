@@ -35,7 +35,7 @@ function DeletePolicyAttachment({ updateList, dataRow }) {
     const intl = useIntl();
     const formSaveCallback = () => {
         return new GovernanceAPI()
-            .deletePolicy(id)
+            .deleteGovernancePolicyAttachment(id)
             .then(() => (
                 <FormattedMessage
                     id='AdminPages.Governance.PolicyAttachments.Delete.form.delete.successful'

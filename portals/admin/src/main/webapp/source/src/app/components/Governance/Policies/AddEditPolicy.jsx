@@ -119,16 +119,15 @@ function AddEditPolicy(props) {
         if (id) {
             // Get policy metadata
             restApi
-                .getRuleset(id)
+                .getPolicyById(id)
                 .then((result) => {
                     const { body } = result;
                     return body;
                 })
                 .then((data) => {
                     dispatch({ field: 'all', value: data });
-                    dispatch({ field: 'policyType', value: data.ruleType }); // TODO: Remove this after backend changes
                     // After getting metadata, fetch the policy content
-                    return restApi.getRulesetContent(id);
+                    return restApi.getPolicyContent(id);
                 })
                 .then((contentResult) => {
                     const { text } = contentResult;
@@ -312,9 +311,7 @@ function AddEditPolicy(props) {
         const body = {
             ...state,
             provider: AuthManager.getUser().name,
-            ruleType: state.policyType, // TODO: Remove this after backend changes
-            rulesetContent: file, // TODO: Remove this after backend changes
-            // policyContent: file,
+            policyContent: file,
         };
 
         // Do the API call
@@ -322,7 +319,7 @@ function AddEditPolicy(props) {
         let promiseAPICall = null;
 
         if (id) {
-            promiseAPICall = restApi.updateRuleset(id, body)
+            promiseAPICall = restApi.updatePolicyById(id, body)
                 .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.edit.success',
@@ -330,7 +327,7 @@ function AddEditPolicy(props) {
                     });
                 });
         } else {
-            promiseAPICall = restApi.addRuleset(body)
+            promiseAPICall = restApi.createPolicy(body)
                 .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.add.success',
