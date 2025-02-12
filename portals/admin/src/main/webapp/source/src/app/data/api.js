@@ -556,6 +556,18 @@ class API extends Resource {
     }
 
     /**
+     * Get a Gateway Environment
+     */
+    getGatewayEnvironment(id) {
+        return this.client.then((client) => {
+            return client.apis['Environments'].get_environments__environmentId_(
+                { environmentId: id },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Delete a Gateway Environment
      */
     deleteGatewayEnvironment(id) {
