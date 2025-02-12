@@ -41,9 +41,10 @@ const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.d
 
 function AddEditVhost(props) {
     const intl = useIntl();
-    const { onVhostChange, initialVhosts, gatewayType } = props;
-
-    const [userVhosts, setUserVhosts] = useState(initialVhosts);
+    const {
+        onVhostChange, initialVhosts, gatewayType,
+    } = props;
+    const [userVhosts, setUserVhosts] = useState([]);
     const [id, setId] = useState(0);
     const defaultVhost = {
         host: '', httpContext: '', httpsPort: 8243, httpPort: 8280, wssPort: 8099, wsPort: 9099, isNew: true,
@@ -121,13 +122,8 @@ function AddEditVhost(props) {
                 return keyedVhost;
             }));
             setId(i);
-        } else {
-            setId(id + 1);
-            const vhost = defaultVhost;
-            vhost.key = '' + id;
-            setUserVhosts([vhost]);
         }
-    }, []);
+    }, [initialVhosts]);
 
     let vhostCounter = 1;
     return (

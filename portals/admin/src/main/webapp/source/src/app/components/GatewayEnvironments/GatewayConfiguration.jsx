@@ -28,8 +28,12 @@ export default function GatewayConfiguration(props) {
     };
 
     const getComponent = (gatewayConfiguration) => {
-        const { value } = additionalProperties.length > 0
-            ? additionalProperties.filter((t) => t.key === gatewayConfiguration.name)[0] : '';
+        //         const { value } = additionalProperties.length > 0
+        //             ? additionalProperties.filter((t) => t.key === gatewayConfiguration.name)[0] : '';
+        let value = '';
+        if (additionalProperties[gatewayConfiguration.name]) {
+            value = additionalProperties[gatewayConfiguration.name];
+        }
 
         return (
             <TextField
