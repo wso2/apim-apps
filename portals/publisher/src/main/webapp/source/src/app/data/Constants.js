@@ -68,7 +68,9 @@ const CONSTS = {
         id: null,
         name: '',
         environment: '',
-        endpointConfig: {},
+        endpointConfig: {
+            endpoint_type: 'http',
+        },
     },
     ENVIRONMENTS: {
         production: 'PRODUCTION',
