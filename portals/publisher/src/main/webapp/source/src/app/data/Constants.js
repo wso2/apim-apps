@@ -74,12 +74,12 @@ const CONSTS = {
     },
     DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
     DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
-    POLICY_ADHERENCE_STATES: [
+    POLICY_ATTACHMENT_ADHERENCE_STATES: [
         { value: 'FOLLOWED', label: 'Followed' },
         { value: 'VIOLATED', label: 'Violated' },
         { value: 'UNAPPLIED', label: 'Unapplied' },
     ],
-    RULESET_VALIDATION_STATES: [
+    POLICY_VALIDATION_STATES: [
         { value: 'PASSED', label: 'Passed' },
         { value: 'FAILED', label: 'Failed' },
     ],

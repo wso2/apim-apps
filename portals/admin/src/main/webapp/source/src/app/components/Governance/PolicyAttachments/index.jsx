@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -19,22 +20,22 @@
 import React from 'react';
 import { Route, Switch, withRouter } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import ListRulesets from './ListRulesets';
-import AddEditRuleset from './AddEditRuleset';
+import ListPolicyAttachments from './ListPolicyAttachments';
+import AddEditPolicyAttachment from './AddEditPolicyAttachment';
 
 /**
- * Render ruleset routes
- * @returns {JSX} Ruleset routing component
+ * Render a list
+ * @returns {JSX} Header AppBar components.
  */
-function RulesetCatalog() {
+function PolicyAttachments() {
     return (
         <Switch>
-            <Route exact path='/governance/ruleset-catalog' component={ListRulesets} />
-            <Route exact path='/governance/ruleset-catalog/create' component={AddEditRuleset} />
-            <Route exact path='/governance/ruleset-catalog/:id' component={AddEditRuleset} />
+            <Route exact path='/governance/policy-attachments' component={ListPolicyAttachments} />
+            <Route exact path='/governance/policy-attachments/create' component={AddEditPolicyAttachment} />
+            <Route exact path='/governance/policy-attachments/:id' component={AddEditPolicyAttachment} />
             <Route component={ResourceNotFound} />
         </Switch>
     );
 }
 
-export default withRouter(RulesetCatalog);
+export default withRouter(PolicyAttachments);

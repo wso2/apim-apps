@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -26,19 +25,20 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 
 /**
- * Render delete dialog box.
- * @param {JSON} props component props.
- * @returns {JSX} Loading animation.
+ * Renders delete dialog box
+ * @param {JSON} props component properties
+ * @returns {JSX} Delete dialog box
  */
 function DeletePolicy({ updateList, dataRow }) {
     const { id } = dataRow;
     const intl = useIntl();
+
     const formSaveCallback = () => {
         return new GovernanceAPI()
             .deletePolicy(id)
             .then(() => (
                 <FormattedMessage
-                    id='AdminPages.Governance.Policy.Delete.form.delete.successful'
+                    id='AdminPages.Governance.Policies.Delete.form.delete.successful'
                     defaultMessage='Policy deleted successfully'
                 />
             ))

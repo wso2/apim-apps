@@ -29,8 +29,8 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import DonutChart from 'AppComponents/Shared/DonutChart';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
 import RuleViolationSummary from './RuleViolationSummary';
-import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
 import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
+import PolicyAttachmentAdherenceSummaryTable from './PolicyAttachmentAdherenceSummaryTable';
 
 export default function Compliance(props) {
     const intl = useIntl();
@@ -47,19 +47,19 @@ export default function Compliance(props) {
             .then((response) => {
                 setArtifactName(response.body.info.name);
                 setComplianceStatus(response.body.status);
-                const rulesetMap = new Map();
+                const policyMap = new Map();
 
-                response.body.governedPolicies.forEach((policy) => {
-                    policy.rulesetValidationResults.forEach((result) => {
-                        // If ruleset not in map or if existing result is older, update the map
-                        if (!rulesetMap.has(result.id)) {
-                            rulesetMap.set(result.id, result);
+                response.body.governedPolicyAttachments.forEach((policyAttachment) => {
+                    policyAttachment.policyValidationResults.forEach((result) => {
+                        // If policy not in map or if existing result is older, update the map
+                        if (!policyMap.has(result.id)) {
+                            policyMap.set(result.id, result);
                         }
                     });
                 });
 
-                // Count statuses from unique rulesets
-                const counts = Array.from(rulesetMap.values()).reduce((acc, result) => {
+                // Count statuses from unique policies
+                const counts = Array.from(policyMap.values()).reduce((acc, result) => {
                     if (result.status === 'PASSED') acc.passed += 1;
                     if (result.status === 'FAILED') acc.failed += 1;
                     return acc;
@@ -69,7 +69,7 @@ export default function Compliance(props) {
             })
             .catch((error) => {
                 if (!abortController.signal.aborted) {
-                    console.error('Error fetching ruleset adherence data:', error);
+                    console.error('Error fetching policy adherence data:', error);
                     setStatusCounts({ passed: 0, failed: 0 });
                     setArtifactName('');
                 }
@@ -187,7 +187,7 @@ export default function Compliance(props) {
                     </Card>
                 </Grid>
 
-                {/* Policy Adherence Summary section */}
+                {/* Policy Attachment Adherence Summary section */}
                 <Grid item xs={12}>
                     <Card
                         elevation={3}
@@ -203,16 +203,16 @@ export default function Compliance(props) {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 <FormattedMessage
-                                    id='Governance.Overview.Compliance.policy.adherence.summary'
-                                    defaultMessage='Policy Adherence Summary'
+                                    id='Governance.Overview.Compliance.policyAttachment.adherence.summary'
+                                    defaultMessage='Policy Attachment Adherence Summary'
                                 />
                             </Typography>
-                            <PolicyAdherenceSummaryTable artifactId={artifactId} />
+                            <PolicyAttachmentAdherenceSummaryTable artifactId={artifactId} />
                         </CardContent>
                     </Card>
                 </Grid>
 
-                {/* Ruleset Adherence Summary section */}
+                {/* Policy Adherence Summary section */}
                 <Grid item xs={12} md={4}>
                     <Card elevation={3}>
                         <CardContent>
@@ -221,8 +221,8 @@ export default function Compliance(props) {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 <FormattedMessage
-                                    id='Governance.Overview.Compliance.ruleset.adherence'
-                                    defaultMessage='Ruleset Adherence'
+                                    id='Governance.Overview.Compliance.policy.adherence'
+                                    defaultMessage='Policy Adherence'
                                 />
                             </Typography>
                             <DonutChart
@@ -265,11 +265,11 @@ export default function Compliance(props) {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 <FormattedMessage
-                                    id='Governance.Overview.Compliance.ruleset.adherence.summary'
-                                    defaultMessage='Ruleset Adherence Summary'
+                                    id='Governance.Overview.Compliance.policy.adherence.summary'
+                                    defaultMessage='Policy Adherence Summary'
                                 />
                             </Typography>
-                            <RulesetAdherenceSummaryTable artifactId={artifactId} />
+                            <PolicyAdherenceSummaryTable artifactId={artifactId} />
                         </CardContent>
                     </Card>
                 </Grid>

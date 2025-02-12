@@ -27,124 +27,59 @@ import {
     Grid,
     TextField,
     Typography,
-    Chip,
-    IconButton,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
+    MenuItem,
     Paper,
     CircularProgress,
-    Autocomplete,
-    RadioGroup,
-    FormControlLabel,
-    Radio,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+    DialogContentText,
 } from '@mui/material';
-import AddIcon from '@mui/icons-material/Add';
 import { styled } from '@mui/material/styles';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import PropTypes from 'prop-types';
+import Editor from '@monaco-editor/react';
 import cloneDeep from 'lodash.clonedeep';
+import PropTypes from 'prop-types';
+import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import GovernanceAPI from 'AppData/GovernanceAPI';
-import API from 'AppData/api';
-import Utils from 'AppData/Utils';
 import CONSTS from 'AppData/Constants';
-import ActionConfigDialog from './ActionConfigDialog';
-import RulesetSelector from './RulesetSelector';
+import AuthManager from 'AppData/AuthManager';
 
-// Keep these styled components
-const StyledSpan = styled('span')(({ theme }) => ({
-    color: theme.palette.error.dark,
+const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
+const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
+
+const EditorToolbar = styled(Box)(({ theme }) => ({
+    padding: theme.spacing(1),
+    borderTopLeftRadius: theme.shape.borderRadius,
+    borderTopRightRadius: theme.shape.borderRadius,
+    borderBottom: `1px solid ${theme.palette.divider}`,
+    display: 'flex',
+    justifyContent: 'flex-end',
+    backgroundColor: theme.palette.grey[50],
 }));
 
-const StyledHr = styled('hr')({
-    border: 'solid 1px #efefef',
-});
-
-const PREFIX = 'AddEditPolicy';
-
-const classes = {
-    root: `${PREFIX}-root`,
-    formContainer: `${PREFIX}-formContainer`,
-    helperText: `${PREFIX}-helperText`,
-    divider: `${PREFIX}-divider`,
-    actionButton: `${PREFIX}-actionButton`,
-    actionButtonContainer: `${PREFIX}-actionButtonContainer`,
-    tableContainer: `${PREFIX}-tableContainer`,
-    actionChip: `${PREFIX}-actionChip`,
-    buttonWrapper: `${PREFIX}-buttonWrapper`,
-    requiredStar: `${PREFIX}-requiredStar`,
-};
-
-const StyledContentBase = styled(ContentBase)(({ theme }) => ({
-    [`& .${classes.formContainer}`]: {
-        margin: theme.spacing(1),
-    },
-    [`& .${classes.helperText}`]: {
-        position: 'absolute',
-        marginTop: '10px',
-    },
-    [`& .${classes.divider}`]: {
-        margin: `${theme.spacing(2)} 0`,
-        borderTop: `1px solid ${theme.palette.divider}`,
-    },
-    [`& .${classes.actionButton}`]: {
-        margin: theme.spacing(1),
-    },
-    [`& .${classes.actionButtonContainer}`]: {
-        margin: theme.spacing(1),
-    },
-    [`& .${classes.tableContainer}`]: {
-        margin: theme.spacing(1),
-    },
-    [`& .${classes.actionChip}`]: {
-        borderColor: (props) => (props.isBlock ? theme.palette.error.main : theme.palette.primary.main),
-        backgroundColor: (props) => (props.isBlock ? theme.palette.error.lighter : theme.palette.primary.lighter),
-    },
-    [`& .${classes.buttonWrapper}`]: {
-        margin: theme.spacing(2),
-    },
-    [`& .${classes.requiredStar}`]: {
-        color: theme.palette.error.dark,
+const EditorContainer = styled(Box)(({ theme }) => ({
+    height: 400,
+    '& .monaco-editor': {
+        borderBottomLeftRadius: theme.shape.borderRadius,
+        borderBottomRightRadius: theme.shape.borderRadius,
+        overflow: 'hidden',
     },
 }));
 
 function reducer(state, { field, value }) {
     const nextState = cloneDeep(state);
     switch (field) {
-        case 'all': // We set initial state with this.
+        case 'all':
             return value;
         case 'name':
         case 'description':
+        case 'policyType':
+        case 'artifactType':
+        case 'provider':
+        case 'policyContent':
+        case 'documentationLink':
             nextState[field] = value;
-            return nextState;
-        case 'labels':
-            if (Array.isArray(value)) {
-                nextState.labels = value;
-            }
-            return nextState;
-        case 'rulesets':
-            if (Array.isArray(value)) {
-                nextState.rulesets = value;
-            }
-            return nextState;
-        case 'actions':
-            if (Array.isArray(value)) {
-                nextState.actions = value;
-            } else if (typeof value === 'object') {
-                const { actionType, actionData, indexToRemove } = value;
-
-                if (actionType === 'ADD') {
-                    nextState.actions.push(actionData);
-                } else if (actionType === 'REMOVE') {
-                    nextState.actions = nextState.actions.filter((_, index) => index !== indexToRemove);
-                } else if (actionType === 'UPDATE') {
-                    nextState.actions[indexToRemove] = actionData;
-                }
-            }
             return nextState;
         default:
             return nextState;
@@ -154,119 +89,114 @@ function reducer(state, { field, value }) {
 function AddEditPolicy(props) {
     const [validating, setValidating] = useState(false);
     const [saving, setSaving] = useState(false);
-    const [availableRulesets, setAvailableRulesets] = useState([]);
-    const [selectedRulesets, setSelectedRulesets] = useState([]); // Store full ruleset objects for UI
-    const [availableLabels, setAvailableLabels] = useState([]);
-    const [labelMode, setLabelMode] = useState('all');
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [pendingFile, setPendingFile] = useState(null);
     const intl = useIntl();
-    const { match: { params: { id: policyId } }, history } = props;
+    const { match: { params: { id } }, history } = props;
 
     const initialState = {
         name: '',
         description: '',
-        labels: ['GLOBAL'],
-        actions: [],
-        rulesets: [], // Store only IDs
+        policyType: '',
+        artifactType: '',
+        provider: '',
+        policyContent: '',
+        documentationLink: '',
     };
     const [state, dispatch] = useReducer(reducer, initialState);
 
     const {
         name,
         description,
-        labels,
-        actions,
-        rulesets,
+        policyType,
+        artifactType,
+        policyContent,
+        documentationLink,
     } = state;
-
-    const [dialogConfig, setDialogConfig] = useState({
-        open: false,
-        editAction: null,
-    });
 
     useEffect(() => {
         const restApi = new GovernanceAPI();
-        const adminApi = new API();
-
-        // Fetch available labels
-        adminApi.labelsListGet()
-            .then((response) => {
-                const labelList = response.body.list || [];
-                setAvailableLabels(labelList.map((label) => label.name));
-            })
-            .catch((error) => {
-                console.error('Error loading labels:', error);
-                Alert.error(intl.formatMessage({
-                    id: 'Governance.Policies.AddEdit.error.loading.labels',
-                    defaultMessage: 'Error loading labels',
-                }));
-            });
-
-        restApi.getRulesetsList()
-            .then((response) => {
-                const rulesetList = response.body.list;
-                setAvailableRulesets(rulesetList);
-
-                if (policyId) {
-                    return restApi.getPolicy(policyId)
-                        .then((policyResponse) => {
-                            const { body } = policyResponse;
-                            const fullRulesets = body.rulesets.map((rulesetId) => {
-                                const foundRuleset = rulesetList.find((r) => r.id === rulesetId);
-                                return foundRuleset || { id: rulesetId, name: 'Unknown Ruleset' };
-                            });
-                            setSelectedRulesets(fullRulesets);
-
-                            // Set the correct label mode based on the policy data
-                            if (body.labels.length === 1 && body.labels[0] === 'GLOBAL') {
-                                setLabelMode('all');
-                            } else if (body.labels.length === 0) {
-                                setLabelMode('none');
-                            } else {
-                                setLabelMode('specific');
-                            }
-
-                            return dispatch({
-                                field: 'all',
-                                value: {
-                                    ...body,
-                                    rulesets: body.rulesets.map(
-                                        (ruleset) => (typeof ruleset === 'object' ? ruleset.id : ruleset),
-                                    ),
-                                },
-                            });
-                        });
-                }
-                return null;
-            })
-            .catch((error) => {
-                console.error('Error loading rulesets:', error);
-                Alert.error(intl.formatMessage({
-                    id: 'Governance.Policies.AddEdit.error.loading.rulesets',
-                    defaultMessage: 'Error loading rulesets',
-                }));
-            });
-    }, [policyId]);
+        if (id) {
+            // Get policy metadata
+            restApi
+                .getPolicyById(id)
+                .then((result) => {
+                    const { body } = result;
+                    return body;
+                })
+                .then((data) => {
+                    dispatch({ field: 'all', value: data });
+                    // After getting metadata, fetch the policy content
+                    return restApi.getPolicyContent(id);
+                })
+                .then((contentResult) => {
+                    const { text } = contentResult;
+                    dispatch({ field: 'policyContent', value: text });
+                })
+                .catch((error) => {
+                    const { response } = error;
+                    if (response && response.body) {
+                        Alert.error(response.body.description);
+                    } else {
+                        Alert.error(intl.formatMessage({
+                            id: 'Governance.Policies.AddEdit.error.loading',
+                            defaultMessage: 'Error loading policy',
+                        }));
+                    }
+                });
+        }
+    }, [id]);
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
-    const handleLabelModeChange = (e) => {
-        setLabelMode(e.target.value);
-        switch (e.target.value) {
-            case 'all':
-                dispatch({ field: 'labels', value: ['GLOBAL'] });
-                break;
-            case 'none':
-                dispatch({ field: 'labels', value: [] });
-                break;
-            case 'specific':
-                // TODO: should load the saved labels instead of clearing
-                dispatch({ field: 'labels', value: [] });
-                break;
-            default:
-                break;
+    const handleEditorChange = (value) => {
+        dispatch({ field: 'policyContent', value });
+    };
+
+    const processFile = (file) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            dispatch({ field: 'policyContent', value: e.target.result });
+        };
+        reader.onerror = () => {
+            Alert.error(intl.formatMessage({
+                id: 'Governance.Policies.AddEdit.file.read.error',
+                defaultMessage: 'Error reading file',
+            }));
+        };
+        reader.readAsText(file);
+    };
+
+    const handleFileUpload = (event) => {
+        const file = event.target.files[0];
+        if (file) {
+            if (policyContent.trim()) {
+                setPendingFile(file);
+                setOpenConfirmDialog(true);
+            } else {
+                processFile(file);
+            }
         }
+        // Clone the event target before modifying
+        const input = event.target;
+        setTimeout(() => {
+            input.value = '';
+        }, 0);
+    };
+
+    const handleConfirmOverwrite = () => {
+        if (pendingFile) {
+            processFile(pendingFile);
+            setPendingFile(null);
+        }
+        setOpenConfirmDialog(false);
+    };
+
+    const handleCancelOverwrite = () => {
+        setPendingFile(null);
+        setOpenConfirmDialog(false);
     };
 
     const hasErrors = (fieldName, fieldValue, validatingActive) => {
@@ -281,11 +211,6 @@ function AddEditPolicy(props) {
                         id: 'Governance.Policies.AddEdit.form.name.required',
                         defaultMessage: 'Policy name is required',
                     });
-                } else if (fieldValue.length < 1) {
-                    error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.name.too.short',
-                        defaultMessage: 'Policy name cannot be empty',
-                    });
                 } else if (fieldValue.length > 255) {
                     error = intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.form.name.too.long',
@@ -295,61 +220,63 @@ function AddEditPolicy(props) {
                     error = intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.form.name.invalid',
                         defaultMessage: 'Policy name can only contain alphanumeric characters,'
-                            + ' hyphens, underscores, and spaces',
+                            + ' spaces, hyphens and underscores.',
                     });
                 }
                 break;
+
             case 'description':
-                if (fieldValue && fieldValue.length > 1024) {
+                if (fieldValue && fieldValue.length > 1000) {
                     error = intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.form.description.too.long',
-                        defaultMessage: 'Description cannot exceed 1024 characters',
+                        defaultMessage: 'Description cannot exceed 1000 characters',
                     });
                 }
                 break;
-            case 'rulesets':
-                if (!fieldValue || !Array.isArray(fieldValue) || fieldValue.length === 0) {
-                    error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.rulesets.required',
-                        defaultMessage: 'At least one ruleset is required',
-                    });
-                } else if (new Set(fieldValue).size !== fieldValue.length) {
-                    error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.rulesets.duplicate',
-                        defaultMessage: 'Duplicate rulesets are not allowed',
-                    });
-                }
-                break;
-            case 'actions': {
-                if (!fieldValue || !Array.isArray(fieldValue) || fieldValue.length === 0) {
-                    error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.actions.invalid',
-                        defaultMessage: 'Actions must be properly configured',
-                    });
-                    break;
-                }
 
-                // Check for invalid BLOCK actions
-                const invalidBlockActions = fieldValue.filter((action) => (
-                    action.state === 'API_CREATE' || action.state === 'API_UPDATE')
-                    && action.type === CONSTS.GOVERNANCE_ACTIONS.BLOCK);
-                if (invalidBlockActions.length > 0) {
+            case 'policyType':
+                if (!fieldValue) {
                     error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.actions.invalid.block',
-                        defaultMessage: 'BLOCK action is not allowed for API_CREATE and API_UPDATE states',
-                    });
-                    break;
-                }
-                break;
-            }
-            case 'labels':
-                if (labelMode === 'specific' && (!fieldValue || fieldValue.length === 0)) {
-                    error = intl.formatMessage({
-                        id: 'Governance.Policies.AddEdit.form.labels.required',
-                        defaultMessage: 'At least one label is required when applying to specific APIs',
+                        id: 'Governance.Policies.AddEdit.form.policyType.required',
+                        defaultMessage: 'Policy type is required',
                     });
                 }
                 break;
+
+            case 'artifactType':
+                if (!fieldValue) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Policies.AddEdit.form.artifacttype.required',
+                        defaultMessage: 'Artifact type is required',
+                    });
+                }
+                break;
+
+            case 'documentationLink':
+                if (fieldValue) {
+                    if (fieldValue.length > 500) {
+                        error = intl.formatMessage({
+                            id: 'Governance.Policies.AddEdit.form.doclink.too.long',
+                            defaultMessage: 'Documentation link cannot exceed 500 characters',
+                        });
+                    } else if (!/^https?:\/\/.+/.test(fieldValue)) {
+                        error = intl.formatMessage({
+                            id: 'Governance.Policies.AddEdit.form.doclink.invalid',
+                            defaultMessage: 'Documentation link must be a valid HTTP/HTTPS URL',
+                        });
+                    }
+                }
+                break;
+
+            case 'policyContent':
+                if (!fieldValue || fieldValue.trim().length === 0) {
+                    error = intl.formatMessage({
+                        id: 'Governance.Policies.AddEdit.form.policyContent.required',
+                        defaultMessage: 'Policy content is required',
+                    });
+                }
+                break;
+
             default:
                 break;
         }
@@ -359,9 +286,10 @@ function AddEditPolicy(props) {
     const formHasErrors = (validatingActive = false) => {
         if (hasErrors('name', name, validatingActive)
             || hasErrors('description', description, validatingActive)
-            || hasErrors('labels', labels, validatingActive)
-            || hasErrors('rulesets', rulesets, validatingActive)
-            || hasErrors('actions', actions, validatingActive)) {
+            || hasErrors('policyType', policyType, validatingActive)
+            || hasErrors('artifactType', artifactType, validatingActive)
+            || hasErrors('documentationLink', documentationLink, validatingActive)
+            || hasErrors('policyContent', policyContent, validatingActive)) {
             return true;
         }
         return false;
@@ -378,26 +306,29 @@ function AddEditPolicy(props) {
         }
 
         setSaving(true);
+
+        const file = new File([policyContent], `${name}.yaml`);
         const body = {
             ...state,
-            governableStates: [...new Set(actions.map((action) => action.state))],
+            provider: AuthManager.getUser().name,
+            policyContent: file,
         };
 
         // Do the API call
         const restApi = new GovernanceAPI();
         let promiseAPICall = null;
 
-        if (policyId) {
-            promiseAPICall = restApi
-                .updatePolicy(body).then(() => {
+        if (id) {
+            promiseAPICall = restApi.updatePolicyById(id, body)
+                .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.edit.success',
                         defaultMessage: 'Policy Updated Successfully',
                     });
                 });
         } else {
-            promiseAPICall = restApi
-                .addPolicy(body).then(() => {
+            promiseAPICall = restApi.createPolicy(body)
+                .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.add.success',
                         defaultMessage: 'Policy Added Successfully',
@@ -422,119 +353,28 @@ function AddEditPolicy(props) {
         return true;
     };
 
-    const groupActionsByState = (actionsList) => {
-        return actionsList.reduce((acc, action) => {
-            const existingStateIndex = acc.findIndex((item) => item.state === action.state);
-            if (existingStateIndex === -1) {
-                acc.push({
-                    state: action.state,
-                    error: action.ruleSeverity === 'ERROR' ? action.type : null,
-                    warn: action.ruleSeverity === 'WARN' ? action.type : null,
-                    info: action.ruleSeverity === 'INFO' ? action.type : null,
-                });
-            } else {
-                switch (action.ruleSeverity) {
-                    case 'ERROR':
-                        acc[existingStateIndex].error = action.type;
-                        break;
-                    case 'WARN':
-                        acc[existingStateIndex].warn = action.type;
-                        break;
-                    case 'INFO':
-                        acc[existingStateIndex].info = action.type;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            return acc;
-        }, []);
-    };
-
-    const handleActionSave = (actionConfig) => {
-        const newActions = [];
-        const { governedState, actions: configuredActions } = actionConfig;
-
-        Object.entries(configuredActions).forEach(([severity, action]) => {
-            if (action) {
-                newActions.push({
-                    state: governedState,
-                    ruleSeverity: severity.toUpperCase(),
-                    type: action,
-                });
-            }
-        });
-
-        // Remove existing actions for this governedState
-        const filteredActions = actions.filter((action) => action.state !== governedState);
-        dispatch({ field: 'actions', value: [...filteredActions, ...newActions] });
-        setDialogConfig({
-            open: false,
-            editAction: null,
-        });
-    };
-
-    const handleAddAction = () => {
-        setDialogConfig({
-            open: true,
-            editAction: null,
-        });
-    };
-
-    const handleEditAction = (groupedAction) => {
-        const actionConfig = {
-            governedState: groupedAction.state,
-            actions: {
-                error: groupedAction.error || CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
-                warn: groupedAction.warn || CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
-                info: groupedAction.info || CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
-            },
-        };
-        setDialogConfig({
-            open: true,
-            editAction: actionConfig,
-        });
-    };
-
-    const handleCloseDialog = () => {
-        setDialogConfig({
-            open: false,
-            editAction: null,
-        });
-    };
-
-    const handleRulesetSelect = (ruleset) => {
-        dispatch({
-            field: 'rulesets',
-            value: [...rulesets, ruleset.id],
-        });
-        setSelectedRulesets([...selectedRulesets, ruleset]);
-    };
-
-    const handleRulesetDeselect = (ruleset) => {
-        dispatch({
-            field: 'rulesets',
-            value: rulesets.filter((id) => id !== ruleset.id),
-        });
-        setSelectedRulesets(selectedRulesets.filter((r) => r.id !== ruleset.id));
-    };
-
     return (
-        <StyledContentBase
+        <ContentBase
             pageStyle='half'
             title={
-                policyId ? `${intl.formatMessage({
-                    id: 'Governance.Policies.AddEdit.title.edit',
-                    defaultMessage: 'Governance Policy - Edit ',
-                })} ${name}` : intl.formatMessage({
-                    id: 'Governance.Policies.AddEdit.title.new',
-                    defaultMessage: 'Governance Policy - Create new',
-                })
+                id ? (
+                    <FormattedMessage
+                        id='Governance.Policies.AddEdit.title.edit'
+                        defaultMessage='Edit Policy - {name}'
+                        values={{ name }}
+                    />
+                ) : (
+                    <FormattedMessage
+                        id='Governance.Policies.AddEdit.title.new'
+                        defaultMessage='Create New Policy'
+                    />
+                )
             }
             help={<div>TODO: Link Doc</div>}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
+                    {/* General Details Section */}
                     <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px', paddingTop: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
@@ -549,6 +389,7 @@ function AddEditPolicy(props) {
                             />
                         </Typography>
                     </Grid>
+
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
                             <TextField
@@ -568,10 +409,7 @@ function AddEditPolicy(props) {
                                 )}
                                 fullWidth
                                 error={hasErrors('name', name, validating)}
-                                helperText={hasErrors('name', name, validating) || intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.form.name.help',
-                                    defaultMessage: 'Name of the governance policy.',
-                                })}
+                                helperText={hasErrors('name', name, validating)}
                                 variant='outlined'
                             />
                             <TextField
@@ -579,272 +417,93 @@ function AddEditPolicy(props) {
                                 name='description'
                                 value={description}
                                 onChange={onChange}
-                                label={intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.form.description',
-                                    defaultMessage: 'Description',
-                                })}
+                                label={(
+                                    <FormattedMessage
+                                        id='Governance.Policies.AddEdit.form.description'
+                                        defaultMessage='Description'
+                                    />
+                                )}
                                 fullWidth
-                                multiline
                                 error={hasErrors('description', description, validating)}
-                                helperText={hasErrors('description', description, validating) || intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.form.description.help',
-                                    defaultMessage: 'Description of the governance policy.',
-                                })}
+                                helperText={hasErrors('description', description, validating)}
+                                multiline
+                                rows={3}
                                 variant='outlined'
                                 InputProps={{
                                     style: { padding: 0 },
                                 }}
                             />
-                        </Box>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
-
-                    <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px' }}>
-                        <Typography color='inherit' variant='subtitle2' component='div'>
-                            <FormattedMessage
-                                id='Governance.Policies.AddEdit.labels.title'
-                                defaultMessage='Applicability'
-                            />
-                        </Typography>
-                        <Typography color='inherit' variant='caption' component='p'>
-                            <FormattedMessage
-                                id='Governance.Policies.AddEdit.labels.description'
-                                defaultMessage={'Choose whether to apply this policy to'
-                                    + ' all APIs or only to APIs with specific labels'}
-                            />
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
-                            <Box mb={2}>
-                                <RadioGroup
-                                    row
-                                    value={labelMode}
-                                    onChange={handleLabelModeChange}
-                                >
-                                    <FormControlLabel
-                                        value='all'
-                                        control={<Radio />}
-                                        label={intl.formatMessage({
-                                            id: 'Governance.Policies.AddEdit.labels.applyAll',
-                                            defaultMessage: 'Apply to all APIs',
-                                        })}
+                            <TextField
+                                margin='dense'
+                                name='documentationLink'
+                                value={documentationLink}
+                                onChange={onChange}
+                                label={(
+                                    <FormattedMessage
+                                        id='Governance.Policies.AddEdit.form.documentation'
+                                        defaultMessage='Documentation Link'
                                     />
-                                    <FormControlLabel
-                                        value='specific'
-                                        control={<Radio />}
-                                        label={intl.formatMessage({
-                                            id: 'Governance.Policies.AddEdit.labels.applySpecific',
-                                            defaultMessage: 'Apply to APIs with specific labels',
-                                        })}
-                                    />
-                                    <FormControlLabel
-                                        value='none'
-                                        control={<Radio />}
-                                        label={intl.formatMessage({
-                                            id: 'Governance.Policies.AddEdit.labels.applyNone',
-                                            defaultMessage: 'Apply to none',
-                                        })}
-                                    />
-                                </RadioGroup>
-                            </Box>
-                            {labelMode === 'specific' && (
-                                <Autocomplete
-                                    multiple
-                                    id='governance-policy-labels'
-                                    options={availableLabels}
-                                    value={labels}
-                                    onChange={(event, newValue) => {
-                                        dispatch({ field: 'labels', value: newValue });
-                                    }}
-                                    renderInput={(params) => (
-                                        <TextField
-                                            {...params}
-                                            variant='outlined'
-                                            label={intl.formatMessage({
-                                                id: 'Governance.Policies.AddEdit.labels.input',
-                                                defaultMessage: 'Select Labels',
-                                            })}
-                                            error={hasErrors('labels', labels, validating)}
-                                            helperText={hasErrors('labels', labels, validating) || intl.formatMessage({
-                                                id: 'Governance.Policies.AddEdit.labels.helper',
-                                                defaultMessage:
-                                                    'Select one or more labels to determine'
-                                                    + ' which APIs this policy applies to',
-                                            })}
-                                        />
-                                    )}
-                                    renderTags={(value, getTagProps) => value.map((option, index) => (
-                                        <Chip
-                                            label={option}
-                                            {...getTagProps({ index })}
-                                        />
-                                    ))}
-                                />
-                            )}
-                        </Box>
-                    </Grid>
-
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
-
-                    <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px' }}>
-                        <Typography color='inherit' variant='subtitle2' component='div'>
-                            <FormattedMessage
-                                id='Governance.Policies.AddEdit.enforcement.title'
-                                defaultMessage='Enforcement Details'
-                            />
-                        </Typography>
-                        <Typography color='inherit' variant='caption' component='p'>
-                            <FormattedMessage
-                                id='Governance.Policies.AddEdit.enforcement.description'
-                                defaultMessage='Provide details of when the policy will be applied'
-                            />
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
-                            <Button
+                                )}
+                                fullWidth
+                                error={hasErrors('documentationLink', documentationLink, validating)}
+                                helperText={hasErrors('documentationLink', documentationLink, validating)}
                                 variant='outlined'
-                                color='primary'
-                                startIcon={<AddIcon />}
-                                onClick={handleAddAction}
-                            >
-                                {intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.action.add',
-                                    defaultMessage: 'Add Action Configuration',
-                                })}
-                            </Button>
+                            />
+                            <Grid container spacing={2}>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        select
+                                        margin='dense'
+                                        name='policyType'
+                                        value={policyType}
+                                        onChange={onChange}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Governance.Policies.AddEdit.form.policy.type'
+                                                defaultMessage='Policy Type'
+                                            />
+                                        )}
+                                        fullWidth
+                                        error={hasErrors('policyType', policyType, validating)}
+                                        helperText={hasErrors('policyType', policyType, validating)}
+                                        required
+                                        variant='outlined'
+                                    >
+                                        {CONSTS.POLICY_TYPES.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
+                                <Grid item xs={6}>
+                                    <TextField
+                                        select
+                                        margin='dense'
+                                        name='artifactType'
+                                        value={artifactType}
+                                        onChange={onChange}
+                                        label={(
+                                            <FormattedMessage
+                                                id='Governance.Policies.AddEdit.form.artifact.type'
+                                                defaultMessage='Artifact Type'
+                                            />
+                                        )}
+                                        fullWidth
+                                        error={hasErrors('artifactType', artifactType, validating)}
+                                        helperText={hasErrors('artifactType', artifactType, validating)}
+                                        required
+                                        variant='outlined'
+                                    >
+                                        {CONSTS.ARTIFACT_TYPES.map((option) => (
+                                            <MenuItem key={option.value} value={option.value}>
+                                                {option.label}
+                                            </MenuItem>
+                                        ))}
+                                    </TextField>
+                                </Grid>
+                            </Grid>
                         </Box>
-                        <Box component='div' m={1}>
-                            {actions && actions.length > 0 && (
-                                <TableContainer component={Paper}>
-                                    <Table>
-                                        <TableHead>
-                                            <TableRow>
-                                                <TableCell>
-                                                    {intl.formatMessage({
-                                                        id: 'Governance.Policies.AddEdit.action.table.state',
-                                                        defaultMessage: 'State',
-                                                    })}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {intl.formatMessage({
-                                                        id: 'Governance.Policies.AddEdit.action.table.onError',
-                                                        defaultMessage: 'On Error',
-                                                    })}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {intl.formatMessage({
-                                                        id: 'Governance.Policies.AddEdit.action.table.onWarn',
-                                                        defaultMessage: 'On Warn',
-                                                    })}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {intl.formatMessage({
-                                                        id: 'Governance.Policies.AddEdit.action.table.onInfo',
-                                                        defaultMessage: 'On Info',
-                                                    })}
-                                                </TableCell>
-                                                <TableCell align='right'>
-                                                    {intl.formatMessage({
-                                                        id: 'Governance.Policies.AddEdit.action.table.actions',
-                                                        defaultMessage: 'Actions',
-                                                    })}
-                                                </TableCell>
-                                            </TableRow>
-                                        </TableHead>
-                                        <TableBody>
-                                            {groupActionsByState(actions).map((groupedAction) => (
-                                                <TableRow key={groupedAction.state}>
-                                                    <TableCell>
-                                                        {Utils.mapGovernableStateToLabel(groupedAction.state)}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Chip
-                                                            label={groupedAction.error || 'Not Set'}
-                                                            color={
-                                                                groupedAction.error === CONSTS.GOVERNANCE_ACTIONS.BLOCK
-                                                                    ? 'error' : 'primary'
-                                                            }
-                                                            variant='outlined'
-                                                            size='small'
-                                                            className={classes.actionChip}
-                                                            isBlock={
-                                                                groupedAction.error === CONSTS.GOVERNANCE_ACTIONS.BLOCK
-                                                            }
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Chip
-                                                            label={groupedAction.warn || 'Not Set'}
-                                                            color={
-                                                                groupedAction.warn === CONSTS.GOVERNANCE_ACTIONS.BLOCK
-                                                                    ? 'error' : 'primary'
-                                                            }
-                                                            variant='outlined'
-                                                            size='small'
-                                                            className={classes.actionChip}
-                                                            isBlock={
-                                                                groupedAction.warn === CONSTS.GOVERNANCE_ACTIONS.BLOCK
-                                                            }
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        <Chip
-                                                            label={groupedAction.info || 'Not Set'}
-                                                            color={
-                                                                groupedAction.info === CONSTS.GOVERNANCE_ACTIONS.BLOCK
-                                                                    ? 'error' : 'primary'
-                                                            }
-                                                            variant='outlined'
-                                                            size='small'
-                                                            className={classes.actionChip}
-                                                            isBlock={
-                                                                groupedAction.info === CONSTS.GOVERNANCE_ACTIONS.BLOCK
-                                                            }
-                                                        />
-                                                    </TableCell>
-                                                    <TableCell align='right'>
-                                                        <IconButton
-                                                            onClick={() => handleEditAction(groupedAction)}
-                                                            size='small'
-                                                            sx={{ mr: 1 }}
-                                                        >
-                                                            <EditIcon />
-                                                        </IconButton>
-                                                        <IconButton
-                                                            onClick={() => {
-                                                                const newActions = actions.filter(
-                                                                    (a) => a.state !== groupedAction.state,
-                                                                );
-                                                                dispatch({ field: 'actions', value: newActions });
-                                                            }}
-                                                            size='small'
-                                                        >
-                                                            <DeleteIcon />
-                                                        </IconButton>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))}
-                                        </TableBody>
-                                    </Table>
-                                </TableContainer>
-                            )}
-                        </Box>
-                        {validating && hasErrors('actions', actions, true) && (
-                            <Box sx={{ color: 'error.main', pl: 2, pb: 1 }}>
-                                {hasErrors('actions', actions, true)}
-                            </Box>
-                        )}
                     </Grid>
 
                     <Grid item xs={12}>
@@ -853,66 +512,95 @@ function AddEditPolicy(props) {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={12} lg={12} style={{ paddingLeft: '24px' }}>
+                    {/* Policy Content Section */}
+                    <Grid item xs={12} md={12} lg={5} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.rulesets.title'
-                                defaultMessage='Rulesets'
+                                id='Governance.Policies.AddEdit.content.title'
+                                defaultMessage='Policy Content'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.rulesets.description'
-                                defaultMessage={'Search and select rulesets to include in the policy. '
-                                    + 'Selected rulesets will appear above the search bar.'}
+                                id='Governance.Policies.AddEdit.content.description'
+                                defaultMessage='Define the Policy content in YAML or JSON format'
                             />
                         </Typography>
                     </Grid>
+
                     <Grid item xs={12} md={12} lg={12}>
                         <Box component='div' m={1}>
-                            <RulesetSelector
-                                availableRulesets={availableRulesets}
-                                selectedRulesets={selectedRulesets}
-                                onRulesetSelect={handleRulesetSelect}
-                                onRulesetDeselect={handleRulesetDeselect}
-                            />
+                            <Paper variant='outlined'>
+                                <EditorToolbar>
+                                    <Button
+                                        component='label'
+                                        variant='contained'
+                                        startIcon={<CloudUploadIcon />}
+                                        size='small'
+                                    >
+                                        <FormattedMessage
+                                            id='Governance.Policies.AddEdit.button.upload'
+                                            defaultMessage='Upload File'
+                                        />
+                                        <input
+                                            type='file'
+                                            hidden
+                                            accept='.yaml,.yml,.json'
+                                            onChange={handleFileUpload}
+                                        />
+                                    </Button>
+                                </EditorToolbar>
+                                <EditorContainer>
+                                    <Editor
+                                        height='100%'
+                                        defaultLanguage='yaml'
+                                        value={policyContent}
+                                        onChange={handleEditorChange}
+                                        theme='light'
+                                        options={{
+                                            minimap: { enabled: false },
+                                            lineNumbers: 'on',
+                                            scrollBeyondLastLine: false,
+                                        }}
+                                    />
+                                </EditorContainer>
+                            </Paper>
                         </Box>
-                        {validating && hasErrors('rulesets', rulesets, true) && (
+                        {validating && hasErrors('policyContent', policyContent, true) && (
                             <Box sx={{ color: 'error.main', pl: 2, pb: 1 }}>
-                                {hasErrors('rulesets', rulesets, true)}
+                                {hasErrors('policyContent', policyContent, true)}
                             </Box>
                         )}
                     </Grid>
 
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
-
+                    {/* Action Buttons */}
                     <Grid item xs={12} sx={{ mb: 2 }}>
                         <Box component='span' m={1}>
                             <Button
                                 variant='contained'
                                 color='primary'
                                 onClick={formSave}
+                                disabled={saving}
                             >
-                                {saving ? (<CircularProgress size={16} />) : (
-                                    <>
-                                        {policyId ? (
+                                {(() => {
+                                    if (saving) {
+                                        return <CircularProgress size={16} />;
+                                    } else if (id) {
+                                        return (
                                             <FormattedMessage
-                                                id='Governance.Policies.AddEdit.form.update.btn'
+                                                id='Governance.Policies.AddEdit.button.update'
                                                 defaultMessage='Update'
                                             />
-                                        ) : (
+                                        );
+                                    } else {
+                                        return (
                                             <FormattedMessage
-                                                id='Governance.Policies.AddEdit.form.add.btn'
+                                                id='Governance.Policies.AddEdit.button.create'
                                                 defaultMessage='Create'
                                             />
-                                        )}
-                                    </>
-                                )}
-
+                                        );
+                                    }
+                                })()}
                             </Button>
                         </Box>
                         <RouterLink to='/governance/policies'>
@@ -927,19 +615,56 @@ function AddEditPolicy(props) {
                 </Grid>
             </Box>
 
-            <ActionConfigDialog
-                open={dialogConfig.open}
-                onClose={handleCloseDialog}
-                onSave={handleActionSave}
-                editAction={dialogConfig.editAction}
-            />
-        </StyledContentBase>
+            {/* Add the confirmation dialog */}
+            <Dialog
+                open={openConfirmDialog}
+                onClose={handleCancelOverwrite}
+                aria-labelledby='overwrite-dialog-title'
+                aria-describedby='overwrite-dialog-description'
+            >
+                <DialogTitle id='overwrite-dialog-title'>
+                    <FormattedMessage
+                        id='Governance.Policies.AddEdit.confirm.overwrite.title'
+                        defaultMessage='Confirm Overwrite'
+                    />
+                </DialogTitle>
+                <DialogContent>
+                    <DialogContentText id='overwrite-dialog-description'>
+                        <FormattedMessage
+                            id='Governance.Policies.AddEdit.confirm.overwrite.message'
+                            defaultMessage={'The editor contains existing content.'
+                                + ' Do you want to overwrite it with the uploaded file?'}
+                        />
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={handleCancelOverwrite} color='primary'>
+                        <FormattedMessage
+                            id='Governance.Policies.AddEdit.confirm.overwrite.cancel'
+                            defaultMessage='Cancel'
+                        />
+                    </Button>
+                    <Button onClick={handleConfirmOverwrite} color='primary' autoFocus>
+                        <FormattedMessage
+                            id='Governance.Policies.AddEdit.confirm.overwrite.ok'
+                            defaultMessage='Overwrite'
+                        />
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </ContentBase>
     );
 }
 
 AddEditPolicy.propTypes = {
-    match: PropTypes.shape({}).isRequired,
-    history: PropTypes.shape({}).isRequired,
+    match: PropTypes.shape({
+        params: PropTypes.shape({
+            id: PropTypes.string,
+        }),
+    }).isRequired,
+    history: PropTypes.shape({
+        push: PropTypes.func,
+    }).isRequired,
 };
 
 export default AddEditPolicy;

@@ -38,8 +38,8 @@ import KeyManagers from 'AppComponents/KeyManagers';
 import AiVendors from 'AppComponents/AiVendors';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
+import PolicyAttachments from 'AppComponents/Governance/PolicyAttachments';
 import Policies from 'AppComponents/Governance/Policies';
-import RulesetCatalog from 'AppComponents/Governance/RulesetCatalog';
 import Overview from 'AppComponents/Governance/Overview';
 import BusinessIcon from '@mui/icons-material/Business';
 import Organizations from 'AppComponents/Organizations/ListOrganizations';
@@ -48,7 +48,6 @@ import GamesIcon from '@mui/icons-material/Games';
 import CategoryIcon from '@mui/icons-material/Category';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PolicyIcon from '@mui/icons-material/Policy';
-import RuleIcon from '@mui/icons-material/Rule';
 import BarChartIcon from '@mui/icons-material/BarChart';
 import BlockIcon from '@mui/icons-material/Block';
 import AssignmentIcon from '@mui/icons-material/Assignment';
@@ -310,24 +309,24 @@ const RouteMenuMapping = (intl) => [
                 icon: <BarChartIcon />,
             },
             {
+                id: 'Policy Attachments',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.governance.policyAttachments',
+                    defaultMessage: 'Policy Attachments',
+                }),
+                path: '/governance/policy-attachments',
+                component: PolicyAttachments,
+                icon: <PolicyIcon />,
+            },
+            {
                 id: 'Policies',
                 displayText: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.governance.policies',
+                    id: 'Base.RouteMenuMapping.policies',
                     defaultMessage: 'Policies',
                 }),
                 path: '/governance/policies',
                 component: Policies,
                 icon: <PolicyIcon />,
-            },
-            {
-                id: 'Ruleset Catalog',
-                displayText: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.ruleset.catalog',
-                    defaultMessage: 'Ruleset Catalog',
-                }),
-                path: '/governance/ruleset-catalog',
-                component: RulesetCatalog,
-                icon: <RuleIcon />,
             },
         ],
     },

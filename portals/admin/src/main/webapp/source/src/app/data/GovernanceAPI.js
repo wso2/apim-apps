@@ -77,25 +77,99 @@ class GovernanceAPI extends Resource {
     }
 
     /**
-     * Get list of governance policies
-     * @returns {Promise} Promised policies response
+     * Get list of governance policy attachments
+     * @returns {Promise} Promised policy attachments response
      */
-    getPoliciesList() {
+    getGovernancePolicyAttachments() {
         return this.client.then((client) => {
-            return client.apis['Governance Policies'].getGovernancePolicies(
+            return client.apis['Governance Policy Attachments'].getGovernancePolicyAttachments(
                 this._requestMetaData(),
             );
         });
     }
 
     /**
-     * Get governance policy by id
+     * Get governance policy attachment by id
+     * @param {string} policyAttachmentId Policy Attachment id
+     * @returns {Promise} Promised policy attachment response
+     */
+    getGovernancePolicyAttachmentById(policyAttachmentId) {
+        return this.client.then((client) => {
+            return client.apis['Governance Policy Attachments'].getGovernancePolicyAttachmentById(
+                { policyAttachmentId: policyAttachmentId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add a new governance policy attachment
+     * @param {Object} policyAttachment - Policy Attachment object containing the policy attchment configuration
+     * @returns {Promise} Promise resolving to API response
+     */
+    createGovernancePolicyAttachment(policyAttachment) {
+        return this.client.then((client) => {
+            return client.apis['Governance Policy Attachments'].createGovernancePolicyAttachment(
+                { 'Content-Type': 'application/json' },
+                { requestBody: policyAttachment },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update an existing governance policy attachment
+     * @param {Object} policyAttachment - Policy Attachment object containing the updated policy attachment configuration and ID
+     * @param {string} policyAttachment.id - ID of the policy attachment to update
+     * @returns {Promise} Promise resolving to API response
+     */
+    updateGovernancePolicyAttachmentById(policyAttachment) {
+        return this.client.then((client) => {
+            return client.apis['Governance Policy Attachments'].updateGovernancePolicyAttachmentById(
+                {
+                    policyAttachmentId: policyAttachment.id,
+                    'Content-Type': 'application/json'
+                },
+                { requestBody: policyAttachment },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete a governance policy attachment
+     * @param {string} policyAttachmentId Policy attachment id
+     * @returns {Promise} Promised response
+     */
+    deleteGovernancePolicyAttachment(policyAttachmentId) {
+        return this.client.then((client) => {
+            return client.apis['Governance Policy Attachments'].deleteGovernancePolicyAttachment(
+                { policyAttachmentId: policyAttachmentId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get list of policies
+     * @returns {Promise} Promised policies response
+     */
+    getPolicies() {
+        return this.client.then((client) => {
+            return client.apis['Policies'].getPolicies(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get policy by id
      * @param {string} policyId Policy id
      * @returns {Promise} Promised policy response
      */
-    getPolicy(policyId) {
+    getPolicyById(policyId) {
         return this.client.then((client) => {
-            return client.apis['Governance Policies'].getGovernancePolicyById(
+            return client.apis['Policies'].getPolicyById(
                 { policyId: policyId },
                 this._requestMetaData(),
             );
@@ -103,119 +177,44 @@ class GovernanceAPI extends Resource {
     }
 
     /**
-     * Add a new governance policy
-     * @param {Object} policy - Policy object containing the policy configuration
-     * @returns {Promise} Promise resolving to API response
-     */
-    addPolicy(policy) {
-        return this.client.then((client) => {
-            return client.apis['Governance Policies'].createGovernancePolicy(
-                { 'Content-Type': 'application/json' },
-                { requestBody: policy },
-                this._requestMetaData(),
-            );
-        });
-    }
-
-    /**
-     * Update an existing governance policy
-     * @param {Object} policy - Policy object containing the updated policy configuration and ID
-     * @param {string} policy.id - ID of the policy to update
-     * @returns {Promise} Promise resolving to API response
-     */
-    updatePolicy(policy) {
-        return this.client.then((client) => {
-            return client.apis['Governance Policies'].updateGovernancePolicyById(
-                {
-                    policyId: policy.id,
-                    'Content-Type': 'application/json'
-                },
-                { requestBody: policy },
-                this._requestMetaData(),
-            );
-        });
-    }
-
-    /**
-     * Delete a governance policy
+     * Get policy content by id
      * @param {string} policyId Policy id
-     * @returns {Promise} Promised response
+     * @returns {Promise} Promised policy content response
      */
-    deletePolicy(policyId) {
+    getPolicyContent(policyId) {
         return this.client.then((client) => {
-            return client.apis['Governance Policies'].deleteGovernancePolicy(
+            return client.apis['Policies'].getPolicyContent(
                 { policyId: policyId },
                 this._requestMetaData(),
             );
         });
     }
 
-    // rulesets
     /**
-     * Get list of rulesets
-     * @returns {Promise} Promised rulesets response
-     */
-    getRulesetsList() {
-        return this.client.then((client) => {
-            return client.apis['Rulesets'].getRulesets(
-                this._requestMetaData(),
-            );
-        });
-    }
-
-    /**
-     * Get ruleset by id
-     * @param {string} rulesetId Ruleset id
-     * @returns {Promise} Promised ruleset response
-     */
-    getRuleset(rulesetId) {
-        return this.client.then((client) => {
-            return client.apis['Rulesets'].getRulesetById(
-                { rulesetId: rulesetId },
-                this._requestMetaData(),
-            );
-        });
-    }
-
-    /**
-     * Get ruleset content by id
-     * @param {string} rulesetId Ruleset id
-     * @returns {Promise} Promised ruleset content response
-     */
-    getRulesetContent(rulesetId) {
-        return this.client.then((client) => {
-            return client.apis['Rulesets'].getRulesetContent(
-                { rulesetId: rulesetId },
-                this._requestMetaData(),
-            );
-        });
-    }
-
-    /**
-     * Add a new ruleset
-     * @param {FormData} ruleset Ruleset data including the file
+     * Add a new policy
+     * @param {FormData} policy Policy data including the file
      * @returns {Promise} Promise resolving to response
      */
-    addRuleset(ruleset) {
+    createPolicy(policy) {
         return this.client.then((client) => {
-            return client.apis['Rulesets'].createRuleset(
+            return client.apis['Policies'].createPolicy(
                 { 'Content-Type': 'multipart/form-data' },
-                { requestBody: ruleset },
+                { requestBody: policy },
             );
         });
     }
 
     /**
-     * Update a ruleset
-     * @param {string} id Ruleset ID
-     * @param {FormData} ruleset Updated ruleset data including the file
+     * Update a policy
+     * @param {string} id Policy ID
+     * @param {FormData} policy Updated policy data including the file
      * @returns {Promise} Promise resolving to response
      */
-    updateRuleset(id, ruleset) {
+    updatePolicyById(id, policy) {
         return this.client.then((client) => {
-            const payload = ruleset;
-            return client.apis['Rulesets'].updateRulesetById(
-                { rulesetId: id },
+            const payload = policy;
+            return client.apis['Policies'].updatePolicyById(
+                { policyId: id },
                 { requestBody: payload },
                 { 'Content-Type': 'multipart/form-data' },
             );
@@ -223,14 +222,14 @@ class GovernanceAPI extends Resource {
     }
 
     /**
-     * Delete a ruleset
-     * @param {string} rulesetId Ruleset id
+     * Delete a policy
+     * @param {string} policyId Policy id
      * @returns {Promise} Promised response
      */
-    deleteRuleset(rulesetId) {
+    deletePolicy(policyId) {
         return this.client.then((client) => {
-            return client.apis['Rulesets'].deleteRuleset(
-                { rulesetId: rulesetId },
+            return client.apis['Policies'].deletePolicy(
+                { policyId: policyId },
                 this._requestMetaData(),
             );
         });
@@ -240,9 +239,9 @@ class GovernanceAPI extends Resource {
      * Get policy adherence for all policies
      * @returns {Promise} Promised policy adherence response
      */
-    getPolicyAdherenceForAllPolicies() {
+    getPolicyAttachmentAdherenceForAllPolicyAttachments() {
         return this.client.then((client) => {
-            return client.apis['Policy Adherence'].getPolicyAdherenceForAllPolicies(
+            return client.apis['Policy Attachment Adherence'].getPolicyAttachmentAdherenceForAllPolicyAttachments(
                 this._requestMetaData(),
             );
         });
@@ -276,12 +275,12 @@ class GovernanceAPI extends Resource {
     }
 
     /**
-     * Get policy adherence summary
-     * @returns {Promise} Promised policy adherence summary response
+     * Get policy attachment adherence summary
+     * @returns {Promise} Promised policy attachment adherence summary response
      */
-    getPolicyAdherenceSummary() {
+    getPolicyAttachmentAdherenceSummary() {
         return this.client.then((client) => {
-            return client.apis['Policy Adherence'].getPolicyAdherenceSummary(
+            return client.apis['Policy Attachment Adherence'].getPolicyAttachmentAdherenceSummary(
                 this._requestMetaData(),
             );
         });
@@ -300,29 +299,29 @@ class GovernanceAPI extends Resource {
     }
 
     /**
-     * Get policy adherence by id
-     * @param {string} policyId Policy id
-     * @returns {Promise} Promised policy adherence response
+     * Get policy attachment adherence by id
+     * @param {string} policyAttachmentId Policy attachment id
+     * @returns {Promise} Promised policy attachment adherence response
      */
-    getPolicyAdherenceByPolicyId(policyId) {
+    getPolicyAttachmentAdherenceByPolicyAttachmentId(policyAttachmentId) {
         return this.client.then((client) => {
-            return client.apis['Policy Adherence'].getPolicyAdherenceByPolicyId(
-                { policyId: policyId },
+            return client.apis['Policy Attachment Adherence'].getPolicyAttachmentAdherenceByPolicyAttachmentId(
+                { policyAttachmentId: policyAttachmentId },
                 this._requestMetaData(),
             );
         });
     }
 
     /**
-     * Get ruleset validation results by artifact id
+     * Get policy validation results by artifact id
      * @param {string} artifactId Artifact id
-     * @param {string} rulesetId Ruleset id
+     * @param {string} policyAttachmentId Policy id
      * @returns {Promise} Promised validation results response
      */
-    getRulesetValidationResultsByAPIId(artifactId, rulesetId) {
+    getPolicyValidationResultsByAPIId(artifactId, policyAttachmentId) {
         return this.client.then((client) => {
-            return client.apis['Artifact Compliance'].getRulesetValidationResultsByAPIId(
-                { apiId: artifactId, rulesetId: rulesetId },
+            return client.apis['Artifact Compliance'].getPolicyValidationResultsByAPIId(
+                { apiId: artifactId, policyAttachmentId: policyAttachmentId },
                 this._requestMetaData(),
             );
         });

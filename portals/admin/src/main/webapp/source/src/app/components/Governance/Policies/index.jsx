@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -24,8 +23,8 @@ import ListPolicies from './ListPolicies';
 import AddEditPolicy from './AddEditPolicy';
 
 /**
- * Render a list
- * @returns {JSX} Header AppBar components.
+ * Render policy routes
+ * @returns {JSX} Policy routing component
  */
 function Policies() {
     return (

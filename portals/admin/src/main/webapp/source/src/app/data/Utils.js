@@ -328,9 +328,9 @@ class Utils {
      * @param {String} value - The value to be mapped
      * @returns {String} The corresponding label
      */
-    static mapRuleTypeToLabel(value) {
-        const ruleType = CONSTS.RULESET_TYPES.find((t) => t.value === value);
-        return ruleType?.label || value;
+    static mapPolicyTypeToLabel(value) {
+        const policyType = CONSTS.POLICY_TYPES.find((t) => t.value === value);
+        return policyType?.label || value;
     }
 
     /**
@@ -354,24 +354,24 @@ class Utils {
     }
 
     /**
-     * Maps a policy adherence state value to its label
-     * @param {string} state The value of the policy adherence state
-     * @returns {string} The label of the policy adherence state
+     * Maps a policy attachment adherence state value to its label
+     * @param {string} state The value of the policy attachment adherence state
+     * @returns {string} The label of the policy attachment adherence state
      * @memberof Utils
      */
-    static mapPolicyAdherenceStateToLabel(state) {
-        const policyState = CONSTS.POLICY_ADHERENCE_STATES.find((t) => t.value === state);
-        return policyState?.label || state;
+    static mapPolicyAttachmentAdherenceStateToLabel(state) {
+        const policyAttachmentState = CONSTS.POLICY_ATTACHMENT_ADHERENCE_STATES.find((t) => t.value === state);
+        return policyAttachmentState?.label || state;
     }
 
     /**
-     * Maps a ruleset validation state value to its label
-     * @param {string} state The value of the ruleset validation state
-     * @returns {string} The label of the ruleset validation state
+     * Maps a policy validation state value to its label
+     * @param {string} state The value of the policy validation state
+     * @returns {string} The label of the policy validation state
      * @memberof Utils
      */
-    static mapRulesetValidationStateToLabel(state) {
-        const validationState = CONSTS.RULESET_VALIDATION_STATES.find((t) => t.value === state);
+    static mapPolicyValidationStateToLabel(state) {
+        const validationState = CONSTS.POLICY_VALIDATION_STATES.find((t) => t.value === state);
         return validationState?.label || state;
     }
 

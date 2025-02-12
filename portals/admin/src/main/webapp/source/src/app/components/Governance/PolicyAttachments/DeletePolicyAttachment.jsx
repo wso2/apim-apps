@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -25,21 +26,20 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
 
 /**
- * Renders delete dialog box
- * @param {JSON} props component properties
- * @returns {JSX} Delete dialog box
+ * Render delete dialog box.
+ * @param {JSON} props component props.
+ * @returns {JSX} Loading animation.
  */
-function DeleteRuleset({ updateList, dataRow }) {
+function DeletePolicyAttachment({ updateList, dataRow }) {
     const { id } = dataRow;
     const intl = useIntl();
-
     const formSaveCallback = () => {
         return new GovernanceAPI()
-            .deleteRuleset(id)
+            .deleteGovernancePolicyAttachment(id)
             .then(() => (
                 <FormattedMessage
-                    id='AdminPages.Governance.Ruleset.Delete.form.delete.successful'
-                    defaultMessage='Ruleset deleted successfully'
+                    id='AdminPages.Governance.PolicyAttachments.Delete.form.delete.successful'
+                    defaultMessage='Policy Attachment deleted successfully'
                 />
             ))
             .catch((error) => {
@@ -53,11 +53,11 @@ function DeleteRuleset({ updateList, dataRow }) {
     return (
         <FormDialogBase
             title={intl.formatMessage({
-                id: 'AdminPages.Governance.Ruleset.Delete.form.delete.dialog.title',
-                defaultMessage: 'Delete Ruleset?',
+                id: 'AdminPages.Governance.PolicyAttachments.Delete.form.delete.dialog.title',
+                defaultMessage: 'Delete Policy Attachment?',
             })}
             saveButtonText={intl.formatMessage({
-                id: 'AdminPages.Governance.Ruleset.Delete.form.delete.dialog.btn',
+                id: 'AdminPages.Governance.PolicyAttachments.Delete.form.delete.dialog.btn',
                 defaultMessage: 'Delete',
             })}
             icon={<DeleteForeverIcon />}
@@ -65,19 +65,19 @@ function DeleteRuleset({ updateList, dataRow }) {
         >
             <DialogContentText>
                 <FormattedMessage
-                    id='AdminPages.Governance.Ruleset.Delete.form.delete.confirmation.message'
-                    defaultMessage='Are you sure you want to delete this Ruleset?'
+                    id='AdminPages.Governance.PolicyAttachments.Delete.form.delete.confirmation.message'
+                    defaultMessage='Are you sure you want to delete this Policy Attachment?'
                 />
             </DialogContentText>
         </FormDialogBase>
     );
 }
 
-DeleteRuleset.propTypes = {
+DeletePolicyAttachment.propTypes = {
     updateList: PropTypes.func.isRequired,
     dataRow: PropTypes.shape({
         id: PropTypes.string.isRequired,
     }).isRequired,
 };
 
-export default DeleteRuleset;
+export default DeletePolicyAttachment;

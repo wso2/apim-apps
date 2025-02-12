@@ -38,8 +38,8 @@ const CONSTS = {
         CATEGORY_MANAGER: ['apim:api_category', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
         KEY_MANAGER: ['apim:keymanagers_manage', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
         GATEWAY_MANAGER: ['apim:environment_manage', 'openid', 'apim:admin_settings', 'apim:environment_read'],
-        GOVERNANCE_MANAGER: ['apim:gov_policy_read', 'apim:gov_policy_manage', 'apim:gov_result_read',
-            'apim:gov_rule_read', 'apim:gov_rule_manage'],
+        GOVERNANCE_MANAGER: ['apim:gov_policy_attachment_read', 'apim:gov_policy_attachment_manage',
+            'apim:gov_result_read', 'apim:gov_policy_read', 'apim:gov_policy_manage'],
         SETTINGS_MANAGER: ['apim:app_owner_change', 'apim:admin_application_view',
             'apim:scope_manage', 'openid', 'apim:admin_settings', 'apim:tenantInfo', 'apim:api_provider_change',
         ],
@@ -52,7 +52,7 @@ const CONSTS = {
         { value: 'API_DEPLOY', label: 'API Deploy' },
         { value: 'API_PUBLISH', label: 'API Publish' },
     ],
-    RULESET_TYPES: [
+    POLICY_TYPES: [
         { value: 'API_DEFINITION', label: 'API Definition' },
         { value: 'API_METADATA', label: 'API Metadata' },
         { value: 'API_DOCUMENTATION', label: 'Documentation' },
@@ -72,12 +72,12 @@ const CONSTS = {
         { value: 'PENDING', label: 'Pending' },
         { value: 'NON_COMPLIANT', label: 'Non Compliant' },
     ],
-    POLICY_ADHERENCE_STATES: [
+    POLICY_ATTACHMENT_ADHERENCE_STATES: [
         { value: 'FOLLOWED', label: 'Followed' },
         { value: 'VIOLATED', label: 'Violated' },
         { value: 'UNAPPLIED', label: 'Unapplied' },
     ],
-    RULESET_VALIDATION_STATES: [
+    POLICY_VALIDATION_STATES: [
         { value: 'PASSED', label: 'Passed' },
         { value: 'FAILED', label: 'Failed' },
     ],
