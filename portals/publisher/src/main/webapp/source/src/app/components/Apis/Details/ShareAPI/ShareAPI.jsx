@@ -1,6 +1,3 @@
-/* eslint-disable no-unused-vars */
-/* eslint-disable valid-jsdoc */
-/* eslint-disable require-jsdoc */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com) All Rights Reserved.
  *
@@ -24,32 +21,17 @@ import { styled } from '@mui/material/styles';
 import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Container from '@mui/material/Container';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
-import TextField from '@mui/material/TextField';
-import MenuItem from '@mui/material/MenuItem';
 import { FormattedMessage, injectIntl, useIntl } from 'react-intl';
-import { AlertTitle, Box, CircularProgress, Alert as MUIAlert } from '@mui/material';
-import FormControl from '@mui/material/FormControl';
-import ServiceCatalog from 'AppData/ServiceCatalog';
-import Tooltip from '@mui/material/Tooltip';
-import HelpOutline from '@mui/icons-material/HelpOutline';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Radio from '@mui/material/Radio';
-import FormLabel from '@mui/material/FormLabel';
+import { CircularProgress } from '@mui/material';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import { withAPI, useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
 import CONSTS from 'AppData/Constants';
 import { isRestricted } from 'AppData/AuthManager';
 import OrganizationSubscriptionPoliciesManage from './OrganizationSubscriptionPoliciesManage';
 import SharedOrganizations from './SharedOrganizations';
-
-
 
 
 const PREFIX = 'ShareAPI';
@@ -88,6 +70,8 @@ const Root = styled('div')((
  *
  * @class ShareAPI
  * @extends {Component}
+ * @param {Object} props - The properties passed to the component.
+ * @param {Function} props.updateAPI - Function to update the API.
  */
 function ShareAPI(props) {
 
@@ -96,8 +80,6 @@ function ShareAPI(props) {
     const { updateAPI } = props;
     const restApi = new API();
     const [tenants, setTenants] = useState(null);
-    const availability = api.subscriptionAvailability;
-    const [tenantList, setTenantList] = useState(api.subscriptionAvailableTenants);
     const [updateInProgress, setUpdateInProgress] = useState(false);
     const [organizationPolicies, setOrganizationPolicies] = useState([]);
     const [organizations, setOrganizations] = useState({});
@@ -168,7 +150,7 @@ function ShareAPI(props) {
             });
         restApi.organizations()
             .then((result) => {
-                setOrganizations(result.body.list);
+                setOrganizations(result.body);
             })
         setOrganizationPolicies(api.organizationPolicies ? [...api.organizationPolicies] : []);
         setVisibleOrganizations([...api.visibleOrganizations]);
@@ -214,10 +196,10 @@ function ShareAPI(props) {
             {(api.gatewayVendor === 'wso2') &&
             (   
                 <>
-                    {organizations?.length > 0 && selectionMode !== "none" &&
+                    {organizations?.list?.length > 0 && selectionMode !== "none" &&
                         <OrganizationSubscriptionPoliciesManage
                             api={api}
-                            organizations={organizations}
+                            organizations={organizations.list}
                             visibleOrganizations={visibleOrganizations}
                             organizationPolicies={organizationPolicies}
                             setOrganizationPolicies={setOrganizationPolicies}

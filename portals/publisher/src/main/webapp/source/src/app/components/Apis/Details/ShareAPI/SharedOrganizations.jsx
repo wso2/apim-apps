@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-unused-vars */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.com) All Rights Reserved.
  *
@@ -18,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
@@ -26,7 +24,6 @@ import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import HelpOutline from '@mui/icons-material/HelpOutline';
-import API from 'AppData/api';
 import {
     RadioGroup,
     FormControlLabel,
@@ -73,12 +70,7 @@ const checkedIcon = <CheckBoxIcon fontSize='small' />;
  * @returns {JSX} Render the organizations drop down.
  */
 function SharedOrganizations(props) {
-    const [organizations, setOrganizations] = useState({});
-    const { api, visibleOrganizations, setVisibleOrganizations, selectionMode, setSelectionMode } = props;
-
-    useEffect(() => {
-        API.getOrganizations().then((response) => setOrganizations(response.body));
-    }, []);
+    const { organizations, visibleOrganizations, setVisibleOrganizations, selectionMode, setSelectionMode } = props;
 
     if (organizations && !organizations.list) {
         return null;
@@ -112,8 +104,8 @@ function SharedOrganizations(props) {
                                         <p>
                                             <FormattedMessage
                                                 id='Apis.Details.ShareAPI.Shared.organizations.selection.all.tooltip'
-                                                defaultMessage={'Select this to share the API with all the existing' 
-                                                    + ' organizations and all new organizations that you register under' 
+                                                defaultMessage={'Select this to share the API with all the existing ' 
+                                                    + 'organizations and all new organizations that you register under' 
                                                     + ' your current organization.'}
                                             />
                                         </p>
@@ -128,15 +120,16 @@ function SharedOrganizations(props) {
                             </Tooltip>
                         </Box>
                         <Box display='flex' alignItems='center'>
-                            <FormControlLabel value='none' control={<Radio />} label='Do not share with any     organization' />
+                            <FormControlLabel value='none' control={<Radio />} 
+                                label='Do not share with any organization' />
                             <Tooltip
                                 title={(
                                     <>
                                         <p>
                                             <FormattedMessage
                                                 id='Apis.Details.ShareAPI.Shared.organizations.selection.none.tooltip'
-                                                defaultMessage={'This will allow you to prevent sharing this API with any   '
-                                                    + ' of the existing organizations or new organizations that you'
+                                                defaultMessage={'This will allow you to prevent sharing this API with'
+                                                    + ' any of the existing organizations or new organizations that you'
                                                     + ' register under this organization in the future.'}
                                             />
                                         </p>
@@ -200,7 +193,6 @@ function SharedOrganizations(props) {
 
 SharedOrganizations.defaultProps = {
     organizations: [],
-    api: PropTypes.shape({}).isRequired,
     configDispatcher: PropTypes.func.isRequired,
 };
 
