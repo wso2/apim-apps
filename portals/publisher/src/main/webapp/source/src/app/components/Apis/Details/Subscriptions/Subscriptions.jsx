@@ -37,7 +37,6 @@ import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
 import SubscriptionsTable from './SubscriptionsTable';
 import SubscriptionPoliciesManage from './SubscriptionPoliciesManage';
-import OrganizationSubscriptionPoliciesManage from './OrganizationSubscriptionPoliciesManage';
 import SubscriptionAvailability from './SubscriptionAvailability';
 
 const PREFIX = 'Subscriptions';
@@ -85,9 +84,6 @@ function Subscriptions(props) {
     const { settings } = useAppContext();
     const isSubValidationDisabled = api.policies && api.policies.length === 1 
     && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
-    const [organizationPolicies, setOrganizationPolicies] = useState([]);
-    const [organizations, setOrganizations] = useState({});
-    const [visibleOrganizations, setVisibleOrganizations] = useState(api.visibleOrganizations);
 
     /**
      * Save subscription information (policies, subscriptionAvailability, subscriptionAvailableTenants)
@@ -97,7 +93,6 @@ function Subscriptions(props) {
         const { subscriptionAvailability } = availability;
         const newApi = {
             policies,
-            ...(settings?.orgAccessControlEnabled && api.apiType !== API.CONSTS.APIProduct && { organizationPolicies }),
             subscriptionAvailability,
             subscriptionAvailableTenants: tenantList,
         };
@@ -131,14 +126,6 @@ function Subscriptions(props) {
             .then((result) => {
                 setSubscriptions(result.body.count);
             });
-        if (settings && settings.orgAccessControlEnabled && api.apiType !== API.CONSTS.APIProduct) {
-            restApi.organizations()
-                .then((result) => {
-                    setOrganizations(result.body.list);
-                })
-            setOrganizationPolicies(api.organizationPolicies ? [...api.organizationPolicies] : []);
-            setVisibleOrganizations([...api.visibleOrganizations]);
-        }
         setPolices([...api.policies]);
         setOriginalPolicies([...api.policies]);
     }, []);
@@ -175,23 +162,12 @@ function Subscriptions(props) {
         (<Root>
             {(api.gatewayVendor === 'wso2') &&
             (   
-                <>
-                    <SubscriptionPoliciesManage
-                        api={api}
-                        policies={policies}
-                        setPolices={setPolices}
-                        subValidationDisablingAllowed={settings.allowSubscriptionValidationDisabling}
-                    />
-                    {organizations?.length > 0 &&
-                        <OrganizationSubscriptionPoliciesManage
-                            api={api}
-                            organizations={organizations}
-                            visibleOrganizations={visibleOrganizations}
-                            organizationPolicies={organizationPolicies}
-                            setOrganizationPolicies={setOrganizationPolicies}
-                        />
-                    }
-                </>
+                <SubscriptionPoliciesManage
+                    api={api}
+                    policies={policies}
+                    setPolices={setPolices}
+                    subValidationDisablingAllowed={settings.allowSubscriptionValidationDisabling}
+                />
             )}
             {isSubValidationDisabled && (
                 <Box mb={2} mt={2}>

@@ -42,6 +42,7 @@ import API from 'AppData/api';
 import MUIAlert from 'AppComponents/Shared/MuiAlert';
 import DeleteApiButton from './DeleteApiButton';
 import CreateNewVersionButton from './CreateNewVersionButton';
+import ShareButton from './ShareButton';
 
 const PREFIX = 'APIDetailsTopMenu';
 const classes = {
@@ -466,6 +467,12 @@ const APIDetailsTopMenu = (props) => {
                 )}
                 {/* Page error banner */}
                 {/* end of Page error banner */}
+                {api.apiType !== API.CONSTS.APIProduct && isVisibleInStore
+                    ? <>
+                        <ShareButton buttonClass={classes.viewInStoreLauncher}
+                            api={api} isAPIProduct={isAPIProduct} />
+                    </> : null
+                }
                 {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                     ? null :
                     <>

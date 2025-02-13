@@ -78,6 +78,7 @@ import Policies from './Policies/Policies';
 import ExternalStores from './ExternalStores/ExternalStores';
 import { APIProvider } from './components/ApiContext';
 import CreateNewVersion from './NewVersion/NewVersion';
+import ShareAPI from './ShareAPI/ShareAPI';
 import TryOutConsole from './TryOut/TryOutConsole';
 import Compliance from './APICompliance/Compliance';
 
@@ -1065,6 +1066,8 @@ class Details extends Component {
                                         path={Details.subPaths.PROPERTIES_PRODUCT}
                                         component={() => <Properties api={api} />}
                                     />
+                                    <Route path={Details.subPaths.SHARE} component={() => <ShareAPI 
+                                        api={api} updateAPI={this.updateAPI} />} />
                                     <Route path={Details.subPaths.NEW_VERSION} component={() => <CreateNewVersion />} />
                                     <Route
                                         path={Details.subPaths.NEW_VERSION_PRODUCT}
@@ -1150,6 +1153,7 @@ Details.subPaths = {
     PROPERTIES_PRODUCT: '/api-products/:apiprod_uuid/properties',
     NEW_VERSION: '/apis/:api_uuid/new_version',
     NEW_VERSION_PRODUCT: '/api-products/:api_uuid/new_version',
+    SHARE: '/apis/:api_uuid/share',
     MONETIZATION: '/apis/:api_uuid/monetization',
     MONETIZATION_PRODUCT: '/api-products/:apiprod_uuid/monetization',
     EXTERNAL_STORES: '/apis/:api_uuid/external-devportals',
