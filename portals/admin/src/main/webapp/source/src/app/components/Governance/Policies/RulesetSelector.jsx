@@ -255,7 +255,11 @@ function RulesetSelector({
                                         }}
                                     />
                                 </Box>
-                                <Typography variant='subtitle1' component='div' sx={{ fontWeight: 500, mb: 0.5 }}>
+                                <Typography
+                                    variant='subtitle1'
+                                    component='div'
+                                    sx={{ fontWeight: 500, mb: 0.5, mr: 2.75 }}
+                                >
                                     {ruleset.name}
                                 </Typography>
                                 <Box sx={{ mb: 1.5, display: 'flex', gap: 1 }}>
