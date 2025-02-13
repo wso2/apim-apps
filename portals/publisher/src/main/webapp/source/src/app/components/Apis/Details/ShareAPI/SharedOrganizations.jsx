@@ -91,7 +91,7 @@ function SharedOrganizations(props) {
                         <FormLabel component='legend' style={{ marginTop: 8, marginBottom: 8}}>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.Shared.Organizations.label'
-                                defaultMessage='Select a following option to share the API with organizations.'
+                                defaultMessage='Select an option to share the API with organizations.'
                             />
                         </FormLabel>
                     </Box>
