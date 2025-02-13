@@ -279,7 +279,7 @@ class LifeCycleUpdate extends Component {
                         const errorDescription = error.response.body.description
                             .replace('Compliance violation error.', '');
                         this.setState({
-                            governanceError: JSON.parse(errorDescription),
+                            governanceError: JSON.parse(errorDescription).blockingViolations,
                             isGovernanceViolation: true,
                         });
                         Alert.error(intl.formatMessage({
@@ -604,7 +604,7 @@ class LifeCycleUpdate extends Component {
                 </Grid>
                 {/* Page error banner */}
                 {isGovernanceViolation ? (
-                    <Grid item xs={11}>
+                    <Grid item xs={12}>
                         <GovernanceViolations violations={governanceError} />
                     </Grid>
                 ) : pageError && (

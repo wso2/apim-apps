@@ -45,8 +45,9 @@ function GovernanceViolations({ violations }) {
 
     const columns = [
         { id: 'severity', label: 'Severity' },
-        { id: 'ruleCode', label: 'Rule' },
+        { id: 'ruleName', label: 'Rule' },
         { id: 'violatedPath', label: 'Path' },
+        { id: 'message', label: 'Message' },
     ];
 
     const filteredViolations = (selectedSeverity
@@ -114,8 +115,9 @@ function GovernanceViolations({ violations }) {
                                             // eslint-disable-next-line react/no-array-index-key
                                             <TableRow hover key={index}>
                                                 <TableCell>{violationSeverityMap[violation.severity]}</TableCell>
-                                                <TableCell>{violation.ruleCode}</TableCell>
+                                                <TableCell>{violation.ruleName}</TableCell>
                                                 <TableCell>{violation.violatedPath}</TableCell>
+                                                <TableCell>{violation.message}</TableCell>
                                             </TableRow>
                                         ))}
                                 </TableBody>
