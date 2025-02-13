@@ -2000,7 +2000,6 @@ function AddEditKeyManager(props) {
                                     {orgSelectionType === 'SELECT' && (
                                         <Box display='flex' flexDirection='row' alignItems='center'>
                                             <Autocomplete
-                                                disabled={organizations.length === 0}
                                                 multiple
                                                 fullWidth
                                                 limitTags={5}
@@ -2033,17 +2032,11 @@ function AddEditKeyManager(props) {
                                                     <TextField
                                                         {...params}
                                                         name='selectOrgs'
-                                                        disabled={organizations.length === 0}
                                                         fullWidth
-                                                        label={organizations.length !== 0 ? (
+                                                        label={(
                                                             <FormattedMessage
                                                                 id='Apis.Details.Configurations.organizations'
                                                                 defaultMessage='Organizations'
-                                                            />
-                                                        ) : (
-                                                            <FormattedMessage
-                                                                id='Apis.Details.Configurations.organizations.empty'
-                                                                defaultMessage='No Organizations Registered.'
                                                             />
                                                         )}
                                                         placeholder={intl.formatMessage({
