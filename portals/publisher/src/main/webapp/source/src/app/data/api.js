@@ -1,20 +1,21 @@
-/**
- * Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+/* eslint-disable */
+/*
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
-/* eslint-disable */
 import APIClientFactory from './APIClientFactory';
 import Utils from './Utils';
 import Resource from './Resource';
@@ -440,6 +441,71 @@ class API extends Resource {
         });
     }
 
+    saveAPIDesignAssistant() {
+        const promisedAPIResponse = this.client.then(client => {
+            const properties = client.spec.components.schemas.API.properties;
+            const data = {};
+            Object.keys(this).forEach(apiAttribute => {
+                if (apiAttribute in properties) {
+                    data[apiAttribute] = this[apiAttribute];
+                }
+            });
+            const payload = {
+                'Content-Type': 'application/json'
+            };
+            const requestBody = {
+                'requestBody': data,
+            };
+            return client.apis['APIs'].createAPI(payload, requestBody, this._requestMetaData());
+        });
+        return promisedAPIResponse.then(response => {
+            return new API(response.body);
+        });
+    }
+
+    sendChatAPIDesignAssistant(query, sessionId) {
+        return this.client.then(client => {
+            const data = {
+                text: query,
+                sessionId: sessionId
+            };
+            const payload = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            const requestBody = {
+                requestBody: data
+            };
+            return client.apis['APIs'].designAssistantChat(payload, requestBody, this._requestMetaData());
+        }).then(response => {
+            return response.body;
+        }).catch(error => {
+            throw error;
+        });
+    }
+
+    payloadGenAPIDesignAssistant(sessionId) {
+        return this.client.then(client => {
+            const data = {
+                sessionId: sessionId
+            };
+            const payload = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            const requestBody = {
+                requestBody: data
+            };
+            return client.apis['APIs'].designAssistantApiPayloadGen(payload, requestBody, this._requestMetaData());
+        }).then(response => {
+            return response.body;
+        }).catch(error => {
+            throw error;
+        });
+    }
+    
     saveProduct() {
         const promisedAPIResponse = this.client.then(client => {
             const properties = client.spec.definitions.APIProduct.properties;

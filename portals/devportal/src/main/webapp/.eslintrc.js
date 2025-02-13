@@ -36,6 +36,7 @@ module.exports = {
     },
     extends: ['airbnb', 'plugin:jsx-a11y/recommended'], // http://airbnb.io/javascript/react/
     rules: {
+        "linebreak-style": 0,
         'max-len': ['error', { code: 140, tabWidth: 4 }],
         'require-jsdoc': [
             'warn',
