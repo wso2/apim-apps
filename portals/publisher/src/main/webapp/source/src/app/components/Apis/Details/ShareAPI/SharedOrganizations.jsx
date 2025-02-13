@@ -97,16 +97,17 @@ function SharedOrganizations(props) {
                     </Box>
                     <RadioGroup value={selectionMode} onChange={handleRadioChange} column>
                         <Box display='flex' alignItems='center'>
-                            <FormControlLabel value='all' control={<Radio />} label='Share with all organizations' />
+                            <FormControlLabel value='none' control={<Radio />} 
+                                label='Do not share with any organization' />
                             <Tooltip
                                 title={(
                                     <>
                                         <p>
                                             <FormattedMessage
-                                                id='Apis.Details.ShareAPI.Shared.organizations.selection.all.tooltip'
-                                                defaultMessage={'Select this to share the API with all the existing ' 
-                                                    + 'organizations and all new organizations that you register under' 
-                                                    + ' your current organization.'}
+                                                id='Apis.Details.ShareAPI.Shared.organizations.selection.none.tooltip'
+                                                defaultMessage={'This will allow you to prevent sharing this API with'
+                                                    + ' any of the existing organizations or new organizations that you'
+                                                    + ' register under this organization in the future.'}
                                             />
                                         </p>
                                     </>
@@ -120,17 +121,16 @@ function SharedOrganizations(props) {
                             </Tooltip>
                         </Box>
                         <Box display='flex' alignItems='center'>
-                            <FormControlLabel value='none' control={<Radio />} 
-                                label='Do not share with any organization' />
+                            <FormControlLabel value='all' control={<Radio />} label='Share with all organizations' />
                             <Tooltip
                                 title={(
                                     <>
                                         <p>
                                             <FormattedMessage
-                                                id='Apis.Details.ShareAPI.Shared.organizations.selection.none.tooltip'
-                                                defaultMessage={'This will allow you to prevent sharing this API with'
-                                                    + ' any of the existing organizations or new organizations that you'
-                                                    + ' register under this organization in the future.'}
+                                                id='Apis.Details.ShareAPI.Shared.organizations.selection.all.tooltip'
+                                                defaultMessage={'Select this to share the API with all the existing ' 
+                                                    + 'organizations and all new organizations that you register under' 
+                                                    + ' your current organization.'}
                                             />
                                         </p>
                                     </>

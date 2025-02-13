@@ -167,7 +167,7 @@ function OrganizationSubscriptionPoliciesManage(props) {
         <Root>
             <div className={classes.heading}>
                 <Typography variant='h6' style={{ marginTop: '20px' }}>
-                    Business Plans for Shared Organizations
+                    Business Plans
                 </Typography>
             </div>
             <Paper>
