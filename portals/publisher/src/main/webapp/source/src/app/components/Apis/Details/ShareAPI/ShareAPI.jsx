@@ -99,7 +99,7 @@ function ShareAPI(props) {
             updatedVisibleOrganizations = ["all"];
             updatedOrganizationPolicies = updatedOrganizationPolicies.filter(policy => policy.organizationID === "all");
         } else if (selectionMode === "none") {
-            updatedVisibleOrganizations = [];
+            updatedVisibleOrganizations = ["none"];
             updatedOrganizationPolicies = [];
         } else if (selectionMode === "select") {
             updatedVisibleOrganizations = visibleOrganizations;
@@ -107,16 +107,6 @@ function ShareAPI(props) {
                 visibleOrganizations.includes(policy.organizationID)
             );
         }
-
-        // Add missing organization policies with empty policies array
-        // updatedVisibleOrganizations.forEach(orgID => {
-        //     if (!updatedOrganizationPolicies.some(policy => policy.organizationID === orgID)) {
-        //         updatedOrganizationPolicies.push({
-        //             organizationID: orgID,
-        //             policies: []
-        //         });
-        //     }
-        // });
         
         const newApi = {
             visibleOrganizations : updatedVisibleOrganizations,
@@ -155,10 +145,10 @@ function ShareAPI(props) {
         setOrganizationPolicies(api.organizationPolicies ? [...api.organizationPolicies] : []);
         setVisibleOrganizations([...api.visibleOrganizations]);
         
-        if (visibleOrganizations.includes("all")) {
-            setSelectionMode("all");
-        } else if (visibleOrganizations.length === 0) {
+        if (visibleOrganizations.includes("none")) {
             setSelectionMode("none");
+        } else if (visibleOrganizations.includes("all")) {
+            setSelectionMode("all");
         } else {
             setSelectionMode("select");
         }
