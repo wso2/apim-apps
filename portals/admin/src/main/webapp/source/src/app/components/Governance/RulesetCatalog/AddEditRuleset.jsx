@@ -119,7 +119,7 @@ function AddEditRuleset(props) {
         if (id) {
             // Get ruleset metadata
             restApi
-                .getRuleset(id)
+                .getRulesetById(id)
                 .then((result) => {
                     const { body } = result;
                     return body;
@@ -320,7 +320,7 @@ function AddEditRuleset(props) {
         let promiseAPICall = null;
 
         if (id) {
-            promiseAPICall = restApi.updateRuleset(id, body)
+            promiseAPICall = restApi.updateRulesetById(id, body)
                 .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.edit.success',
@@ -328,7 +328,7 @@ function AddEditRuleset(props) {
                     });
                 });
         } else {
-            promiseAPICall = restApi.addRuleset(body)
+            promiseAPICall = restApi.createRuleset(body)
                 .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.add.success',

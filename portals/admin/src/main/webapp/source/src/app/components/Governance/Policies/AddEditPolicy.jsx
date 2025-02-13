@@ -218,13 +218,13 @@ function AddEditPolicy(props) {
                 }));
             });
 
-        restApi.getRulesetsList()
+        restApi.getRulesets()
             .then((response) => {
                 const rulesetList = response.body.list;
                 setAvailableRulesets(rulesetList);
 
                 if (policyId) {
-                    return restApi.getPolicy(policyId)
+                    return restApi.getGovernancePolicyById(policyId)
                         .then((policyResponse) => {
                             const { body } = policyResponse;
                             const fullRulesets = body.rulesets.map((rulesetId) => {
@@ -411,7 +411,7 @@ function AddEditPolicy(props) {
 
         if (policyId) {
             promiseAPICall = restApi
-                .updatePolicy(body).then(() => {
+                .updateGovernancePolicyById(body).then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.edit.success',
                         defaultMessage: 'Policy Updated Successfully',
@@ -419,7 +419,7 @@ function AddEditPolicy(props) {
                 });
         } else {
             promiseAPICall = restApi
-                .addPolicy(body).then(() => {
+                .createGovernancePolicy(body).then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.add.success',
                         defaultMessage: 'Policy Added Successfully',
