@@ -186,7 +186,8 @@ function ShareAPI(props) {
                         <FormLabel component='legend' style={{ marginTop: 8, marginBottom: 8}}>
                             <FormattedMessage
                                 id='Apis.Details.Configuration.components.Share.API.no.organizations'
-                                defaultMessage='No organizations are currently registered under your current organization to share the API.'
+                                defaultMessage='No organizations are currently registered under 
+                                your current organization to share the API.'
                             />
                         </FormLabel>
                     </Box>
@@ -200,7 +201,6 @@ function ShareAPI(props) {
                         setVisibleOrganizations = {setVisibleOrganizations}
                         selectionMode = {selectionMode}
                         setSelectionMode = {setSelectionMode}
-                        subValidationDisablingAllowed={settings.allowSubscriptionValidationDisabling}
                     />
                     {(api.gatewayVendor === 'wso2') &&
                     (   
