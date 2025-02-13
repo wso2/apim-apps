@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
 import { injectIntl } from 'react-intl';
 import API from 'AppData/api';
+import CONSTANTS from 'AppData/Constants';
 import NoApi from 'AppComponents/Apis/Listing/NoApi';
 import Loading from 'AppComponents/Base/Loading/Loading';
 import Alert from 'AppComponents/Shared/Alert';
@@ -175,9 +176,13 @@ class APICardView extends React.Component {
     * @memberof APICardView
     */
     updateUnsubscribedAPIsList(list) {
-        const listLocal = list;
         const subscribedIds = this.getIdsOfSubscribedEntities();
+        const listLocal = list.filter((api) => !(api.throttlingPolicies.length === 1
+             && api.throttlingPolicies[0].includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)));
         for (let i = 0; i < listLocal.length; i++) {
+            const policyList = listLocal[i].throttlingPolicies
+                .filter((policy) => !policy.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
+            listLocal[i].throttlingPolicies = policyList;
             if (!((!subscribedIds.includes(listLocal[i].id) && !listLocal[i].advertiseInfo.advertised)
                 && listLocal[i].isSubscriptionAvailable)) {
                 listLocal[i].throttlingPolicies = null;

@@ -79,7 +79,7 @@ function Endpoints(props) {
             <Box p={1}>
                 {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
                     <Grid container spacing={2}>
-                        <Grid item xs={12} md={6} lg={4}>
+                        <Grid item xs={12} md={6} lg={6}>
                             {/* Production Endpoint (TODO) fix the endpoint
                                                 info when it's available with the api object */}
                             { !isPrototypedAvailable ? (
@@ -100,7 +100,7 @@ function Endpoints(props) {
                                     </Typography>
                                 )}
                         </Grid>
-                        <Grid item xs={12} md={6} lg={8}>
+                        <Grid item xs={12} md={6} lg={6}>
                             <Tooltip
                                 placement='top'
                                 classes={{
@@ -129,7 +129,7 @@ function Endpoints(props) {
                             </Typography>
                         </Grid>
                         {!isPrototypedAvailable && (
-                            <Grid item xs={12} md={6} lg={4}>
+                            <Grid item xs={12} md={6} lg={6}>
                                 {/* Sandbox Endpoint (TODO) fix the endpoint info when
                                                     it's available with the api object */}
                                 <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
@@ -143,7 +143,7 @@ function Endpoints(props) {
                         )}
 
                         {!isPrototypedAvailable && (
-                            <Grid item xs={12} md={6} lg={8}>
+                            <Grid item xs={12} md={6} lg={6}>
                                 <Tooltip
                                     placement='top'
                                     classes={{
@@ -174,7 +174,7 @@ function Endpoints(props) {
                         )}
                         {isPrototypedAvailable ? (
                             <>
-                                <Grid item xs={12} md={6} lg={4}>
+                                <Grid item xs={12} md={6} lg={6}>
                                     {/* Sandbox Endpoint (TODO) fix the endpoint info when
                                                         it's available with the api object */}
                                     <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
@@ -184,7 +184,7 @@ function Endpoints(props) {
                                         />
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={12} md={6} lg={8}>
+                                <Grid item xs={12} md={6} lg={6}>
                                     <Typography component='p' variant='body1'>
                                         {productionEndpointSecurity && <>{authTypes[productionEndpointSecurity]}</>}
                                     </Typography>
@@ -203,7 +203,7 @@ function Endpoints(props) {
                             </>
                         ) : (
                             <>
-                                <Grid item xs={12} md={6} lg={4}>
+                                <Grid item xs={12} md={6} lg={6}>
                                     <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.Endpoints.production.endpoint.security'
@@ -211,7 +211,7 @@ function Endpoints(props) {
                                         />
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={12} md={6} lg={8}>
+                                <Grid item xs={12} md={6} lg={6}>
                                     <Typography component='p' variant='body1'>
                                         {productionEndpointSecurity && <>{authTypes[productionEndpointSecurity]}</>}
                                     </Typography>
@@ -227,7 +227,7 @@ function Endpoints(props) {
                                         )}
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={12} md={6} lg={4}>
+                                <Grid item xs={12} md={6} lg={6}>
                                     <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.Endpoints.sandbox.endpoint.security'
@@ -235,7 +235,7 @@ function Endpoints(props) {
                                         />
                                     </Typography>
                                 </Grid>
-                                <Grid item xs={12} md={6} lg={8}>
+                                <Grid item xs={12} md={6} lg={6}>
                                     <Typography component='p' variant='body1'>
                                         {sandboxEndpointSecurity && <>{authTypes[sandboxEndpointSecurity]}</>}
                                     </Typography>
@@ -257,7 +257,7 @@ function Endpoints(props) {
                 )}
                 {api.advertiseInfo && api.advertiseInfo.advertised && (
                     <Grid container spacing={2}>
-                        <Grid item xs={12} md={6} lg={4}>
+                        <Grid item xs={12} md={6} lg={6}>
                             <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                 <FormattedMessage
                                     id='Apis.Details.NewOverview.Endpoints.external.production.endpoint'
@@ -265,7 +265,7 @@ function Endpoints(props) {
                                 />
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} md={6} lg={8}>
+                        <Grid item xs={12} md={6} lg={6}>
                             <Tooltip
                                 placement='top'
                                 classes={{
@@ -293,7 +293,7 @@ function Endpoints(props) {
                                 )}
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} md={6} lg={4}>
+                        <Grid item xs={12} md={6} lg={6}>
                             <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                                 <FormattedMessage
                                     id='Apis.Details.NewOverview.Endpoints.external.sandbox.endpoint'
@@ -301,7 +301,7 @@ function Endpoints(props) {
                                 />
                             </Typography>
                         </Grid>
-                        <Grid item xs={12} md={6} lg={8}>
+                        <Grid item xs={12} md={6} lg={6}>
                             <Tooltip
                                 placement='top'
                                 classes={{

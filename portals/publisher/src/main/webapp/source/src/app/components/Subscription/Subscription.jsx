@@ -17,32 +17,37 @@
  */
 
 import React from 'react';
-import { Route, Switch } from 'react-router-dom';
-import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import SubscriptionCreation from './SubscriptionCreation/ListLabels.jsx';
-import SubscriptionUpdate from './SubscriptionUpdate/ListLabels.jsx';
+import { styled } from '@mui/material/styles';
+import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
+import { FormattedMessage } from 'react-intl';
+import SubscriptionTabMenu from './SubscriptionTabMenu.jsx';
 
-/**
-     * `Route` elements for shared scopes UI.
- * @returns {JSX} Shared scope routes.
- */
+
+const PREFIX = 'subscription';
+
+const classes = {
+    mainTitle: `${PREFIX}-mainTitle`,
+};
+
+const StyledBox = styled(Box)(() => ({
+    [`& .${classes.mainTitle}`]: {
+        paddingTop: 15,
+        paddingLeft: 25,
+    }
+}));
+
 const Subscription = () => {
     return (
-        <div>
-            <Switch>
-                <Route
-                    exact
-                    path='/subscription/creation'
-                    component={SubscriptionCreation}
+        <StyledBox>
+            <Typography variant='h4' className={classes.mainTitle}>
+                <FormattedMessage
+                    id='Task.title'
+                    defaultMessage='Tasks'
                 />
-                <Route
-                    exact
-                    path='/subscription/update'
-                    component={SubscriptionUpdate}
-                />
-                <Route component={ResourceNotFound}/>
-            </Switch>
-        </div>
+            </Typography>
+            <SubscriptionTabMenu />
+        </StyledBox>
     );
 };
 

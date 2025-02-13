@@ -173,6 +173,13 @@
             cookie.setMaxAge((int) expiresIn);
             response.addCookie(cookie);
 
+            cookie = new Cookie("AM_PUBLISHER_ACC_TOKEN_DEFAULT_P2", accessTokenPart2);
+            cookie.setPath(proxyContext != null ? proxyContext + "/api/am/governance/" : "/api/am/governance/");
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
+            cookie.setMaxAge((int) expiresIn);
+            response.addCookie(cookie);
+
             cookie = new Cookie("AM_REF_TOKEN_DEFAULT_P2", refreshTokenPart2);
             cookie.setPath(context + "/");
             cookie.setHttpOnly(true);
@@ -204,7 +211,7 @@
             cookie.setMaxAge((int) expiresIn);
             response.addCookie(cookie);
 
-            cookie = new Cookie("publisher_session_state", request.getParameter("session_state"));
+            cookie = new Cookie("PUBLISHER_SESSION_STATE", request.getParameter("session_state"));
             cookie.setPath(context + "/");
             cookie.setSecure(true);
             cookie.setMaxAge(-1);

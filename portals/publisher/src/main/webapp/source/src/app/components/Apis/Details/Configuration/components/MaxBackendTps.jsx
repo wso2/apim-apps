@@ -120,7 +120,7 @@ export default function MaxBackendTps(props) {
                             </FormLabel>
                             <RadioGroup
                                 aria-label='change-max-TPS'
-                                value={api.maxTps === null ? 'unlimited' : 'specify'}
+                                value={api.maxTps === undefined || api.maxTps === null ? 'unlimited' : 'specify'}
                                 onChange={(event) => {
                                     configDispatcher({
                                         action: 'maxTps',
@@ -165,7 +165,7 @@ export default function MaxBackendTps(props) {
                                 />
                             </RadioGroup>
                         </FormControl>
-                        <Collapse in={api.maxTps !== null}>
+                        <Collapse in={api.maxTps !== undefined && api.maxTps !== null}>
                             <Grid item xs={12} style={{ marginBottom: 10, position: 'relative' }}>
                                 <TextField
                                     label={intl.formatMessage({
@@ -181,7 +181,7 @@ export default function MaxBackendTps(props) {
                                             value: { ...api.maxTps, production: event.target.value },
                                         });
                                     }}
-                                    value={api.maxTps !== null ? api.maxTps.production : ''}
+                                    value={api.maxTps ? api.maxTps.production : ''}
                                     disabled={isRestricted(['apim:api_create'], api)}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>TPS</InputAdornment>,
@@ -203,7 +203,7 @@ export default function MaxBackendTps(props) {
                                             value: { ...api.maxTps, sandbox: event.target.value },
                                         });
                                     }}
-                                    value={api.maxTps !== null ? api.maxTps.sandbox : ''}
+                                    value={api.maxTps ? api.maxTps.sandbox : ''}
                                     disabled={isRestricted(['apim:api_create'], api)}
                                     InputProps={{
                                         endAdornment: <InputAdornment position='end'>TPS</InputAdornment>,

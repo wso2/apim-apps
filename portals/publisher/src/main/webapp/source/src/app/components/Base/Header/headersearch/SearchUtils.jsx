@@ -85,6 +85,12 @@ function getPath(suggestion) {
             return `/apis/${suggestion.id}/overview`;
         case 'APIPRODUCT':
             return `/api-products/${suggestion.id}/overview`;
+        case 'DEFINITION':
+            if (suggestion.associatedType === 'API') {
+                return `/apis/${suggestion.apiUUID}/api-definition`
+            } else {
+                return `/api-products/${suggestion.apiUUID}/api-definition`
+            }
         default:
             if (suggestion.associatedType === 'API') {
                 return `/apis/${suggestion.apiUUID}/documents/${suggestion.id}/details`;
@@ -118,6 +124,8 @@ function getIcon(type) {
                     strokeColor='#000000'
                 />
             );
+        case 'DEFINITION':
+            return <Icon style={{ fontSize: 30 }}>code</Icon>;
         default:
             return <Icon style={{ fontSize: 30 }}>library_books</Icon>;
     }
@@ -193,9 +201,14 @@ function buildSearchQuery(searchText) {
  * @returns {Promise} If no input text, return a promise which resolve to empty array, else return the API.all response
  */
 function getSuggestions(value) {
+    // Skip empty and invalid inputs such as queries ending with a colon
+    if (value.trim().length === 0 || /:(\s+|(?![\s\S]))/g.test(value)) {
+        return new Promise((resolve) => resolve({ obj: { list: [] } }));
+    }
+    
     const modifiedSearchQuery = buildSearchQuery(value);
 
-    if (value.trim().length === 0 || !modifiedSearchQuery) {
+    if (!modifiedSearchQuery) {
         return new Promise((resolve) => resolve({ obj: { list: [] } }));
     } else {
         return API.search({ query: modifiedSearchQuery, limit: 8 });

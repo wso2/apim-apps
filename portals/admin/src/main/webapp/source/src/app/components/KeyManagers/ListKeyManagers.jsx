@@ -22,7 +22,8 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import Delete from 'AppComponents/KeyManagers/DeleteKeyManager';
 import { Link as RouterLink, useHistory } from 'react-router-dom';
-import Alert from '@mui/material/Alert';
+import AlertMui from '@mui/material/Alert';
+import Alert from 'AppComponents/Shared/Alert';
 import Switch from '@mui/material/Switch';
 import Button from '@mui/material/Button';
 import {
@@ -295,7 +296,7 @@ export default function ListKeyManagers() {
                                         size='small'
                                         label='Global'
                                         color='primary'
-                                        style={{ marginTop: -4, marginLeft: 10 }}
+                                        style={{ marginLeft: 10 }}
                                     />
                                 )}
                             </RouterLink>
@@ -683,7 +684,7 @@ export default function ListKeyManagers() {
     if (error) {
         return (
             <ContentBase {...pageProps}>
-                <Alert severity='error'>{error}</Alert>
+                <AlertMui severity='error'>{error}</AlertMui>
             </ContentBase>
         );
     }

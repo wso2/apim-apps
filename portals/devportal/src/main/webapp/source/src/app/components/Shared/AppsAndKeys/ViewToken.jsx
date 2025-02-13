@@ -259,17 +259,18 @@ class ViewToken extends React.Component {
                 <FormHelperText>
                     <FormattedMessage
                         id='Shared.AppsAndKeys.ViewToken.info.first'
-                        defaultMessage='Above token has a validity period of '
+                        defaultMessage='Above token has a validity period of'
                     />
-                    {token.validityTime}
+                    {` ${token.validityTime} `}
                     <FormattedMessage
                         id='Shared.AppsAndKeys.ViewToken.info.second'
-                        defaultMessage=' seconds'
+                        defaultMessage='seconds'
                     />
+                    {' '}
                     {token.isOauth && (
                         <FormattedMessage
                             id='Shared.AppsAndKeys.ViewToken.info.third'
-                            defaultMessage=' and the token has ('
+                            defaultMessage='and the token has ('
                         />
                     )}
                     {this.getTokeScopesString(token.tokenScopes)}

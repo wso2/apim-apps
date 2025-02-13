@@ -57,6 +57,7 @@ import TokenMangerSummary from './TokenManagerSummary';
 import Progress from '../Progress';
 import RemoveKeys from './RemoveKeys';
 import CleanKeys from './CleanKeys';
+import Settings from 'AppComponents/Shared/SettingsContext';
 
 const PREFIX = 'TokenManager';
 
@@ -236,6 +237,7 @@ class TokenManager extends React.Component {
             importDisabled: false,
             mode: null,
             tokenType: 'DIRECT',
+            isOrgWideAppUpdateEnabled: false,
         };
         this.keyStates = {
             COMPLETED: 'COMPLETED',
@@ -262,6 +264,7 @@ class TokenManager extends React.Component {
      */
     componentDidMount() {
         this.loadApplication();
+        this.isOrgWideAppUpdateEnabled();
     }
 
     componentDidUpdate(nextProps) {
@@ -270,6 +273,15 @@ class TokenManager extends React.Component {
         if (nextKeyType !== prevKeyType) {
             this.loadApplication();
         }
+    }
+
+    /**
+     * retrieve Settings from the context and check the org-wide application update enabled
+     */
+    isOrgWideAppUpdateEnabled = () => {
+        const settingsContext = this.context;
+        const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
+        this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
     }
 
     /**
@@ -360,6 +372,7 @@ class TokenManager extends React.Component {
                     additionalProperties: this.getDefaultAdditionalProperties(selectedKM),
                 },
                 selectedTab: newSelectedTab,
+                mode: null,
                 importDisabled: false,
             });
         }
@@ -728,7 +741,7 @@ class TokenManager extends React.Component {
         const {
             keys, keyRequest, isLoading, isKeyJWT, providedConsumerKey,
             providedConsumerSecret, selectedTab, keyManagers, validating, hasError, initialToken,
-            initialValidityTime, initialScopes, importDisabled, mode, tokenType,
+            initialValidityTime, initialScopes, importDisabled, mode, tokenType, isOrgWideAppUpdateEnabled,
         } = this.state;
 
         if (keyManagers && keyManagers.length === 0) {
@@ -982,7 +995,7 @@ class TokenManager extends React.Component {
                                                 resourcePath={resourcePaths.APPLICATION_GENERATE_KEYS}
                                                 resourceMethod={resourceMethods.POST}
                                             >
-                                                {!isUserOwner ? (
+                                                {!isOrgWideAppUpdateEnabled && !isUserOwner ? (
                                                     <>
                                                         <Button
                                                             id='generate-keys'
@@ -992,7 +1005,7 @@ class TokenManager extends React.Component {
                                                             onClick={
                                                                 key ? this.updateKeys : this.generateKeys
                                                             }
-                                                            disabled={!isUserOwner || isLoading || !keymanager.enableOAuthAppCreation
+                                                            disabled={(!isOrgWideAppUpdateEnabled && !isUserOwner) || isLoading || !keymanager.enableOAuthAppCreation
                                                                 || (isKeyManagerAllowed
                                                                     && !isKeyManagerAllowed(keymanager.name)
                                                                     && ((keymanager.name !== 'Resident Key Manager')
@@ -1226,7 +1239,7 @@ class TokenManager extends React.Component {
                                                             resourcePath={resourcePaths.APPLICATION_GENERATE_KEYS}
                                                             resourceMethod={resourceMethods.POST}
                                                         >
-                                                            {!isUserOwner ? (
+                                                            {!isOrgWideAppUpdateEnabled && !isUserOwner ? (
                                                                 <>
                                                                     <Button
                                                                         id='generate-keys'
@@ -1367,6 +1380,8 @@ class TokenManager extends React.Component {
         );
     }
 }
+
+TokenManager.contextType = Settings;
 
 TokenManager.defaultProps = {
     updateSubscriptionData: () => { },

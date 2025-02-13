@@ -251,4 +251,4 @@ BusinessPlans.propTypes = {
     classes: PropTypes.shape({}).isRequired,
 };
 
-export default injectIntl(BusinessPlans);
+export default injectIntl(BusinessPlans,{ forwardRef: true });

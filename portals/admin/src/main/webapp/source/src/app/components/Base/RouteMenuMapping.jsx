@@ -35,12 +35,21 @@ import AdvancedThrottlePolicies from 'AppComponents/Throttling/Advanced';
 import CustomThrottlingPolicies from 'AppComponents/Throttling/Custom';
 import TenantTheme from 'AppComponents/TenantTheme/UploadTheme';
 import KeyManagers from 'AppComponents/KeyManagers';
+import AiVendors from 'AppComponents/AiVendors';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
+import Policies from 'AppComponents/Governance/Policies';
+import RulesetCatalog from 'AppComponents/Governance/RulesetCatalog';
+import Overview from 'AppComponents/Governance/Overview';
+import BusinessIcon from '@mui/icons-material/Business';
+import Organizations from 'AppComponents/Organizations/ListOrganizations';
 
 import GamesIcon from '@mui/icons-material/Games';
 import CategoryIcon from '@mui/icons-material/Category';
+import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PolicyIcon from '@mui/icons-material/Policy';
+import RuleIcon from '@mui/icons-material/Rule';
+import BarChartIcon from '@mui/icons-material/BarChart';
 import BlockIcon from '@mui/icons-material/Block';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ApplicationCreation from 'AppComponents/Workflow/ApplicationCreation';
@@ -54,10 +63,13 @@ import APIRevisionDeployment from 'AppComponents/Workflow/APIRevisionDeployment'
 import UserCreation from 'AppComponents/Workflow/UserCreation';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import SecurityIcon from '@mui/icons-material/Security';
+import AssistantIcon from '@mui/icons-material/Assistant';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import ListApis from '../APISettings/ListApis';
+import UsageReport from '../APISettings/UsageReport';
+import ListLabels from '../Labels/ListLabels';
 
 const RouteMenuMapping = (intl) => [
     {
@@ -205,6 +217,16 @@ const RouteMenuMapping = (intl) => [
         icon: <CategoryIcon />,
     },
     {
+        id: 'Organizations',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.organizations',
+            defaultMessage: 'Organizations',
+        }),
+        path: '/settings/organizations',
+        component: Organizations,
+        icon: <BusinessIcon />,
+    },
+    {
         id: 'Key Managers',
         displayText: intl.formatMessage({
             id: 'Base.RouteMenuMapping.keymanagers',
@@ -231,6 +253,83 @@ const RouteMenuMapping = (intl) => [
                 path: '/settings/key-managers/(.*?)$',
             },
         ],
+    },
+    {
+        id: 'Ai Vendors',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.aivendors',
+            defaultMessage: 'AI/LLM Vendors',
+        }),
+        path: '/settings/ai-vendors',
+        component: AiVendors,
+        icon: <AssistantIcon />,
+        addEditPageDetails: [
+            {
+                id: 'Add AI Vendor',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.aivendors.items.Adding',
+                    defaultMessage: 'Add AI/LLM Vendor',
+                }),
+                path: '/settings/ai-vendors/create',
+            },
+            {
+                id: 'Edit AI Vendor',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.aivendors.items.Editing',
+                    defaultMessage: 'Edit AI/LLM Vendor',
+                }),
+                path: '/settings/ai-vendors/(.*?)$',
+            },
+        ],
+    },
+    {
+        id: 'Governance',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.governance',
+            defaultMessage: 'Governance',
+        }),
+        children: [
+            {
+                id: 'Overview',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.overview',
+                    defaultMessage: 'Overview',
+                }),
+                path: '/governance/overview',
+                component: Overview,
+                icon: <BarChartIcon />,
+            },
+            {
+                id: 'Policies',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.governance.policies',
+                    defaultMessage: 'Policies',
+                }),
+                path: '/governance/policies',
+                component: Policies,
+                icon: <PolicyIcon />,
+            },
+            {
+                id: 'Ruleset Catalog',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.ruleset.catalog',
+                    defaultMessage: 'Ruleset Catalog',
+                }),
+                path: '/governance/ruleset-catalog',
+                component: RulesetCatalog,
+                icon: <RuleIcon />,
+            },
+        ],
+    },
+    {
+        id: 'Labels',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.labels',
+            defaultMessage: 'Labels',
+        }),
+        path: '/settings/labels',
+        component: ListLabels,
+        icon: <BookmarksIcon />,
     },
     {
         id: 'Tasks',
@@ -397,6 +496,16 @@ const RouteMenuMapping = (intl) => [
                 path: '/settings/advanced',
                 component: TenantConfSave,
                 icon: <SettingsApplicationsIcon />,
+            },
+            {
+                id: 'Usage Report',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.usage.report',
+                    defaultMessage: 'Usage Report',
+                }),
+                path: '/settings/usage-report',
+                component: UsageReport,
+                icon: <AssignmentIcon />,
             },
         ],
     },

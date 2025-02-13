@@ -133,6 +133,13 @@ const setResponseSessionCookies = (res, accessToken, refreshToken, idToken, sess
     });
 
     res.cookie('AM_REF_TOKEN_DEFAULT_P2', refreshTokenPart2, {
+        path: '/api/am/governance/',
+        httpOnly: true,
+        secure: true,
+        maxAge,
+    });
+
+    res.cookie('AM_REF_TOKEN_DEFAULT_P2', refreshTokenPart2, {
         path: '/publisher',
         httpOnly: true,
         secure: true,
@@ -163,7 +170,7 @@ const setResponseSessionCookies = (res, accessToken, refreshToken, idToken, sess
         maxAge,
     });
 
-    res.cookie('publisher_session_state', sessionState, {
+    res.cookie('PUBLISHER_SESSION_STATE', sessionState, {
         path: '/publisher',
         secure: true,
         maxAge: 14400000,

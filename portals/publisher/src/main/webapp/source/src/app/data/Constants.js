@@ -42,6 +42,9 @@ const CONSTS = {
     DEFAULT_ENDPOINT_SECURITY: {
         enabled: false,
         type: 'NONE',
+        apiKeyIdentifier: null, // AI api key identifier
+        apiKeyValue: null, // AI api key value
+        apiKeyIdentifierType: null,
         username: '',
         password: null, // has to use null to differentiate the returned '' (empty) password vs no password provided
         grantType: '',
@@ -49,6 +52,17 @@ const CONSTS = {
         clientId: null,
         clientSecret: null, // same as above password case
         customParameters: {},
+        connectionTimeoutDuration: -1,
+        connectionRequestTimeoutDuration: -1,
+        socketTimeoutDuration: -1,
+        proxyConfigs: {
+            proxyEnabled: '',
+            proxyHost: '',
+            proxyPort: '',
+            proxyUsername: '',
+            proxyPassword: '',
+            proxyProtocol: '',
+        },
     },
     GATEWAY_TYPE: {
         synapse: 'Synapse',
@@ -57,7 +71,18 @@ const CONSTS = {
     PATH_TEMPLATES: {
         COMMON_POLICIES: '/policies',
         COMMON_POLICY_CREATE: '/policies/create',
-    }
+    },
+    DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
+    DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
+    POLICY_ADHERENCE_STATES: [
+        { value: 'FOLLOWED', label: 'Followed' },
+        { value: 'VIOLATED', label: 'Violated' },
+        { value: 'UNAPPLIED', label: 'Unapplied' },
+    ],
+    RULESET_VALIDATION_STATES: [
+        { value: 'PASSED', label: 'Passed' },
+        { value: 'FAILED', label: 'Failed' },
+    ],
 };
 
 export default CONSTS;

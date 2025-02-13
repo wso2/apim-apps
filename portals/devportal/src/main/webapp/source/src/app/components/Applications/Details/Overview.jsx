@@ -334,76 +334,77 @@ function Overview(props) {
                                 {application.description}
                             </TableCell>
                         </TableRow>
-                        {tierDescription
-                            && (
-                                <TableRow>
-                                    <TableCell component='th' scope='row' className={classes.leftCol}>
-                                        <div className={classes.iconAligner}>
-                                            <Icon className={classes.iconOdd}>settings_input_component</Icon>
-                                            <span className={classes.iconTextWrapper}>
-                                                <Typography variant='caption' gutterBottom align='left'>
+                        <TableRow>
+                            <TableCell component='th' scope='row' className={classes.leftCol}>
+                                <div className={classes.iconAligner}>
+                                    <Icon className={classes.iconOdd}>settings_input_component</Icon>
+                                    <span className={classes.iconTextWrapper}>
+                                        <Typography variant='caption' gutterBottom align='left'>
+                                            <FormattedMessage
+                                                id='Applications.Details.InfoBar.business.plan'
+                                                defaultMessage='Business Plan'
+                                            />
+                                        </Typography>
+                                    </span>
+                                </div>
+                            </TableCell>
+                            {application
+                                && (
+                                    <TableCell className={classes.iconAligner}>
+                                        {application.throttlingPolicy}
+                                        {tierDescription && tierDescription.trim() && (
+                                            <span className={tierDisabled ? classes.disabledTier : ''}>
+                                                &nbsp;
+                                                {`(${tierDescription.trim()})`}
+                                            </span>
+                                        )}
+
+                                        <VerticalDivider height={40} />
+                                        <Grid item xs={1} m={1}>
+                                            <Button
+                                                id='reset-application-policy'
+                                                style={{ padding: '1px' }}
+                                                onClick={handleResetConfirmation}
+                                                color='grey'
+                                                aria-label={(
                                                     <FormattedMessage
-                                                        id='Applications.Details.InfoBar.business.plan'
-                                                        defaultMessage='Business Plan'
+                                                        id='Applications.Details.Overview.application.reset'
+                                                        defaultMessage='Reset'
+                                                    />
+                                                )}
+                                            >
+                                                <Icon>replay</Icon>
+                                                <Typography variant='caption'>
+                                                    <FormattedMessage
+                                                        id='Applications.Details.Overview.application.reset.text'
+                                                        defaultMessage='RESET'
                                                     />
                                                 </Typography>
-                                            </span>
-                                        </div>
-                                    </TableCell>
-                                    {application
-                                        && (
-                                            <TableCell className={classes.iconAligner}>
-                                                {application.throttlingPolicy}
-                                                {' '}
-                                                <span className={tierDisabled ? classes.disabledTier : ''}>{`(${tierDescription})`}</span>
-
-                                                <VerticalDivider height={40} />
-                                                <Grid item xs={1} m={1}>
-                                                    <Button
-                                                        id='reset-application-policy'
-                                                        style={{ padding: '1px' }}
-                                                        onClick={handleResetConfirmation}
-                                                        color='grey'
-                                                        aria-label={(
-                                                            <FormattedMessage
-                                                                id='Applications.Details.Overview.application.reset'
-                                                                defaultMessage='Reset'
-                                                            />
-                                                        )}
-                                                    >
-                                                        <Icon>replay</Icon>
-                                                        <Typography variant='caption'>
-                                                            <FormattedMessage
-                                                                id='Applications.Details.Overview.application.reset.text'
-                                                                defaultMessage='RESET'
-                                                            />
-                                                        </Typography>
-                                                    </Button>
-                                                    <Tooltip
-                                                        interactive
-                                                        title={(
-                                                            <FormattedMessage
-                                                                id='Applications.Details.Overview.application.reset.tooltip'
-                                                                defaultMessage='Reset the Application Throttle Policy for a Specific User'
-                                                            />
-                                                        )}
-                                                        placement='right'
-                                                        classeName={classes.infoToolTip}
-                                                    >
-                                                        <IconButton className={classes.infoButton} aria-label='arch'>
-                                                            <InfoIcon />
-                                                        </IconButton>
-                                                    </Tooltip>
-                                                    <ResetThrottlePolicyDialog
-                                                        handleResetThrottlePolicy={handleReset}
-                                                        isResetOpen={isResetOpen}
-                                                        toggleResetConfirmation={toggleResetConfirmation}
+                                            </Button>
+                                            <Tooltip
+                                                interactive
+                                                title={(
+                                                    <FormattedMessage
+                                                        id='Applications.Details.Overview.application.reset.tooltip'
+                                                        defaultMessage='Reset the Application Throttle Policy for a Specific User'
                                                     />
-                                                </Grid>
-                                            </TableCell>
-                                        )}
-                                </TableRow>
-                            )}
+                                                )}
+                                                placement='right'
+                                                classeName={classes.infoToolTip}
+                                            >
+                                                <IconButton className={classes.infoButton} aria-label='arch'>
+                                                    <InfoIcon />
+                                                </IconButton>
+                                            </Tooltip>
+                                            <ResetThrottlePolicyDialog
+                                                handleResetThrottlePolicy={handleReset}
+                                                isResetOpen={isResetOpen}
+                                                toggleResetConfirmation={toggleResetConfirmation}
+                                            />
+                                        </Grid>
+                                    </TableCell>
+                                )}
+                        </TableRow>
                         <TableRow>
                             <TableCell component='th' scope='row' className={classes.leftCol}>
                                 <div className={classes.iconAligner}>

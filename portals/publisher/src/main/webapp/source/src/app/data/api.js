@@ -144,6 +144,31 @@ class API extends Resource {
         return promise_create;
     }
 
+    importOpenAPIByInlineDefinition(inlineDefinition) {
+        let payload, promise_create;
+
+        promise_create = this.client.then(client => {
+            const apiData = this.getDataFromSpecFields(client);
+
+            payload = {
+                requestBody: {
+                    inlineAPIDefinition: inlineDefinition,
+                    additionalProperties: JSON.stringify(apiData),
+                }
+            };
+
+            const promisedResponse = client.apis['APIs'].importOpenAPIDefinition(
+                null,
+                payload,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+            return promisedResponse.then(response => new API(response.body));
+        });
+        return promise_create;
+    }
+
     /**
      * Get list of workflow pending requests
      */
@@ -219,6 +244,29 @@ class API extends Resource {
         const requestBody = {
             requestBody: {
                 url: url,
+            },
+        };
+        return apiClient.then(client => {
+            return client.apis['Validation'].validateOpenAPIDefinition(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+
+    }
+
+    static validateOpenAPIByInlineDefinition(inlineDefinition, params = { returnContent: false }) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const payload = {
+            'Content-Type': 'multipart/form-data',
+            ...params
+        };
+        const requestBody = {
+            requestBody: {
+                inlineAPIDefinition: inlineDefinition,
             },
         };
         return apiClient.then(client => {
@@ -616,6 +664,94 @@ class API extends Resource {
     }
 
     /**
+     * Get attached labels to an API
+     *
+     * @param apiId
+     */
+    getAPILabels(apiId) {
+        const promise_api_labels = this.client.then(client => {
+            const payload = {
+                apiId: apiId,
+                'Content-Type': 'multipart/form-data',
+            };
+            return client.apis['API Labels'].getLabelsOfAPI(
+                payload,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+        return promise_api_labels
+    }
+
+    /**
+     * Attach labels to the given API
+     *
+     * @param apiId
+     * @param addList
+     */
+    attachLabels(apiId, addList) {
+
+        let promise_updated_labels;
+        if (addList && addList.length !== 0) {
+            promise_updated_labels = this.client.then(client => {
+                const payload = {
+                    apiId: apiId,
+                    'Content-Type': 'multipart/form-data',
+                };
+                const requestBody = {
+                    requestBody: {
+                        labels: addList.map(label => label.id)
+                    }
+                }
+                return client.apis['API Labels Attach'].attachLabelsToAPI(
+                    payload,
+                    requestBody,
+                    this._requestMetaData({
+                        'Content-Type': 'multipart/form-data',
+                    }),
+                );
+            });
+        }
+
+        return promise_updated_labels;
+    }
+
+    /**
+     * Detach labels to the given API
+     *
+     * @param apiId
+     * @param deleteList
+     */
+    detachLabels(apiId, deleteList) {
+
+        let promise_updated_labels;
+
+        if (deleteList && deleteList.length !== 0) {
+            promise_updated_labels = this.client.then(client => {
+                const payload = {
+                    apiId: apiId,
+                    'Content-Type': 'multipart/form-data',
+                };
+                const requestBody = {
+                    requestBody: {
+                        labels: deleteList.map(label => label.id)
+                    }
+                }
+                return client.apis['API Labels Detach'].detachLabelsFromAPI(
+                    payload,
+                    requestBody,
+                    this._requestMetaData({
+                        'Content-Type': 'multipart/form-data',
+                    }),
+                );
+            });
+        }
+
+        return promise_updated_labels;
+    }
+
+    /**
      * Mock sample responses for Inline Prototyping
      * of a swagger OAS defintion
      *
@@ -713,11 +849,12 @@ class API extends Resource {
      * @param callback {function} Function which needs to be called upon success of the API deletion
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    getSubscriptionPolicies(id, callback = null) {
+    getSubscriptionPolicies(id, isAiApi, callback = null) {
         const promisePolicies = this.client.then(client => {
             return client.apis['APIs'].getAPISubscriptionPolicies(
                 {
                     apiId: id,
+                    isAiApi,
                 },
                 this._requestMetaData(),
             );
@@ -923,6 +1060,75 @@ class API extends Resource {
                 }
             };
             return client.apis['APIs'].updateAPISwagger(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+        return promised_update;
+    }
+
+    deleteSequenceBackend(keyType, apiId) {
+        const promised_delete = this.client.then(client => {
+            return client.apis['APIs'].sequenceBackendDelete(
+                {
+                    type: keyType,
+                    apiId: apiId,
+                },
+                this._requestMetaData({
+                
+                }),
+            );
+        });
+        return promised_delete; 
+    }
+
+    getSequenceBackends(apiId) {
+        const promised_get = this.client.then(client => {
+            return client.apis['APIs'].getSequenceBackendData(
+                {
+                    apiId: apiId,
+                },
+                this._requestMetaData({
+                
+                }),
+            );
+        });
+        return promised_get; 
+    }
+
+    getSequenceBackendContentByAPIID(apiId, keyType) {
+        const promised_get = this.client.then(client => {
+            return client.apis['APIs'].getSequenceBackendContent(
+                {
+                    type: keyType,
+                    apiId: apiId,
+                },
+                this._requestMetaData({
+                
+                }),
+            );
+        });
+        return promised_get; 
+    }
+
+    uploadCustomBackend(customBackend, keyType, apiId) {
+        const promised_update = this.client.then(client => {
+            const payload = {
+                apiId: apiId,
+                'Content-Type': 'multipart/form-data',
+            };
+            const requestBody = {
+                requestBody: {
+                    sequence: customBackend,
+                    type: keyType,
+                },
+            };
+            console.log('requestBody', requestBody);
+            console.log('payload', payload);
+            return client.apis['APIs'].sequenceBackendUpdate(
                 payload,
                 requestBody,
                 this._requestMetaData({
@@ -1304,6 +1510,19 @@ class API extends Resource {
         return promise_subscription;
     }
 
+    /**
+     * Get all Organizations of the given tenant
+     * @return {Promise}
+     * */
+    organizations() {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis["Organizations"].get_organizations(
+                this._requestMetaData(),
+            );
+        });
+    }
+
     addDocument(api_id, body) {
         const promised_addDocument = this.client.then(client => {
             const payload = {
@@ -1493,7 +1712,9 @@ class API extends Resource {
             requestBody: {
                 type: 'GraphQL',
                 additionalProperties: api_data.additionalProperties,
-                file: api_data.file,
+                ...(api_data.file !== undefined
+                    ? { file: api_data.file }
+                    : { schema: api_data.schema }),
             }
         };
 
@@ -1524,6 +1745,28 @@ class API extends Resource {
                 {
                     requestBody: {
                         file,
+                    }
+                },
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+        return promised_validationResponse;
+    }
+
+    static validateGraphQL(url, params = { useIntrospection: false }) {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        const promised_validationResponse = apiClient.then(client => {
+            return client.apis['Validation'].validateGraphQLSchema(
+                {
+                    type: 'GraphQL',
+                    'Content-Type': 'multipart/form-data',
+                    ...params
+                },
+                {
+                    requestBody: {
+                        url,
                     }
                 },
                 this._requestMetaData({
@@ -2488,13 +2731,15 @@ class API extends Resource {
      * @returns {Promise}
      *
      */
-    static policies(policyLevel, limit ) {
+    static policies(policyLevel, limit, isAiApi, organizationId ) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
             return client.apis['Throttling Policies'].getAllThrottlingPolicies(
                 {
                     policyLevel: policyLevel,
                     limit,
+                    isAiApi,
+                    organizationId,
                 },
                 this._requestMetaData(),
             );
@@ -2769,6 +3014,36 @@ class API extends Resource {
             );
         });
     }
+
+    /**
+     * @static
+     * Get all Labels of the given tenant
+     * @return {Promise}
+     * */
+    static labels() {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis["Labels (Collection)"].getAllLabels(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+
+    /**
+     * @static
+     * Get all Organizations of the given tenant
+     * @return {Promise}
+     * */
+    static getOrganizations() {
+        const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return apiClient.then(client => {
+            return client.apis["Organizations"].get_organizations(
+                this._requestMetaData(),
+            );
+        });
+    }
+
     static keyManagers() {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return apiClient.then(client => {
@@ -3314,6 +3589,63 @@ class API extends Resource {
             );
         });
     }
+
+    /**
+     * Get the all LLM providers
+     * @returns {Promise} Promise containing the list of LLM providers
+     */
+    static getLLMProviders() {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProviders'].getLLMProviders();
+        });
+    }
+
+    /**
+     * Get the LLM provider by ID
+     * @param {String} llmProviderId UUID of the LLM provider
+     * @returns {Promise} Promise containing the information of the requested LLM provider
+     */
+    static getLLMProviderById(llmProviderId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProvider(
+                {llmProviderId},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the LLM provider API definition by id
+     *
+     * @param {String} llmProviderId
+     */
+    static getLLMProviderAPIDefinition(llmProviderId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProviderApiDefinition(
+                { llmProviderId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the LLM provider API Endpoint Configuration by llmProviderId
+     * 
+     * @param {String} llmProviderId
+     */
+    static getLLMProviderEndpointConfiguration(llmProviderId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProviderEndpointConfiguration(
+                { llmProviderId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
 }
 
 API.CONSTS = {

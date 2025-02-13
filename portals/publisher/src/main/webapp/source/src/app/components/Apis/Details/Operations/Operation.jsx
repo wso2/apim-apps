@@ -90,7 +90,7 @@ const StyledTableRow = styled(TableRow)((
     },
 
     [`& .${classes.dropDown}`]: {
-        width: theme.spacing(11.25),
+        width: 120,
     },
 
     [`& .${classes.divider}`]: {

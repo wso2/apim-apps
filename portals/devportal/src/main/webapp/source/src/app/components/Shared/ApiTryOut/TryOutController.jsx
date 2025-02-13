@@ -45,6 +45,7 @@ import AdvertiseDetailsPanel from 'AppComponents/Shared/ApiTryOut/AdvertiseDetai
 import Progress from '../Progress';
 import Api from '../../../data/api';
 import Application from '../../../data/Application';
+import CONSTANTS from '../../../data/Constants';
 import SelectAppPanel from './SelectAppPanel';
 
 const PREFIX = 'TryOutController';
@@ -177,6 +178,7 @@ function TryOutController(props) {
     const [isUpdating, setIsUpdating] = useState(false);
     const [notFound, setNotFound] = useState(false);
     const [subscriptions, setSubscriptions] = useState([]);
+    const [allApplications, setAllApplications] = useState(null);
     const [selectedApplication, setSelectedApplication] = useState([]);
     const [keyManagers, setKeyManagers] = useState([]);
     const [selectedKMObject, setSelectedKMObject] = useState(null);
@@ -186,6 +188,8 @@ function TryOutController(props) {
     const apiID = api.id;
     const restApi = new Api();
     const user = AuthManager.getUser();
+    const isSubValidationDisabled = api.tiers && api.tiers.length === 1
+            && api.tiers[0].tierName.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
 
     const handleAccessTokenChange = ({ newAccessToken }) => {
         if (onConfigChange) {
@@ -201,11 +205,56 @@ function TryOutController(props) {
 
     useEffect(() => {
         let subscriptionsList;
+        let appList;
         let newSelectedApplication;
         let keys;
         let selectedKeyTypes = 'PRODUCTION';
         let accessToken;
         if (api.lifeCycleStatus) {
+            if (isSubValidationDisabled) {
+                const promiseAllApplications = Application.all(100, 0, 'asc', 'name', '');
+                promiseAllApplications.then((appResponse) => {
+                    if (appResponse !== null) {
+                        appList = appResponse.list.filter((app) => app.status === 'APPROVED');
+                        if (appList && appList.length > 0) {
+                            newSelectedApplication = appList[0].applicationId;
+                            Application.get(newSelectedApplication)
+                                .then((application) => {
+                                    return application.getKeys();
+                                })
+                                .then((appKeys) => {
+                                    if (appKeys.get(selectedKeyManager)
+                                        && appKeys.get(selectedKeyManager).keyType === 'SANDBOX') {
+                                        selectedKeyTypes = 'SANDBOX';
+                                        ({ accessToken } = appKeys.get(selectedKeyManager).token);
+                                    } else if (appKeys.get(selectedKeyManager)
+                                        && appKeys.get(selectedKeyManager).keyType === 'PRODUCTION') {
+                                        selectedKeyTypes = 'PRODUCTION';
+                                        ({ accessToken } = appKeys.get(selectedKeyManager).token);
+                                    }
+                                    setSelectedApplication(newSelectedApplication);
+                                    setAllApplications(appList);
+                                    setKeys(appKeys);
+                                    setSelectedEnvironment(selectedEnvironment, false);
+                                    setSelectedKeyType(selectedKeyTypes, false);
+                                    if (selectedKeyType === 'PRODUCTION') {
+                                        setProductionAccessToken(accessToken);
+                                    } else {
+                                        setSandboxAccessToken(accessToken);
+                                    }
+                                });
+                        }
+                    }
+                }).catch((error) => {
+                    if (process.env.NODE_ENV !== 'production') {
+                        console.error(error);
+                    }
+                    const { status } = error;
+                    if (status === 404) {
+                        setNotFound(true);
+                    }
+                });
+            }
             const promiseSubscriptions = restApi.getSubscriptions(apiID);
             promiseSubscriptions.then((subscriptionsResponse) => {
                 if (subscriptionsResponse !== null) {
@@ -378,13 +427,25 @@ function TryOutController(props) {
         if (api.lifeCycleStatus) {
             let accessToken;
             let keyType;
-            if (subscriptions !== null && subscriptions.length !== 0 && selectedApplication.length !== 0) {
-                if (subscriptions.find((sub) => sub.applicationId
-                    === selectedApplication).status === 'PROD_ONLY_BLOCKED') {
-                    setSelectedKeyType(selectedKeyType, false);
-                    keyType = 'SANDBOX';
-                } else {
-                    keyType = selectedKeyType;
+            if (isSubValidationDisabled) {
+                if (allApplications !== null && allApplications.length !== 0 && selectedApplication.length !== 0) {
+                    if (allApplications.find((app) => app.applicationId
+                        === selectedApplication).status === 'PROD_ONLY_BLOCKED') {
+                        setSelectedKeyType(selectedKeyType, false);
+                        keyType = 'SANDBOX';
+                    } else {
+                        keyType = selectedKeyType;
+                    }
+                }
+            } else {
+                if (subscriptions !== null && subscriptions.length !== 0 && selectedApplication.length !== 0) {
+                    if (subscriptions.find((sub) => sub.applicationId
+                        === selectedApplication).status === 'PROD_ONLY_BLOCKED') {
+                        setSelectedKeyType(selectedKeyType, false);
+                        keyType = 'SANDBOX';
+                    } else {
+                        keyType = selectedKeyType;
+                    }
                 }
             }
             Application.get(selectedApplication)
@@ -649,11 +710,14 @@ function TryOutController(props) {
             <Grid xs={12} md={12} item>
                 <Box display='block'>
                     {user && subscriptions
-                        && subscriptions.length > 0 && securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
+                        && ((isSubValidationDisabled && allApplications !== null)
+                        || (subscriptions.length > 0 && !isSubValidationDisabled))
+                        && securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
                         && (!api.advertiseInfo || !api.advertiseInfo.advertised)
                         && (
                             <SelectAppPanel
                                 subscriptions={subscriptions}
+                                allApplications={allApplications}
                                 handleChanges={handleChanges}
                                 selectedApplication={selectedApplication}
                                 selectedKeyManager={selectedKeyManager}
@@ -662,7 +726,8 @@ function TryOutController(props) {
                             />
                         )}
                     {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST'
-                        && (!api.advertiseInfo || !api.advertiseInfo.advertised) ? (
+                    && securitySchemeType !== 'BASIC'
+                        && (!api.advertiseInfo || !api.advertiseInfo.advertised) && !isSubValidationDisabled ? (
                             <Grid x={8} md={6} className={classes.tokenType} item>
                                 <Box mb={1} alignItems='center'>
                                     <Typography variant='body1'>
@@ -815,8 +880,9 @@ function TryOutController(props) {
                                             variant='contained'
                                             color='grey'
                                             className={classes.genKeyButton}
-                                            disabled={!user || (subscriptions && subscriptions.length === 0)
-                                                        || (!ksGenerated && securitySchemeType === 'OAUTH')}
+                                            disabled={!user
+                                                || (subscriptions && subscriptions.length === 0 && !isSubValidationDisabled)
+                                                || (!ksGenerated && securitySchemeType === 'OAUTH')}
                                             id='gen-test-key'
                                         >
                                             {isUpdating && (

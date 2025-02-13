@@ -16,6 +16,7 @@
             "enabled": true,
             "timeout": 4000
         },
+        "logoutSessionStateAppender" : "OIDC" ,
         "throttlingPolicyLimit": 80,
         "operationPolicyCount": 500,
         "documentCount": 1000,
@@ -40,7 +41,8 @@
           "limit": 30
         },
         "loadDefaultLocales": false,
-        "supportedDocTypes": "application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, application/pdf, text/plain, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.oasis.opendocument.text, application/vnd.oasis.opendocument.spreadsheet, application/json, application/x-yaml, .yaml, .md"
+        "supportedDocTypes": "application/vnd.openxmlformats-officedocument.wordprocessingml.document, application/msword, application/pdf, text/plain, application/vnd.ms-excel, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.oasis.opendocument.text, application/vnd.oasis.opendocument.spreadsheet, application/json, application/x-yaml, .yaml, .md",
+        "docUrl": "https://apim.docs.wso2.com/en/4.4.0/"
     },
     "serviceCatalogDefinitionTypes": {
       "OAS2": "Swagger",

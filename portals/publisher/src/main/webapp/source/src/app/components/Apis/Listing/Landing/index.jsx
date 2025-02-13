@@ -30,6 +30,7 @@ import RestAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/RestAPIMenu';
 import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';
 import GraphqlAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/GraphqlAPIMenu';
 import StreamingAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/StreamingAPIMenu';
+import AIAPIMenu from './Menus/AIAPIMenu';
 import DesignAssistantMenu from './Menus/DesignAssistantMenu';
 
 const PREFIX = 'APILanding';
@@ -67,6 +68,7 @@ const APILanding = () => {
     const {
         graphqlIcon,
         restApiIcon,
+        aiApiIcon,
         soapApiIcon,
         streamingApiIcon,
     } = theme.custom.landingPage.icons;
@@ -127,6 +129,7 @@ const APILanding = () => {
                                 {gateway &&
                                     <StreamingAPIMenu icon={streamingApiIcon} />
                                 }
+                                <AIAPIMenu icon={aiApiIcon} />
                                 <Grid item xs={12}>
                                     <DesignAssistantMenu />
                                 </Grid>

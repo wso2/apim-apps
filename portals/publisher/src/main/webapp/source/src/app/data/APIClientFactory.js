@@ -18,6 +18,7 @@
 
 import APIClient from './APIClient';
 import ServiceCatalogClient from './ServiceCatalogClient';
+import GovernanceAPIClient from './GovernanceAPIClient';
 import Utils from './Utils';
 
 /**
@@ -55,6 +56,7 @@ class APIClientFactory {
         }
         const apiClientEnvLabel = environment.label + Utils.CONST.API_CLIENT;
         const catalogClientEnvLabel = environment.label + Utils.CONST.SERVICE_CATALOG_CLIENT;
+        const governanceClientEnvLabel = environment.label + Utils.CONST.GOVERNANCE_CLIENT;
         let apiClient;
         if (clientType === Utils.CONST.API_CLIENT) {
             apiClient = this._APIClientMap.get(apiClientEnvLabel);
@@ -71,6 +73,14 @@ class APIClientFactory {
             } else {
                 apiClient = new ServiceCatalogClient(environment);
                 this._APIClientMap.set(catalogClientEnvLabel);
+            }
+        } else if (clientType === Utils.CONST.GOVERNANCE_CLIENT) {
+            apiClient = this._APIClientMap.get(governanceClientEnvLabel);
+            if (apiClient) {
+                return apiClient;
+            } else {
+                apiClient = new GovernanceAPIClient(environment);
+                this._APIClientMap.set(governanceClientEnvLabel);
             }
         }
         return apiClient;

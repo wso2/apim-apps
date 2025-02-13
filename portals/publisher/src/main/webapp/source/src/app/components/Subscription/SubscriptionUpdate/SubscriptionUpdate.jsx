@@ -56,7 +56,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import WarningBase from 'AppComponents/Addons/Addons/WarningBase';
 import { Dialog, DialogActions, DialogContent, DialogContentText, 
     DialogTitle, Alert as MUIAlert } from '@mui/material';
-import LeftMenu from '../LeftMenu/LeftMenu.jsx';
 
 const PREFIX = 'subscriptionupdate';
 
@@ -80,11 +79,6 @@ const StyledBox = styled(Box)((
         theme
     }
 ) => ({
-    [`& .${classes.LeftMenu}`]: {
-        backgroundColor: theme.palette.background.leftMenu,
-        width: theme.custom.leftMenuWidth,
-        minHeight: `calc(100vh - ${64 + theme.custom.footer.height}px)`,
-    },
 
     [`& .${classes.content}`]: {
         display: 'flex',
@@ -224,8 +218,8 @@ function ListLabels() {
                         <Link
                             target='_blank'
                             href={Configurations.app.docUrl
-                        + 'learn/consume-api/manage-subscription/advanced-topics/adding'
-                        + '-an-api-subscription-workflow/#adding-an-api-subscription-workflow'}
+                                + 'consume/manage-subscription/advanced-topics/'
+                                + 'adding-an-api-subscription-tier-update-workflow'}
                             underline='hover'
                         >
                             <ListItemText primary={(
@@ -451,9 +445,6 @@ function ListLabels() {
     if (data && data.length === 0) {
         return (
             <StyledBox display='flex' alignItems='stretch' flexDirection='row' className={classes.main}>
-                <Box className={classes.LeftMenu}>  
-                    <LeftMenu/>
-                </Box>
                 <Box className={classes.content}>
                     <ContentBase
                         {...pageProps}
@@ -464,13 +455,13 @@ function ListLabels() {
                                 <Typography gutterBottom variant='h5' component='h2'>
                                     <FormattedMessage
                                         id='Workflow.SubscriptionUpdate.List.empty.title.subscriptionupdate'
-                                        defaultMessage='Subscription update'
+                                        defaultMessage='Subscription Update'
                                     />
                                 </Typography>
                                 <Typography variant='body2' color='textSecondary' component='p'>
                                     <FormattedMessage
                                         id='Workflow.SubscriptionUpdate.List.empty.content.subscriptionupdate'
-                                        defaultMessage='There are no pending workflow requests for subscription update'
+                                        defaultMessage='There are no pending workflow requests for subscription update.'
                                     />
                                 </Typography>
                             </CardContent>
@@ -524,9 +515,6 @@ function ListLabels() {
     }
     return (
         <StyledBox display='flex' alignItems='stretch' flexDirection='row'>
-            <Box className={classes.LeftMenu}>  
-                <LeftMenu/>
-            </Box>
             <Box className={classes.content}>
                 <ContentBase {...pageProps}>
                     {(searchActive || addButtonProps) && (

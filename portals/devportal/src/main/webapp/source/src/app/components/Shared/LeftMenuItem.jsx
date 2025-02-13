@@ -89,9 +89,6 @@ const StyledBootstrapTooltip = styled(BootstrapTooltip)((
         paddingBottom: theme.spacing(0.6),
         paddingLeft: theme.spacing(1),
         paddingRight: theme.spacing(1),
-        [theme.breakpoints.down('md')]: {
-            paddingLeft: 0,
-        },
         fontSize: theme.typography.caption.fontSize,
         cursor: 'pointer',
         textDecoration: 'none',
@@ -250,8 +247,9 @@ function LeftMenuItem(props) {
                             className={classNames(
                                 {
                                     [classes.leftLInkText_IconLeft]: leftMenu.style === 'icon left',
+                                    [classes.leftLInkText_NoText]: leftMenu.style === 'no text',
                                 },
-                                classes.leftLInkText_NoTextWhenSmall,
+                                classes.leftLInkText_NoText,
                                 'leftLInkText',
                             )}
                         />

@@ -25,6 +25,7 @@ import Delete from 'AppComponents/GatewayEnvironments/DeleteGWEnvironment';
 import AddEdit from 'AppComponents/GatewayEnvironments/AddEditGWEnvironment';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import EditIcon from '@mui/icons-material/Edit';
+import Permission from './Permission';
 
 /**
  * API call to get Gateway labels
@@ -117,6 +118,26 @@ export default function ListGWEnviornments() {
                     },
                 },
             },
+            {
+                name: 'permissions',
+                label: intl.formatMessage({
+                    id: 'AdminPages.Gateways.table.header.permission',
+                    defaultMessage: 'Visibility Permission',
+                }),
+                options: {
+                    sort: false,
+                    customBodyRender: (permissions) => {
+                        return (
+                            <div>
+                                <Permission
+                                    type={permissions.permissionType}
+                                    roles={permissions.roles}
+                                />
+                            </div>
+                        );
+                    },
+                },
+            },
         ];
     } else {
         columProps = [
@@ -170,6 +191,26 @@ export default function ListGWEnviornments() {
                                     }
                                 </div>
                             ))
+                        );
+                    },
+                },
+            },
+            {
+                name: 'permissions',
+                label: intl.formatMessage({
+                    id: 'AdminPages.Gateways.table.header.permission',
+                    defaultMessage: 'Visibility Permission',
+                }),
+                options: {
+                    sort: false,
+                    customBodyRender: (permissions) => {
+                        return (
+                            <div>
+                                <Permission
+                                    type={permissions.permissionType}
+                                    roles={permissions.roles}
+                                />
+                            </div>
                         );
                     },
                 },

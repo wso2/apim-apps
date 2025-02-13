@@ -19,8 +19,10 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
+import base64url from 'base64url';
 import PropTypes from 'prop-types';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
+import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Select from '@mui/material//Select';
@@ -35,6 +37,10 @@ import Typography from '@mui/material/Typography';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
+import { MuiChipsInput } from 'mui-chips-input';
+import Error from '@mui/icons-material/Error';
+import InputAdornment from '@mui/material/InputAdornment';
+import { red } from '@mui/material/colors/';
 import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 
 const styles = {
@@ -77,6 +83,15 @@ const StyledLabel = styled('span')({ ...styles.label, ...styles.newLabel });
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
+const useStyles = styled(() => ({
+    chipInputBox: {
+        marginRight: '30px',
+        marginLeft: '10px',
+        marginTop: '10px',
+        marginBottom: '10px',
+    },
+}));
+
 /**
  * Reducer
  * @param {JSON} state State
@@ -91,10 +106,16 @@ function reducer(state, { field, value }) {
         case 'gatewayType':
         case 'description':
         case 'type':
+        case 'roles':
         case 'vhosts':
             return { ...state, [field]: value };
         case 'editDetails':
             return value;
+        case 'permissionType':
+            return {
+                ...state,
+                permissions: { ...state.permissions, [field]: value },
+            };
         default:
             return state;
     }
@@ -106,6 +127,7 @@ function reducer(state, { field, value }) {
  * @returns {JSX}.
  */
 function AddEditGWEnvironment(props) {
+    const classes = useStyles();
     const intl = useIntl();
     const {
         updateList, dataRow, icon, triggerButtonText, title,
@@ -115,22 +137,90 @@ function AddEditGWEnvironment(props) {
         host: '', httpContext: '', httpsPort: 8243, httpPort: 8280, wssPort: 8099, wsPort: 9099, isNew: true,
     };
     const { settings } = useAppContext();
+    const [validRoles, setValidRoles] = useState([]);
+    const [invalidRoles, setInvalidRoles] = useState([]);
+    const [roleValidity, setRoleValidity] = useState(true);
     const { gatewayTypes } = settings;
-    const [initialState, setInitialState] = useState({
-        displayName: '',
-        description: '',
-        gatewayType: gatewayTypes && gatewayTypes.length > 1 ? 'Regular' : gatewayTypes[0],
-        type: 'hybrid',
-        vhosts: [defaultVhost],
+    const initialPermissions = dataRow && dataRow.permissions
+        ? dataRow.permissions
+        : { roles: [], permissionType: 'PUBLIC' };
+    const [initialState, setInitialState] = useState(() => {
+        return {
+            displayName: '',
+            description: '',
+            gatewayType: gatewayTypes && gatewayTypes.length > 1 ? 'Regular' : gatewayTypes[0],
+            type: 'hybrid',
+            vhosts: [defaultVhost],
+            permissions: initialPermissions,
+        };
     });
     const [editMode, setIsEditMode] = useState(false);
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
-        name, displayName, description, vhosts, type, gatewayType,
+        name, displayName, description, vhosts, type, gatewayType, permissions,
     } = state;
 
+    const [roles, setRoles] = useState([]);
+
+    useEffect(() => {
+        if (permissions && permissions.roles) {
+            setRoles(permissions.roles);
+        }
+    }, [permissions]);
+
+    let permissionType = '';
+    if (permissions) {
+        permissionType = state.permissions.permissionType;
+    }
+    const handleRoleDeletion = (role) => {
+        if (invalidRoles.includes(role)) {
+            const invalidRolesArray = invalidRoles.filter((existingRole) => existingRole !== role);
+            setInvalidRoles(invalidRolesArray);
+            if (invalidRolesArray.length === 0) {
+                setRoleValidity(true);
+            }
+        } else if (roles.includes(role)) {
+            setRoles(roles.filter((existingRole) => existingRole !== role));
+        } else {
+            setValidRoles(validRoles.filter((existingRole) => existingRole !== role));
+        }
+    };
+
+    const restApi = new API();
+    const handleRoleAddition = (role) => {
+        const promise = restApi.validateSystemRole(base64url.encode(role));
+        promise
+            .then(() => {
+                // Check if the role is already added
+                if (roles.includes(role) || validRoles.includes(role) || invalidRoles.includes(role)) {
+                    Alert.error('Role already added: ' + role);
+                    return;
+                }
+
+                setValidRoles(validRoles.concat(role));
+                if (invalidRoles.length === 0) {
+                    setRoleValidity(true);
+                } else {
+                    setRoleValidity(false);
+                }
+            })
+            .catch((error) => {
+                if (error.status === 404) {
+                    setInvalidRoles(invalidRoles.concat(role));
+                    setRoleValidity(false);
+                } else {
+                    Alert.error('Error when validating role: ' + role);
+                    console.error('Error when validating role ' + error);
+                }
+            });
+    };
+
     const onChange = (e) => {
+        if (e.target.name === 'GatewayPermissionRestrict') {
+            permissionType = e.target.value;
+            dispatch({ field: 'permissionType', value: permissionType });
+        }
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
@@ -147,6 +237,10 @@ function AddEditGWEnvironment(props) {
             gatewayType: '',
             type: 'hybrid',
             vhosts: [defaultVhost],
+            permissions: {
+                roles: [],
+                permissionType: 'PUBLIC',
+            },
         });
     }, []);
 
@@ -322,18 +416,18 @@ function AddEditGWEnvironment(props) {
                 });
             });
         }
-
-        const restApi = new API();
+        permissions.permissionType = state.permissions.permissionType;
+        permissions.roles = roles.concat(validRoles);
         let promiseAPICall;
         if (dataRow) {
             // assign the update promise to the promiseAPICall
             promiseAPICall = restApi.updateGatewayEnvironment(
-                dataRow.id, name.trim(), displayName, type, description, gatewayType, vhostDto,
+                dataRow.id, name.trim(), displayName, type, description, gatewayType, vhostDto, permissions,
             );
         } else {
             // assign the create promise to the promiseAPICall
             promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, type, description,
-                gatewayType, vhostDto);
+                gatewayType, vhostDto, permissions);
         }
 
         return promiseAPICall.then(() => {
@@ -372,6 +466,7 @@ function AddEditGWEnvironment(props) {
                 type: originalType,
                 vhosts: originalVhosts,
                 gatewayType: originalGatewayType,
+                permissions: originalPermissions,
             } = dataRow;
             setIsEditMode(true);
             dispatch({
@@ -383,6 +478,7 @@ function AddEditGWEnvironment(props) {
                     gatewayType: originalGatewayType,
                     description: originalDescription,
                     vhosts: originalVhosts,
+                    permissions: originalPermissions,
                 },
             });
         }
@@ -402,6 +498,7 @@ function AddEditGWEnvironment(props) {
             triggerButtonText={triggerButtonText}
             formSaveCallback={formSaveCallback}
             dialogOpenCallback={dialogOpenCallback}
+            saveButtonDisabled={!roleValidity}
         >
             <FormControl
                 variant='standard'
@@ -613,6 +710,148 @@ function AddEditGWEnvironment(props) {
                             defaultMessage='Supported Key Type of the Gateway Environment'
                         />
                     </FormHelperText>
+                </FormControl>
+                {/* Permissions */}
+                <FormControl
+                    component='fieldset'
+                    variant='outlined'
+                    margin='dense'
+                    style={{ marginTop: '10px', marginBottom: '10px' }}
+                >
+                    <InputLabel id='demo-simple-select-label'>
+                        <FormattedMessage
+                            id='GatewayEnvironments.AddEditGWEnvironment.form.permissions'
+                            defaultMessage='Permission'
+                        />
+                    </InputLabel>
+                    <Select
+                        labelId='demo-simple-select-label'
+                        id='demo-simple-select'
+                        value={permissionType}
+                        name='GatewayPermissionRestrict'
+                        label={(
+                            <FormattedMessage
+                                id='GatewayEnvironments.AddEditGWEnvironment.form.permissions.select'
+                                defaultMessage='Permission'
+                            />
+                        )}
+                        onChange={onChange}
+                    >
+                        <MenuItem key='PUBLIC' value='PUBLIC'>
+                            <FormattedMessage
+                                id='GatewayEnvironments.AddEditGWEnvironment.form.permission.public.option'
+                                defaultMessage='Public'
+                            />
+                        </MenuItem>
+                        <MenuItem key='ALLOW' value='ALLOW'>
+                            <FormattedMessage
+                                id='GatewayEnvironments.AddEditGWEnvironment.form.permission.allow.option'
+                                defaultMessage='Allow for role(s)'
+                            />
+                        </MenuItem>
+                        <MenuItem key='DENY' value='DENY'>
+                            <FormattedMessage
+                                id='GatewayEnvironments.AddEditGWEnvironment.form.permission.deny.option'
+                                defaultMessage='Deny for role(s)'
+                            />
+                        </MenuItem>
+                    </Select>
+                    <FormHelperText>
+                        <FormattedMessage
+                            id='GatewayEnvironments.AddEditGWEnvironment.form.Permission.helper.text'
+                            defaultMessage='Permissions for the Gateway Environment'
+                        />
+                    </FormHelperText>
+                    <Box component='div' m={1}>
+                        {
+                            (permissionType === 'ALLOW' || permissionType === 'DENY')
+                            && (
+                                <Box
+                                    display='flex'
+                                    flexDirection='row'
+                                    alignItems='center'
+                                    margin='dense'
+                                    classes={{ root: classes.chipInputBox }}
+                                >
+                                    <MuiChipsInput
+                                        fullWidth
+                                        label='Roles'
+                                        InputLabelProps={{
+                                            shrink: true,
+                                        }}
+                                        name='GatewayEnvironmentPermissions'
+                                        variant='outlined'
+                                        value={roles.concat(validRoles, invalidRoles)}
+                                        alwaysShowPlaceholder={false}
+                                        placeholder='Enter roles and press Enter'
+                                        blurBehavior='clear'
+                                        data-testid='gateway-permission-roles'
+                                        InputProps={{
+                                            endAdornment: !roleValidity && (
+                                                <InputAdornment
+                                                    position='end'
+                                                    sx={{
+                                                        position: 'absolute',
+                                                        right: '25px',
+                                                        top: '50%',
+                                                    }}
+                                                >
+                                                    <Error color='error' />
+                                                </InputAdornment>
+                                            ),
+                                        }}
+                                        onAddChip={handleRoleAddition}
+                                        renderChip={(ChipComponent, key, ChipProps) => (
+                                            <ChipComponent
+                                                key={ChipProps.label}
+                                                label={ChipProps.label}
+                                                onDelete={() => handleRoleDeletion(ChipProps.label)}
+                                                data-testid={ChipProps.label}
+                                                style={{
+                                                    backgroundColor:
+                                                        invalidRoles.includes(ChipProps.label)
+                                                            ? red[300] : null,
+                                                    margin: '8px 8px 8px 0',
+                                                    float: 'left',
+                                                }}
+                                            />
+                                        )}
+                                        error={!roleValidity}
+                                        helperText={
+                                            !roleValidity ? (
+                                                <FormattedMessage
+                                                    id='Gateway.AddEditGWEnvironment.permission.Invalid'
+                                                    defaultMessage='Invalid Role(s) Found'
+                                                />
+                                            ) : [
+                                                (permissionType === 'ALLOW'
+                                                    ? (
+                                                        <FormattedMessage
+                                                            id='Gateway.AddEditGWEnvironment.permission.allowed'
+                                                            defaultMessage='Use of this Gateway Environment is
+                                                                "Allowed" for above roles.'
+                                                        />
+                                                    )
+                                                    : (
+                                                        <FormattedMessage
+                                                            id='Gateway.AddEditGWEnvironment.permission.denied'
+                                                            defaultMessage='Use of this Gateway Environment is
+                                                                "Denied" for above roles.'
+                                                        />
+                                                    )
+                                                ),
+                                                ' ',
+                                                <FormattedMessage
+                                                    id='Gateway.AddEditGWEnvironment.permission.help'
+                                                    defaultMessage='Enter a valid role and press `Enter`'
+                                                />,
+                                            ]
+                                        }
+                                    />
+                                </Box>
+                            )
+                        }
+                    </Box>
                 </FormControl>
                 <AddEditVhost
                     initialVhosts={vhosts}

@@ -21,7 +21,8 @@ import MenuList from '@mui/material/MenuList';
 export default function CustomSplitButton(props) {
     const [open, setOpen] = React.useState(false);
     const {
-        advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating, api, id,
+        advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating, api, id, isValidSequenceBackend,
+        isCustomBackendSelected
     } = props;
     const intl = useIntl();
     const options = [
@@ -47,7 +48,7 @@ export default function CustomSplitButton(props) {
     const isEndpointAvailable = api.endpointConfig !== null;
     const isTierAvailable = api.policies.length !== 0;
 
-    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
+    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && (!isCustomBackendSelected && !isEndpointAvailable)))
     || (!isMutualSslOnly && !isTierAvailable)
     || api.workflowStatus === 'CREATED');
 
@@ -92,12 +93,12 @@ export default function CustomSplitButton(props) {
                         color='primary'
                         ref={anchorRef}
                         aria-label='split button'
-                        disabled={isUpdating}
+                        disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)}
                         style={{ width: '200px' }}
                     >
                         <Button
                             onClick={(event) => handleClick(event, selectedIndex)}
-                            disabled={isUpdating}
+                            disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)}
                             data-testid = 'custom-select-save-button'
                             style={{ width: '200px' }}
                             id={id}
@@ -151,9 +152,15 @@ export default function CustomSplitButton(props) {
     );
 }
 
+CustomSplitButton.defaultProps = {
+    isCustomBackendSelected: false,
+    isValidSequenceBackend: true,
+};
 CustomSplitButton.propTypes = {
     api: PropTypes.shape({}).isRequired,
     handleSave: PropTypes.shape({}).isRequired,
     handleSaveAndDeploy: PropTypes.shape({}).isRequired,
     isUpdating: PropTypes.bool.isRequired,
+    isValidSequenceBackend: PropTypes.bool,
+    isCustomBackendSelected: PropTypes.bool,
 };

@@ -85,7 +85,9 @@ export default function ApiCreateGraphQL(props) {
             case 'isFormValid':
                 return { ...currentState, [action]: value };
             case 'inputType':
-                return { ...currentState, [action]: value, inputValue: value === 'url' ? '' : null };
+                return { ...currentState, [action]: value,
+                    inputValue: value === 'url' || value === 'endpoint' ? '' : null
+                };
             case 'graphQLInfo':
                 return { ...currentState, [action]: value };
             case 'preSetAPI':
@@ -145,6 +147,7 @@ export default function ApiCreateGraphQL(props) {
             endpoint,
             gatewayType,
             implementationType,
+            inputType,
             inputValue,
             graphQLInfo: { operations },
         } = apiInputs;
@@ -166,7 +169,6 @@ export default function ApiCreateGraphQL(props) {
             policies,
             operations,
         };
-        const uploadMethod = 'file';
         if (endpoint) {
             additionalProperties.endpointConfig = {
                 endpoint_type: 'http',
@@ -182,9 +184,13 @@ export default function ApiCreateGraphQL(props) {
         const apiData = {
             additionalProperties: JSON.stringify(additionalProperties),
             implementationType,
-            [uploadMethod]: uploadMethod,
-            file: inputValue,
         };
+
+        if (inputType === 'file') {
+            apiData.file = inputValue;
+        } else if (inputType === 'url' || inputType === 'endpoint') {
+            apiData.schema = apiInputs.graphQLInfo.graphQLSchema.schemaDefinition;
+        }
 
         newApi
             .importGraphQL(apiData)
@@ -222,61 +228,40 @@ export default function ApiCreateGraphQL(props) {
                     <Typography variant='h5'>
                         <FormattedMessage
                             id='Apis.Create.GraphQL.ApiCreateGraphQL.heading'
-                            defaultMessage='Create an API using a GraphQL SDL definition'
+                            defaultMessage='Create a GraphQL API'
                         />
                     </Typography>
                     <Typography variant='caption'>
                         <FormattedMessage
                             id='Apis.Create.GraphQL.ApiCreateGraphQL.sub.heading'
-                            defaultMessage='Create an API by importing an existing GraphQL SDL definition.'
+                            defaultMessage={'Create a GraphQL API by importing a SDL definition'
+                                + ' using a file, SDL hosted URL, or by using a GraphQL endpoint.'
+                            }
                         />
                     </Typography>
                 </>
             )}
         >
             <Box sx={{ mb: 2 }}>
-                {wizardStep === 0 && (
-                    <Stepper alternativeLabel activeStep={0}>
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.one'
-                                    defaultMessage='Provide GraphQL'
-                                />
-                            </StepLabel>
-                        </Step>
+                <Stepper alternativeLabel activeStep={wizardStep}>
+                    <Step>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.one'
+                                defaultMessage='Provide GraphQL'
+                            />
+                        </StepLabel>
+                    </Step>
 
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.two'
-                                    defaultMessage='Create API'
-                                />
-                            </StepLabel>
-                        </Step>
-                    </Stepper>
-                )}
-                {wizardStep === 1 && (
-                    <Stepper alternativeLabel activeStep={1}>
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.one'
-                                    defaultMessage='Provide GraphQL'
-                                />
-                            </StepLabel>
-                        </Step>
-
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.two'
-                                    defaultMessage='Create API'
-                                />
-                            </StepLabel>
-                        </Step>
-                    </Stepper>
-                )}
+                    <Step>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.two'
+                                defaultMessage='Create API'
+                            />
+                        </StepLabel>
+                    </Step>
+                </Stepper>
             </Box>
 
             <Grid container spacing={2}>
@@ -295,6 +280,7 @@ export default function ApiCreateGraphQL(props) {
                             multiGateway={multiGateway}
                             api={apiInputs}
                             isAPIProduct={false}
+                            readOnlyAPIEndpoint={apiInputs.inputType === 'endpoint' ? apiInputs.endpoint : null}
                         />
                     )}
                 </Grid>

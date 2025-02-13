@@ -29,12 +29,27 @@ import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
 import { Link } from 'react-router-dom';
 import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
 import Box from '@mui/material/Box';
+import {
+    Checkbox,
+    Chip,
+    Divider,
+    IconButton,
+    List,
+    ListItem,
+    ListItemIcon,
+    ListItemText,
+    Menu,
+    MenuItem,
+    Stack,
+    TextField,
+    Tooltip
+} from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import CircularProgress from '@mui/material/CircularProgress';
 import CONSTS from 'AppData/Constants';
 import Alert from 'AppComponents/Shared/Alert';
+import AddIcon from '@mui/icons-material/Add';
 
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import UpdateWithoutDetails from 'AppComponents/Apis/Details/Configuration/components/UpdateWithoutDetails';
@@ -51,6 +66,7 @@ import StoreVisibility from './components/StoreVisibility';
 import Tags from './components/Tags';
 import Social from './components/Social';
 import APICategories from './components/APICategories';
+import SharedOrganizations from './components/SharedOrganizations';
 
 const PREFIX = 'DesignConfigurations';
 
@@ -197,6 +213,7 @@ function copyAPIConfig(api) {
         enableSchemaValidation: api.enableSchemaValidation,
         accessControlRoles: [...api.accessControlRoles],
         visibleRoles: [...api.visibleRoles],
+        visibleOrganizations: [...(api?.visibleOrganizations || [])],
         tags: [...api.tags],
         maxTps: api.maxTps,
         transport: [...api.transport],
@@ -248,6 +265,7 @@ function configReducer(state, configAction) {
         case 'enableSchemaValidation':
         case 'maxTps':
         case 'categories':
+        case 'visibleOrganizations':
         case 'tags':
             nextState[action] = value;
             return nextState;
@@ -307,6 +325,7 @@ function configReducer(state, configAction) {
  * @returns
  */
 export default function DesignConfigurations() {
+    const [anchorEl, setAnchorEl] = useState(null);
     const { api, updateAPI } = useContext(APIContext);
     const { data: settings } = usePublisherSettings();
     const [isUpdating, setIsUpdating] = useState(false);
@@ -316,6 +335,12 @@ export default function DesignConfigurations() {
     const [errorInExternalEndpoints, setErrorInExternalEndpoints] = useState(false);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
 
+    const [loading, setLoading] = useState(true);
+    const [labels, setLabels] = useState({});
+    const [searchQuery, setSearchQuery] = useState('');
+    const [searchResult, setSearchResult] = useState({});
+    const [updatedLabels, setUpdatedLabels] = useState([]);
+    const [unselectedLabels, setUnselectedLabels] = useState([]);
     const [descriptionType, setDescriptionType] = useState('');
     const [overview, setOverview] = useState('');
     const [overviewDocument, setOverviewDocument] = useState(null);
@@ -329,6 +354,14 @@ export default function DesignConfigurations() {
         return (/([~!@#;%^&*+=|\\<>"'/,])/.test(tag)) || (tag.length > 30);
     });
     const intl = useIntl();
+
+    const handleOpenList = (event) => setAnchorEl(event.currentTarget);
+    const handleCloseList = () => {
+        setSearchQuery('');
+        setSearchResult({});
+        setAnchorEl(null);
+    }
+
     const handleChange = (event) => {
         const type = event.target.value;
         if (type === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {
@@ -438,7 +471,37 @@ export default function DesignConfigurations() {
                     }));
                 }
             });
+        // const apiClient = new API();
+        API.labels().then((response) => setLabels(response.body));
+        restApi.getAPILabels(api.id).then((response) => {
+            setUpdatedLabels(response.body.list.map((label) => label.name));
+        }).finally(() => {
+            setLoading(false);
+        });
     }, []);
+
+    useEffect(() => {
+        setUnselectedLabels(labels?.list?.filter(label => !updatedLabels.includes(label.name))
+            .map((label) => label.name).sort());
+    }, [labels, updatedLabels]);
+
+    const attachLabel = (name) => {
+        const apiClient = new API();
+        apiClient.attachLabels(api.id,
+            labels.list?.filter(label => [name].includes(label.name)))
+            .then((response) => {
+                setUpdatedLabels(response.body.list.map((label) => label.name))
+            });
+    }
+
+    const detachLabel = (name) => {
+        const apiClient = new API();
+        apiClient.detachLabels(api.id,
+            labels.list?.filter(label => [name].includes(label.name)))
+            .then((response) => {
+                setUpdatedLabels(response.body.list.map((label) => label.name))
+            });
+    }
 
     /**
      *
@@ -519,41 +582,178 @@ export default function DesignConfigurations() {
         setIsOpen(false);
     };
     const restricted = isRestricted(['apim:api_publish', 'apim:api_create'], api
-    || isUpdating || api.isRevision || invalidTagsExist
-    || (apiConfig.visibility === 'RESTRICTED'
-    && apiConfig.visibleRoles.length === 0));
+        || isUpdating || api.isRevision || invalidTagsExist
+        || (apiConfig.visibility === 'RESTRICTED'
+            && apiConfig.visibleRoles.length === 0));
+
+    const LabelMenu = () => {
+        if (searchResult && searchResult.list && searchQuery !== '') {
+            if (searchResult.list.length !== 0) {
+                return (
+                    <List sx={{ width: '350px' }} id='label-menu-list-search-result'>
+                        {searchResult.list
+                            .filter(label => updatedLabels.includes(label.name))
+                            .concat(searchResult.list.filter(label => !updatedLabels.includes(label.name)))
+                            .map((label) => (
+                                <MenuItem
+                                    key={label.name}
+                                    onClick={() => updatedLabels.includes(label.name)
+                                        ? detachLabel(label.name)
+                                        : attachLabel(label.name)}
+                                >
+                                    <ListItemIcon>
+                                        <Checkbox checked={updatedLabels.includes(label.name)} />
+                                    </ListItemIcon>
+                                    <ListItemText
+                                        primary={label.name}
+                                        sx={{ whiteSpace: 'normal', wordWrap: 'break-word' }}
+                                    />
+                                </MenuItem>
+                            ))}
+                    </List>
+                );
+            } else {
+                return (
+                    <MenuItem disabled sx={{ width: '350px' }} id='label-menu-search-result-no-labels'>
+                        <ListItemIcon />
+                        <ListItemText primary='No Labels Found' />
+                    </MenuItem>
+                );
+            }
+        }
+
+        return (
+            <span>
+                <MenuItem disabled>
+                    <ListItemText primary='Attached Labels' />
+                </MenuItem>
+                <List sx={{ width: '350px' }}>
+                    {updatedLabels && updatedLabels.length !== 0 ? (
+                        updatedLabels.map((label) => (
+                            <MenuItem key={label} onClick={() => detachLabel(label)}>
+                                <ListItemIcon>
+                                    <Checkbox checked />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={label}
+                                    sx={{ whiteSpace: 'normal', wordWrap: 'break-word' }}
+                                />
+                            </MenuItem>
+                        ))
+                    ) : (
+                        <MenuItem disabled>
+                            <ListItemIcon />
+                            <ListItemText primary='No Labels Attached' />
+                        </MenuItem>
+                    )}
+                </List>
+                <MenuItem disabled>
+                    <ListItemText primary='Unattached Labels' />
+                </MenuItem>
+                <List sx={{ width: '350px' }}>
+                    {unselectedLabels && unselectedLabels.length !== 0 ? (
+                        unselectedLabels.map((label) => (
+                            <MenuItem key={label} onClick={() => attachLabel(label)}>
+                                <ListItemIcon>
+                                    <Checkbox />
+                                </ListItemIcon>
+                                <ListItemText
+                                    primary={label}
+                                    sx={{ whiteSpace: 'normal', wordWrap: 'break-word' }}
+                                />
+                            </MenuItem>
+                        ))
+                    ) : (
+                        <MenuItem disabled>
+                            <ListItemIcon />
+                            <ListItemText primary='No More Labels to Attach' />
+                        </MenuItem>
+                    )}
+                </List>
+            </span>
+        );
+    };
 
     return (
         (<Root>
-            <Container maxWidth='md'>
-                <Grid container spacing={2}>
-                    <Grid item md={12}>
-                        <Typography id='itest-api-details-design-config-head' variant='h5' component='h2'>
-                            <FormattedMessage
-                                id='Apis.Details.Configuration.Configuration.Design.topic.header'
-                                defaultMessage='Design Configurations'
+            <Menu anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleCloseList}
+                onKeyDown={(e) => e.stopPropagation()}
+                id='label-menu'
+                sx={{
+                    maxHeight: '450px',
+                    width: '350px',
+                    wordWrap: 'break-word'
+                }}>
+                <ListItem key='label-search' id='label-search'>
+                    <Grid container direction='column'>
+                        <Grid item>
+                            <ListItemText primary='Attach labels to this API' />
+                        </Grid>
+                        <Grid item>
+                            <TextField
+                                value={searchQuery}
+                                fullWidth
+                                onChange={(e) => {
+                                    setSearchQuery(e.target.value);
+                                    if (e.target.value === '') {
+                                        setSearchResult({});
+                                    } else {
+                                        setSearchResult({
+                                            list: labels.list.filter(label => label.name.includes(e.target.value))
+                                        });
+                                    }
+                                }}
+                                onKeyDown={(e) => e.stopPropagation()}
+                                id='label-search-textfield'
+                                placeholder='Search...'
+                                size='small'
                             />
-                        </Typography>
-                        <Box color='text.secondary'>
-                            {api.apiType === API.CONSTS.APIProduct
-                                ? (
-                                    <Typography variant='caption'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Configuration.Configuration.Design.APIProduct.sub.heading'
-                                            defaultMessage='Configure basic API Product meta information'
-                                        />
-                                    </Typography>
-                                )
-                                : (
-                                    <Typography variant='caption'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Configuration.Configuration.Design.sub.heading'
-                                            defaultMessage='Configure basic API meta information'
-                                        />
-                                    </Typography>
-                                )}
-                        </Box>
+                        </Grid>
                     </Grid>
+                </ListItem>
+                <Divider />
+                {labels.list && labels.list.length !== 0 ? (
+                    <LabelMenu />
+                ) : (
+                    <MenuItem disabled sx={{ width: '350px' }} id='label-menu-no-labels-defined'>
+                        <ListItemIcon />
+                        <ListItemText primary='No Labels Found' />
+                    </MenuItem>
+                )}
+            </Menu>
+            <Grid item md={12}>
+                <Typography id='itest-api-details-design-config-head' variant='h5' component='h2'>
+                    <FormattedMessage
+                        id='Apis.Details.Configuration.Configuration.Design.topic.header'
+                        defaultMessage='Design Configurations'
+                    />
+                </Typography>
+                <Box color='text.secondary'>
+                    {api.apiType === API.CONSTS.APIProduct
+                        ? (
+                            <Typography variant='caption'>
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration
+                                        .Configuration.Design.APIProduct.sub.heading'
+                                    defaultMessage='Configure basic API Product meta information'
+                                />
+                            </Typography>
+                        )
+                        : (
+                            <Typography variant='caption'>
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.Configuration.Design.sub.heading'
+                                    defaultMessage='Configure basic API meta information'
+                                />
+                            </Typography>
+                        )}
+                </Box>
+            </Grid>
+            <Grid container direction='row' justifyContent='space-around' alignItems='stretch'
+                spacing={3}>
+                <Grid item xs={12} md={9}>
                     <Grid item md={12}>
                         <Paper elevation={0}>
                             <div>
@@ -618,15 +818,28 @@ export default function DesignConfigurations() {
                                             />
                                         )}
                                     </Box>
+                                    { settings && settings.orgAccessControlEnabled && (
+                                        <Box py={1}>
+                                            <SharedOrganizations
+                                                api={apiConfig}
+                                                configDispatcher={configDispatcher}
+                                                organizations={api.visibleOrganizations}
+                                            />
+                                        </Box>
+                                    )}
                                     { settings && !settings.portalConfigurationOnlyModeEnabled && (
                                         <Box py={1}>
-                                            <DefaultVersion api={apiConfig} configDispatcher={configDispatcher} />
+                                            <DefaultVersion
+                                                api={apiConfig} configDispatcher={configDispatcher} />
                                         </Box>
                                     )}
                                     <Box pt={2}>
                                         <Button
-                                            disabled={errorInAccessRoles ||
-                                                errorInRoleVisibility ||
+                                            disabled={
+                                                (apiConfig.accessControl
+                                                    === 'RESTRICTED' && errorInAccessRoles) ||
+                                                (apiConfig.visibility
+                                                    === 'RESTRICTED' && errorInRoleVisibility) ||
                                                 restricted ||
                                                 errorInTags ||
                                                 errorInExternalEndpoints}
@@ -659,15 +872,63 @@ export default function DesignConfigurations() {
                         </Paper>
                     </Grid>
                 </Grid>
-                <UpdateWithoutDetails
-                    classes={classes}
-                    api={api}
-                    apiConfig={apiConfig}
-                    handleClick={handleClick}
-                    handleClose={handleClose}
-                    open={isOpen}
-                />
-            </Container>
+                <Grid item xs={12} md={3}>
+                    <Paper elevation={0}>
+                        <Box p={2}>
+                            <Grid item xs={12} container direction='row'
+                                justifyContent='space-between' >
+                                <Grid item md={6}>
+                                    <Typography
+                                        id='itest-label-head' variant='h5' component='h5'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Configuration.Configuration.Design.topic.label'
+                                            defaultMessage='Labels'
+                                        />
+                                    </Typography>
+                                </Grid>
+                                <Grid item md={6} align='right'>
+                                    {!api.isRevision && (
+                                        <Tooltip title='Attach Labels'>
+                                            <IconButton onClick={handleOpenList}>
+                                                <AddIcon />
+                                            </IconButton>
+                                        </Tooltip>
+                                    )}
+                                </Grid>
+                            </Grid>
+                            <Box>
+                                {loading ? (
+                                    <CircularProgress size='30px'/>
+                                ) : (
+                                    <Stack direction='row' spacing={1} useFlexGap sx={{ flexWrap: 'wrap' }}>
+                                        {updatedLabels.length !== 0 ? (
+                                            updatedLabels.map((label) => (
+                                                <Chip key={label} label={label}
+                                                    onDelete={!api.isRevision ? () => detachLabel(label) : undefined}/>
+                                            ))
+                                        ) : (
+                                            <Typography variant='body2' color='textSecondary'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Configuration.Configuration.Design.no.labels'
+                                                    defaultMessage='No Labels Attached'
+                                                />
+                                            </Typography>
+                                        )}
+                                    </Stack>
+                                )}
+                            </Box>
+                        </Box>
+                    </Paper>
+                </Grid>
+            </Grid>
+            <UpdateWithoutDetails
+                classes={classes}
+                api={api}
+                apiConfig={apiConfig}
+                handleClick={handleClick}
+                handleClose={handleClose}
+                open={isOpen}
+            />
         </Root>)
     );
 }

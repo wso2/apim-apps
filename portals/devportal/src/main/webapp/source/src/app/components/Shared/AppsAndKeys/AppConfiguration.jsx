@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
@@ -34,6 +34,7 @@ import Select from '@mui/material/Select';
 import Input from '@mui/material/Input';
 import Box from '@mui/material/Box';
 import ChipInput from 'AppComponents/Shared/ChipInput';
+import Settings from 'AppComponents/Shared/SettingsContext';
 
 
 const PREFIX = 'AppConfiguration';
@@ -107,6 +108,8 @@ const AppConfiguration = (props) => {
     } = props;
 
     const [selectedValue, setSelectedValue] = useState(previousValue);
+    const [isOrgWideAppUpdateEnabled, setIsOrgWideAppUpdateEnabled] = useState(false);
+    const settingsContext = useContext(Settings);
 
     /**
      * This method is used to handle the updating of key generation
@@ -199,7 +202,9 @@ const AppConfiguration = (props) => {
      */
     useEffect(() => {
         setSelectedValue(previousValue);
-    }, [previousValue])
+        const orgWideAppUpdateEnabled = settingsContext.settings.orgWideAppUpdateEnabled;
+        setIsOrgWideAppUpdateEnabled(orgWideAppUpdateEnabled);
+    }, [previousValue, settingsContext]);
 
     const setCheckboxValue = () => {
         return ( typeof selectedValue === 'string' && selectedValue === 'true' )
@@ -235,7 +240,7 @@ const AppConfiguration = (props) => {
                                 margin='dense'
                                 variant='outlined'
                                 size='small'
-                                disabled={!isUserOwner}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                             >
                                 {config.values.map(key => (
                                     <MenuItem key={key} value={key}>
@@ -310,7 +315,7 @@ const AppConfiguration = (props) => {
                                             handleAppRequestChange(e);
                                         }}
                                         style={{
-                                            margin: '0 8px 12px 0',
+                                            marginRight: '8px',
                                             float: 'left',
                                         }}
                                     />
@@ -340,7 +345,7 @@ const AppConfiguration = (props) => {
                                 margin='dense'
                                 size='small'
                                 variant='outlined'
-                                disabled={!isUserOwner}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                             />
                         ) : (config.type === 'checkbox') ? (
                             <Checkbox
@@ -360,7 +365,7 @@ const AppConfiguration = (props) => {
                                 }
                                 margin='dense'
                                 variant='outlined'
-                                disabled={!isUserOwner}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                             />
                         ) : (
                             <TextField
@@ -380,7 +385,7 @@ const AppConfiguration = (props) => {
                                 }
                                 margin='dense'
                                 variant='outlined'
-                                disabled={!isUserOwner}
+                                disabled={!isOrgWideAppUpdateEnabled && !isUserOwner}
                             />
                         )}
                     </Box>
@@ -389,6 +394,8 @@ const AppConfiguration = (props) => {
         </Root>
     );
 };
+
+AppConfiguration.contextType = Settings;
 
 AppConfiguration.defaultProps = {
     notFound: false,

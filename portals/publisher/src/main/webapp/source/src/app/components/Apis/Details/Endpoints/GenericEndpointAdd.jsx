@@ -24,7 +24,7 @@ import {
     InputAdornment,
     TextField,
 } from '@mui/material';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import { isRestricted } from 'AppData/AuthManager';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
@@ -74,10 +74,10 @@ function GenericEndpointAdd(props) {
         addEndpoint,
         endpointType,
         category,
-        intl,
     } = props;
     const [serviceUrl, setServiceUrl] = useState('');
     const { api } = useContext(APIContext);
+    const intl = useIntl();
 
     /**
      * The method to handle endpoint add button click action.

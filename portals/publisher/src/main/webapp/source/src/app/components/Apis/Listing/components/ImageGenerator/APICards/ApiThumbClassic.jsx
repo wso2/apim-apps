@@ -52,11 +52,10 @@ const classes = {
     thumbLeft: `${PREFIX}-thumbLeft`,
     thumbRight: `${PREFIX}-thumbRight`,
     thumbInfo: `${PREFIX}-thumbInfo`,
-    contextBox: `${PREFIX}-contextBox`,
+    textTruncate: `${PREFIX}-textTruncate`,
     imageOverlap: `${PREFIX}-imageOverlap`,
     row: `${PREFIX}-row`,
     textWrapper: `${PREFIX}-textWrapper`,
-    thumbBy: `${PREFIX}-thumbBy`,
     thumbRightBy: `${PREFIX}-thumbRightBy`,
     thumbRightByLabel: `${PREFIX}-thumbRightByLabel`,
     ribbon: `${PREFIX}-ribbon`
@@ -77,11 +76,14 @@ const StyledCard = styled(Card)((
         textTransform: 'capitalize',
     },
 
-    [`& .${classes.apiDetails}`]: { padding: theme.spacing(1), paddingBottom: 0 },
+    [`& .${classes.apiDetails}`]: { 
+        padding: theme.spacing(1.5), 
+        paddingBottom: 0 
+    },
 
     [`& .${classes.apiActions}`]: { 
         justifyContent: 'space-between',
-        padding: `0px 0px ${theme.spacing(1)} 8px`,
+        padding: `0px 2px ${theme.spacing(1)} 12px`,
         height: 48
     },
 
@@ -99,7 +101,6 @@ const StyledCard = styled(Card)((
         textOverflow: 'ellipsis',
         cursor: 'pointer',
         margin: 0,
-        'padding-left': '5px',
     },
 
     [`& .${classes.imageWrapper}`]: {
@@ -118,34 +119,17 @@ const StyledCard = styled(Card)((
     },
 
     [`& .${classes.thumbLeft}`]: {
-        alignSelf: 'flex-start',
-        flex: 1,
-        width: '25%',
-        'padding-left': '5px',
-        'padding-right': '65px',
+        width: `calc(50% - 4px)`,
     },
 
     [`& .${classes.thumbRight}`]: {
-        alignSelf: 'flex-end',
+        width: `calc(50% - 4px)`,
     },
 
-    [`& .${classes.thumbInfo}`]: {
-        display: 'flex',
-    },
-
-    [`& .${classes.contextBox}`]: {
-        width: '110px',
+    [`& .${classes.textTruncate}`]: {
         whiteSpace: 'nowrap',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
-        cursor: 'pointer',
-        margin: 0,
-        display: 'inline-block',
-        lineHeight: '1em',
-        'padding-top': 5,
-        'padding-right': 5,
-        'padding-bottom': 1.5,
-        textAlign: 'left',
     },
 
     [`& .${classes.imageOverlap}`]: {
@@ -155,16 +139,13 @@ const StyledCard = styled(Card)((
     },
 
     [`& .${classes.row}`]: {
-        display: 'inline-block',
+        display: 'flex',
+        gap: '8px',
     },
 
     [`& .${classes.textWrapper}`]: {
         color: theme.palette.text.secondary,
         textDecoration: 'none',
-    },
-
-    [`& .${classes.thumbBy}`]: {
-        'padding-left': '5px',
     },
 
     [`& .${classes.thumbRightBy}`]: {
@@ -192,13 +173,6 @@ const StyledCard = styled(Card)((
         textTransform: 'uppercase',
     },
 
-    [`& .${classes.truncate}`]: {
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        maxWidth: '175px',
-    },
-
     [`& .${classes.popover}`]: {
         pointerEvents: 'none',
     },
@@ -206,10 +180,6 @@ const StyledCard = styled(Card)((
     [`& .${classes.paper}`]: {
         padding: theme.spacing(1),
         maxWidth: '300px',
-    },
-
-    [`& .${classes.typo}`]: {
-        display: 'flex'
     },
 }));
 
@@ -344,223 +314,215 @@ class APIThumb extends Component {
                         </Link>
                     </div>
                     <div className={classes.row}>
-                        <Typography variant='caption' gutterBottom align='left' className={classes.thumbBy}>
+                        <Typography variant='caption' gutterBottom align='left'>
                             <FormattedMessage id='by' defaultMessage='By' />
-                            <FormattedMessage id='colon' defaultMessage=' : ' />
+                            <FormattedMessage id='colon' defaultMessage=':' />
+                            &nbsp;
                             {api.provider}
                         </Typography>
                     </div>
-                    <div className={classes.thumbInfo}>
-                        <div className={classes.row}>
-                            <div className={classes.thumbLeft}>
-                                <Typography variant='subtitle1'>{api.version}</Typography>
-                            </div>
-
-                            <div className={classes.thumbLeft}>
-                                <Typography variant='caption' gutterBottom align='left'>
-                                    <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
-                                </Typography>
-                            </div>
+                    <div className={classes.row}>
+                        <div className={classes.thumbLeft}>
+                            <Typography variant='subtitle1' className={classes.textTruncate}>
+                                {api.version}
+                            </Typography>
+                            <Typography variant='caption' gutterBottom align='left'>
+                                <FormattedMessage defaultMessage='Version' id='Apis.Listing.ApiThumb.version' />
+                            </Typography>
                         </div>
-                        <div className={classes.row}>
-                            <div className={classes.thumbRight}>
-                                <Typography variant='subtitle1' align='right' className={classes.contextBox}>
-                                    {api.context}
-                                </Typography>
-                            </div>
 
-                            <div className={classes.thumbRight}>
-                                <Typography variant='caption' gutterBottom align='right' className={classes.context}>
-                                    {api.type === 'WS' ? (
-                                        <FormattedMessage
-                                            defaultMessage='Channel'
-                                            id='Apis.Listing.ApiThumb.channel'
-                                        />
-                                    ) : (
-                                        <FormattedMessage
-                                            defaultMessage='Context'
-                                            id='Apis.Listing.ApiThumb.context'
-                                        />
-                                    )}
-                                </Typography>
-                            </div>
+                        <div className={classes.thumbRight}>
+                            <Typography variant='subtitle1' className={classes.textTruncate}>
+                                {api.context}
+                            </Typography>
+                            <Typography variant='caption' gutterBottom className={classes.context}>
+                                {api.type === 'WS' ? (
+                                    <FormattedMessage
+                                        defaultMessage='Channel'
+                                        id='Apis.Listing.ApiThumb.channel'
+                                    />
+                                ) : (
+                                    <FormattedMessage
+                                        defaultMessage='Context'
+                                        id='Apis.Listing.ApiThumb.context'
+                                    />
+                                )}
+                            </Typography>
                         </div>
                     </div>
                     {(tileDisplayInfo.showBusinessDetails || tileDisplayInfo.showTechnicalDetails) && (
                         <>
                             <hr />
-                            <div>
-                                <div className={classes.row}>
-                                    <div className={classes.thumbLeft}>
-                                        <Typography variant='body2' gutterBottom align='left'>
-                                            <FormattedMessage
-                                                defaultMessage='Owners'
-                                                id='Apis.Listing.ApiThumb.owners'
-                                            />
-                                        </Typography>
-                                    </div>
-                                    {tileDisplayInfo.showBusinessDetails &&
-                                        <div style={{ paddingLeft: '5px' }}>
-                                            <Typography
-                                                variant='caption'
-                                                gutterBottom
-                                                align='left'
-                                                onMouseEnter={this.handleBusinessPopoverOpen}
-                                                onMouseLeave={this.handleBusinessPopoverClose}
-                                                className={classes.typo}
-                                            >
-                                                <FormattedMessage
-                                                    defaultMessage='Business'
-                                                    id='Apis.Listing.ApiThumb.owners.business'
-                                                />
-                                                {' : '}
-                                                {api.businessOwner ? (api.businessOwner): (
-                                                    <span style={{ color: '#808080' }}>
-                                                        Not Provided
-                                                    </span>
-                                                )}
-                                            </Typography>
-                                            {api.businessOwnerEmail && (
-                                                <Popover
-                                                    id='mouse-over-popover'
-                                                    sx={{
-                                                        pointerEvents: 'none',
-                                                    }}
-                                                    open={this.state.businessOpenPopover}
-                                                    anchorEl={this.state.businessAnchorEl}
-                                                    anchorOrigin={{
-                                                        vertical: 'top',
-                                                        horizontal: 'right',
-                                                    }}
-                                                    transformOrigin={{
-                                                        vertical: 'bottom',
-                                                        horizontal: 'left',
-                                                    }}
-                                                    onClose={this.handleBusinessPopoverClose}
-                                                    disableRestoreFocus
-                                                >
-                                                    <div style={{
-                                                        display: 'flex',
-                                                        flexDirection: 'column'
-                                                    }}
-                                                    >
-                                                        <div style={{ display: 'flex', padding: '4px' }}>
-                                                            <EmailIcon fontSize='small' />
-                                                            <Typography
-                                                                variant='body2'
-                                                                style={{ marginLeft: '8px' }}
-                                                            >
-                                                                {api.businessOwnerEmail}
-                                                            </Typography>
-                                                        </div>
-                                                    </div>
-                                                </Popover>
-                                            )}
-                                        </div>}
-                                    {tileDisplayInfo.showTechnicalDetails &&
-                                        <div style={{ paddingLeft: '5px' }}>
-                                            <Typography
-                                                variant='caption'
-                                                gutterBottom align='left'
-                                                onMouseEnter={this.handleTechnicalPopoverOpen}
-                                                onMouseLeave={this.handleTechnicalPopoverClose}
-                                                className={classes.typo}
-                                            >
-                                                <FormattedMessage
-                                                    defaultMessage='Technical'
-                                                    id='Apis.Listing.ApiThumb.owners.technical'
-                                                />
-                                                {' : '}
-                                                {api.technicalOwner ? (api.technicalOwner): (
-                                                    <span style={{ color: '#808080' }}>
-                                                        Not Provided
-                                                    </span>
-                                                )}
-                                            </Typography>
-                                            {api.technicalOwnerEmail && (
-                                                <Popover
-                                                    id='mouse-over-popover'
-                                                    sx={{
-                                                        pointerEvents: 'none',
-                                                    }}
-                                                    open={this.state.technicalOpenPopover}
-                                                    anchorEl={this.state.technicalAnchorEl}
-                                                    anchorOrigin={{
-                                                        vertical: 'top',
-                                                        horizontal: 'right',
-                                                    }}
-                                                    transformOrigin={{
-                                                        vertical: 'bottom',
-                                                        horizontal: 'left',
-                                                    }}
-                                                    onClose={this.handleTechnicalPopoverClose}
-                                                    disableRestoreFocus
-                                                >
-                                                    <div style={{
-                                                        display: 'flex',
-                                                        flexDirection: 'column'
-                                                    }}
-                                                    >
-                                                        <div style={{ display: 'flex', padding: '4px' }}>
-                                                            <EmailIcon fontSize='small' />
-                                                            <Typography
-                                                                variant='body2'
-                                                                style={{ marginLeft: '8px' }}
-                                                            >
-                                                                {api.technicalOwnerEmail}
-                                                            </Typography>
-                                                        </div>
-                                                    </div>
-                                                </Popover>
-                                            )}
-                                        </div>}
-                                </div>
+                            <div className={classes.row}>
+                                <Typography variant='body2' gutterBottom align='left'>
+                                    <FormattedMessage
+                                        defaultMessage='Owners'
+                                        id='Apis.Listing.ApiThumb.owners'
+                                    />
+                                </Typography>
                             </div>
+                            {tileDisplayInfo.showBusinessDetails &&
+                                <div className={classes.row}>
+                                    <Typography
+                                        variant='caption'
+                                        gutterBottom
+                                        align='left'
+                                        onMouseEnter={this.handleBusinessPopoverOpen}
+                                        onMouseLeave={this.handleBusinessPopoverClose}
+                                        className={classes.textTruncate}
+                                    >
+                                        <FormattedMessage
+                                            defaultMessage='Business'
+                                            id='Apis.Listing.ApiThumb.owners.business'
+                                        />
+                                        {': '}
+                                        {api.businessOwner ? (api.businessOwner): (
+                                            <span style={{ color: '#808080' }}>
+                                                Not Provided
+                                            </span>
+                                        )}
+                                    </Typography>
+                                    {api.businessOwnerEmail && (
+                                        <Popover
+                                            id='mouse-over-popover'
+                                            sx={{
+                                                pointerEvents: 'none',
+                                            }}
+                                            open={this.state.businessOpenPopover}
+                                            anchorEl={this.state.businessAnchorEl}
+                                            anchorOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            transformOrigin={{
+                                                vertical: 'bottom',
+                                                horizontal: 'left',
+                                            }}
+                                            onClose={this.handleBusinessPopoverClose}
+                                            disableRestoreFocus
+                                        >
+                                            <div style={{
+                                                display: 'flex',
+                                                flexDirection: 'column'
+                                            }}
+                                            >
+                                                <div style={{ display: 'flex', padding: '4px' }}>
+                                                    <EmailIcon fontSize='small' />
+                                                    <Typography
+                                                        variant='body2'
+                                                        style={{ marginLeft: '8px' }}
+                                                    >
+                                                        {api.businessOwnerEmail}
+                                                    </Typography>
+                                                </div>
+                                            </div>
+                                        </Popover>
+                                    )}
+                                </div>}
+                            {tileDisplayInfo.showTechnicalDetails &&
+                                <div className={classes.row}>
+                                    <Typography
+                                        variant='caption'
+                                        gutterBottom align='left'
+                                        onMouseEnter={this.handleTechnicalPopoverOpen}
+                                        onMouseLeave={this.handleTechnicalPopoverClose}
+                                        className={classes.textTruncate}
+                                    >
+                                        <FormattedMessage
+                                            defaultMessage='Technical'
+                                            id='Apis.Listing.ApiThumb.owners.technical'
+                                        />
+                                        {': '}
+                                        {api.technicalOwner ? (api.technicalOwner): (
+                                            <span style={{ color: '#808080' }}>
+                                                Not Provided
+                                            </span>
+                                        )}
+                                    </Typography>
+                                    {api.technicalOwnerEmail && (
+                                        <Popover
+                                            id='mouse-over-popover'
+                                            sx={{
+                                                pointerEvents: 'none',
+                                            }}
+                                            open={this.state.technicalOpenPopover}
+                                            anchorEl={this.state.technicalAnchorEl}
+                                            anchorOrigin={{
+                                                vertical: 'top',
+                                                horizontal: 'right',
+                                            }}
+                                            transformOrigin={{
+                                                vertical: 'bottom',
+                                                horizontal: 'left',
+                                            }}
+                                            onClose={this.handleTechnicalPopoverClose}
+                                            disableRestoreFocus
+                                        >
+                                            <div style={{
+                                                display: 'flex',
+                                                flexDirection: 'column'
+                                            }}
+                                            >
+                                                <div style={{ display: 'flex', padding: '4px' }}>
+                                                    <EmailIcon fontSize='small' />
+                                                    <Typography
+                                                        variant='body2'
+                                                        style={{ marginLeft: '8px' }}
+                                                    >
+                                                        {api.technicalOwnerEmail}
+                                                    </Typography>
+                                                </div>
+                                            </div>
+                                        </Popover>
+                                    )}
+                                </div>}
                             <hr />
                         </>
                     )}
                 </CardContent>
                 <CardActions className={classes.apiActions} data-testid={'card-action-' + api.name + api.version}>
-                    <Chip
-                        size='small'
-                        classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                        label={lifecycleState}
-                        color='default'
-                        data-testid='itest-api-lifecycleState'
-                    />
-                    {(api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') && (
+                    <div>
                         <Chip
                             size='small'
                             classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                            label={api.transportType === undefined
-                                ? api.type : api.transportType}
-                            color='primary'
+                            label={lifecycleState}
+                            color='default'
+                            data-testid='itest-api-lifecycleState'
                         />
-                    )}
-                    {(api.type === 'WS') && (
-                        <Chip
-                            size='small'
-                            classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                            label='WEBSOCKET'
-                            color='primary'
-                        />
-                    )}
-                    {(api.type === 'WEBSUB') && (api.gatewayVendor === 'wso2') && (
-                        <Chip
-                            size='small'
-                            classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                            label='WEBSUB'
-                            color='primary'
-                        />
-                    )}
-                    {(api.type === 'WEBSUB') && (api.gatewayVendor === 'solace') && (
-                        <Chip
-                            size='small'
-                            classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
-                            label='SOLACE API'
-                            style={{ backgroundColor: '#00c995' }}
-                        />
-                    )}
+                        {(api.type === 'GRAPHQL' || api.transportType === 'GRAPHQL') && (
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
+                                label={api.transportType === undefined
+                                    ? api.type : api.transportType}
+                                color='primary'
+                            />
+                        )}
+                        {(api.type === 'WS') && (
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
+                                label='WEBSOCKET'
+                                color='primary'
+                            />
+                        )}
+                        {(api.type === 'WEBSUB') && (api.gatewayVendor === 'wso2') && (
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
+                                label='WEBSUB'
+                                color='primary'
+                            />
+                        )}
+                        {(api.type === 'WEBSUB') && (api.gatewayVendor === 'solace') && (
+                            <Chip
+                                size='small'
+                                classes={{ root: classes.thumbRightBy, label: classes.thumbRightByLabel }}
+                                label='SOLACE API'
+                                style={{ backgroundColor: '#00c995' }}
+                            />
+                        )}
+                    </div>
                     {!isRestricted(['apim:api_create'], api) && (
                         <>
                             <DeleteApiButton
