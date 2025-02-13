@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
@@ -45,6 +45,18 @@ function apiCall() {
  */
 export default function ListOrganizations() {
     const intl = useIntl();
+    const [userOrg, setUserOrg] = useState(null);
+
+    useEffect(() => {
+        new API()
+            .getUserOrganizationInfo()
+            .then((result) => {
+                setUserOrg(result.body.organizationId);
+            })
+            .catch((error) => {
+                throw error;
+            });
+    }, []);
 
     const columProps = [
         { name: 'id', options: { display: false } },
@@ -116,12 +128,33 @@ export default function ListOrganizations() {
         ),
     };
 
+    const emptyBoxPropsForNoOrgUser = {
+        content: (
+            <Typography variant='body2' color='textSecondary' component='p'>
+                <FormattedMessage
+                    id='AdminPages.Organizations.List.empty.content.organization.no.orguser'
+                    defaultMessage={'Users who belong to an organization can manage their '
+                    + 'organizations by registering new organizations '
+                    + 'or updating existing entries.'}
+                />
+            </Typography>
+        ),
+        title: (
+            <Typography gutterBottom variant='h5' component='h2'>
+                <FormattedMessage
+                    id='AdminPages.Organizations.List.empty.title.organization'
+                    defaultMessage='Organizations'
+                />
+            </Typography>
+        ),
+    };
+
     return (
         <ListBase
             columProps={columProps}
             pageProps={pageProps}
             searchProps={searchProps}
-            emptyBoxProps={emptyBoxProps}
+            emptyBoxProps={userOrg ? emptyBoxProps : emptyBoxPropsForNoOrgUser}
             apiCall={apiCall}
             EditComponent={AddEditOrganization}
             editComponentProps={{
@@ -129,7 +162,7 @@ export default function ListOrganizations() {
                 title: 'Edit Organization',
             }}
             DeleteComponent={Delete}
-            addButtonProps={addButtonProps}
+            addButtonProps={userOrg ? addButtonProps : null}
         />
     );
 }

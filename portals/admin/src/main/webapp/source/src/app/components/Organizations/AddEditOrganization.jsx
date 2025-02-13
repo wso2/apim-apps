@@ -253,6 +253,7 @@ function AddEditOrganization(props) {
         >
             <Box style={{ paddingRight: '20px' }}>
                 <TextField
+                    autoFocus
                     margin='dense'
                     name='displayName'
                     value={displayName}
@@ -276,7 +277,6 @@ function AddEditOrganization(props) {
                     }}
                 >
                     <TextField
-                        autoFocus
                         margin='dense'
                         name='referenceId'
                         value={referenceId}

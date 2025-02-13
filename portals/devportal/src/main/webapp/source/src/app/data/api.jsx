@@ -973,4 +973,12 @@ export default class API extends Resource {
             );
         });
     }
+    /**
+     * Get the Organization information to which the user belongs to
+     */
+    getUserOrganizationInfo() {
+        return this.client.then((client) => {
+            return client.apis.Users.organizationInformation(this._requestMetaData());
+        });
+    }
 }
