@@ -257,16 +257,14 @@ export default function RuleViolationSummary({ artifactId }) {
                 <Grid container spacing={2}>
                     {paginatedRulesets.map((item) => (
                         <Grid item xs={12} key={item.id}>
-                            <Card
-                                onClick={() => handleExpandClick(item.id)}
-                                sx={{
-                                    cursor: 'pointer',
-                                }}
-                            >
-                                <CardContent sx={{
-                                    py: 0.5,
-                                    '&:last-child': { pb: 0.5 },
-                                }}
+                            <Card>
+                                <CardContent
+                                    onClick={() => handleExpandClick(item.id)}
+                                    sx={{
+                                        py: 0.5,
+                                        '&:last-child': { pb: 0.5 },
+                                        cursor: 'pointer',
+                                    }}
                                 >
                                     <Box sx={{
                                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
