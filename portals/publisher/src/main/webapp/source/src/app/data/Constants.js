@@ -82,6 +82,7 @@ const CONSTS = {
     RULESET_VALIDATION_STATES: [
         { value: 'PASSED', label: 'Passed' },
         { value: 'FAILED', label: 'Failed' },
+        { value: 'UNAPPLIED', label: 'Unapplied' },
     ],
 };
 

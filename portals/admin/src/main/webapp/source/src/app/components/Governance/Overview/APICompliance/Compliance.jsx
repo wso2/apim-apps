@@ -35,7 +35,7 @@ import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
 export default function Compliance(props) {
     const intl = useIntl();
     const { match: { params: { id: artifactId } } } = props;
-    const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0 });
+    const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0, unapplied: 0 });
     const [artifactName, setArtifactName] = useState('');
     const [complianceStatus, setComplianceStatus] = useState('');
 
@@ -62,15 +62,16 @@ export default function Compliance(props) {
                 const counts = Array.from(rulesetMap.values()).reduce((acc, result) => {
                     if (result.status === 'PASSED') acc.passed += 1;
                     if (result.status === 'FAILED') acc.failed += 1;
+                    if (result.status === 'UNAPPLIED') acc.unapplied += 1;
                     return acc;
-                }, { passed: 0, failed: 0 });
+                }, { passed: 0, failed: 0, unapplied: 0 });
 
                 setStatusCounts(counts);
             })
             .catch((error) => {
                 if (!abortController.signal.aborted) {
                     console.error('Error fetching ruleset adherence data:', error);
-                    setStatusCounts({ passed: 0, failed: 0 });
+                    setStatusCounts({ passed: 0, failed: 0, unapplied: 0 });
                     setArtifactName('');
                 }
             });
@@ -226,7 +227,7 @@ export default function Compliance(props) {
                                 />
                             </Typography>
                             <DonutChart
-                                colors={['#2E96FF', '#FF5252']}
+                                colors={['#2E96FF', '#FF5252', 'grey']}
                                 data={[
                                     {
                                         id: 0,
@@ -243,6 +244,14 @@ export default function Compliance(props) {
                                             id: 'Governance.Overview.Compliance.failed',
                                             defaultMessage: 'Failed',
                                         })} (${statusCounts.failed})`,
+                                    },
+                                    {
+                                        id: 2,
+                                        value: statusCounts.unapplied,
+                                        label: `${intl.formatMessage({
+                                            id: 'Apis.Details.Compliance.unapplied',
+                                            defaultMessage: 'Unapplied',
+                                        })} (${statusCounts.unapplied})`,
                                     },
                                 ]}
                             />

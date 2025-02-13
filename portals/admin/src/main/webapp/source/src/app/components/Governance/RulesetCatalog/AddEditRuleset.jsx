@@ -311,6 +311,7 @@ function AddEditRuleset(props) {
         const body = {
             ...state,
             provider: AuthManager.getUser().name,
+            ruleCategory: 'SPECTRAL',
             rulesetContent: file,
         };
 
