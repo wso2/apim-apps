@@ -93,7 +93,7 @@ const Root = styled(Grid)(({ theme }) => ({
     [`& .${classes.endpointErrorChip}`]: {
         color: 'red',
         border: '1px solid red',
-    },    
+    },
 }));
 
 /**
@@ -188,15 +188,15 @@ const EndpointCard = ({
     const intl = useIntl();
 
     useEffect(() => {
-        setProduction(state.environment === CONSTS.ENVIRONMENTS.production);
+        setProduction(state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production);
         try {
-            if (state.environment === CONSTS.ENVIRONMENTS.production) {
+            if (state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production) {
                 setCategory('production_endpoints');
                 setEndpointUrl(state.endpointConfig.production_endpoints?.url);
                 setAdvancedConfig(state.endpointConfig.production_endpoints?.config ?
                     state.endpointConfig.production_endpoints.config : {}
                 );
-            } else if (state.environment === CONSTS.ENVIRONMENTS.sandbox) {
+            } else if (state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.sandbox) {
                 setCategory('sandbox_endpoints');
                 setEndpointUrl(state.endpointConfig.sandbox_endpoints?.url);
                 setAdvancedConfig(state.endpointConfig.sandbox_endpoints?.config ?
@@ -215,22 +215,22 @@ const EndpointCard = ({
             .then((response) => {
                 const newEndpoint = response.body;
 
-                if (newEndpoint.environment === 'PRODUCTION') {
+                if (newEndpoint.deploymentStage === 'PRODUCTION') {
                     setProductionEndpoints(prev => [...prev, newEndpoint]);
                     dispatch({
                         field: 'reset',
                         value: {
                             ...CONSTS.DEFAULT_ENDPOINT,
-                            environment: CONSTS.ENVIRONMENTS.production,
+                            deploymentStage: CONSTS.DEPLOYMENT_STAGE.production,
                         }
                     });
-                } else if (newEndpoint.environment === 'SANDBOX') {
+                } else if (newEndpoint.deploymentStage === 'SANDBOX') {
                     setSandboxEndpoints(prev => [...prev, newEndpoint]);
                     dispatch({
                         field: 'reset',
                         value: {
                             ...CONSTS.DEFAULT_ENDPOINT,
-                            environment: CONSTS.ENVIRONMENTS.sandbox,
+                            deploymentStage: CONSTS.DEPLOYMENT_STAGE.sandbox,
                         }
                     });
                 }
@@ -263,26 +263,26 @@ const EndpointCard = ({
         updateEndpointPromise
             .then((response) => {
                 const updatedEndpoint = response.body;
-                
-                if (updatedEndpoint.environment === 'PRODUCTION') {
-                    
+
+                if (updatedEndpoint.deploymentStage === 'PRODUCTION') {
+
                     setProductionEndpoints(prev =>
                         prev.map(endpointObj => (
-                            endpointObj.id === endpointId 
-                                ? { ...endpointObj, ...updatedEndpoint } 
+                            endpointObj.id === endpointId
+                                ? { ...endpointObj, ...updatedEndpoint }
                                 : endpointObj
                         ))
                     );
-                } else if (updatedEndpoint.environment === 'SANDBOX') {
+                } else if (updatedEndpoint.deploymentStage === 'SANDBOX') {
                     setSandboxEndpoints(prev =>
                         prev.map(endpointObj => (
-                            endpointObj.id === endpointId 
-                                ? { ...endpointObj, ...updatedEndpoint } 
+                            endpointObj.id === endpointId
+                                ? { ...endpointObj, ...updatedEndpoint }
                                 : endpointObj
                         ))
                     );
                 }
-                
+
                 Alert.success(intl.formatMessage({
                     id: 'Apis.Details.Endpoints.endpoints.update.success',
                     defaultMessage: 'Endpoint updated successfully!',
@@ -298,7 +298,7 @@ const EndpointCard = ({
             });
     };
 
-    const deleteEndpoint = (endpointId, environment) => {
+    const deleteEndpoint = (endpointId, deploymentStage) => {
         setEndpointDeleting(true);
         // TODO
         // if primary endpoint, show alert saying that this endpoint is treated as a primary endpoint 
@@ -306,9 +306,9 @@ const EndpointCard = ({
         const deleteEndpointPromise = API.deleteApiEndpoint(apiObject.id, endpointId);
         deleteEndpointPromise
             .then(() => {
-                if (environment === 'PRODUCTION') {
+                if (deploymentStage === 'PRODUCTION') {
                     setProductionEndpoints(prev => prev.filter(endpointObj => endpointObj.id !== endpointId));
-                } else if (environment === 'SANDBOX') {
+                } else if (deploymentStage === 'SANDBOX') {
                     setSandboxEndpoints(prev => prev.filter(endpointObj => endpointObj.id !== endpointId));
                 }
 
@@ -330,10 +330,10 @@ const EndpointCard = ({
     const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
         const newEndpointSecurityObj = endpointSecurityObj;
         const secretPlaceholder = '******';
-        newEndpointSecurityObj.clientSecret = newEndpointSecurityObj.clientSecret 
-                === secretPlaceholder ? '' : newEndpointSecurityObj.clientSecret;
-        newEndpointSecurityObj.password = newEndpointSecurityObj.password 
-                === secretPlaceholder ? '' : newEndpointSecurityObj.password;
+        newEndpointSecurityObj.clientSecret = newEndpointSecurityObj.clientSecret
+            === secretPlaceholder ? '' : newEndpointSecurityObj.clientSecret;
+        newEndpointSecurityObj.password = newEndpointSecurityObj.password
+            === secretPlaceholder ? '' : newEndpointSecurityObj.password;
         newEndpointSecurityObj.enabled = true;
 
         dispatch({
@@ -399,7 +399,7 @@ const EndpointCard = ({
     const handleAdvancedConfigOpen = () => {
         setAdvancedConfigOpen(true);
     };
-    
+
     /**
      * Method to close the advanced configurations dialog box.
      */
@@ -565,7 +565,7 @@ const EndpointCard = ({
                                         size='small'
                                         onClick={() => addEndpoint(state)}
                                         className={classes.btn}
-                                        disable={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
+                                        disable={endpointHasErrors() || isRestricted(['apim:api_create'], apiObject)}
                                     >
                                         {isEndpointSaving
                                             ? <CircularProgress size='small' />
@@ -582,7 +582,7 @@ const EndpointCard = ({
                                         size='small'
                                         data-testid='policy-attached-details-save'
                                         onClick={() => setShowAddEndpoint(false)}
-                                        disabled={ isRestricted(['apim:api_create'], apiObject) }
+                                        disabled={isRestricted(['apim:api_create'], apiObject)}
                                     >
                                         {isEndpointDeleting
                                             ? <CircularProgress size='small' />
@@ -603,7 +603,7 @@ const EndpointCard = ({
                                         size='small'
                                         onClick={() => updateEndpoint(state.id, state)}
                                         className={classes.btn}
-                                        disable={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
+                                        disable={endpointHasErrors() || isRestricted(['apim:api_create'], apiObject)}
                                     >
                                         {isEndpointUpdating
                                             ? <>
@@ -625,8 +625,8 @@ const EndpointCard = ({
                                         color='primary'
                                         size='small'
                                         data-testid='policy-attached-details-save'
-                                        onClick={() => deleteEndpoint(state.id, state.environment)}
-                                        disabled={ endpointHasErrors() || isRestricted(['apim:api_create'], apiObject) }
+                                        onClick={() => deleteEndpoint(state.id, state.deploymentStage)}
+                                        disabled={endpointHasErrors() || isRestricted(['apim:api_create'], apiObject)}
                                     >
                                         {isEndpointDeleting
                                             ? <>

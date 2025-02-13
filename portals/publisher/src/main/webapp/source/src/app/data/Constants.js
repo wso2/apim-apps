@@ -67,12 +67,12 @@ const CONSTS = {
     DEFAULT_ENDPOINT: {
         id: null,
         name: '',
-        environment: '',
+        deploymentStage: '',
         endpointConfig: {
             endpoint_type: 'http',
         },
     },
-    ENVIRONMENTS: {
+    DEPLOYMENT_STAGE: {
         production: 'PRODUCTION',
         sandbox: 'SANDBOX',
     },

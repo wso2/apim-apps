@@ -190,10 +190,10 @@ const AIEndpoints = ({
         endpointsPromise
             .then((response) => {
                 const endpoints = response.body.list;
-                
+
                 // Filter endpoints based on endpoint type
-                const prodEndpointList = endpoints.filter((endpoint) => endpoint.environment === 'PRODUCTION');
-                const sandEndpointList = endpoints.filter((endpoint) => endpoint.environment === 'SANDBOX');
+                const prodEndpointList = endpoints.filter((endpoint) => endpoint.deploymentStage === 'PRODUCTION');
+                const sandEndpointList = endpoints.filter((endpoint) => endpoint.deploymentStage === 'SANDBOX');
                 setProductionEndpoints(prodEndpointList);
                 setSandboxEndpoints(sandEndpointList);
 
@@ -246,22 +246,22 @@ const AIEndpoints = ({
     const toggleAddProductionEndpoint = () => {
         setShowAddProductionEndpoint(!showAddProductionEndpoint);
     };
-    
+
     const toggleAddSandboxEndpoint = () => {
         setShowAddSandboxEndpoint(!showAddSandboxEndpoint);
     };
 
-    const getDefaultEndpoint = (environment) => {
+    const getDefaultEndpoint = (deploymentStage) => {
         return {
             ...CONSTS.DEFAULT_ENDPOINT,
-            environment,
+            deploymentStage,
         }
     };
 
-    const handlePrimaryEndpointChange = (environment, event) => {
-        if (environment === CONSTS.ENVIRONMENTS.production) {
+    const handlePrimaryEndpointChange = (deploymentStage, event) => {
+        if (deploymentStage === CONSTS.DEPLOYMENT_STAGE.production) {
             setPrimaryProductionEndpoint(event.target.value);
-        } else if (environment === CONSTS.ENVIRONMENTS.sandbox) {
+        } else if (deploymentStage === CONSTS.DEPLOYMENT_STAGE.sandbox) {
             setPrimarySandboxEndpoint(event.target.value);
         }
     };
@@ -338,7 +338,7 @@ const AIEndpoints = ({
                         </Typography>
                         <Grid container direction='row' justifyContent='center' display='flex' spacing={2}>
                             <Grid item xs={6} mt={2} mb={2}>
-                                <FormControl size='small' sx={{ width: '100%'}}>
+                                <FormControl size='small' sx={{ width: '100%' }}>
                                     <InputLabel id='primary-production-endpoint-label'>
                                         <FormattedMessage
                                             id='Apis.Details.Endpoints.AIEndpoints.primary.production.endpoint.label'
@@ -350,7 +350,9 @@ const AIEndpoints = ({
                                         id='primary-production-endpoint'
                                         value={primaryProductionEndpoint || ''}
                                         label='Primary Production Endpoint'
-                                        onChange={(e) => handlePrimaryEndpointChange(CONSTS.ENVIRONMENTS.production, e)}
+                                        onChange={
+                                            (e) => handlePrimaryEndpointChange(CONSTS.DEPLOYMENT_STAGE.production, e)
+                                        }
                                     >
                                         <MenuItem value=''>
                                             <em>None</em>
@@ -374,7 +376,9 @@ const AIEndpoints = ({
                                         id='primary-sandbox-endpoint'
                                         value={primarySandboxEndpoint || ''}
                                         label='Primary Sandbox Endpoint'
-                                        onChange={(e) => handlePrimaryEndpointChange(CONSTS.ENVIRONMENTS.sandbox, e)}
+                                        onChange={
+                                            (e) => handlePrimaryEndpointChange(CONSTS.DEPLOYMENT_STAGE.sandbox, e)
+                                        }
                                     >
                                         <MenuItem value=''>
                                             <em>None</em>
@@ -386,7 +390,7 @@ const AIEndpoints = ({
                                 </FormControl>
                             </Grid>
                         </Grid>
-                        <Grid container justifyContent='flex-start'>                        
+                        <Grid container justifyContent='flex-start'>
                             <Button
                                 id='save-primary-endpoints'
                                 variant='contained'
@@ -461,7 +465,7 @@ const AIEndpoints = ({
                         {showAddProductionEndpoint && (
                             <EndpointCard
                                 key='add-new-production-endpoint'
-                                endpoint={getDefaultEndpoint(CONSTS.ENVIRONMENTS.production)}
+                                endpoint={getDefaultEndpoint(CONSTS.DEPLOYMENT_STAGE.production)}
                                 apiObject={apiObject}
                                 apiKeyParamConfig={apiKeyParamConfig}
                                 setProductionEndpoints={setProductionEndpoints}
@@ -513,7 +517,7 @@ const AIEndpoints = ({
                         {showAddSandboxEndpoint && (
                             <EndpointCard
                                 key='add-new-sandbox-endpoint'
-                                endpoint={getDefaultEndpoint(CONSTS.ENVIRONMENTS.sandbox)}
+                                endpoint={getDefaultEndpoint(CONSTS.DEPLOYMENT_STAGE.sandbox)}
                                 apiObject={apiObject}
                                 apiKeyParamConfig={apiKeyParamConfig}
                                 setSandboxEndpoints={setSandboxEndpoints}

@@ -20,7 +20,7 @@ export type Endpoint = {
     id: string;
     name: string;
     endpointType: string;
-    environment: string;
+    deploymentStage: string;
     endpointConfig: any;
 }
 

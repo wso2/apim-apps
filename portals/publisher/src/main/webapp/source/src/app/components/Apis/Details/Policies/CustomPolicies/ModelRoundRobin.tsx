@@ -67,8 +67,8 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                 const endpoints = response.body.list;
                 
                 // Filter endpoints based on endpoint type
-                const prodEndpointList = endpoints.filter((endpoint: Endpoint) => endpoint.environment === 'PRODUCTION');
-                const sandEndpointList = endpoints.filter((endpoint: Endpoint) => endpoint.environment === 'SANDBOX');
+                const prodEndpointList = endpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'PRODUCTION');
+                const sandEndpointList = endpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'SANDBOX');
                 setProductionEndpoints(prodEndpointList);
                 setSandboxEndpoints(sandEndpointList);
 
