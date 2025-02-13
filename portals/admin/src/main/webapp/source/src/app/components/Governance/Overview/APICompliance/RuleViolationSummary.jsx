@@ -19,6 +19,7 @@
 import React from 'react';
 import {
     Grid, Card, CardContent, Typography, Box, Tabs, Tab, Collapse, IconButton,
+    TablePagination,
 } from '@mui/material';
 import ReportIcon from '@mui/icons-material/Report';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -37,6 +38,8 @@ export default function RuleViolationSummary({ artifactId }) {
     const intl = useIntl();
     const [selectedTab, setSelectedTab] = React.useState(0);
     const [expandedItems, setExpandedItems] = React.useState([]);
+    const [page, setPage] = React.useState(0);
+    const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
     // TODO: Optimize + simplify
     const apiCall = () => {
@@ -137,6 +140,7 @@ export default function RuleViolationSummary({ artifactId }) {
     const handleTabChange = (e, newValue) => {
         setSelectedTab(newValue);
         setExpandedItems([]); // Reset expanded items when tab changes
+        setPage(0); // Reset to first page when changing tabs
     };
 
     const handleExpandClick = (id) => {
@@ -146,6 +150,23 @@ export default function RuleViolationSummary({ artifactId }) {
                 ? prev.filter((i) => i !== id)
                 : [...prev, id];
         });
+    };
+
+    const handlePageChange = (event, newPage) => {
+        setPage(newPage);
+        setExpandedItems([]); // Reset expanded items when page changes
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+        setExpandedItems([]);
+    };
+
+    const paginateRulesets = (rulesets) => {
+        const startIndex = page * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+        return rulesets.slice(startIndex, endIndex);
     };
 
     const getRuleData = (rules) => {
@@ -229,12 +250,19 @@ export default function RuleViolationSummary({ artifactId }) {
     ];
 
     const renderComplianceCards = (rulesets, isPassed = false) => {
+        const paginatedRulesets = paginateRulesets(rulesets);
+
         return (
             <>
                 <Grid container spacing={2}>
-                    {rulesets.map((item) => (
+                    {paginatedRulesets.map((item) => (
                         <Grid item xs={12} key={item.id}>
-                            <Card>
+                            <Card
+                                onClick={() => handleExpandClick(item.id)}
+                                sx={{
+                                    cursor: 'pointer',
+                                }}
+                            >
                                 <CardContent sx={{
                                     py: 0.5,
                                     '&:last-child': { pb: 0.5 },
@@ -262,7 +290,10 @@ export default function RuleViolationSummary({ artifactId }) {
                                             /> */}
                                         </Box>
                                         <IconButton
-                                            onClick={() => handleExpandClick(item.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent card click event
+                                                handleExpandClick(item.id);
+                                            }}
                                             aria-expanded={expandedItems.includes(item.id)}
                                             aria-label='show more'
                                         >
@@ -304,6 +335,18 @@ export default function RuleViolationSummary({ artifactId }) {
                         </Grid>
                     ))}
                 </Grid>
+                {rulesets.length > 5 && (
+                    <TablePagination
+                        component='div'
+                        count={rulesets.length}
+                        page={page}
+                        onPageChange={handlePageChange}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[5, 10, 25]}
+                        sx={{ mt: 2 }}
+                    />
+                )}
             </>
         );
     };
