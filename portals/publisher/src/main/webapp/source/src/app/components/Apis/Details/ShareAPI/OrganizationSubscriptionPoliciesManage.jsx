@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
@@ -83,11 +83,21 @@ function OrganizationSubscriptionPoliciesManage(props) {
         organizationPolicies, setOrganizationPolicies, selectionMode } = props;
     const [filteredOrganizations, setFilteredOrganizations] = useState([]);
     const [subscriptionPolicies, setSubscriptionPolicies] = useState([]);
+    
+    const isAsyncAPI = useMemo(() => 
+        ['WS', 'WEBSUB', 'SSE', 'ASYNC'].includes(api.type), [api.type]
+    );
 
     useEffect(() => {
         const limit = Configurations.app.subscriptionPolicyLimit;
         const isAiApi = api?.subtypeConfiguration?.subtype?.toLowerCase().includes('aiapi') ?? false;
-        const policyPromise = API.policies('subscription', limit || undefined, isAiApi);
+        let policyPromise;
+
+        if (isAsyncAPI) {
+            policyPromise = API.asyncAPIPolicies();
+        } else {
+            policyPromise = API.policies('subscription', limit || undefined, isAiApi);
+        }
 
         policyPromise
             .then((res) => {
