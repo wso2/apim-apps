@@ -37,6 +37,7 @@ export default function Compliance(props) {
     const { match: { params: { id: artifactId } } } = props;
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0, unapplied: 0 });
     const [artifactName, setArtifactName] = useState('');
+    const [artifactOwner, setArtifactOwner] = useState('');
     const [complianceStatus, setComplianceStatus] = useState('');
 
     useEffect(() => {
@@ -45,13 +46,16 @@ export default function Compliance(props) {
 
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
-                setArtifactName(response.body.info.name);
+                setArtifactName(
+                    response.body.info.name + ' :'
+                    + response.body.info.version,
+                );
+                setArtifactOwner(response.body.info.owner);
                 setComplianceStatus(response.body.status);
                 const rulesetMap = new Map();
 
                 response.body.governedPolicies.forEach((policy) => {
                     policy.rulesetValidationResults.forEach((result) => {
-                        // If ruleset not in map or if existing result is older, update the map
                         if (!rulesetMap.has(result.id)) {
                             rulesetMap.set(result.id, result);
                         }
@@ -163,7 +167,13 @@ export default function Compliance(props) {
             )}
             pageStyle='paperLess'
         >
-            <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: 4 }}>
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                paddingBottom: 4,
+                justifyContent: 'space-between',
+            }}
+            >
                 <RouterLink
                     to='/governance/overview'
                     style={{
@@ -176,6 +186,13 @@ export default function Compliance(props) {
                         defaultMessage='Back to Overview'
                     />
                 </RouterLink>
+                <Typography variant='body2'>
+                    <FormattedMessage
+                        id='Governance.Overview.Compliance.api.owner'
+                        defaultMessage='API Owner: {owner}'
+                        values={{ owner: artifactOwner }}
+                    />
+                </Typography>
             </Box>
 
             <Grid container spacing={4}>

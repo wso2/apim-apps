@@ -63,9 +63,8 @@ export default function Compliance() {
                 setComplianceStatus(response.body.status);
                 const rulesetMap = new Map();
 
-                response.body.governedPolicies.forEach(policy => {
-                    policy.rulesetValidationResults.forEach(result => {
-                        // If ruleset not in map or if existing result is older, update the map
+                response.body.governedPolicies.forEach((policy) => {
+                    policy.rulesetValidationResults.forEach((result) => {
                         if (!rulesetMap.has(result.id)) {
                             rulesetMap.set(result.id, result);
                         }
@@ -141,7 +140,7 @@ export default function Compliance() {
                         defaultMessage='Compliance Summary'
                     />
                 </Typography>
-                <Card 
+                <Card
                     elevation={3}
                     sx={{
                         mt: 2,

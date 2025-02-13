@@ -371,7 +371,7 @@ function AddEditRuleset(props) {
                     />
                 )
             }
-            help={<div>TODO: Link Doc</div>}
+            // help={<div>TODO: Link Doc</div>}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>

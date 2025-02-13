@@ -661,6 +661,16 @@ class Utils {
     }
 
     /**
+     * Maps rule type value to its label
+     * @param {String} value - The value to be mapped
+     * @returns {String} The corresponding label
+     */
+    static mapRuleTypeToLabel(value) {
+        const ruleType = CONSTS.RULESET_TYPES.find((t) => t.value === value);
+        return ruleType?.label || value;
+    }
+
+    /**
      * Maps a policy adherence state value to its label
      * @param {string} state The value of the policy adherence state
      * @returns {string} The label of the policy adherence state

@@ -74,6 +74,11 @@ const CONSTS = {
     },
     DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
     DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
+    RULESET_TYPES: [
+        { value: 'API_DEFINITION', label: 'API Definition' },
+        { value: 'API_METADATA', label: 'API Metadata' },
+        { value: 'API_DOCUMENTATION', label: 'Documentation' },
+    ],
     POLICY_ADHERENCE_STATES: [
         { value: 'FOLLOWED', label: 'Followed' },
         { value: 'VIOLATED', label: 'Violated' },

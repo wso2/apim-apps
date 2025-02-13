@@ -19,7 +19,7 @@
 import React from 'react';
 import {
     Grid, Card, CardContent, Typography, Box, Tabs, Tab, Collapse, IconButton,
-    TablePagination,
+    TablePagination, Chip,
 } from '@mui/material';
 import ReportIcon from '@mui/icons-material/Report';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -32,6 +32,7 @@ import RuleIcon from '@mui/icons-material/Rule';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
+import Utils from '../../../../data/Utils';
 
 // TODO: Improve the component
 export default function RuleViolationSummary({ artifactId }) {
@@ -46,22 +47,32 @@ export default function RuleViolationSummary({ artifactId }) {
         const restApi = new GovernanceAPI();
         return restApi.getComplianceByAPIId(artifactId)
             .then((response) => {
+                // Create a map of ruleset IDs to their results
+                const rulesetMap = new Map();
+                response.body.governedPolicies.forEach((policy) => {
+                    policy.rulesetValidationResults.forEach((result) => {
+                        if (!rulesetMap.has(result.id)) {
+                            rulesetMap.set(result.id, result);
+                        }
+                    });
+                });
+
                 // Get unique ruleset IDs from all policies
-                const rulesetIds = [...new Set(
-                    response.body.governedPolicies.flatMap(
-                        (policy) => policy.rulesetValidationResults.map((result) => result.id),
-                    ),
-                )];
+                const rulesetIds = [...rulesetMap.keys()];
 
                 // Get validation results for each ruleset
                 return Promise.all(
                     rulesetIds.map((rulesetId) => restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
-                        .then((result) => result.body)),
+                        .then((result) => ({
+                            ...result.body,
+                            ruleType: rulesetMap.get(rulesetId).ruleType,
+                        }))),
                 ).then((rulesets) => {
                     // Create rulesets array with severities catagorized
                     const rulesetCategories = rulesets.map((ruleset) => ({
                         id: ruleset.id,
                         rulesetName: ruleset.name,
+                        ruleType: ruleset.ruleType,
                         error: ruleset.violatedRules.filter((rule) => rule.severity === 'ERROR'),
                         warn: ruleset.violatedRules.filter((rule) => rule.severity === 'WARN'),
                         info: ruleset.violatedRules.filter((rule) => rule.severity === 'INFO'),
@@ -81,7 +92,7 @@ export default function RuleViolationSummary({ artifactId }) {
                             severityGroups.errors.push({
                                 id: ruleset.id,
                                 rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
+                                ruleType: ruleset.ruleType,
                                 rules: ruleset.error,
                             });
                         }
@@ -89,7 +100,7 @@ export default function RuleViolationSummary({ artifactId }) {
                             severityGroups.warnings.push({
                                 id: ruleset.id,
                                 rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
+                                ruleType: ruleset.ruleType,
                                 rules: ruleset.warn,
                             });
                         }
@@ -97,7 +108,7 @@ export default function RuleViolationSummary({ artifactId }) {
                             severityGroups.info.push({
                                 id: ruleset.id,
                                 rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
+                                ruleType: ruleset.ruleType,
                                 rules: ruleset.info,
                             });
                         }
@@ -105,7 +116,7 @@ export default function RuleViolationSummary({ artifactId }) {
                             severityGroups.passed.push({
                                 id: ruleset.id,
                                 rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
+                                ruleType: ruleset.ruleType,
                                 rules: ruleset.passed,
                             });
                         }
@@ -280,12 +291,20 @@ export default function RuleViolationSummary({ artifactId }) {
                                                 {item.rules.length}
                                                 )
                                             </Typography>
-                                            {/* <Chip
-                                                label={item.tag}
-                                                size="small"
-                                                color="primary"
-                                                variant="outlined"
-                                            /> */}
+                                            <Chip
+                                                label={Utils.mapRuleTypeToLabel(item.ruleType)}
+                                                size='small'
+                                                color='primary'
+                                                variant='outlined'
+                                                style={{
+                                                    height: '18px',
+                                                    '& .MuiChip-label': {
+                                                        padding: '0 6px',
+                                                        fontSize: '0.625rem',
+                                                        lineHeight: 1,
+                                                    },
+                                                }}
+                                            />
                                         </Box>
                                         <IconButton
                                             onClick={(e) => {
