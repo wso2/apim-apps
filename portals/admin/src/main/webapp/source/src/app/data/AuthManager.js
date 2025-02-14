@@ -155,6 +155,8 @@ class AuthManager {
             value = CONSTS.Roles.CATEGORY_MANAGER;
         } else if (val === 'gatewayManager') {
             value = CONSTS.Roles.GATEWAY_MANAGER;
+        } else if (val === 'governanceManager') {
+            value = CONSTS.Roles.GOVERNANCE_MANAGER;
         }
         for (let i = 0; i < value.length; i++) {
             if (!scopes.includes(value[i])) {
@@ -176,13 +178,15 @@ class AuthManager {
         const keyManagers = 'keyManagers';
         const categoriesManager = 'categoriesManager';
         const gatewayManager = 'gatewayManager';
+        const governanceManager = 'governanceManager';
         return (scopes.includes('apim:admin')
         || this.hasPermission(scopes, workflowManager)
         || this.hasPermission(scopes, settingsManager)
         || this.hasPermission(scopes, policyManager)
         || this.hasPermission(scopes, keyManagers)
         || this.hasPermission(scopes, categoriesManager)
-        || this.hasPermission(scopes, gatewayManager));
+        || this.hasPermission(scopes, gatewayManager))
+        || this.hasPermission(scopes, governanceManager);
     }
 
     /**
