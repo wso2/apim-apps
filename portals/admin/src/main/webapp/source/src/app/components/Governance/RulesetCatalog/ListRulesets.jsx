@@ -20,7 +20,7 @@ import React from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
-import { Chip, Button } from '@mui/material';
+import { Chip, Button, Tooltip } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import GovernanceAPI from 'AppData/GovernanceAPI';
@@ -63,17 +63,24 @@ export default function ListRulesets() {
                 customBodyRender: (value, tableMeta) => {
                     const dataRow = tableMeta.rowData;
                     return (
-                        // TODO: Add text wrapping + tooltip for long descriptions
-                        <>
-                            <Typography>{value}</Typography>
-                            <Typography
-                                variant='caption'
-                                display='block'
-                                color='textSecondary'
-                            >
-                                {dataRow[1]}
-                            </Typography>
-                        </>
+                        <Tooltip title={dataRow[1]} arrow>
+                            <div>
+                                <Typography>{value}</Typography>
+                                <Typography
+                                    variant='caption'
+                                    display='block'
+                                    color='textSecondary'
+                                    sx={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        maxWidth: '320px',
+                                    }}
+                                >
+                                    {dataRow[1]}
+                                </Typography>
+                            </div>
+                        </Tooltip>
                     );
                 },
                 setCellProps: () => ({

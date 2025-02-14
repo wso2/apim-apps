@@ -50,7 +50,18 @@ function apiCall() {
 export default function ApiComplianceTable() {
     const intl = useIntl();
 
-    const renderProgress = (followed, total) => {
+    const renderProgress = (followed, total, status) => {
+        if (status === 'PENDING') {
+            return (
+                <Typography variant="body2" color="textSecondary">
+                    {intl.formatMessage({
+                        id: 'Governance.Overview.APICompliance.pending',
+                        defaultMessage: 'N/A - Waiting for policy evaluation',
+                    })}
+                </Typography>
+            );
+        }
+
         if (total === 0) {
             return (
                 <Typography variant="body2" color="textSecondary">
@@ -224,7 +235,8 @@ export default function ApiComplianceTable() {
                     const followed = tableMeta.rowData[4]?.followed || 0;
                     const violated = tableMeta.rowData[4]?.violated || 0;
                     const total = followed + violated;
-                    return renderProgress(followed, total);
+                    const status = tableMeta.rowData[3];
+                    return renderProgress(followed, total, status);
                 },
                 setCellProps: () => ({
                     style: { width: '40%' },
