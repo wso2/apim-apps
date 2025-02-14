@@ -123,7 +123,8 @@ function reducer(state, { field, value }) {
             return nextState;
         case 'labels':
             if (Array.isArray(value)) {
-                nextState.labels = value;
+                // Store only the IDs in the state
+                nextState.labels = value.map((label) => (typeof label === 'object' ? label.id : label));
             }
             return nextState;
         case 'rulesets':
@@ -208,7 +209,7 @@ function AddEditPolicy(props) {
         adminApi.labelsListGet()
             .then((response) => {
                 const labelList = response.body.list || [];
-                setAvailableLabels(labelList.map((label) => label.name));
+                setAvailableLabels(labelList); // Store full label objects
             })
             .catch((error) => {
                 console.error('Error loading labels:', error);
@@ -553,7 +554,7 @@ function AddEditPolicy(props) {
                     defaultMessage: 'Governance Policy - Create new',
                 })
             }
-            // help={<div>TODO: Link Doc</div>}
+        // help={<div>TODO: Link Doc</div>}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
@@ -680,9 +681,22 @@ function AddEditPolicy(props) {
                                     multiple
                                     id='governance-policy-labels'
                                     options={availableLabels}
-                                    value={labels}
+                                    value={
+                                        labels.map((labelId) => {
+                                            const labelObject = availableLabels.find((l) => l.id === labelId);
+                                            return labelObject || labelId;
+                                        })
+                                    }
                                     onChange={(event, newValue) => {
                                         dispatch({ field: 'labels', value: newValue });
+                                    }}
+                                    getOptionLabel={(option) => {
+                                        return typeof option === 'object' ? option.name : option;
+                                    }}
+                                    isOptionEqualTo={(option, value) => {
+                                        return typeof option === 'object' && typeof value === 'object'
+                                            ? option.id === value.id
+                                            : option === value;
                                     }}
                                     renderInput={(params) => (
                                         <TextField
@@ -703,7 +717,7 @@ function AddEditPolicy(props) {
                                     )}
                                     renderTags={(value, getTagProps) => value.map((option, index) => (
                                         <Chip
-                                            label={option}
+                                            label={typeof option === 'object' ? option.name : option}
                                             {...getTagProps({ index })}
                                         />
                                     ))}
