@@ -44,6 +44,7 @@ import Settings, { useSettingsContext } from 'AppComponents/Shared/SettingsConte
 import { app } from 'Settings';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import Box from '@mui/material/Box';
+import API from 'AppData/api';
 import AuthManager from '../../data/AuthManager';
 import LanguageSelector from './Header/LanuageSelector';
 import GlobalNavBar from './Header/GlobalNavbar';
@@ -275,6 +276,7 @@ class LayoutLegacy extends React.Component {
             selected: 'home',
             anchorEl: null,
             bannerHeight: 0,
+            userOrganization: null,
         };
         this.toggleGlobalNavBar = this.toggleGlobalNavBar.bind(this);
         const { history } = props;
@@ -288,6 +290,7 @@ class LayoutLegacy extends React.Component {
      * @returns {void}
      */
     componentDidMount() {
+        const restApi = new API();
         const { history: { location }, theme } = this.props;
         document.body.style.backgroundColor = theme.custom.page.emptyAreadBackground || '#ffffff';
         this.detectCurrentMenu(location);
@@ -302,6 +305,14 @@ class LayoutLegacy extends React.Component {
                 this.setState({ bannerHeight: bannerElement.clientHeight });
             }
         }
+        restApi
+            .getUserOrganizationInfo()
+            .then((res) => {
+                this.setState({ userOrganization: res.body.name });
+            })
+            .catch((error) => {
+                throw error;
+            });
     }
 
     detectCurrentMenu = (location) => {
@@ -414,11 +425,9 @@ class LayoutLegacy extends React.Component {
         const user = AuthManager.getUser();
         // TODO: Refer to fix: https://github.com/mui-org/material-ui/issues/10076#issuecomment-361232810 ~tmkb
         let username = null;
-        let organization = null;
 
         if (user) {
             username = user.name;
-            organization = user.getOrganizationName();
             const count = (username.match(/@/g) || []).length;
             if (user.name.endsWith('@carbon.super') && count <= 1) {
                 username = user.name.replace('@carbon.super', '');
@@ -610,7 +619,16 @@ class LayoutLegacy extends React.Component {
                                                 aria-label='user menu'
                                             >
                                                 <Icon className={classes.icons}>person</Icon>
-                                                {username}
+                                                <span
+                                                    style={{
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap',
+                                                        maxWidth: '200px',
+                                                    }}
+                                                >
+                                                    {username}
+                                                </span>
                                             </Button>
                                             <Popper
                                                 id='userPopup'
@@ -626,7 +644,7 @@ class LayoutLegacy extends React.Component {
                                                     vertical: 'top',
                                                     horizontal: 'center',
                                                 }}
-                                                placement='bottom-end'
+                                                placement='bottom-start'
                                             >
                                                 {({ TransitionProps, placement }) => (
                                                     <Grow
@@ -640,7 +658,7 @@ class LayoutLegacy extends React.Component {
                                                         <Paper>
                                                             <ClickAwayListener onClickAway={this.handleCloseUserMenu}>
                                                                 <MenuList>
-                                                                    {organization && (
+                                                                    {this.state.userOrganization && (
                                                                         <MenuItem style={{ pointerEvents: 'none' }}>
                                                                             <>
                                                                                 <Icon
@@ -659,9 +677,13 @@ class LayoutLegacy extends React.Component {
                                                                                         textTransform: 'uppercase',
                                                                                         fontWeight: 'bold',
                                                                                         fontSize: '12px',
+                                                                                        whiteSpace: 'nowrap',
+                                                                                        overflow: 'hidden',
+                                                                                        textOverflow: 'ellipsis',
+                                                                                        maxWidth: '200px',
                                                                                     }}
                                                                                 >
-                                                                                    {organization}
+                                                                                    {this.state.userOrganization}
                                                                                 </Typography>
                                                                             </>
                                                                         </MenuItem>

@@ -43,6 +43,8 @@ const CONSTS = {
         SETTINGS_MANAGER: ['apim:app_owner_change', 'apim:admin_application_view',
             'apim:scope_manage', 'openid', 'apim:admin_settings', 'apim:tenantInfo', 'apim:api_provider_change',
         ],
+        ORGANIZATION_MANAGER: ['apim:organization_manage', 'apim:organization_read', 'openid',
+            'apim:tenantInfo', 'apim:admin_settings'],
     },
     DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
     DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',

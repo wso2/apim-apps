@@ -651,6 +651,7 @@
   "KeyManagers.AddEditKeyManager.form.issuer.help": "E.g.,: https://localhost:9443/oauth2/token",
   "KeyManagers.AddEditKeyManager.form.name": "Name",
   "KeyManagers.AddEditKeyManager.form.name.help": "Name of the Key Manager.",
+  "KeyManagers.AddEditKeyManager.form.orgs.error": "At least one organization should be selected.",
   "KeyManagers.AddEditKeyManager.form.revokeEndpoint": "Revoke Endpoint",
   "KeyManagers.AddEditKeyManager.form.revokeEndpoint.help": "E.g., https://localhost:9443/oauth2/revoke",
   "KeyManagers.AddEditKeyManager.form.scopeManagementEndpoint": "Scope Management Endpoint",

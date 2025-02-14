@@ -1457,6 +1457,15 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Get user organization information
+     */
+    getUserOrganizationInfo() {
+        return this.client.then((client) => {
+            return client.apis.Users.organizationInformation(this._requestMetaData());
+        });
+    }
+
     addDocument(api_id, body) {
         const promised_addDocument = this.client.then(client => {
             const payload = {
