@@ -36,7 +36,7 @@ import DeletePolicy from './DeletePolicy';
 function apiCall() {
     const restApi = new GovernanceAPI();
     return restApi
-        .getPoliciesList()
+        .getGovernancePolicies()
         .then((result) => {
             return result.body.list;
         })

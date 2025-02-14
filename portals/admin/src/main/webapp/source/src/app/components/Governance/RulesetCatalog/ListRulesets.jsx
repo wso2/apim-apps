@@ -34,7 +34,7 @@ import DeleteRuleset from './DeleteRuleset';
 function apiCall() {
     const restApi = new GovernanceAPI();
     return restApi
-        .getRulesetsList()
+        .getRulesets()
         .then((result) => {
             return result.body.list;
         })

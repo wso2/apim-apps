@@ -256,8 +256,17 @@ export default function CustomizedStepper() {
             })
             .finally(() => setUpdating(false))
             .catch((errorResponse) => {
-                console.log(errorResponse);
-                Alert.error(JSON.stringify(errorResponse.message));
+                if (errorResponse.response?.body?.code === 903300) {
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.LifeCycle.Policies.update.error.governance',
+                        defaultMessage: 'One or more governance policies have been'
+                            + ' violated. Please try using the publish option in the Lifecycle'
+                            + ' tab to get more details.',
+                    }));
+                } else {
+                    console.log(errorResponse);
+                    Alert.error(JSON.stringify(errorResponse.message));
+                }
             });
     }
 

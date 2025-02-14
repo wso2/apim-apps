@@ -283,6 +283,16 @@ const RouteMenuMapping = (intl) => [
         ],
     },
     {
+        id: 'Labels',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.labels',
+            defaultMessage: 'Labels',
+        }),
+        path: '/settings/labels',
+        component: ListLabels,
+        icon: <BookmarksIcon />,
+    },
+    {
         id: 'Governance',
         displayText: intl.formatMessage({
             id: 'Base.RouteMenuMapping.governance',
@@ -320,16 +330,6 @@ const RouteMenuMapping = (intl) => [
                 icon: <RuleIcon />,
             },
         ],
-    },
-    {
-        id: 'Labels',
-        displayText: intl.formatMessage({
-            id: 'Base.RouteMenuMapping.labels',
-            defaultMessage: 'Labels',
-        }),
-        path: '/settings/labels',
-        component: ListLabels,
-        icon: <BookmarksIcon />,
     },
     {
         id: 'Tasks',

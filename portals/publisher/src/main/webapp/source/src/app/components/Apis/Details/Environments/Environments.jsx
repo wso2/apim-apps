@@ -802,9 +802,9 @@ export default function Environments() {
                 .catch((error) => {
                     if (error.response) {
                         // TODO: Use the error code to identify the errors thrown by governance violation
-                        if (error.response.body.description.toLowerCase().includes('rule')) {
+                        if (error.response.body.description.includes('blockingViolations')) {
                             setGovernanceError(
-                                JSON.parse(error.response.body.description)
+                                JSON.parse(error.response.body.description).blockingViolations,
                             );
                             setIsGovernanceViolation(true);
                             Alert.error(
@@ -1103,9 +1103,9 @@ export default function Environments() {
                         .catch((error) => {
                             if (error.response) {
                                 // TODO: Use the error code to identify the errors thrown by governance violation
-                                if (error.response.body.description.toLowerCase().includes('rule')) {
+                                if (error.response.body.description.includes('blockingViolations')) {
                                     setGovernanceError(
-                                        JSON.parse(error.response.body.description)
+                                        JSON.parse(error.response.body.description).blockingViolations,
                                     );
                                     setIsGovernanceViolation(true);
                                     Alert.error(
@@ -1136,9 +1136,9 @@ export default function Environments() {
                 .catch((error) => {
                     if (error.response) {
                         // TODO: Use the error code to identify the errors thrown by governance violation
-                        if (error.response.body.description.toLowerCase().includes('rule')) {
+                        if (error.response.body.description.includes('blockingViolations')) {
                             setGovernanceError(
-                                JSON.parse(error.response.body.description)
+                                JSON.parse(error.response.body.description).blockingViolations,
                             );
                             setIsGovernanceViolation(true);
                             Alert.error(
