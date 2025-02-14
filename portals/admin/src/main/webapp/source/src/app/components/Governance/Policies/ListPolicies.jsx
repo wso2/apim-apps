@@ -27,6 +27,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import Utils from 'AppData/Utils';
+import API from 'AppData/api';
 import DeletePolicy from './DeletePolicy';
 
 /**
@@ -35,10 +36,27 @@ import DeletePolicy from './DeletePolicy';
  */
 function apiCall() {
     const restApi = new GovernanceAPI();
-    return restApi
-        .getGovernancePolicies()
-        .then((result) => {
-            return result.body.list;
+    const adminApi = new API();
+
+    // First get the labels
+    return adminApi.labelsListGet()
+        .then((labelsResponse) => {
+            const labelsList = labelsResponse.body.list || [];
+            // Get the policies
+            return restApi.getGovernancePolicies()
+                .then((result) => {
+                    // Map label IDs to names
+                    return result.body.list.map((policy) => {
+                        return {
+                            ...policy,
+                            labels: policy.labels.map((labelId) => {
+                                if (labelId === 'GLOBAL') return labelId;
+                                const label = labelsList.find((l) => l.id === labelId);
+                                return label ? label.name : labelId;
+                            }),
+                        };
+                    });
+                });
         })
         .catch((error) => {
             throw error;
@@ -64,17 +82,24 @@ export default function ListPolicies() {
                 customBodyRender: (value, tableMeta) => {
                     const dataRow = tableMeta.rowData;
                     return (
-                        <>
-                            {/* TODO: Add text wrapping */}
-                            <Typography>{value}</Typography>
-                            <Typography
-                                variant='caption'
-                                display='block'
-                                color='textSecondary'
-                            >
-                                {dataRow[1]}
-                            </Typography>
-                        </>
+                        <Tooltip title={dataRow[1]} arrow>
+                            <div>
+                                <Typography>{value}</Typography>
+                                <Typography
+                                    variant='caption'
+                                    display='block'
+                                    color='textSecondary'
+                                    sx={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        maxWidth: '320px',
+                                    }}
+                                >
+                                    {dataRow[1]}
+                                </Typography>
+                            </div>
+                        </Tooltip>
                     );
                 },
                 setCellProps: () => ({

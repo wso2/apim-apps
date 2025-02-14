@@ -155,7 +155,7 @@ function ListBase(props) {
                                 const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
                                 const isAI = tableMeta.rowData[1] === 'AI API Quota';
                                 return (
-                                    <div data-testid={`${itemName}-actions`}>
+                                    <div style={{ display: 'flex', gap: '4px' }} data-testid={`${itemName}-actions`}>
                                         <RouterLink
                                             to={{
                                                 pathname: editComponentProps.routeTo + artifactId,
