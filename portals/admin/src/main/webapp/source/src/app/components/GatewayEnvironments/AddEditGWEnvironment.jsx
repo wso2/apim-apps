@@ -496,38 +496,6 @@ function AddEditGWEnvironment(props) {
         return true;
     };
 
-    //     const dialogOpenCallback = () => {
-    //         if (dataRow) {
-    //             setGatewayConfiguration(
-    //                 settings.gatewayConfiguration.filter((t) => t.type === dataRow.gatewayType)[0].configurations,
-    //             );
-    //             const {
-    //                 name: originalName,
-    //                 displayName: originalDisplayName,
-    //                 description: originalDescription,
-    //                 type: originalType,
-    //                 vhosts: originalVhosts,
-    //                 gatewayType: originalGatewayType,
-    //                 permissions: originalPermissions,
-    //                 additionalProperties: originalAdditionalProperties,
-    //             } = dataRow;
-    //             setIsEditMode(true);
-    //             dispatch({
-    //                 field: 'editDetails',
-    //                 value: {
-    //                     name: originalName,
-    //                     displayName: originalDisplayName,
-    //                     type: originalType,
-    //                     gatewayType: originalGatewayType,
-    //                     description: originalDescription,
-    //                     vhosts: originalVhosts,
-    //                     permissions: originalPermissions,
-    //                     additionalProperties: originalAdditionalProperties,
-    //                 },
-    //             });
-    //         }
-    //     };
-
     const pageTitle = id ? `${intl.formatMessage({
         id: 'Gateways.AddEditGateway.title.edit',
         defaultMessage: 'Gateway Environment - Edit ',
