@@ -631,13 +631,13 @@ function AddEditPolicy(props) {
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.labels.title'
-                                defaultMessage='Applicability'
+                                defaultMessage='Attachment'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.labels.description'
-                                defaultMessage={'Choose whether to apply this policy to'
+                                defaultMessage={'Choose whether to attach this policy to'
                                     + ' all APIs or only to APIs with specific labels'}
                             />
                         </Typography>
@@ -655,7 +655,7 @@ function AddEditPolicy(props) {
                                         control={<Radio />}
                                         label={intl.formatMessage({
                                             id: 'Governance.Policies.AddEdit.labels.applyAll',
-                                            defaultMessage: 'Apply to all APIs',
+                                            defaultMessage: 'All APIs',
                                         })}
                                     />
                                     <FormControlLabel
@@ -663,7 +663,7 @@ function AddEditPolicy(props) {
                                         control={<Radio />}
                                         label={intl.formatMessage({
                                             id: 'Governance.Policies.AddEdit.labels.applySpecific',
-                                            defaultMessage: 'Apply to APIs with specific labels',
+                                            defaultMessage: 'APIs with specific labels',
                                         })}
                                     />
                                     <FormControlLabel
@@ -671,7 +671,7 @@ function AddEditPolicy(props) {
                                         control={<Radio />}
                                         label={intl.formatMessage({
                                             id: 'Governance.Policies.AddEdit.labels.applyNone',
-                                            defaultMessage: 'Apply to none',
+                                            defaultMessage: 'None',
                                         })}
                                     />
                                 </RadioGroup>
@@ -711,7 +711,7 @@ function AddEditPolicy(props) {
                                                 id: 'Governance.Policies.AddEdit.labels.helper',
                                                 defaultMessage:
                                                     'Select one or more labels to determine'
-                                                    + ' which APIs this policy applies to',
+                                                    + ' which APIs this policy attaches to',
                                             })}
                                         />
                                     )}
