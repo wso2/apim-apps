@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { styled } from '@mui/material/styles';
 import Checkbox from '@mui/material/Checkbox';
 import Typography from '@mui/material/Typography';
@@ -79,14 +79,25 @@ const Root = styled('div')((
  * @returns {JSX.Element} The rendered component
  */
 function OrganizationSubscriptionPoliciesManage(props) {
-    const { api, organizations, visibleOrganizations, organizationPolicies, setOrganizationPolicies } = props;
+    const { api, organizations, visibleOrganizations, 
+        organizationPolicies, setOrganizationPolicies, selectionMode } = props;
     const [filteredOrganizations, setFilteredOrganizations] = useState([]);
     const [subscriptionPolicies, setSubscriptionPolicies] = useState([]);
+    
+    const isAsyncAPI = useMemo(() => 
+        ['WS', 'WEBSUB', 'SSE', 'ASYNC'].includes(api.type), [api.type]
+    );
 
     useEffect(() => {
         const limit = Configurations.app.subscriptionPolicyLimit;
         const isAiApi = api?.subtypeConfiguration?.subtype?.toLowerCase().includes('aiapi') ?? false;
-        const policyPromise = API.policies('subscription', limit || undefined, isAiApi);
+        let policyPromise;
+
+        if (isAsyncAPI) {
+            policyPromise = API.asyncAPIPolicies();
+        } else {
+            policyPromise = API.policies('subscription', limit || undefined, isAiApi);
+        }
 
         policyPromise
             .then((res) => {
@@ -96,12 +107,18 @@ function OrganizationSubscriptionPoliciesManage(props) {
                 console.error(error);
             });
 
-        if (visibleOrganizations.includes('all')) {
-            setFilteredOrganizations(organizations);
+        let updatedOrganizations = [];
+        if (selectionMode === 'all') {
+            updatedOrganizations = [
+                { organizationId: 'all', displayName: 'All Organizations' },
+            ];
         } else {
-            setFilteredOrganizations(organizations.filter(org => visibleOrganizations.includes(org.organizationId)));
+            updatedOrganizations = organizations.filter(org => visibleOrganizations.includes(org.organizationId));
         }
-    }, [organizations, visibleOrganizations]);
+    
+        setFilteredOrganizations(updatedOrganizations);
+
+    }, [organizations, visibleOrganizations, selectionMode]);
 
     const handlePolicyChange = (organizationId, selectedPolicies) => {
         const selectedPolicyNames = selectedPolicies.map(policy => policy.name);
@@ -117,12 +134,10 @@ function OrganizationSubscriptionPoliciesManage(props) {
                     : orgPolicy
             );
         } else {
-            const organizationName = organizations.find(org => org.organizationId === organizationId).displayName;
             updatedOrganizationPolicies = [
                 ...organizationPolicies,
                 { 
                     organizationID: organizationId,
-                    organizationName,
                     policies: selectedPolicyNames
                 }
             ];
@@ -161,7 +176,9 @@ function OrganizationSubscriptionPoliciesManage(props) {
     return (
         <Root>
             <div className={classes.heading}>
-                <Typography variant='h6' style={{ marginTop: '20px' }}>Organization Specific Business Plans</Typography>
+                <Typography variant='h6' style={{ marginTop: '20px' }}>
+                    Business Plans
+                </Typography>
             </div>
             <Paper>
                 <TableContainer>
@@ -176,7 +193,7 @@ function OrganizationSubscriptionPoliciesManage(props) {
                             {filteredOrganizations.map(org => (
                                 <TableRow key={org.organizationId}>
                                     <TableCell>{org.displayName}</TableCell>
-                                    <TableCell>
+                                    <TableCell style={{ width: '80%' }}>
                                         <Autocomplete
                                             multiple
                                             disableCloseOnSelect

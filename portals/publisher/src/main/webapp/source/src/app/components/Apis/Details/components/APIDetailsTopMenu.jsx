@@ -42,6 +42,7 @@ import API from 'AppData/api';
 import MUIAlert from 'AppComponents/Shared/MuiAlert';
 import DeleteApiButton from './DeleteApiButton';
 import CreateNewVersionButton from './CreateNewVersionButton';
+import ShareButton from './ShareButton';
 
 const PREFIX = 'APIDetailsTopMenu';
 const classes = {
@@ -184,6 +185,19 @@ const APIDetailsTopMenu = (props) => {
             id: 'Apis.Details.LifeCycle.State.Status.PRE-RELEASED', defaultMessage: 'PRE-RELEASED',
         }),
     };
+
+    const [userOrg, setUserOrg] = useState(null);
+
+    useEffect(() => {
+        new API()
+            .getUserOrganizationInfo()
+            .then((result) => {
+                setUserOrg(result.body.organizationId);
+            })
+            .catch((error) => {
+                throw error;
+            });
+    }, []);
 
     /**
          * The component for advanced endpoint configurations.
@@ -466,6 +480,12 @@ const APIDetailsTopMenu = (props) => {
                 )}
                 {/* Page error banner */}
                 {/* end of Page error banner */}
+                {api.apiType !== API.CONSTS.APIProduct && isVisibleInStore && userOrg 
+                    ? <>
+                        <ShareButton buttonClass={classes.viewInStoreLauncher}
+                            api={api} isAPIProduct={isAPIProduct} />
+                    </> : null
+                }
                 {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                     ? null :
                     <>

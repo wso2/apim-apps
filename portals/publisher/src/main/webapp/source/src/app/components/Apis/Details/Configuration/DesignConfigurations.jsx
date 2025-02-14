@@ -67,7 +67,6 @@ import Tags from './components/Tags';
 import Social from './components/Social';
 import APICategories from './components/APICategories';
 import APIDescription from './components/APIDescription';
-import SharedOrganizations from './components/SharedOrganizations';
 
 const PREFIX = 'DesignConfigurations';
 
@@ -801,15 +800,6 @@ export default function DesignConfigurations() {
                                             />
                                         )}
                                     </Box>
-                                    { settings && settings.orgAccessControlEnabled && (
-                                        <Box py={1}>
-                                            <SharedOrganizations
-                                                api={apiConfig}
-                                                configDispatcher={configDispatcher}
-                                                organizations={api.visibleOrganizations}
-                                            />
-                                        </Box>
-                                    )}
                                     { settings && !settings.portalConfigurationOnlyModeEnabled && (
                                         <Box py={1}>
                                             <DefaultVersion
