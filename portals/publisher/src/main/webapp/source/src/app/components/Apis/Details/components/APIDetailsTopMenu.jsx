@@ -186,6 +186,19 @@ const APIDetailsTopMenu = (props) => {
         }),
     };
 
+    const [userOrg, setUserOrg] = useState(null);
+
+    useEffect(() => {
+        new API()
+            .getUserOrganizationInfo()
+            .then((result) => {
+                setUserOrg(result.body.organizationId);
+            })
+            .catch((error) => {
+                throw error;
+            });
+    }, []);
+
     /**
          * The component for advanced endpoint configurations.
          * @param {string} name The name of the
@@ -467,7 +480,7 @@ const APIDetailsTopMenu = (props) => {
                 )}
                 {/* Page error banner */}
                 {/* end of Page error banner */}
-                {api.apiType !== API.CONSTS.APIProduct && isVisibleInStore
+                {api.apiType !== API.CONSTS.APIProduct && isVisibleInStore && userOrg 
                     ? <>
                         <ShareButton buttonClass={classes.viewInStoreLauncher}
                             api={api} isAPIProduct={isAPIProduct} />

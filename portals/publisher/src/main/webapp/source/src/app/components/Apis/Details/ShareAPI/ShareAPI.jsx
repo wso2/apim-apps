@@ -24,7 +24,7 @@ import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
 import { FormattedMessage, injectIntl, useIntl } from 'react-intl';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Paper, Box, FormLabel } from '@mui/material';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 import { withAPI, useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -47,9 +47,9 @@ const classes = {
     helpIcon: `${PREFIX}-helpIcon`,
     htmlTooltip: `${PREFIX}-htmlTooltip`,
     buttonSection: `${PREFIX}-buttonSection`,
-    emptyBox: `${PREFIX}-emptyBox`
+    emptyBox: `${PREFIX}-emptyBox`,
+    shareAPIPaper: `${PREFIX}-shareAPIPaper`
 }
-
 
 const Root = styled('div')((
     {
@@ -61,6 +61,11 @@ const Root = styled('div')((
     },
 
     [`& .${classes.emptyBox}`]: {
+        marginTop: theme.spacing(2),
+    },
+
+    [`& .${classes.shareAPIPaper}`]: {
+        padding: theme.spacing(2),
         marginTop: theme.spacing(2),
     }
 }));
@@ -175,28 +180,44 @@ function ShareAPI(props) {
                     defaultMessage='Share API'
                 />
             </Typography>
-            <SharedOrganizations
-                api={api}
-                organizations={organizations}
-                visibleOrganizations={visibleOrganizations}
-                setVisibleOrganizations = {setVisibleOrganizations}
-                selectionMode = {selectionMode}
-                setSelectionMode = {setSelectionMode}
-            />
-            {(api.gatewayVendor === 'wso2') &&
-            (   
-                <>
-                    {organizations?.list?.length > 0 && selectionMode !== "none" &&
-                        <OrganizationSubscriptionPoliciesManage
-                            api={api}
-                            organizations={organizations.list}
-                            visibleOrganizations={visibleOrganizations}
-                            organizationPolicies={organizationPolicies}
-                            setOrganizationPolicies={setOrganizationPolicies}
-                            selectionMode = {selectionMode}
-                        />
-                    }
-                </>
+            {organizations?.list?.length === 0 ? (
+                <Paper className={classes.shareAPIPaper}>
+                    <Box display='flex' alignItems='center' >
+                        <FormLabel component='legend' style={{ marginTop: 8, marginBottom: 8}}>
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.Share.API.no.organizations'
+                                defaultMessage='No organizations are currently registered under 
+                                your current organization to share the API.'
+                            />
+                        </FormLabel>
+                    </Box>
+                </Paper>
+            ) : (
+                <div>
+                    <SharedOrganizations
+                        api={api}
+                        organizations={organizations}
+                        visibleOrganizations={visibleOrganizations}
+                        setVisibleOrganizations = {setVisibleOrganizations}
+                        selectionMode = {selectionMode}
+                        setSelectionMode = {setSelectionMode}
+                    />
+                    {(api.gatewayVendor === 'wso2') &&
+                    (   
+                        <>
+                            {organizations?.list?.length > 0 && selectionMode !== "none" &&
+                                <OrganizationSubscriptionPoliciesManage
+                                    api={api}
+                                    organizations={organizations.list}
+                                    visibleOrganizations={visibleOrganizations}
+                                    organizationPolicies={organizationPolicies}
+                                    setOrganizationPolicies={setOrganizationPolicies}
+                                    selectionMode = {selectionMode}
+                                />
+                            }
+                        </>
+                    )}
+                </div>
             )}
             {(api.gatewayVendor === 'wso2') && (
                 <Grid
@@ -211,7 +232,7 @@ function ShareAPI(props) {
                             type='submit'
                             variant='contained'
                             color='primary'
-                            disabled={updateInProgress || api.isRevision 
+                            disabled={organizations?.list?.length === 0  || updateInProgress || api.isRevision 
                                 || isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                             onClick={() => handleShareAPISave()}
                             id='share-api-save-btn'
