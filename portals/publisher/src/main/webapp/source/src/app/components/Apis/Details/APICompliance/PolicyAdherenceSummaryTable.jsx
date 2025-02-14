@@ -17,11 +17,12 @@
  */
 
 import React from 'react';
-import { Typography, Chip, Box, LinearProgress , TableRow, TableCell } from '@mui/material';
+import { Typography, Chip, Box, LinearProgress, TableRow, TableCell } from '@mui/material';
 import ListBase from 'AppComponents/Addons/Addons/ListBase';
 import Stack from '@mui/material/Stack';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
+import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { useIntl } from 'react-intl';
 import PolicyIcon from '@mui/icons-material/Policy';
 
@@ -83,6 +84,17 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
 
     const renderExpandableRow = (rowData) => {
         const rulesets = rowData[3];
+
+        const getStatusIcon = (status) => {
+            if (status === 'PASSED') {
+                return <CheckCircleIcon color='success' sx={{ fontSize: 16 }} />;
+            } else if (status === 'FAILED') {
+                return <CancelIcon color='error' sx={{ fontSize: 16 }} />;
+            } else {
+                return <RemoveCircleIcon color='disabled' sx={{ fontSize: 16 }} />;
+            }
+        };
+
         return (
             <TableRow>
                 <TableCell colSpan={3} />
@@ -97,10 +109,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                                     gap: 1
                                 }}
                             >
-                                {ruleset.status === 'PASSED' ?
-                                    <CheckCircleIcon color='success' sx={{ fontSize: 16 }} /> :
-                                    <CancelIcon color='error' sx={{ fontSize: 16 }} />
-                                }
+                                {getStatusIcon(ruleset.status)}
                                 <Typography variant='body2'>
                                     {ruleset.name}
                                 </Typography>

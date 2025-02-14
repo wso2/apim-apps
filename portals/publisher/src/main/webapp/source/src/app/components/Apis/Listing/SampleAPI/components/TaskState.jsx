@@ -39,18 +39,33 @@ export default function TaskState(props) {
         severity = 'error';
         if (errors.response) {
             const { body } = errors.response;
-            message = (
-                <>
-                    <b>
-                        [
-                        {body.code}
-                        ]
-                    </b>
-                    {' '}
-                    :
-                    {body.description}
-                </>
-            );
+            if (body.description && body.description.includes('violatedPath')) { 
+                // TODO: Use the code for governance violations
+                message = (
+                    <>
+                        <b>Governance Policy Violation</b>
+                        {': '}
+                        <FormattedMessage
+                            id='Apis.Listing.TaskState.governance.violation'
+                            defaultMessage={'One or more governance polices have been violated.'
+                            + ' Please check the configurations.'}
+                        />
+                    </>
+                );
+            } else {
+                message = (
+                    <>
+                        <b>
+                            [
+                            {body.code}
+                            ]
+                        </b>
+                        {' '}
+                        :
+                        {body.description}
+                    </>
+                );
+            }
         } else {
             message = (
                 <>

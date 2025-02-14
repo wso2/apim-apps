@@ -46,7 +46,7 @@ export default function Compliance() {
     const intl = useIntl();
     const [api] = useAPI();
     const artifactId = api.id;
-    const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0 });
+    const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0, unapplied: 0 });
     const [complianceStatus, setComplianceStatus] = useState('');
 
     useEffect(() => {
@@ -63,9 +63,8 @@ export default function Compliance() {
                 setComplianceStatus(response.body.status);
                 const rulesetMap = new Map();
 
-                response.body.governedPolicies.forEach(policy => {
-                    policy.rulesetValidationResults.forEach(result => {
-                        // If ruleset not in map or if existing result is older, update the map
+                response.body.governedPolicies.forEach((policy) => {
+                    policy.rulesetValidationResults.forEach((result) => {
                         if (!rulesetMap.has(result.id)) {
                             rulesetMap.set(result.id, result);
                         }
@@ -76,15 +75,16 @@ export default function Compliance() {
                 const counts = Array.from(rulesetMap.values()).reduce((acc, result) => {
                     if (result.status === 'PASSED') acc.passed += 1;
                     if (result.status === 'FAILED') acc.failed += 1;
+                    if (result.status === 'UNAPPLIED') acc.unapplied += 1;
                     return acc;
-                }, { passed: 0, failed: 0 });
+                }, { passed: 0, failed: 0, unapplied: 0 });
 
                 setStatusCounts(counts);
             })
             .catch((error) => {
                 if (!abortController.signal.aborted) {
                     console.error('Error fetching ruleset adherence data:', error);
-                    setStatusCounts({ passed: 0, failed: 0 });
+                    setStatusCounts({ passed: 0, failed: 0, unapplied: 0 });
                 }
             });
 
@@ -140,7 +140,7 @@ export default function Compliance() {
                         defaultMessage='Compliance Summary'
                     />
                 </Typography>
-                <Card 
+                <Card
                     elevation={3}
                     sx={{
                         mt: 2,
@@ -238,7 +238,7 @@ export default function Compliance() {
                                 />
                             </Typography>
                             <DonutChart
-                                colors={['#2E96FF', '#FF5252']}
+                                colors={['#2E96FF', '#FF5252', 'grey']}
                                 data={[
                                     {
                                         id: 0,
@@ -255,6 +255,14 @@ export default function Compliance() {
                                             id: 'Apis.Details.Compliance.failed',
                                             defaultMessage: 'Failed'
                                         })} (${statusCounts.failed})`
+                                    },
+                                    {
+                                        id: 2,
+                                        value: statusCounts.unapplied,
+                                        label: `${intl.formatMessage({
+                                            id: 'Apis.Details.Compliance.unapplied',
+                                            defaultMessage: 'Unapplied'
+                                        })} (${statusCounts.unapplied})`
                                     },
                                 ]}
                             />

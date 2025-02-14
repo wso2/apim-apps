@@ -80,7 +80,7 @@ class GovernanceAPI extends Resource {
      * Get list of governance policies
      * @returns {Promise} Promised policies response
      */
-    getPoliciesList() {
+    getGovernancePolicies() {
         return this.client.then((client) => {
             return client.apis['Governance Policies'].getGovernancePolicies(
                 this._requestMetaData(),
@@ -93,7 +93,7 @@ class GovernanceAPI extends Resource {
      * @param {string} policyId Policy id
      * @returns {Promise} Promised policy response
      */
-    getPolicy(policyId) {
+    getGovernancePolicyById(policyId) {
         return this.client.then((client) => {
             return client.apis['Governance Policies'].getGovernancePolicyById(
                 { policyId: policyId },
@@ -107,7 +107,7 @@ class GovernanceAPI extends Resource {
      * @param {Object} policy - Policy object containing the policy configuration
      * @returns {Promise} Promise resolving to API response
      */
-    addPolicy(policy) {
+    createGovernancePolicy(policy) {
         return this.client.then((client) => {
             return client.apis['Governance Policies'].createGovernancePolicy(
                 { 'Content-Type': 'application/json' },
@@ -123,7 +123,7 @@ class GovernanceAPI extends Resource {
      * @param {string} policy.id - ID of the policy to update
      * @returns {Promise} Promise resolving to API response
      */
-    updatePolicy(policy) {
+    updateGovernancePolicyById(policy) {
         return this.client.then((client) => {
             return client.apis['Governance Policies'].updateGovernancePolicyById(
                 {
@@ -141,7 +141,7 @@ class GovernanceAPI extends Resource {
      * @param {string} policyId Policy id
      * @returns {Promise} Promised response
      */
-    deletePolicy(policyId) {
+    deleteGovernancePolicy(policyId) {
         return this.client.then((client) => {
             return client.apis['Governance Policies'].deleteGovernancePolicy(
                 { policyId: policyId },
@@ -155,7 +155,7 @@ class GovernanceAPI extends Resource {
      * Get list of rulesets
      * @returns {Promise} Promised rulesets response
      */
-    getRulesetsList() {
+    getRulesets() {
         return this.client.then((client) => {
             return client.apis['Rulesets'].getRulesets(
                 this._requestMetaData(),
@@ -168,7 +168,7 @@ class GovernanceAPI extends Resource {
      * @param {string} rulesetId Ruleset id
      * @returns {Promise} Promised ruleset response
      */
-    getRuleset(rulesetId) {
+    getRulesetById(rulesetId) {
         return this.client.then((client) => {
             return client.apis['Rulesets'].getRulesetById(
                 { rulesetId: rulesetId },
@@ -196,7 +196,7 @@ class GovernanceAPI extends Resource {
      * @param {FormData} ruleset Ruleset data including the file
      * @returns {Promise} Promise resolving to response
      */
-    addRuleset(ruleset) {
+    createRuleset(ruleset) {
         return this.client.then((client) => {
             return client.apis['Rulesets'].createRuleset(
                 { 'Content-Type': 'multipart/form-data' },
@@ -211,7 +211,7 @@ class GovernanceAPI extends Resource {
      * @param {FormData} ruleset Updated ruleset data including the file
      * @returns {Promise} Promise resolving to response
      */
-    updateRuleset(id, ruleset) {
+    updateRulesetById(id, ruleset) {
         return this.client.then((client) => {
             const payload = ruleset;
             return client.apis['Rulesets'].updateRulesetById(

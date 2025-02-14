@@ -158,6 +158,7 @@ function AddEditPolicy(props) {
     const [selectedRulesets, setSelectedRulesets] = useState([]); // Store full ruleset objects for UI
     const [availableLabels, setAvailableLabels] = useState([]);
     const [labelMode, setLabelMode] = useState('all');
+    const [originalLabels, setOriginalLabels] = useState([]);
     const intl = useIntl();
     const { match: { params: { id: policyId } }, history } = props;
 
@@ -165,7 +166,23 @@ function AddEditPolicy(props) {
         name: '',
         description: '',
         labels: ['GLOBAL'],
-        actions: [],
+        actions: [
+            {
+                state: 'API_UPDATE',
+                ruleSeverity: 'ERROR',
+                type: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+            },
+            {
+                state: 'API_UPDATE',
+                ruleSeverity: 'WARN',
+                type: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+            },
+            {
+                state: 'API_UPDATE',
+                ruleSeverity: 'INFO',
+                type: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+            },
+        ],
         rulesets: [], // Store only IDs
     };
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -201,13 +218,13 @@ function AddEditPolicy(props) {
                 }));
             });
 
-        restApi.getRulesetsList()
+        restApi.getRulesets()
             .then((response) => {
                 const rulesetList = response.body.list;
                 setAvailableRulesets(rulesetList);
 
                 if (policyId) {
-                    return restApi.getPolicy(policyId)
+                    return restApi.getGovernancePolicyById(policyId)
                         .then((policyResponse) => {
                             const { body } = policyResponse;
                             const fullRulesets = body.rulesets.map((rulesetId) => {
@@ -223,6 +240,7 @@ function AddEditPolicy(props) {
                                 setLabelMode('none');
                             } else {
                                 setLabelMode('specific');
+                                setOriginalLabels(body.labels);
                             }
 
                             return dispatch({
@@ -261,8 +279,12 @@ function AddEditPolicy(props) {
                 dispatch({ field: 'labels', value: [] });
                 break;
             case 'specific':
-                // TODO: should load the saved labels instead of clearing
-                dispatch({ field: 'labels', value: [] });
+                // Restore original labels when switching to specific mode
+                if (originalLabels?.length > 0) {
+                    dispatch({ field: 'labels', value: originalLabels });
+                } else {
+                    dispatch({ field: 'labels', value: [] });
+                }
                 break;
             default:
                 break;
@@ -389,7 +411,7 @@ function AddEditPolicy(props) {
 
         if (policyId) {
             promiseAPICall = restApi
-                .updatePolicy(body).then(() => {
+                .updateGovernancePolicyById(body).then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.edit.success',
                         defaultMessage: 'Policy Updated Successfully',
@@ -397,7 +419,7 @@ function AddEditPolicy(props) {
                 });
         } else {
             promiseAPICall = restApi
-                .addPolicy(body).then(() => {
+                .createGovernancePolicy(body).then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.add.success',
                         defaultMessage: 'Policy Added Successfully',
@@ -531,7 +553,7 @@ function AddEditPolicy(props) {
                     defaultMessage: 'Governance Policy - Create new',
                 })
             }
-            help={<div>TODO: Link Doc</div>}
+            // help={<div>TODO: Link Doc</div>}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
@@ -685,6 +707,11 @@ function AddEditPolicy(props) {
                                             {...getTagProps({ index })}
                                         />
                                     ))}
+                                    sx={{
+                                        '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
+                                            padding: '4px 4px 4px 5px',
+                                        },
+                                    }}
                                 />
                             )}
                         </Box>

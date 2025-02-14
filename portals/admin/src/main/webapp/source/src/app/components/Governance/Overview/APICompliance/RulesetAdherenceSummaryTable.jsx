@@ -133,14 +133,22 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 setCellProps: () => ({
                     style: { width: '30%' },
                 }),
-                customBodyRender: (value) => (
-                    <Chip
-                        label={Utils.mapRulesetValidationStateToLabel(value)}
-                        color={value === 'PASSED' ? 'success' : 'error'}
-                        size='small'
-                        variant='outlined'
-                    />
-                ),
+                customBodyRender: (value) => {
+                    const getChipColor = (status) => {
+                        if (status === 'PASSED') return 'success';
+                        if (status === 'FAILED') return 'error';
+                        return 'default';
+                    };
+
+                    return (
+                        <Chip
+                            label={Utils.mapRulesetValidationStateToLabel(value)}
+                            color={getChipColor(value)}
+                            size='small'
+                            variant='outlined'
+                        />
+                    );
+                },
                 setCellHeaderProps: () => ({
                     sx: {
                         paddingTop: 0,

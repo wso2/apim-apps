@@ -119,7 +119,7 @@ function AddEditRuleset(props) {
         if (id) {
             // Get ruleset metadata
             restApi
-                .getRuleset(id)
+                .getRulesetById(id)
                 .then((result) => {
                     const { body } = result;
                     return body;
@@ -311,6 +311,7 @@ function AddEditRuleset(props) {
         const body = {
             ...state,
             provider: AuthManager.getUser().name,
+            ruleCategory: 'SPECTRAL',
             rulesetContent: file,
         };
 
@@ -319,7 +320,7 @@ function AddEditRuleset(props) {
         let promiseAPICall = null;
 
         if (id) {
-            promiseAPICall = restApi.updateRuleset(id, body)
+            promiseAPICall = restApi.updateRulesetById(id, body)
                 .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.edit.success',
@@ -327,7 +328,7 @@ function AddEditRuleset(props) {
                     });
                 });
         } else {
-            promiseAPICall = restApi.addRuleset(body)
+            promiseAPICall = restApi.createRuleset(body)
                 .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.add.success',
@@ -370,7 +371,7 @@ function AddEditRuleset(props) {
                     />
                 )
             }
-            help={<div>TODO: Link Doc</div>}
+            // help={<div>TODO: Link Doc</div>}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
