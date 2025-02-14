@@ -3589,6 +3589,106 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Get the LLM provider model list
+     * 
+     * @param {String} llmProviderId LLM Provider ID
+     * @returns {Promise} Promise containing the list of LLM provider models
+     */
+    static getLLMProviderModelList(llmProviderId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProviderModels(
+                { llmProviderId },
+                this._requestMetaData(),
+            )
+        });
+    }
+
+    /**
+     * Get all endpoints of the API
+     * @param {String} apiId UUID of the API
+     * @param {number} limit Limit of the endpoints list which needs to be retrieved
+     * @param {number} offset Offset of the endpoints list which needs to be retrieved 
+     * @returns {Promise} Promise containing the list of endpoints of the API
+     */
+    static getApiEndpoints(apiId, limit = null, offset = 0) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['API Endpoints'].getApiEndpoints(
+                {
+                    apiId: apiId,
+                    limit,
+                    offset,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add an endpoint to the API
+     * @param {String} apiId UUID of the API 
+     * @param {Object} endpointBody Endpoint object to be added
+     * @returns {Promise} Promise containing the added endpoint object
+     */
+    static addApiEndpoint(apiId, endpointBody) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['API Endpoints'].addApiEndpoint(
+                {
+                    apiId: apiId,
+                },
+                {
+                    requestBody: endpointBody,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update an endpoint of the API
+     * @param {String} apiId UUID of the API
+     * @param {String} endpointId UUID of the endpoint
+     * @param {Object} endpointBody Updated endpoint object
+     * @returns {Promise} Promise containing the updated endpoint
+     */
+    static updateApiEndpoint(apiId, endpointId, endpointBody) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['API Endpoints'].updateApiEndpoint(
+                {
+                    apiId: apiId,
+                    endpointId: endpointId,
+                },
+                {
+                    requestBody: endpointBody,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete an endpoint of the API
+     * @param {String} apiId UUID of the API
+     * @param {String} endpointId UUID of the endpoint
+     * @returns {Promise} Promise containing the deleted endpoint
+     */
+    static deleteApiEndpoint(apiId, endpointId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['API Endpoints'].deleteApiEndpoint(
+                {
+                    apiId: apiId,
+                    endpointId: endpointId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
 }
 
 API.CONSTS = {

@@ -23,6 +23,7 @@ module.exports = {
             jsx: true,
             modules: true,
         },
+        requireConfigFile: false,
         babelOptions: {
             presets: ['@babel/preset-react', '@babel/preset-typescript'],
         },

@@ -55,7 +55,7 @@ interface GeneralDetailsProps {
     version: string | null;
     description: string;
     applicableFlows: string[];
-    supportedApiTypes: string[];
+    supportedApiTypes: string[] | Map<string, string>[];
     dispatch?: React.Dispatch<any>;
     isViewMode: boolean;
 }
@@ -374,9 +374,11 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                             <Checkbox
                                                 name='HTTP'
                                                 color='primary'
-                                                checked={supportedApiTypes.includes(
-                                                    'HTTP',
-                                                )}
+                                                checked={
+                                                    Array.isArray(supportedApiTypes) &&
+                                                    supportedApiTypes.every(item => typeof item === 'string') &&
+                                                    supportedApiTypes.includes('HTTP')
+                                                }
                                                 id='http-select-check-box'
                                                 onChange={handleApiTypeChange}
                                             />
@@ -389,9 +391,11 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                             <Checkbox
                                                 name='SOAP'
                                                 color='primary'
-                                                checked={supportedApiTypes.includes(
-                                                    'SOAP',
-                                                )}
+                                                checked={
+                                                    Array.isArray(supportedApiTypes) &&
+                                                    supportedApiTypes.every(item => typeof item === 'string') &&
+                                                    supportedApiTypes.includes('SOAP')
+                                                }
                                                 id='soap-select-check-box'
                                                 onChange={handleApiTypeChange}
                                             />
@@ -404,9 +408,11 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                             <Checkbox
                                                 name='SOAPTOREST'
                                                 color='primary'
-                                                checked={supportedApiTypes.includes(
-                                                    'SOAPTOREST',
-                                                )}
+                                                checked={
+                                                    Array.isArray(supportedApiTypes) &&
+                                                    supportedApiTypes.every(item => typeof item === 'string') &&
+                                                    supportedApiTypes.includes('SOAPTOREST')
+                                                }
                                                 id='soaptorest-select-check-box'
                                                 onChange={handleApiTypeChange}
                                             />

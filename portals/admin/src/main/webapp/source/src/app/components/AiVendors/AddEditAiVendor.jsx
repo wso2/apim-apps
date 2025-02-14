@@ -33,6 +33,7 @@ import Grid from '@mui/material/Grid';
 import Select from '@mui/material/Select';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
+import { MuiChipsInput } from 'mui-chips-input';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import AIAPIDefinition from './AIAPIDefinition';
 
@@ -62,12 +63,15 @@ function reducer(state, newValue) {
         case 'name':
         case 'apiVersion':
         case 'description':
+        case 'modelList':
         case 'apiDefinition':
             return { ...state, [field]: value };
-        case 'model':
+        case 'requestModel':
+        case 'responseModel':
         case 'promptTokenCount':
         case 'completionTokenCount':
         case 'totalTokenCount':
+        case 'remainingTokenCount':
             return {
                 ...state,
                 configurations: {
@@ -116,24 +120,40 @@ export default function AddEditAiVendor(props) {
         configurations: {
             metadata: [
                 {
-                    attributeName: 'model',
+                    attributeName: 'requestModel',
                     inputSource: 'payload',
                     attributeIdentifier: '',
+                    required: false,
+                },
+                {
+                    attributeName: 'responseModel',
+                    inputSource: 'payload',
+                    attributeIdentifier: '',
+                    required: true,
                 },
                 {
                     attributeName: 'promptTokenCount',
                     inputSource: 'payload',
                     attributeIdentifier: '',
+                    required: true,
                 },
                 {
                     attributeName: 'completionTokenCount',
                     inputSource: 'payload',
                     attributeIdentifier: '',
+                    required: true,
                 },
                 {
                     attributeName: 'totalTokenCount',
                     inputSource: 'payload',
                     attributeIdentifier: '',
+                    required: true,
+                },
+                {
+                    attributeName: 'remainingTokenCount',
+                    inputSource: 'header',
+                    attributeIdentifier: '',
+                    required: false,
                 },
             ],
             connectorType: '',
@@ -141,6 +161,7 @@ export default function AddEditAiVendor(props) {
             authHeader: '',
         },
         apiDefinition: '',
+        modelList: [],
     });
 
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -166,8 +187,8 @@ export default function AddEditAiVendor(props) {
                         description: aiVendorBody.description || '',
                         configurations: JSON.parse(aiVendorBody.configurations),
                         apiDefinition: aiVendorBody.apiDefinition || '',
+                        modelList: aiVendorBody.modelList || [],
                     };
-
                     if (newState.configurations.authQueryParameter) {
                         setAuthSource('authQueryParameter');
                     } else if (newState.configurations.authHeader) {
@@ -230,7 +251,7 @@ export default function AddEditAiVendor(props) {
                 }
                 break;
             case 'attributeIdentifier':
-                if (fieldValue.trim() === '') {
+                if (fieldValue.required && fieldValue.attributeIdentifier.trim() === '') {
                     error = intl.formatMessage({
                         id: 'AiVendors.AddEditAiVendor.is.empty.error.attributeIdentifier',
                         defaultMessage: 'Attribute identifier is required.',
@@ -253,7 +274,7 @@ export default function AddEditAiVendor(props) {
 
     const formHasErrors = (validatingActive = false) => {
         const metadataErrors = state.configurations.metadata.map((meta) => {
-            return hasErrors('attributeIdentifier', meta.attributeIdentifier, validatingActive)
+            return hasErrors('attributeIdentifier', meta, validatingActive)
                 || hasErrors('inputSource', meta.inputSource, validatingActive);
         });
 
@@ -289,7 +310,9 @@ export default function AddEditAiVendor(props) {
             const newState = {
                 ...state,
                 configurations: updatedConfigurations,
+                modelList: JSON.stringify(state.modelList),
             };
+
             if (id) {
                 await new API().updateAiVendor(id, { ...newState, apiDefinition: file });
                 Alert.success(`${state.name} ${intl.formatMessage({
@@ -303,6 +326,7 @@ export default function AddEditAiVendor(props) {
                     defaultMessage: ' - AI/LLM Vendor added successfully.',
                 })}`);
             }
+
             setSaving(false);
             history.push('/settings/ai-vendors/');
         } catch (e) {
@@ -569,7 +593,7 @@ export default function AddEditAiVendor(props) {
                                                 })}
                                                 error={hasErrors(
                                                     'attributeIdentifier',
-                                                    metadata.attributeIdentifier,
+                                                    metadata,
                                                     validating,
                                                 )}
                                             />
@@ -770,9 +794,70 @@ export default function AddEditAiVendor(props) {
                                     state.configurations.connectorType,
                                     validating,
                                 ) || intl.formatMessage({
-                                    id: 'AiVendors.AddEditAiVendor.form.name.help',
+                                    id: 'AiVendors.AddEditAiVendor.form.connectorType.help',
                                     defaultMessage: 'Connector Type for AI/LLM Vendor',
                                 })}
+                            />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box marginTop={2} marginBottom={2}>
+                            <StyledHr />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={3}>
+                        <Typography
+                            color='inherit'
+                            variant='subtitle2'
+                            component='div'
+                            id='AiVendors.AddEditAiVendor.modelList.header'
+                        >
+                            <FormattedMessage
+                                id='AiVendors.AddEditAiVendor.modelList'
+                                defaultMessage='Model List'
+                            />
+                        </Typography>
+                        <Typography
+                            color='inherit'
+                            variant='caption'
+                            component='p'
+                            id='AiVendors.AddEditAiVendor.modelList.body'
+                        >
+                            <FormattedMessage
+                                id='AiVendors.AddEditAiVendor.modelList.description'
+                                defaultMessage='AI/LLM Vendor supported model list'
+                            />
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={9}>
+                        <Box component='div' m={1}>
+                            <MuiChipsInput
+                                variant='outlined'
+                                fullWidth
+                                value={state.modelList}
+                                onAddChip={(model) => {
+                                    state.modelList.push(model);
+                                }}
+                                onDeleteChip={(model) => {
+                                    const filteredModelList = state.modelList.filter(
+                                        (modelItem) => modelItem !== model,
+                                    );
+                                    dispatch({ field: 'modelList', value: filteredModelList });
+                                }}
+                                placeholder={intl.formatMessage({
+                                    id: 'AiVendors.AddEditAiVendor.modelList.placeholder',
+                                    defaultMessage: 'Type Model name and press Enter',
+                                })}
+                                data-testid='ai-vendor-llm-model-list'
+                                helperText={(
+                                    <div style={{ position: 'absolute', marginTop: '10px' }}>
+                                        {intl.formatMessage({
+                                            id: 'AiVendors.AddEditAiVendor.modelList.help',
+                                            defaultMessage: 'Type available models and '
+                                                + 'press enter/return to add them.',
+                                        })}
+                                    </div>
+                                )}
                             />
                         </Box>
                     </Grid>

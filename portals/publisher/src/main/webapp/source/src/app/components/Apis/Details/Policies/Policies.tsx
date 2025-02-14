@@ -217,11 +217,27 @@ const Policies: React.FC = () => {
             let filteredCommonPoliciesByAPITypeList = [];
 
             if (api.type === "HTTP" || api.type === "SOAP" || api.type === "SOAPTOREST") {
-                // Get HTTP supported policies
-                filteredApiPoliciesByAPITypeList = filteredApiPolicyByGatewayTypeList.filter(
-                    (policy: Policy) => policy.supportedApiTypes.includes(api.type));
-                filteredCommonPoliciesByAPITypeList = filteredCommonPolicyByGatewayTypeList.filter(
-                    (policy: Policy) => policy.supportedApiTypes.includes(api.type));
+                // Get API policies based on the API type
+                filteredApiPoliciesByAPITypeList = filteredApiPolicyByGatewayTypeList.filter((policy: Policy) => {
+                    return policy.supportedApiTypes.some((item: any) => {
+                        if (typeof item === 'string') {
+                            return item === api.type;
+                        } else if (typeof item === 'object') {
+                            return item.apiType === api.type && item.subType === api.subtypeConfiguration?.subtype;
+                        }
+                    });
+                });
+
+                // Get common policies based on the API type
+                filteredCommonPoliciesByAPITypeList = filteredCommonPolicyByGatewayTypeList.filter((policy: Policy) => {
+                    return policy.supportedApiTypes.some((item: any) => {
+                        if (typeof item === 'string') {
+                            return item === api.type;
+                        } else if (typeof item === 'object') {
+                            return item.apiType === api.type && item.subType === api.subtypeConfiguration?.subtype;
+                        }
+                    });
+                });
             }
 
             setApiPolicies(filteredApiPoliciesByAPITypeList);
