@@ -64,17 +64,24 @@ export default function ListPolicies() {
                 customBodyRender: (value, tableMeta) => {
                     const dataRow = tableMeta.rowData;
                     return (
-                        <>
-                            {/* TODO: Add text wrapping */}
-                            <Typography>{value}</Typography>
-                            <Typography
-                                variant='caption'
-                                display='block'
-                                color='textSecondary'
-                            >
-                                {dataRow[1]}
-                            </Typography>
-                        </>
+                        <Tooltip title={dataRow[1]} arrow>
+                            <div>
+                                <Typography>{value}</Typography>
+                                <Typography
+                                    variant='caption'
+                                    display='block'
+                                    color='textSecondary'
+                                    sx={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        maxWidth: '320px',
+                                    }}
+                                >
+                                    {dataRow[1]}
+                                </Typography>
+                            </div>
+                        </Tooltip>
                     );
                 },
                 setCellProps: () => ({
