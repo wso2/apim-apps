@@ -27,13 +27,16 @@ import Configurations from 'Config';
 import CONSTS from 'AppData/Constants';
 import Tooltip from '@mui/material/Tooltip';
 import InfoIcon from '@mui/icons-material/Info';
-import { Table, TableRow, Chip, Autocomplete, TextField, ListItem } from '@mui/material';
+import { Table, TableRow, Chip, Autocomplete, TextField, ListItem, Box, 
+    Alert as MUIAlert, AlertTitle } from '@mui/material';
+import { FormattedMessage } from 'react-intl';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableHead from '@mui/material/TableHead';
 import TableContainer from '@mui/material/TableContainer';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import WarningIcon from '@mui/icons-material/WarningAmber';
 
 const PREFIX = 'OrganizationSubscriptionPoliciesManage';
 
@@ -80,13 +83,21 @@ const Root = styled('div')((
  */
 function OrganizationSubscriptionPoliciesManage(props) {
     const { api, organizations, visibleOrganizations, 
-        organizationPolicies, setOrganizationPolicies, selectionMode } = props;
+        organizationPolicies, setOrganizationPolicies, selectionMode, subValidationDisablingAllowed } = props;
     const [filteredOrganizations, setFilteredOrganizations] = useState([]);
     const [subscriptionPolicies, setSubscriptionPolicies] = useState([]);
     
     const isAsyncAPI = useMemo(() => 
         ['WS', 'WEBSUB', 'SSE', 'ASYNC'].includes(api.type), [api.type]
     );
+    const securityScheme = useMemo(() => [...api.securityScheme], [api.securityScheme]);
+    const isMutualSslOnly = useMemo(() => 
+        securityScheme.length === 2 && 
+        securityScheme.includes('mutualssl') && 
+        securityScheme.includes('mutualssl_mandatory'), [securityScheme]
+    );
+    const isApiKeyEnabled = useMemo(() => securityScheme.includes('api_key'), [securityScheme]);
+
 
     useEffect(() => {
         const limit = Configurations.app.subscriptionPolicyLimit;
@@ -121,15 +132,27 @@ function OrganizationSubscriptionPoliciesManage(props) {
     }, [organizations, visibleOrganizations, selectionMode]);
 
     const handlePolicyChange = (organizationId, selectedPolicies) => {
-        const selectedPolicyNames = selectedPolicies.map(policy => policy.name);
+
+        let selectedPolicyNames = selectedPolicies.map(policy => policy.name);
+        if (selectedPolicyNames.length > 1 ) {
+            selectedPolicyNames = selectedPolicyNames.filter((policy) =>
+                !policy.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
+        } else if (subValidationDisablingAllowed
+            && !isMutualSslOnly && !isApiKeyEnabled && selectedPolicyNames.length === 0) {
+            if (!isAsyncAPI) {
+                selectedPolicyNames.push(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+            } else {
+                selectedPolicyNames.push(CONSTS.DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN);
+            }
+            
+        }
         const existingOrgPolicyIndex = organizationPolicies.findIndex(
             orgPolicy => orgPolicy.organizationID === organizationId
         );
         let updatedOrganizationPolicies;
-
         if (existingOrgPolicyIndex !== -1) {
-            updatedOrganizationPolicies = organizationPolicies.map(orgPolicy =>
-                orgPolicy.organizationID === organizationId
+            updatedOrganizationPolicies = organizationPolicies.map(
+                orgPolicy => orgPolicy.organizationID === organizationId
                     ? { ...orgPolicy, policies: selectedPolicyNames }
                     : orgPolicy
             );
@@ -186,13 +209,58 @@ function OrganizationSubscriptionPoliciesManage(props) {
                         <TableHead>
                             <TableRow>
                                 <TableCell>Organization</TableCell>
-                                <TableCell>Policies</TableCell>
+                                <TableCell style={{ width: '80%' }}>Policies</TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
+                            {selectionMode === 'select' 
+                                && (visibleOrganizations.length === 0 
+                                || (visibleOrganizations.length === 1 && (visibleOrganizations[0].includes('all') 
+                                || visibleOrganizations[0].includes('none')))) && (
+                                <TableRow>
+                                    <TableCell colSpan={2}>
+                                        <MUIAlert severity='warning'>
+                                            <AlertTitle>
+                                                <FormattedMessage
+                                                    id={'Apis.Details.ShareAPI.Organization.' +
+                                                    'Subscriptions.no.selected.organizations'}
+                                                    defaultMessage='No organizations selected'
+                                                />
+                                            </AlertTitle>
+                                        </MUIAlert>
+                                    </TableCell>
+                                </TableRow>
+                            )}
                             {filteredOrganizations.map(org => (
                                 <TableRow key={org.organizationId}>
-                                    <TableCell>{org.displayName}</TableCell>
+                                    <TableCell>
+                                        <Box style={{ display: 'flex' }}>
+                                            {org.displayName}
+                                            {(() => {
+                                                const orgPolicy = organizationPolicies.find(
+                                                    (op) => op.organizationID === org.organizationId);
+                                                const hasNoPolicies = !orgPolicy || orgPolicy.policies.length === 0;
+                                                const hasSubscriptionlessPlan = 
+                                                    orgPolicy?.policies.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+
+                                                if (hasNoPolicies || hasSubscriptionlessPlan) {
+                                                    return (
+                                                        <Tooltip title='Subscription policies have not been assigned. 
+                                                        Subscription validation will be disabled.'>
+                                                            <WarningIcon
+                                                                style={{
+                                                                    color: 'orange',
+                                                                    marginLeft: 10,
+                                                                    fontSize: 'medium',
+                                                                }}
+                                                            />
+                                                        </Tooltip>
+                                                    );
+                                                }
+                                                return null;
+                                            })()}
+                                        </Box>
+                                    </TableCell>
                                     <TableCell style={{ width: '80%' }}>
                                         <Autocomplete
                                             multiple
