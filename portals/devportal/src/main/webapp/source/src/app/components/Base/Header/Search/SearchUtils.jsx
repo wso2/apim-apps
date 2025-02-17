@@ -74,6 +74,8 @@ const Root = styled('div')((
         transition: 'all .35s ease-in-out',
         padding: '5px 5px 5px 5px',
         minHeight: '40px',
+        borderTopRightRadius: '8px',
+        borderBottomRightRadius: '8px',
     },
 
     [`& .${classes.inputFocused}`]: {
@@ -91,6 +93,8 @@ const Root = styled('div')((
         borderRight: '1px solid rgba(0, 0, 0, 0.42)',
         minHeight: '40px',
         padding: '5px 5px 5px 15px',
+        borderTopLeftRadius: '8px',
+        borderBottomLeftRadius: '8px',
         background: theme.custom.appBar.searchInputBackground,
         color: theme.palette.getContrastText(theme.custom.appBar.searchInputBackground),
     },

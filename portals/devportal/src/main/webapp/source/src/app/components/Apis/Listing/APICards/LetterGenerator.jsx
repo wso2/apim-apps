@@ -68,8 +68,10 @@ export default (props) => {
                                 `-webkit-linear-gradient(to right, ${light}, ${dark})`, /* Chrome 10-25, Safari 5.1-6 */
                             },
                         ],
-                        height,
-                        width,
+                        height:'100px',
+                        width:'100px',
+                        borderRadius: '8px',
+                        marginBottom: '16px',
                         fontSize: `${fontSize}px`,
                         textShadow,
                     };

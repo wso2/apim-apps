@@ -125,7 +125,7 @@ function GlobalNavBar(props) {
                         })}
                     />
                 </ListItem>
-                {(selected === 'apis' && !drawerView) && (<div className={classes.triangleDown} />)}
+                {/* {(selected === 'apis' && !drawerView) && (<div className={classes.triangleDown} />)} */}
             </Link>
             <Link
                 id='itest-link-to-applications'
@@ -165,7 +165,7 @@ function GlobalNavBar(props) {
                         })}
                     />
                 </ListItem>
-                {(selected === 'applications' && !drawerView) && (<div className={classes.triangleDown} />)}
+                {/* {(selected === 'applications' && !drawerView) && (<div className={classes.triangleDown} />)} */}
             </Link>
         </List>
     );

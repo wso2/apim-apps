@@ -27,7 +27,7 @@ import classNames from 'classnames';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import Settings from 'AppComponents/Shared/SettingsContext';
 import API from 'AppData/api';
-import { useTheme } from '@mui/material';
+import { Button, useTheme } from '@mui/material';
 import ApiBreadcrumbs from './ApiBreadcrumbs';
 import ApiTableView from './ApiTableView';
 import { ApiContext } from '../Details/ApiContext';
@@ -36,6 +36,7 @@ import CategoryListingCategories from './CategoryListingCategories';
 import ApiTagCloud from './ApiTagCloud';
 import Recommendations from './Recommendations';
 import AuthManager from '../../../data/AuthManager';
+import Avatar from '../../../../../../../../../../components/Avatar/Avatar';
 
 const PREFIX = 'CommonListingLegacy';
 
@@ -47,6 +48,7 @@ const classes = {
     appBar: `${PREFIX}-appBar`,
     mainIconWrapper: `${PREFIX}-mainIconWrapper`,
     mainTitle: `${PREFIX}-mainTitle`,
+    subTitle: `${PREFIX}-subTitle`,
     mainTitleWrapper: `${PREFIX}-mainTitleWrapper`,
     listContentWrapper: `${PREFIX}-listContentWrapper`,
     iconDefault: `${PREFIX}-iconDefault`,
@@ -73,8 +75,7 @@ const Root = styled('div')((
     },
 
     [`& .${classes.button}`]: {
-        margin: theme.spacing(1),
-        marginBottom: 0,
+        marginRight: theme.spacing(1),
     },
 
     [`& .${classes.buttonRight}`]: {
@@ -91,8 +92,9 @@ const Root = styled('div')((
     [`& .${classes.appBar}`]: {
         height: 70,
         background: theme.custom.infoBar.background,
+        padding: '0 16px',
         color: theme.palette.getContrastText(theme.custom.infoBar.background),
-        borderBottom: 'solid 1px ' + theme.palette.grey.A200,
+        // borderBottom: 'solid 1px ' + theme.palette.grey.A200,
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
@@ -106,6 +108,10 @@ const Root = styled('div')((
 
     [`& .${classes.mainTitle}`]: {
         paddingTop: 10,
+    },
+
+    [`& .${classes.subTitle}`]: {
+        lineHeight: 1,
     },
 
     [`& .${classes.mainTitleWrapper}`]: {
@@ -403,6 +409,11 @@ class CommonListingLegacy extends React.Component {
                             <Typography variant='h4' component='h1' className={classes.mainTitle}>
                                 <FormattedMessage defaultMessage='APIs' id='Apis.Listing.Listing.apis.main' />
                             </Typography>
+                            <Typography variant='body1' className={classes.subTitle}>
+                                <FormattedMessage defaultMessage='Explore and manage your APIs effortlessly' 
+                                id='Apis.Listing.Listing.apis.subtext' />
+                            </Typography>
+                            <Avatar size="small" testId="small">H</Avatar>
                         </div>
                         {this.showToggle && (
                             <div className={classes.buttonRight} id='listGridWrapper'>

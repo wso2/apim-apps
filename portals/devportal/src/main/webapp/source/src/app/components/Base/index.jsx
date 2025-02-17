@@ -44,6 +44,8 @@ import Settings, { useSettingsContext } from 'AppComponents/Shared/SettingsConte
 import { app } from 'Settings';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import Box from '@mui/material/Box';
+// import PermIdentityOutlinedIcon from '@mui/icons-material/PermIdentityOutlined';
+// import Avatar from '../../../../../../../../../components/Avatar/Avatar';
 import AuthManager from '../../data/AuthManager';
 import LanguageSelector from './Header/LanuageSelector';
 import GlobalNavBar from './Header/GlobalNavbar';
@@ -228,7 +230,9 @@ const Root = styled('div')((
             alignItems: 'center',
             textDecoration: 'none',
             color: theme.palette.getContrastText(theme.custom.appBar.activeBackground),
-        },
+            borderRadius: '8px',
+            padding: '4px',
+        },       
         [`& .${classes.selectedText}`]: {
             color: theme.palette.getContrastText(theme.custom.appBar.activeBackground),
         },
@@ -569,9 +573,9 @@ class LayoutLegacy extends React.Component {
                                         </div>
                                     </Drawer>
                                 </Hidden>
-                                <VerticalDivider height={32} />
-                                {showSearch && (<HeaderSearch id='headerSearch' />)}
+                                {/* <VerticalDivider height={32} /> */}
                                 <Box sx={{ flexGrow: 1 }} />
+                                {showSearch && (<HeaderSearch id='headerSearch' />)}
                                 {tenantDomain && customUrlEnabledDomain === 'null' && tenantDomain !== 'INVALID'
                                     && publicTenantStoreVisible && (
                                     <Link
@@ -608,6 +612,9 @@ class LayoutLegacy extends React.Component {
                                                 aria-label='user menu'
                                             >
                                                 <Icon className={classes.icons}>person</Icon>
+                                                {/* <Avatar size='medium' testId='medium'>
+                                                    <PermIdentityOutlinedIcon fontSize='small' />
+                                                </Avatar> */}
                                                 {username}
                                             </Button>
                                             <Popper
