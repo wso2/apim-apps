@@ -43,9 +43,9 @@ const GovernanceViolationsSummary = ({ violations, handleChange }) => {
     return (
         <Box ml={3}>
             <Tooltip title={
-                `Error: ${severityCounts.error || 0}, ` +
-                `Warning: ${severityCounts.warning || 0}, ` +
-                `Info: ${severityCounts.info || 0}`
+                `Error: ${severityCounts.ERROR || 0}, ` +
+                `Warning: ${severityCounts.WARN || 0}, ` +
+                `Info: ${severityCounts.INFO || 0}`
             }>
                 <ToggleButtonGroup
                     exclusive
