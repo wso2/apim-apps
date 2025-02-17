@@ -290,7 +290,6 @@ class LayoutLegacy extends React.Component {
      * @returns {void}
      */
     componentDidMount() {
-        const restApi = new API();
         const { history: { location }, theme } = this.props;
         document.body.style.backgroundColor = theme.custom.page.emptyAreadBackground || '#ffffff';
         this.detectCurrentMenu(location);
@@ -305,14 +304,6 @@ class LayoutLegacy extends React.Component {
                 this.setState({ bannerHeight: bannerElement.clientHeight });
             }
         }
-        restApi
-            .getUserOrganizationInfo()
-            .then((res) => {
-                this.setState({ userOrganization: res.body.name });
-            })
-            .catch((error) => {
-                throw error;
-            });
     }
 
     detectCurrentMenu = (location) => {
@@ -354,8 +345,21 @@ class LayoutLegacy extends React.Component {
     };
 
     handleToggleUserMenu = (event) => {
+        const isOpen = !this.state.openUserMenu;
         this.setState((state) => ({ openUserMenu: !state.openUserMenu }));
         this.setState({ anchorEl: event.currentTarget });
+
+        if (isOpen) {
+            const restApi = new API();
+            restApi
+                .getUserOrganizationInfo()
+                .then((res) => {
+                    this.setState({ userOrganization: res.body.name });
+                })
+                .catch((error) => {
+                    throw error;
+                });
+        }
     };
 
     handleCloseUserMenu = (event) => {
