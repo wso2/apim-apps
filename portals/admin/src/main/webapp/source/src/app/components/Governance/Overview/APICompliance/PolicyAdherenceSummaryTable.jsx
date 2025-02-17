@@ -187,6 +187,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                     const getChipColor = (status) => {
                         if (status === 'FOLLOWED') return 'success';
                         if (status === 'VIOLATED') return 'error';
+                        if (status === 'PENDING') return 'warning';
                         return 'default';
                     };
                     return (
