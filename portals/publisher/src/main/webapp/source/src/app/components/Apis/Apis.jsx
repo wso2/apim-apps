@@ -16,12 +16,13 @@
  * under the License.
  */
 
-import React, { Suspense, lazy } from 'react';
+import React, { Suspense, lazy} from 'react';
 import { Route, Switch, Redirect } from 'react-router-dom';
 import Progress from 'AppComponents/Shared/Progress';
 import AuthManager from 'AppData/AuthManager';
 
 import Listing from './Listing/Listing';
+import APICreateWithAI from './Create/CreateAPIWithAI/APICreateWithAI';
 
 /* if needs to pre fetch use 'webpackPrefetch: true' */
 
@@ -38,6 +39,12 @@ const APICreateRoutes = lazy(
 const DeferredAPICreateRoutes = (props) => (
     <Suspense fallback={<Progress per={70} message='Loading API Create component ...' />}>
         <APICreateRoutes {...props} />
+    </Suspense>
+);
+
+const DefferedAIApiCreateRoutes = (props) => (
+    <Suspense fallback={<Progress per={70} message='Loading AI API Create component ...' />}>
+        <APICreateWithAI {...props} />
     </Suspense>
 );
 
@@ -63,6 +70,7 @@ const Apis = () => {
             />
             <Route path='/apis/search' render={(props) => <Listing {...props} isAPIProduct={false} />} />
             <Route path='/apis/create' component={DeferredAPICreateRoutes} />
+            <Route path='/apis/design-assistant' component={DefferedAIApiCreateRoutes} />
             <Route
                 path='/api-products/create'
                 render={() => {
@@ -73,7 +81,7 @@ const Apis = () => {
                     }
                 }}
             />
-            <Route path='/apis/:apiUUID/' render={(props) => <DeferredDetails {...props} isAPIProduct={false} />} />
+            <Route path='/apis/:apiUUID/' render={(props) =><DeferredDetails {...props} isAPIProduct={false} />} />
             <Route
                 path='/api-products/:apiProdUUID/'
                 render={(props) => {

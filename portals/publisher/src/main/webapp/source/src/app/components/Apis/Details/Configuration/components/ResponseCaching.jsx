@@ -132,7 +132,10 @@ export default function ResponseCaching(props) {
                         control={(
                             <Switch
                                 id='response-caching-switch'
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                disabled={
+                                    isRestricted(['apim:api_create'], apiFromContext) ||
+                                    apiFromContext.subtypeConfiguration?.subtype.includes('AIAPI')
+                                }
                                 checked={api.responseCachingEnabled}
                                 onChange={({ target: { checked } }) => configDispatcher({
                                     action: 'responseCachingEnabled',

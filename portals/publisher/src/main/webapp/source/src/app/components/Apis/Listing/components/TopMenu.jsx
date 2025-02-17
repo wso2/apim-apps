@@ -30,6 +30,7 @@ import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { isRestricted } from 'AppData/AuthManager';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import APICreateMenu from './APICreateMenu';
 
 const PREFIX = 'TopMenu';
@@ -121,7 +122,7 @@ function getTitleForArtifactType(props, count) {
 function TopMenu(props) {
     const {
         data, setListType, count, isAPIProduct, listType, showToggle, query,
-    } = props;
+    } = props;   
     if (count > 0) {
         return (
             <Root className={classes.root}>
@@ -190,7 +191,26 @@ function TopMenu(props) {
                                 defaultMessage='Create API'
                             />
                         </APICreateMenu>
-                    )}
+                    )} 
+                    {/* Button to Create API with AI */}
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        component={Link}
+                        to='/apis/design-assistant'
+                        sx={{ marginLeft: '10px' }}
+                    >
+                        <FormattedMessage
+                            id='Apis.Listing.components.TopMenu.create.api.with.ai'
+                            defaultMessage='Create API with AI'
+                        />
+                        <AutoAwesomeIcon 
+                            sx={{ 
+                                marginLeft: '6px',
+                                fontSize: 15
+                            }} 
+                        />
+                    </Button>                              
                 </div>
                 {showToggle && (
                     <Box height={32} m='auto' mr={8}>

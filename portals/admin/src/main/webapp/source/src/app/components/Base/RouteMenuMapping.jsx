@@ -30,7 +30,7 @@ import SubscriptionThrottlingPolicies from 'AppComponents/Throttling/Subscriptio
 import APICategories from 'AppComponents/APICategories/ListApiCategories';
 import BlacklistThrottlingPolicies from 'AppComponents/Throttling/Blacklist/List';
 import ListApplications from 'AppComponents/ApplicationSettings/ListApplications';
-import GatewayEnvironments from 'AppComponents/GatewayEnvironments/ListGWEnviornments';
+import GatewayEnvironments from 'AppComponents/GatewayEnvironments';
 import AdvancedThrottlePolicies from 'AppComponents/Throttling/Advanced';
 import CustomThrottlingPolicies from 'AppComponents/Throttling/Custom';
 import TenantTheme from 'AppComponents/TenantTheme/UploadTheme';
@@ -205,6 +205,24 @@ const RouteMenuMapping = (intl) => [
         path: '/settings/environments',
         component: GatewayEnvironments,
         icon: <GamesIcon />,
+        addEditPageDetails: [
+            {
+                id: 'Add Gateway Environment',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.gateways.items.Adding',
+                    defaultMessage: 'Gateway Environment',
+                }),
+                path: '/settings/gateways/create',
+            },
+            {
+                id: 'Edit Gateway Environment',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.gateways.items.Editing',
+                    defaultMessage: 'Edit Gateway Environment',
+                }),
+                path: '/settings/gateways/(.*?)$',
+            },
+        ],
     },
     {
         id: 'API Categories',

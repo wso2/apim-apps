@@ -21,7 +21,6 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
@@ -80,7 +79,6 @@ function apiInputsReducer(currentState, inputAction) {
 export default function ApiCreateAIAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history, multiGateway } = props;
-    const { data: settings } = usePublisherSettings();
 
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         type: 'ApiCreateAIAPI',
@@ -124,20 +122,12 @@ export default function ApiCreateAIAPI(props) {
         const {
             name, version, context, endpoint, gatewayType, policies = ["Unlimited"], inputValue, llmProviderId,
         } = apiInputs;
-        let defaultGatewayType;
-        if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
-            defaultGatewayType = 'wso2/synapse';
-        } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')) {
-            defaultGatewayType = 'wso2/apk';
-        } else {
-            defaultGatewayType = 'default';
-        }
 
         const additionalProperties = {
             name,
             version,
             context,
-            gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
+            gatewayType,
             policies,
             subtypeConfiguration: {
                 subtype: 'AIAPI',

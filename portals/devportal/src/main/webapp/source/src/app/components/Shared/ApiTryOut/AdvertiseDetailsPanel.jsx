@@ -38,6 +38,7 @@ const AdvertiseDetailsPanel = (props) => {
             transport,
             securityScheme,
             authorizationHeader,
+            gatewayVendor,
         },
     } = props;
 
@@ -112,59 +113,61 @@ const AdvertiseDetailsPanel = (props) => {
                     />
                 </Grid>
             </Grid>
-            <Grid x={12} md={6} className={classes.centerItems}>
-                <Typography
-                    variant='h6'
-                    component='label'
-                    id='key-type'
-                    color='textSecondary'
-                    className={classes.tryoutHeading}
-                >
-                    <FormattedMessage
-                        id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.endpoint.heading'
-                        defaultMessage='API Endpoint'
-                    />
-                </Typography>
-                <TextField
-                    fullWidth
-                    select
-                    id='selectedEndpoint'
-                    label={(
+            {gatewayVendor === 'wso2' &&
+                <Grid x={12} md={6} className={classes.centerItems}>
+                    <Typography
+                        variant='h6'
+                        component='label'
+                        id='key-type'
+                        color='textSecondary'
+                        className={classes.tryoutHeading}
+                    >
                         <FormattedMessage
-                            defaultMessage='Endpoint type'
-                            id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.endpoint'
+                            id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.endpoint.heading'
+                            defaultMessage='API Endpoint'
                         />
-                    )}
-                    value={selectedEndpoint}
-                    name='selectedEndpoint'
-                    onChange={handleChanges}
-                    helperText={(
-                        <FormattedMessage
-                            defaultMessage='Please select an endpoint type'
-                            id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.endpoint.help'
-                        />
-                    )}
-                    margin='normal'
-                    variant='outlined'
-                >
-                    {advertiseInfo.apiExternalProductionEndpoint && (
-                        <MenuItem
-                            value='PRODUCTION'
-                            className={classes.menuItem}
-                        >
-                            Production
-                        </MenuItem>
-                    )}
-                    {advertiseInfo.apiExternalSandboxEndpoint && (
-                        <MenuItem
-                            value='SANDBOX'
-                            className={classes.menuItem}
-                        >
-                            Sandbox
-                        </MenuItem>
-                    )}
-                </TextField>
-            </Grid>
+                    </Typography>
+                    <TextField
+                        fullWidth
+                        select
+                        id='selectedEndpoint'
+                        label={(
+                            <FormattedMessage
+                                defaultMessage='Endpoint type'
+                                id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.endpoint'
+                            />
+                        )}
+                        value={selectedEndpoint}
+                        name='selectedEndpoint'
+                        onChange={handleChanges}
+                        helperText={(
+                            <FormattedMessage
+                                defaultMessage='Please select an endpoint type'
+                                id='Apis.Details.ApiConsole.AdvertiseDetailsPanel.endpoint.help'
+                            />
+                        )}
+                        margin='normal'
+                        variant='outlined'
+                    >
+                        {advertiseInfo.apiExternalProductionEndpoint && (
+                            <MenuItem
+                                value='PRODUCTION'
+                                className={classes.menuItem}
+                            >
+                                Production
+                            </MenuItem>
+                        )}
+                        {advertiseInfo.apiExternalSandboxEndpoint && (
+                            <MenuItem
+                                value='SANDBOX'
+                                className={classes.menuItem}
+                            >
+                                Sandbox
+                            </MenuItem>
+                        )}
+                    </TextField>
+                </Grid>
+            }
             {(availableTransports || securitySchemes || authorizationHeader) && (
                 <Grid x={12} md={6} className={classes.centerItems} style={{ marginTop: '10px' }}>
                     <MuiAlert severity='info' variant='filled' sx={{ bgcolor: 'background.paper' }}>

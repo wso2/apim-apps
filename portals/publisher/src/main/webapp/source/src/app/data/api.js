@@ -1,20 +1,21 @@
-/**
- * Copyright (c) 2018, WSO2 Inc. (http://wso2.com) All Rights Reserved.
+/* eslint-disable */
+/*
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
  * You may obtain a copy of the License at
  *
  * http://www.apache.org/licenses/LICENSE-2.0
  *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
  */
-
-/* eslint-disable */
 import APIClientFactory from './APIClientFactory';
 import Utils from './Utils';
 import Resource from './Resource';
@@ -440,6 +441,71 @@ class API extends Resource {
         });
     }
 
+    saveAPIDesignAssistant() {
+        const promisedAPIResponse = this.client.then(client => {
+            const properties = client.spec.components.schemas.API.properties;
+            const data = {};
+            Object.keys(this).forEach(apiAttribute => {
+                if (apiAttribute in properties) {
+                    data[apiAttribute] = this[apiAttribute];
+                }
+            });
+            const payload = {
+                'Content-Type': 'application/json'
+            };
+            const requestBody = {
+                'requestBody': data,
+            };
+            return client.apis['APIs'].createAPI(payload, requestBody, this._requestMetaData());
+        });
+        return promisedAPIResponse.then(response => {
+            return new API(response.body);
+        });
+    }
+
+    sendChatAPIDesignAssistant(query, sessionId) {
+        return this.client.then(client => {
+            const data = {
+                text: query,
+                sessionId: sessionId
+            };
+            const payload = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            const requestBody = {
+                requestBody: data
+            };
+            return client.apis['API Design Assistant'].designAssistantChat(payload, requestBody, this._requestMetaData());
+        }).then(response => {
+            return response.body;
+        }).catch(error => {
+            throw error;
+        });
+    }
+
+    payloadGenAPIDesignAssistant(sessionId) {
+        return this.client.then(client => {
+            const data = {
+                sessionId: sessionId
+            };
+            const payload = {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            const requestBody = {
+                requestBody: data
+            };
+            return client.apis['API Design Assistant'].designAssistantApiPayloadGen(payload, requestBody, this._requestMetaData());
+        }).then(response => {
+            return response.body;
+        }).catch(error => {
+            throw error;
+        });
+    }
+    
     saveProduct() {
         const promisedAPIResponse = this.client.then(client => {
             const properties = client.spec.definitions.APIProduct.properties;
@@ -3584,6 +3650,106 @@ class API extends Resource {
         return restApiClient.then(client => {
             return client.apis['LLMProvider'].getLLMProviderEndpointConfiguration(
                 { llmProviderId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the LLM provider model list
+     * 
+     * @param {String} llmProviderId LLM Provider ID
+     * @returns {Promise} Promise containing the list of LLM provider models
+     */
+    static getLLMProviderModelList(llmProviderId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['LLMProvider'].getLLMProviderModels(
+                { llmProviderId },
+                this._requestMetaData(),
+            )
+        });
+    }
+
+    /**
+     * Get all endpoints of the API
+     * @param {String} apiId UUID of the API
+     * @param {number} limit Limit of the endpoints list which needs to be retrieved
+     * @param {number} offset Offset of the endpoints list which needs to be retrieved 
+     * @returns {Promise} Promise containing the list of endpoints of the API
+     */
+    static getApiEndpoints(apiId, limit = null, offset = 0) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['API Endpoints'].getApiEndpoints(
+                {
+                    apiId: apiId,
+                    limit,
+                    offset,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add an endpoint to the API
+     * @param {String} apiId UUID of the API 
+     * @param {Object} endpointBody Endpoint object to be added
+     * @returns {Promise} Promise containing the added endpoint object
+     */
+    static addApiEndpoint(apiId, endpointBody) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['API Endpoints'].addApiEndpoint(
+                {
+                    apiId: apiId,
+                },
+                {
+                    requestBody: endpointBody,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update an endpoint of the API
+     * @param {String} apiId UUID of the API
+     * @param {String} endpointId UUID of the endpoint
+     * @param {Object} endpointBody Updated endpoint object
+     * @returns {Promise} Promise containing the updated endpoint
+     */
+    static updateApiEndpoint(apiId, endpointId, endpointBody) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['API Endpoints'].updateApiEndpoint(
+                {
+                    apiId: apiId,
+                    endpointId: endpointId,
+                },
+                {
+                    requestBody: endpointBody,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete an endpoint of the API
+     * @param {String} apiId UUID of the API
+     * @param {String} endpointId UUID of the endpoint
+     * @returns {Promise} Promise containing the deleted endpoint
+     */
+    static deleteApiEndpoint(apiId, endpointId) {
+        const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
+        return restApiClient.then(client => {
+            return client.apis['API Endpoints'].deleteApiEndpoint(
+                {
+                    apiId: apiId,
+                    endpointId: endpointId,
+                },
                 this._requestMetaData(),
             );
         });

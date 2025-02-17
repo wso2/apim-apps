@@ -64,9 +64,22 @@ const CONSTS = {
             proxyProtocol: '',
         },
     },
+    DEFAULT_ENDPOINT: {
+        id: null,
+        name: '',
+        deploymentStage: '',
+        endpointConfig: {
+            endpoint_type: 'http',
+        },
+    },
+    DEPLOYMENT_STAGE: {
+        production: 'PRODUCTION',
+        sandbox: 'SANDBOX',
+    },
     GATEWAY_TYPE: {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
+        AWS: 'AWS',
     },
     PATH_TEMPLATES: {
         COMMON_POLICIES: '/policies',

@@ -31,7 +31,6 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
-import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 import ProvideGraphQL from './Steps/ProvideGraphQL';
 
@@ -47,7 +46,6 @@ export default function ApiCreateGraphQL(props) {
     const { multiGateway } = props;
     const [wizardStep, setWizardStep] = useState(0);
     const history = useHistory();
-    const { data: settings } = usePublisherSettings();
     const [policies, setPolicies] = useState([]);
 
     useEffect(() => {
@@ -152,20 +150,11 @@ export default function ApiCreateGraphQL(props) {
             graphQLInfo: { operations },
         } = apiInputs;
 
-        let defaultGatewayType;
-        if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
-            defaultGatewayType = 'wso2/synapse';
-        } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')){
-            defaultGatewayType = 'wso2/apk';
-        } else {
-            defaultGatewayType = 'default';
-        }
-
         const additionalProperties = {
             name,
             version,
             context,
-            gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
+            gatewayType,
             policies,
             operations,
         };

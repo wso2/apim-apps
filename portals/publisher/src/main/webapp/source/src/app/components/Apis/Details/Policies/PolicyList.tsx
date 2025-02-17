@@ -72,6 +72,7 @@ interface PolicyListPorps {
     commonPolicyList: Policy[];
     fetchPolicies: () => void;
     isChoreoConnectEnabled: boolean;
+    gatewayType: string;
 }
 
 /**
@@ -79,11 +80,11 @@ interface PolicyListPorps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} List of policies local to the API segment.
  */
-const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetchPolicies, isChoreoConnectEnabled}) => {
+const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetchPolicies, isChoreoConnectEnabled, 
+    gatewayType}) => {
 
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [dialogOpen, setDialogOpen] = React.useState(false);
-    let gatewayType = CONSTS.GATEWAY_TYPE.synapse;
 
     const handleAddPolicy = () => {
         setDialogOpen(true);
@@ -92,10 +93,6 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
     const handleAddPolicyClose = () => {
         setDialogOpen(false);
     };
-
-    if (isChoreoConnectEnabled) {
-        gatewayType = CONSTS.GATEWAY_TYPE.choreoConnect;
-    }
 
     return (
         <StyledPaper className={classes.paperPosition}>

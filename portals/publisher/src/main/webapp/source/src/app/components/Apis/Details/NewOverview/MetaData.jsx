@@ -145,7 +145,10 @@ function MetaData(props) {
                             </Grid>
                             <Grid item xs={12} md={6} lg={8}>
                                 <Typography component='p' variant='body1'>
-                                    {api.gatewayType === 'wso2/synapse' ? 'Regular' : 'APK'}
+                                    {api.gatewayType === 'wso2/synapse' && 'Regular'}
+                                    {api.gatewayType === 'wso2/apk' && 'APK'}
+                                    {api.gatewayType !== 'wso2/synapse' && api.gatewayType !== 'wso2/apk' 
+                                        && api.gatewayType}
                                 </Typography>
                             </Grid>
                         </>
