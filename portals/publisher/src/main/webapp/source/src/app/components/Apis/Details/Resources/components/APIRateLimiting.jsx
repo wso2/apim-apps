@@ -104,7 +104,7 @@ function APIRateLimiting(props) {
     useEffect(() => {
         if (!isLoading) {
             setComponentValidator(publisherSettings.gatewayFeatureCatalog
-                .gatewayFeatures[api.gatewayType].resources);
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources);
         }
     }, [isLoading]);
 

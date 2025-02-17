@@ -809,7 +809,8 @@ export default function DesignConfigurations() {
                                     <Box py={1}>
                                         {api.apiType !== API.CONSTS.APIProduct &&
                                             settings && settings.gatewayFeatureCatalog
-                                            .gatewayFeatures[api.gatewayType].basic.includes("advertised") && (
+                                            .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
+                                            .basic.includes("advertised") && (
                                             <AdvertiseInfo
                                                 oldApi={api}
                                                 api={apiConfig}
@@ -820,7 +821,8 @@ export default function DesignConfigurations() {
                                         )}
                                     </Box>
                                     { settings && !settings.portalConfigurationOnlyModeEnabled &&
-                                        settings.gatewayFeatureCatalog.gatewayFeatures[api.gatewayType]
+                                        settings.gatewayFeatureCatalog
+                                            .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                             .basic.includes("defaultVersion") &&
                                             <Box py={1}>
                                                 <DefaultVersion api={apiConfig}
