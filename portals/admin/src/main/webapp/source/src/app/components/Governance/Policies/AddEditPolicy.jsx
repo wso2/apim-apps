@@ -608,6 +608,7 @@ function AddEditPolicy(props) {
                                 })}
                                 fullWidth
                                 multiline
+                                rows={3}
                                 error={hasErrors('description', description, validating)}
                                 helperText={hasErrors('description', description, validating) || intl.formatMessage({
                                     id: 'Governance.Policies.AddEdit.form.description.help',
