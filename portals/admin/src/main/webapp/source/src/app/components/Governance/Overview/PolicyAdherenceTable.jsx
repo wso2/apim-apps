@@ -70,8 +70,8 @@ export default function PolicyAdherenceTable() {
     const intl = useIntl();
 
     // TODO: reuse this function in other components
-    const renderProgress = (followed, total) => {
-        if (total === 0) {
+    const renderProgress = (followed, total, status) => {
+        if (status === 'UNAPPLIED') {
             return (
                 <Typography variant="body2" color="textSecondary">
                     {intl.formatMessage({
@@ -202,7 +202,8 @@ export default function PolicyAdherenceTable() {
                 customBodyRender: (value, tableMeta) => {
                     const followed = tableMeta.rowData[3]?.compliant || 0;
                     const total = (tableMeta.rowData[3]?.nonCompliant + followed) || 0;
-                    return renderProgress(followed, total);
+                    const status = tableMeta.rowData[2];
+                    return renderProgress(followed, total, status);
                 },
                 setCellHeaderProps: () => ({
                     sx: {
