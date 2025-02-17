@@ -99,6 +99,7 @@ const Policies: React.FC = () => {
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType !== 'wso2/synapse');
     const { showMultiVersionPolicies } = Configurations.apis;
     const [selectedTab, setSelectedTab] = useState((api.apiPolicies != null) ? 0 : 1);
+    const [gateway, setGateway] = useState<string>("");
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -214,6 +215,7 @@ const Policies: React.FC = () => {
                 // Get synpase gateway supported policies
                 gatewayType = 'Synapse';
             }
+            setGateway(gatewayType);
 
             let filteredApiPolicyByGatewayTypeList = null;
             let filteredCommonPolicyByGatewayTypeList = null;
@@ -629,7 +631,7 @@ const Policies: React.FC = () => {
                             commonPolicyList={commonPolicies}
                             fetchPolicies={fetchPolicies}
                             isChoreoConnectEnabled={isChoreoConnectEnabled}
-                            gatewayType={api.gatewayType}
+                            gatewayType={gateway}
                         />
                     </Box>
                 </Box>
