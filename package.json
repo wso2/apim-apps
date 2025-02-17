@@ -1,6 +1,40 @@
 {
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
     "@material-ui/icons": "^4.11.3",
-    "@types/react": "^17.0.83"
+    "@mui/icons-material": "^6.4.1",
+    "@mui/material": "^6.4.1",
+    "@mui/styles": "^6.4.1",
+    "@storybook/react-webpack5": "^8.5.2",
+    "@types/react": "^17.0.83",
+    "react": "^18.0.0",
+    "react-intl": "^7.1.5",
+    "react-router-dom": "^7.1.3"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.26.7",
+    "@babel/preset-env": "^7.26.7",
+    "@babel/preset-react": "^7.26.3",
+    "@babel/preset-typescript": "^7.26.0",
+    "@chromatic-com/storybook": "^3.2.4",
+    "@storybook/addon-essentials": "^8.5.2",
+    "@storybook/addon-interactions": "^8.5.1",
+    "@storybook/addon-onboarding": "^8.5.1",
+    "@storybook/blocks": "^8.5.1",
+    "@storybook/builder-webpack5": "^8.5.2",
+    "@storybook/manager-webpack5": "^6.5.16",
+    "@storybook/react": "^8.5.1",
+    "@storybook/react-vite": "^8.5.1",
+    "@storybook/test": "^8.5.1",
+    "babel-loader": "^9.2.1",
+    "prop-types": "^15.8.1",
+    "react-docgen": "^7.1.1",
+    "react-docgen-typescript-loader": "^3.7.2",
+    "storybook": "^8.5.1"
+  },
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build"
   }
 }

@@ -65,6 +65,7 @@ const classes = {
     imageWrapper: `${PREFIX}-imageWrapper`,
     imageOverlap: `${PREFIX}-imageOverlap`,
     chipWrapper: `${PREFIX}-chipWrapper`,
+    apiVector: `${PREFIX}-apiVector`,
     chipWrapper2: `${PREFIX}-chipWrapper2`,
     chipWrapper3: `${PREFIX}-chipWrapper3`,
     ratingWrapper: `${PREFIX}-ratingWrapper`,
@@ -220,6 +221,13 @@ const StyledCard = styled(Card)((
 
     [`& .${classes.ratingWrapper}`]: {
         marginTop: '20px',
+    },
+
+    [`& .${classes.apiVector}`]: {
+        height: '100px',
+        width: '100px',
+        borderRadius: '8px',
+        marginBottom: '16px'
     },
 
     [`& .${classes.textblock}`]: {
@@ -572,7 +580,7 @@ class ApiThumbClassicLegacy extends React.Component {
                         to={detailsLink}
                         area-label={'Go to ' + name}
                     >
-                        <div style={{ position: 'relative' }}>
+                        {/* <div style={{ position: 'relative' }}>
                             <CardMedia area-hidden='true' classes={{ root: 'image-thumb-card-root' }}>
                                 {!defaultImage && ImageView}
                                 {defaultImage && <img src={app.context + defaultImage} alt='img' />}
@@ -582,8 +590,19 @@ class ApiThumbClassicLegacy extends React.Component {
                                     <MonetizationOnIcon fontSize='medium' style={{ color: '#FFD700', paddingLeft: '2px' }} />
                                 </div>
                             )}
-                        </div>
+                        </div> */}
                         <CardContent classes={{ root: classNames(classes.apiDetails, 'image-thumb-card-content') }}>
+                            <div style={{ position: 'relative' }}>
+                                <CardMedia area-hidden='true' classes={{ root: 'image-thumb-card-root' }}  >
+                                    {!defaultImage && ImageView}
+                                    {defaultImage && <img src={app.context + defaultImage} alt='img' />}
+                                </CardMedia>
+                                {tileDisplayInfo.showMonetizedState && api.monetizedInfo && (
+                                    <div className={classes.thumbLeft} style={{ position: 'absolute', bottom: 0 }}>
+                                        <MonetizationOnIcon fontSize='medium' style={{ color: '#FFD700', paddingLeft: '2px' }} />
+                                    </div>
+                                )}
+                            </div>
                             <Typography
                                 className={classNames(classes.thumbHeader, 'image-thumb-card-thumb-header')}
                                 variant='h5'

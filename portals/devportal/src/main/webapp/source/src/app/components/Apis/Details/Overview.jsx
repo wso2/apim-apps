@@ -65,9 +65,12 @@ const classes = {
     textLabel: `${PREFIX}-textLabel`,
     textValue: `${PREFIX}-textValue`,
     apiThumb: `${PREFIX}-apiThumb`,
+    apiMeta: `${PREFIX}-apiMeta`,
     chipRoot: `${PREFIX}-chipRoot`,
     subtitle: `${PREFIX}-subtitle`,
     cardRoot: `${PREFIX}-cardRoot`,
+    metaCard: `${PREFIX}-metaCard`,
+    detailsCard: `${PREFIX}-detailsCard`,
     sectionTitle: `${PREFIX}-sectionTitle`,
     moreLink: `${PREFIX}-moreLink`,
     table: `${PREFIX}-table`,
@@ -84,10 +87,8 @@ const Root = styled('div')((
     },
 ) => ({
     [`& .${classes.root}`]: {
-        width: '100%',
         height: '100vh',
-        paddingLeft: theme.spacing(2),
-        paddingTop: theme.spacing(2),
+        padding: theme.spacing(2),
     },
 
     [`& .${classes.linkTitle}`]: {
@@ -108,10 +109,11 @@ const Root = styled('div')((
     },
 
     [`& .${classes.apiThumb}`]: {
-        padding: theme.spacing(),
-        border: 'solid 1px',
-        borderColor: theme.palette.grey[800],
+        // padding: theme.spacing(),
+        // border: 'solid 1px',
+        // borderColor: theme.palette.grey[800],
         width: 100,
+        marginRight: '12px',
     },
 
     [`& .${classes.chipRoot}`]: {
@@ -130,6 +132,17 @@ const Root = styled('div')((
         marginTop: theme.spacing(2),
     },
 
+    [`& .${classes.metaCard}`]: {
+        minHeight: 135,
+        marginRight: theme.spacing(),
+        marginTop: theme.spacing(2),
+    },
+
+    [`& .${classes.detailsCard}`]: {
+        marginRight: theme.spacing(),
+        marginTop: theme.spacing(2),
+    },
+
     [`& .${classes.sectionTitle}`]: {
         color: theme.palette.grey[800],
         fontSize: '0.95rem',
@@ -138,6 +151,14 @@ const Root = styled('div')((
 
     [`& .${classes.moreLink}`]: {
         fontSize: '14px',
+    },
+
+    [`& .${classes.apiMeta}`]: {
+        marginLeft: '16px',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'flex-end',
+        // paddingBottom: '20px',
     },
 
     [`& .${classes.table}`]: {
@@ -159,7 +180,7 @@ const Root = styled('div')((
     },
 
     [`& .${classes.originalDevportalUrl}`]: {
-        marginTop: theme.spacing(4),
+        marginTop: theme.spacing(2),
     },
 }));
 
@@ -443,232 +464,420 @@ function Overview() {
         <Root>
             <Paper className={classes.root} elevation={0}>
                 <Grid container>
-                    <Grid item sm={8} xl={9}>
+                    <Grid item sm={12} xl={12} md={12}>
                         <Box display='flex' flexDirection='column'>
-                            <Box display='flex' flexDirection='row'>
-                                {showThumbnail && (
-                                    <Box id='overview-thumbnail' width={86} display='flex' alignItems='center'>
-                                        <Box className={classes.apiThumb}>
-                                            <ApiThumb
-                                                api={api}
-                                                customWidth={70}
-                                                customHeight={50}
-                                                showInfo={false}
-                                            />
+                            <Card className={classes.metaCard} >
+                                <CardContent>
+                                    <Box display='flex' flexDirection='row' justifyContent='space-between'>
+                                        <Box display='flex'>
+                                            {showThumbnail && (
+                                                <Box id='overview-thumbnail' width={100} display='flex'>
+                                                    <Box className={classes.apiThumb}>
+                                                        <ApiThumb
+                                                            api={api}
+                                                            customWidth={70}
+                                                            customHeight={50}
+                                                            showInfo={false}
+                                                        />
+                                                    </Box>
+                                                </Box>
+                                            )}
+                                            <Box ml={3} mr={2} className={classes.apiMeta}>
+                                                <Typography variant='h4' component='h2'>{api.name}</Typography>
+                                                {api.description && (
+                                                    <Typography variant='body2' gutterBottom align='left' className={classes.description}>
+                                                        {(descriptionIsBig && descriptionHidden) ? smallDescription : api.description}
+                                                        {descriptionIsBig && (
+                                                            <a aria-label='Show more/less description' onClick={collapseAllDescription} href='#'>
+                                                                {descriptionHidden
+                                                                    ? intl.formatMessage({
+                                                                        defaultMessage: ' more',
+                                                                        id: 'Apis.Details.Overview.description.more',
+                                                                    })
+                                                                    : intl.formatMessage({
+                                                                        defaultMessage: ' less',
+                                                                        id: 'Apis.Details.Overview.description.less',
+                                                                    })}
+                                                            </a>
+                                                        )}
+                                                    </Typography>
+                                                )}
+                                                <Box display='flex' area-lable='API version and owner details' flexDirection='row'>
+                                                    <Typography variant='body2' gutterBottom align='left' className={classes.textLabel}>
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Overview.list.version'
+                                                            defaultMessage='Version '
+                                                        />
+                                                    </Typography>
+                                                    {' '}
+                                                    <Typography variant='body2' gutterBottom align='left' className={classes.textValue}>
+                                                        {api.version}
+                                                    </Typography>
+                                                    <VerticalDivider height={20} />
+                                                    <Typography variant='body2' gutterBottom align='left' className={classes.textLabel}>
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Overview.list.provider'
+                                                            defaultMessage='By '
+                                                        />
+                                                    </Typography>
+                                                    {' '}
+                                                    <Typography variant='body2' gutterBottom align='left' className={classes.textValue}>
+                                                        {getProvider()}
+                                                    </Typography>
+                                                </Box>
+                                                <Box display='flex' flexDirection='row' mb={1}>
+                                                    <Box mr={1}>
+                                                        <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Overview.tags.title'
+                                                                defaultMessage='Tags'
+                                                            />
+                                                        </Typography>
+                                                    </Box>
+
+                                                    <Typography variant='body2' className={classes.endpointLabel}>
+                                                        {api.tags.map((tag) => (
+                                                            <Chip
+                                                                label={tag}
+                                                                key={tag}
+                                                                component={Link}
+                                                                clickable
+                                                                to={`/apis?offset=0&query=tag:${tag}`}
+                                                                classes={{ root: classes.chipRoot }}
+                                                                variant='outlined'
+                                                                size='small'
+                                                            />
+                                                        ))}
+                                                        {api.tags.length === 0 && (
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Overview.list.tags.not'
+                                                                defaultMessage='Not Tagged'
+                                                            />
+                                                        )}
+                                                    </Typography>
+                                                </Box>
+                                            </Box>
+                                        </Box>
+                                        <Box>
+                                            <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Overview.source'
+                                                        defaultMessage='Source'
+                                                    />
+                                            </Typography>
+                                                {(api.type === 'HTTP' || api.type === 'SOAPTOREST'
+                                                || api.type === 'SOAP' || api.type === 'GRAPHQL' || api.type === 'WS' || api.type === 'WEBSUB'
+                                                || api.type === 'SSE' || api.type === 'ASYNC') && (
+                                                <Box >
+                                                    {selectedEndpoint && (<SourceDownload selectedEndpoint={selectedEndpoint} />)}
+                                                </Box>
+                                            )}
+                                            {user && showRating && (
+                                                <Box display='flex' flexDirection='row' alignItems='center'>
+                                                    <StarRatingSummary avgRating={rating.avgRating} reviewCount={rating.total} returnCount={rating.count} />
+                                                    <VerticalDivider height={30} />
+                                                    <StarRatingBar
+                                                        apiId={api.id}
+                                                        isEditable
+                                                        showSummary={false}
+                                                        setRatingUpdate={setRatingUpdate}
+                                                    />
+                                                </Box>
+                                            )}
                                         </Box>
                                     </Box>
-                                )}
-                                <Box ml={3} mr={2}>
-                                    <Typography variant='h4' component='h2'>{api.name}</Typography>
-                                    {api.description && (
-                                        <Typography variant='body2' gutterBottom align='left' className={classes.description}>
-                                            {(descriptionIsBig && descriptionHidden) ? smallDescription : api.description}
-                                            {descriptionIsBig && (
-                                                <a aria-label='Show more/less description' onClick={collapseAllDescription} href='#'>
-                                                    {descriptionHidden
-                                                        ? intl.formatMessage({
-                                                            defaultMessage: ' more',
-                                                            id: 'Apis.Details.Overview.description.more',
-                                                        })
-                                                        : intl.formatMessage({
-                                                            defaultMessage: ' less',
-                                                            id: 'Apis.Details.Overview.description.less',
-                                                        })}
-                                                </a>
-                                            )}
-                                        </Typography>
-                                    )}
-                                    <Box display='flex' area-lable='API version and owner details' flexDirection='row'>
-                                        <Typography variant='body2' gutterBottom align='left' className={classes.textLabel}>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.list.version'
-                                                defaultMessage='Version '
-                                            />
-                                        </Typography>
-                                        {' '}
-                                        <Typography variant='body2' gutterBottom align='left' className={classes.textValue}>
-                                            {api.version}
-                                        </Typography>
-                                        <VerticalDivider height={20} />
-                                        <Typography variant='body2' gutterBottom align='left' className={classes.textLabel}>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.list.provider'
-                                                defaultMessage='By '
-                                            />
-                                        </Typography>
-                                        {' '}
-                                        <Typography variant='body2' gutterBottom align='left' className={classes.textValue}>
-                                            {getProvider()}
-                                        </Typography>
-                                    </Box>
-                                </Box>
-                            </Box>
-                            <Box display='flex' flexDirection='row' alignItems='center' mt={2} pr={6}>
-                                {
-                                    (api.gatewayVendor === 'solace') ? (
-                                        <SolaceEndpoints />
-                                    ) : (
-                                        <Environments updateSelectedEndpoint={updateSelectedEndpoint} selectedEndpoint={selectedEndpoint} />
-                                    )
-                                }
-                            </Box>
-                            <Box
-                                display='flex'
-                                flexDirection='row'
-                                alignItems='center'
-                                className={classes.originalDevportalUrl}
-                                mt={2}
-                                pr={6}
-                            >
-                                {advertiseInfo && advertiseInfo.advertised && advertiseInfo.originalDevPortalUrl && (
-                                    <MUILink
-                                        target='_blank'
-                                        rel='noopener noreferrer'
-                                        href={advertiseInfo.originalDevPortalUrl}
-                                        variant='body3'
-                                        underline='hover'
-                                    >
-                                        <FormattedMessage
-                                            id={'Apis.Details.Credentials.Credentials.visit.original.'
-                                                + 'developer.portal'}
-                                            defaultMessage='Visit Original Developer Portal'
-                                        />
-                                        <LaunchIcon className={classes.launchIcon} />
-                                    </MUILink>
-                                )}
-                            </Box>
-                            {isSubValidationDisabled && (
-                                <Box mt={2} ml={1} pr={6}>
-                                    <InlineMessage
-                                        type='info'
-                                        title={(
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.subscriptions.not.required'
-                                                defaultMessage='No subscriptions required'
-                                            />
-                                        )}
-                                    >
-                                        <Typography component='p'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.subscriptions.not.required.content'
-                                                defaultMessage='Subscriptions are not required for this API.
-                                                    You can consume this without subscribing to it.'
-                                            />
-                                        </Typography>
-                                    </InlineMessage>
-                                </Box>
-                            )}
-                            {api.gatewayVendor === 'wso2' && allPolicies && allPolicies.length > 0 && !isSubValidationDisabled && (
-                                <>
-                                    <Box mt={6}>
-                                        <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.business.plans.title'
-                                                defaultMessage='Business Plans'
-                                            />
-                                        </Typography>
-                                    </Box>
-                                    <Box
-                                        flexWrap='wrap'
-                                        display='flex'
-                                        flexDirection='row'
-                                        alignItems='center'
-                                        mt={2}
-                                        ml={1}
-                                        textAlign='center'
-                                    >
-                                        {allPolicies && allPolicies.map((tier) => (
-                                            tier.name.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) ? null : (
-                                                <Card className={classes.cardRoot} key={tier.name}>
-                                                    <CardContent>
-                                                        <Typography className={classes.cardMainTitle} color='textSecondary' gutterBottom>
-                                                            {tier.name}
+                                </CardContent>
+                            </Card>
+                            <Grid item sm={12} xl={12} md={12} display='flex' gap={1}>
+                                <Grid item sm={12} xl={8} md={8}>
+                                    <Card className={classes.detailsCard} >
+                                        <CardContent>
+                                            <Box display='flex' flexDirection='row' alignItems='center' mt={2} pr={6}>
+                                                {
+                                                    (api.gatewayVendor === 'solace') ? (
+                                                        <SolaceEndpoints />
+                                                    ) : (
+                                                        <Environments updateSelectedEndpoint={updateSelectedEndpoint} selectedEndpoint={selectedEndpoint} />
+                                                    )
+                                                }
+                                            </Box>
+                                            <Box
+                                                display='flex'
+                                                flexDirection='row'
+                                                alignItems='center'
+                                                className={classes.originalDevportalUrl}
+                                                mt={2}
+                                                pr={6}
+                                            >
+                                                {advertiseInfo && advertiseInfo.advertised && advertiseInfo.originalDevPortalUrl && (
+                                                    <MUILink
+                                                        target='_blank'
+                                                        rel='noopener noreferrer'
+                                                        href={advertiseInfo.originalDevPortalUrl}
+                                                        variant='body3'
+                                                        underline='hover'
+                                                    >
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Credentials.Credentials.visit.original.'
+                                                                + 'developer.portal'}
+                                                            defaultMessage='Visit Original Developer Portal'
+                                                        />
+                                                        <LaunchIcon className={classes.launchIcon} />
+                                                    </MUILink>
+                                                )}
+                                            </Box>
+                                            {isSubValidationDisabled && (
+                                                <Box mt={2} ml={1} pr={6}>
+                                                    <InlineMessage
+                                                        type='info'
+                                                        title={(
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Overview.subscriptions.not.required'
+                                                                defaultMessage='No subscriptions required'
+                                                            />
+                                                        )}
+                                                    >
+                                                        <Typography component='p'>
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Overview.subscriptions.not.required.content'
+                                                                defaultMessage='Subscriptions are not required for this API.
+                                                                    You can consume this without subscribing to it.'
+                                                            />
                                                         </Typography>
-                                                        <Box mt={2}>
-                                                            <Typography className={classes.requestCount} color='textSecondary'>
-                                                                {tier.requestCount === 2147483647 ? 'Unlimited' : tier.requestCount}
-                                                            </Typography>
-                                                        </Box>
-                                                        <Box>
-                                                            <Typography className={classes.requestUnit} color='textSecondary'>
+                                                    </InlineMessage>
+                                                </Box>
+                                            )}
+                                            {api.gatewayVendor === 'wso2' && allPolicies && allPolicies.length > 0 && !isSubValidationDisabled && (
+                                                <>
+                                                    <Box mt={2}>
+                                                        <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Overview.business.plans.title'
+                                                                defaultMessage='Business Plans'
+                                                            />
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box
+                                                        flexWrap='wrap'
+                                                        display='flex'
+                                                        flexDirection='row'
+                                                        alignItems='center'
+                                                        mt={2}
+                                                        ml={1}
+                                                        textAlign='center'
+                                                    >
+                                                        {allPolicies && allPolicies.map((tier) => (
+                                                            tier.name.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) ? null : (
+                                                                <Card className={classes.cardRoot} key={tier.name}>
+                                                                    <CardContent>
+                                                                        <Typography className={classes.cardMainTitle} color='textSecondary' gutterBottom>
+                                                                            {tier.name}
+                                                                        </Typography>
+                                                                        <Box mt={2}>
+                                                                            <Typography className={classes.requestCount} color='textSecondary'>
+                                                                                {tier.requestCount === 2147483647 ? 'Unlimited' : tier.requestCount}
+                                                                            </Typography>
+                                                                        </Box>
+                                                                        <Box>
+                                                                            <Typography className={classes.requestUnit} color='textSecondary'>
+                                                                                <FormattedMessage
+                                                                                    id='Apis.Details.Overview.business.plans.requests.unit'
+                                                                                    defaultMessage='Requests/{timeUnit}'
+                                                                                    values={{
+                                                                                        timeUnit: tier.timeUnit in subscriptionTimeUnits
+                                                                                            ? subscriptionTimeUnits[tier.timeUnit]
+                                                                                            : tier.timeUnit,
+                                                                                    }}
+                                                                                />
+                                                                            </Typography>
+                                                                        </Box>
+                                                                    </CardContent>
+                                                                </Card>
+                                                            )
+                                                        ))}
+                                                    </Box>
+                                                </>
+                                            )}
+                                            {(showCredentials && subscribedApplications.length > 0) && !isSubValidationDisabled && (
+                                                <>
+                                                    <Box mt={2}>
+                                                        <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Overview.subscriptions.title'
+                                                                defaultMessage='Subscriptions'
+                                                            />
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box mt={2} ml={1} pr={6}>
+                                                        <TableContainer component={Paper}>
+                                                            <Table className={classes.table} aria-label='simple table'>
+                                                                <TableHead>
+                                                                    <TableRow>
+                                                                        <TableCell>
+                                                                            <FormattedMessage
+                                                                                id={'Apis.Details.Overview.'
+                                                                                    + 'api.credentials.subscribed.apps.name'}
+                                                                                defaultMessage='Application Name'
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            <FormattedMessage
+                                                                                id={'Apis.Details.Overview.api.'
+                                                                                    + 'credentials.subscribed.apps.tier'}
+                                                                                defaultMessage='Throttling Tier'
+                                                                            />
+                                                                        </TableCell>
+                                                                        <TableCell>
+                                                                            <FormattedMessage
+                                                                                id={'Apis.Details.Overview.'
+                                                                                    + 'api.credentials.subscribed.apps.status'}
+                                                                                defaultMessage='Application Status'
+                                                                            />
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                </TableHead>
+                                                                <TableBody>
+                                                                    {subscribedApplications.map((app) => (
+                                                                        <TableRow key={app.label}>
+                                                                            <TableCell component='th' scope='row'>
+                                                                                <MUILink
+                                                                                    component={Link}
+                                                                                    to={`/applications/${app.value}/overview`}
+                                                                                    underline='hover'
+                                                                                >
+                                                                                    {app.label}
+                                                                                </MUILink>
+                                                                            </TableCell>
+                                                                            <TableCell>{app.policy}</TableCell>
+                                                                            <TableCell>{app.status}</TableCell>
+                                                                        </TableRow>
+                                                                    ))}
+                                                                </TableBody>
+                                                            </Table>
+                                                        </TableContainer>
+                                                    </Box>
+                                                </>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                                <Grid item sm={12} xl={4} md={4}>
+                                    <Card className={classes.detailsCard} >
+                                        <CardContent>
+                                            <Box mt={1} mb={1} display='flex'>
+                                                <Typography variant='subtitle2' component='h3' className={classes.sectionTitle} mr={1}>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Overview.subscriptions.title'
+                                                        defaultMessage='Subscriptions'
+                                                    />
+                                                </Typography>
+                                                { !isSubValidationDisabled ? (
+                                                    <Typography variant='body2'>
+                                                        {api.subscriptions || 0}
+                                                    </Typography>
+                                                ) : (
+                                                    <Typography variant='body2'>
+                                                        N/A
+                                                    </Typography>
+                                                )}
+                                            </Box>
+                                            {(showDocuments && allDocuments && allDocuments.length > 0) && (
+                                                <>
+                                                    <Box mt={6}>
+                                                        <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Overview.documents.title'
+                                                                defaultMessage='Documents'
+                                                            />
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box pr={2} pl={1}>
+                                                        <OverviewDocuments apiId={api.id} />
+                                                        {allDocuments.length > 2 && (
+                                                            <MUILink
+                                                                component={Link}
+                                                                to={'/apis/' + api.id + '/documents'}
+                                                                className={classes.moreLink}
+                                                                underline='hover'
+                                                            >
+                                                                {allDocuments.length - 2}
+                                                                {' '}
                                                                 <FormattedMessage
-                                                                    id='Apis.Details.Overview.business.plans.requests.unit'
-                                                                    defaultMessage='Requests/{timeUnit}'
-                                                                    values={{
-                                                                        timeUnit: tier.timeUnit in subscriptionTimeUnits
-                                                                            ? subscriptionTimeUnits[tier.timeUnit]
-                                                                            : tier.timeUnit,
-                                                                    }}
+                                                                    id='Apis.Details.Overview.comments.show.more.more'
+                                                                    defaultMessage='more'
                                                                 />
-                                                            </Typography>
-                                                        </Box>
-                                                    </CardContent>
-                                                </Card>
-                                            )
-                                        ))}
-                                    </Box>
-                                </>
-                            )}
-                            {(showCredentials && subscribedApplications.length > 0) && !isSubValidationDisabled && (
-                                <>
-                                    <Box mt={6}>
-                                        <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.subscriptions.title'
-                                                defaultMessage='Subscriptions'
-                                            />
-                                        </Typography>
-                                    </Box>
-                                    <Box mt={2} ml={1} pr={6}>
-                                        <TableContainer component={Paper}>
-                                            <Table className={classes.table} aria-label='simple table'>
-                                                <TableHead>
-                                                    <TableRow>
-                                                        <TableCell>
+                                                            </MUILink>
+                                                        )}
+                                                    </Box>
+                                                </>
+
+                                                    )}
+                                                    {api.businessInformation.businessOwnerEmail && (
+                                                        <>
+                                                            <Box mt={6}>
+                                                                <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
+                                                                    <FormattedMessage
+                                                                        id='Apis.Details.Overview.business.info'
+                                                                        defaultMessage='Business Info'
+                                                                    />
+                                                                </Typography>
+                                                            </Box>
+                                                            <Box mt={1}>
+                                                                <Typography variant='body2'>
+                                                                    {api.businessInformation.businessOwnerEmail}
+                                                                </Typography>
+                                                            </Box>
+                                                        </>
+                                                    )}
+                                            <Box mt={6}>
+                                                <Social />
+                                            </Box>
+                                            {getKeyManagers() && (
+                                                <>
+                                                    <Box mt={6}>
+                                                        <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
                                                             <FormattedMessage
-                                                                id={'Apis.Details.Overview.'
-                                                                    + 'api.credentials.subscribed.apps.name'}
-                                                                defaultMessage='Application Name'
+                                                                id='Apis.Details.Overview.key.manager'
+                                                                defaultMessage='Key Managers'
                                                             />
-                                                        </TableCell>
-                                                        <TableCell>
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box mt={1}>
+                                                        {getKeyManagers()}
+                                                    </Box>
+                                                </>
+                                            )}
+                                            {api.additionalProperties && Object.keys(api.additionalProperties).length > 0 && (
+                                                <>
+                                                    <Box mt={6}>
+                                                        <Typography variant='subtitle2' className={classes.sectionTitle}>
                                                             <FormattedMessage
-                                                                id={'Apis.Details.Overview.api.'
-                                                                    + 'credentials.subscribed.apps.tier'}
-                                                                defaultMessage='Throttling Tier'
+                                                                id='Apis.Details.Overview.additional.properties'
+                                                                defaultMessage='Additonal properties'
                                                             />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <FormattedMessage
-                                                                id={'Apis.Details.Overview.'
-                                                                    + 'api.credentials.subscribed.apps.status'}
-                                                                defaultMessage='Application Status'
-                                                            />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                </TableHead>
-                                                <TableBody>
-                                                    {subscribedApplications.map((app) => (
-                                                        <TableRow key={app.label}>
-                                                            <TableCell component='th' scope='row'>
-                                                                <MUILink
-                                                                    component={Link}
-                                                                    to={`/applications/${app.value}/overview`}
-                                                                    underline='hover'
-                                                                >
-                                                                    {app.label}
-                                                                </MUILink>
-                                                            </TableCell>
-                                                            <TableCell>{app.policy}</TableCell>
-                                                            <TableCell>{app.status}</TableCell>
-                                                        </TableRow>
-                                                    ))}
-                                                </TableBody>
-                                            </Table>
-                                        </TableContainer>
-                                    </Box>
-                                </>
-                            )}
+                                                        </Typography>
+                                                    </Box>
+                                                    <Box mt={1} ml={1}>
+                                                        {api.additionalProperties
+                                                            .filter(({ name, display }) => display && !['slack_url', 'github_repo'].includes(name))
+                                                            .map(({ name, value }) => {
+                                                                return (
+                                                                    <Typography variant='body2'>
+                                                                        {name}
+                                                                        {' '}
+                                                                        :
+                                                                        {' '}
+                                                                        {value}
+                                                                    </Typography>
+                                                                );
+                                                            })}
+                                                    </Box>
+                                                </>
+                                            )}
+                                        </CardContent>
+                                    </Card>
+                                </Grid>
+                            </Grid>
                             <Box mt={6}>
                                 {showComments && (
                                     <>
@@ -687,178 +896,6 @@ function Overview() {
                                 )}
                             </Box>
                         </Box>
-                    </Grid>
-                    <Grid item xs={4} xl={3}>
-                        {user && showRating && (
-                            <Box display='flex' flexDirection='row' alignItems='center'>
-                                <StarRatingSummary avgRating={rating.avgRating} reviewCount={rating.total} returnCount={rating.count} />
-                                <VerticalDivider height={30} />
-                                <StarRatingBar
-                                    apiId={api.id}
-                                    isEditable
-                                    showSummary={false}
-                                    setRatingUpdate={setRatingUpdate}
-                                />
-                            </Box>
-                        )}
-                        <Box mt={6}>
-                            <Social />
-                        </Box>
-                        {/* Subscription count */}
-                        <Box mt={2} mb={1}>
-                            <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
-                                <FormattedMessage
-                                    id='Apis.Details.Overview.subscriptions.title'
-                                    defaultMessage='Subscriptions'
-                                />
-                            </Typography>
-                            { !isSubValidationDisabled ? (
-                                <Typography variant='body2'>
-                                    {api.subscriptions || 0}
-                                </Typography>
-                            ) : (
-                                <Typography variant='body2'>
-                                    N/A
-                                </Typography>
-                            )}
-                        </Box>
-                        <Box mt={2} mb={1}>
-                            <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
-                                <FormattedMessage
-                                    id='Apis.Details.Overview.tags.title'
-                                    defaultMessage='Tags'
-                                />
-                            </Typography>
-                        </Box>
-
-                        <Typography variant='body2' className={classes.endpointLabel}>
-                            {api.tags.map((tag) => (
-                                <Chip
-                                    label={tag}
-                                    key={tag}
-                                    component={Link}
-                                    clickable
-                                    to={`/apis?offset=0&query=tag:${tag}`}
-                                    classes={{ root: classes.chipRoot }}
-                                    variant='outlined'
-                                    size='small'
-                                />
-                            ))}
-                            {api.tags.length === 0 && (
-                                <FormattedMessage
-                                    id='Apis.Details.Overview.list.tags.not'
-                                    defaultMessage='Not Tagged'
-                                />
-                            )}
-                        </Typography>
-
-                        {/* Documentation */}
-                        {(showDocuments && allDocuments && allDocuments.length > 0) && (
-                            <>
-                                <Box mt={6}>
-                                    <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
-                                        <FormattedMessage
-                                            id='Apis.Details.Overview.documents.title'
-                                            defaultMessage='Documents'
-                                        />
-                                    </Typography>
-                                </Box>
-                                <Box pr={2} pl={1}>
-                                    <OverviewDocuments apiId={api.id} />
-                                    {allDocuments.length > 2 && (
-                                        <MUILink
-                                            component={Link}
-                                            to={'/apis/' + api.id + '/documents'}
-                                            className={classes.moreLink}
-                                            underline='hover'
-                                        >
-                                            {allDocuments.length - 2}
-                                            {' '}
-                                            <FormattedMessage
-                                                id='Apis.Details.Overview.comments.show.more.more'
-                                                defaultMessage='more'
-                                            />
-                                        </MUILink>
-                                    )}
-                                </Box>
-                            </>
-
-                        )}
-                        {api.businessInformation.businessOwnerEmail && (
-                            <>
-                                <Box mt={6}>
-                                    <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
-                                        <FormattedMessage
-                                            id='Apis.Details.Overview.business.info'
-                                            defaultMessage='Business Info'
-                                        />
-                                    </Typography>
-                                </Box>
-                                <Box mt={1}>
-                                    <Typography variant='body2'>
-                                        {api.businessInformation.businessOwnerEmail}
-                                    </Typography>
-                                </Box>
-                            </>
-                        )}
-                        <Box mt={6}>
-                            <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
-                                <FormattedMessage
-                                    id='Apis.Details.Overview.source'
-                                    defaultMessage='Source'
-                                />
-                            </Typography>
-                        </Box>
-                        {(api.type === 'HTTP' || api.type === 'SOAPTOREST'
-                            || api.type === 'SOAP' || api.type === 'GRAPHQL' || api.type === 'WS' || api.type === 'WEBSUB'
-                            || api.type === 'SSE' || api.type === 'ASYNC') && (
-                            <Box mt={2}>
-                                {selectedEndpoint && (<SourceDownload selectedEndpoint={selectedEndpoint} />)}
-                            </Box>
-                        )}
-                        {/* Key Managers */}
-                        {getKeyManagers() && (
-                            <>
-                                <Box mt={6}>
-                                    <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>
-                                        <FormattedMessage
-                                            id='Apis.Details.Overview.key.manager'
-                                            defaultMessage='Key Managers'
-                                        />
-                                    </Typography>
-                                </Box>
-                                <Box mt={1}>
-                                    {getKeyManagers()}
-                                </Box>
-                            </>
-                        )}
-                        {api.additionalProperties && Object.keys(api.additionalProperties).length > 0 && (
-                            <>
-                                <Box mt={6}>
-                                    <Typography variant='subtitle2' className={classes.sectionTitle}>
-                                        <FormattedMessage
-                                            id='Apis.Details.Overview.additional.properties'
-                                            defaultMessage='Additonal properties'
-                                        />
-                                    </Typography>
-                                </Box>
-                                <Box mt={1} ml={1}>
-                                    {api.additionalProperties
-                                        .filter(({ name, display }) => display && !['slack_url', 'github_repo'].includes(name))
-                                        .map(({ name, value }) => {
-                                            return (
-                                                <Typography variant='body2'>
-                                                    {name}
-                                                    {' '}
-                                                    :
-                                                    {' '}
-                                                    {value}
-                                                </Typography>
-                                            );
-                                        })}
-                                </Box>
-                            </>
-                        )}
                     </Grid>
                 </Grid>
             </Paper>
