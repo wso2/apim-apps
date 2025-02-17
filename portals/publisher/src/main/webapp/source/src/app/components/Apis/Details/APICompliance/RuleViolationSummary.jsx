@@ -214,6 +214,7 @@ export default function RuleViolationSummary({ artifactId }) {
                 defaultMessage: 'Path',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value.path}</Typography>
                 ),
@@ -226,6 +227,7 @@ export default function RuleViolationSummary({ artifactId }) {
                 defaultMessage: 'Message',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value}</Typography>
                 ),
@@ -254,6 +256,7 @@ export default function RuleViolationSummary({ artifactId }) {
                 defaultMessage: 'Description',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value}</Typography>
                 ),
