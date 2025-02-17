@@ -132,9 +132,9 @@ function Endpoints(props) {
     useEffect(() => {
         if (!isLoading) {
             setComponentValidator(publisherSettings.gatewayFeatureCatalog
-                .gatewayFeatures[api.gatewayType].endpoints);
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].endpoints);
             setEndpointSecurityTypes(publisherSettings.gatewayFeatureCatalog
-                .gatewayFeatures[api.gatewayType].endpointSecurity);
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].endpointSecurity);
         }
     }, [isLoading]);
 

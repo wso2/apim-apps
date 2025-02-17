@@ -810,7 +810,7 @@ class Details extends Component {
                                 getLeftMenuItemForDefinitionByType={this.getLeftMenuItemForDefinitionByType}
                                 componentValidator=
                                     {settings && settings.gatewayFeatureCatalog
-                                        .gatewayFeatures[api.gatewayType]}
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']}
                             />
                             <Divider />
                             {!isAPIProduct && (
@@ -855,7 +855,8 @@ class Details extends Component {
                             )}
                             {!readOnlyUser && (isAPIProduct || (!isAPIProduct && !api.isWebSocket()
                                 && !api.isGraphql() && !isAsyncAPI)) &&
-                            (settings && settings.gatewayFeatureCatalog.gatewayFeatures[api.gatewayType]
+                            (settings && settings.gatewayFeatureCatalog
+                                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                 .tryout.includes('tryout')) && (
                                 <div>
                                     <Divider />
@@ -1028,7 +1029,8 @@ class Details extends Component {
                                         component={() => <Operations api={api}
                                             componentValidator={settings &&
                                                 settings.gatewayFeatureCatalog
-                                                    .gatewayFeatures[api.gatewayType].resources}
+                                                    .gatewayFeatures
+                                                    [api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources}
                                             updateAPI={this.updateAPI} />}
                                     />
                                     <Route
@@ -1047,7 +1049,7 @@ class Details extends Component {
                                         component={APIOperations}
                                     />
                                     {settings && settings.gatewayFeatureCatalog
-                                        .gatewayFeatures[api.gatewayType]
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                         .localScopes.includes("operationScopes") &&
                                         <Route path={Details.subPaths.SCOPES} component={() =>
                                             <Scope api={api} />} />
@@ -1061,7 +1063,7 @@ class Details extends Component {
                                         component={() => <Documents api={api} />}
                                     />
                                     {settings && settings.gatewayFeatureCatalog
-                                        .gatewayFeatures[api.gatewayType]
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                         .subscriptions.includes("subscriptions") &&
                                         <Route
                                             path={Details.subPaths.SUBSCRIPTIONS}
@@ -1104,7 +1106,7 @@ class Details extends Component {
                                     <Route path={Details.subPaths.SUBSCRIPTIONS} component={() =>
                                         <Subscriptions />} />
                                     {settings && settings.gatewayFeatureCatalog
-                                        .gatewayFeatures[api.gatewayType]
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                         .monetization.includes("monetization") &&
                                         <Route
                                             path={Details.subPaths.MONETIZATION}
