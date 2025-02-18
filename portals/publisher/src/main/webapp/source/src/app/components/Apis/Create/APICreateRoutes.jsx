@@ -47,19 +47,19 @@ const gatewayDetails = {
     'wso2/synapse': { 
         value: 'wso2/synapse',
         name: 'Regular Gateway', 
-        description: 'API gateway embedded in APIM runtime. Connect directly to APIM.', 
+        description: 'API gateway embedded in APIM runtime.', 
         isNew: false 
     },
     'wso2/apk': { 
         value: 'wso2/apk',
         name: 'APK Gateway', 
-        description: 'Fast API gateway on Kubernetes. Manages and secures APIs.', 
+        description: 'API gateway running on Kubernetes.', 
         isNew: false 
     },
     'AWS': { 
         value: 'AWS',
         name: 'AWS Gateway', 
-        description: 'API gateway offering from AWS cloud to secures APIs efficiently.', 
+        description: 'API gateway offered by AWS cloud.', 
         isNew: true 
     }
 };

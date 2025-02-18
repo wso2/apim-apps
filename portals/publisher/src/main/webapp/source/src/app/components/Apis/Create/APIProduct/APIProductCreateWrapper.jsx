@@ -376,6 +376,7 @@ export default function ApiProductCreateWrapper(props) {
                             onChange={handleOnChange}
                             api={apiInputs}
                             isAPIProduct
+                            settings={settings}
                         />
                     )}
                     {wizardStep === 1 && (

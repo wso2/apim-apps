@@ -309,7 +309,7 @@ export default function DevelopSectionMenu(props) {
                                 id='left-menu-itemendpoints'
                             />
                         )}
-                        {(componentValidator.localScopes.includes("localScopes") 
+                        {(componentValidator.localScopes.includes("operationScopes") 
                             && (!isAPIProduct)) && 
                             <LeftMenuItem
                                 text={intl.formatMessage({

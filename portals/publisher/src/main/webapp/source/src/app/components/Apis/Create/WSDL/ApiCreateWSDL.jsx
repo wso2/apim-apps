@@ -34,6 +34,7 @@ import { Alert as MUIAlert, AlertTitle } from '@mui/lab';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 import ProvideWSDL from './Steps/ProvideWSDL';
 
@@ -49,6 +50,7 @@ export default function ApiCreateWSDL(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history, multiGateway } = props;
     const [policies, setPolicies] = useState([]);
+    const { data: settings } = usePublisherSettings();
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
@@ -93,6 +95,8 @@ export default function ApiCreateWSDL(props) {
         inputValue: '',
         formValidity: false,
         mode: 'create',
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
 
     /**
@@ -256,6 +260,7 @@ export default function ApiCreateWSDL(props) {
                             api={apiInputs}
                             isAPIProduct={false}
                             multiGateway={multiGateway}
+                            settings={settings}
                         />
                     )}
                 </Grid>
