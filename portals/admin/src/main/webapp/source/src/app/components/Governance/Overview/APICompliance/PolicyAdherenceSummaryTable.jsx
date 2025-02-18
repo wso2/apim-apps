@@ -50,7 +50,29 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             });
     }
 
-    const renderProgress = (followed, total) => {
+    const renderProgress = (followed, total, status) => {
+        if (status === 'PENDING') {
+            return (
+                <Typography variant='body2' color='textSecondary'>
+                    {intl.formatMessage({
+                        id: 'Governance.Overview.APICompliance.PolicyAdherence.pending',
+                        defaultMessage: 'N/A - Waiting for policy evaluation',
+                    })}
+                </Typography>
+            );
+        }
+
+        if (status === 'UNAPPLIED') {
+            return (
+                <Typography variant='body2' color='textSecondary'>
+                    {intl.formatMessage({
+                        id: 'Governance.Overview.APICompliance.PolicyAdherence.not.applied',
+                        defaultMessage: 'N/A - Policy not applied',
+                    })}
+                </Typography>
+            );
+        }
+
         const percentage = (followed / total) * 100;
         const isComplete = followed === total;
 
@@ -165,6 +187,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                     const getChipColor = (status) => {
                         if (status === 'FOLLOWED') return 'success';
                         if (status === 'VIOLATED') return 'error';
+                        if (status === 'PENDING') return 'warning';
                         return 'default';
                     };
                     return (
@@ -203,7 +226,8 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                     const rulesets = tableMeta.rowData[3];
                     const total = rulesets.length;
                     const followed = rulesets.filter((ruleset) => ruleset.status === 'PASSED').length;
-                    return renderProgress(followed, total);
+                    const status = tableMeta.rowData[2];
+                    return renderProgress(followed, total, status);
                 },
                 setCellHeaderProps: () => ({
                     sx: {

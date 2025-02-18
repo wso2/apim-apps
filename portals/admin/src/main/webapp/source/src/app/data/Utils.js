@@ -420,6 +420,26 @@ class Utils {
             }, 100);
         }
     }
+
+    /**
+     * Downloads content as a file with specified name and type
+     * @param {string} content - Content to download
+     * @param {string} filename - Name of the file
+     * @param {string} contentType - MIME type of the file (defaults to text/yaml)
+     */
+    static downloadContent(content, filename, contentType = 'text/yaml') {
+        const blob = new Blob([content], { type: contentType });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+
+        link.href = url;
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+
+        window.URL.revokeObjectURL(url);
+    }
 }
 
 Utils.CONST = {

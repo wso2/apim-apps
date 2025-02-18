@@ -60,7 +60,11 @@ export default function Compliance() {
 
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
-                setComplianceStatus(response.body.status);
+                if (response.body.governedPolicies.length === 0) {
+                    setComplianceStatus(response.body.status);
+                    return;
+                }
+                
                 const rulesetMap = new Map();
 
                 response.body.governedPolicies.forEach((policy) => {

@@ -41,9 +41,11 @@ import Editor from '@monaco-editor/react';
 import cloneDeep from 'lodash.clonedeep';
 import PropTypes from 'prop-types';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import CONSTS from 'AppData/Constants';
 import AuthManager from 'AppData/AuthManager';
+import Utils from 'AppData/Utils';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
@@ -197,6 +199,18 @@ function AddEditRuleset(props) {
     const handleCancelOverwrite = () => {
         setPendingFile(null);
         setOpenConfirmDialog(false);
+    };
+
+    const handleDownload = () => {
+        if (!rulesetContent) {
+            Alert.warning(intl.formatMessage({
+                id: 'Governance.Rulesets.AddEdit.download.empty',
+                defaultMessage: 'No content to download',
+            }));
+            return;
+        }
+
+        Utils.downloadContent(rulesetContent, `${name || 'ruleset'}.yaml`);
     };
 
     const hasErrors = (fieldName, fieldValue, validatingActive) => {
@@ -533,23 +547,36 @@ function AddEditRuleset(props) {
                         <Box component='div' m={1}>
                             <Paper variant='outlined'>
                                 <EditorToolbar>
-                                    <Button
-                                        component='label'
-                                        variant='contained'
-                                        startIcon={<CloudUploadIcon />}
-                                        size='small'
-                                    >
-                                        <FormattedMessage
-                                            id='Governance.Rulesets.AddEdit.button.upload'
-                                            defaultMessage='Upload File'
-                                        />
-                                        <input
-                                            type='file'
-                                            hidden
-                                            accept='.yaml,.yml,.json'
-                                            onChange={handleFileUpload}
-                                        />
-                                    </Button>
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <Button
+                                            component='label'
+                                            variant='contained'
+                                            startIcon={<CloudUploadIcon />}
+                                            size='small'
+                                        >
+                                            <FormattedMessage
+                                                id='Governance.Rulesets.AddEdit.button.upload'
+                                                defaultMessage='Upload File'
+                                            />
+                                            <input
+                                                type='file'
+                                                hidden
+                                                accept='.yaml,.yml,.json'
+                                                onChange={handleFileUpload}
+                                            />
+                                        </Button>
+                                        <Button
+                                            variant='contained'
+                                            startIcon={<CloudDownloadIcon />}
+                                            size='small'
+                                            onClick={handleDownload}
+                                        >
+                                            <FormattedMessage
+                                                id='Governance.Rulesets.AddEdit.button.download'
+                                                defaultMessage='Download'
+                                            />
+                                        </Button>
+                                    </Box>
                                 </EditorToolbar>
                                 <EditorContainer>
                                     <Editor

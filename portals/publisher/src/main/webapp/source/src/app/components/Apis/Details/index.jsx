@@ -788,16 +788,18 @@ class Details extends Component {
                                 head='valueOnly'
                                 id='left-menu-overview'
                             />
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.compliance',
-                                    defaultMessage: 'compliance',
-                                })}
-                                to={pathPrefix + 'compliance'}
-                                Icon={<PolicyIcon />}
-                                head='valueOnly'
-                                id='left-menu-compliance'
-                            />
+                            {!isAPIProduct && !api.isGraphql() && !api.isSOAPToREST() && !api.isSOAP() && (
+                                <LeftMenuItem
+                                    text={intl.formatMessage({
+                                        id: 'Apis.Details.index.compliance',
+                                        defaultMessage: 'compliance',
+                                    })}
+                                    to={pathPrefix + 'compliance'}
+                                    Icon={<PolicyIcon />}
+                                    head='valueOnly'
+                                    id='left-menu-compliance'
+                                />
+                            )}
                             <Typography className={classes.headingText}>
                                 <FormattedMessage id='Apis.Details.index.develop.title'
                                     defaultMessage='Develop' />
@@ -1135,7 +1137,19 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.COMPLIANCE}
-                                        component={() => <Compliance api={api} />}
+                                        component={() => {
+                                            return (
+                                                !isAPIProduct &&
+                                                !api.isGraphql() &&
+                                                !api.isSOAPToREST() &&
+                                                !api.isSOAP() ? 
+                                                    (
+                                                        <Compliance api={api} />
+                                                    ) : (
+                                                        <ResourceNotFound />
+                                                    )
+                                            )
+                                        }}
                                     />
                                 </Switch>
                             </div>

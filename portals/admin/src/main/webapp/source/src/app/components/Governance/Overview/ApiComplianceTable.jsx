@@ -62,7 +62,7 @@ export default function ApiComplianceTable() {
             );
         }
 
-        if (total === 0) {
+        if (status === 'NOT_APPLICABLE') {
             return (
                 <Typography variant="body2" color="textSecondary">
                     {intl.formatMessage({
