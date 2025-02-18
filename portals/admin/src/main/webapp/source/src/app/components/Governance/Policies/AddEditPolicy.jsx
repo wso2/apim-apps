@@ -52,6 +52,7 @@ import GovernanceAPI from 'AppData/GovernanceAPI';
 import API from 'AppData/api';
 import Utils from 'AppData/Utils';
 import CONSTS from 'AppData/Constants';
+import Tooltip from '@mui/material/Tooltip';
 import ActionConfigDialog from './ActionConfigDialog';
 import RulesetSelector from './RulesetSelector';
 
@@ -856,13 +857,30 @@ function AddEditPolicy(props) {
                                                         />
                                                     </TableCell>
                                                     <TableCell align='right'>
-                                                        <IconButton
-                                                            onClick={() => handleEditAction(groupedAction)}
-                                                            size='small'
-                                                            sx={{ mr: 1 }}
+                                                        <Tooltip title={
+                                                            (groupedAction.state === 'API_UPDATE'
+                                                                || groupedAction.state === 'API_CREATE')
+                                                                ? intl.formatMessage({
+                                                                    id: 'Governance.Policies.AddEdit.action.edit.'
+                                                                        + 'disabled.tooltip',
+                                                                    defaultMessage: 'Cannot edit as only notify action'
+                                                                        + ' is allowed',
+                                                                })
+                                                                : ''
+                                                        }
                                                         >
-                                                            <EditIcon />
-                                                        </IconButton>
+                                                            <span>
+                                                                <IconButton
+                                                                    onClick={() => handleEditAction(groupedAction)}
+                                                                    size='small'
+                                                                    sx={{ mr: 1 }}
+                                                                    disabled={groupedAction.state === 'API_UPDATE'
+                                                                        || groupedAction.state === 'API_CREATE'}
+                                                                >
+                                                                    <EditIcon />
+                                                                </IconButton>
+                                                            </span>
+                                                        </Tooltip>
                                                         <IconButton
                                                             onClick={() => {
                                                                 const newActions = actions.filter(
