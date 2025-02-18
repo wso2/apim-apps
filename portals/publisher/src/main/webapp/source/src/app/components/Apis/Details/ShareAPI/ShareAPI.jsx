@@ -30,7 +30,6 @@ import API from 'AppData/api';
 import { withAPI, useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import CONSTS from 'AppData/Constants';
 import { isRestricted } from 'AppData/AuthManager';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
 import OrganizationSubscriptionPoliciesManage from './OrganizationSubscriptionPoliciesManage';
 import SharedOrganizations from './SharedOrganizations';
 
@@ -91,16 +90,18 @@ function ShareAPI(props) {
     const [organizations, setOrganizations] = useState({});
     const [visibleOrganizations, setVisibleOrganizations] = useState(api.visibleOrganizations);
     const [selectionMode, setSelectionMode] = useState("none");
-    const { settings } = useAppContext();
-    const [requestToDisableSubscriptionValidation, setRequestToDisableSubscriptionValidation] = useState(false);
     const isSubValidationDisabled = api.policies && api.policies.length === 1 
         && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+    const [policies, setPolicies] = useState([]);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [confirmCallback, setConfirmCallback] = useState(null);
 
 
     /**
      * Save API sharing information (visible organizations and organization policies)
+     * 
+     * @param {Array} updatedVisibleOrganizations - The updated list of visible organizations.
+     * @param {Array} updatedOrganizationPolicies - The updated list of organization policies.
      */
     function saveAPI(updatedVisibleOrganizations, updatedOrganizationPolicies) {
         setUpdateInProgress(true);
@@ -141,8 +142,9 @@ function ShareAPI(props) {
             })
         setOrganizationPolicies(api.organizationPolicies ? [...api.organizationPolicies] : []);
         setVisibleOrganizations([...api.visibleOrganizations]);
+        setPolicies(api.policies);
         
-        if (visibleOrganizations.includes("none")) {
+        if (visibleOrganizations.includes("none") || visibleOrganizations.length === 0) {
             setSelectionMode("none");
         } else if (visibleOrganizations.includes("all")) {
             setSelectionMode("all");
@@ -154,14 +156,13 @@ function ShareAPI(props) {
     const handleShareAPISave = () => {
 
         const securityScheme = [...api.securityScheme];
-        const isAsyncAPI = ['WS', 'WEBSUB', 'SSE', 'ASYNC'].includes(api.type);
         const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl') 
             && securityScheme.includes('mutualssl_mandatory');
         const isApiKeyEnabled = securityScheme.includes('api_key');
 
         let updatedVisibleOrganizations = [];
         let updatedOrganizationPolicies = [...organizationPolicies];
-        let defaultSubscriptionlessPlanAdded = false;
+        let defaultSubscriptionPlansAdded = false;
     
         if (selectionMode === "all") {
             updatedVisibleOrganizations = ["all"];
@@ -181,25 +182,31 @@ function ShareAPI(props) {
                 return;
             }
             if (!updatedOrganizationPolicies.some(policy => policy.organizationID === orgID) 
-                && settings.allowSubscriptionValidationDisabling && !isMutualSslOnly && !isApiKeyEnabled) {
-
-                if (!isAsyncAPI) {
-                    updatedOrganizationPolicies.push({
-                        organizationID: orgID,
-                        policies: [CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN],
-                    });
-                } else {
-                    updatedOrganizationPolicies.push({
-                        organizationID: orgID,
-                        policies: [CONSTS.DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN],
-                    });
-                }
-                setRequestToDisableSubscriptionValidation(true);
-                defaultSubscriptionlessPlanAdded = true;
+                && !isMutualSslOnly && !isApiKeyEnabled) {
+                updatedOrganizationPolicies.push({
+                    organizationID: orgID,
+                    policies,
+                });
+                defaultSubscriptionPlansAdded = true;
             }
         });
 
-        if (!isSubValidationDisabled && (requestToDisableSubscriptionValidation || defaultSubscriptionlessPlanAdded)) {
+        updatedOrganizationPolicies = updatedOrganizationPolicies.map(orgPolicy => {
+            if (isSubValidationDisabled && orgPolicy.policies.length > 0) {
+                defaultSubscriptionPlansAdded = true;
+                return { ...orgPolicy, policies };
+            } else if (
+                !isSubValidationDisabled &&
+                orgPolicy.policies.length === 1 &&
+                orgPolicy.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN)
+            ) {
+                defaultSubscriptionPlansAdded = true;
+                return { ...orgPolicy, policies };
+            }
+            return orgPolicy;
+        });
+
+        if (defaultSubscriptionPlansAdded) {
             setConfirmCallback(() => () => saveAPI(updatedVisibleOrganizations, updatedOrganizationPolicies));
             setOpenConfirmDialog(true);
         } else {
@@ -257,6 +264,7 @@ function ShareAPI(props) {
                                     organizationPolicies={organizationPolicies}
                                     setOrganizationPolicies={setOrganizationPolicies}
                                     selectionMode = {selectionMode}
+                                    isSubValidationDisabled = {isSubValidationDisabled}
                                 />
                             }
                         </>
@@ -324,23 +332,21 @@ function ShareAPI(props) {
                 <DialogContent>
                     <DialogContentText id='alert-dialog-description'>
                         <Typography variant='subtitle1' display='block' gutterBottom>
-                            <FormattedMessage
-                                id='Apis.Details.ShareAPI.subValidationDisabled.dialog.description'
-                                defaultMessage={
-                                    'Subscription policies are not selected for some of the organizations. ' 
-                                    + ' This will allow anyone with a valid token to consume the API' 
-                                    + ' without a subscription.'
-                                }
-                            />
-                        </Typography>
-                        <Typography variant='subtitle2' display='block' gutterBottom>
-                            <b>
+                            {isSubValidationDisabled ? (
                                 <FormattedMessage
-                                    id={'Apis.Details.ShareAPI.subValidationDisabled.dialog'
-                                    + '.description.question'}
-                                    defaultMessage='Do you want to disable subscription validation?'
+                                    id='Apis.Details.ShareAPI.subValidationDisabled.dialog.description'
+                                    defaultMessage={'Subscription validation is disabled for this API. This will allow '
+                                        + 'anyone with a valid token inside a shared organization to consume ' 
+                                        + 'the API without a subscription. Do you want to confirm?'}
                                 />
-                            </b>
+                            ) : (
+                                <FormattedMessage
+                                    id='Apis.Details.ShareAPI.subValidationEnabled.dialog.description'
+                                    defaultMessage={'Subscription policies are not set for some of the organizations. '
+                                        + 'Root organization\'s subscription policies will be set to them. '
+                                        + 'Do you want to confirm?'}
+                                />
+                            )}
                         </Typography>
                     </DialogContentText>
                 </DialogContent>
