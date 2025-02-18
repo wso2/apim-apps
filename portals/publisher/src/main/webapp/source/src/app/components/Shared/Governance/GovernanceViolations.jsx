@@ -24,10 +24,13 @@ import {
     AccordionSummary,
     Grid,
     Typography,
-    Box
+    Box,
+    Tooltip,
+    Button,
 } from '@mui/material';
 import { ExpandMore } from '@mui/icons-material';
 import RuleIcon from '@mui/icons-material/Rule';
+import DownloadIcon from '@mui/icons-material/Download';
 import ListBase from 'AppComponents/Addons/Addons/ListBase';
 import Utils from 'AppData/Utils';
 import GovernanceViolationsSummary, { violationSeverityMap } from './GovernanceViolationsSummary';
@@ -192,6 +195,11 @@ export default function GovernanceViolations({ violations }) {
         setExpandViolations(true);
     };
 
+    const handleDownload = (event) => {
+        event.stopPropagation();
+        Utils.downloadAsJSON(violations, 'governance-violations');
+    };
+
     return (
         <Grid item xs={10} md={12} paddingTop={6}>
             <Accordion
@@ -204,16 +212,38 @@ export default function GovernanceViolations({ violations }) {
                     id='governance-violations-header'
                 >
                     <Grid container direction='row' justifyContent='space-between' alignItems='center'>
-                        <Typography sx={{ fontWeight: 600 }}>
-                            <FormattedMessage
-                                id='Apis.Details.Environments.GovernanceViolations.title'
-                                defaultMessage='Governance Rule Violations'
+                        <Grid item>
+                            <Typography sx={{ fontWeight: 600 }}>
+                                <FormattedMessage
+                                    id='Apis.Details.Environments.GovernanceViolations.title'
+                                    defaultMessage='Governance Rule Violations'
+                                />
+                            </Typography>
+                        </Grid>
+                        <Grid item sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                            <Tooltip
+                                title={intl.formatMessage({
+                                    id: 'Apis.Details.Environments.GovernanceViolations.download.tooltip',
+                                    defaultMessage: 'Download the violations as JSON'
+                                })}
+                            >
+                                <Button
+                                    size='small'
+                                    onClick={handleDownload}
+                                    startIcon={<DownloadIcon />}
+                                    sx={{ textTransform: 'none' }}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.Environments.GovernanceViolations.download.button'
+                                        defaultMessage='Download as JSON'
+                                    />
+                                </Button>
+                            </Tooltip>
+                            <GovernanceViolationsSummary
+                                violations={violations}
+                                handleChange={handleSeverityChange}
                             />
-                        </Typography>
-                        <GovernanceViolationsSummary
-                            violations={violations}
-                            handleChange={handleSeverityChange}
-                        />
+                        </Grid>
                     </Grid>
                 </AccordionSummary>
                 <AccordionDetails style={{ padding: 0 }}>

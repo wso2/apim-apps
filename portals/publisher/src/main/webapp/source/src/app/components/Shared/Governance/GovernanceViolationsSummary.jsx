@@ -41,7 +41,7 @@ export default function GovernanceViolationsSummary({ violations, handleChange }
     }
 
     return (
-        <Box ml={3}>
+        <Box mx={1.5}>
             <Tooltip title={
                 `Error: ${severityCounts.ERROR || 0}, ` +
                 `Warning: ${severityCounts.WARN || 0}, ` +
