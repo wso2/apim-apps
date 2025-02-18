@@ -276,7 +276,6 @@ class LayoutLegacy extends React.Component {
             selected: 'home',
             anchorEl: null,
             bannerHeight: 0,
-            userOrganization: null,
         };
         this.toggleGlobalNavBar = this.toggleGlobalNavBar.bind(this);
         const { history } = props;
@@ -303,6 +302,21 @@ class LayoutLegacy extends React.Component {
                 const bannerElement = document.getElementById('bannerElement');
                 this.setState({ bannerHeight: bannerElement.clientHeight });
             }
+        }
+        const user = AuthManager.getUser();
+        if (user) {
+            if (!sessionStorage.getItem('userOrganization')) {
+                new API()
+                    .getUserOrganizationInfo()
+                    .then((res) => {
+                        if (res.body.name) sessionStorage.setItem('userOrganization', res.body.name);
+                    })
+                    .catch((error) => {
+                        throw error;
+                    });
+            }
+        } else {
+            sessionStorage.removeItem('userOrganization');
         }
     }
 
@@ -345,21 +359,8 @@ class LayoutLegacy extends React.Component {
     };
 
     handleToggleUserMenu = (event) => {
-        const isOpen = !this.state.openUserMenu;
         this.setState((state) => ({ openUserMenu: !state.openUserMenu }));
         this.setState({ anchorEl: event.currentTarget });
-
-        if (isOpen) {
-            const restApi = new API();
-            restApi
-                .getUserOrganizationInfo()
-                .then((res) => {
-                    this.setState({ userOrganization: res.body.name });
-                })
-                .catch((error) => {
-                    throw error;
-                });
-        }
     };
 
     handleCloseUserMenu = (event) => {
@@ -429,6 +430,7 @@ class LayoutLegacy extends React.Component {
         const user = AuthManager.getUser();
         // TODO: Refer to fix: https://github.com/mui-org/material-ui/issues/10076#issuecomment-361232810 ~tmkb
         let username = null;
+        const userOrganization = sessionStorage.getItem('userOrganization');
 
         if (user) {
             username = user.name;
@@ -662,7 +664,7 @@ class LayoutLegacy extends React.Component {
                                                         <Paper>
                                                             <ClickAwayListener onClickAway={this.handleCloseUserMenu}>
                                                                 <MenuList>
-                                                                    {this.state.userOrganization && (
+                                                                    {userOrganization && (
                                                                         <MenuItem style={{ pointerEvents: 'none' }}>
                                                                             <>
                                                                                 <Icon
@@ -687,7 +689,7 @@ class LayoutLegacy extends React.Component {
                                                                                         maxWidth: '200px',
                                                                                     }}
                                                                                 >
-                                                                                    {this.state.userOrganization}
+                                                                                    {userOrganization}
                                                                                 </Typography>
                                                                             </>
                                                                         </MenuItem>
