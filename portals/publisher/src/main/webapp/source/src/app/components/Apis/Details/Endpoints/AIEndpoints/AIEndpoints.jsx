@@ -36,8 +36,8 @@ import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
 import AddCircle from '@mui/icons-material/AddCircle';
 import CONSTS from 'AppData/Constants';
-import EndpointCard from './MultiEndpointComponents/EndpointCard';
-import GeneralEndpointConfigurations from './MultiEndpointComponents/GeneralEndpointConfigurations';
+import EndpointCard from '../MultiEndpointComponents/EndpointCard';
+import GeneralEndpointConfigurations from '../MultiEndpointComponents/GeneralEndpointConfigurations';
 
 const PREFIX = 'AIEndpoints';
 
