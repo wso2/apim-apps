@@ -33,25 +33,44 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { Endpoint, ModelData } from './Types';
 import ModelCard from './ModelCard';
 
-interface RoundRobinConfig {
-    production: ModelData[];
-    sandbox: ModelData[];
-    suspendDuration?: number;
+interface ModelConfig {
+    targetModel: ModelData;
+    fallbackModels: ModelData[];
 }
 
-interface ModelRoundRobinProps {
+interface FailoverConfig {
+    production: ModelConfig;
+    sandbox: ModelConfig;
+    requestTimeout: number;
+    suspendDuration: number;
+}
+
+interface ModelFailoverProps {
     setManualPolicyConfig: React.Dispatch<React.SetStateAction<string>>;
     manualPolicyConfig: string;
 }
 
-const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
+const ModelFailover: FC<ModelFailoverProps> = ({
     setManualPolicyConfig,
     manualPolicyConfig,
 }) => {
     const [apiFromContext] = useAPI();
-    const [config, setConfig] = useState<RoundRobinConfig>({
-        production: [],
-        sandbox: [],
+    const [config, setConfig] = useState<FailoverConfig>({
+        production: {
+            targetModel: {
+                model: '',
+                endpointId: '',
+            },
+            fallbackModels: [],
+        },
+        sandbox: {
+            targetModel: {
+                model: '',
+                endpointId: '',
+            },
+            fallbackModels: [],
+        },
+        requestTimeout: 0,
         suspendDuration: 0,
     });
     const [modelList, setModelList] = useState<string[]>([]);
@@ -104,7 +123,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
         setManualPolicyConfig(JSON.stringify(config).replace(/"/g, "'"));
     }, [config]);
 
-    const handleAddModel = (env: 'production' | 'sandbox') => {
+    const handleAddFallbackModel = (env: 'production' | 'sandbox') => {
         const newModel: ModelData = {
             model: '',
             endpointId: '',
@@ -112,21 +131,40 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
 
         setConfig((prevConfig) => ({
             ...prevConfig,
-            [env]: [...prevConfig[env], newModel],
+            [env]: {
+                ...prevConfig[env],
+                fallbackModels: [...prevConfig[env].fallbackModels, newModel],
+            },
         }));
     }
 
-    const handleUpdate = (env: 'production' | 'sandbox', index: number, updatedModel: ModelData) => {
+    const handleTargetModelUpdate = (env: 'production' | 'sandbox', index: number, updatedTargetModel: ModelData) => {
         setConfig((prevConfig) => ({
             ...prevConfig,
-            [env]: prevConfig[env].map((item, i) => (i === index ? updatedModel : item)),
+            [env]: {
+                ...prevConfig[env],
+                targetModel: updatedTargetModel,
+            },
         }));
     }
 
-    const handleDelete = (env: 'production' | 'sandbox', index: number) => {
+    const handleFallbackModelUpdate = (env: 'production' | 'sandbox', index: number, updatedModel: ModelData) => {
         setConfig((prevConfig) => ({
             ...prevConfig,
-            [env]: prevConfig[env].filter((item, i) => i !== index),
+            [env]: {
+                ...prevConfig[env],
+                fallbackModels: prevConfig[env].fallbackModels.map((item, i) => (i === index ? updatedModel : item)),
+            },
+        }));
+    }
+
+    const handleFallbackModelDelete = (env: 'production' | 'sandbox', index: number) => {
+        setConfig((prevConfig) => ({
+            ...prevConfig,
+            [env]: {
+                ...prevConfig[env],
+                fallbackModels: prevConfig[env].fallbackModels.filter((item, i) => i !== index),
+            },
         }));
     }
 
@@ -145,34 +183,42 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                     >
                     <Typography variant='subtitle2' color='textPrimary'>
                         <FormattedMessage
-                            id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.accordion.production'
+                            id='Apis.Details.Policies.CustomPolicies.ModelFailover.accordion.production'
                             defaultMessage='Production'
                         />
                     </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
+                        <ModelCard
+                            modelData={config.production.targetModel}
+                            modelList={modelList}
+                            endpointList={productionEndpoints}
+                            isWeightApplicable={false}
+                            onUpdate={(updatedTargetModel) => handleTargetModelUpdate('production', 0, updatedTargetModel)}
+                            onDelete={() => {}}
+                        />
                         <Button
                             variant='outlined'
                             color='primary'
                             data-testid='add-production-model'
                             sx={{ ml: 1 }}
-                            onClick={() => handleAddModel('production')}
+                            onClick={() => handleAddFallbackModel('production')}
                         >
                             <AddCircle sx={{ mr: 1 }} />
                             <FormattedMessage
                                 id='Apis.Details.Policies.Custom.Policies.model.add'
-                                defaultMessage='Add Model'
+                                defaultMessage='Add Fallback Model'
                             />
                         </Button>
-                        {config.production.map((model, index) => (
+                        {config.production.fallbackModels.map((model, index) => (
                             <ModelCard
                                 key={index}
                                 modelData={model}
                                 modelList={modelList}
                                 endpointList={productionEndpoints}
                                 isWeightApplicable={false}
-                                onUpdate={(updatedModel) => handleUpdate('production', index, updatedModel)}
-                                onDelete={() => handleDelete('production', index)}
+                                onUpdate={(updatedModel) => handleFallbackModelUpdate('production', index, updatedModel)}
+                                onDelete={() => handleFallbackModelDelete('production', index)}
                             />
                         ))}
                     </AccordionDetails>
@@ -185,40 +231,62 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                     >
                         <Typography variant='subtitle2' color='textPrimary'>
                             <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.accordion.sandbox'
+                                id='Apis.Details.Policies.CustomPolicies.ModelFailover.accordion.sandbox'
                                 defaultMessage='Sandbox'
                             />
                         </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
+                        <ModelCard
+                            modelData={config.sandbox.targetModel}
+                            modelList={modelList}
+                            endpointList={productionEndpoints}
+                            isWeightApplicable={false}
+                            onUpdate={(updatedTargetModel) => handleTargetModelUpdate('sandbox', 0, updatedTargetModel)}
+                            onDelete={() => {}}
+                        />
                         <Button
                             variant='outlined'
                             color='primary'
                             data-testid='add-sandbox-model'
                             sx={{ ml: 1 }}
-                            onClick={() => handleAddModel('sandbox')}
+                            onClick={() => handleAddFallbackModel('sandbox')}
                         >
                             <AddCircle sx={{ mr: 1 }} />
                             <FormattedMessage
                                 id='Apis.Details.Policies.Custom.Policies.model.add'
-                                defaultMessage='Add Model'
+                                defaultMessage='Add Fallback Model'
                             />
                         </Button>
-                        {config.sandbox.map((model, index) => (
+                        {config.sandbox.fallbackModels.map((model, index) => (
                             <ModelCard
                                 key={index}
                                 modelData={model}
                                 modelList={modelList}
                                 endpointList={sandboxEndpoints}
                                 isWeightApplicable={false}
-                                onUpdate={(updatedModel) => handleUpdate('sandbox', index, updatedModel)}
-                                onDelete={() => handleDelete('sandbox', index)}
+                                onUpdate={(updatedModel) => handleFallbackModelUpdate('sandbox', index, updatedModel)}
+                                onDelete={() => handleFallbackModelDelete('sandbox', index)}
                             />
                         ))}
                     </AccordionDetails>
                 </Accordion>
                 <TextField
-                    id='suspend-duration-production'
+                    id='request-timeout'
+                    label='Request Timeout (s)'
+                    size='small'
+                    sx={{ pt: 2, mt: 2 }}
+                    // helperText={getError(spec) === '' ? spec.description : getError(spec)}
+                    // error={getError(spec) !== ''}
+                    variant='outlined'
+                    name='requestTimeout'
+                    type='number'
+                    value={config.requestTimeout}
+                    onChange={(e: any) => setConfig({ ...config, requestTimeout: e.target.value })}
+                    fullWidth
+                />
+                <TextField
+                    id='suspend-duration'
                     label='Suspend Duration (s)'
                     size='small'
                     sx={{ pt: 2, mt: 2 }}
@@ -236,4 +304,4 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
     );
 }
 
-export default ModelRoundRobin;
+export default ModelFailover;
