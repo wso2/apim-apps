@@ -73,19 +73,19 @@ jobs:
           working-directory: 'apim-apps/tests'
           spec: '**/*.spec.js'
       - name: Upload ScreenShots
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots
           path: apim-apps/tests/cypress/screenshots
       - name: Upload videos
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cypress-videos
           path: apim-apps/tests/cypress/videos
       - name: Upload Logs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: server-logs
