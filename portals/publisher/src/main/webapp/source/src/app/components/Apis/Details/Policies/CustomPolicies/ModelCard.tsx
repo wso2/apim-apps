@@ -33,7 +33,7 @@ interface ModelCardProps {
     modelData: ModelData;
     modelList: string[];
     endpointList: Endpoint[];
-    isWeightedRoundRobinPolicy: boolean;
+    isWeightApplicable: boolean;
     onUpdate: (updatedModel: ModelData) => void;
     onDelete: () => void;
 }
@@ -42,7 +42,7 @@ const ModelCard: FC<ModelCardProps> = ({
     modelData,
     modelList,
     endpointList,
-    isWeightedRoundRobinPolicy,
+    isWeightApplicable,
     onUpdate,
     onDelete,
 }) => {
@@ -105,7 +105,7 @@ const ModelCard: FC<ModelCardProps> = ({
                             ))}
                         </Select>
                     </FormControl>
-                    {isWeightedRoundRobinPolicy && (
+                    {isWeightApplicable && (
                         <TextField
                             id='endpoint-weight'
                             label='Weight'

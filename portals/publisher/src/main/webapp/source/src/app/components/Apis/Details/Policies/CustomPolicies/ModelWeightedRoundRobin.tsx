@@ -170,7 +170,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
                                 modelData={model}
                                 modelList={modelList}
                                 endpointList={productionEndpoints}
-                                isWeightedRoundRobinPolicy={true}
+                                isWeightApplicable={true}
                                 onUpdate={(updatedModel) => handleUpdate('production', index, updatedModel)}
                                 onDelete={() => handleDelete('production', index)}
                             />
@@ -210,7 +210,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
                                 modelData={model}
                                 modelList={modelList}
                                 endpointList={sandboxEndpoints}
-                                isWeightedRoundRobinPolicy={true}
+                                isWeightApplicable={true}
                                 onUpdate={(updatedModel) => handleUpdate('sandbox', index, updatedModel)}
                                 onDelete={() => handleDelete('sandbox', index)}
                             />
