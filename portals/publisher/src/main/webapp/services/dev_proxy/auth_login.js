@@ -132,7 +132,7 @@ const setResponseSessionCookies = (res, accessToken, refreshToken, idToken, sess
         maxAge,
     });
 
-    res.cookie('AM_REF_TOKEN_DEFAULT_P2', refreshTokenPart2, {
+    res.cookie('AM_PUBLISHER_ACC_TOKEN_DEFAULT_P2', accessTokenPart2, {
         path: '/api/am/governance/',
         httpOnly: true,
         secure: true,

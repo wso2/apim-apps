@@ -291,8 +291,18 @@ function APICreateDefault(props) {
                 error: (error) => {
                     console.error(error);
                     if (error.response) {
-                        setPageError(error.response.body);
-                        return error.response.body.description;
+                        // TODO: Use the code to check for the governance error
+                        if (error.response.body.description.includes('blockingViolations')) {
+                            // TODO: Check whether we need to display the violations table
+                            // TODO: Improve the error alert
+                            return intl.formatMessage({
+                                id: 'Apis.Create.Default.APICreateDefault.error.governance.violation',
+                                defaultMessage: 'Revision creation failed due to governance violations',
+                            });
+                        } else {
+                            setPageError(error.response.body);
+                            return error.response.body.description;
+                        }
                     } else {
                         setPageError('Something went wrong while creating the API Revision');
                         return intl.formatMessage({
@@ -357,8 +367,18 @@ function APICreateDefault(props) {
                     error: (error) => {
                         console.error(error);
                         if (error.response) {
-                            setPageError(error.response.body);
-                            return error.response.body.description;
+                            // TODO: Use the code to check for the governance error
+                            if (error.response.body.description.includes('blockingViolations')) {
+                                // TODO: Check whether we need to display the violations list
+                                // TODO: Improve the error alert
+                                return intl.formatMessage({
+                                    id: 'Apis.Create.Default.APICreateDefault.error.governance.violation',
+                                    defaultMessage: 'Deployment failed due to governance violations',
+                                });
+                            } else {
+                                setPageError(error.response.body);
+                                return error.response.body.description;
+                            }
                         } else {
                             setPageError('Something went wrong while publishing the API');
 

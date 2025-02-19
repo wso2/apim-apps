@@ -257,12 +257,42 @@ export default function CustomizedStepper() {
             .finally(() => setUpdating(false))
             .catch((errorResponse) => {
                 if (errorResponse.response?.body?.code === 903300) {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.LifeCycle.Policies.update.error.governance',
-                        defaultMessage: 'One or more governance policies have been'
-                            + ' violated. Please try using the publish option in the Lifecycle'
-                            + ' tab to get more details.',
-                    }));
+                    Alert.error(
+                        <Box sx={{ width: '100%' }}>
+                            <Typography>
+                                <FormattedMessage
+                                    id='Apis.Details.LifeCycle.Policies.update.error.governance'
+                                    defaultMessage={'One or more governance policies have been violated. '
+                                    + 'Please try using the publish option in the Lifecycle page for more details.'}
+                                />
+                            </Typography>
+                            <Box sx={{ 
+                                display: 'flex', 
+                                justifyContent: 'flex-end',
+                                mt: 1
+                            }}>
+                                <Link
+                                    component={RouterLink}
+                                    to={`/apis/${api.id}/lifecycle`}
+                                    sx={{
+                                        color: 'inherit',
+                                        fontWeight: 600,
+                                        textDecoration: 'none',
+                                        transition: 'all 0.3s',
+                                        '&:hover': {
+                                            transform: 'translateY(-2px)',
+                                            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                        },
+                                    }}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.LifeCycle.Policies.update.error.governance.link'
+                                        defaultMessage='Go to Lifecycle page'
+                                    />
+                                </Link>
+                            </Box>
+                        </Box>
+                    );
                 } else {
                     console.log(errorResponse);
                     Alert.error(JSON.stringify(errorResponse.message));
