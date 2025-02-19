@@ -31,6 +31,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 import ProvideGraphQL from './Steps/ProvideGraphQL';
 
@@ -47,6 +48,7 @@ export default function ApiCreateGraphQL(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const history = useHistory();
     const [policies, setPolicies] = useState([]);
+    const { data: settings } = usePublisherSettings();
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
@@ -105,6 +107,8 @@ export default function ApiCreateGraphQL(props) {
         inputType: 'file',
         inputValue: '',
         formValidity: false,
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
 
     /**
@@ -270,6 +274,7 @@ export default function ApiCreateGraphQL(props) {
                             api={apiInputs}
                             isAPIProduct={false}
                             readOnlyAPIEndpoint={apiInputs.inputType === 'endpoint' ? apiInputs.endpoint : null}
+                            settings={settings}
                         />
                     )}
                 </Grid>

@@ -31,6 +31,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { API_SECURITY_API_KEY }
     from 'AppComponents/Apis/Details/Configuration/components/APISecurity/components/apiSecurityConstants';
 import ProvideAIOpenAPI from './Steps/ProvideAIOpenAPI';
@@ -79,11 +80,14 @@ function apiInputsReducer(currentState, inputAction) {
 export default function ApiCreateAIAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history, multiGateway } = props;
+    const { data: settings } = usePublisherSettings();
 
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         type: 'ApiCreateAIAPI',
         inputValue: '',
         formValidity: false,
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
 
     const intl = useIntl();
@@ -229,6 +233,7 @@ export default function ApiCreateAIAPI(props) {
                             api={apiInputs}
                             isAPIProduct={false}
                             hideEndpoint
+                            settings={settings}
                         />
                     )}
                 </Grid>
