@@ -66,6 +66,9 @@ jobs:
           sh wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE)/bin/api-manager.sh start
           sleep 5m # sleep for 5 min to start the server
           nc -zv localhost 9443
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
