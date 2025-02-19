@@ -18,7 +18,7 @@
 
 import React, { useState } from 'react';
 import Box from '@mui/material/Box';
-import { Grid, Tooltip, Typography } from '@mui/material';
+import { Tooltip, Typography } from '@mui/material';
 import { ToggleButton, ToggleButtonGroup } from '@mui/lab';
 import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -30,7 +30,7 @@ export const violationSeverityMap = {
     'INFO': <InfoIcon color='info' />,
 };
 
-const GovernanceViolationsSummary = ({ violations, handleChange }) => {
+export default function GovernanceViolationsSummary({ violations, handleChange }) {
     const [selectedSeverity, setSelectedSeverity] = useState(null);
     const severityCounts = {};
 
@@ -41,11 +41,11 @@ const GovernanceViolationsSummary = ({ violations, handleChange }) => {
     }
 
     return (
-        <Box ml={3}>
+        <Box mx={1.5}>
             <Tooltip title={
-                `Error: ${severityCounts.error || 0}, ` +
-                `Warning: ${severityCounts.warning || 0}, ` +
-                `Info: ${severityCounts.info || 0}`
+                `Error: ${severityCounts.ERROR || 0}, ` +
+                `Warning: ${severityCounts.WARN || 0}, ` +
+                `Info: ${severityCounts.INFO || 0}`
             }>
                 <ToggleButtonGroup
                     exclusive
@@ -61,22 +61,16 @@ const GovernanceViolationsSummary = ({ violations, handleChange }) => {
                             key={severity}
                             value={severity}
                         >
-                            <Box ml={1} display='flex'>
+                            <Box display='flex' alignItems='center' justifyContent='center' width='100%'>
                                 {component}
-                                <Grid item>
-                                    <Box maxWidth='2rem'>
-                                        <Typography noWrap>
-                                            &nbsp;{severityCounts[severity] || 0}
-                                        </Typography>
-                                    </Box>
-                                </Grid>
+                                <Typography sx={{ ml: 0.5, minWidth: '20px' }}>
+                                    {severityCounts[severity] || 0}
+                                </Typography>
                             </Box>
                         </ToggleButton>
                     ))}
                 </ToggleButtonGroup>
             </Tooltip>
-        </Box >
+        </Box>
     );
-};
-
-export default GovernanceViolationsSummary;
+}

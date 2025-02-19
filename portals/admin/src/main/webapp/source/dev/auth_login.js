@@ -153,7 +153,7 @@ function devServerBefore(app) {
             maxAge,
         });
 
-        res.cookie('AM_ACC_TOKEN_DEFAULT_P2', accessTokenPart2, {
+        res.cookie('AM_ADMIN_ACC_TOKEN_DEFAULT_P2', accessTokenPart2, {
             path: '/api/am/governance/',
             httpOnly: true,
             secure: true,

@@ -77,6 +77,7 @@ const CONSTS = {
     POLICY_ADHERENCE_STATES: [
         { value: 'FOLLOWED', label: 'Followed' },
         { value: 'VIOLATED', label: 'Violated' },
+        { value: 'PENDING', label: 'Pending' },
         { value: 'UNAPPLIED', label: 'Unapplied' },
     ],
     RULESET_VALIDATION_STATES: [

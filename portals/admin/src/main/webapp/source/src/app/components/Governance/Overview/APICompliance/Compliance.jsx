@@ -51,7 +51,11 @@ export default function Compliance(props) {
                     + response.body.info.version,
                 );
                 setArtifactOwner(response.body.info.owner);
-                setComplianceStatus(response.body.status);
+                if (response.body.governedPolicies.length === 0) {
+                    setComplianceStatus(response.body.status);
+                    return;
+                }
+
                 const rulesetMap = new Map();
 
                 response.body.governedPolicies.forEach((policy) => {

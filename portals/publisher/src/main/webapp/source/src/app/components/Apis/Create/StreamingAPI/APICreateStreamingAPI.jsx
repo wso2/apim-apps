@@ -356,8 +356,19 @@ const APICreateStreamingAPI = (props) => {
                 })
                 .catch((error) => {
                     if (error.response) {
-                        Alert.error(error.response.body.description);
-                        setPageError(error.response.body);
+                        // TODO: Use the code to check for the governance error
+                        if (error.response.body.description.includes('blockingViolations')) {
+                            // TODO: Check whether we need to display the violations list
+                            // TODO: Improve the error alert
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Create.Default.APICreateDefault.error.errorMessage.'
+                                    + 'create.revision.governance',
+                                defaultMessage: 'Action failed due to governance violations',
+                            }));
+                        } else {
+                            Alert.error(error.response.body.description);
+                            setPageError(error.response.body);
+                        }
                     } else {
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Create.Default.APICreateDefault.error.errorMessage.create.revision',

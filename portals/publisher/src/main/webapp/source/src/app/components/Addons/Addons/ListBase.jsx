@@ -48,7 +48,8 @@ function ListBase(props) {
     const {
         EditComponent, editComponentProps, DeleteComponent, showActionColumn,
         columnProps, pageProps, addButtonProps, addButtonOverride,
-        searchProps: { active: searchActive, searchPlaceholder }, apiCall, emptyBoxProps: {
+        searchProps: { active: searchActive, searchPlaceholder }, apiCall, initialData,
+        emptyBoxProps: {
             title: emptyBoxTitle,
             content: emptyBoxContent,
         },
@@ -60,7 +61,7 @@ function ListBase(props) {
     } = props;
 
     const [searchText, setSearchText] = useState('');
-    const [data, setData] = useState(null);
+    const [data, setData] = useState(initialData || null);
     const [error, setError] = useState(null);
     const intl = useIntl();
 
@@ -92,6 +93,10 @@ function ListBase(props) {
     };
 
     const fetchData = () => {
+        if (initialData) {
+            setData(initialData);
+            return;
+        }
         // Fetch data from backend when an apiCall is provided
         setData(null);
         if (apiCall) {
@@ -115,8 +120,14 @@ function ListBase(props) {
     };
 
     useEffect(() => {
-        fetchData();
+        if (!initialData) {
+            fetchData();
+        }
     }, []);
+
+    useEffect(() => {
+        setData(initialData);
+    }, [initialData]);
 
     useLayoutEffect(() => {
         let i;
@@ -185,7 +196,7 @@ function ListBase(props) {
                             }
                         }
                         return (
-                            <div data-testid={`${itemName}-actions`}>
+                            <div style={{ display: 'flex', gap: '4px' }} data-testid={`${itemName}-actions`}>
                                 {EditComponent && (
                                     <EditComponent
                                         dataRow={dataRow}
@@ -249,9 +260,9 @@ function ListBase(props) {
         ...props.options,
     };
 
-    // If no apiCall is provided OR,
+    // If no apiCall and no initialData is provided OR,
     // retrieved data is empty, display an information card.
-    if (!apiCall || (data && data.length === 0)) {
+    if ((!apiCall && !initialData) || (data && data.length === 0)) {
         const content = (
             <Card>
                 <CardContent>
@@ -400,6 +411,7 @@ ListBase.defaultProps = {
     ),
     showActionColumn: true,
     apiCall: null,
+    initialData: null,
     EditComponent: null,
     DeleteComponent: null,
     editComponentProps: {},
@@ -423,6 +435,7 @@ ListBase.propTypes = {
         active: PropTypes.bool.isRequired,
     }),
     apiCall: PropTypes.func,
+    initialData: PropTypes.shape([]),
     emptyBoxProps: PropTypes.shape({
         title: PropTypes.element.isRequired,
         content: PropTypes.element.isRequired,
