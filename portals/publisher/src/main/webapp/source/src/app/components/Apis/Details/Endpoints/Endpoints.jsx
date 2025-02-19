@@ -33,7 +33,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { Alert, Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import EndpointOverview from './EndpointOverview';
-import AIEndpoints from './AIEndpoints';
+import AIEndpoints from './AIEndpoints/AIEndpoints';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
 import { API_SECURITY_KEY_TYPE_PRODUCTION, 
     API_SECURITY_KEY_TYPE_SANDBOX } from '../Configuration/components/APISecurity/components/apiSecurityConstants';
