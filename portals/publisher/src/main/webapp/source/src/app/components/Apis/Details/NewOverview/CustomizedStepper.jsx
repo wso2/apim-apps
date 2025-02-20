@@ -182,7 +182,7 @@ export default function CustomizedStepper() {
         // TODO: tmkasun need to handle is loading
         devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
     }
-    const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI())
+    const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI() || api.gatewayVendor !== 'wso2')
         ? ['Develop', 'Deploy', 'Publish'] : ['Develop', 'Deploy', 'Test', 'Publish'];
     const forceComplete = [];
     if (isPublished) {
