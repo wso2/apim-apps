@@ -75,6 +75,7 @@ const APICreateStreamingAPI = (props) => {
         apiType = apiType.toUpperCase();
     }
     const isWebSub = (apiType === 'WEBSUB');
+    const complianceErrorCode = 903300;
 
     useEffect(() => {
         API.asyncAPIPolicies().then((response) => {
@@ -357,7 +358,7 @@ const APICreateStreamingAPI = (props) => {
                 .catch((error) => {
                     if (error.response) {
                         // TODO: Use the code to check for the governance error
-                        if (error.response.body.description.includes('blockingViolations')) {
+                        if (error.response.body.code === complianceErrorCode) {
                             // TODO: Check whether we need to display the violations list
                             // TODO: Improve the error alert
                             Alert.error(intl.formatMessage({

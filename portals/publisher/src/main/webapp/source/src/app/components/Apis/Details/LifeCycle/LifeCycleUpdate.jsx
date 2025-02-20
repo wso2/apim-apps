@@ -57,7 +57,6 @@ const classes = {
     subHeading: `${PREFIX}-subHeading`,
     mandatoryStar: `${PREFIX}-mandatoryStar`
 };
-
 const StyledGrid = styled(Grid)((
     {
         theme
@@ -220,6 +219,7 @@ class LifeCycleUpdate extends Component {
     updateLCStateOfAPI(apiUUID, action) {
         this.setState({ isUpdating: action });
         let promisedUpdate;
+        const complianceErrorCode = 903300;
         const { intl } = this.props;
         const lifecycleChecklist = this.props.checkList.map((item) => item.value + ':' + item.checked);
         const { isAPIProduct } = this.props;
@@ -278,10 +278,9 @@ class LifeCycleUpdate extends Component {
             })
             .catch((error) => {
                 if (error.response) {
-                    if (error.response.body.code === 903300) {
+                    if (error.response.body.code === complianceErrorCode) {
                         // Handle governance violation
-                        const errorDescription = error.response.body.description
-                            .replace('Compliance violation error.', '');
+                        const errorDescription = error.response.body.description;
                         const violations = JSON.parse(errorDescription).blockingViolations;
                         this.setState({
                             governanceError: violations,

@@ -275,6 +275,7 @@ function APICreateDefault(props) {
      *
      */
     function createAndPublish() {
+        const complianceErrorCode = 903300;
         const restApi = new API();
         setIsPublishButtonClicked(true);
         createAPI().then((api) => {
@@ -292,7 +293,7 @@ function APICreateDefault(props) {
                     console.error(error);
                     if (error.response) {
                         // TODO: Use the code to check for the governance error
-                        if (error.response.body.description.includes('blockingViolations')) {
+                        if (error.response.body.code === complianceErrorCode) {
                             // TODO: Check whether we need to display the violations table
                             // TODO: Improve the error alert
                             return intl.formatMessage({
@@ -368,7 +369,7 @@ function APICreateDefault(props) {
                         console.error(error);
                         if (error.response) {
                             // TODO: Use the code to check for the governance error
-                            if (error.response.body.description.includes('blockingViolations')) {
+                            if (error.response.body.code === complianceErrorCode) {
                                 // TODO: Check whether we need to display the violations list
                                 // TODO: Improve the error alert
                                 return intl.formatMessage({
