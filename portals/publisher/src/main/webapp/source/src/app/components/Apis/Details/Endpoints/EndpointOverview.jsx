@@ -1397,6 +1397,7 @@ function EndpointOverview(props) {
                                     onChangeEndpointAuth={handleEndpointSecurityChange}
                                     saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                                     closeEndpointSecurityConfig={closeEndpointSecurityConfig}
+                                    endpointSecurityTypes={endpointSecurityTypes}
                                 />
                             )}
                         </DialogContent>

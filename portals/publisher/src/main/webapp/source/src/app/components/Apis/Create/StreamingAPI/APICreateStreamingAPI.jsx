@@ -144,6 +144,8 @@ const APICreateStreamingAPI = (props) => {
     }
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         formValidity: false,
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
 
     const isAPICreatable = apiInputs.name && apiInputs.context && apiInputs.version && !isCreating;
@@ -452,6 +454,7 @@ const APICreateStreamingAPI = (props) => {
                         multiGateway={multiGateway}
                         isWebSocket={(apiType && apiType === protocolKeys.WebSocket)
                             || apiInputs.protocol === protocolKeys.WebSocket}
+                        settings={settings}
                     >
                         <TextField
                             fullWidth

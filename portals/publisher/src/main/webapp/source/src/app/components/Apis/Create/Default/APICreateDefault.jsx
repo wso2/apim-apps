@@ -88,7 +88,8 @@ function APICreateDefault(props) {
     }
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         formValidity: false,
-        gatewayType: 'wso2/synapse',
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
 
     useEffect(() => {
@@ -547,6 +548,7 @@ function APICreateDefault(props) {
                         multiGateway={multiGateway}
                         isAPIProduct={isAPIProduct}
                         isWebSocket={isWebSocket}
+                        settings={settings}
                     />
                 </Grid>
                 <Grid item xs={12}>

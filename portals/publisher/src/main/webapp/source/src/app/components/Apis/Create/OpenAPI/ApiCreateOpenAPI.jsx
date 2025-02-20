@@ -86,6 +86,8 @@ export default function ApiCreateOpenAPI(props) {
         inputType: 'url',
         inputValue: '',
         formValidity: false,
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
     
     const intl = useIntl();
@@ -233,6 +235,7 @@ export default function ApiCreateOpenAPI(props) {
                             multiGateway={multiGateway}
                             api={apiInputs}
                             isAPIProduct={false}
+                            settings={settings}
                         />
                     )}
                 </Grid>
