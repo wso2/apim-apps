@@ -147,6 +147,7 @@ export default function ApiCreateAsyncAPI(props) {
         setWizardStep(1);
         inputsDispatcher({ action: 'preSetAPI', value: assistantInfo });
         inputsDispatcher({ action: 'protocol', value: assistantInfo.protocol });
+        inputsDispatcher({ action: 'endpoint', value: assistantInfo.endpoint });
         inputsDispatcher({ action: 'inputType', value: 'file' });
         inputsDispatcher({ action: 'inputValue', value: assistantInfo.file });
     }

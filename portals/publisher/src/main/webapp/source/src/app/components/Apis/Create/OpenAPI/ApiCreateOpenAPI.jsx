@@ -96,6 +96,7 @@ export default function ApiCreateOpenAPI(props) {
         setWizardStep(1);
         inputsDispatcher({ action: 'preSetAPI', value: assistantInfo });
         inputsDispatcher({ action: 'gatewayType', value: assistantInfo.gatewayType });
+        inputsDispatcher({ action: 'endpoint', value: assistantInfo.endpoint });
         inputsDispatcher({ action: 'inputType', value: 'file' });
         inputsDispatcher({ action: 'inputValue', value: assistantInfo.file });
     }

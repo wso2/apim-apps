@@ -23,9 +23,10 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
-import CreateAPISuccessDialog from './CreateAPISuccessDialog';
 import LinearProgress from '@mui/material/LinearProgress';
 import { useHistory } from 'react-router-dom';
+import { useIntl } from 'react-intl';
+import Alert from 'AppComponents/Shared/Alert';
 import YAML from 'js-yaml';
 import API from 'AppData/api';
 
@@ -37,11 +38,7 @@ interface AlertDialogProps {
 const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec }) => {
   const [open, setOpen] = React.useState(false);
   const [showProgress, setShowProgress] = React.useState(false);
-  const [successDialogOpen, setSuccessDialogOpen] = React.useState(false);
-  const [dialogTitle, setDialogTitle] = React.useState('');
-  const [dialogContentText, setDialogContentText] = React.useState('');
-  const [firstDialogAction, setFirstDialogAction] = React.useState('');
-  const [secondDialogAction, setSecondDialogAction] = React.useState('');
+  const intl = useIntl();
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -67,159 +64,171 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec }) => {
       }
   }
 
+    /**
+   * Method to handle error scenarios
+   * 
+   * @param messageId messageId
+   * @param defaultMessage defaultMessage
+   */
+    const handleError = (messageId: string, defaultMessage: string) => {
+      Alert.error(intl.formatMessage({ id: messageId, defaultMessage }));
+      throw new Error(defaultMessage);
+    };
+
+  /**
+   * Validate the provided GraphQL schema as a file
+   * 
+   * @param definition API definition for graphql API returned from LLM
+   * @returns validation response object
+   */
   async function validateGraphQLSchema(definition: any) { 
     try {
       const response = await API.validateGraphQLFile(definition);
-      return response.obj;
+      if (response != null) {
+        return response.obj;
+      }
+      throw new Error("Invalid response received while validating GraphQL schema");
     } catch (error) {
         console.error("Error validating the GraphQL schema: ", error);
         throw error;
     }
   }
 
+  /**
+   * Validate the provided OpenAPI definition as a file
+   * 
+   * @param definition API definition for REST API returned from LLM
+   * @returns validation response object
+   */
   async function validateOpenAPIDefinition(definition: any) { 
     try {
       const response = await API.validateOpenAPIByFile(definition);
-      return response.obj;
+      if (response != null) {
+        return response.obj;
+      }
+      throw new Error("Invalid response received while validating OpenAPI definition");
     } catch (error) {
-        console.error("Error validating the GraphQL schema: ", error);
+        console.error("Error validating the OpenAPI definition: ", error);
         throw error;
     }
   }
 
+  /**
+   * Validate the provided AsyncAPI definition as a file
+   * 
+   * @param definition API definition for AsyncAPI returned from LLM
+   * @returns validation response object
+   */
   async function validateAsyncAPIDefinition(definition: any) { 
     try {
       const response = await API.validateAsyncAPIByFile(definition);
-      return response.obj;
+      if (response != null) {
+        return response.obj;
+      }
+      throw new Error("Invalid response received while validating AsyncAPI definition");
     } catch (error) {
-        console.error("Error validating the GraphQL schema: ", error);
+        console.error("Error validating the AsyncAPI definition: ", error);
         throw error;
     }
   }
 
-  function createAPI(data: any) {
-    const apiData = {
-      ...data
-    };
-    const newAPI = new API(apiData);
-    const promisedCreatedAPI = newAPI
-        .saveAPIDesignAssistant()
-    return promisedCreatedAPI.then((response:any) => {
-         console.log(response.body)
-    });
-  }
+  /**
+   * Method used to create a file object of the API definitions
+   * 
+   * @param spec The API spec
+   * @param type The content type
+   * @returns 
+   */
+  const createBlobAndFile = (spec: string, type: string) => {
+    const blob = new Blob([spec], { type });
+    return new File([blob], `apiDefinition.${type === 'text/plain' ? 'graphql' : 'yaml'}`, { type: `${type};charset=utf-8` });
+  };
 
+  /**
+   * Handles redirecting the user to create an API
+   * @returns if an error occurs
+   */
   const handleCreate = async () => {
+
     handleClose();
     setShowProgress(true);
 
+    const protocolKeys = {
+      WS: 'WebSocket',
+      SSE: 'SSE',
+      WEBSUB: 'WebSub',
+      ASYNC: 'Other'
+    };
+
+    type ProtocolTypes = typeof protocolKeys;
+
     try {
-      const protocolKeys = {
-        WS: 'WebSocket',
-        SSE: 'SSE',
-        WEBSUB: 'WebSub',
-        ASYNC: 'Other'
-      };
       const payloadResponse = await genPayload(sessionId);
       const { generatedPayload } = payloadResponse;
       const parsedPayload = JSON.parse(generatedPayload);
+  
+      if (!parsedPayload) return;
 
-      type ProtocolTypes = typeof protocolKeys;
       const protocolKey: keyof ProtocolTypes = parsedPayload.type;
-      let definition = null;
-      let validationResponse = null;
-      let graphQLInfo = null;
-      if (parsedPayload && parsedPayload.type == 'GRAPHQL') {
-        const blobGraphql = new Blob([spec], { type: 'text/plain' });
-        definition = new File([blobGraphql], 'modifiedContent.graphql', { type: 'text/plain;charset=utf-8' });
-        validationResponse = await validateGraphQLSchema(definition);
-        if (validationResponse && validationResponse.isValid) {
-          graphQLInfo = validationResponse.graphQLInfo;
-        } else {
-          setShowProgress(false);
 
-          setDialogTitle('API Creation Unsuccessful');
-          setDialogContentText('API creation was unsuccessful. Please try again.');
-          setFirstDialogAction('');
-          setSecondDialogAction('CLOSE');
+      let endpointValue = parsedPayload.endpointConfig?.production_endpoints?.url ?? 
+                    (parsedPayload.type === 'WS' ? 'ws://localhost:9099' : 'http://localhost:8080');
 
-          setSuccessDialogOpen(true);
+      const createData = (type: string, file: File, graphQLInfo?: any) => ({
+        name: parsedPayload.name,
+        version: parsedPayload.version,
+        context: parsedPayload.context,
+        gatewayType: parsedPayload.gatewayType,
+        gatewayVendor: parsedPayload.gatewayVendor,
+        endpoint: endpointValue,
+        protocol: protocolKeys[protocolKey],
+        asyncTransportProtocols: type,
+        source: 'DesignAssistant',
+        file,
+        graphQLInfo
+      });
 
-          console.error("The provided API definition is invalid. Please try again.");
-          return;
-        }
-      } else if (parsedPayload && parsedPayload.type == 'HTTP') {
+      let validationResponse: any;
+      let definition: File;
+      let graphQLInfo: any;
+  
+      if (parsedPayload.type === 'HTTP') {
         YAML.load(spec);
-        const blobYaml = new Blob([spec], { type: 'text/yaml' });
-        definition = new File([blobYaml], 'modifiedContent.yaml', { type: 'text/yaml;charset=utf-8' });
+        definition = createBlobAndFile(spec, 'text/yaml');
         validationResponse = await validateOpenAPIDefinition(definition);
-        if (validationResponse && !validationResponse.isValid) {
-          setShowProgress(false);
-
-          setDialogTitle('API Creation Unsuccessful');
-          setDialogContentText('API creation was unsuccessful. Please try again.');
-          setFirstDialogAction('');
-          setSecondDialogAction('CLOSE');
-
-          setSuccessDialogOpen(true);
-
-          console.error("The provided API definition is invalid. Please try again.");
-          return;
+  
+        if (!validationResponse?.isValid) {
+          handleError('CreateAPIWithAI.components.AlertDialog.error.create.http.API', 'The provided OpenAPI definition is invalid. Please try again.');
         }
-      } else if (parsedPayload && (parsedPayload.type == 'SSE' || parsedPayload.type == 'WS' 
-        || parsedPayload.type == 'WEBSUB' || parsedPayload.type == 'WEBHOOK' || parsedPayload.type == 'ASYNC')) {
-          YAML.load(spec);
-          const blobYaml = new Blob([spec], { type: 'text/yaml' });
-          definition = new File([blobYaml], 'modifiedContent.yaml', { type: 'text/yaml;charset=utf-8' });
-          validationResponse = await validateAsyncAPIDefinition(definition);
-          if (validationResponse && !validationResponse.isValid) {
-            setShowProgress(false);
-
-            setDialogTitle('API Creation Unsuccessful');
-            setDialogContentText('API creation was unsuccessful. Please try again.');
-            setFirstDialogAction('');
-            setSecondDialogAction('CLOSE');
-
-            setSuccessDialogOpen(true);
-
-            console.error("The provided API definition is invalid. Please try again.");
-            return;
-          }
-      }
-      
-      const data = { name: parsedPayload.name, version: parsedPayload.version, context: parsedPayload.context, 
-        gatewayType: parsedPayload.gatewayType, gatewayVendor: parsedPayload.gatewayVendor, protocol: protocolKeys[protocolKey], 
-        asyncTransportProtocols: parsedPayload.type, source: 'DesignAssistant', file: definition, graphQLInfo: graphQLInfo };
-
-      if (parsedPayload && parsedPayload.type == 'HTTP') {
+        const data = createData(parsedPayload.type, definition);
         history.push('/apis/create/openapi', data);
-      } else if (parsedPayload && (parsedPayload.type == 'SSE' || parsedPayload.type == 'WS' 
-        || parsedPayload.type == 'WEBSUB' || parsedPayload.type == 'WEBHOOK' || parsedPayload.type == 'ASYNC')) {
+      } else if (['SSE', 'WS', 'WEBSUB', 'WEBHOOK', 'ASYNC'].includes(parsedPayload.type)) {
+        YAML.load(spec);
+        definition = createBlobAndFile(spec, 'text/yaml');
+        validationResponse = await validateAsyncAPIDefinition(definition);
+  
+        if (!validationResponse?.isValid) {
+          handleError('CreateAPIWithAI.components.AlertDialog.error.create.async.API', 'The provided AsyncAPI definition is invalid. Please try again.');
+        }
+        const data = createData(parsedPayload.type, definition);
         history.push('/apis/create/asyncapi', data);
-      } else if (parsedPayload && parsedPayload.type == 'GRAPHQL') {
-        history.push('/apis/create/graphQL', data);
-      } else {
-        createAPI(parsedPayload);
-      }
-
+      } else if (parsedPayload.type === 'GRAPHQL') {
+        definition = createBlobAndFile(spec, 'text/plain');
+        validationResponse = await validateGraphQLSchema(definition);
+  
+        if (validationResponse?.isValid) {
+          graphQLInfo = validationResponse.graphQLInfo;
+          const data = createData(parsedPayload.type, definition, graphQLInfo);
+          history.push('/apis/create/graphQL', data);
+        } else {
+          handleError('CreateAPIWithAI.components.AlertDialog.error.create.graphql.API', 'The provided GraphQL schema is invalid. Please try again.');
+        }
+      } 
       setShowProgress(false);
-      setDialogTitle('API Creation Successful!');
-      setDialogContentText('API created successfully in the Publisher Portal!');
-      setFirstDialogAction('CLOSE');
-      setSecondDialogAction('VIEW API');
-
-      setSuccessDialogOpen(true);
     } catch (error) {
       setShowProgress(false);
-
-      setDialogTitle('API Creation Unsuccessful');
-      setDialogContentText('API creation was unsuccessful. Please try again.');
-      setFirstDialogAction('');
-      setSecondDialogAction('CLOSE');
-
-      setSuccessDialogOpen(true);
-
       console.error('Error during API creation:', error);
+      throw error;
     }
   };
 
@@ -287,15 +296,6 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec }) => {
           </DialogContent>
         </Dialog>
       )}
-
-      <CreateAPISuccessDialog
-        dialogTitle={dialogTitle}
-        dialogContentText={dialogContentText}
-        firstDialogAction={firstDialogAction}
-        secondDialogAction={secondDialogAction}
-        open={successDialogOpen}
-        onClose={() => setSuccessDialogOpen(false)}
-      />
     </React.Fragment>
   );
 };

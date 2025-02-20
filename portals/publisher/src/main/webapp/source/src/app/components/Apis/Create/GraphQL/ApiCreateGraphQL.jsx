@@ -118,6 +118,7 @@ export default function ApiCreateGraphQL(props) {
         inputsDispatcher({ action: 'preSetAPI', value: assistantInfo });
         inputsDispatcher({ action: 'gatewayType', value: assistantInfo.gatewayType });
         inputsDispatcher({ action: 'graphQLInfo', value: assistantInfo.graphQLInfo });
+        inputsDispatcher({ action: 'endpoint', value: assistantInfo.endpoint });
         inputsDispatcher({ action: 'inputType', value: 'file' });
         inputsDispatcher({ action: 'inputValue', value: assistantInfo.file });
     }
