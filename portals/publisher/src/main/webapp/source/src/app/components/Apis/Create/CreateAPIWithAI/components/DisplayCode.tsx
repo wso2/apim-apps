@@ -118,6 +118,7 @@ const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType, se
         >
           <AlertDialog 
             sessionId={sessionId}
+            spec={finalOutcomeCode}
           />
         </Box>
       </Stack>

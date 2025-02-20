@@ -26,7 +26,7 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -82,6 +82,8 @@ const StyledAPICreateBase = styled(APICreateBase)((
  */
 export default function ApiCreateAsyncAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
+    const location = useLocation();
+    const assistantInfo = location.state;
     const { history, multiGateway } = props;
     const { data: settings } = usePublisherSettings();
     // eslint-disable-next-line no-use-before-define
@@ -140,6 +142,14 @@ export default function ApiCreateAsyncAPI(props) {
         gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
             'wso2/synapse' : multiGateway[0]?.value),
     });
+
+    if (assistantInfo && wizardStep === 0 && assistantInfo.source === 'DesignAssistant') {
+        setWizardStep(1);
+        inputsDispatcher({ action: 'preSetAPI', value: assistantInfo });
+        inputsDispatcher({ action: 'protocol', value: assistantInfo.protocol });
+        inputsDispatcher({ action: 'inputType', value: 'file' });
+        inputsDispatcher({ action: 'inputValue', value: assistantInfo.file });
+    }
 
     const protocols = [
         {
