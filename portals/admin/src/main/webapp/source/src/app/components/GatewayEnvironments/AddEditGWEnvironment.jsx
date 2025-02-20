@@ -106,9 +106,7 @@ function reducer(state, { field, value }) {
 function AddEditGWEnvironment(props) {
     const classes = useStyles();
     const intl = useIntl();
-    const {
-        updateList, dataRow,
-    } = props;
+    const { dataRow } = props;
 
     const defaultVhost = {
         host: '', httpContext: '', httpsPort: 8243, httpPort: 8280, wssPort: 8099, wsPort: 9099, isNew: true,
@@ -163,7 +161,6 @@ function AddEditGWEnvironment(props) {
                     additionalProperties: tempAdditionalProperties || {},
                 };
                 dispatch({ field: 'editDetails', value: newState });
-                dispatch({ field: 'vhosts', value: body.vhosts });
             });
             setIsEditMode(true);
         } else {
@@ -453,10 +450,8 @@ function AddEditGWEnvironment(props) {
         let promiseAPICall;
         if (id) {
             // assign the update promise to the promiseAPICall
-            promiseAPICall = restApi.updateGatewayEnvironment(
-                id, name.trim(), displayName, type, description, gatewayType, vhostDto, permissions,
-                additionalPropertiesArrayDTO, provider,
-            );
+            promiseAPICall = restApi.updateGatewayEnvironment(id, name.trim(), displayName, type, description,
+                gatewayType, vhostDto, permissions, additionalPropertiesArrayDTO, provider);
         } else {
             // assign the create promise to the promiseAPICall
             promiseAPICall = restApi.addGatewayEnvironment(name.trim(), displayName, type, description,
@@ -490,8 +485,6 @@ function AddEditGWEnvironment(props) {
                 Alert.error(response.body.description);
             }
             setSaving(false);
-        }).finally(() => {
-            updateList();
         });
         return true;
     };
@@ -1046,6 +1039,7 @@ function AddEditGWEnvironment(props) {
                                 color='primary'
                                 onClick={formSaveCallback}
                                 disabled={!roleValidity}
+                                data-testid='form-dialog-base-save-btn'
                             >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
@@ -1084,7 +1078,6 @@ AddEditGWEnvironment.defaultProps = {
 };
 
 AddEditGWEnvironment.propTypes = {
-    updateList: PropTypes.func.isRequired,
     dataRow: PropTypes.shape({
         id: PropTypes.string.isRequired,
         name: PropTypes.string.isRequired,

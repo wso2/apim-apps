@@ -122,6 +122,34 @@ function AddEditVhost(props) {
                 return keyedVhost;
             }));
             setId(i);
+        } else {
+            setId(id + 1);
+            const vhost = defaultVhost;
+            vhost.key = '' + id;
+            setUserVhosts([vhost]);
+        }
+    }, []);
+
+    const isUserVhostsUpdated = (vhosts) => {
+        if (vhosts.length > 0) {
+            // check whether only the default vhost exists
+            if (vhosts.length === 1 && vhosts[0].host === '') {
+                return false;
+            }
+            return true;
+        }
+        return false;
+    };
+
+    useEffect(() => {
+        if (!isUserVhostsUpdated(userVhosts) && initialVhosts && initialVhosts.length > 0) {
+            let i = 0;
+            setUserVhosts(initialVhosts.map((vhost) => {
+                const keyedVhost = vhost;
+                keyedVhost.key = '' + i++;
+                return keyedVhost;
+            }));
+            setId(i);
         }
     }, [initialVhosts]);
 

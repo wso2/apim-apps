@@ -599,9 +599,9 @@ class API extends Resource {
     /**
      * Update a Gateway Environment
      */
-    updateGatewayEnvironment(id, name, displayName, type, description, gatewayType, vhosts, permissions, additionalProperties, callback = null) {
+    updateGatewayEnvironment(id, name, displayName, type, description, gatewayType, vhosts, permissions, additionalProperties, provider="wso2", callback = null) {
         return this.client.then((client) => {
-            const data = { name, displayName, type, description, gatewayType, vhosts, permissions, additionalProperties };
+            const data = { name, displayName, type, description, gatewayType, vhosts, permissions, additionalProperties, provider };
             return client.apis['Environments'].put_environments__environmentId_(
                 { environmentId: id },
                 { requestBody: data },
