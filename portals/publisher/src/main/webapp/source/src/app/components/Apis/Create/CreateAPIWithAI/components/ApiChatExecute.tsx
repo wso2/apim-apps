@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -144,6 +143,7 @@ interface ApiChatExecuteProps {
     ) => void;
     handleExecute: () => Promise<void>;
     paths?: string[]; 
+    loading?: boolean;
 }
 
 const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
@@ -152,6 +152,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
     handleQueryChange,
     handleExecute,
     paths = [],
+    loading = false,
 }) => {
     const intl = useIntl();
     const QUERY_CHARACTER_LIMIT = 500;
@@ -266,7 +267,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
         <Root>
             <Box className={classes.tryAiBottom}>
                 <Box className={classes.tryAiBottomInner}>
-                    <Box className={classes.tryAiBottomTextInputWrap} pl={2}>
+                    <Box className={classes.tryAiBottomTextInputWrap} pl={2} pr={2}>
                         <TextInput
                             ref={textareaRef}
                             fullWidth
@@ -274,7 +275,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                             value={inputQuery}
                             placeholder={intl.formatMessage({
                                 id: 'Apis.Details.ApiChat.components.ApiChatExecute.queryInput.placeholder',
-                                defaultMessage: 'Type the test scenario here...',
+                                defaultMessage: 'Describe your API design requirements...',
                             })}
                             onChange={handleInputChange}
                             onKeyDown={handleKeyDown}
@@ -299,21 +300,15 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                                     onClick={handleExecute}
                                     id='run-agent-button'
                                     startIcon={<ExecuteQuery />}
-                                    sx={{
-                                        marginLeft: 1,
-                                    }}
+                                    disabled={loading}
                                 >
-                                    <FormattedMessage
-                                        id='Apis.Details.ApiChat.components.ApiChatExecute.executeButton.label'
-                                        defaultMessage='Execute'
-                                    />
                                 </Button>
                             )}
                             inputProps={{
                                 maxLength: QUERY_CHARACTER_LIMIT,
                             }}
                         />
-                        <Box display='flex' justifyContent='flex-end' mt={1} mr={2}>
+                        <Box display='flex' justifyContent='flex-end' mt={1} mr={2} >
                             <Typography variant='caption'>
                                 {inputQuery.length}
                                 /
