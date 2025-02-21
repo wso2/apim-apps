@@ -65,10 +65,37 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
         endpointsPromise
             .then((response) => {
                 const endpoints = response.body.list;
+                const defaultEndpoints = [];
+
+                if (apiFromContext.endpointConfig?.production_endpoints) {
+                    defaultEndpoints.push({
+                        id: `${apiFromContext.id}--PRODUCTION`,
+                        name: 'Default Production Endpoint',
+                        deploymentStage: 'PRODUCTION',
+                        endpointConfig: {
+                            production_endpoints: apiFromContext.endpointConfig.production_endpoints,
+                            endpoint_security: apiFromContext.endpointConfig.endpoint_security
+                        }
+                    });
+                }
+
+                if (apiFromContext.endpointConfig?.sandbox_endpoints) {
+                    defaultEndpoints.push({
+                        id: `${apiFromContext.id}--SANDBOX`,
+                        name: 'Default Sandbox Endpoint',
+                        deploymentStage: 'SANDBOX',
+                        endpointConfig: {
+                            sandbox_endpoints: apiFromContext.endpointConfig.sandbox_endpoints,
+                            endpoint_security: apiFromContext.endpointConfig.endpoint_security
+                        }
+                    });
+                }
+
+                const allEndpoints = [...endpoints, ...defaultEndpoints];
                 
                 // Filter endpoints based on endpoint type
-                const prodEndpointList = endpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'PRODUCTION');
-                const sandEndpointList = endpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'SANDBOX');
+                const prodEndpointList = allEndpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'PRODUCTION');
+                const sandEndpointList = allEndpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'SANDBOX');
                 setProductionEndpoints(prodEndpointList);
                 setSandboxEndpoints(sandEndpointList);
 
