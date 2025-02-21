@@ -24,7 +24,6 @@ import Grid from '@mui/material/Grid';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import AddCircle from '@mui/icons-material/AddCircle';
 import API from 'AppData/api';
@@ -32,6 +31,11 @@ import { Progress } from 'AppComponents/Shared';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { Endpoint, ModelData } from './Types';
 import ModelCard from './ModelCard';
+import { styled } from '@mui/material/styles';
+import Alert from '@mui/material/Alert';
+import { Link } from 'react-router-dom';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 interface ModelConfig {
     targetModel: ModelData;
@@ -49,6 +53,24 @@ interface ModelFailoverProps {
     setManualPolicyConfig: React.Dispatch<React.SetStateAction<string>>;
     manualPolicyConfig: string;
 }
+
+const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+    minHeight: 48,
+    maxHeight: 48,
+    '&.Mui-expanded': {
+        minHeight: 48,
+        maxHeight: 48,
+    },
+    '& .MuiAccordionSummary-content': {
+        margin: 0,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        '&.Mui-expanded': {
+            margin: 0,
+        }
+    }
+}));
 
 const ModelFailover: FC<ModelFailoverProps> = ({
     setManualPolicyConfig,
@@ -77,6 +99,8 @@ const ModelFailover: FC<ModelFailoverProps> = ({
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState<Endpoint[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [productionEnabled, setProductionEnabled] = useState<boolean>(false);
+    const [sandboxEnabled, setSandboxEnabled] = useState<boolean>(false);
 
     const fetchEndpoints = () => {
         setLoading(true);
@@ -84,10 +108,37 @@ const ModelFailover: FC<ModelFailoverProps> = ({
         endpointsPromise
             .then((response) => {
                 const endpoints = response.body.list;
+                const defaultEndpoints = [];
+
+                if (apiFromContext.endpointConfig?.production_endpoints) {
+                    defaultEndpoints.push({
+                        id: `${apiFromContext.id}--PRODUCTION`,
+                        name: 'Default Production Endpoint',
+                        deploymentStage: 'PRODUCTION',
+                        endpointConfig: {
+                            production_endpoints: apiFromContext.endpointConfig.production_endpoints,
+                            endpoint_security: apiFromContext.endpointConfig.endpoint_security
+                        }
+                    });
+                }
+
+                if (apiFromContext.endpointConfig?.sandbox_endpoints) {
+                    defaultEndpoints.push({
+                        id: `${apiFromContext.id}--SANDBOX`,
+                        name: 'Default Sandbox Endpoint',
+                        deploymentStage: 'SANDBOX',
+                        endpointConfig: {
+                            sandbox_endpoints: apiFromContext.endpointConfig.sandbox_endpoints,
+                            endpoint_security: apiFromContext.endpointConfig.endpoint_security
+                        }
+                    });
+                }
+
+                const allEndpoints = [...defaultEndpoints, ...endpoints];
                 
                 // Filter endpoints based on endpoint type
-                const prodEndpointList = endpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'PRODUCTION');
-                const sandEndpointList = endpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'SANDBOX');
+                const prodEndpointList = allEndpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'PRODUCTION');
+                const sandEndpointList = allEndpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'SANDBOX');
                 setProductionEndpoints(prodEndpointList);
                 setSandboxEndpoints(sandEndpointList);
 
@@ -115,7 +166,17 @@ const ModelFailover: FC<ModelFailoverProps> = ({
 
     useEffect(() => {
         if (manualPolicyConfig !== '') {
-            setConfig(JSON.parse(manualPolicyConfig.replace(/'/g, '"')));
+            const parsedConfig = JSON.parse(manualPolicyConfig.replace(/'/g, '"'));
+            setConfig(parsedConfig);
+            
+            // Set toggle states based on whether there's any configuration
+            const hasProductionConfig = parsedConfig.production.targetModel.model !== '' 
+                || parsedConfig.production.fallbackModels.length > 0;
+            const hasSandboxConfig = parsedConfig.sandbox.targetModel.model !== '' 
+                || parsedConfig.sandbox.fallbackModels.length > 0;
+            
+            setProductionEnabled(hasProductionConfig);
+            setSandboxEnabled(hasSandboxConfig);
         }
     }, [manualPolicyConfig]);
 
@@ -168,6 +229,57 @@ const ModelFailover: FC<ModelFailoverProps> = ({
         }));
     }
 
+    const isAddModelDisabled = (env: 'production' | 'sandbox') => {
+        if (modelList.length === 0) {
+            return true;
+        }
+        return env === 'production' ? productionEndpoints.length === 0 : sandboxEndpoints.length === 0;
+    };
+
+    const getEndpointsUrl = () => {
+        return `/apis/${apiFromContext.id}/endpoints`;
+    };
+
+    const handleProductionToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setProductionEnabled(event.target.checked);
+        if (!event.target.checked) {
+            setConfig(prev => ({
+                ...prev,
+                production: {
+                    targetModel: {
+                        model: '',
+                        endpointId: '',
+                    },
+                    fallbackModels: [],
+                },
+            }));
+        }
+    };
+
+    const handleSandboxToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSandboxEnabled(event.target.checked);
+        if (!event.target.checked) {
+            setConfig(prev => ({
+                ...prev,
+                sandbox: {
+                    targetModel: {
+                        model: '',
+                        endpointId: '',
+                    },
+                    fallbackModels: [],
+                },
+            }));
+        }
+    };
+
+    const handleAccordionChange = (env: 'production' | 'sandbox') => (event: React.SyntheticEvent, expanded: boolean) => {
+        if (env === 'production') {
+            handleProductionToggle({ target: { checked: expanded } } as React.ChangeEvent<HTMLInputElement>);
+        } else {
+            handleSandboxToggle({ target: { checked: expanded } } as React.ChangeEvent<HTMLInputElement>);
+        }
+    };
+
     if (loading) {
         return <Progress per={90} message='Loading Endpoints ...' />;
     }
@@ -175,20 +287,61 @@ const ModelFailover: FC<ModelFailoverProps> = ({
     return (
         <>
             <Grid item xs={12}>
-                <Accordion defaultExpanded>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
+                <Accordion 
+                    expanded={productionEnabled} 
+                    onChange={handleAccordionChange('production')}
+                >
+                    <StyledAccordionSummary
                         aria-controls='production-content'
                         id='production-header'
                     >
-                    <Typography variant='subtitle2' color='textPrimary'>
-                        <FormattedMessage
-                            id='Apis.Details.Policies.CustomPolicies.ModelFailover.accordion.production'
-                            defaultMessage='Production'
+                        <Typography variant='subtitle2' color='textPrimary'>
+                            <FormattedMessage
+                                id='Apis.Details.Policies.CustomPolicies.ModelFailover.accordion.production'
+                                defaultMessage='Production'
+                            />
+                        </Typography>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={productionEnabled}
+                                    onChange={handleProductionToggle}
+                                    name="production-toggle"
+                                />
+                            }
+                            label=""
                         />
-                    </Typography>
-                    </AccordionSummary>
+                    </StyledAccordionSummary>
                     <AccordionDetails>
+                        {modelList.length === 0 && (
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.models'
+                                    defaultMessage='No models available. Please configure models for the LLM provider.'
+                                />
+                            </Alert>
+                        )}
+                        {productionEndpoints.length === 0 && (
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.production.endpoints'
+                                    defaultMessage='No production endpoints available. Please {configureLink} first.'
+                                    values={{
+                                        configureLink: (
+                                            <Link to={getEndpointsUrl()}>
+                                                configure endpoints
+                                            </Link>
+                                        ),
+                                    }}
+                                />
+                            </Alert>
+                        )}
+                        <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                            <FormattedMessage
+                                id='Apis.Details.Policies.CustomPolicies.ModelFailover.target.model'
+                                defaultMessage='Target Model'
+                            />
+                        </Typography>
                         <ModelCard
                             modelData={config.production.targetModel}
                             modelList={modelList}
@@ -196,12 +349,19 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                             isWeightApplicable={false}
                             onUpdate={(updatedTargetModel) => handleTargetModelUpdate('production', 0, updatedTargetModel)}
                         />
+                        <Typography variant='subtitle2' sx={{ mt: 2, mb: 1 }}>
+                            <FormattedMessage
+                                id='Apis.Details.Policies.CustomPolicies.ModelFailover.fallback.models'
+                                defaultMessage='Fallback Models'
+                            />
+                        </Typography>
                         <Button
                             variant='outlined'
                             color='primary'
                             data-testid='add-production-model'
-                            sx={{ ml: 1 }}
+                            sx={{ ml: 1, mb: 2 }}
                             onClick={() => handleAddFallbackModel('production')}
+                            disabled={isAddModelDisabled('production')}
                         >
                             <AddCircle sx={{ mr: 1 }} />
                             <FormattedMessage
@@ -222,9 +382,11 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                         ))}
                     </AccordionDetails>
                 </Accordion>
-                <Accordion>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
+                <Accordion 
+                    expanded={sandboxEnabled} 
+                    onChange={handleAccordionChange('sandbox')}
+                >
+                    <StyledAccordionSummary
                         aria-controls='sandbox-content'
                         id='sandbox-header'
                     >
@@ -234,21 +396,67 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                                 defaultMessage='Sandbox'
                             />
                         </Typography>
-                    </AccordionSummary>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={sandboxEnabled}
+                                    onChange={handleSandboxToggle}
+                                    name="sandbox-toggle"
+                                />
+                            }
+                            label=""
+                        />
+                    </StyledAccordionSummary>
                     <AccordionDetails>
+                        {modelList.length === 0 && (
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.models'
+                                    defaultMessage='No models available. Please configure models for the LLM provider.'
+                                />
+                            </Alert>
+                        )}
+                        {sandboxEndpoints.length === 0 && (
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.sandbox.endpoints'
+                                    defaultMessage='No sandbox endpoints available. Please {configureLink} first.'
+                                    values={{
+                                        configureLink: (
+                                            <Link to={getEndpointsUrl()}>
+                                                configure endpoints
+                                            </Link>
+                                        ),
+                                    }}
+                                />
+                            </Alert>
+                        )}
+                        <Typography variant='subtitle2' sx={{ mb: 1 }}>
+                            <FormattedMessage
+                                id='Apis.Details.Policies.CustomPolicies.ModelFailover.target.model'
+                                defaultMessage='Target Model'
+                            />
+                        </Typography>
                         <ModelCard
                             modelData={config.sandbox.targetModel}
                             modelList={modelList}
-                            endpointList={productionEndpoints}
+                            endpointList={sandboxEndpoints}
                             isWeightApplicable={false}
                             onUpdate={(updatedTargetModel) => handleTargetModelUpdate('sandbox', 0, updatedTargetModel)}
                         />
+                        <Typography variant='subtitle2' sx={{ mt: 2, mb: 1 }}>
+                            <FormattedMessage
+                                id='Apis.Details.Policies.CustomPolicies.ModelFailover.fallback.models'
+                                defaultMessage='Fallback Models'
+                            />
+                        </Typography>
                         <Button
                             variant='outlined'
                             color='primary'
                             data-testid='add-sandbox-model'
-                            sx={{ ml: 1 }}
+                            sx={{ ml: 1, mb: 2 }}
                             onClick={() => handleAddFallbackModel('sandbox')}
+                            disabled={isAddModelDisabled('sandbox')}
                         >
                             <AddCircle sx={{ mr: 1 }} />
                             <FormattedMessage
