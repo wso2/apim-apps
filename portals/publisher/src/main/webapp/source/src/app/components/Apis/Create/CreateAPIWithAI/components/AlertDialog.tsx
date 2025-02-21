@@ -16,8 +16,7 @@
  * under the License.
  */
 import * as React from 'react';
-import { Button, CircularProgress, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
-import Dialog from '@mui/material/Dialog';
+import { Button, CircularProgress} from '@mui/material';
 import { useHistory } from 'react-router-dom';
 import { useIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
@@ -25,19 +24,14 @@ import YAML from 'js-yaml';
 import API from 'AppData/api';
 
 interface AlertDialogProps {
-  sessionId: string;
   loading?: boolean;
   taskStatus: string;
   spec: string;
   apiType: string;
 }
 
-const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, loading = false, taskStatus, spec, apiType}) => {
+const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, spec, apiType}) => {
   const [showProgress, setShowProgress] = React.useState(false);
-  const [successDialogOpen, setSuccessDialogOpen] = React.useState(false);
-  const [dialogTitle, setDialogTitle] = React.useState('');
-  const [dialogContentText, setDialogContentText] = React.useState('');
-  const [success, setSuccess] = React.useState(false);
   const intl = useIntl();
   const history = useHistory();
 
@@ -130,13 +124,24 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, loading = false, t
 
     try {
       
-      let endpointValue = (apiType === 'WebSocket' ? 'ws://localhost:9099' : 'http://localhost:8080');
+      const endpointValue = (apiType === 'WebSocket' ? 'ws://localhost:9099' : 'http://localhost:8080');
       let apiName = (apiType === 'REST' ? 'Banking Transaction API' : 'Live Streaming API');
+      let apiVersion = '1.0.0';
+      let apiContext = '/apiContext';
+
+      interface Info {
+        title: string;
+        version: string;
+      }
+      
+      interface ParsedYAML {
+        info: Info;
+      }
 
       const createData = (type: string, file: File, graphQLInfo?: any) => ({
         name: apiName,
-        version: '1.0.0',
-        context: '/apicontext',
+        version: apiVersion,
+        context: apiContext,
         gatewayType: 'wso2/synapse',
         gatewayVendor: 'wso2',
         endpoint: endpointValue,
@@ -152,7 +157,14 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, loading = false, t
       let graphQLInfo: any;
   
       if (apiType === 'REST') {
-        YAML.load(spec);
+        const jsonContent: ParsedYAML = YAML.load(spec) as ParsedYAML;
+
+        if (jsonContent && jsonContent.info) {
+          apiName = jsonContent.info.title? jsonContent.info.title : apiName;
+          apiVersion = jsonContent.info.version? jsonContent.info.version : apiVersion;
+          apiContext = apiName ? ('/' + apiName.replace(/[&/\\#,+()$~%.'":*?<>{}\s]/g, '')) : apiContext;
+        }
+
         definition = createBlobAndFile(spec, 'text/yaml');
         validationResponse = await validateOpenAPIDefinition(definition);
   
@@ -162,7 +174,14 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, loading = false, t
         const data = createData(apiType, definition);
         history.push('/apis/create/openapi', data);
       } else if (['SSE', 'WebSocket', 'WebSub'].includes(apiType)) {
-        YAML.load(spec);
+        const jsonContent: ParsedYAML = YAML.load(spec) as ParsedYAML;
+
+        if (jsonContent && jsonContent.info) {
+          apiName = jsonContent.info.title? jsonContent.info.title : apiName;
+          apiVersion = jsonContent.info.version? jsonContent.info.version : apiVersion;
+          apiContext = apiName ? ('/' + apiName.replace(/[&/\\#,+()$~%.'":*?<>{}\s]/g, '')) : apiContext;
+        }
+
         definition = createBlobAndFile(spec, 'text/yaml');
         validationResponse = await validateAsyncAPIDefinition(definition);
   
@@ -174,7 +193,8 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, loading = false, t
       } else if (apiType === 'GraphQL') {
         definition = createBlobAndFile(spec, 'text/plain');
         validationResponse = await validateGraphQLSchema(definition);
-  
+        apiName = 'GraphQLAPI';
+        apiContext = '/graphqlapi';
         if (validationResponse?.isValid) {
           graphQLInfo = validationResponse.graphQLInfo;
           const data = createData(apiType, definition, graphQLInfo);
@@ -183,10 +203,8 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, loading = false, t
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.graphql.API', 'The provided GraphQL schema is invalid. Please try again.');
         }
       } 
-      setSuccess(true);
       setShowProgress(false);
     } catch (error) {
-      setSuccess(false);
       setShowProgress(false);
       console.error('Error during API creation:', error);
       Alert.error(intl.formatMessage({ id: 'CreateAPIWithAI.components.AlertDialog.error.create.API', defaultMessage: 'Error Creating API' }));
@@ -209,26 +227,6 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, loading = false, t
         {' '}
         {showProgress &&  <CircularProgress size={16} color='inherit'/> }
       </Button>
-
-      {!success && (
-        <Dialog 
-          open={successDialogOpen} 
-          aria-labelledby="success-dialog-title" 
-          aria-describedby="success-dialog-description"
-          sx={{ 
-            '.MuiDialog-paper': { 
-              padding: '33px 55px',
-            } 
-          }}
-        >
-          <DialogTitle id="success-dialog-title">{dialogTitle}</DialogTitle>
-          <DialogContent>
-            <DialogContentText id="success-dialog-description">
-              {dialogContentText}
-            </DialogContentText>
-        </DialogContent>
-        </Dialog>
-      )}
     </React.Fragment>
   );
 };
