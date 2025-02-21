@@ -158,10 +158,12 @@ export default function CustomizedStepper() {
     const [api, updateAPI] = useAPI();
     const [isUpdating, setUpdating] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
+    const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
     const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct && api.endpointConfig !== null
-    && api.endpointConfig.implementation_status === 'prototyped';
-    const isEndpointAvailable = api.endpointConfig !== null;
-    const isEndpointSecurityConfigured = api.endpointConfig && api.endpointConfig.endpoint_security;
+        && api.endpointConfig.implementation_status === 'prototyped';
+    const isEndpointAvailable = api.subtypeConfiguration?.subtype === 'AIAPI'
+        ? (api.primaryProductionEndpointId || api.primarySandboxEndpointId)
+        : api.endpointConfig !== null;
     const isTierAvailable = api.policies.length !== 0;
     const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
@@ -226,6 +228,49 @@ export default function CustomizedStepper() {
 
         });
     }, []);
+
+    useEffect(() => {
+        const checkEndpointSecurity = async () => {
+            try {
+                const hasProductionEndpoint = !!api.primaryProductionEndpointId;
+                const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
+                let isProductionSecure = false;
+                let isSandboxSecure = false;
+
+                if (hasProductionEndpoint) {
+                    if (api.primaryProductionEndpointId === `${api.id}--PRODUCTION`) {
+                        isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
+                    } else {
+                        const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
+                        isProductionSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.production;
+                    }
+                }
+
+                if (hasSandboxEndpoint) {
+                    if (api.primarySandboxEndpointId === `${api.id}--SANDBOX`) {
+                        isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
+                    } else {
+                        const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
+                        isSandboxSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox;
+                    }
+                }
+
+                if (hasProductionEndpoint && hasSandboxEndpoint) {
+                    setIsEndpointSecurityConfigured(isProductionSecure && isSandboxSecure);
+                } else if (hasProductionEndpoint) {
+                    setIsEndpointSecurityConfigured(isProductionSecure);
+                } else if (hasSandboxEndpoint) {
+                    setIsEndpointSecurityConfigured(isSandboxSecure);
+                } else {
+                    setIsEndpointSecurityConfigured(false);
+                }
+            } catch (error) {
+                console.error('Error checking endpoint security:', error);
+                setIsEndpointSecurityConfigured(false);
+            }
+        };
+        checkEndpointSecurity();
+    }, [api]);
 
     /**
  * Update the LifeCycle state of the API

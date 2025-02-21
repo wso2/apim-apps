@@ -17,541 +17,275 @@
  */
 
 import React, { useState, useEffect, useContext } from 'react';
-import { styled } from '@mui/material/styles';
 import {
     Grid,
     Paper,
     Typography,
-    Button,
+    styled,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
-import InputLabel from '@mui/material/InputLabel';
-import MenuItem from '@mui/material/MenuItem';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
-import { isRestricted } from 'AppData/AuthManager';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
-import AddCircle from '@mui/icons-material/AddCircle';
-import CONSTS from 'AppData/Constants';
-import EndpointCard from '../MultiEndpointComponents/EndpointCard';
-import GeneralEndpointConfigurations from '../MultiEndpointComponents/GeneralEndpointConfigurations';
+import GeneralEndpointConfigurations from './GeneralEndpointConfigurations';
+import EndpointCard from './EndpointCard';
 
-const PREFIX = 'AIEndpoints';
-
-const classes = {
-    listing: `${PREFIX}-listing`,
-    endpointContainer: `${PREFIX}-endpointContainer`,
-    endpointName: `${PREFIX}-endpointName`,
-    endpointTypesWrapper: `${PREFIX}-endpointTypesWrapper`,
-    sandboxHeading: `${PREFIX}-sandboxHeading`,
-    radioGroup: `${PREFIX}-radioGroup`,
-    endpointsWrapperLeft: `${PREFIX}-endpointsWrapperLeft`,
-    endpointsWrapperRight: `${PREFIX}-endpointsWrapperRight`,
-    endpointsTypeSelectWrapper: `${PREFIX}-endpointsTypeSelectWrapper`,
-    endpointTypesSelectWrapper: `${PREFIX}-endpointTypesSelectWrapper`,
-    defaultEndpointWrapper: `${PREFIX}-defaultEndpointWrapper`,
-    configDialogHeader: `${PREFIX}-configDialogHeader`,
-    addLabel: `${PREFIX}-addLabel`,
-    buttonIcon: `${PREFIX}-buttonIcon`,
-    button: `${PREFIX}-button`,
-    btn: `${PREFIX}-btn`,
-};
-
-const Root = styled('div')((
-    {
-        theme
-    }
-) => ({
-    [`& .${classes.listing}`]: {
-        margin: theme.spacing(1),
-        padding: theme.spacing(1),
-    },
-
-    [`& .${classes.endpointContainer}`]: {
-        paddingLeft: theme.spacing(2),
-        padding: theme.spacing(1),
-    },
-
-    [`& .${classes.endpointName}`]: {
-        paddingLeft: theme.spacing(1),
-        fontSize: '1rem',
-        paddingTop: theme.spacing(1),
-        paddingBottom: theme.spacing(1),
-    },
-
-    [`& .${classes.endpointTypesWrapper}`]: {
-        padding: theme.spacing(3),
-        marginTop: theme.spacing(2),
-    },
-
-    [`& .${classes.sandboxHeading}`]: {
-        display: 'flex',
-        alignItems: 'center',
-    },
-
-    [`& .${classes.radioGroup}`]: {
-        display: 'flex',
-        flexDirection: 'row',
-    },
-
-    [`& .${classes.endpointsWrapperLeft}`]: {
-        padding: theme.spacing(1),
-        borderRight: '#c4c4c4',
-        borderRightStyle: 'solid',
-        borderRightWidth: 'thin',
-    },
-
-    [`& .${classes.endpointsWrapperRight}`]: {
-        padding: theme.spacing(1),
-    },
-
-    [`& .${classes.endpointsTypeSelectWrapper}`]: {
-        marginLeft: theme.spacing(2),
-        marginRight: theme.spacing(2),
-        padding: theme.spacing(1),
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
-
-    [`& .${classes.endpointTypesSelectWrapper}`]: {
-        display: 'flex',
-    },
-
-    [`& .${classes.defaultEndpointWrapper}`]: {
-        paddingLeft: theme.spacing(1),
-        paddingRight: theme.spacing(1),
-        marginRight: theme.spacing(1),
-    },
-
-    [`& .${classes.configDialogHeader}`]: {
-        fontWeight: '600',
-    },
-
-    [`& .${classes.addLabel}`]: {
-        padding: theme.spacing(2),
-    },
-
-    [`& .${classes.buttonIcon}`]: {
-        marginRight: theme.spacing(1),
-    },
-
-    [`& .${classes.button}`]: {
-        textTransform: 'none',
-    },
-
-    [`& .${classes.btn}`]: {
-        marginRight: theme.spacing(0.5),
-    },
-
-    [`& .${classes.endpointInputWrapper}`]: {
-        width: '100%',
-        display: 'flex',
-        justifyContent: 'space-between',
-    },
-
-    [`& .${classes.textField}`]: {
-        width: '100%',
-    },
-
-    [`& .${classes.input}`]: {
-        marginLeft: theme.spacing(1),
-        flex: 1,
-    },
-
-    [`& .${classes.iconButton}`]: {
-        padding: theme.spacing(1),
-    }
+const StyledPaper = styled(Paper)(({ theme }) => ({
+    padding: theme.spacing(3),
 }));
-
 
 const AIEndpoints = ({
     apiObject,
-    apiKeyParamConfig,
 }) => {
     const [productionEndpoints, setProductionEndpoints] = useState([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState([]);
-    const [showAddProductionEndpoint, setShowAddProductionEndpoint] = useState(false);
-    const [showAddSandboxEndpoint, setShowAddSandboxEndpoint] = useState(false);
-    const [primaryProductionEndpoint, setPrimaryProductionEndpoint] = useState(null);
-    const [primarySandboxEndpoint, setPrimarySandboxEndpoint] = useState(null);
     const [endpointList, setEndpointList] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [saving, setSaving] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const intl = useIntl();
     const { updateAPI } = useContext(APIContext);
 
     const fetchEndpoints = () => {
         setLoading(true);
-        const endpointsPromise = API.getApiEndpoints(apiObject.id);
-        endpointsPromise
+        API.getApiEndpoints(apiObject.id)
             .then((response) => {
                 const endpoints = response.body.list;
+                const defaultEndpoints = [];
 
-                // Filter endpoints based on endpoint type
-                const prodEndpointList = endpoints.filter((endpoint) => endpoint.deploymentStage === 'PRODUCTION');
-                const sandEndpointList = endpoints.filter((endpoint) => endpoint.deploymentStage === 'SANDBOX');
+                if (apiObject.endpointConfig?.production_endpoints) {
+                    defaultEndpoints.push({
+                        id: `${apiObject.id}--PRODUCTION`,
+                        name: 'Default Production Endpoint',
+                        deploymentStage: 'PRODUCTION',
+                        endpointConfig: {
+                            production_endpoints: apiObject.endpointConfig.production_endpoints,
+                            endpoint_security: apiObject.endpointConfig.endpoint_security
+                        }
+                    });
+                }
+
+                if (apiObject.endpointConfig?.sandbox_endpoints) {
+                    defaultEndpoints.push({
+                        id: `${apiObject.id}--SANDBOX`,
+                        name: 'Default Sandbox Endpoint',
+                        deploymentStage: 'SANDBOX',
+                        endpointConfig: {
+                            sandbox_endpoints: apiObject.endpointConfig.sandbox_endpoints,
+                            endpoint_security: apiObject.endpointConfig.endpoint_security
+                        }
+                    });
+                }
+
+                const allEndpoints = [...endpoints, ...defaultEndpoints];
+                const prodEndpointList = allEndpoints.filter(ep => ep.deploymentStage === 'PRODUCTION');
+                const sandEndpointList = allEndpoints.filter(ep => ep.deploymentStage === 'SANDBOX');
+
                 setProductionEndpoints(prodEndpointList);
                 setSandboxEndpoints(sandEndpointList);
 
-                // Loop through endpoints and add endpointList
-                const tempEndpointUrlList = [];
-                for (const prodEndpoint of prodEndpointList) {
-                    tempEndpointUrlList.push(prodEndpoint.endpointConfig?.production_endpoints);
-                }
-                for (const sandEndpoint of sandEndpointList) {
-                    tempEndpointUrlList.push(sandEndpoint.endpointConfig?.sandbox_endpoints);
-                }
-                setEndpointList(tempEndpointUrlList);
-
-            }).catch((error) => {
+                const endpointUrlList = [
+                    ...prodEndpointList.map(ep => ep.endpointConfig?.production_endpoints),
+                    ...sandEndpointList.map(ep => ep.endpointConfig?.sandbox_endpoints)
+                ].filter(Boolean);
+                setEndpointList(endpointUrlList);
+            })
+            .catch((error) => {
                 console.error(error);
                 Alert.error(intl.formatMessage({
                     id: 'Apis.Details.Endpoints.endpoints.fetch.error',
                     defaultMessage: 'Something went wrong while fetching endpoints',
                 }));
-            }).finally(() => {
-                setLoading(false);
-            });
+            })
+            .finally(() => setLoading(false));
     }
 
     useEffect(() => {
         fetchEndpoints();
     }, []);
 
-    /**
-     * Set primary endpoints
-     */
-    useEffect(() => {
-        const { primaryProductionEndpointId, primarySandboxEndpointId } = apiObject;
-        if (primaryProductionEndpointId) {
-            setPrimaryProductionEndpoint(
-                productionEndpoints.find(
-                    (endpoint) => endpoint.id === primaryProductionEndpointId,
-                ),
-            );
-        }
-        if (primarySandboxEndpointId) {
-            setPrimarySandboxEndpoint(
-                sandboxEndpoints.find(
-                    (endpoint) => endpoint.id === primarySandboxEndpointId,
-                ),
-            );
-        }
-    }, [productionEndpoints, sandboxEndpoints]);
-
-    const toggleAddProductionEndpoint = () => {
-        setShowAddProductionEndpoint(!showAddProductionEndpoint);
-    };
-
-    const toggleAddSandboxEndpoint = () => {
-        setShowAddSandboxEndpoint(!showAddSandboxEndpoint);
-    };
-
-    const getDefaultEndpoint = (deploymentStage) => {
-        return {
-            ...CONSTS.DEFAULT_ENDPOINT,
-            deploymentStage,
-        }
-    };
-
-    const handlePrimaryEndpointChange = (deploymentStage, event) => {
-        if (deploymentStage === CONSTS.DEPLOYMENT_STAGE.production) {
-            setPrimaryProductionEndpoint(event.target.value);
-        } else if (deploymentStage === CONSTS.DEPLOYMENT_STAGE.sandbox) {
-            setPrimarySandboxEndpoint(event.target.value);
-        }
-    };
-
-    const savePrimaryEndpoints = () => {
-        setSaving(true);
-        // Verify if production and/or sandbox primary endpoints are selected
-        if (!primaryProductionEndpoint && !primarySandboxEndpoint) {
+    const handleDelete = (endpoint) => {
+        // Check if endpoint is primary
+        if (endpoint.id === apiObject.primaryProductionEndpointId ||
+            endpoint.id === apiObject.primarySandboxEndpointId) {
             Alert.error(intl.formatMessage({
-                id: 'Apis.Details.Endpoints.primary.endpoints.save.error',
-                defaultMessage: 'Please select at least one primary endpoint',
+                id: 'Apis.Details.Endpoints.endpoint.delete.primary.error',
+                defaultMessage: 'Cannot delete primary endpoint. Please remove primary status first.',
             }));
-            setSaving(false);
             return;
         }
 
-        const updatePromise = updateAPI({
-            primaryProductionEndpointId: primaryProductionEndpoint?.id,
-            primarySandboxEndpointId: primarySandboxEndpoint?.id,
-        });
-        updatePromise
-            .catch((error) => {
-                console.error(error);
-                Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.primary.endpoints.save.error',
-                    defaultMessage: 'Error occurred while saving primary endpoints',
-                }));
+        setIsDeleting(true);
+        const isGeneralEndpoint =
+            endpoint.id === `${apiObject.id}--PRODUCTION` ||
+            endpoint.id === `${apiObject.id}--SANDBOX`;
+
+        let deletePromise;
+        if (isGeneralEndpoint) {
+            const updatedApi = { ...apiObject };
+            const isProduction = endpoint.deploymentStage === 'PRODUCTION';
+
+            // Update endpoint configuration by deleting the property
+            delete updatedApi.endpointConfig[isProduction ? 'production_endpoints' : 'sandbox_endpoints'];
+
+            // Clean up security configuration
+            if (updatedApi.endpointConfig.endpoint_security) {
+                delete updatedApi.endpointConfig.endpoint_security[isProduction ? 'production' : 'sandbox'];
+                if (!updatedApi.endpointConfig.endpoint_security.production &&
+                    !updatedApi.endpointConfig.endpoint_security.sandbox) {
+                    delete updatedApi.endpointConfig.endpoint_security;
+                }
             }
-            ).finally(() => {
-                setSaving(false);
+
+            deletePromise = updateAPI(updatedApi);
+        } else {
+            deletePromise = API.deleteApiEndpoint(apiObject.id, endpoint.id);
+        }
+
+        deletePromise
+            .then(() => {
+                if (endpoint.deploymentStage === 'PRODUCTION') {
+                    setProductionEndpoints(prev => prev.filter(ep => ep.id !== endpoint.id));
+                } else {
+                    setSandboxEndpoints(prev => prev.filter(ep => ep.id !== endpoint.id));
+                }
+
+
+                Alert.success(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.endpoint.delete.success',
+                    defaultMessage: 'Endpoint deleted successfully',
+                }));
+            })
+            .catch((error) => {
+                console.error('Error deleting endpoint:', error);
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.endpoint.delete.error',
+                    defaultMessage: 'Error deleting endpoint',
+                }));
+            })
+            .finally(() => {
+                setIsDeleting(false);
             });
     };
 
-    const resetPrimaryEndpoints = () => {
-        const { primaryProductionEndpointId, primarySandboxEndpointId } = apiObject;
+    const handleSetAsPrimary = (endpoint) => {
+        // Create a deep copy of the API object to avoid direct mutations
+        const updatedApi = {
+            ...apiObject,
+            [endpoint.deploymentStage === 'PRODUCTION' ?
+                'primaryProductionEndpointId' : 'primarySandboxEndpointId']: endpoint.id,
+        };
 
-        // Reset primary production endpoint
-        if (primaryProductionEndpointId) {
-            setPrimaryProductionEndpoint(
-                productionEndpoints.find(
-                    (endpoint) => endpoint.id === primaryProductionEndpointId,
-                ),
-            );
-        } else {
-            setPrimaryProductionEndpoint(null);
+        updateAPI(updatedApi)
+            .then(() => {
+                Alert.success(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.endpoint.primary.set.success',
+                    defaultMessage: 'Primary endpoint updated successfully',
+                }));
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.endpoint.primary.set.error',
+                    defaultMessage: 'Error setting primary endpoint',
+                }));
+            });
+    };
+
+    const handleRemovePrimary = (endpoint) => {
+        if (!apiObject.primaryProductionEndpointId || !apiObject.primarySandboxEndpointId) {
+            Alert.error(intl.formatMessage({
+                id: 'Apis.Details.Endpoints.endpoint.primary.remove.error',
+                defaultMessage: 'At least one endpoint has to be a primary endpoint.',
+            }));
+            return;
         }
 
-        // Reset primary sandbox endpoint
-        if (primarySandboxEndpointId) {
-            setPrimarySandboxEndpoint(
-                sandboxEndpoints.find(
-                    (endpoint) => endpoint.id === primarySandboxEndpointId,
-                ),
-            );
-        } else {
-            setPrimarySandboxEndpoint(null);
-        }
-    }
+        const updatedApi = {
+            ...apiObject,
+            [endpoint.deploymentStage === 'PRODUCTION' ?
+                'primaryProductionEndpointId' : 'primarySandboxEndpointId']: null,
+        };
+
+        updateAPI(updatedApi)
+            .then(() => {
+                Alert.success(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.endpoint.primary.update.success',
+                    defaultMessage: 'Primary endpoint updated successfully',
+                }));
+            })
+            .catch((error) => {
+                console.error(error);
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.endpoint.primary.update.error',
+                    defaultMessage: 'Error updating primary endpoint',
+                }));
+            });
+    };
 
     if (loading) {
         return <Progress per={90} message='Loading Endpoints ...' />;
     }
 
     return (
-        <Root className={classes.overviewWrapper}>
-            <Grid container rowSpacing={2}>
-                <Grid item xs={12}>
-                    <Paper className={classes.endpointContainer}>
-                        <Typography id='itest-primary-endpoints-heading' variant='h6' component='h6'>
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.AIEndpoints.primary.endpoints.label'
-                                defaultMessage='Primary Endpoints'
-                            />
-                        </Typography>
-                        <Grid container direction='row' justifyContent='center' display='flex' spacing={2}>
-                            <Grid item xs={6} mt={2} mb={2}>
-                                <FormControl size='small' sx={{ width: '100%' }}>
-                                    <InputLabel id='primary-production-endpoint-label'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.primary.production.endpoint.label'
-                                            defaultMessage='Primary Production Endpoint'
-                                        />
-                                    </InputLabel>
-                                    <Select
-                                        labelId='primary-production-endpoint-label'
-                                        id='primary-production-endpoint'
-                                        value={primaryProductionEndpoint || ''}
-                                        label='Primary Production Endpoint'
-                                        onChange={
-                                            (e) => handlePrimaryEndpointChange(CONSTS.DEPLOYMENT_STAGE.production, e)
-                                        }
-                                    >
-                                        <MenuItem value=''>
-                                            <em>None</em>
-                                        </MenuItem>
-                                        {productionEndpoints.map((endpoint) => (
-                                            <MenuItem key={endpoint.id} value={endpoint}>{endpoint.name}</MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                            <Grid item xs={6} mt={2} mb={2}>
-                                <FormControl size='small' sx={{ width: '100%' }}>
-                                    <InputLabel id='primary-sandbox-endpoint-label'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.primary.sandbox.endpoint.label'
-                                            defaultMessage='Primary Sandbox Endpoint'
-                                        />
-                                    </InputLabel>
-                                    <Select
-                                        labelId='primary-sandbox-endpoint-label'
-                                        id='primary-sandbox-endpoint'
-                                        value={primarySandboxEndpoint || ''}
-                                        label='Primary Sandbox Endpoint'
-                                        onChange={
-                                            (e) => handlePrimaryEndpointChange(CONSTS.DEPLOYMENT_STAGE.sandbox, e)
-                                        }
-                                    >
-                                        <MenuItem value=''>
-                                            <em>None</em>
-                                        </MenuItem>
-                                        {sandboxEndpoints.map((endpoint) => (
-                                            <MenuItem key={endpoint.id} value={endpoint}>{endpoint.name}</MenuItem>
-                                        ))}
-                                    </Select>
-                                </FormControl>
-                            </Grid>
-                        </Grid>
-                        <Grid container justifyContent='flex-start'>
-                            <Button
-                                id='save-primary-endpoints'
-                                variant='contained'
-                                color='primary'
-                                size='small'
-                                className={classes.btn}
-                                disabled={
-                                    isRestricted(['apim:api_create', 'apim:api_publish'], apiObject)
-                                    || (!primaryProductionEndpoint && !primarySandboxEndpoint)
-                                    || saving
-                                }
-                                onClick={() => savePrimaryEndpoints()}
-                            >
-                                {saving ?
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.AIEndpoints.saving.primary.endpoints'
-                                        defaultMessage='Saving'
-                                    />
-                                    :
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.AIEndpoints.save.primary.endpoints'
-                                        defaultMessage='Save'
-                                    />
-                                }
-                            </Button>
-                            <Button
-                                id='reset-primary-endpoints'
-                                variant='outlined'
-                                color='primary'
-                                size='small'
-                                className={classes.btn}
-                                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiObject)}
-                                onClick={() => resetPrimaryEndpoints()}
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.AIEndpoints.reset.primary.endpoints'
-                                    defaultMessage='Reset'
-                                />
-                            </Button>
-                        </Grid>
-                    </Paper>
-                </Grid>
-                <Grid item xs={12}>
-                    <Paper className={classes.endpointContainer}>
-                        <Grid container justifyContent='flex-start'>
-                            <Typography id='itest-production-endpoints-heading' variant='h6' component='h6'>
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.AIEndpoints.production.endpoints.label'
-                                    defaultMessage='Production Endpoints'
-                                />
-                            </Typography>
-                            <Grid ml={1}>
-                                <Button
-                                    id='add-new-production-endpoint'
-                                    variant='outlined'
-                                    color='primary'
-                                    size='small'
-                                    onClick={toggleAddProductionEndpoint}
-                                    disabled={
-                                        isRestricted(['apim:api_create', 'apim:api_publish'], apiObject)
-                                        || showAddProductionEndpoint
-                                    }
-                                >
-                                    <AddCircle className={classes.buttonIcon} />
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.AIEndpoints.add.new.endpoint'
-                                        defaultMessage='Add New Endpoint'
-                                    />
-                                </Button>
-                            </Grid>
-                        </Grid>
-                        {showAddProductionEndpoint && (
-                            <EndpointCard
-                                key='add-new-production-endpoint'
-                                endpoint={getDefaultEndpoint(CONSTS.DEPLOYMENT_STAGE.production)}
-                                apiObject={apiObject}
-                                apiKeyParamConfig={apiKeyParamConfig}
-                                setProductionEndpoints={setProductionEndpoints}
-                                showAddEndpoint
-                                setShowAddEndpoint={setShowAddProductionEndpoint}
-                            />
-                        )}
-                        {productionEndpoints.map((endpoint) => (
-                            <EndpointCard
-                                key={endpoint.id}
-                                endpoint={endpoint}
-                                apiObject={apiObject}
-                                apiKeyParamConfig={apiKeyParamConfig}
-                                setProductionEndpoints={setProductionEndpoints}
-                                showAddEndpoint={false}
-                            />
-                        ))}
-                    </Paper>
-                </Grid>
-                <Grid item xs={12}>
-                    <Paper className={classes.endpointContainer}>
-                        <Grid container justifyContent='flex-start'>
-                            <Typography id='itest-sandbox-endpoints-heading' variant='h6' component='h6'>
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.AIEndpoints.sandbox.endpoints.label'
-                                    defaultMessage='Sandbox Endpoints'
-                                />
-                            </Typography>
-                            <Grid ml={1}>
-                                <Button
-                                    id='add-new-sandbox-endpoint'
-                                    variant='outlined'
-                                    color='primary'
-                                    size='small'
-                                    onClick={toggleAddSandboxEndpoint}
-                                    disabled={
-                                        isRestricted(['apim:api_create', 'apim:api_publish'], apiObject)
-                                        || showAddSandboxEndpoint
-                                    }
-                                >
-                                    <AddCircle className={classes.buttonIcon} />
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.AIEndpoints.add.new.endpoint'
-                                        defaultMessage='Add New Endpoint'
-                                    />
-                                </Button>
-                            </Grid>
-                        </Grid>
-                        {showAddSandboxEndpoint && (
-                            <EndpointCard
-                                key='add-new-sandbox-endpoint'
-                                endpoint={getDefaultEndpoint(CONSTS.DEPLOYMENT_STAGE.sandbox)}
-                                apiObject={apiObject}
-                                apiKeyParamConfig={apiKeyParamConfig}
-                                setSandboxEndpoints={setSandboxEndpoints}
-                                showAddEndpoint
-                                setShowAddEndpoint={setShowAddSandboxEndpoint}
-                            />
-                        )}
-                        {sandboxEndpoints.map((endpoint) => (
-                            <EndpointCard
-                                key={endpoint.id}
-                                endpoint={endpoint}
-                                apiObject={apiObject}
-                                apiKeyParamConfig={apiKeyParamConfig}
-                                setSandboxEndpoints={setSandboxEndpoints}
-                                showAddEndpoint={false}
-                            />
-                        ))}
-                    </Paper>
-                </Grid>
-                <Grid item xs={12}>
-                    <Paper className={classes.endpointContainer}>
-                        <Typography id='itest-sandbox-endpoints-heading' variant='h6' component='h6'>
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.AIEndpoints.general.config.header'
-                                defaultMessage='General Endpoint Configurations'
-                            />
-                        </Typography>
-                        <GeneralEndpointConfigurations
-                            endpointList={endpointList}
+        <Grid container spacing={2}>
+            <Grid item xs={12}>
+                <StyledPaper elevation={0} variant='outlined'>
+                    <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.AIEndpoints.production.endpoints.label'
+                            defaultMessage='Production Endpoints'
                         />
-                    </Paper>
-                </Grid>
+                    </Typography>
+                    {productionEndpoints.map((endpoint) => (
+                        <EndpointCard
+                            key={endpoint.id}
+                            endpoint={endpoint}
+                            apiObject={apiObject}
+                            isPrimary={endpoint.id === apiObject.primaryProductionEndpointId}
+                            isDeleting={isDeleting}
+                            onDelete={handleDelete}
+                            onSetPrimary={handleSetAsPrimary}
+                            onRemovePrimary={handleRemovePrimary}
+                        />
+                    ))}
+                </StyledPaper>
             </Grid>
-        </Root>
+            <Grid item xs={12}>
+                <StyledPaper elevation={0} variant='outlined'>
+                    <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.AIEndpoints.sandbox.endpoints.label'
+                            defaultMessage='Sandbox Endpoints'
+                        />
+                    </Typography>
+                    {sandboxEndpoints.map((endpoint) => (
+                        <EndpointCard
+                            key={endpoint.id}
+                            endpoint={endpoint}
+                            apiObject={apiObject}
+                            isPrimary={endpoint.id === apiObject.primarySandboxEndpointId}
+                            isDeleting={isDeleting}
+                            onDelete={handleDelete}
+                            onSetPrimary={handleSetAsPrimary}
+                            onRemovePrimary={handleRemovePrimary}
+                        />
+                    ))}
+                </StyledPaper>
+            </Grid>
+            <Grid item xs={12}>
+                <StyledPaper elevation={0} variant='outlined'>
+                    <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.AIEndpoints.general.config.header'
+                            defaultMessage='General Endpoint Configurations'
+                        />
+                    </Typography>
+                    <GeneralEndpointConfigurations endpointList={endpointList} />
+                </StyledPaper>
+            </Grid>
+        </Grid>
     );
 }
 

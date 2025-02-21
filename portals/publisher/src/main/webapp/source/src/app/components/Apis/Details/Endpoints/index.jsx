@@ -23,8 +23,7 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { isRestricted } from 'AppData/AuthManager';
 import Endpoints from './Endpoints';
-import AddAIEndpoint from './AIEndpoints/AddAIEndpoint';
-import UpdateAIEndpoint from './AIEndpoints/UpdateAIEndpoint';
+import AddEditAIEndpoint from './AIEndpoints/AddEditAIEndpoint';
 
 const Endpoint = () => {
     const [api] = useAPI();
@@ -36,18 +35,20 @@ const Endpoint = () => {
                 path={'/' + urlPrefix + '/:api_uuid/endpoints/'}
                 component={() => <Endpoints api={api} />}
             />
-            {!isRestricted(['apim:api_manage']) && (
-                <Route
-                    exact
-                    path={'/' + urlPrefix + '/:api_uuid/endpoints/create'}
-                    component={(props) => <AddAIEndpoint apiObject={api} {...props} />}
-                />
+            {!isRestricted(['apim:api_view', 'apim:api_manage']) && (
+                <>
+                    <Route
+                        exact
+                        path={'/' + urlPrefix + '/:api_uuid/endpoints/create'}
+                        component={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
+                    />
+                    <Route
+                        exact
+                        path={'/' + urlPrefix + '/:api_uuid/endpoints/:id'}
+                        component={(props) => <AddEditAIEndpoint apiObject={api} {...props} />}
+                    />
+                </>
             )}
-            <Route
-                exact
-                path={'/' + urlPrefix + '/:api_uuid/endpoints/edit'}
-                component={(props) => <UpdateAIEndpoint {...props} />}
-            />
             <Route component={ResourceNotFound} />
         </Switch>
     );
