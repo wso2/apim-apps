@@ -184,9 +184,10 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, loading = false, t
         }
       } 
       setSuccess(true);
-      history.push(`/apis`);
+      setShowProgress(false);
     } catch (error) {
       setSuccess(false);
+      setShowProgress(false);
       console.error('Error during API creation:', error);
       Alert.error(intl.formatMessage({ id: 'CreateAPIWithAI.components.AlertDialog.error.create.API', defaultMessage: 'Error Creating API' }));
       throw error;
