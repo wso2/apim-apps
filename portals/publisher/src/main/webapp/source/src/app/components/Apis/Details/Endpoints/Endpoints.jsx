@@ -32,6 +32,7 @@ import cloneDeep from 'lodash.clonedeep';
 import { isRestricted } from 'AppData/AuthManager';
 import { Alert, Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
+import AddCircle from '@mui/icons-material/AddCircle';
 import EndpointOverview from './EndpointOverview';
 import AIEndpoints from './AIEndpoints/AIEndpoints';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
@@ -47,7 +48,10 @@ const classes = {
     radioGroup: `${PREFIX}-radioGroup`,
     endpointValidityMessage: `${PREFIX}-endpointValidityMessage`,
     errorMessageContainer: `${PREFIX}-errorMessageContainer`,
-    implSelectRadio: `${PREFIX}-implSelectRadio`
+    implSelectRadio: `${PREFIX}-implSelectRadio`,
+    titleWrapper: `${PREFIX}-titleWrapper`,
+    mainTitle: `${PREFIX}-mainTitle`,
+    buttonIcon: `${PREFIX}-buttonIcon`,
 };
 
 
@@ -88,7 +92,22 @@ const Root = styled('div')((
 
     [`& .${classes.implSelectRadio}`]: {
         padding: theme.spacing(1) / 2,
-    }
+    },
+
+    [`& .${classes.titleWrapper}`]: {
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: theme.spacing(2),
+    },
+
+    [`& .${classes.mainTitle}`]: {
+        paddingLeft: 0,
+    },
+
+    [`& .${classes.buttonIcon}`]: {
+        marginRight: theme.spacing(1),
+    },
 }));
 
 const defaultSwagger = { paths: {} };
@@ -741,18 +760,40 @@ function Endpoints(props) {
                 />
                 : (
                     <div className={classes.root}>
-                        <Typography
-                            id='itest-api-details-endpoints-head'
-                            variant='h4'
-                            component='h2'
-                            align='left'
-                            gutterBottom
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.Endpoints.endpoints.header'
-                                defaultMessage='Endpoints'
-                            />
-                        </Typography>
+                        <div className={classes.titleWrapper}>
+                            <Typography
+                                id='itest-api-details-endpoints-head'
+                                variant='h4'
+                                component='h2'
+                                align='left'
+                                className={classes.mainTitle}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.Endpoints.Endpoints.endpoints.header'
+                                    defaultMessage='Endpoints'
+                                />
+                            </Typography>
+                            {api.subtypeConfiguration?.subtype === 'AIAPI' && (
+                                <Button
+                                    variant='outlined'
+                                    color='primary'
+                                    size='small'
+                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    onClick={() => {
+                                        const urlPrefix 
+                                            = api.apiType === API.CONSTS.APIProduct ? 'api-products' : 'apis';
+                                        history.push(`/${urlPrefix}/${api.id}/endpoints/create`);
+                                    }}
+                                    style={{ marginLeft: '1em' }}
+                                >
+                                    <AddCircle className={classes.buttonIcon} />
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.add.new.endpoint'
+                                        defaultMessage='Add New Endpoint'
+                                    />
+                                </Button>
+                            )}
+                        </div>
                         {(api.subtypeConfiguration?.subtype === 'AIAPI' && (
                             <AIEndpoints
                                 swaggerDef={swagger}
