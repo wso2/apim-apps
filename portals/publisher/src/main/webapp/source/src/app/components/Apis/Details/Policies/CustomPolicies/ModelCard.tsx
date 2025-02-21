@@ -35,7 +35,7 @@ interface ModelCardProps {
     endpointList: Endpoint[];
     isWeightApplicable: boolean;
     onUpdate: (updatedModel: ModelData) => void;
-    onDelete: () => void;
+    onDelete?: () => void;
 }
 
 const ModelCard: FC<ModelCardProps> = ({
@@ -123,17 +123,19 @@ const ModelCard: FC<ModelCardProps> = ({
                     )}
                 </Grid>
                 <Grid item xs={12}>
-                    <Button
-                        variant='outlined'
-                        color='primary'
-                        data-testid='policy-attached-details-save'
-                        onClick={onDelete}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.Custom.Policies.Modelcard.delete'
-                            defaultMessage='Delete'
-                        />
-                    </Button>
+                    {onDelete && (
+                        <Button
+                            variant='outlined'
+                            color='primary'
+                            data-testid='policy-attached-details-save'
+                            onClick={onDelete}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Policies.Custom.Policies.Modelcard.delete'
+                                defaultMessage='Delete'
+                            />
+                        </Button>
+                    )}
                 </Grid>
             </Paper>
         </>
