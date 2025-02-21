@@ -195,7 +195,6 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                             endpointList={productionEndpoints}
                             isWeightApplicable={false}
                             onUpdate={(updatedTargetModel) => handleTargetModelUpdate('production', 0, updatedTargetModel)}
-                            onDelete={() => {}}
                         />
                         <Button
                             variant='outlined'
@@ -243,7 +242,6 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                             endpointList={productionEndpoints}
                             isWeightApplicable={false}
                             onUpdate={(updatedTargetModel) => handleTargetModelUpdate('sandbox', 0, updatedTargetModel)}
-                            onDelete={() => {}}
                         />
                         <Button
                             variant='outlined'
@@ -271,34 +269,38 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                         ))}
                     </AccordionDetails>
                 </Accordion>
-                <TextField
-                    id='request-timeout'
-                    label='Request Timeout (s)'
-                    size='small'
-                    sx={{ pt: 2, mt: 2 }}
-                    // helperText={getError(spec) === '' ? spec.description : getError(spec)}
-                    // error={getError(spec) !== ''}
-                    variant='outlined'
-                    name='requestTimeout'
-                    type='number'
-                    value={config.requestTimeout}
-                    onChange={(e: any) => setConfig({ ...config, requestTimeout: e.target.value })}
-                    fullWidth
-                />
-                <TextField
-                    id='suspend-duration'
-                    label='Suspend Duration (s)'
-                    size='small'
-                    sx={{ pt: 2, mt: 2 }}
-                    // helperText={getError(spec) === '' ? spec.description : getError(spec)}
-                    // error={getError(spec) !== ''}
-                    variant='outlined'
-                    name='suspendDuration'
-                    type='number'
-                    value={config.suspendDuration}
-                    onChange={(e: any) => setConfig({ ...config, suspendDuration: e.target.value })}
-                    fullWidth
-                />
+                <Grid container mt={2}>
+                    <Grid item xs={6} pr={1}>
+                        <TextField
+                            id='request-timeout'
+                            label='Request Timeout (s)'
+                            size='small'
+                            // helperText={getError(spec) === '' ? spec.description : getError(spec)}
+                            // error={getError(spec) !== ''}
+                            variant='outlined'
+                            name='requestTimeout'
+                            type='number'
+                            value={config.requestTimeout}
+                            onChange={(e: any) => setConfig({ ...config, requestTimeout: e.target.value })}
+                            fullWidth
+                        />
+                    </Grid>
+                    <Grid item xs={6} pl={1}>
+                        <TextField
+                            id='suspend-duration'
+                            label='Suspend Duration (s)'
+                            size='small'
+                            // helperText={getError(spec) === '' ? spec.description : getError(spec)}
+                            // error={getError(spec) !== ''}
+                            variant='outlined'
+                            name='suspendDuration'
+                            type='number'
+                            value={config.suspendDuration}
+                            onChange={(e: any) => setConfig({ ...config, suspendDuration: e.target.value })}
+                            fullWidth
+                        />
+                    </Grid>
+                </Grid>
             </Grid>
         </>
     );
