@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -17,13 +16,8 @@
  * under the License.
  */
 import * as React from 'react';
-import Button from '@mui/material/Button';
+import { Button, CircularProgress, DialogContent, DialogContentText, DialogTitle} from '@mui/material';
 import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import LinearProgress from '@mui/material/LinearProgress';
 import { useHistory } from 'react-router-dom';
 import { useIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
@@ -32,23 +26,19 @@ import API from 'AppData/api';
 
 interface AlertDialogProps {
   sessionId: string;
+  loading?: boolean;
+  taskStatus: string;
   spec: string;
   apiType: string;
 }
 
-const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec, apiType }) => {
-  const [open, setOpen] = React.useState(false);
+const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, loading = false, taskStatus, spec, apiType}) => {
   const [showProgress, setShowProgress] = React.useState(false);
+  const [successDialogOpen, setSuccessDialogOpen] = React.useState(false);
+  const [dialogTitle, setDialogTitle] = React.useState('');
+  const [dialogContentText, setDialogContentText] = React.useState('');
+  const [success, setSuccess] = React.useState(false);
   const intl = useIntl();
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-
   const history = useHistory();
 
     /**
@@ -136,8 +126,6 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec, apiType }) =
    * @returns if an error occurs
    */
   const handleCreate = async () => {
-
-    handleClose();
     setShowProgress(true);
 
     try {
@@ -195,9 +183,10 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec, apiType }) =
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.graphql.API', 'The provided GraphQL schema is invalid. Please try again.');
         }
       } 
-      setShowProgress(false);
+      setSuccess(true);
+      history.push(`/apis`);
     } catch (error) {
-      setShowProgress(false);
+      setSuccess(false);
       console.error('Error during API creation:', error);
       Alert.error(intl.formatMessage({ id: 'CreateAPIWithAI.components.AlertDialog.error.create.API', defaultMessage: 'Error Creating API' }));
       throw error;
@@ -207,65 +196,36 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec, apiType }) =
   return (
     <React.Fragment>
       <Button
-        variant="outlined"
-        onClick={handleClickOpen}
-        sx={{ backgroundColor: '#FFF' }}
+        variant="contained"
+        onClick={handleCreate}
+        sx={{ marginRight: '10px', minWidth: '120px',  height: '35px', display: 'flex', gap:1, alignItems: 'center'}}  
+        disabled={loading || taskStatus == ''}
       >
-        Create API
+        {intl.formatMessage({
+          id: 'Apis.Create.Default.APICreateDefault.create.btn',
+          defaultMessage: 'Create API'
+        })}
+        {' '}
+        {showProgress &&  <CircularProgress size={16} color='inherit'/> }
       </Button>
-      
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Create API"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Confirm creation of API in the Publisher Portal.
-          </DialogContentText>
-        </DialogContent>
 
-        <DialogActions>
-          <Button onClick={handleClose}>
-            CANCEL
-          </Button>
-          <Button
-            onClick={handleCreate}
-            sx={{
-              border: '1px solid #1C7EA7'
-            }}
-            autoFocus
-          >
-            CREATE
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {showProgress && (
+      {!success && (
         <Dialog 
-          open={showProgress} 
-          aria-labelledby="progress-dialog-title" 
+          open={successDialogOpen} 
+          aria-labelledby="success-dialog-title" 
+          aria-describedby="success-dialog-description"
           sx={{ 
             '.MuiDialog-paper': { 
               padding: '33px 55px',
             } 
           }}
         >
-          <DialogTitle id="progress-dialog-title" sx={{ textAlign: 'center' }}>
-            API Creation in Progress
-          </DialogTitle>
+          <DialogTitle id="success-dialog-title">{dialogTitle}</DialogTitle>
           <DialogContent>
-            <LinearProgress
-              sx={{ 
-                width: '100%',
-                height: '6px'
-              }} 
-            />
-          </DialogContent>
+            <DialogContentText id="success-dialog-description">
+              {dialogContentText}
+            </DialogContentText>
+        </DialogContent>
         </Dialog>
       )}
     </React.Fragment>

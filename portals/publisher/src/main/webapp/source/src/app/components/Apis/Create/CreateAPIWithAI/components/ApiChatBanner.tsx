@@ -96,10 +96,7 @@ const ApiChatBanner: React.FC = () => {
                 </Box>
                 <Box className={classes.tryAiBannerContentWrap}>
                     <Typography sx={{ fontSize: '1.0rem', fontWeight: 'bold' }}>
-                        Design APIs with Confidence!{'\n'}
-                        <Typography sx={{ marginTop: '8px', fontSize: '0.9rem', fontWeight: 'bold' }}>
-                            From Concept to Creation in Minutes With Our Assistant!
-                        </Typography>
+                        Turn Your Ideas Into Reality in Minutes with Our Assistant!
                     </Typography>
                 </Box>
             </Stack>

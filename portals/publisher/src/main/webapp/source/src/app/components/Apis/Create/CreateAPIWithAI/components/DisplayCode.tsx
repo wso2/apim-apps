@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -19,11 +18,13 @@
 import * as React from 'react';
 import { useState } from 'react';
 import { Editor as MonacoEditor } from '@monaco-editor/react';
-import AlertDialog from './AlertDialog';
 import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import SwaggerUI from './swaggerUIChatbot/SwaggerUI';
+import { Typography } from '@mui/material';
 import 'swagger-ui-react/swagger-ui.css';
 
 interface DisplayCodeProps {
@@ -35,62 +36,63 @@ interface DisplayCodeProps {
 const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType, sessionId }) => {
   const [showCode, setShowCode] = useState(false);
 
-  const handleClickOpenCode = () => {
-    setShowCode((prevState) => !prevState);
-  };
-
-  const backgroundColor = showCode ? '#192738' : 'rgba(0, 0, 0, .03)';
-
   return (
     <Box sx={{ width: '100%', height: '85vh' }}>
-      <Stack spacing={0} sx={{ height: '95%', mt: 2 }}>
+      <Stack spacing={0} sx={{ height: '100%', mt: 2 }}>
         <Box
           sx={{
-            height: '12%',
-            backgroundColor: backgroundColor,
+            height: '5%',
             display: 'flex',
             justifyContent: 'flex-end',
-            alignItems: 'center',
-            paddingRight: 10,
+            alignItems: 'flex-end',
+            paddingRight: '20px',
           }}
         >
-          <Stack direction="row" spacing={2}>
+          {/* <Stack direction="row" spacing={1}> */}
             {apiType === 'REST' && (
-              <Button
-                variant="outlined"
-                onClick={handleClickOpenCode}
-                sx={{ backgroundColor: '#FFF' }}
-              >
-                {showCode ? 'View Swagger UI' : 'View Spec'}
-              </Button>
+
+                  <FormControlLabel
+                  label={
+                    <Typography sx={{ fontSize: 16}} >
+                      View Source
+                    </Typography>
+                  }
+                  control={
+                      <Switch
+                        checked={showCode}
+                        onChange={() => setShowCode((prevState) => !prevState)}
+                      />
+                  }
+                  labelPlacement='start'
+                  />
             )}
-          </Stack>
+          {/* </Stack> */}
         </Box>
 
         {apiType === 'REST' ? (
-          showCode ? (
-            <Box sx={{ height: '76%', display: 'flex', backgroundColor: backgroundColor }}>
-              <MonacoEditor
-                width="100%"
-                height="100%"
-                language="yaml"
-                theme="vs-dark"
-                value={finalOutcomeCode}
-                options={{
-                  readOnly: true,
-                  minimap: { enabled: false },
-                  scrollBeyondLastLine: false,
-                  wordWrap: 'on',
-                }}
-              />
+            <Box sx={{ height: '100%', display: 'flex', flex:1, minHeight: 0}}>
+               { showCode ? (
+                <MonacoEditor
+                  width="100%"
+                  height="100%"
+                  language="yaml"
+                  theme="vs-dark"
+                  value={finalOutcomeCode}
+                  options={{
+                    readOnly: true,
+                    minimap: { enabled: false },
+                    scrollBeyondLastLine: false,
+                    wordWrap: 'on',
+                  }}
+                />
+              ) : (
+                <Box sx={{ width: '100%', height: '100%', overflow: 'auto', flex: 1 }}>
+                  <SwaggerUI spec={finalOutcomeCode} />
+                </Box>
+              )}
             </Box>
-          ) : (
-            <Box sx={{ height: '76%', display: 'flex', backgroundColor: backgroundColor }}>
-              <SwaggerUI spec={finalOutcomeCode} />
-            </Box>
-          )
         ) : (
-          <Box sx={{ height: '76%', display: 'flex', backgroundColor: backgroundColor }}>
+          <Box sx={{ height: '100%', display: 'flex', flex:1, minHeight: 0 }}>
             <MonacoEditor
               width="100%"
               height="100%"
@@ -109,18 +111,12 @@ const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType, se
 
         <Box
           sx={{
-            height: '12%',
-            backgroundColor: backgroundColor,
+            height: '5%',
             display: 'flex',
             justifyContent: 'center',
             alignItems: 'center',
           }}
         >
-          <AlertDialog 
-            sessionId={sessionId}
-            spec={finalOutcomeCode}
-            apiType={apiType}
-          />
         </Box>
       </Stack>
     </Box>

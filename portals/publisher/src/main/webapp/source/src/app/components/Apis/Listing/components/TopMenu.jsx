@@ -30,7 +30,7 @@ import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { isRestricted } from 'AppData/AuthManager';
-import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
 import APICreateMenu from './APICreateMenu';
 
 const PREFIX = 'TopMenu';
@@ -194,9 +194,10 @@ function TopMenu(props) {
                     )} 
                     {/* Button to Create API with AI */}
                     <Button
-                        variant='contained'
+                        variant='outlined'
                         color='primary'
                         component={Link}
+                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                         to='/apis/design-assistant'
                         sx={{ marginLeft: '10px' }}
                     >
@@ -204,12 +205,7 @@ function TopMenu(props) {
                             id='Apis.Listing.components.TopMenu.create.api.with.ai'
                             defaultMessage='Create API with AI'
                         />
-                        <AutoAwesomeIcon 
-                            sx={{ 
-                                marginLeft: '6px',
-                                fontSize: 15
-                            }} 
-                        />
+                        <SmartToyIcon sx={{ marginLeft: 1, fontSize: 15 }} />
                     </Button>                              
                 </div>
                 {showToggle && (
