@@ -238,18 +238,27 @@ const AIEndpoints = ({
                             defaultMessage='Production Endpoints'
                         />
                     </Typography>
-                    {productionEndpoints.map((endpoint) => (
-                        <EndpointCard
-                            key={endpoint.id}
-                            endpoint={endpoint}
-                            apiObject={apiObject}
-                            isPrimary={endpoint.id === apiObject.primaryProductionEndpointId}
-                            isDeleting={isDeleting}
-                            onDelete={handleDelete}
-                            onSetPrimary={handleSetAsPrimary}
-                            onRemovePrimary={handleRemovePrimary}
-                        />
-                    ))}
+                    {productionEndpoints.length > 0 ? (
+                        productionEndpoints.map((endpoint) => (
+                            <EndpointCard
+                                key={endpoint.id}
+                                endpoint={endpoint}
+                                apiObject={apiObject}
+                                isPrimary={endpoint.id === apiObject.primaryProductionEndpointId}
+                                isDeleting={isDeleting}
+                                onDelete={handleDelete}
+                                onSetPrimary={handleSetAsPrimary}
+                                onRemovePrimary={handleRemovePrimary}
+                            />
+                        ))
+                    ) : (
+                        <Typography variant='body1'>
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.AIEndpoints.no.production.endpoints'
+                                defaultMessage='No production endpoints configured'
+                            />
+                        </Typography>
+                    )}
                 </StyledPaper>
             </Grid>
             <Grid item xs={12}>
@@ -260,18 +269,27 @@ const AIEndpoints = ({
                             defaultMessage='Sandbox Endpoints'
                         />
                     </Typography>
-                    {sandboxEndpoints.map((endpoint) => (
-                        <EndpointCard
-                            key={endpoint.id}
-                            endpoint={endpoint}
-                            apiObject={apiObject}
-                            isPrimary={endpoint.id === apiObject.primarySandboxEndpointId}
-                            isDeleting={isDeleting}
-                            onDelete={handleDelete}
-                            onSetPrimary={handleSetAsPrimary}
-                            onRemovePrimary={handleRemovePrimary}
-                        />
-                    ))}
+                    {sandboxEndpoints.length > 0 ? (
+                        sandboxEndpoints.map((endpoint) => (
+                            <EndpointCard
+                                key={endpoint.id}
+                                endpoint={endpoint}
+                                apiObject={apiObject}
+                                isPrimary={endpoint.id === apiObject.primarySandboxEndpointId}
+                                isDeleting={isDeleting}
+                                onDelete={handleDelete}
+                                onSetPrimary={handleSetAsPrimary}
+                                onRemovePrimary={handleRemovePrimary}
+                            />
+                        ))
+                    ) : (
+                        <Typography variant='body1'>
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.AIEndpoints.no.sandbox.endpoints'
+                                defaultMessage='No sandbox endpoints configured'
+                            />
+                        </Typography>
+                    )}
                 </StyledPaper>
             </Grid>
             <Grid item xs={12}>
