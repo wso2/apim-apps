@@ -18,6 +18,7 @@
  */
 import React from 'react';
 import PropTypes from 'prop-types';
+import './swagger-ui-overrides.css';
 import SwaggerUILib from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 
@@ -26,8 +27,8 @@ import 'swagger-ui-react/swagger-ui.css';
 const disableAuthorizeAndInfoPlugin = function () {
     return {
         wrapComponents: {
-            info: () => () => null,         // Disable "info" section
-            authorizeBtn: () => () => null, // Disable "Authorize" button
+            info: () => () => null,
+            authorizeBtn: () => () => null
         },
     };
 };
@@ -37,7 +38,7 @@ const disableTryItOutPlugin = function () {
         statePlugins: {
             spec: {
                 wrapSelectors: {
-                    allowTryItOutFor: () => () => false, // Disable "Try It Out" button
+                    allowTryItOutFor: () => () => false,
                 },
             },
         },

@@ -267,7 +267,7 @@ const Root = styled('div')(({ theme }) => ({
             {messages.map((message, index) => (
                 <Box key={index} display="flex" justifyContent={message.role === 'user' ? 'flex-end' : 'flex-start'}>
                     {message.role === 'system' ? (
-                        <Box ml={6} mr={6} mt={-2.5}>
+                        <Box ml={2} mr={6} mt={-2.5}>
                             <Box 
                                 sx={{ 
                                     display: 'flex', 

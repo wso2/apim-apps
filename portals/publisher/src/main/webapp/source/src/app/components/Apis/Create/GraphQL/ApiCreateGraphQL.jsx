@@ -25,7 +25,7 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -46,6 +46,8 @@ export default function ApiCreateGraphQL(props) {
     const intl = useIntl();
     const { multiGateway } = props;
     const [wizardStep, setWizardStep] = useState(0);
+    const location = useLocation();
+    const assistantInfo = location.state;
     const history = useHistory();
     const [policies, setPolicies] = useState([]);
     const { data: settings } = usePublisherSettings();
@@ -110,6 +112,26 @@ export default function ApiCreateGraphQL(props) {
         gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
             'wso2/synapse' : multiGateway[0]?.value),
     });
+
+    if (assistantInfo && wizardStep === 0 && assistantInfo.source === 'DesignAssistant') {
+        setWizardStep(1);
+        inputsDispatcher({ action: 'preSetAPI', value: assistantInfo });
+        inputsDispatcher({ action: 'gatewayType', value: assistantInfo.gatewayType });
+        inputsDispatcher({ action: 'graphQLInfo', value: assistantInfo.graphQLInfo });
+        inputsDispatcher({ action: 'endpoint', value: assistantInfo.endpoint });
+        inputsDispatcher({ action: 'inputType', value: 'file' });
+        inputsDispatcher({ action: 'inputValue', value: assistantInfo.file });
+    }
+
+    /**
+     * Handles back button click for the API creation wizard for Design Asistant
+     * @param 
+     *  
+     */
+    const handleBackButtonOnClick = () => {
+        const landingPage = '/apis';
+        history.push(landingPage);
+    };
 
     /**
      *
@@ -292,15 +314,21 @@ export default function ApiCreateGraphQL(props) {
                                 </Link>
                             )}
                             {wizardStep === 1 && (
-                                <Button onClick={
-                                    () => setWizardStep((step) => step - 1)
-                                }
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Create.GraphQL.ApiCreateGraphQL.back'
-                                        defaultMessage='Back'
-                                    />
-                                </Button>
+                                (assistantInfo && assistantInfo.source ===  'DesignAssistant') ? (
+                                    <Button onClick={handleBackButtonOnClick}>
+                                        <FormattedMessage
+                                            id='Apis.Create.GraphQL.ApiCreateGraphQL.designAssistant.back'
+                                            defaultMessage='Back'
+                                        />
+                                    </Button>
+                                ) : (
+                                    <Button onClick={() => setWizardStep((step) => step - 1)}>
+                                        <FormattedMessage
+                                            id='Apis.Create.GraphQL.ApiCreateGraphQL.back'
+                                            defaultMessage='Back'
+                                        />
+                                    </Button>
+                                )
                             )}
                         </Grid>
                         <Grid item>
