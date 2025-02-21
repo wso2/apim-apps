@@ -273,6 +273,7 @@ export default function ListGWEnviornments() {
                 variant='contained'
                 color='primary'
                 size='small'
+                data-testid='form-dialog-base-trigger-btn'
             >
                 {intl.formatMessage({
                     id: 'Gateways.ListGatewayEnvironments.addNewGatewayEnvironment',

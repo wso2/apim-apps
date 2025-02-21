@@ -33,7 +33,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
             .find('input[name="0"]').type('localhost');
         // Wait until the label is saved
         cy.intercept('GET', '**/environments').as('environmentsGet');
-        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Save').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Add').click();
         cy.wait('@environmentsGet',{ timeout: 3000 }).then(() => {
             cy.get('table tr td').contains('MARKETING_STORE').should('exist');
         });
@@ -45,7 +45,7 @@ describe("Add Edit Delete Microgateway Environments", () => {
         cy.get('textarea[name="description"]').type('marketing store');
         // Wait until the label is saved
         cy.intercept('GET', '**/environments').as('environmentsGet');
-        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Save').click();
+        cy.get('[data-testid="form-dialog-base-save-btn"]').contains('Update').click();
         cy.wait('@environmentsGet', { timeout: 3000 }).then(() => {
             cy.get('table tr td').contains('marketing store').should('exist');
         });
