@@ -46,7 +46,7 @@ describe("Landing page", () => {
                 .should('eq', '/publisher/apis/create/wsdl');
 
             // Checking links under GraphQL apis
-            cy.get('a').contains('Import GraphQL SDL')
+            cy.get('a').contains('Create GraphQL API')
                 .invoke('attr', 'href')
                 .should('eq', '/publisher/apis/create/graphQL');
 
