@@ -62,7 +62,7 @@ import Operations from './Operations/Operations';
 import APIOperations from './Resources/APIOperations';
 import APIProductOperations from './ProductResources/APIProductOperations';
 import ProductResourcesEdit from './ProductResources/ProductResourcesEdit';
-import Endpoints from './Endpoints/Endpoints';
+import Endpoint from './Endpoints';
 import Environments from './Environments/Environments';
 import Subscriptions from './Subscriptions/Subscriptions';
 import Comments from './Comments/Comments';
@@ -1016,7 +1016,7 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.ENDPOINTS}
-                                        component={() => <Endpoints api={api} />}
+                                        component={() => <Endpoint />}
                                     />
                                     <Route
                                         path={Details.subPaths.ENVIRONMENTS}

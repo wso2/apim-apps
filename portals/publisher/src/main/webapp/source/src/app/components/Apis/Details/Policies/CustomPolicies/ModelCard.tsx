@@ -25,24 +25,24 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import Button from '@mui/material/Button';
-import { Paper } from '@mui/material';
+import { Paper, IconButton } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Endpoint, ModelData } from './Types';
 
 interface ModelCardProps {
     modelData: ModelData;
     modelList: string[];
     endpointList: Endpoint[];
-    isWeightedRoundRobinPolicy: boolean;
+    isWeightApplicable: boolean;
     onUpdate: (updatedModel: ModelData) => void;
-    onDelete: () => void;
+    onDelete?: () => void;
 }
 
 const ModelCard: FC<ModelCardProps> = ({
     modelData,
     modelList,
     endpointList,
-    isWeightedRoundRobinPolicy,
+    isWeightApplicable,
     onUpdate,
     onDelete,
 }) => {
@@ -57,9 +57,9 @@ const ModelCard: FC<ModelCardProps> = ({
 
     return (
         <>
-            <Paper elevation={2} sx={{ padding: 1, margin: 1 }}>
+            <Paper elevation={2} sx={{ padding: 2, margin: 1, position: 'relative' }}>
                 <Grid item xs={12}>
-                    <FormControl size='small' sx={{ width: '100%', margin: '10px 0' }}>
+                    <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
                         <InputLabel id='model-label'>
                             <FormattedMessage
                                 id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.select.model'
@@ -69,20 +69,17 @@ const ModelCard: FC<ModelCardProps> = ({
                         <Select
                             labelId='model-label'
                             id='model'
-                            value={model || ''}
+                            value={model}
                             label='Model'
                             name='model'
                             onChange={(e: any) => handleChange(e)}
                         >
-                            <MenuItem value=''>
-                                <em>None</em>
-                            </MenuItem>
                             {modelList.map((model) => (
                                 <MenuItem key={model} value={model}>{model}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
-                    <FormControl size='small' sx={{ width: '100%', margin: '10px 0' }}>
+                    <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
                         <InputLabel id='endpoint-label'>
                             <FormattedMessage
                                 id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.select.endpoint'
@@ -92,49 +89,53 @@ const ModelCard: FC<ModelCardProps> = ({
                         <Select
                             labelId='endpoint-label'
                             id='endpoint'
-                            value={endpointId || ''}
-                            label='Ednpoint'
+                            value={endpointId}
+                            label='Endpoint'
                             name='endpointId'
                             onChange={(e: any) => handleChange(e)}
                         >
-                            <MenuItem value=''>
-                                <em>None</em>
-                            </MenuItem>
                             {endpointList.map((endpoint) => (
                                 <MenuItem key={endpoint.id} value={endpoint.id}>{endpoint.name}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
-                    {isWeightedRoundRobinPolicy && (
-                        <TextField
-                            id='endpoint-weight'
-                            label='Weight'
-                            size='small'
-                            // helperText={getError(spec) === '' ? spec.description : getError(spec)}
-                            // error={getError(spec) !== ''}
-                            variant='outlined'
-                            name='weight'
-                            type='number'
-                            value={weight}
-                            sx={{ width: '100%', margin: '10px 0' }}
-                            onChange={(e: any) => handleChange(e)}
-                            fullWidth
-                        />
+                    {isWeightApplicable && (
+                        <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
+                            <TextField
+                                id='endpoint-weight'
+                                label='Weight'
+                                size='small'
+                                // helperText={getError(spec) === '' ? spec.description : getError(spec)}
+                                // error={getError(spec) !== ''}
+                                variant='outlined'
+                                name='weight'
+                                type='number'
+                                value={weight}
+                                onChange={(e: any) => handleChange(e)}
+                                fullWidth
+                            />
+                        </FormControl>
                     )}
                 </Grid>
-                <Grid item xs={12}>
-                    <Button
-                        variant='outlined'
-                        color='primary'
-                        data-testid='policy-attached-details-save'
-                        onClick={onDelete}
+                {onDelete && (
+                    <Grid
+                        item
+                        xs={12}
+                        sx={{
+                            display: 'flex',
+                            justifyContent: 'flex-end',
+                        }}
                     >
-                        <FormattedMessage
-                            id='Apis.Details.Policies.Custom.Policies.Modelcard.delete'
-                            defaultMessage='Delete'
-                        />
-                    </Button>
-                </Grid>
+                        <IconButton
+                            color='error'
+                            data-testid='policy-attached-details-delete'
+                            onClick={onDelete}
+                            size="small"
+                        >
+                            <DeleteIcon />
+                        </IconButton>
+                    </Grid>
+                )}
             </Paper>
         </>
     );
