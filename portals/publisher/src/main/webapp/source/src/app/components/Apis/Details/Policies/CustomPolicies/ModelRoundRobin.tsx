@@ -27,11 +27,16 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import AddCircle from '@mui/icons-material/AddCircle';
+import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { Endpoint, ModelData } from './Types';
 import ModelCard from './ModelCard';
+import Alert from '@mui/material/Alert';
+import { Link } from 'react-router-dom';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 interface RoundRobinConfig {
     production: ModelData[];
@@ -43,6 +48,24 @@ interface ModelRoundRobinProps {
     setManualPolicyConfig: React.Dispatch<React.SetStateAction<string>>;
     manualPolicyConfig: string;
 }
+
+const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+    minHeight: 48,
+    maxHeight: 48,
+    '&.Mui-expanded': {
+        minHeight: 48,
+        maxHeight: 48,
+    },
+    '& .MuiAccordionSummary-content': {
+        margin: 0,
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        '&.Mui-expanded': {
+            margin: 0,
+        }
+    }
+}));
 
 const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
     setManualPolicyConfig,
@@ -58,6 +81,8 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState<Endpoint[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
+    const [productionEnabled, setProductionEnabled] = useState<boolean>(false);
+    const [sandboxEnabled, setSandboxEnabled] = useState<boolean>(false);
 
     const fetchEndpoints = () => {
         setLoading(true);
@@ -91,7 +116,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                     });
                 }
 
-                const allEndpoints = [...endpoints, ...defaultEndpoints];
+                const allEndpoints = [...defaultEndpoints, ...endpoints];
                 
                 // Filter endpoints based on endpoint type
                 const prodEndpointList = allEndpoints.filter((endpoint: Endpoint) => endpoint.deploymentStage === 'PRODUCTION');
@@ -123,7 +148,11 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
 
     useEffect(() => {
         if (manualPolicyConfig !== '') {
-            setConfig(JSON.parse(manualPolicyConfig.replace(/'/g, '"')));
+            const parsedConfig = JSON.parse(manualPolicyConfig.replace(/'/g, '"'));
+            setConfig(parsedConfig);
+            
+            setProductionEnabled(parsedConfig.production.length > 0);
+            setSandboxEnabled(parsedConfig.sandbox.length > 0);
         }
     }, [manualPolicyConfig]);
 
@@ -157,6 +186,45 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
         }));
     }
 
+    const isAddModelDisabled = (env: 'production' | 'sandbox') => {
+        if (modelList.length === 0) {
+            return true;
+        }
+        return env === 'production' ? productionEndpoints.length === 0 : sandboxEndpoints.length === 0;
+    };
+
+    const getEndpointsUrl = () => {
+        return `/apis/${apiFromContext.id}/endpoints`;
+    };
+
+    const handleProductionToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setProductionEnabled(event.target.checked);
+        if (!event.target.checked) {
+            setConfig(prev => ({
+                ...prev,
+                production: [],
+            }));
+        }
+    };
+
+    const handleSandboxToggle = (event: React.ChangeEvent<HTMLInputElement>) => {
+        setSandboxEnabled(event.target.checked);
+        if (!event.target.checked) {
+            setConfig(prev => ({
+                ...prev,
+                sandbox: [],
+            }));
+        }
+    };
+
+    const handleAccordionChange = (env: 'production' | 'sandbox') => (event: React.SyntheticEvent, expanded: boolean) => {
+        if (env === 'production') {
+            handleProductionToggle({ target: { checked: expanded } } as React.ChangeEvent<HTMLInputElement>);
+        } else {
+            handleSandboxToggle({ target: { checked: expanded } } as React.ChangeEvent<HTMLInputElement>);
+        }
+    };
+
     if (loading) {
         return <Progress per={90} message='Loading Endpoints ...' />;
     }
@@ -164,26 +232,62 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
     return (
         <>
             <Grid item xs={12}>
-                <Accordion defaultExpanded>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
+                <Accordion 
+                    expanded={productionEnabled}
+                    onChange={handleAccordionChange('production')}
+                >
+                    <StyledAccordionSummary
                         aria-controls='production-content'
                         id='production-header'
                     >
-                    <Typography variant='subtitle2' color='textPrimary'>
-                        <FormattedMessage
-                            id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.accordion.production'
-                            defaultMessage='Production'
+                        <Typography variant='subtitle2' color='textPrimary'>
+                            <FormattedMessage
+                                id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.accordion.production'
+                                defaultMessage='Production'
+                            />
+                        </Typography>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={productionEnabled}
+                                    onChange={handleProductionToggle}
+                                    name="production-toggle"
+                                />
+                            }
+                            label=""
                         />
-                    </Typography>
-                    </AccordionSummary>
+                    </StyledAccordionSummary>
                     <AccordionDetails>
+                        {modelList.length === 0 && (
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.no.models'
+                                    defaultMessage='No models available. Please configure models for the LLM provider.'
+                                />
+                            </Alert>
+                        )}
+                        {productionEndpoints.length === 0 && (
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.no.production.endpoints'
+                                    defaultMessage='No production endpoints available. Please {configureLink} first.'
+                                    values={{
+                                        configureLink: (
+                                            <Link to={getEndpointsUrl()}>
+                                                configure endpoints
+                                            </Link>
+                                        ),
+                                    }}
+                                />
+                            </Alert>
+                        )}
                         <Button
                             variant='outlined'
                             color='primary'
                             data-testid='add-production-model'
                             sx={{ ml: 1 }}
                             onClick={() => handleAddModel('production')}
+                            disabled={isAddModelDisabled('production')}
                         >
                             <AddCircle sx={{ mr: 1 }} />
                             <FormattedMessage
@@ -204,9 +308,11 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                         ))}
                     </AccordionDetails>
                 </Accordion>
-                <Accordion>
-                    <AccordionSummary
-                        expandIcon={<ExpandMoreIcon />}
+                <Accordion 
+                    expanded={sandboxEnabled}
+                    onChange={handleAccordionChange('sandbox')}
+                >
+                    <StyledAccordionSummary
                         aria-controls='sandbox-content'
                         id='sandbox-header'
                     >
@@ -216,14 +322,48 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                                 defaultMessage='Sandbox'
                             />
                         </Typography>
-                    </AccordionSummary>
+                        <FormControlLabel
+                            control={
+                                <Switch
+                                    checked={sandboxEnabled}
+                                    onChange={handleSandboxToggle}
+                                    name="sandbox-toggle"
+                                />
+                            }
+                            label=""
+                        />
+                    </StyledAccordionSummary>
                     <AccordionDetails>
+                        {modelList.length === 0 && (
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.no.models'
+                                    defaultMessage='No models available. Please configure models for the LLM provider.'
+                                />
+                            </Alert>
+                        )}
+                        {sandboxEndpoints.length === 0 && (
+                            <Alert severity="warning" sx={{ mb: 2 }}>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.no.sandbox.endpoints'
+                                    defaultMessage='No sandbox endpoints available. Please {configureLink} first.'
+                                    values={{
+                                        configureLink: (
+                                            <Link to={getEndpointsUrl()}>
+                                                configure endpoints
+                                            </Link>
+                                        ),
+                                    }}
+                                />
+                            </Alert>
+                        )}
                         <Button
                             variant='outlined'
                             color='primary'
                             data-testid='add-sandbox-model'
                             sx={{ ml: 1 }}
                             onClick={() => handleAddModel('sandbox')}
+                            disabled={isAddModelDisabled('sandbox')}
                         >
                             <AddCircle sx={{ mr: 1 }} />
                             <FormattedMessage
@@ -248,7 +388,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                     id='suspend-duration-production'
                     label='Suspend Duration (s)'
                     size='small'
-                    sx={{ pt: 2, mt: 2 }}
+                    sx={{ mt: 2 }}
                     // helperText={getError(spec) === '' ? spec.description : getError(spec)}
                     // error={getError(spec) !== ''}
                     variant='outlined'
