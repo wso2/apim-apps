@@ -60,7 +60,7 @@ export type PolicySpec = {
     description: string;
     applicableFlows: string[];
     supportedGateways: string[];
-    supportedApiTypes: string[] | Map<string, string>[];
+    supportedApiTypes: string[] | ApiTypeObject[];
     policyAttributes: PolicySpecAttribute[];
     isAPISpecific?: boolean;
     md5?: string;

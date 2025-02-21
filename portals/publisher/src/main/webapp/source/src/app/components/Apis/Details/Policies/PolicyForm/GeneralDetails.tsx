@@ -30,6 +30,7 @@ import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import FormControl from '@mui/material/FormControl';
 import { ACTIONS } from './PolicyCreateForm';
+import { ApiTypeObject } from '../Types';
 
 const PREFIX = 'GeneralDetails';
 
@@ -55,7 +56,7 @@ interface GeneralDetailsProps {
     version: string | null;
     description: string;
     applicableFlows: string[];
-    supportedApiTypes: string[] | Map<string, string>[];
+    supportedApiTypes: string[] | ApiTypeObject[];
     dispatch?: React.Dispatch<any>;
     isViewMode: boolean;
 }
@@ -376,8 +377,11 @@ const GeneralDetails: FC<GeneralDetailsProps> = ({
                                                 color='primary'
                                                 checked={
                                                     Array.isArray(supportedApiTypes) &&
-                                                    supportedApiTypes.every(item => typeof item === 'string') &&
-                                                    supportedApiTypes.includes('HTTP')
+                                                    supportedApiTypes.some(
+                                                        item =>
+                                                            (typeof item === 'string' && item === 'HTTP') ||
+                                                            (typeof item === 'object' && item !== null && item.apiType === 'HTTP')
+                                                    )                                            
                                                 }
                                                 id='http-select-check-box'
                                                 onChange={handleApiTypeChange}
