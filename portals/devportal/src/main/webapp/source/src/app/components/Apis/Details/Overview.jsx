@@ -558,7 +558,8 @@ function Overview() {
                                     </InlineMessage>
                                 </Box>
                             )}
-                            {api.gatewayVendor === 'wso2' && allPolicies && allPolicies.length > 0 && !isSubValidationDisabled && (
+                            {(api.gatewayVendor === 'wso2' || !api.gatewayVendor)
+                                && allPolicies && allPolicies.length > 0 && !isSubValidationDisabled && (
                                 <>
                                     <Box mt={6}>
                                         <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>

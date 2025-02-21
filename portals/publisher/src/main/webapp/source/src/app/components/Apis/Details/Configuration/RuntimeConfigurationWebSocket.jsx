@@ -249,7 +249,7 @@ export default function RuntimeConfiguration() {
     useEffect(() => {
         if (!isLoading) {
             setEndpointSecurity(publisherSettings.gatewayFeatureCatalog
-                .gatewayFeatures[api.gatewayType].endpoints);
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].endpoints);
         }
     }, [isLoading]);
 

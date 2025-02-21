@@ -33,7 +33,6 @@ import Box from '@mui/material/Box';
 import {
     Checkbox,
     Chip,
-    Divider,
     IconButton,
     List,
     ListItem,
@@ -613,19 +612,29 @@ export default function DesignConfigurations() {
                 );
             } else {
                 return (
-                    <MenuItem disabled sx={{ width: '350px' }} id='label-menu-search-result-no-labels'>
+                    <ListItem sx={{ width: '350px' }} id='label-menu-search-result-no-labels'>
                         <ListItemIcon />
-                        <ListItemText primary='No Labels Found' />
-                    </MenuItem>
+                        <Typography variant='body1' color='textPrimary'>
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.Configuration.Design.no.labels.found'
+                                defaultMessage='No Labels Found'
+                            />
+                        </Typography>
+                    </ListItem>
                 );
             }
         }
 
         return (
             <span>
-                <MenuItem disabled>
-                    <ListItemText primary='Attached Labels' />
-                </MenuItem>
+                <ListItem >
+                    <Typography variant='body1' color='textPrimary' sx={{ fontWeight: 'bold' }}>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.Configuration.Design.attached.labels'
+                            defaultMessage='Attached Labels'
+                        />
+                    </Typography>
+                </ListItem>
                 <List sx={{ width: '350px' }}>
                     {updatedLabels && updatedLabels.length !== 0 ? (
                         updatedLabels.map((label) => (
@@ -640,15 +649,25 @@ export default function DesignConfigurations() {
                             </MenuItem>
                         ))
                     ) : (
-                        <MenuItem disabled>
+                        <ListItem >
                             <ListItemIcon />
-                            <ListItemText primary='No Labels Attached' />
-                        </MenuItem>
+                            <Typography variant='body2' color='textPrimary'>
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.Configuration.Design.no.labels'
+                                    defaultMessage='No Labels Attached'
+                                />
+                            </Typography>
+                        </ListItem>
                     )}
                 </List>
-                <MenuItem disabled>
-                    <ListItemText primary='Unattached Labels' />
-                </MenuItem>
+                <ListItem >
+                    <Typography variant='body1' color='textPrimary' sx={{ fontWeight: 'bold' }}>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.Configuration.Design.unattached.labels'
+                            defaultMessage='Unattached Labels'
+                        />
+                    </Typography>
+                </ListItem>
                 <List sx={{ width: '350px' }}>
                     {unselectedLabels && unselectedLabels.length !== 0 ? (
                         unselectedLabels.map((label) => (
@@ -663,10 +682,15 @@ export default function DesignConfigurations() {
                             </MenuItem>
                         ))
                     ) : (
-                        <MenuItem disabled>
+                        <ListItem >
                             <ListItemIcon />
-                            <ListItemText primary='No More Labels to Attach' />
-                        </MenuItem>
+                            <Typography variant='body2' color='textPrimary'>
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.Configuration.Design.no.more.labels'
+                                    defaultMessage='No More Labels Available'
+                                />
+                            </Typography>
+                        </ListItem>
                     )}
                 </List>
             </span>
@@ -712,7 +736,6 @@ export default function DesignConfigurations() {
                         </Grid>
                     </Grid>
                 </ListItem>
-                <Divider />
                 {labels.list && labels.list.length !== 0 ? (
                     <LabelMenu />
                 ) : (
@@ -809,7 +832,8 @@ export default function DesignConfigurations() {
                                     <Box py={1}>
                                         {api.apiType !== API.CONSTS.APIProduct &&
                                             settings && settings.gatewayFeatureCatalog
-                                            .gatewayFeatures[api.gatewayType].basic.includes("advertised") && (
+                                            .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
+                                            .basic.includes("advertised") && (
                                             <AdvertiseInfo
                                                 oldApi={api}
                                                 api={apiConfig}
@@ -820,7 +844,8 @@ export default function DesignConfigurations() {
                                         )}
                                     </Box>
                                     { settings && !settings.portalConfigurationOnlyModeEnabled &&
-                                        settings.gatewayFeatureCatalog.gatewayFeatures[api.gatewayType]
+                                        settings.gatewayFeatureCatalog
+                                            .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                             .basic.includes("defaultVersion") &&
                                             <Box py={1}>
                                                 <DefaultVersion api={apiConfig}

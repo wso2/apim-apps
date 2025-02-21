@@ -587,7 +587,8 @@ class DetailsLegacy extends React.Component {
                                 open={open}
                                 id='left-menu-overview'
                             />
-                            {user && showCredentials && !isSubValidationDisabled && api.gatewayVendor === 'wso2' && (
+                            {user && showCredentials && !isSubValidationDisabled
+                                && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
                                 <>
 
                                     <LeftMenuItem
@@ -665,8 +666,8 @@ class DetailsLegacy extends React.Component {
                                                     open={open}
                                                     id='left-menu-test'
                                                 />
-                                                {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi
-                                                    && apiChatEnabled && api.gatewayVendor === 'wso2' && (
+                                                {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi && apiChatEnabled
+                                                && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
                                                     <LeftMenuItem
                                                         text={(
                                                             <FormattedMessage

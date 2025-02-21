@@ -75,6 +75,7 @@ const APICreateStreamingAPI = (props) => {
         apiType = apiType.toUpperCase();
     }
     const isWebSub = (apiType === 'WEBSUB');
+    const complianceErrorCode = 903300;
 
     useEffect(() => {
         API.asyncAPIPolicies().then((response) => {
@@ -143,6 +144,8 @@ const APICreateStreamingAPI = (props) => {
     }
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         formValidity: false,
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
 
     const isAPICreatable = apiInputs.name && apiInputs.context && apiInputs.version && !isCreating;
@@ -357,7 +360,7 @@ const APICreateStreamingAPI = (props) => {
                 .catch((error) => {
                     if (error.response) {
                         // TODO: Use the code to check for the governance error
-                        if (error.response.body.description.includes('blockingViolations')) {
+                        if (error.response.body.code === complianceErrorCode) {
                             // TODO: Check whether we need to display the violations list
                             // TODO: Improve the error alert
                             Alert.error(intl.formatMessage({
@@ -451,6 +454,7 @@ const APICreateStreamingAPI = (props) => {
                         multiGateway={multiGateway}
                         isWebSocket={(apiType && apiType === protocolKeys.WebSocket)
                             || apiInputs.protocol === protocolKeys.WebSocket}
+                        settings={settings}
                     >
                         <TextField
                             fullWidth

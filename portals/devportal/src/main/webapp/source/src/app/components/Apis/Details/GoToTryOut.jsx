@@ -250,7 +250,7 @@ export default function GoToTryOut() {
     if (!defaultApplication
         || subscribedApplications.length > 0
         || api.advertiseInfo.advertised
-        || api.gatewayVendor !== 'wso2'
+        || (api.gatewayVendor && api.gatewayVendor !== 'wso2')
         || !user
         || isAsyncAPI
         || isPrototypedAPI) {

@@ -39,6 +39,7 @@ import TextField from '@mui/material/TextField';
 
 import Chip from '@mui/material/Chip';
 import Joi from '@hapi/joi';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { upperCaseString } from 'AppData/stringFormatter';
 import ExternalEndpoint from 'AppComponents/Apis/Create/AsyncAPI/ExternalEndpoint';
 import ProvideAsyncAPI from './Steps/ProvideAsyncAPI';
@@ -82,6 +83,7 @@ const StyledAPICreateBase = styled(APICreateBase)((
 export default function ApiCreateAsyncAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const { history, multiGateway } = props;
+    const { data: settings } = usePublisherSettings();
     // eslint-disable-next-line no-use-before-define
 
     const [hideEndpoint, setHideEndpoint] = useState(true);
@@ -135,6 +137,8 @@ export default function ApiCreateAsyncAPI(props) {
         inputType: 'url',
         inputValue: '',
         formValidity: false,
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
 
     const protocols = [
@@ -356,6 +360,7 @@ export default function ApiCreateAsyncAPI(props) {
                             endpointPlaceholderText='Streaming Provider'
                             appendChildrenBeforeEndpoint
                             multiGateway={multiGateway}
+                            settings={settings}
                         >
                             <Grid container spacing={2}>
                                 {apiInputs.gatewayVendor === 'solace'

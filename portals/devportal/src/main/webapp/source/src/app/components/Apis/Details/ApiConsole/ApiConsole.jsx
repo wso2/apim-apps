@@ -446,7 +446,7 @@ class ApiConsole extends React.Component {
             securitySchemeType, username, password, productionAccessToken, sandboxAccessToken, selectedKeyType,
             productionApiKey, sandboxApiKey, api, advAuthHeaderValue,
         } = this.state;
-        if ((api.advertiseInfo && api.advertiseInfo.advertised) || api.gatewayVendor !== 'wso2') {
+        if ((api.advertiseInfo && api.advertiseInfo.advertised) || (api.gatewayVendor && api.gatewayVendor !== 'wso2')) {
             return advAuthHeaderValue;
         }
         if (securitySchemeType === 'BASIC') {
@@ -557,7 +557,7 @@ class ApiConsole extends React.Component {
                 <Paper className={classes.paper}>
                     <Grid container className={classes.grid}>
                         {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised)
-                            && api.gatewayVendor !== 'wso2' && (
+                            && (api.gatewayVendor && api.gatewayVendor !== 'wso2') && (
                             <Grid item md={6}>
                                 <Paper className={classes.userNotificationPaper}>
                                     <Typography variant='h5' component='h3'>

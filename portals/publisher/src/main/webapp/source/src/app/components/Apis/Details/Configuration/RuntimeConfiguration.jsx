@@ -458,9 +458,9 @@ export default function RuntimeConfiguration() {
     useEffect(() => {
         if (!isLoading) {
             setComponentValidator(publisherSettings.gatewayFeatureCatalog
-                .gatewayFeatures[api.gatewayType].runtime);
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].runtime);
             setEndpointSecurity(publisherSettings.gatewayFeatureCatalog
-                .gatewayFeatures[api.gatewayType].endpoints);
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].endpoints);
         }
     }, [isLoading]);
 

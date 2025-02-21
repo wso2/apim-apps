@@ -488,6 +488,7 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
  */
 export default function Environments() {
     const maxCommentLength = '255';
+    const complianceErrorCode = 903300;
     const intl = useIntl();
     const { api, updateAPI } = useContext(APIContext);
     const isEndpointAvailable = api.endpointConfig !== null;
@@ -830,7 +831,7 @@ export default function Environments() {
                 .catch((error) => {
                     if (error.response) {
                         // TODO: Use the error code to identify the errors thrown by governance violation
-                        if (error.response.body.description.includes('blockingViolations')) {
+                        if (error.response.body.code === complianceErrorCode) {
                             const violations = JSON.parse(error.response.body.description).blockingViolations;
                             setGovernanceError(violations);
                             setIsGovernanceViolation(true);
@@ -1098,7 +1099,7 @@ export default function Environments() {
             }).catch((error) => {
                 if (error.response) {
                     // TODO: Use the error code to identify the errors thrown by governance violation
-                    if (error.response.body.description.includes('blockingViolations')) {
+                    if (error.response.body.code === complianceErrorCode) {
                         const violations = JSON.parse(error.response.body.description).blockingViolations;
                         setGovernanceError(violations);
                         setIsGovernanceViolation(true);
@@ -1213,7 +1214,7 @@ export default function Environments() {
                         .catch((error) => {
                             if (error.response) {
                                 // TODO: Use the error code to identify the errors thrown by governance violation
-                                if (error.response.body.description.includes('blockingViolations')) {
+                                if (error.response.body.code === complianceErrorCode) {
                                     const violations = JSON.parse(error.response.body.description).blockingViolations;
                                     setGovernanceError(violations);
                                     setIsGovernanceViolation(true);
@@ -1279,7 +1280,7 @@ export default function Environments() {
                 .catch((error) => {
                     if (error.response) {
                         // TODO: Use the error code to identify the errors thrown by governance violation
-                        if (error.response.body.description.includes('blockingViolations')) {
+                        if (error.response.body.code === complianceErrorCode) {
                             const violations = JSON.parse(error.response.body.description).blockingViolations;
                             setGovernanceError(violations);
                             setIsGovernanceViolation(true);
