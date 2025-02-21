@@ -124,6 +124,16 @@ export default function ApiCreateGraphQL(props) {
     }
 
     /**
+     * Handles back button click for the API creation wizard for Design Asistant
+     * @param 
+     *  
+     */
+    const handleBackButtonOnClick = () => {
+        const landingPage = '/apis';
+        history.push(landingPage);
+    };
+
+    /**
      *
      *
      * @param {*} event
@@ -304,15 +314,21 @@ export default function ApiCreateGraphQL(props) {
                                 </Link>
                             )}
                             {wizardStep === 1 && (
-                                <Button onClick={
-                                    () => setWizardStep((step) => step - 1)
-                                }
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Create.GraphQL.ApiCreateGraphQL.back'
-                                        defaultMessage='Back'
-                                    />
-                                </Button>
+                                (assistantInfo && assistantInfo.source ===  'DesignAssistant') ? (
+                                    <Button onClick={handleBackButtonOnClick}>
+                                        <FormattedMessage
+                                            id='Apis.Create.GraphQL.ApiCreateGraphQL.designAssistant.back'
+                                            defaultMessage='Back'
+                                        />
+                                    </Button>
+                                ) : (
+                                    <Button onClick={() => setWizardStep((step) => step - 1)}>
+                                        <FormattedMessage
+                                            id='Apis.Create.GraphQL.ApiCreateGraphQL.back'
+                                            defaultMessage='Back'
+                                        />
+                                    </Button>
+                                )
                             )}
                         </Grid>
                         <Grid item>

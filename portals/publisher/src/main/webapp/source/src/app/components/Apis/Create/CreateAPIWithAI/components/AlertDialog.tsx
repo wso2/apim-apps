@@ -33,9 +33,10 @@ import API from 'AppData/api';
 interface AlertDialogProps {
   sessionId: string;
   spec: string;
+  apiType: string;
 }
 
-const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec }) => {
+const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec, apiType }) => {
   const [open, setOpen] = React.useState(false);
   const [showProgress, setShowProgress] = React.useState(false);
   const intl = useIntl();
@@ -49,20 +50,6 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec }) => {
   };
 
   const history = useHistory();
-    
-  async function genPayload(sessionId: any) { 
-      try {
-          const genPayloadDesignAssistant = new API();
-          const response = await genPayloadDesignAssistant.payloadGenAPIDesignAssistant(sessionId);
-          if (!response || typeof response !== 'object') {
-              throw new Error("Invalid response received from API.");
-          }
-          return response;
-      } catch (error) {
-          console.error("Error in sendQuery:", error);
-          throw error;
-      }
-  }
 
     /**
    * Method to handle error scenarios
@@ -153,35 +140,19 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec }) => {
     handleClose();
     setShowProgress(true);
 
-    const protocolKeys = {
-      WS: 'WebSocket',
-      SSE: 'SSE',
-      WEBSUB: 'WebSub',
-      ASYNC: 'Other'
-    };
-
-    type ProtocolTypes = typeof protocolKeys;
-
     try {
-      const payloadResponse = await genPayload(sessionId);
-      const { generatedPayload } = payloadResponse;
-      const parsedPayload = JSON.parse(generatedPayload);
-  
-      if (!parsedPayload) return;
-
-      const protocolKey: keyof ProtocolTypes = parsedPayload.type;
-
-      let endpointValue = parsedPayload.endpointConfig?.production_endpoints?.url ?? 
-                    (parsedPayload.type === 'WS' ? 'ws://localhost:9099' : 'http://localhost:8080');
+      
+      let endpointValue = (apiType === 'WebSocket' ? 'ws://localhost:9099' : 'http://localhost:8080');
+      let apiName = (apiType === 'REST' ? 'Banking Transaction API' : 'Live Streaming API');
 
       const createData = (type: string, file: File, graphQLInfo?: any) => ({
-        name: parsedPayload.name,
-        version: parsedPayload.version,
-        context: parsedPayload.context,
-        gatewayType: parsedPayload.gatewayType,
-        gatewayVendor: parsedPayload.gatewayVendor,
+        name: apiName,
+        version: '1.0.0',
+        context: '/apicontext',
+        gatewayType: 'wso2/synapse',
+        gatewayVendor: 'wso2',
         endpoint: endpointValue,
-        protocol: protocolKeys[protocolKey],
+        protocol: type,
         asyncTransportProtocols: type,
         source: 'DesignAssistant',
         file,
@@ -192,7 +163,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec }) => {
       let definition: File;
       let graphQLInfo: any;
   
-      if (parsedPayload.type === 'HTTP') {
+      if (apiType === 'REST') {
         YAML.load(spec);
         definition = createBlobAndFile(spec, 'text/yaml');
         validationResponse = await validateOpenAPIDefinition(definition);
@@ -200,9 +171,9 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec }) => {
         if (!validationResponse?.isValid) {
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.http.API', 'The provided OpenAPI definition is invalid. Please try again.');
         }
-        const data = createData(parsedPayload.type, definition);
+        const data = createData(apiType, definition);
         history.push('/apis/create/openapi', data);
-      } else if (['SSE', 'WS', 'WEBSUB', 'WEBHOOK', 'ASYNC'].includes(parsedPayload.type)) {
+      } else if (['SSE', 'WebSocket', 'WebSub'].includes(apiType)) {
         YAML.load(spec);
         definition = createBlobAndFile(spec, 'text/yaml');
         validationResponse = await validateAsyncAPIDefinition(definition);
@@ -210,15 +181,15 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec }) => {
         if (!validationResponse?.isValid) {
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.async.API', 'The provided AsyncAPI definition is invalid. Please try again.');
         }
-        const data = createData(parsedPayload.type, definition);
+        const data = createData(apiType, definition);
         history.push('/apis/create/asyncapi', data);
-      } else if (parsedPayload.type === 'GRAPHQL') {
+      } else if (apiType === 'GraphQL') {
         definition = createBlobAndFile(spec, 'text/plain');
         validationResponse = await validateGraphQLSchema(definition);
   
         if (validationResponse?.isValid) {
           graphQLInfo = validationResponse.graphQLInfo;
-          const data = createData(parsedPayload.type, definition, graphQLInfo);
+          const data = createData(apiType, definition, graphQLInfo);
           history.push('/apis/create/graphQL', data);
         } else {
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.graphql.API', 'The provided GraphQL schema is invalid. Please try again.');
@@ -228,6 +199,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId, spec }) => {
     } catch (error) {
       setShowProgress(false);
       console.error('Error during API creation:', error);
+      Alert.error(intl.formatMessage({ id: 'CreateAPIWithAI.components.AlertDialog.error.create.API', defaultMessage: 'Error Creating API' }));
       throw error;
     }
   };

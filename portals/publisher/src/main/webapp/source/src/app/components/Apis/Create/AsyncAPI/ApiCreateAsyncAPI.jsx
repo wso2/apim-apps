@@ -183,6 +183,16 @@ export default function ApiCreateAsyncAPI(props) {
     };
 
     /**
+     * Handles back button click for the API creation wizard for Design Asistant
+     * @param 
+     *  
+     */
+    const handleBackButtonOnClick = () => {
+        const landingPage = '/apis';
+        history.push(landingPage);
+    };
+
+    /**
      *
      *
      * @param {*} event
@@ -472,12 +482,21 @@ export default function ApiCreateAsyncAPI(props) {
                                 </Link>
                             )}
                             {wizardStep === 1 && (
-                                <Button onClick={() => setWizardStep((step) => step - 1)}>
-                                    <FormattedMessage
-                                        id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.back'
-                                        defaultMessage='Back'
-                                    />
-                                </Button>
+                                (assistantInfo && assistantInfo.source ===  'DesignAssistant') ? (
+                                    <Button onClick={handleBackButtonOnClick}>
+                                        <FormattedMessage
+                                            id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.designAssistant.back'
+                                            defaultMessage='Back'
+                                        />
+                                    </Button>
+                                ) : (
+                                    <Button onClick={() => setWizardStep((step) => step - 1)}>
+                                        <FormattedMessage
+                                            id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.back'
+                                            defaultMessage='Back'
+                                        />
+                                    </Button>
+                                )
                             )}
                         </Grid>
                         <Grid item>

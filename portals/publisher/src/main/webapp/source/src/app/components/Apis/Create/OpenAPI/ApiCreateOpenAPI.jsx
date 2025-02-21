@@ -126,6 +126,16 @@ export default function ApiCreateOpenAPI(props) {
         });
     }
 
+    /**
+     * Handles back button click for the API creation wizard for Design Asistant
+     * @param 
+     *  
+     */
+    const handleBackButtonOnClick = () => {
+        const landingPage = '/apis';
+        history.push(landingPage);
+    };
+
     const [isCreating, setCreating] = useState();
     /**
      *
@@ -264,12 +274,21 @@ export default function ApiCreateOpenAPI(props) {
                                 </Link>
                             )}
                             {wizardStep === 1 && (
-                                <Button onClick={() => setWizardStep((step) => step - 1)}>
-                                    <FormattedMessage
-                                        id='Apis.Create.OpenAPI.ApiCreateOpenAPI.back'
-                                        defaultMessage='Back'
-                                    />
-                                </Button>
+                                (assistantInfo && assistantInfo.source ===  'DesignAssistant') ? (
+                                    <Button onClick={handleBackButtonOnClick}>
+                                        <FormattedMessage
+                                            id='Apis.Create.OpenAPI.ApiCreateOpenAPI.designAssistant.back'
+                                            defaultMessage='Back'
+                                        />
+                                    </Button>
+                                ) : (
+                                    <Button onClick={() => setWizardStep((step) => step - 1)}>
+                                        <FormattedMessage
+                                            id='Apis.Create.OpenAPI.ApiCreateOpenAPI.back'
+                                            defaultMessage='Back'
+                                        />
+                                    </Button>
+                                )
                             )}
                         </Grid>
                         <Grid item>
