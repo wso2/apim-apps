@@ -62,7 +62,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CardHeader from '@mui/material/CardHeader';
 import Checkbox from '@mui/material/Checkbox';
 import InfoIcon from '@mui/icons-material/Info';
-import { CircularProgress } from '@mui/material';
+import { CircularProgress, Link } from '@mui/material';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import API from 'AppData/api';
@@ -831,15 +831,48 @@ export default function Environments() {
                     if (error.response) {
                         // TODO: Use the error code to identify the errors thrown by governance violation
                         if (error.response.body.description.includes('blockingViolations')) {
-                            setGovernanceError(
-                                JSON.parse(error.response.body.description).blockingViolations,
-                            );
+                            const violations = JSON.parse(error.response.body.description).blockingViolations;
+                            setGovernanceError(violations);
                             setIsGovernanceViolation(true);
                             Alert.error(
-                                intl.formatMessage({
-                                    id: 'Apis.Details.Environments.Environments.revision.create.error.governance',
-                                    defaultMessage: 'Revision Creation failed. Governance policy violations found',
-                                }),
+                                <Box sx={{ width: '100%' }}>
+                                    <Typography>
+                                        <FormattedMessage
+                                            id={'Apis.Details.Environments.Environments.'
+                                                + 'revision.create.error.governance'}
+                                            defaultMessage={'Revision Creation failed. '
+                                                + 'Governance policy violations found'}
+                                        />
+                                    </Typography>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        mt: 1
+                                    }}>
+                                        <Link
+                                            component='button'
+                                            onClick={() => 
+                                                Utils.downloadAsJSON(violations, 'governance-violations')
+                                            }
+                                            sx={{
+                                                color: 'inherit',
+                                                fontWeight: 600,
+                                                textDecoration: 'none',
+                                                transition: 'all 0.3s',
+                                                '&:hover': {
+                                                    transform: 'translateY(-2px)',
+                                                    textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                },
+                                            }}
+                                        >
+                                            <FormattedMessage
+                                                id={'Apis.Details.Environments.Environments.revision.'
+                                                    + 'create.error.governance.download'}
+                                                defaultMessage='Download Violations'
+                                            />
+                                        </Link>
+                                    </Box>
+                                </Box>
                             );
                             return;
                         } else {
@@ -1064,7 +1097,51 @@ export default function Environments() {
                 }
             }).catch((error) => {
                 if (error.response) {
-                    Alert.error(error.response.body.description);
+                    // TODO: Use the error code to identify the errors thrown by governance violation
+                    if (error.response.body.description.includes('blockingViolations')) {
+                        const violations = JSON.parse(error.response.body.description).blockingViolations;
+                        setGovernanceError(violations);
+                        setIsGovernanceViolation(true);
+                        Alert.error(
+                            <Box sx={{ width: '100%' }}>
+                                <Typography>
+                                    <FormattedMessage
+                                        id='Apis.Details.Environments.Environments.revision.deploy.error.governance'
+                                        defaultMessage='Revision Deployment failed. Governance policy violations found'
+                                    />
+                                </Typography>
+                                <Box sx={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    mt: 1
+                                }}>
+                                    <Link
+                                        component='button'
+                                        onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
+                                        sx={{
+                                            color: 'inherit',
+                                            fontWeight: 600,
+                                            textDecoration: 'none',
+                                            transition: 'all 0.3s',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                            },
+                                        }}
+                                    >
+                                        <FormattedMessage
+                                            id={'Apis.Details.Environments.Environments.revision.'
+                                                + 'deploy.error.governance.download'}
+                                            defaultMessage='Download Violations'
+                                        />
+                                    </Link>
+                                </Box>
+                            </Box>
+                        );
+                        return;
+                    } else {
+                        Alert.error(error.response.body.description);
+                    }
                 } else {
                     Alert.error(intl.formatMessage({
                         id: 'Apis.Details.Environments.Environments.revision.deploy.error',
@@ -1137,17 +1214,48 @@ export default function Environments() {
                             if (error.response) {
                                 // TODO: Use the error code to identify the errors thrown by governance violation
                                 if (error.response.body.description.includes('blockingViolations')) {
-                                    setGovernanceError(
-                                        JSON.parse(error.response.body.description).blockingViolations,
-                                    );
+                                    const violations = JSON.parse(error.response.body.description).blockingViolations;
+                                    setGovernanceError(violations);
                                     setIsGovernanceViolation(true);
                                     Alert.error(
-                                        intl.formatMessage({
-                                            id: 'Apis.Details.Environments.Environments.'
-                                                + 'revision.create.error.governance',
-                                            defaultMessage: 'Revision Deployment failed.'
-                                                + ' Governance policy violations found',
-                                        }),
+                                        <Box sx={{ width: '100%' }}>
+                                            <Typography>
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Environments.Environments.'
+                                                        + 'revision.create.error.governance'}
+                                                    defaultMessage={'Revision Deployment failed. '
+                                                        + 'Governance policy violations found'}
+                                                />
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                justifyContent: 'flex-end',
+                                                mt: 1
+                                            }}>
+                                                <Link
+                                                    component='button'
+                                                    onClick={() => 
+                                                        Utils.downloadAsJSON(violations, 'governance-violations')
+                                                    }
+                                                    sx={{
+                                                        color: 'inherit',
+                                                        fontWeight: 600,
+                                                        textDecoration: 'none',
+                                                        transition: 'all 0.3s',
+                                                        '&:hover': {
+                                                            transform: 'translateY(-2px)',
+                                                            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                        },
+                                                    }}
+                                                >
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Environments.Environments.revision.'
+                                                            + 'create.error.governance.download'}
+                                                        defaultMessage='Download Violations'
+                                                    />
+                                                </Link>
+                                            </Box>
+                                        </Box>
                                     );
                                     return;
                                 } else {
@@ -1172,15 +1280,46 @@ export default function Environments() {
                     if (error.response) {
                         // TODO: Use the error code to identify the errors thrown by governance violation
                         if (error.response.body.description.includes('blockingViolations')) {
-                            setGovernanceError(
-                                JSON.parse(error.response.body.description).blockingViolations,
-                            );
+                            const violations = JSON.parse(error.response.body.description).blockingViolations;
+                            setGovernanceError(violations);
                             setIsGovernanceViolation(true);
                             Alert.error(
-                                intl.formatMessage({
-                                    id: 'Apis.Details.Environments.Environments.revision.create.error.governance',
-                                    defaultMessage: 'Revision Creation failed. Governance policy violations found',
-                                }),
+                                <Box sx={{ width: '100%' }}>
+                                    <Typography>
+                                        <FormattedMessage
+                                            id={'Apis.Details.Environments.Environments.revision.'
+                                                + 'create.error.governance'}
+                                            defaultMessage={'Revision Creation failed. '
+                                                + 'Governance policy violations found'}
+                                        />
+                                    </Typography>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        mt: 1
+                                    }}>
+                                        <Link
+                                            component='button'
+                                            onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
+                                            sx={{
+                                                color: 'inherit',
+                                                fontWeight: 600,
+                                                textDecoration: 'none',
+                                                transition: 'all 0.3s',
+                                                '&:hover': {
+                                                    transform: 'translateY(-2px)',
+                                                    textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                },
+                                            }}
+                                        >
+                                            <FormattedMessage
+                                                id={'Apis.Details.Environments.Environments.revision.'
+                                                    + 'create.error.governance.download'}
+                                                defaultMessage='Download Violations'
+                                            />
+                                        </Link>
+                                    </Box>
+                                </Box>
                             );
                             return;
                         } else {

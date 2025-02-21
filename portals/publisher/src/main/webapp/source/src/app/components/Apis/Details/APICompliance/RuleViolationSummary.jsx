@@ -19,7 +19,7 @@
 import React from 'react';
 import {
     Grid, Card, CardContent, Typography, Box, Tabs, Tab,
-    Collapse, IconButton, TablePagination, Chip
+    Collapse, IconButton, TablePagination, Chip, Link
 } from '@mui/material';
 import ReportIcon from '@mui/icons-material/Report';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -29,6 +29,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import LabelIcon from '@mui/icons-material/Label';
 import RuleIcon from '@mui/icons-material/Rule';
+import LaunchIcon from '@mui/icons-material/Launch';
 import ListBase from 'AppComponents/Addons/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
@@ -60,13 +61,17 @@ export default function RuleViolationSummary({ artifactId }) {
                 // Get the unique ruleset IDs
                 const rulesetIds = [...rulesetMap.keys()];
 
-                // Get validation results for each ruleset
+                // Get validation results and ruleset details for each ruleset
                 return Promise.all(
                     rulesetIds.map(rulesetId =>
-                        restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
-                            .then((result) => ({
-                                ...result.body,
+                        Promise.all([
+                            restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId),
+                            restApi.getRulesetById(rulesetId)
+                        ])
+                            .then(([validationResult, rulesetResult]) => ({
+                                ...validationResult.body,
                                 ruleType: rulesetMap.get(rulesetId).ruleType,
+                                documentationLink: rulesetResult.body.documentationLink,
                             }))),
                 ).then((rulesets) => {
                     // Create rulesets array with severities catagorized
@@ -74,6 +79,7 @@ export default function RuleViolationSummary({ artifactId }) {
                         id: ruleset.id,
                         rulesetName: ruleset.name,
                         ruleType: ruleset.ruleType,
+                        documentationLink: ruleset.documentationLink,
                         error: ruleset.violatedRules.filter(rule => rule.severity === 'ERROR'),
                         warn: ruleset.violatedRules.filter(rule => rule.severity === 'WARN'),
                         info: ruleset.violatedRules.filter(rule => rule.severity === 'INFO'),
@@ -93,6 +99,7 @@ export default function RuleViolationSummary({ artifactId }) {
                             severityGroups.errors.push({
                                 id: ruleset.id,
                                 rulesetName: ruleset.rulesetName,
+                                documentationLink: ruleset.documentationLink,
                                 ruleType: ruleset.ruleType,
                                 rules: ruleset.error
                             });
@@ -101,6 +108,7 @@ export default function RuleViolationSummary({ artifactId }) {
                             severityGroups.warnings.push({
                                 id: ruleset.id,
                                 rulesetName: ruleset.rulesetName,
+                                documentationLink: ruleset.documentationLink,
                                 ruleType: ruleset.ruleType,
                                 rules: ruleset.warn
                             });
@@ -109,6 +117,7 @@ export default function RuleViolationSummary({ artifactId }) {
                             severityGroups.info.push({
                                 id: ruleset.id,
                                 rulesetName: ruleset.rulesetName,
+                                documentationLink: ruleset.documentationLink,
                                 ruleType: ruleset.ruleType,
                                 rules: ruleset.info
                             });
@@ -117,6 +126,7 @@ export default function RuleViolationSummary({ artifactId }) {
                             severityGroups.passed.push({
                                 id: ruleset.id,
                                 rulesetName: ruleset.rulesetName,
+                                documentationLink: ruleset.documentationLink,
                                 ruleType: ruleset.ruleType,
                                 rules: ruleset.passed
                             });
@@ -214,6 +224,7 @@ export default function RuleViolationSummary({ artifactId }) {
                 defaultMessage: 'Path',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value.path}</Typography>
                 ),
@@ -226,6 +237,7 @@ export default function RuleViolationSummary({ artifactId }) {
                 defaultMessage: 'Message',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value}</Typography>
                 ),
@@ -254,6 +266,7 @@ export default function RuleViolationSummary({ artifactId }) {
                 defaultMessage: 'Description',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value}</Typography>
                 ),
@@ -302,17 +315,46 @@ export default function RuleViolationSummary({ artifactId }) {
                                                 }}
                                             />
                                         </Box>
-                                        <IconButton
-                                            onClick={(e) => {
-                                                e.stopPropagation(); // Prevent card click event
-                                                handleExpandClick(item.id);
-                                            }}
-                                            aria-expanded={expandedItems.includes(item.id)}
-                                            aria-label='show more'
-                                        >
-                                            {expandedItems.includes(item.id) ?
-                                                <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
-                                        </IconButton>
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            {item.documentationLink && (
+                                                <Link
+                                                    href={item.documentationLink}
+                                                    target='_blank'
+                                                    rel='noopener noreferrer'
+                                                    onClick={(e) => e.stopPropagation()}
+                                                    sx={{
+                                                        display: 'flex',
+                                                        alignItems: 'center',
+                                                        textDecoration: 'none',
+                                                        '&:hover': {
+                                                            textDecoration: 'underline',
+                                                        },
+                                                    }}
+                                                >
+                                                    <LaunchIcon sx={{ fontSize: 16, mr: 0.5 }} />
+                                                    <Typography 
+                                                        variant='caption'
+                                                        color='primary'
+                                                    >
+                                                        {intl.formatMessage({
+                                                            id: 'Apis.Details.Compliance.RuleViolation.documentation',
+                                                            defaultMessage: 'View Documentation',
+                                                        })}
+                                                    </Typography>
+                                                </Link>
+                                            )}
+                                            <IconButton
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleExpandClick(item.id);
+                                                }}
+                                                aria-expanded={expandedItems.includes(item.id)}
+                                                aria-label='show more'
+                                            >
+                                                {expandedItems.includes(item.id) ?
+                                                    <KeyboardArrowUpIcon /> : <KeyboardArrowDownIcon />}
+                                            </IconButton>
+                                        </Box>
                                     </Box>
                                 </CardContent>
                                 <Collapse in={expandedItems.includes(item.id)} timeout='auto' unmountOnExit>
