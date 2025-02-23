@@ -46,13 +46,13 @@ const Root = styled('div')({
 const gatewayDetails = {
     'wso2/synapse': { 
         value: 'wso2/synapse',
-        name: 'Regular Gateway', 
+        name: 'Universal Gateway',
         description: 'API gateway embedded in APIM runtime.', 
         isNew: false 
     },
     'wso2/apk': { 
         value: 'wso2/apk',
-        name: 'APK Gateway', 
+        name: 'Kubernetes Gateway',
         description: 'API gateway running on Kubernetes.', 
         isNew: false 
     },
