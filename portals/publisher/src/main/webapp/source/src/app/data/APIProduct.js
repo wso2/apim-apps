@@ -251,12 +251,17 @@ class APIProduct extends Resource {
      */
     update(updatedProperties) {
         const updatedAPI = { ...this.toJSON(), ...this.toJSON(updatedProperties) };
+
+        // Create a copy and remove visibleOrganizations
+        const apiWithoutVisibleOrgs = { ...updatedAPI };
+        delete apiWithoutVisibleOrgs.visibleOrganizations;
+
         const promisedUpdate = this.client.then(client => {
             const payload = {
                 apiProductId: updatedAPI.id,
             };
             const requestBody = {
-                requestBody: updatedAPI,
+                requestBody: apiWithoutVisibleOrgs,
             }
             return client.apis['API Products'].updateAPIProduct(payload, requestBody);
         });
