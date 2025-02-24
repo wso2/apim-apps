@@ -16,7 +16,8 @@
  * under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
@@ -42,13 +43,15 @@ const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.d
 function AddEditVhost(props) {
     const intl = useIntl();
     const {
-        onVhostChange, initialVhosts, gatewayType,
+        onVhostChange, initialVhosts, gatewayType, isEditMode,
     } = props;
     const [userVhosts, setUserVhosts] = useState([]);
     const [id, setId] = useState(0);
     const defaultVhost = {
         host: '', httpContext: '', httpsPort: 8243, httpPort: 8280, wssPort: 8099, wsPort: 9099, isNew: true,
     };
+    const prevRef = useRef();
+    const { settings } = useAppContext();
 
     // change handlers
     const updateChanges = (key, field, newValue) => {
@@ -142,7 +145,38 @@ function AddEditVhost(props) {
     };
 
     useEffect(() => {
-        if (!isUserVhostsUpdated(userVhosts) && initialVhosts && initialVhosts.length > 0) {
+        if (prevRef.gatewayType !== gatewayType) {
+            const config = settings.gatewayConfiguration.filter((t) => t.type === gatewayType)[0];
+            if (initialVhosts && initialVhosts.length > 0) {
+                let i = 0;
+                if (config && !isEditMode) {
+                    const defaultHostnameTemplate = config.defaultHostnameTemplate
+                        ? config.defaultHostnameTemplate : '';
+                    setUserVhosts(initialVhosts.map((vhost) => {
+                        const keyedVhost = vhost;
+                        keyedVhost.key = '' + i++;
+                        keyedVhost.host = defaultHostnameTemplate;
+                        return keyedVhost;
+                    }));
+                } else {
+                    setUserVhosts(initialVhosts.map((vhost) => {
+                        const keyedVhost = vhost;
+                        keyedVhost.key = '' + i++;
+                        return keyedVhost;
+                    }));
+                }
+                setId(i);
+            } else {
+                setId(id + 1);
+                const vhost = defaultVhost;
+                vhost.key = '' + id;
+                if (config && config.defaultHostnameTemplate) {
+                    vhost.host = config.defaultHostnameTemplate;
+                }
+                setUserVhosts([vhost]);
+            }
+            prevRef.gatewayType = gatewayType;
+        } else if (!isUserVhostsUpdated(userVhosts) && initialVhosts && initialVhosts.length > 0) {
             let i = 0;
             setUserVhosts(initialVhosts.map((vhost) => {
                 const keyedVhost = vhost;
@@ -151,7 +185,7 @@ function AddEditVhost(props) {
             }));
             setId(i);
         }
-    }, [initialVhosts]);
+    }, [initialVhosts, gatewayType]);
 
     let vhostCounter = 1;
     return (
