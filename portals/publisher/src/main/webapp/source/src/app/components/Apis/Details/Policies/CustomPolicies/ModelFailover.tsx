@@ -310,6 +310,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                                 />
                             }
                             label=""
+                            sx={{ mr: -1 }}
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
@@ -373,7 +374,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                             <ModelCard
                                 key={index}
                                 modelData={model}
-                                modelList={modelList}
+                                modelList={modelList.filter(m => m !== config.production.targetModel.model)}
                                 endpointList={productionEndpoints}
                                 isWeightApplicable={false}
                                 onUpdate={(updatedModel) => handleFallbackModelUpdate('production', index, updatedModel)}
@@ -405,6 +406,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                                 />
                             }
                             label=""
+                            sx={{ mr: -1 }}
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
@@ -468,7 +470,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                             <ModelCard
                                 key={index}
                                 modelData={model}
-                                modelList={modelList}
+                                modelList={modelList.filter(m => m !== config.sandbox.targetModel.model)}
                                 endpointList={sandboxEndpoints}
                                 isWeightApplicable={false}
                                 onUpdate={(updatedModel) => handleFallbackModelUpdate('sandbox', index, updatedModel)}
