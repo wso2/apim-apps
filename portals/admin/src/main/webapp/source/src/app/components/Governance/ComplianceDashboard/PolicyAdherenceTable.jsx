@@ -126,15 +126,7 @@ export default function PolicyAdherenceTable() {
             options: {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <RouterLink
-                            to={`/governance/policies/${tableMeta.rowData[0]}`}
-                            style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            {value}
-                            <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
-                        </RouterLink>
+                        {value}
                     </Box>
                 ),
                 setCellProps: () => ({
