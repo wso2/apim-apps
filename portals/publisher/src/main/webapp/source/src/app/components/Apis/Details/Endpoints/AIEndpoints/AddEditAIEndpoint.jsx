@@ -833,7 +833,7 @@ const AddEditAIEndpoint = ({
                                 name='deployment-stage'
                                 value={state.deploymentStage}
                                 onChange={handleDeploymentStageChange}
-                                disabled={isEditing || isRestricted(['apim:api_manage'], apiObject)}
+                                disabled={isEditing || isRestricted(['apim:api_create'], apiObject)}
                             >
                                 <FormControlLabel
                                     value={CONSTS.DEPLOYMENT_STAGE.production}
@@ -863,7 +863,7 @@ const AddEditAIEndpoint = ({
                             <Grid item xs={6}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        disabled={isEditing || isRestricted(['apim:api_manage'], apiObject)}
+                                        disabled={isEditing || isRestricted(['apim:api_create'], apiObject)}
                                         label='Endpoint Name'
                                         id='name'
                                         fullWidth
@@ -914,7 +914,7 @@ const AddEditAIEndpoint = ({
                                                         aria-label='TestEndpoint'
                                                         onClick={() => testEndpoint(endpointUrl, apiObject.id)}
                                                         disabled={
-                                                            (isRestricted(['apim:api_manage'], apiObject)) || isUpdating
+                                                            (isRestricted(['apim:api_create'], apiObject)) || isUpdating
                                                         }
                                                         id='endpoint-test-icon-btn'
                                                         size='large'>
@@ -1033,7 +1033,7 @@ const AddEditAIEndpoint = ({
                                 type='submit'
                                 onClick={formSave}
                                 disabled={
-                                    isRestricted(['apim:api_manage'], apiObject)
+                                    isRestricted(['apim:api_create'], apiObject)
                                     || formHasErrors(validating)
                                     || apiObject.isRevision
                                 }
