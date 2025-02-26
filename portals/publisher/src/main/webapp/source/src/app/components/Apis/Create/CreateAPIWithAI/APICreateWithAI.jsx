@@ -444,6 +444,8 @@ const ApiCreateWithAI = () => {
                         sessionId={sessionId}
                         loading={loading}
                         taskStatus={taskStatus}
+                        spec={finalOutcomeCode}
+                        apiType={apiType}
                     />
                 </Box>
             </Stack>
