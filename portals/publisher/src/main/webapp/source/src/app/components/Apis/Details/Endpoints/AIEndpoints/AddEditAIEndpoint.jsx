@@ -346,9 +346,10 @@ const AddEditAIEndpoint = ({
             return true;
         }
 
-        const isDuplicate = endpoints.some(endpoint =>
-            endpoint.name === name && (!isEditing || endpoint.id !== endpointId)
-        );
+        const isDuplicate = Array.isArray(endpoints) && endpoints.length > 0
+            ? endpoints.some(endpoint =>
+                endpoint.name === name && (!isEditing || endpoint.id !== endpointId)
+            ) : false;
 
         return isDuplicate;
     };
