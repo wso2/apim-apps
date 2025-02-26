@@ -168,7 +168,7 @@ export default function Summary() {
                                         }, { count: apiCompliance.notApplicableArtifacts })
                                     }
                                 ]}
-                                colors={['#2E96FF', '#FF5252', '#FFC107', 'grey']}
+                                colors={['#00B81D', '#FF5252', '#FFC107', 'grey']}
                             />
                         </CardContent>
                     </Card>

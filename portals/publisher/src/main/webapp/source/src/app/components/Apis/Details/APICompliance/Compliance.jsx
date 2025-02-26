@@ -242,7 +242,7 @@ export default function Compliance() {
                                 />
                             </Typography>
                             <DonutChart
-                                colors={['#2E96FF', '#FF5252', 'grey']}
+                                colors={['#00B81D', '#FF5252', 'grey']}
                                 data={[
                                     {
                                         id: 0,
