@@ -60,8 +60,6 @@ const classes = {
     root: `${PREFIX}-root`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     titleLink: `${PREFIX}-titleLink`,
-    contentWrapper: `${PREFIX}-contentWrapper`,
-    mainTitle: `${PREFIX}-mainTitle`,
     FormControl: `${PREFIX}-FormControl`,
     FormControlOdd: `${PREFIX}-FormControlOdd`,
     FormControlLabel: `${PREFIX}-FormControlLabel`,
@@ -71,7 +69,6 @@ const classes = {
     extraPadding: `${PREFIX}-extraPadding`,
     actionButtonSection: `${PREFIX}-actionButtonSection`,
     titleGrid: `${PREFIX}-titleGrid`,
-    descriptionForm: `${PREFIX}-descriptionForm`,
     progress: `${PREFIX}-progress`,
     endpointCardWrapper: `${PREFIX}-endpointCardWrapper`,
     textField: `${PREFIX}-textField`,
@@ -104,14 +101,6 @@ const StyledGrid = styled(Grid)((
     [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
         marginRight: theme.spacing(1),
-    },
-
-    [`& .${classes.contentWrapper}`]: {
-        maxWidth: theme.custom.contentAreaWidth,
-    },
-
-    [`& .${classes.mainTitle}`]: {
-        paddingLeft: 0,
     },
 
     [`& .${classes.FormControl}`]: {
@@ -159,10 +148,6 @@ const StyledGrid = styled(Grid)((
             padding: 0,
             margin: 0,
         },
-    },
-
-    [`& .${classes.descriptionForm}`]: {
-        marginTop: theme.spacing(1),
     },
 
     [`& .${classes.progress}`]: {
