@@ -43,7 +43,19 @@ function DeletePolicy({ updateList, dataRow }) {
                 />
             ))
             .catch((error) => {
-                throw new Error(error.response.body.description);
+                const { response, message } = error;
+                if (response && response.body) {
+                    Alert.error(response.body.description);
+                } else if (message) {
+                    Alert.error(message);
+                } else {
+                    Alert.error(
+                        intl.formatMessage({
+                            id: 'AdminPages.Governance.Policy.Delete.form.delete.error',
+                            defaultMessage: 'Something went wrong while deleting the Policy',
+                        })
+                    );
+                }
             })
             .finally(() => {
                 updateList();
