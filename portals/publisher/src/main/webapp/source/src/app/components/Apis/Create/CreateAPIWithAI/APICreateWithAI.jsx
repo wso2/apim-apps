@@ -299,108 +299,139 @@ const ApiCreateWithAI = () => {
 
                     
                 }}>
-                <Stack
-                    direction="row"
-                    sx={{ width: '100%', height: '100%' }}
-                >
-                    <Box 
-                        sx={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            paddingTop:'10px',
-                            paddingBottom:'10px',
-                            marginLeft: '20px',
-                            borderLeft: '1px solid #dee0e8',
-                            borderBottom: '1px solid #dee0e8',
-                            borderTop: '1px solid #dee0e8',
-                            borderRight: '1px solid #dee0e8',
-                            minwidth:'50%'
-                        }}
+                    <Stack
+                        direction='row'
+                        sx={{ width: '100%', height: '100%', overflow: 'auto' }}
                     >
-                        <Stack direction='column' sx={{ width: '100%', height: '100%'}}>
-                            {!lastQuery && (
-                                <Box>
-                                    <WelcomeMessage/>
-                                    <Stack 
-                                        direction='row' 
-                                        spacing={7} 
-                                        justifyContent='center'
-                                        marginTop= '40px'
-                                    >
-                                        <SampleQueryCard 
-                                            onExecuteClick={handleExecuteSampleQuery} 
-                                            queryHeading='Create a REST API' 
-                                            queryData='Create an API for a banking transaction' 
-                                            sx={{ textAlign: 'left' }} 
-                                        />
-                                        <SampleQueryCard 
-                                            onExecuteClick={handleExecuteSampleQuery} 
-                                            queryHeading='Create a SSE API' 
-                                            queryData='Create an API for live sports scores' 
-                                            sx={{ textAlign: 'left' }} 
+                        <Box 
+                            sx={{
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                paddingTop:'10px',
+                                paddingBottom:'10px',
+                                marginLeft: '20px',
+                                borderLeft: '1px solid #dee0e8',
+                                borderBottom: '1px solid #dee0e8',
+                                borderTop: '1px solid #dee0e8',
+                                borderRight: '1px solid #dee0e8',
+                                minwidth:'50%'
+                            }}
+                        >
+                            <Stack direction='column' sx={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
+                                {!lastQuery && (
+                                    <Box>
+                                        <WelcomeMessage/>
+                                        <Stack 
+                                            direction='row' 
+                                            spacing={7} 
+                                            justifyContent='center'
+                                            marginTop= '40px'
+                                        >
+                                            <SampleQueryCard 
+                                                onExecuteClick={handleExecuteSampleQuery} 
+                                                queryHeading='Create a REST API' 
+                                                queryData='Create an API for a banking transaction' 
+                                                sx={{ textAlign: 'left' }} 
                                             />
-                                    </Stack>
-                                </Box>
-                            )}
-                            <Box ref={chatContainerRef} sx={{ flexGrow: 1, textAlign: 'left', overflowY: 'auto', overflowX: 'auto', scrollBehavior: 'smooth' }}>
-                                {(lastQuery || finalOutcome) && (
-                                    <ApiChatResponse 
-                                        messages={messages} 
-                                        onTitlesSelected={handleSelectedTitles}
-                                        taskStatus={taskStatus}
-                                    />
+                                            <SampleQueryCard 
+                                                onExecuteClick={handleExecuteSampleQuery} 
+                                                queryHeading='Create a SSE API' 
+                                                queryData='Create an API for live sports scores' 
+                                                sx={{ textAlign: 'left' }} 
+                                                />
+                                        </Stack>
+                                    </Box>
                                 )}
-                                {loading && <LoadingDots />}
-                            </Box>
-                            <Box>
-                                <ApiChatExecute
-                                    lastQuery={lastQuery}
-                                    inputQuery={inputQuery}
-                                    handleExecute={handleExecute}
-                                    handleQueryChange={handleQueryChange}
-                                    paths={paths} 
-                                    loading={loading}
-                                />
-                            </Box>
+                                <Box 
+                                    ref={chatContainerRef} 
+                                    sx={{ 
+                                        flexGrow: 1, 
+                                        textAlign: 'left', 
+                                        overflowY: 'auto', 
+                                        overflowX: 'auto', 
+                                        scrollBehavior: 'smooth' }}
+                                >
+                                    {(lastQuery || finalOutcome) && (
+                                        <ApiChatResponse 
+                                            messages={messages} 
+                                            onTitlesSelected={handleSelectedTitles}
+                                            taskStatus={taskStatus}
+                                        />
+                                    )}
+                                    {loading && <LoadingDots />}
+                                </Box>
+                                <Box>
+                                    <Box display='flex' alignItems='center' flexDirection='column' marginTop={1} marginBottom={2}>
+                                        {/* Handle prepare call failed scenario */}
+                                        {specEnrichmentError && specEnrichmentErrorLevel && (
+                                            <Alert severity={specEnrichmentErrorLevel}>
+                                                <Typography variant='body1'>
+                                                    {specEnrichmentError}
+                                                </Typography>
+                                            </Alert>
+                                        )}
+                                        {/* Handle auth token not provided scenario */}
+                                        {settings && !settings?.aiAuthTokenProvided && (
+                                            <Alert severity='warning'>
+                                                <Typography variant='body1'>
+                                                    {authTokenNotProvidedWarning}
+                                                </Typography>
+                                            </Alert>
+                                        )}
+                                    </Box>
+                                    <Box>
+                                        <ApiChatExecute
+                                            lastQuery={lastQuery}
+                                            inputQuery={inputQuery}
+                                            handleExecute={handleExecute}
+                                            handleQueryChange={handleQueryChange}
+                                            paths={paths} 
+                                            loading={loading}
+                                        />
+                                    </Box>
+                                </Box>
+                                
+                            </Stack>
+                        </Box>
+                        <Box 
+                            sx={{
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                textAlign: 'left',
+                                borderLeft: '1px solid #dee0e8',
+                                borderRight: '1px solid #dee0e8',
+                                borderBottom: '1px solid #dee0e8',
+                                borderTop: '1px solid #dee0e8',
+                                paddingLeft: '10px',
+                                paddingRight: '10px',
+                                backgroundColor: '#fff',
+                                marginRight: '20px',
+                                minwidth:'50%',
+                                overflowY: 'auto',
+                                overflowX: 'hidden'
 
-                        </Stack>
-                    </Box>
-                    <Box 
-                        sx={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            textAlign: 'left',
-                            borderLeft: '1px solid #dee0e8',
-                            borderRight: '1px solid #dee0e8',
-                            borderBottom: '1px solid #dee0e8',
-                            borderTop: '1px solid #dee0e8',
-                            paddingLeft: '10px',
-                            paddingRight: '10px',
-                            backgroundColor: '#fff',
-                            marginRight: '20px',
-                            minwidth:'50%'
-                        }}
-                    >
-                        {lastRenderedComponent}
-                    </Box>
-                 </Stack>
-                       
+
+                            }}
+                        >
+                            {lastRenderedComponent}
+                        </Box>
+                    </Stack>
                 </Box>
-                <Box sx={{ 
-                            display: 'flex',
-                            backgroundColor: '#fff',
-                            flex: 1,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            padding:'10px 20px',
-                        }}
+                <Box
+                    sx={{ 
+                        display: 'flex',
+                        flex: 1,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        padding:'10px 20px',
+                    }}
                 >
-                 <Button
+                    <Button
                         size='small'
                         variant='outlined'
                         color='primary'
@@ -413,8 +444,6 @@ const ApiCreateWithAI = () => {
                         sessionId={sessionId}
                         loading={loading}
                         taskStatus={taskStatus}
-                        spec={finalOutcomeCode}
-                        apiType={apiType}
                     />
                 </Box>
             </Stack>
