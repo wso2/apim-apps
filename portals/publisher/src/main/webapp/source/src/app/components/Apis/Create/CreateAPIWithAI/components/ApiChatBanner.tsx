@@ -91,12 +91,12 @@ const ApiChatBanner: React.FC = () => {
                     <img
                         alt='API Design Assistant'
                         src={`${app.context}/site/public/images/ai/APIchatassistantImageWithColour.svg`}
-                        style={{ width: '300px', height: 'auto' }}
+                        style={{ width: '200px', height: 'auto' }}
                     />
                 </Box>
                 <Box className={classes.tryAiBannerContentWrap}>
                     <Typography sx={{ fontSize: '1.0rem', fontWeight: 'bold' }}>
-                        Turn Your Ideas Into Reality in Minutes with Our Assistant!
+                        Turn your ideas into reality in minutes with our Assistant!
                     </Typography>
                 </Box>
             </Stack>

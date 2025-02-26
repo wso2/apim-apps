@@ -23,6 +23,7 @@ import Send from '@mui/icons-material/SendOutlined';
 import { styled } from '@mui/system';
 import TextInput from './TextInput/TextInput';
 import { createPortal } from 'react-dom';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 const PREFIX = 'ApiChatExecute';
 
@@ -164,6 +165,9 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
     } | null>(null);
     const [mentionIndex, setMentionIndex] = useState<number>(0);
     const [dynamicCharacters, setDynamicCharacters] = useState<string[]>([]);
+    const { data: settings }: any = usePublisherSettings();
+    const aiAuthTokenProvided = settings?.aiAuthTokenProvided;
+    const designAssistantEnabled = settings?.designAssistantEnabled;
 
     useEffect(() => {
         const transformedPaths = paths.map(path => 
@@ -281,6 +285,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                             onKeyDown={handleKeyDown}
                             testId='nl-query-input'
                             multiline
+                            disabled={(designAssistantEnabled && !aiAuthTokenProvided)||!designAssistantEnabled}
                             sx={{
                                 '& .TextInput-textarea': {
                                     resize: 'none',
@@ -299,9 +304,9 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                                     color='primary'
                                     onClick={handleExecute}
                                     id='run-agent-button'
-                                    startIcon={<ExecuteQuery />}
                                     disabled={loading}
                                 >
+                                <ExecuteQuery />
                                 </Button>
                             )}
                             inputProps={{

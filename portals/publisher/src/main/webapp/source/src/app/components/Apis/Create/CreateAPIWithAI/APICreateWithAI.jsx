@@ -1,4 +1,4 @@
-/* eslint-disable */
+/*eslint-disable*/
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import { Typography } from '@mui/material';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
 import ApiChatResponse from './components/ApiChatResponse';
@@ -30,6 +31,10 @@ import WelcomeMessage from './components/WelcomeMessage';
 import LoadingDots from './components/LoadingDots';
 import { useHistory } from 'react-router-dom';
 import API from 'AppData/api';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { FormattedMessage } from 'react-intl';
+import LaunchIcon from '@mui/icons-material/Launch';
+import Alert from '@mui/material/Alert';
 
 /**
  * Renders the Create API with AI UI.
@@ -54,9 +59,11 @@ const ApiCreateWithAI = () => {
     const [missingValues, setMissingValues] = useState('');
     const history = useHistory();
     const [lastRenderedComponent, setLastRenderedComponent] = useState(<ApiChatBanner />);
+    const { data: settings } = usePublisherSettings();
+    const [specEnrichmentError, setSpecEnrichmentError] = useState('');
+    const [specEnrichmentErrorLevel, setSpecEnrichmentErrorLevel] = useState('');
 
     const chatContainerRef = useRef(null);
-
     useEffect(() => {
         if (chatContainerRef.current) {
             const element = chatContainerRef.current;
@@ -127,6 +134,30 @@ const ApiCreateWithAI = () => {
     const generateSessionId = () => {
         return `${Date.now()}`;
     };
+
+    const authTokenNotProvidedWarning = (
+        <FormattedMessage
+            id='Apis.Details.ApiChat.warning.authTokenMissing'
+            defaultMessage={'You must provide a token to start using API Design Assistant. To obtain one, '
+                + 'follow the steps provided under {apiAiChatDocLink} '}
+            values={{
+                apiAiChatDocLink: (
+                    <a
+                        id='api-chat-doc-link'
+                        href='https://apim.docs.wso2.com/en/4.5.0/design/create-api/create-api-with-ai/'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                    >
+                        Create APIs with AI
+                        <LaunchIcon
+                            style={{ marginLeft: '2px' }}
+                            fontSize='small'
+                        />
+                    </a>
+                ),
+            }}
+        />
+    );
 
     const handleSelectedTitles = (titles) => { 
         const titlesString = "Modify this API to include the following features as well:\n" + 
@@ -209,14 +240,37 @@ const ApiCreateWithAI = () => {
 
         } catch (error) {
             console.error('Error:', error);
-            setFinalOutcome('An error occurred while fetching the data.');
+
+            let content;
+            try {
+                switch (error.response.status) {
+                    case 401: // Unauthorized
+                        content = 'Apologies for the inconvenience. It appears that your token is invalid or expired. Please'
+                        + ' provide a valid token or upgrade your subscription plan.';
+                        break;
+                    case 429: // Token limit exceeded
+                        content = 'Apologies for the inconvenience. It appears that the token limit has been exceeded.';
+                        break;
+                    case 504: //Handle gateway timeout scenario
+                        content = 'Apologies for the inconvenience. The request has timed out. Please try again later.';
+                        break;
+                    default:
+                        content = 'Apologies for the inconvenience. It seems that something went wrong with the'
+                        + ' API Design Assistant Assistant. Please try again.';
+                        break;
+                }
+
+            } catch (err) {
+                content = 'Apologies for the inconvenience. It seems that something went wrong with the'
+                + ' API Design Assistant. Please try again.';
+            }
 
             setMessages((prevMessages) => [
                 ...prevMessages,
-                { role: 'system', content: 'It is taking longer than expected. Please try again.', isSuggestions: false }
+                { role: 'system', content: content, isSuggestions: false }
             ]);
 
-            setTaskStatus('ERROR');
+            throw error;
         } finally {
             setLoading(false);
         }
@@ -232,14 +286,18 @@ const ApiCreateWithAI = () => {
     
     return (
         <div>
-            <Stack direction='column' sx={{ width: '100%', height: 'calc(100vh - 99px)', minHeight: 'calc(100vh - 99px)' }}>
+            <Stack 
+                direction='column' 
+                sx={{ width: '100%', height: 'calc(100vh - 99px)', minHeight: 'calc(100vh - 99px)' }}>
                 <Box sx={{
                     display: 'flex',
                     flex: 9,
                     flexDirection: 'row',
                     paddingTop:'10px',
                     marginTop:'10px',
-                    overflow: 'hidden',
+                    overflow: 'auto',
+
+                    
                 }}>
                 <Stack
                     direction="row"
@@ -305,7 +363,7 @@ const ApiCreateWithAI = () => {
                                     loading={loading}
                                 />
                             </Box>
-                            
+
                         </Stack>
                     </Box>
                     <Box 
@@ -330,6 +388,7 @@ const ApiCreateWithAI = () => {
                         {lastRenderedComponent}
                     </Box>
                  </Stack>
+                       
                 </Box>
                 <Box sx={{ 
                             display: 'flex',
@@ -341,7 +400,7 @@ const ApiCreateWithAI = () => {
                             padding:'10px 20px',
                         }}
                 >
-                    <Button
+                 <Button
                         size='small'
                         variant='outlined'
                         color='primary'

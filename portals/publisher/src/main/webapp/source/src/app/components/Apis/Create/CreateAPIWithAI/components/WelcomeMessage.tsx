@@ -17,20 +17,33 @@
  */
 import Typography from '@mui/material/Typography';
 import Stack from '@mui/material/Stack';
+import Chip from '@mui/material/Chip';
+import Box from '@mui/material/Box';
 
 const WelcomeMessage = () => {    
     return (
       <Stack spacing={2} sx={{ alignItems: 'center', textAlign: 'center' }}>
-            <Typography sx={{ color: '#212020', fontWeight: 'bold', fontSize: '2rem', marginTop: '70px', paddingTop: '70px' }}>
-            Welcome to the
-
-            <Typography component="span" sx={{ color: '#004d99', fontWeight: 'bold', fontSize: '2rem' }}>
-                {' API Design Assistant!'}
-            </Typography>
-            </Typography>
+          <Box display='flex'>
+              <Typography sx={{ color: '#212020', fontWeight: 'bold', fontSize: '2rem', marginTop: '20px', paddingTop: '10px'}}>
+              Welcome to the
+                <Typography component="span" sx={{ color: '#004d99', fontWeight: 'bold', fontSize: '2rem' }}>
+                    {' API Design Assistant!'}
+                </Typography>
+                <Chip
+                    label='Experimental'
+                    variant='outlined'
+                    size='small'
+                    color='primary'
+                    sx={{
+                      ml: 1,
+                      mb:'40px',
+                    }}
+                />
+              </Typography>
+          </Box>
     
             <Typography sx={{ whiteSpace: 'pre-line', fontSize: '1.0rem'  }}>
-                        Provide API details or choose a template below to get started!
+                        Provide API details or choose a template to get started!
             </Typography>
       </Stack>
     );
