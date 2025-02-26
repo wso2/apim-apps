@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -17,169 +16,217 @@
  * under the License.
  */
 import * as React from 'react';
-import Button from '@mui/material/Button';
-import Dialog from '@mui/material/Dialog';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import DialogTitle from '@mui/material/DialogTitle';
-import CreateAPISuccessDialog from './CreateAPISuccessDialog';
-import LinearProgress from '@mui/material/LinearProgress';
+import { Button, CircularProgress} from '@mui/material';
+import { useHistory } from 'react-router-dom';
+import { useIntl } from 'react-intl';
+import Alert from 'AppComponents/Shared/Alert';
+import YAML from 'js-yaml';
 import API from 'AppData/api';
 
 interface AlertDialogProps {
-  sessionId: string;
+  loading?: boolean;
+  taskStatus: string;
+  spec: string;
+  apiType: string;
 }
 
-const AlertDialog: React.FC<AlertDialogProps> = ({ sessionId }) => {
-  const [open, setOpen] = React.useState(false);
+const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, spec, apiType}) => {
   const [showProgress, setShowProgress] = React.useState(false);
-  const [successDialogOpen, setSuccessDialogOpen] = React.useState(false);
-  const [dialogTitle, setDialogTitle] = React.useState('');
-  const [dialogContentText, setDialogContentText] = React.useState('');
-  const [firstDialogAction, setFirstDialogAction] = React.useState('');
-  const [secondDialogAction, setSecondDialogAction] = React.useState('');
+  const intl = useIntl();
+  const history = useHistory();
 
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
-  };
-    
-  async function genPayload(sessionId: any) { 
-      try {
-          const genPayloadDesignAssistant = new API();
-          const response = await genPayloadDesignAssistant.payloadGenAPIDesignAssistant(sessionId);
-          if (!response || typeof response !== 'object') {
-              throw new Error("Invalid response received from API.");
-          }
-          return response;
-      } catch (error) {
-          console.error("Error in sendQuery:", error);
-          throw error;
-      }
-  }
-
-  function createAPI(data: any) {
-    const apiData = {
-      ...data
+    /**
+   * Method to handle error scenarios
+   * 
+   * @param messageId messageId
+   * @param defaultMessage defaultMessage
+   */
+    const handleError = (messageId: string, defaultMessage: string) => {
+      Alert.error(intl.formatMessage({ id: messageId, defaultMessage }));
+      throw new Error(defaultMessage);
     };
-    const newAPI = new API(apiData);
-    const promisedCreatedAPI = newAPI
-        .saveAPIDesignAssistant()
-    return promisedCreatedAPI.then((response:any) => {
-         console.log(response.body)
-    });
+
+  /**
+   * Validate the provided GraphQL schema as a file
+   * 
+   * @param definition API definition for graphql API returned from LLM
+   * @returns validation response object
+   */
+  async function validateGraphQLSchema(definition: any) { 
+    try {
+      const response = await API.validateGraphQLFile(definition);
+      if (response != null) {
+        return response.obj;
+      }
+      throw new Error("Invalid response received while validating GraphQL schema");
+    } catch (error) {
+        console.error("Error validating the GraphQL schema: ", error);
+        throw error;
+    }
   }
 
-  const handleCreate = async () => {
-    handleClose();
-    setShowProgress(true);
-  
+  /**
+   * Validate the provided OpenAPI definition as a file
+   * 
+   * @param definition API definition for REST API returned from LLM
+   * @returns validation response object
+   */
+  async function validateOpenAPIDefinition(definition: any) { 
     try {
-      const payloadResponse = await genPayload(sessionId);
-      const { generatedPayload } = payloadResponse;
-      const parsedPayload = JSON.parse(generatedPayload);
+      const response = await API.validateOpenAPIByFile(definition);
+      if (response != null) {
+        return response.obj;
+      }
+      throw new Error("Invalid response received while validating OpenAPI definition");
+    } catch (error) {
+        console.error("Error validating the OpenAPI definition: ", error);
+        throw error;
+    }
+  }
+
+  /**
+   * Validate the provided AsyncAPI definition as a file
+   * 
+   * @param definition API definition for AsyncAPI returned from LLM
+   * @returns validation response object
+   */
+  async function validateAsyncAPIDefinition(definition: any) { 
+    try {
+      const response = await API.validateAsyncAPIByFile(definition);
+      if (response != null) {
+        return response.obj;
+      }
+      throw new Error("Invalid response received while validating AsyncAPI definition");
+    } catch (error) {
+        console.error("Error validating the AsyncAPI definition: ", error);
+        throw error;
+    }
+  }
+
+  /**
+   * Method used to create a file object of the API definitions
+   * 
+   * @param spec The API spec
+   * @param type The content type
+   * @returns 
+   */
+  const createBlobAndFile = (spec: string, type: string) => {
+    const blob = new Blob([spec], { type });
+    return new File([blob], `apiDefinition.${type === 'text/plain' ? 'graphql' : 'yaml'}`, { type: `${type};charset=utf-8` });
+  };
+
+  /**
+   * Handles redirecting the user to create an API
+   * @returns if an error occurs
+   */
+  const handleCreate = async () => {
+    setShowProgress(true);
+
+    try {
       
-      createAPI(parsedPayload);
+      const endpointValue = (apiType === 'WebSocket' ? 'ws://localhost:9099' : 'http://localhost:8080');
+      let apiName = (apiType === 'REST' ? 'Banking Transaction API' : 'Live Streaming API');
+      let apiVersion = '1.0.0';
+      let apiContext = '/apiContext';
+
+      interface Info {
+        title: string;
+        version: string;
+      }
+      
+      interface ParsedYAML {
+        info: Info;
+      }
+
+      const createData = (type: string, file: File, graphQLInfo?: any) => ({
+        name: apiName,
+        version: apiVersion,
+        context: apiContext,
+        gatewayType: 'wso2/synapse',
+        gatewayVendor: 'wso2',
+        endpoint: endpointValue,
+        protocol: type,
+        asyncTransportProtocols: type,
+        source: 'DesignAssistant',
+        file,
+        graphQLInfo
+      });
+
+      let validationResponse: any;
+      let definition: File;
+      let graphQLInfo: any;
+  
+      if (apiType === 'REST') {
+        const jsonContent: ParsedYAML = YAML.load(spec) as ParsedYAML;
+
+        if (jsonContent && jsonContent.info) {
+          apiName = jsonContent.info.title? jsonContent.info.title : apiName;
+          apiVersion = jsonContent.info.version? jsonContent.info.version : apiVersion;
+          apiContext = apiName ? ('/' + apiName.replace(/[&/\\#,+()$~%.'":*?<>{}\s]/g, '')) : apiContext;
+        }
+
+        definition = createBlobAndFile(spec, 'text/yaml');
+        validationResponse = await validateOpenAPIDefinition(definition);
+  
+        if (!validationResponse?.isValid) {
+          handleError('CreateAPIWithAI.components.AlertDialog.error.create.http.API', 'The provided OpenAPI definition is invalid. Please try again.');
+        }
+        const data = createData(apiType, definition);
+        history.push('/apis/create/openapi', data);
+      } else if (['SSE', 'WebSocket', 'WebSub'].includes(apiType)) {
+        const jsonContent: ParsedYAML = YAML.load(spec) as ParsedYAML;
+
+        if (jsonContent && jsonContent.info) {
+          apiName = jsonContent.info.title? jsonContent.info.title : apiName;
+          apiVersion = jsonContent.info.version? jsonContent.info.version : apiVersion;
+          apiContext = apiName ? ('/' + apiName.replace(/[&/\\#,+()$~%.'":*?<>{}\s]/g, '')) : apiContext;
+        }
+
+        definition = createBlobAndFile(spec, 'text/yaml');
+        validationResponse = await validateAsyncAPIDefinition(definition);
+  
+        if (!validationResponse?.isValid) {
+          handleError('CreateAPIWithAI.components.AlertDialog.error.create.async.API', 'The provided AsyncAPI definition is invalid. Please try again.');
+        }
+        const data = createData(apiType, definition);
+        history.push('/apis/create/asyncapi', data);
+      } else if (apiType === 'GraphQL') {
+        definition = createBlobAndFile(spec, 'text/plain');
+        validationResponse = await validateGraphQLSchema(definition);
+        apiName = 'GraphQLAPI';
+        apiContext = '/graphqlapi';
+        if (validationResponse?.isValid) {
+          graphQLInfo = validationResponse.graphQLInfo;
+          const data = createData(apiType, definition, graphQLInfo);
+          history.push('/apis/create/graphQL', data);
+        } else {
+          handleError('CreateAPIWithAI.components.AlertDialog.error.create.graphql.API', 'The provided GraphQL schema is invalid. Please try again.');
+        }
+      } 
       setShowProgress(false);
-      
-      setDialogTitle('API Creation Successful!');
-      setDialogContentText('API created successfully in the Publisher Portal!');
-      setFirstDialogAction('CLOSE');
-      setSecondDialogAction('VIEW API');
-
-      setSuccessDialogOpen(true);
-
     } catch (error) {
       setShowProgress(false);
-
-      setDialogTitle('API Creation Unsuccessful');
-      setDialogContentText('API creation was unsuccessful. Please try again.');
-      setFirstDialogAction('');
-      setSecondDialogAction('CLOSE');
-
-      setSuccessDialogOpen(true);
-
       console.error('Error during API creation:', error);
+      Alert.error(intl.formatMessage({ id: 'CreateAPIWithAI.components.AlertDialog.error.create.API', defaultMessage: 'Error Creating API' }));
+      throw error;
     }
   };
 
   return (
     <React.Fragment>
       <Button
-        variant="outlined"
-        onClick={handleClickOpen}
-        sx={{ backgroundColor: '#FFF' }}
+        variant="contained"
+        onClick={handleCreate}
+        sx={{ marginRight: '10px', minWidth: '120px',  height: '35px', display: 'flex', gap:1, alignItems: 'center'}}  
+        disabled={loading || taskStatus == ''}
       >
-        Create API
+        {intl.formatMessage({
+          id: 'Apis.Create.Default.APICreateDefault.create.btn',
+          defaultMessage: 'Create API'
+        })}
+        {' '}
+        {showProgress &&  <CircularProgress size={16} color='inherit'/> }
       </Button>
-      
-      <Dialog
-        open={open}
-        onClose={handleClose}
-        aria-labelledby="alert-dialog-title"
-        aria-describedby="alert-dialog-description"
-      >
-        <DialogTitle id="alert-dialog-title">
-          {"Create API"}
-        </DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-description">
-            Confirm creation of API in the Publisher Portal.
-          </DialogContentText>
-        </DialogContent>
-
-        <DialogActions>
-          <Button onClick={handleClose}>
-            CANCEL
-          </Button>
-          <Button
-            onClick={handleCreate}
-            sx={{
-              border: '1px solid #1C7EA7'
-            }}
-            autoFocus
-          >
-            CREATE
-          </Button>
-        </DialogActions>
-      </Dialog>
-
-      {showProgress && (
-        <Dialog 
-          open={showProgress} 
-          aria-labelledby="progress-dialog-title" 
-          sx={{ 
-            '.MuiDialog-paper': { 
-              padding: '33px 55px',
-            } 
-          }}
-        >
-          <DialogTitle id="progress-dialog-title" sx={{ textAlign: 'center' }}>
-            API Creation in Progress
-          </DialogTitle>
-          <DialogContent>
-            <LinearProgress
-              sx={{ 
-                width: '100%',
-                height: '6px'
-              }} 
-            />
-          </DialogContent>
-        </Dialog>
-      )}
-
-      <CreateAPISuccessDialog
-        dialogTitle={dialogTitle}
-        dialogContentText={dialogContentText}
-        firstDialogAction={firstDialogAction}
-        secondDialogAction={secondDialogAction}
-        open={successDialogOpen}
-        onClose={() => setSuccessDialogOpen(false)}
-      />
     </React.Fragment>
   );
 };

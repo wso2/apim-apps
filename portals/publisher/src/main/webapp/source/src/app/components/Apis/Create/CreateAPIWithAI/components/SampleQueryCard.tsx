@@ -42,12 +42,7 @@ const Root = styled('div')(({ theme }) => ({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-    },
-    [`& .${classes.sampleQueryCard}`]: {
-        '&:hover': {
-            backgroundColor: 'transparent',
-            border: `1px solid ${alpha(theme.palette.primary.main, 0.5)}`,
-        },
+        width: '250px',
     },
 }));
 
@@ -120,7 +115,7 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
                                 >
                                     {intl.formatMessage({
                                         id: 'Apis.Details.ApiChat.components.SampleQueryCard.executeButton',
-                                        defaultMessage: 'EXECUTE',
+                                        defaultMessage: 'Try It',
                                     })}
                                 </Button>
                             </Box>
