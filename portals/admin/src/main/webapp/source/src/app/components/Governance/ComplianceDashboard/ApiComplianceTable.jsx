@@ -18,16 +18,16 @@
  */
 
 import React from 'react';
-import { Box, Chip, Typography, TableRow, TableCell, LinearProgress } from '@mui/material';
+import { Box, Chip, Typography, Tooltip, LinearProgress } from '@mui/material';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Link as RouterLink } from 'react-router-dom';
-import Stack from '@mui/material/Stack';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import CancelIcon from '@mui/icons-material/Cancel';
+import ErrorIcon from '@mui/icons-material/Error';
+import WarningIcon from '@mui/icons-material/Warning';
+import InfoIcon from '@mui/icons-material/Info';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
-import PolicyIcon from '@mui/icons-material/Policy';
+import ApiIcon from '@mui/icons-material/Api';
 import Utils from 'AppData/Utils';
 
 /**
@@ -37,46 +37,37 @@ import Utils from 'AppData/Utils';
 function apiCall() {
     const restApi = new GovernanceAPI();
     return restApi
-        .getPolicyAdherenceForAllPolicies()
+        .getComplianceStatusListOfAPIs()
         .then((result) => {
-            const policies = result.body.list;
-
-            // Fetch policy adherence details for each policy
-            // TODO: optimize
-            return Promise.all(
-                policies.map(async (policy) => {
-                    try {
-                        const adherenceDetails = await restApi.getPolicyAdherenceByPolicyId(policy.id);
-                        return {
-                            ...policy,
-                            evaluatedArtifacts: adherenceDetails.body.evaluatedArtifacts || []
-                        };
-                    } catch (error) {
-                        console.error(`Error fetching adherence for policy ${policy.id}:`, error);
-                        return {
-                            ...policy,
-                            evaluatedArtifacts: []
-                        };
-                    }
-                })
-            );
+            return result.body.list;
         })
         .catch((error) => {
             throw error;
         });
 }
 
-export default function PolicyAdherenceTable() {
+
+export default function ApiComplianceTable() {
     const intl = useIntl();
 
-    // TODO: reuse this function in other components
     const renderProgress = (followed, total, status) => {
-        if (status === 'UNAPPLIED') {
+        if (status === 'PENDING') {
             return (
                 <Typography variant="body2" color="textSecondary">
                     {intl.formatMessage({
-                        id: 'Governance.Overview.PolicyAdherence.no.apis',
-                        defaultMessage: 'N/A - No APIs to evaluate',
+                        id: 'Governance.ComplianceDashboard.APICompliance.pending',
+                        defaultMessage: 'N/A - Waiting for policy evaluation',
+                    })}
+                </Typography>
+            );
+        }
+
+        if (status === 'NOT_APPLICABLE') {
+            return (
+                <Typography variant="body2" color="textSecondary">
+                    {intl.formatMessage({
+                        id: 'Governance.ComplianceDashboard.APICompliance.no.policies',
+                        defaultMessage: 'N/A - No policies to evaluate',
                     })}
                 </Typography>
             );
@@ -90,8 +81,8 @@ export default function PolicyAdherenceTable() {
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="textSecondary">
                         {intl.formatMessage({
-                            id: 'Governance.Overview.PolicyAdherence.compliant.count',
-                            defaultMessage: '{followed}/{total} Compliant',
+                            id: 'Governance.ComplianceDashboard.APICompliance.followed.count',
+                            defaultMessage: '{followed}/{total} Followed',
                         }, { followed, total })}
                     </Typography>
                 </Box>
@@ -112,35 +103,74 @@ export default function PolicyAdherenceTable() {
         );
     };
 
-    const policyColumProps = [
+    const renderComplianceIcons = (severityBasedRuleViolationSummary) => {
+        // get the error, warn, info counts
+        let errorCount = 0;
+        let warnCount = 0;
+        let infoCount = 0;
+
+        severityBasedRuleViolationSummary.forEach((severity) => {
+            if (severity.severity === 'ERROR') {
+                errorCount = severity.violatedRulesCount;
+            } else if (severity.severity === 'WARN') {
+                warnCount = severity.violatedRulesCount;
+            } else if (severity.severity === 'INFO') {
+                infoCount = severity.violatedRulesCount;
+            }
+        });
+
+        return (
+            <Tooltip title={`Error: ${errorCount || 0}, Warn: ${warnCount || 0}, Info: ${infoCount || 0}`}>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <ErrorIcon color="error" sx={{ fontSize: 16 }} />
+                        <Typography variant="caption" sx={{ ml: 0.5 }}>
+                            {errorCount || 0}
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <WarningIcon color="warning" sx={{ fontSize: 16 }} />
+                        <Typography variant="caption" sx={{ ml: 0.5 }}>
+                            {warnCount || 0}
+                        </Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                        <InfoIcon color="info" sx={{ fontSize: 16 }} />
+                        <Typography variant="caption" sx={{ ml: 0.5 }}>
+                            {infoCount || 0}
+                        </Typography>
+                    </Box>
+                </Box>
+            </Tooltip>
+        );
+    };
+
+    const columProps = [
         {
             name: 'id',
             options: { display: false }
         },
         {
+            name: 'info',
+            options: { display: false }
+        },
+        {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.policy',
-                defaultMessage: 'Policy',
+                id: 'Governance.ComplianceDashboard.APICompliance.column.api',
+                defaultMessage: 'API',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <RouterLink
-                            to={`/governance/policies/${tableMeta.rowData[0]}`}
-                            style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            {value}
+                        <RouterLink to={`/governance/compliance/api/${tableMeta.rowData[0]}`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+                            {tableMeta.rowData[1].name}
                             <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
                         </RouterLink>
                     </Box>
                 ),
                 setCellProps: () => ({
-                    style: {
-                        width: '30%'
-                    },
+                    style: { width: '30%' },
                 }),
                 setCellHeaderProps: () => ({
                     sx: {
@@ -157,20 +187,22 @@ export default function PolicyAdherenceTable() {
         {
             name: 'status',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.status',
+                id: 'Governance.ComplianceDashboard.APICompliance.column.status',
                 defaultMessage: 'Status',
             }),
             options: {
                 customBodyRender: (value) => (
                     <Chip
-                        label={Utils.mapPolicyAdherenceStateToLabel(value)}
-                        color={value === 'FOLLOWED' ? 'success' : value === 'VIOLATED' ? 'error' : 'default'}
+                        label={Utils.mapComplianceStateToLabel(value)}
+                        color={value === 'COMPLIANT' ? 'success' :
+                            value === 'NON_COMPLIANT' ? 'error' :
+                                value === 'PENDING' ? 'warning' : 'default'}
                         size="small"
                         variant="outlined"
                     />
                 ),
                 setCellProps: () => ({
-                    sx: { width: '20%' },
+                    style: { width: '20%' },
                 }),
                 setCellHeaderProps: () => ({
                     sx: {
@@ -185,25 +217,49 @@ export default function PolicyAdherenceTable() {
             },
         },
         {
-            name: 'artifactComplianceSummary',
+            name: 'policyAdherenceSummary',
             options: { display: false }
         },
         {
-            name: 'evaluatedArtifacts',
+            name: 'severityBasedRuleViolationSummary',
             options: { display: false }
         },
         {
-            name: 'progress',
+            name: 'policies',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.apis',
-                defaultMessage: 'APIs',
+                id: 'Governance.ComplianceDashboard.APICompliance.column.policies',
+                defaultMessage: 'Policies',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
-                    const followed = tableMeta.rowData[3]?.compliant || 0;
-                    const total = (tableMeta.rowData[3]?.nonCompliant + followed) || 0;
-                    const status = tableMeta.rowData[2];
+                    const followed = tableMeta.rowData[4]?.followed || 0;
+                    const violated = tableMeta.rowData[4]?.violated || 0;
+                    const total = followed + violated;
+                    const status = tableMeta.rowData[3];
                     return renderProgress(followed, total, status);
+                },
+                setCellProps: () => ({
+                    style: { width: '40%' },
+                }),
+                setCellHeaderProps: () => ({
+                    sx: {
+                        paddingTop: 0,
+                        paddingBottom: 0,
+                        '& .MuiButton-root': {
+                            fontWeight: 'bold',
+                            fontSize: 'small'
+                        },
+                    },
+                }),
+            },
+        },
+        {
+            name: 'compliance',
+            label: ' ',
+            options: {
+                customBodyRender: (value, tableMeta) => {
+                    const severityBasedRuleViolationSummary = tableMeta.rowData[5] || [];
+                    return renderComplianceIcons(severityBasedRuleViolationSummary);
                 },
                 setCellHeaderProps: () => ({
                     sx: {
@@ -219,46 +275,6 @@ export default function PolicyAdherenceTable() {
         },
     ];
 
-    const renderExpandableRow = (rowData) => {
-        return (
-            <TableRow>
-                <TableCell colSpan={3} />
-                <TableCell>
-                    <Stack direction="column" spacing={2} sx={{ flexWrap: 'wrap' }}>
-                        {/* TODO: Find a better way to display all those */}
-                        {rowData[4].map((artifact) => (
-                            <Box
-                                key={artifact.id}
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: 1
-                                }}
-                            >
-                                {artifact.status === 'COMPLIANT' ?
-                                    <CheckCircleIcon color="success" sx={{ fontSize: 16 }} /> :
-                                    <CancelIcon color="error" sx={{ fontSize: 16 }} />
-                                }
-                                <RouterLink
-                                    to={`/governance/overview/api/${artifact.id}`}
-                                    style={{
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        textDecoration: 'none',
-                                        color: 'inherit'
-                                    }}
-                                >
-                                    {artifact.info.name}
-                                    <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
-                                </RouterLink>
-                            </Box>
-                        ))}
-                    </Stack>
-                </TableCell>
-            </TableRow>
-        );
-    };
-
     const emptyStateContent = (
         <Box
             sx={{
@@ -268,7 +284,7 @@ export default function PolicyAdherenceTable() {
                 padding: 3
             }}
         >
-            <PolicyIcon
+            <ApiIcon
                 sx={{
                     fontSize: 60,
                     color: 'action.disabled',
@@ -282,8 +298,8 @@ export default function PolicyAdherenceTable() {
                 sx={{ fontWeight: 'medium' }}
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.PolicyAdherence.empty.content',
-                    defaultMessage: 'No Governance Policies Available',
+                    id: 'Governance.ComplianceDashboard.APICompliance.empty.content',
+                    defaultMessage: 'No APIs Available',
                 })}
             </Typography>
             <Typography
@@ -292,8 +308,8 @@ export default function PolicyAdherenceTable() {
                 align="center"
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.PolicyAdherence.empty.helper',
-                    defaultMessage: 'Create a new governance policy to start governing the APIs.',
+                    id: 'Governance.ComplianceDashboard.APICompliance.empty.helper',
+                    defaultMessage: 'Create APIs to start evaluating their compliance.',
                 })}
             </Typography>
         </Box>
@@ -301,7 +317,7 @@ export default function PolicyAdherenceTable() {
 
     return (
         <ListBase
-            columProps={policyColumProps}
+            columProps={columProps}
             apiCall={apiCall}
             searchProps={false}
             emptyBoxProps={{
@@ -310,10 +326,17 @@ export default function PolicyAdherenceTable() {
             addButtonProps={false}
             showActionColumn={false}
             useContentBase={false}
-            enableCollapsable={true}
-            renderExpandableRow={renderExpandableRow}
             options={{
                 elevation: 0,
+                selectableRows: 'none',
+                customBodyRender: (value) => value,
+                setTableProps: () => ({
+                    style: {
+                        '& .MuiTableCell-root': {
+                            border: 'none'
+                        }
+                    }
+                })
             }}
         />
     );

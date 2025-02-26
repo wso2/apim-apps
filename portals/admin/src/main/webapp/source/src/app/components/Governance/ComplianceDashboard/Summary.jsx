@@ -72,8 +72,8 @@ export default function Summary() {
         <ContentBase
             width='full'
             title={intl.formatMessage({
-                id: 'Governance.Overview.title',
-                defaultMessage: 'Overview',
+                id: 'Governance.Compliance.title',
+                defaultMessage: 'Compliance Dashboard',
             })}
             pageStyle='paperLess'
         >
@@ -86,7 +86,7 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Overview.Summary.policy.adherence',
+                                    id: 'Governance.ComplianceDashboard.Summary.policy.adherence',
                                     defaultMessage: 'Policy Adherence',
                                 })}
                             </Typography>
@@ -96,7 +96,7 @@ export default function Summary() {
                                         id: 0,
                                         value: policyAdherence.followedPolicies,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.policy.followed',
+                                            id: 'Governance.ComplianceDashboard.Summary.policy.followed',
                                             defaultMessage: 'Followed ({count})',
                                         }, { count: policyAdherence.followedPolicies })
                                     },
@@ -104,7 +104,7 @@ export default function Summary() {
                                         id: 1,
                                         value: policyAdherence.violatedPolicies,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.policy.violated',
+                                            id: 'Governance.ComplianceDashboard.Summary.policy.violated',
                                             defaultMessage: 'Violated ({count})',
                                         }, { count: policyAdherence.violatedPolicies })
                                     },
@@ -112,7 +112,7 @@ export default function Summary() {
                                         id: 2,
                                         value: policyAdherence.unAppliedPolicies,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.policy.not.applied',
+                                            id: 'Governance.ComplianceDashboard.Summary.policy.not.applied',
                                             defaultMessage: 'Not Applied ({count})',
                                         }, { count: policyAdherence.unAppliedPolicies })
                                     }
@@ -129,7 +129,7 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Overview.Summary.api.compliance',
+                                    id: 'Governance.ComplianceDashboard.Summary.api.compliance',
                                     defaultMessage: 'API Compliance',
                                 })}
                             </Typography>
@@ -139,7 +139,7 @@ export default function Summary() {
                                         id: 0,
                                         value: apiCompliance.compliantArtifacts,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.api.compliant',
+                                            id: 'Governance.ComplianceDashboard.Summary.api.compliant',
                                             defaultMessage: 'Compliant ({count})',
                                         }, { count: apiCompliance.compliantArtifacts })
                                     },
@@ -147,7 +147,7 @@ export default function Summary() {
                                         id: 1,
                                         value: apiCompliance.nonCompliantArtifacts,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.api.non.compliant',
+                                            id: 'Governance.ComplianceDashboard.Summary.api.non.compliant',
                                             defaultMessage: 'Non-Compliant ({count})',
                                         }, { count: apiCompliance.nonCompliantArtifacts })
                                     },
@@ -155,7 +155,7 @@ export default function Summary() {
                                         id: 2,
                                         value: apiCompliance.pendingArtifacts,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.api.pending',
+                                            id: 'Governance.ComplianceDashboard.Summary.api.pending',
                                             defaultMessage: 'Pending ({count})',
                                         }, { count: apiCompliance.pendingArtifacts })
                                     },
@@ -163,7 +163,7 @@ export default function Summary() {
                                         id: 3,
                                         value: apiCompliance.notApplicableArtifacts,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.api.not.applicable',
+                                            id: 'Governance.ComplianceDashboard.Summary.api.not.applicable',
                                             defaultMessage: 'Not Applicable ({count})',
                                         }, { count: apiCompliance.notApplicableArtifacts })
                                     }
@@ -186,7 +186,7 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Overview.Summary.api.compliance.details',
+                                    id: 'Governance.ComplianceDashboard.Summary.api.compliance.details',
                                     defaultMessage: 'API Compliance Details',
                                 })}
                             </Typography>
@@ -207,7 +207,7 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Overview.Summary.policy.adherence.details',
+                                    id: 'Governance.ComplianceDashboard.Summary.policy.adherence.details',
                                     defaultMessage: 'Policy Adherence Details',
                                 })}
                             </Typography>
