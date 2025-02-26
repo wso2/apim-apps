@@ -185,9 +185,14 @@ function AddEditGWEnvironment(props) {
     }, [permissions]);
 
     useEffect(() => {
-        setGatewayConfiguration(
-            settings.gatewayConfiguration.filter((t) => t.type === gatewayType)[0].configurations,
-        );
+        const config = settings.gatewayConfiguration.filter((t) => t.type === gatewayType)[0];
+        if (gatewayType === 'other') {
+            setGatewayConfiguration([]);
+        } else {
+            setGatewayConfiguration(
+                config.configurations,
+            );
+        }
     }, [gatewayType]);
 
     let permissionType = '';
@@ -1023,6 +1028,7 @@ function AddEditGWEnvironment(props) {
                                 initialVhosts={vhosts}
                                 onVhostChange={onChange}
                                 gatewayType={gatewayType}
+                                isEditMode={editMode}
                             />
                         </Box>
                     </Grid>
