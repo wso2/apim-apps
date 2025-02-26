@@ -285,7 +285,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                             onKeyDown={handleKeyDown}
                             testId='nl-query-input'
                             multiline
-                            disabled={(designAssistantEnabled && !aiAuthTokenProvided)||!designAssistantEnabled}
+                            disabled={!aiAuthTokenProvided||!designAssistantEnabled}
                             sx={{
                                 '& .TextInput-textarea': {
                                     resize: 'none',

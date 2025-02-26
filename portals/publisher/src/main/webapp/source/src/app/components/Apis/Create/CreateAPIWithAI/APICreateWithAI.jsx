@@ -256,7 +256,7 @@ const ApiCreateWithAI = () => {
                         break;
                     default:
                         content = 'Apologies for the inconvenience. It seems that something went wrong with the'
-                        + ' API Design Assistant Assistant. Please try again.';
+                        + ' API Design Assistant. Please try again.';
                         break;
                 }
 
