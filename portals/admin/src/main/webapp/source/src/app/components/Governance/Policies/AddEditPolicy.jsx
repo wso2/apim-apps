@@ -447,32 +447,28 @@ function AddEditPolicy(props) {
     };
 
     const groupActionsByState = (actionsList) => {
-        return actionsList.reduce((acc, action) => {
-            const existingStateIndex = acc.findIndex((item) => item.state === action.state);
-            if (existingStateIndex === -1) {
-                acc.push({
+        // Create a map of all actions by state
+        const actionMap = actionsList.reduce((acc, action) => {
+            const existingState = acc.get(action.state);
+            if (!existingState) {
+                acc.set(action.state, {
                     state: action.state,
                     error: action.ruleSeverity === 'ERROR' ? action.type : null,
                     warn: action.ruleSeverity === 'WARN' ? action.type : null,
                     info: action.ruleSeverity === 'INFO' ? action.type : null,
                 });
             } else {
-                switch (action.ruleSeverity) {
-                    case 'ERROR':
-                        acc[existingStateIndex].error = action.type;
-                        break;
-                    case 'WARN':
-                        acc[existingStateIndex].warn = action.type;
-                        break;
-                    case 'INFO':
-                        acc[existingStateIndex].info = action.type;
-                        break;
-                    default:
-                        break;
-                }
+                if (action.ruleSeverity === 'ERROR') existingState.error = action.type;
+                if (action.ruleSeverity === 'WARN') existingState.warn = action.type;
+                if (action.ruleSeverity === 'INFO') existingState.info = action.type;
             }
             return acc;
-        }, []);
+        }, new Map());
+
+        // Return array in GOVERNABLE_STATES order
+        return CONSTS.GOVERNABLE_STATES
+            .filter((st) => actionMap.has(st.value))
+            .map((st) => actionMap.get(st.value));
     };
 
     const handleActionSave = (actionConfig) => {
@@ -541,6 +537,17 @@ function AddEditPolicy(props) {
             value: rulesets.filter((id) => id !== ruleset.id),
         });
         setSelectedRulesets(selectedRulesets.filter((r) => r.id !== ruleset.id));
+    };
+
+    // Get existing states from current actions
+    const getExistingStates = () => {
+        return [...new Set(actions.map((action) => action.state))];
+    };
+
+    // Add this helper function to check if all states are configured
+    const areAllStatesConfigured = () => {
+        const existingStates = getExistingStates();
+        return CONSTS.GOVERNABLE_STATES.every((st) => existingStates.includes(st.value));
     };
 
     return (
@@ -743,29 +750,43 @@ function AddEditPolicy(props) {
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.enforcement.title'
-                                defaultMessage='Enforcement Details'
+                                defaultMessage='Enforcement'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.enforcement.description'
-                                defaultMessage='Provide details of when the policy will be applied'
+                                defaultMessage={'Choose when the policy should be applied and the action '
+                                    + 'that should be taken based on the severity of the rule violation.'}
                             />
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
-                            <Button
-                                variant='outlined'
-                                color='primary'
-                                startIcon={<AddIcon />}
-                                onClick={handleAddAction}
+                            <Tooltip title={
+                                areAllStatesConfigured()
+                                    ? intl.formatMessage({
+                                        id: 'Governance.Policies.AddEdit.enforcement.add.disabled.tooltip',
+                                        defaultMessage: 'All available states have been configured',
+                                    })
+                                    : ''
+                            }
                             >
-                                {intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.action.add',
-                                    defaultMessage: 'Add Action Configuration',
-                                })}
-                            </Button>
+                                <span>
+                                    <Button
+                                        variant='outlined'
+                                        color='primary'
+                                        startIcon={<AddIcon />}
+                                        onClick={handleAddAction}
+                                        disabled={areAllStatesConfigured()}
+                                    >
+                                        {intl.formatMessage({
+                                            id: 'Governance.Policies.AddEdit.enforcement.add.button',
+                                            defaultMessage: 'Add Enforcement Criteria',
+                                        })}
+                                    </Button>
+                                </span>
+                            </Tooltip>
                         </Box>
                         <Box component='div' m={1}>
                             {actions && actions.length > 0 && (
@@ -800,7 +821,7 @@ function AddEditPolicy(props) {
                                                 <TableCell align='right'>
                                                     {intl.formatMessage({
                                                         id: 'Governance.Policies.AddEdit.action.table.actions',
-                                                        defaultMessage: 'Actions',
+                                                        defaultMessage: 'Edit / Delete',
                                                     })}
                                                 </TableCell>
                                             </TableRow>
@@ -992,6 +1013,7 @@ function AddEditPolicy(props) {
                 onClose={handleCloseDialog}
                 onSave={handleActionSave}
                 editAction={dialogConfig.editAction}
+                existingStates={getExistingStates()}
             />
         </StyledContentBase>
     );
