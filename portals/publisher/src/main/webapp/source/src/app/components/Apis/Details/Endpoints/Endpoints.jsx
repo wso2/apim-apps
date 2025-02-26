@@ -778,7 +778,7 @@ function Endpoints(props) {
                                     variant='outlined'
                                     color='primary'
                                     size='small'
-                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                                    disabled={isRestricted(['apim:api_create'], api)}
                                     onClick={() => {
                                         const urlPrefix 
                                             = api.apiType === API.CONSTS.APIProduct ? 'api-products' : 'apis';

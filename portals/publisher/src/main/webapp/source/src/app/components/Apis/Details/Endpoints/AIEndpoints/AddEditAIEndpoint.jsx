@@ -60,8 +60,6 @@ const classes = {
     root: `${PREFIX}-root`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     titleLink: `${PREFIX}-titleLink`,
-    contentWrapper: `${PREFIX}-contentWrapper`,
-    mainTitle: `${PREFIX}-mainTitle`,
     FormControl: `${PREFIX}-FormControl`,
     FormControlOdd: `${PREFIX}-FormControlOdd`,
     FormControlLabel: `${PREFIX}-FormControlLabel`,
@@ -71,7 +69,6 @@ const classes = {
     extraPadding: `${PREFIX}-extraPadding`,
     actionButtonSection: `${PREFIX}-actionButtonSection`,
     titleGrid: `${PREFIX}-titleGrid`,
-    descriptionForm: `${PREFIX}-descriptionForm`,
     progress: `${PREFIX}-progress`,
     endpointCardWrapper: `${PREFIX}-endpointCardWrapper`,
     textField: `${PREFIX}-textField`,
@@ -104,14 +101,6 @@ const StyledGrid = styled(Grid)((
     [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
         marginRight: theme.spacing(1),
-    },
-
-    [`& .${classes.contentWrapper}`]: {
-        maxWidth: theme.custom.contentAreaWidth,
-    },
-
-    [`& .${classes.mainTitle}`]: {
-        paddingLeft: 0,
     },
 
     [`& .${classes.FormControl}`]: {
@@ -159,10 +148,6 @@ const StyledGrid = styled(Grid)((
             padding: 0,
             margin: 0,
         },
-    },
-
-    [`& .${classes.descriptionForm}`]: {
-        marginTop: theme.spacing(1),
     },
 
     [`& .${classes.progress}`]: {
@@ -346,9 +331,10 @@ const AddEditAIEndpoint = ({
             return true;
         }
 
-        const isDuplicate = endpoints.some(endpoint =>
-            endpoint.name === name && (!isEditing || endpoint.id !== endpointId)
-        );
+        const isDuplicate = Array.isArray(endpoints) && endpoints.length > 0
+            ? endpoints.some(endpoint =>
+                endpoint.name === name && (!isEditing || endpoint.id !== endpointId)
+            ) : false;
 
         return isDuplicate;
     };
@@ -833,7 +819,7 @@ const AddEditAIEndpoint = ({
                                 name='deployment-stage'
                                 value={state.deploymentStage}
                                 onChange={handleDeploymentStageChange}
-                                disabled={isEditing || isRestricted(['apim:api_manage'], apiObject)}
+                                disabled={isEditing || isRestricted(['apim:api_create'], apiObject)}
                             >
                                 <FormControlLabel
                                     value={CONSTS.DEPLOYMENT_STAGE.production}
@@ -863,7 +849,7 @@ const AddEditAIEndpoint = ({
                             <Grid item xs={6}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        disabled={isEditing || isRestricted(['apim:api_manage'], apiObject)}
+                                        disabled={isEditing || isRestricted(['apim:api_create'], apiObject)}
                                         label='Endpoint Name'
                                         id='name'
                                         fullWidth
@@ -914,7 +900,7 @@ const AddEditAIEndpoint = ({
                                                         aria-label='TestEndpoint'
                                                         onClick={() => testEndpoint(endpointUrl, apiObject.id)}
                                                         disabled={
-                                                            (isRestricted(['apim:api_manage'], apiObject)) || isUpdating
+                                                            (isRestricted(['apim:api_create'], apiObject)) || isUpdating
                                                         }
                                                         id='endpoint-test-icon-btn'
                                                         size='large'>
@@ -1033,7 +1019,7 @@ const AddEditAIEndpoint = ({
                                 type='submit'
                                 onClick={formSave}
                                 disabled={
-                                    isRestricted(['apim:api_manage'], apiObject)
+                                    isRestricted(['apim:api_create'], apiObject)
                                     || formHasErrors(validating)
                                     || apiObject.isRevision
                                 }
