@@ -72,7 +72,7 @@ const ApiCreateWithAI = () => {
     }, [messages]);
 
     useEffect(() => {
-        if (taskStatus === "COMPLETE") {
+        if (taskStatus === 'COMPLETE') {
             setLastRenderedComponent(
                 <DisplayCode 
                     finalOutcomeCode={finalOutcomeCode}
@@ -160,7 +160,7 @@ const ApiCreateWithAI = () => {
     );
 
     const handleSelectedTitles = (titles) => { 
-        const titlesString = "Modify this API to include the following features as well:\n" + 
+        const titlesString = 'Modify this API to include the following features as well:\n' + 
         titles.map(title => `- ${title}`).join('\n');
         setSelectedTitles(titlesString); 
         setLastQuery(titlesString);
@@ -180,12 +180,12 @@ const ApiCreateWithAI = () => {
             const response = await queryDesignAssistant.sendChatAPIDesignAssistant(query, sessionId);
     
             if (!response || typeof response !== 'object') {
-                throw new Error("Invalid response received from API.");
+                throw new Error('Invalid response received from API.');
             }
     
             return response;
         } catch (error) {
-            console.error("Error in sendQuery:", error);
+            console.error('Error in sendQuery:', error);
             throw error;
         }
     }
@@ -251,7 +251,7 @@ const ApiCreateWithAI = () => {
                     case 429: // Token limit exceeded
                         content = 'Apologies for the inconvenience. It appears that the token limit has been exceeded.';
                         break;
-                    case 504: //Handle gateway timeout scenario
+                    case 504: // Handle gateway timeout scenario
                         content = 'Apologies for the inconvenience. The request has timed out. Please try again later.';
                         break;
                     default:
@@ -296,8 +296,6 @@ const ApiCreateWithAI = () => {
                     paddingTop:'10px',
                     marginTop:'10px',
                     overflow: 'auto',
-
-                    
                 }}>
                     <Stack
                         direction='row'
@@ -318,7 +316,10 @@ const ApiCreateWithAI = () => {
                                 minwidth:'50%'
                             }}
                         >
-                            <Stack direction='column' sx={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}>
+                            <Stack
+                                direction='column' 
+                                sx={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}
+                            >
                                 {!lastQuery && (
                                     <Box>
                                         <WelcomeMessage/>
@@ -339,7 +340,7 @@ const ApiCreateWithAI = () => {
                                                 queryHeading='Create a SSE API' 
                                                 queryData='Create an API for live sports scores' 
                                                 sx={{ textAlign: 'left' }} 
-                                                />
+                                            />
                                         </Stack>
                                     </Box>
                                 )}
@@ -362,7 +363,13 @@ const ApiCreateWithAI = () => {
                                     {loading && <LoadingDots />}
                                 </Box>
                                 <Box>
-                                    <Box display='flex' alignItems='center' flexDirection='column' marginTop={1} marginBottom={2}>
+                                    <Box 
+                                        display='flex' 
+                                        alignItems='center' 
+                                        flexDirection='column' 
+                                        marginTop={1} 
+                                        marginBottom={2}
+                                    >
                                         {/* Handle prepare call failed scenario */}
                                         {specEnrichmentError && specEnrichmentErrorLevel && (
                                             <Alert severity={specEnrichmentErrorLevel}>

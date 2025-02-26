@@ -26,7 +26,7 @@ const WelcomeMessage = () => {
           <Box display='flex'>
               <Typography sx={{ color: '#212020', fontWeight: 'bold', fontSize: '2rem', marginTop: '20px', paddingTop: '10px'}}>
               Welcome to the
-                <Typography component="span" sx={{ color: '#004d99', fontWeight: 'bold', fontSize: '2rem' }}>
+                <Typography component='span' sx={{ color: '#004d99', fontWeight: 'bold', fontSize: '2rem' }}>
                     {' API Design Assistant!'}
                 </Typography>
                 <Chip
