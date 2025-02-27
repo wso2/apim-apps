@@ -79,7 +79,7 @@ export default function ListPolicies() {
                         const policiesWithLabels = allPolicies.map((policy) => ({
                             ...policy,
                             labels: policy.labels.map((labelId) => {
-                                if (labelId === 'GLOBAL') return labelId;
+                                if (labelId === 'GLOBAL') return 'ALL';
                                 const label = labelsList.find((l) => l.id === labelId);
                                 return label ? label.name : labelId;
                             }),
