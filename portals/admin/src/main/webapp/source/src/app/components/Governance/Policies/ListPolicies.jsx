@@ -63,10 +63,12 @@ async function getAllPolicies(restApi, accumulator = []) {
 export default function ListPolicies() {
     const intl = useIntl();
     const [policies, setPolicies] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const restApi = new GovernanceAPI();
         const adminApi = new API();
+        setIsLoading(true);
 
         // First get all policies
         getAllPolicies(restApi)
@@ -85,10 +87,14 @@ export default function ListPolicies() {
                             }),
                         }));
                         setPolicies(policiesWithLabels);
+                    })
+                    .finally(() => {
+                        setIsLoading(false);
                     });
             })
             .catch((error) => {
                 console.error('Error loading policies:', error);
+                setIsLoading(false);
             });
     }, []);
 
@@ -313,7 +319,7 @@ export default function ListPolicies() {
             addButtonProps={addButtonProps}
             searchProps={searchProps}
             emptyBoxProps={emptyBoxProps}
-            initialData={policies}
+            initialData={!isLoading ? policies : null}
             DeleteComponent={DeletePolicy}
             editComponentProps={{
                 icon: <EditIcon />,

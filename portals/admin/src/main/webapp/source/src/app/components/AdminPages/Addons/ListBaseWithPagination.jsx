@@ -1,8 +1,7 @@
-/* eslint-disable react/jsx-props-no-spreading */
 /*
- * Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
+ * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -44,7 +43,7 @@ import Alert from '@mui/material/Alert';
  * @param {JSON} props props passed from parent
  * @returns {JSX} Header AppBar components.
  */
-function ListBase(props) {
+function ListBaseWithPagination(props) {
     const {
         EditComponent, editComponentProps, DeleteComponent, showActionColumn,
         columProps, pageProps, addButtonProps, addButtonOverride,
@@ -61,12 +60,65 @@ function ListBase(props) {
     } = props;
 
     const [searchText, setSearchText] = useState('');
+    const [tempSearchText, setTempSearchText] = useState('');
     const [data, setData] = useState(initialData || null);
     const [error, setError] = useState(null);
+    const [page, setPage] = useState(0);
+    const [count, setCount] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
     const intl = useIntl();
 
+    const fetchData = (pageParams = { page, rowsPerPage, query: searchText }) => {
+        if (initialData) {
+            setData(initialData);
+            return;
+        }
+        // Fetch data from backend when an apiCall is provided
+        setData(null);
+        if (apiCall) {
+            const queryParams = {
+                limit: pageParams.rowsPerPage,
+                offset: pageParams.page * pageParams.rowsPerPage,
+                query: pageParams.query,
+            };
+            const promiseAPICall = apiCall(queryParams);
+            promiseAPICall.then((response) => {
+                if (response) {
+                    setData(response.list);
+                    setCount(response.pagination.total);
+                    setError(null);
+                } else {
+                    setError(intl.formatMessage({
+                        id: 'AdminPages.Addons.ListBaseWithPagination.noDataError',
+                        defaultMessage: 'Error while retrieving data.',
+                    }));
+                }
+            })
+                .catch((e) => {
+                    setError(e.message);
+                });
+        }
+        // Clear both search states when refreshing
+        setSearchText('');
+        setTempSearchText('');
+    };
+
     const filterData = (event) => {
-        setSearchText(event.target.value);
+        if (event.key === 'Enter' && !event.shiftKey) {
+            event.preventDefault();
+            const query = event.target.value;
+            setSearchText(query);
+            setPage(0); // Reset to first page when searching
+            fetchData({
+                page: 0,
+                rowsPerPage,
+                query,
+            });
+        }
+    };
+
+    const handleSearchChange = (event) => {
+        setTempSearchText(event.target.value);
     };
 
     const sortBy = (field, reverse, primer) => {
@@ -92,31 +144,15 @@ function ListBase(props) {
         setData(sorted);
     };
 
-    const fetchData = () => {
-        if (initialData) {
-            setData(initialData);
-            return;
-        }
-        // Fetch data from backend when an apiCall is provided
-        setData(null);
-        if (apiCall) {
-            const promiseAPICall = apiCall();
-            promiseAPICall.then((LocalData) => {
-                if (LocalData) {
-                    setData(LocalData);
-                    setError(null);
-                } else {
-                    setError(intl.formatMessage({
-                        id: 'AdminPages.Addons.ListBase.noDataError',
-                        defaultMessage: 'Error while retrieving data.',
-                    }));
-                }
-            })
-                .catch((e) => {
-                    setError(e.message);
-                });
-        }
-        setSearchText('');
+    const handleChangePage = (newPage) => {
+        setPage(newPage);
+        fetchData({ page: newPage, rowsPerPage, query: searchText });
+    };
+
+    const handleChangeRowsPerPage = (newRowsPerPage) => {
+        setRowsPerPage(newRowsPerPage);
+        setPage(0);
+        fetchData({ page: 0, rowsPerPage: newRowsPerPage, query: searchText });
     };
 
     useEffect(() => {
@@ -257,14 +293,18 @@ function ListBase(props) {
         },
         expandableRows: enableCollapsable,
         renderExpandableRow,
+        serverSide: true,
+        count,
+        rowsPerPage,
+        page,
+        onChangePage: handleChangePage,
+        onChangeRowsPerPage: handleChangeRowsPerPage,
         ...props.options,
     };
 
-    // Show empty state if:
-    // No apiCall and initialData is undefined OR
-    // No apiCall and initialData is empty array OR
-    // Data exists and it's an empty array
-    if ((!apiCall && (initialData === undefined || initialData?.length === 0)) || (data && data.length === 0)) {
+    // If no apiCall and no initialData is provided OR,
+    // retrieved data is empty, display an information card.
+    if ((!apiCall && !initialData) || (data && data.length === 0)) {
         const content = (
             <Card>
                 <CardContent>
@@ -284,10 +324,8 @@ function ListBase(props) {
         ) : content;
     }
 
-    // If apiCall is provided and data is not retrieved yet OR
-    // If apiCall is not provided and initialData is null
-    // display progress component
-    if ((!error && apiCall && !data) || (!apiCall && initialData === null)) {
+    // If apiCall is provided and data is not retrieved yet, display progress component
+    if (!error && apiCall && !data) {
         const content = <InlineProgress />;
         return useContentBase ? (
             <ContentBase pageStyle='paperLess'>{content}</ContentBase>
@@ -335,8 +373,9 @@ function ListBase(props) {
                                         inputProps={{
                                             'aria-label': 'search-by-policy',
                                         }}
-                                        onChange={filterData}
-                                        value={searchText}
+                                        onChange={handleSearchChange}
+                                        onKeyDown={filterData}
+                                        value={tempSearchText}
                                     />
                                 )}
                             </Grid>
@@ -351,7 +390,7 @@ function ListBase(props) {
                                 )}
                                 <Tooltip title={(
                                     <FormattedMessage
-                                        id='AdminPages.Addons.ListBase.reload'
+                                        id='AdminPages.Addons.ListBaseWithPagination.reload'
                                         defaultMessage='Reload'
                                     />
                                 )}
@@ -394,7 +433,7 @@ function ListBase(props) {
     ) : mainContent;
 }
 
-ListBase.defaultProps = {
+ListBaseWithPagination.defaultProps = {
     addButtonProps: {},
     addButtonOverride: null,
     searchProps: {
@@ -409,7 +448,7 @@ ListBase.defaultProps = {
     addedActions: null,
     noDataMessage: (
         <FormattedMessage
-            id='AdminPages.Addons.ListBase.nodata.message'
+            id='AdminPages.Addons.ListBaseWithPagination.nodata.message'
             defaultMessage='No items yet'
         />
     ),
@@ -426,7 +465,7 @@ ListBase.defaultProps = {
     options: {},
 };
 
-ListBase.propTypes = {
+ListBaseWithPagination.propTypes = {
     EditComponent: PropTypes.element,
     editComponentProps: PropTypes.shape({}),
     DeleteComponent: PropTypes.element,
@@ -457,4 +496,5 @@ ListBase.propTypes = {
     useContentBase: PropTypes.bool,
     options: PropTypes.shape({}),
 };
-export default ListBase;
+
+export default ListBaseWithPagination;
