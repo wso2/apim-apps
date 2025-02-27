@@ -24,7 +24,6 @@ import Grid from '@mui/material/Grid';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import AddCircle from '@mui/icons-material/AddCircle';
 import { styled } from '@mui/material/styles';
@@ -75,7 +74,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
     const [config, setConfig] = useState<RoundRobinConfig>({
         production: [],
         sandbox: [],
-        suspendDuration: 0,
+        suspendDuration: undefined,
     });
     const [modelList, setModelList] = useState<string[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
@@ -255,6 +254,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                                 />
                             }
                             label=""
+                            sx={{ mr: -1 }}
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
@@ -331,6 +331,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
                                 />
                             }
                             label=""
+                            sx={{ mr: -1 }}
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>

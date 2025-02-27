@@ -40,7 +40,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import CONSTS from 'AppData/Constants';
 
 export default function ActionConfigDialog({
-    open, onClose, onSave, editAction,
+    open, onClose, onSave, editAction, existingStates = [],
 }) {
     const intl = useIntl();
     const [formState, setFormState] = useState(editAction || {
@@ -95,8 +95,8 @@ export default function ActionConfigDialog({
         >
             <DialogTitle>
                 <FormattedMessage
-                    id='Governance.Policies.AddEdit.action.config.title'
-                    defaultMessage='Action Configuration'
+                    id='Governance.Policies.AddEdit.enforcement.dialog.title'
+                    defaultMessage='Enforcement Criteria'
                 />
             </DialogTitle>
             <DialogContent sx={{ p: 3 }}>
@@ -104,7 +104,7 @@ export default function ActionConfigDialog({
                     <FormControl fullWidth size='small'>
                         <InputLabel>
                             <FormattedMessage
-                                id='Governance.Policies.AddEdit.action.governedState'
+                                id='Governance.Policies.AddEdit.enforcement.state.label'
                                 defaultMessage='Governed State'
                             />
                         </InputLabel>
@@ -120,15 +120,31 @@ export default function ActionConfigDialog({
                             })}
                             label={(
                                 <FormattedMessage
-                                    id='Governance.Policies.AddEdit.action.governedState'
+                                    id='Governance.Policies.AddEdit.enforcement.state.label'
                                     defaultMessage='Governed State'
                                 />
                             )}
                             disabled={!!editAction} // Disable in edit mode
                         >
                             {CONSTS.GOVERNABLE_STATES.map((s) => (
-                                <MenuItem key={s.value} value={s.value}>
+                                <MenuItem
+                                    key={s.value}
+                                    value={s.value}
+                                    disabled={existingStates.includes(s.value)}
+                                >
                                     {s.label}
+                                    {!editAction && existingStates.includes(s.value) && (
+                                        <Typography
+                                            variant='caption'
+                                            color='text.secondary'
+                                            sx={{ ml: 1 }}
+                                        >
+                                            <FormattedMessage
+                                                id='Governance.Policies.AddEdit.enforcement.state.configured'
+                                                defaultMessage='(Already configured)'
+                                            />
+                                        </Typography>
+                                    )}
                                 </MenuItem>
                             ))}
                         </Select>
@@ -163,7 +179,7 @@ export default function ActionConfigDialog({
                                     <Grid item xs={5}>
                                         <Typography variant='subtitle2' sx={{ mb: 2 }}>
                                             <FormattedMessage
-                                                id='Governance.Policies.AddEdit.action.severity.levels'
+                                                id='Governance.Policies.AddEdit.enforcement.severity.title'
                                                 defaultMessage='Severity Levels'
                                             />
                                         </Typography>
@@ -171,7 +187,7 @@ export default function ActionConfigDialog({
                                     <Grid item xs={7}>
                                         <Typography variant='subtitle2' sx={{ mb: 2 }}>
                                             <FormattedMessage
-                                                id='Governance.Policies.AddEdit.action.actions'
+                                                id='Governance.Policies.AddEdit.enforcement.actions.title'
                                                 defaultMessage='Actions'
                                             />
                                         </Typography>
@@ -203,7 +219,8 @@ export default function ActionConfigDialog({
                                                         label={(
                                                             <Typography variant='body2'>
                                                                 {intl.formatMessage({
-                                                                    id: 'Governance.Policies.AddEdit.action.notify',
+                                                                    id: 'Governance.Policies.AddEdit.enforcement.'
+                                                                        + 'action.notify',
                                                                     defaultMessage: 'Notify',
                                                                 })}
                                                             </Typography>
@@ -215,7 +232,8 @@ export default function ActionConfigDialog({
                                                         label={(
                                                             <Typography variant='body2'>
                                                                 {intl.formatMessage({
-                                                                    id: 'Governance.Policies.AddEdit.action.block',
+                                                                    id: 'Governance.Policies.AddEdit.enforcement.'
+                                                                        + 'action.block',
                                                                     defaultMessage: 'Block',
                                                                 })}
                                                             </Typography>
@@ -234,7 +252,7 @@ export default function ActionConfigDialog({
             <DialogActions sx={{ px: 3, pb: 2 }}>
                 <Button onClick={handleClose} size='small'>
                     <FormattedMessage
-                        id='Governance.Policies.AddEdit.action.cancel'
+                        id='Governance.Policies.AddEdit.enforcement.dialog.cancel'
                         defaultMessage='Cancel'
                     />
                 </Button>
@@ -246,7 +264,7 @@ export default function ActionConfigDialog({
                     size='small'
                 >
                     <FormattedMessage
-                        id='Governance.Policies.AddEdit.action.save'
+                        id='Governance.Policies.AddEdit.enforcement.dialog.save'
                         defaultMessage='Save'
                     />
                 </Button>

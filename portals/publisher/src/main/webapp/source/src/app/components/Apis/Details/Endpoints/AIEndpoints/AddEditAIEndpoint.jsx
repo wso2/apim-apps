@@ -60,8 +60,6 @@ const classes = {
     root: `${PREFIX}-root`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     titleLink: `${PREFIX}-titleLink`,
-    contentWrapper: `${PREFIX}-contentWrapper`,
-    mainTitle: `${PREFIX}-mainTitle`,
     FormControl: `${PREFIX}-FormControl`,
     FormControlOdd: `${PREFIX}-FormControlOdd`,
     FormControlLabel: `${PREFIX}-FormControlLabel`,
@@ -71,7 +69,6 @@ const classes = {
     extraPadding: `${PREFIX}-extraPadding`,
     actionButtonSection: `${PREFIX}-actionButtonSection`,
     titleGrid: `${PREFIX}-titleGrid`,
-    descriptionForm: `${PREFIX}-descriptionForm`,
     progress: `${PREFIX}-progress`,
     endpointCardWrapper: `${PREFIX}-endpointCardWrapper`,
     textField: `${PREFIX}-textField`,
@@ -104,14 +101,6 @@ const StyledGrid = styled(Grid)((
     [`& .${classes.titleLink}`]: {
         color: theme.palette.primary.main,
         marginRight: theme.spacing(1),
-    },
-
-    [`& .${classes.contentWrapper}`]: {
-        maxWidth: theme.custom.contentAreaWidth,
-    },
-
-    [`& .${classes.mainTitle}`]: {
-        paddingLeft: 0,
     },
 
     [`& .${classes.FormControl}`]: {
@@ -159,10 +148,6 @@ const StyledGrid = styled(Grid)((
             padding: 0,
             margin: 0,
         },
-    },
-
-    [`& .${classes.descriptionForm}`]: {
-        marginTop: theme.spacing(1),
     },
 
     [`& .${classes.progress}`]: {
@@ -219,7 +204,6 @@ const StyledGrid = styled(Grid)((
 
 const isValidUrl = (string) => {
     try {
-        // Use URL.parse instead of new URL
         return !!new URL(string);
     } catch (_) {
         return false;
@@ -334,6 +318,27 @@ const AddEditAIEndpoint = ({
 
     const history = useHistory();
 
+    const [endpoints, setEndpoints] = useState([]);
+
+    const isDuplicateEndpointName = (name) => {
+        // Check for default endpoint names
+        const defaultNames = [
+            'default production endpoint',
+            'default sandbox endpoint',
+        ];
+
+        if (defaultNames.includes(name.trim().toLowerCase())) {
+            return true;
+        }
+
+        const isDuplicate = Array.isArray(endpoints) && endpoints.length > 0
+            ? endpoints.some(endpoint =>
+                endpoint.name === name && (!isEditing || endpoint.id !== endpointId)
+            ) : false;
+
+        return isDuplicate;
+    };
+
     useEffect(() => {
         if (endpointId) {
             setIsEditing(true);
@@ -404,6 +409,20 @@ const AddEditAIEndpoint = ({
             }
         }
     }, [endpointId]);
+
+    useEffect(() => {
+        // Skip if editing (no need to load all endpoints when editing)
+        if (!isEditing) {
+            API.getApiEndpoints(apiObject.id)
+                .then((response) => {
+                    setEndpoints(response.body);
+                })
+                .catch((error) => {
+                    console.error('Error loading endpoints:', error);
+                });
+            console.log('Endpoints:', endpoints);
+        }
+    }, [apiObject.id, isEditing]);
 
     const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
         const newEndpointSecurityObj = endpointSecurityObj;
@@ -541,17 +560,45 @@ const AddEditAIEndpoint = ({
         }
         switch (fieldName) {
             case 'name':
-                return !fieldValue;
+                if (!fieldValue) {
+                    return intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.name',
+                        defaultMessage: 'Endpoint name cannot be empty',
+                    });
+                } else if (!isEditing && isDuplicateEndpointName(fieldValue)) {
+                    return intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.duplicate.name',
+                        defaultMessage: 'This endpoint name already exists',
+                    });
+                }
+                return false;
             case 'url':
-                return !fieldValue || !isValidUrl(fieldValue);
+                if (!fieldValue) {
+                    return intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.url',
+                        defaultMessage: 'Endpoint URL cannot be empty',
+                    });
+                } else if (!isValidUrl(fieldValue)) {
+                    return intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.invalid.url',
+                        defaultMessage: 'Please enter a valid endpoint URL',
+                    });
+                }
+                return false;
             case 'apiKey':
-                return !fieldValue;
+                if (!fieldValue) {
+                    return intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.apiKey',
+                        defaultMessage: 'API Key cannot be empty',
+                    });
+                }
+                return false;
             default:
                 return false;
         }
     };
 
-    const endpointHasErrors = (validateActive = false) => {
+    const formHasErrors = (validateActive = false) => {
         if (hasErrors('name', state.name, validateActive) ||
             hasErrors('url', endpointUrl, validateActive) ||
             hasErrors('apiKey', apiKeyValue, validateActive)) {
@@ -650,13 +697,14 @@ const AddEditAIEndpoint = ({
 
     const formSave = () => {
         setValidating(true);
-        if (endpointHasErrors(true)) {
+        if (formHasErrors(true)) {
             Alert.error(intl.formatMessage({
                 id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.form.has.errors',
-                defaultMessage: 'Please fill all required fields',
+                defaultMessage: 'One or more fields contain errors',
             }));
             return false;
         }
+        
         setEndpointSaving(true);
 
         let savePromise;
@@ -717,7 +765,7 @@ const AddEditAIEndpoint = ({
                 console.error(error);
                 Alert.error(intl.formatMessage({
                     id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.saving',
-                    defaultMessage: 'Error saving endpoint',
+                    defaultMessage: 'Error occurred while saving the endpoint. Please try again.',
                 }));
             })
             .finally(() => {
@@ -771,7 +819,7 @@ const AddEditAIEndpoint = ({
                                 name='deployment-stage'
                                 value={state.deploymentStage}
                                 onChange={handleDeploymentStageChange}
-                                disabled={isEditing || isRestricted(['apim:api_manage'], apiObject)}
+                                disabled={isEditing || isRestricted(['apim:api_create'], apiObject)}
                             >
                                 <FormControlLabel
                                     value={CONSTS.DEPLOYMENT_STAGE.production}
@@ -801,23 +849,14 @@ const AddEditAIEndpoint = ({
                             <Grid item xs={6}>
                                 <FormControl fullWidth>
                                     <TextField
-                                        disabled={isEditing || isRestricted(['apim:api_manage'], apiObject)}
+                                        disabled={isEditing || isRestricted(['apim:api_create'], apiObject)}
                                         label='Endpoint Name'
                                         id='name'
                                         fullWidth
                                         value={state.name}
                                         onChange={(e) => dispatch({ field: 'name', value: e.target.value })}
                                         error={hasErrors('name', state.name, validating)}
-                                        helperText={
-                                            hasErrors('name', state.name, validating)
-                                                ? (
-                                                    <FormattedMessage
-                                                        id={'Apis.Details.Endpoints.AIEndpoints.'
-                                                            + 'AddEditAIEndpoint.name.helper.text'}
-                                                        defaultMessage='Endpoint name is required'
-                                                    />
-                                                ) : ''
-                                        }
+                                        helperText={hasErrors('name', state.name, validating)}
                                         required
                                     />
                                 </FormControl>
@@ -834,15 +873,7 @@ const AddEditAIEndpoint = ({
                                         onChange={(e) => setEndpointUrl(e.target.value)}
                                         onBlur={handleEndpointBlur}
                                         error={hasErrors('url', endpointUrl, validating)}
-                                        helperText={
-                                            hasErrors('url', endpointUrl, validating)
-                                                ? (
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Endpoints.endpoint.url.helper.text'
-                                                        defaultMessage='Please enter a valid URL'
-                                                    />
-                                                ) : ''
-                                        }
+                                        helperText={hasErrors('url', endpointUrl, validating)}
                                         required
                                         InputProps={{
                                             endAdornment: (
@@ -869,7 +900,7 @@ const AddEditAIEndpoint = ({
                                                         aria-label='TestEndpoint'
                                                         onClick={() => testEndpoint(endpointUrl, apiObject.id)}
                                                         disabled={
-                                                            (isRestricted(['apim:api_manage'], apiObject)) || isUpdating
+                                                            (isRestricted(['apim:api_create'], apiObject)) || isUpdating
                                                         }
                                                         id='endpoint-test-icon-btn'
                                                         size='large'>
@@ -960,12 +991,7 @@ const AddEditAIEndpoint = ({
                                     onChange={handleApiKeyChange}
                                     onBlur={handleApiKeyBlur}
                                     error={hasErrors('apiKey', apiKeyValue, validating)}
-                                    helperText={hasErrors('apiKey', apiKeyValue, validating) ? (
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.Security.no.api.key.value.error'
-                                            defaultMessage='API Key should not be empty'
-                                        />
-                                    ) : ' '}
+                                    helperText={hasErrors('apiKey', apiKeyValue, validating)}
                                     required
                                     type={showApiKey ? 'text' : 'password'}
                                     InputLabelProps={{
@@ -993,8 +1019,8 @@ const AddEditAIEndpoint = ({
                                 type='submit'
                                 onClick={formSave}
                                 disabled={
-                                    isRestricted(['apim:api_manage'], apiObject)
-                                    || endpointHasErrors(validating)
+                                    isRestricted(['apim:api_create'], apiObject)
+                                    || formHasErrors(validating)
                                     || apiObject.isRevision
                                 }
                                 className={classes.saveButton}

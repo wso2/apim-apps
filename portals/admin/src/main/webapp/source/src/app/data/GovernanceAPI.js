@@ -78,11 +78,13 @@ class GovernanceAPI extends Resource {
 
     /**
      * Get list of governance policies
+     * @param {Object} [params] Optional query parameters for pagination (limit, offset) and searching
      * @returns {Promise} Promised policies response
      */
-    getGovernancePolicies() {
+    getGovernancePolicies(params = {}) {
         return this.client.then((client) => {
             return client.apis['Governance Policies'].getGovernancePolicies(
+                params,
                 this._requestMetaData(),
             );
         });
@@ -150,14 +152,15 @@ class GovernanceAPI extends Resource {
         });
     }
 
-    // rulesets
     /**
      * Get list of rulesets
+     * @param {Object} [params] Optional query parameters for pagination (limit, offset) and searching
      * @returns {Promise} Promised rulesets response
      */
-    getRulesets() {
+    getRulesets(params = {}) {
         return this.client.then((client) => {
             return client.apis['Rulesets'].getRulesets(
+                params,
                 this._requestMetaData(),
             );
         });

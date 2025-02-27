@@ -55,7 +55,7 @@ export default function ApiComplianceTable() {
             return (
                 <Typography variant="body2" color="textSecondary">
                     {intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.pending',
+                        id: 'Governance.ComplianceDashboard.APICompliance.pending',
                         defaultMessage: 'N/A - Waiting for policy evaluation',
                     })}
                 </Typography>
@@ -66,7 +66,7 @@ export default function ApiComplianceTable() {
             return (
                 <Typography variant="body2" color="textSecondary">
                     {intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.no.policies',
+                        id: 'Governance.ComplianceDashboard.APICompliance.no.policies',
                         defaultMessage: 'N/A - No policies to evaluate',
                     })}
                 </Typography>
@@ -81,7 +81,7 @@ export default function ApiComplianceTable() {
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="textSecondary">
                         {intl.formatMessage({
-                            id: 'Governance.Overview.APICompliance.followed.count',
+                            id: 'Governance.ComplianceDashboard.APICompliance.followed.count',
                             defaultMessage: '{followed}/{total} Followed',
                         }, { followed, total })}
                     </Typography>
@@ -157,13 +157,13 @@ export default function ApiComplianceTable() {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.column.api',
+                id: 'Governance.ComplianceDashboard.APICompliance.column.api',
                 defaultMessage: 'API',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <RouterLink to={`/governance/overview/api/${tableMeta.rowData[0]}`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
+                        <RouterLink to={`/governance/compliance/api/${tableMeta.rowData[0]}`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
                             {tableMeta.rowData[1].name}
                             <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
                         </RouterLink>
@@ -187,7 +187,7 @@ export default function ApiComplianceTable() {
         {
             name: 'status',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.column.status',
+                id: 'Governance.ComplianceDashboard.APICompliance.column.status',
                 defaultMessage: 'Status',
             }),
             options: {
@@ -227,7 +227,7 @@ export default function ApiComplianceTable() {
         {
             name: 'policies',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.column.policies',
+                id: 'Governance.ComplianceDashboard.APICompliance.column.policies',
                 defaultMessage: 'Policies',
             }),
             options: {
@@ -298,7 +298,7 @@ export default function ApiComplianceTable() {
                 sx={{ fontWeight: 'medium' }}
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.empty.content',
+                    id: 'Governance.ComplianceDashboard.APICompliance.empty.content',
                     defaultMessage: 'No APIs Available',
                 })}
             </Typography>
@@ -308,7 +308,7 @@ export default function ApiComplianceTable() {
                 align="center"
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.empty.helper',
+                    id: 'Governance.ComplianceDashboard.APICompliance.empty.helper',
                     defaultMessage: 'Create APIs to start evaluating their compliance.',
                 })}
             </Typography>

@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -22,12 +21,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
-import { CardActionArea } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import Tooltip from '@mui/material/Tooltip';
-import IconButton from '@mui/material/IconButton';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
-import { styled, alpha } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 const PREFIX = 'SampleQueryCard';
 
@@ -83,6 +79,10 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
         setCopyBtnText(copiedText);
     };
 
+    const { data: settings }: any = usePublisherSettings();
+    const aiAuthTokenProvided = settings?.aiAuthTokenProvided;
+    const designAssistantEnabled = settings?.designAssistantEnabled;
+
     return (
         <Root>
             <Card 
@@ -112,6 +112,10 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
                                     id='sample-query-execute'
                                     variant='outlined'
                                     onClick={() => onExecuteClick(queryData)}
+                                    disabled={
+                                        !designAssistantEnabled
+                                        || !aiAuthTokenProvided
+                                    }
                                 >
                                     {intl.formatMessage({
                                         id: 'Apis.Details.ApiChat.components.SampleQueryCard.executeButton',

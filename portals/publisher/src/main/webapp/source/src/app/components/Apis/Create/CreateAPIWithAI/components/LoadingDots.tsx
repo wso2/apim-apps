@@ -63,7 +63,7 @@ const LoadingDots: React.FC = () => {
         {keyframesStyle}
       </style>
       <div style={containerStyle}>
-        <span style={textStyle}>Assistant is thinking</span>
+        <span style={textStyle}>Generating a response</span>
         <div style={dotsStyle}>
           <span style={{ ...dotStyle, animationDelay: '-0.32s' }}></span>
           <span style={{ ...dotStyle, animationDelay: '-0.16s' }}></span>

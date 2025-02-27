@@ -24,7 +24,6 @@ import Grid from '@mui/material/Grid';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Button from '@mui/material/Button';
 import AddCircle from '@mui/icons-material/AddCircle';
 import API from 'AppData/api';
@@ -78,7 +77,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
     const [config, setConfig] = useState<WeightedRoundRobinConfig>({
         production: [],
         sandbox: [],
-        suspendDuration: 0,
+        suspendDuration: undefined,
     });
     const [modelList, setModelList] = useState<string[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
@@ -258,6 +257,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
                                 />
                             }
                             label=""
+                            sx={{ mr: -1 }}
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
@@ -334,6 +334,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
                                 />
                             }
                             label=""
+                            sx={{ mr: -1 }}
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>

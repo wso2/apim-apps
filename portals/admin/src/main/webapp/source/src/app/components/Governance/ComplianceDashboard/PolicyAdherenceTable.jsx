@@ -75,7 +75,7 @@ export default function PolicyAdherenceTable() {
             return (
                 <Typography variant="body2" color="textSecondary">
                     {intl.formatMessage({
-                        id: 'Governance.Overview.PolicyAdherence.no.apis',
+                        id: 'Governance.ComplianceDashboard.PolicyAdherence.no.apis',
                         defaultMessage: 'N/A - No APIs to evaluate',
                     })}
                 </Typography>
@@ -90,7 +90,7 @@ export default function PolicyAdherenceTable() {
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="textSecondary">
                         {intl.formatMessage({
-                            id: 'Governance.Overview.PolicyAdherence.compliant.count',
+                            id: 'Governance.ComplianceDashboard.PolicyAdherence.compliant.count',
                             defaultMessage: '{followed}/{total} Compliant',
                         }, { followed, total })}
                     </Typography>
@@ -120,21 +120,13 @@ export default function PolicyAdherenceTable() {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.policy',
+                id: 'Governance.ComplianceDashboard.PolicyAdherence.column.policy',
                 defaultMessage: 'Policy',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <RouterLink
-                            to={`/governance/policies/${tableMeta.rowData[0]}`}
-                            style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            {value}
-                            <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
-                        </RouterLink>
+                        {value}
                     </Box>
                 ),
                 setCellProps: () => ({
@@ -157,7 +149,7 @@ export default function PolicyAdherenceTable() {
         {
             name: 'status',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.status',
+                id: 'Governance.ComplianceDashboard.PolicyAdherence.column.status',
                 defaultMessage: 'Status',
             }),
             options: {
@@ -195,7 +187,7 @@ export default function PolicyAdherenceTable() {
         {
             name: 'progress',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.apis',
+                id: 'Governance.ComplianceDashboard.PolicyAdherence.column.apis',
                 defaultMessage: 'APIs',
             }),
             options: {
@@ -240,7 +232,7 @@ export default function PolicyAdherenceTable() {
                                     <CancelIcon color="error" sx={{ fontSize: 16 }} />
                                 }
                                 <RouterLink
-                                    to={`/governance/overview/api/${artifact.id}`}
+                                    to={`/governance/compliance/api/${artifact.id}`}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -282,7 +274,7 @@ export default function PolicyAdherenceTable() {
                 sx={{ fontWeight: 'medium' }}
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.PolicyAdherence.empty.content',
+                    id: 'Governance.ComplianceDashboard.PolicyAdherence.empty.content',
                     defaultMessage: 'No Governance Policies Available',
                 })}
             </Typography>
@@ -292,7 +284,7 @@ export default function PolicyAdherenceTable() {
                 align="center"
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.PolicyAdherence.empty.helper',
+                    id: 'Governance.ComplianceDashboard.PolicyAdherence.empty.helper',
                     defaultMessage: 'Create a new governance policy to start governing the APIs.',
                 })}
             </Typography>
