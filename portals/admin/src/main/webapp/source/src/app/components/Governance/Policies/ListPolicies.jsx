@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import {
@@ -31,36 +31,29 @@ import API from 'AppData/api';
 import DeletePolicy from './DeletePolicy';
 
 /**
- * API call to get Policies
- * @returns {Promise}.
+ * Get all policies recursively
+ * @param {Object} restApi GovernanceAPI instance
+ * @param {Array} accumulator Accumulated policies
+ * @returns {Promise} Promise resolving to all policies
  */
-function apiCall() {
-    const restApi = new GovernanceAPI();
-    const adminApi = new API();
+async function getAllPolicies(restApi, accumulator = []) {
+    try {
+        const params = {
+            limit: 25,
+            offset: accumulator.length,
+        };
+        const response = await restApi.getGovernancePolicies(params);
+        const { list, pagination } = response.body;
+        const newAccumulator = [...accumulator, ...list];
 
-    // First get the labels
-    return adminApi.labelsListGet()
-        .then((labelsResponse) => {
-            const labelsList = labelsResponse.body.list || [];
-            // Get the policies
-            return restApi.getGovernancePolicies()
-                .then((result) => {
-                    // Map label IDs to names
-                    return result.body.list.map((policy) => {
-                        return {
-                            ...policy,
-                            labels: policy.labels.map((labelId) => {
-                                if (labelId === 'GLOBAL') return labelId;
-                                const label = labelsList.find((l) => l.id === labelId);
-                                return label ? label.name : labelId;
-                            }),
-                        };
-                    });
-                });
-        })
-        .catch((error) => {
-            throw error;
-        });
+        if (pagination.total > newAccumulator.length) {
+            return getAllPolicies(restApi, newAccumulator);
+        }
+        return newAccumulator;
+    } catch (error) {
+        console.error('Error fetching policies:', error);
+        throw error;
+    }
 }
 
 /**
@@ -69,6 +62,35 @@ function apiCall() {
  */
 export default function ListPolicies() {
     const intl = useIntl();
+    const [policies, setPolicies] = useState(null);
+
+    useEffect(() => {
+        const restApi = new GovernanceAPI();
+        const adminApi = new API();
+
+        // First get all policies
+        getAllPolicies(restApi)
+            .then((allPolicies) => {
+                // Then get labels and map them
+                adminApi.labelsListGet()
+                    .then((labelsResponse) => {
+                        const labelsList = labelsResponse.body.list || [];
+                        // Map label IDs to names
+                        const policiesWithLabels = allPolicies.map((policy) => ({
+                            ...policy,
+                            labels: policy.labels.map((labelId) => {
+                                if (labelId === 'GLOBAL') return labelId;
+                                const label = labelsList.find((l) => l.id === labelId);
+                                return label ? label.name : labelId;
+                            }),
+                        }));
+                        setPolicies(policiesWithLabels);
+                    });
+            })
+            .catch((error) => {
+                console.error('Error loading policies:', error);
+            });
+    }, []);
 
     const columProps = [
         {
@@ -291,7 +313,7 @@ export default function ListPolicies() {
             addButtonProps={addButtonProps}
             searchProps={searchProps}
             emptyBoxProps={emptyBoxProps}
-            apiCall={apiCall}
+            initialData={policies}
             DeleteComponent={DeletePolicy}
             editComponentProps={{
                 icon: <EditIcon />,

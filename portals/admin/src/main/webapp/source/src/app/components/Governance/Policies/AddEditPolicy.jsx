@@ -202,6 +202,30 @@ function AddEditPolicy(props) {
         editAction: null,
     });
 
+    // Add this function inside the component before useEffect
+    const fetchAllRulesets = async (restApi, offset = 0, accumulator = []) => {
+        try {
+            const params = {
+                limit: 25,
+                offset,
+            };
+
+            const response = await restApi.getRulesets(params);
+            const { list, pagination } = response.body;
+            const newAccumulator = [...accumulator, ...list];
+
+            // If we haven't fetched all items yet, fetch the next page
+            if (pagination.total > offset + params.limit) {
+                return fetchAllRulesets(restApi, offset + params.limit, newAccumulator);
+            }
+
+            return newAccumulator;
+        } catch (error) {
+            console.error('Error fetching rulesets:', error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
         const restApi = new GovernanceAPI();
         const adminApi = new API();
@@ -220,17 +244,17 @@ function AddEditPolicy(props) {
                 }));
             });
 
-        restApi.getRulesets()
-            .then((response) => {
-                const rulesetList = response.body.list;
-                setAvailableRulesets(rulesetList);
+        // Fetch all rulesets recursively
+        fetchAllRulesets(restApi)
+            .then((allRulesets) => {
+                setAvailableRulesets(allRulesets);
 
                 if (policyId) {
                     return restApi.getGovernancePolicyById(policyId)
                         .then((policyResponse) => {
                             const { body } = policyResponse;
                             const fullRulesets = body.rulesets.map((rulesetId) => {
-                                const foundRuleset = rulesetList.find((r) => r.id === rulesetId);
+                                const foundRuleset = allRulesets.find((r) => r.id === rulesetId);
                                 return foundRuleset || { id: rulesetId, name: 'Unknown Ruleset' };
                             });
                             setSelectedRulesets(fullRulesets);
