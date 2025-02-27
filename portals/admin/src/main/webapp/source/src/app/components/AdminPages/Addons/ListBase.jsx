@@ -173,9 +173,26 @@ function ListBase(props) {
                                                 state: { isAI },
                                             }}
                                         >
-                                            <IconButton color='primary' component='span' size='large'>
-                                                <EditIcon aria-label={`edit-policies+${artifactId}`} />
-                                            </IconButton>
+
+                                            {(dataRow.isReadOnly)
+                                                ? (
+                                                    <IconButton
+                                                        color='primary'
+                                                        component='span'
+                                                        size='large'
+                                                        disabled
+                                                    >
+                                                        <EditIcon aria-label={`edit-policies+${artifactId}`} />
+                                                    </IconButton>
+                                                ) : (
+                                                    <IconButton
+                                                        color='primary'
+                                                        component='span'
+                                                        size='large'
+                                                    >
+                                                        <EditIcon aria-label={`edit-policies+${artifactId}`} />
+                                                    </IconButton>
+                                                )}
                                         </RouterLink>
                                         {DeleteComponent && (
                                             <DeleteComponent
