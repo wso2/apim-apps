@@ -250,7 +250,7 @@ const ApplicationCreate = (props) => {
 
             />
             {
-                isOrgAccessControlEnabled && (
+                isOrgAccessControlEnabled && sessionStorage.getItem('userOrganization') && (
                     <Box display='flex' flexDirection='row' sx={{ pt: 1 }}>
                         <Typography sx={{ fontSize: 14 }}>
                             <FormattedMessage
