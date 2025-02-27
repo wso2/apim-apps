@@ -40,7 +40,6 @@ import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
 import Policies from 'AppComponents/Governance/Policies';
 import RulesetCatalog from 'AppComponents/Governance/RulesetCatalog';
-import Overview from 'AppComponents/Governance/Overview';
 import BusinessIcon from '@mui/icons-material/Business';
 import Organizations from 'AppComponents/Organizations/ListOrganizations';
 
@@ -70,6 +69,7 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import ListApis from '../APISettings/ListApis';
 import UsageReport from '../APISettings/UsageReport';
 import ListLabels from '../Labels/ListLabels';
+import ComplianceDashboard from '../Governance/ComplianceDashboard';
 
 const RouteMenuMapping = (intl) => [
     {
@@ -318,13 +318,13 @@ const RouteMenuMapping = (intl) => [
         }),
         children: [
             {
-                id: 'Overview',
+                id: 'Compliance',
                 displayText: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.overview',
-                    defaultMessage: 'Overview',
+                    id: 'Base.RouteMenuMapping.compliance',
+                    defaultMessage: 'Compliance',
                 }),
-                path: '/governance/overview',
-                component: Overview,
+                path: '/governance/compliance',
+                component: ComplianceDashboard,
                 icon: <BarChartIcon />,
             },
             {

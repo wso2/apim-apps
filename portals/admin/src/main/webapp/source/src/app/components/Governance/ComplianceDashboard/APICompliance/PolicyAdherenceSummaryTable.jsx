@@ -55,7 +55,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             return (
                 <Typography variant='body2' color='textSecondary'>
                     {intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.PolicyAdherence.pending',
+                        id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.pending',
                         defaultMessage: 'N/A - Waiting for policy evaluation',
                     })}
                 </Typography>
@@ -66,7 +66,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             return (
                 <Typography variant='body2' color='textSecondary'>
                     {intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.PolicyAdherence.not.applied',
+                        id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.not.applied',
                         defaultMessage: 'N/A - Policy not applied',
                     })}
                 </Typography>
@@ -81,7 +81,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant='body2' sx={{ fontWeight: 'bold' }} color='textSecondary'>
                         {intl.formatMessage({
-                            id: 'Governance.Overview.APICompliance.PolicyAdherence.followed.count',
+                            id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.followed.count',
                             defaultMessage: '{followed}/{total} Followed',
                         }, { followed, total })}
                     </Typography>
@@ -150,7 +150,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.policy',
+                id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.column.policy',
                 defaultMessage: 'Policy',
             }),
             options: {
@@ -176,7 +176,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         {
             name: 'status',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.status',
+                id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.column.status',
                 defaultMessage: 'Status',
             }),
             options: {
@@ -218,7 +218,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         {
             name: 'rulesetsList',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.rulesets',
+                id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.column.rulesets',
                 defaultMessage: 'Rulesets',
             }),
             options: {
@@ -266,7 +266,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 sx={{ fontWeight: 'medium' }}
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.title',
+                    id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.empty.title',
                     defaultMessage: 'No Policies Applied',
                 })}
             </Typography>
@@ -276,7 +276,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 align='center'
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.helper',
+                    id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.empty.helper',
                     defaultMessage: 'No governance policies have been applied to this API.',
                 })}
             </Typography>

@@ -35,6 +35,7 @@ import {
     DialogContent,
     DialogActions,
     DialogContentText,
+    Alert as MuiAlert,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Editor from '@monaco-editor/react';
@@ -93,6 +94,7 @@ function AddEditRuleset(props) {
     const [saving, setSaving] = useState(false);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [pendingFile, setPendingFile] = useState(null);
+    const [rulesetValidationError, setRulesetValidationError] = useState(null);
     const intl = useIntl();
     const { match: { params: { id } }, history } = props;
 
@@ -311,6 +313,7 @@ function AddEditRuleset(props) {
 
     const formSave = () => {
         setValidating(true);
+        setRulesetValidationError(null);
         if (formHasErrors(true)) {
             Alert.error(intl.formatMessage({
                 id: 'Governance.Rulesets.AddEdit.form.has.errors',
@@ -357,7 +360,12 @@ function AddEditRuleset(props) {
         }).catch((error) => {
             const { response, message } = error;
             if (response && response.body) {
-                Alert.error(response.body.description);
+                if (response.body.code === 990120) {
+                    setRulesetValidationError(response.body.description);
+                    Alert.error(response.body.message);
+                } else {
+                    Alert.error(response.body.description);
+                }
             } else if (message) {
                 Alert.error(message);
             }
@@ -597,6 +605,13 @@ function AddEditRuleset(props) {
                         {validating && hasErrors('rulesetContent', rulesetContent, true) && (
                             <Box sx={{ color: 'error.main', pl: 2, pb: 1 }}>
                                 {hasErrors('rulesetContent', rulesetContent, true)}
+                            </Box>
+                        )}
+                        {rulesetValidationError && (
+                            <Box sx={{ m: 1 }}>
+                                <MuiAlert severity='error' style={{ whiteSpace: 'pre-line' }}>
+                                    {rulesetValidationError}
+                                </MuiAlert>
                             </Box>
                         )}
                     </Grid>
