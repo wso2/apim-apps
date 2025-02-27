@@ -18,10 +18,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import { Grid, Card, CardContent, Typography } from '@mui/material';
+import { Grid, Card, CardContent, Typography, List, ListItemButton, ListItemIcon, Link, ListItemText } from '@mui/material';
 import DonutChart from 'AppComponents/Shared/DonutChart';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import Configurations from 'Config';
 import ApiComplianceTable from './ApiComplianceTable';
 import PolicyAdherenceTable from './PolicyAdherenceTable';
 import GovernanceAPI from 'AppData/GovernanceAPI';
@@ -76,6 +79,31 @@ export default function Summary() {
                 defaultMessage: 'Compliance Dashboard',
             })}
             pageStyle='paperLess'
+            help={(
+                <HelpBase>
+                    <List component='nav'>
+                        <ListItemButton>
+                            <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                                <DescriptionIcon />
+                            </ListItemIcon>
+                            <Link
+                                target='_blank'
+                                href={Configurations.app.docUrl
+                                    + 'governance/api-governance-admin-capabilities/#compliance-monitoring'}
+                                underline='hover'
+                            >
+                                <ListItemText primary={(
+                                    <FormattedMessage
+                                        id='Governance.ComplianceDashboard.Summary.help.link'
+                                        defaultMessage='Compliance Monitoring'
+                                    />
+                                )}
+                                />
+                            </Link>
+                        </ListItemButton>
+                    </List>
+                </HelpBase>
+            )}
         >
             <Grid container spacing={4} alignItems='left'>
                 <Grid item xs={12} md={6} lg={4}>
