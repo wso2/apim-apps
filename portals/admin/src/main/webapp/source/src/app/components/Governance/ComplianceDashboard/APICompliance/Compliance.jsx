@@ -51,7 +51,11 @@ export default function Compliance(props) {
                     + response.body.info.version,
                 );
                 setArtifactOwner(response.body.info.owner);
-                setComplianceStatus(response.body.status);
+                if (response.body.governedPolicies.length === 0) {
+                    setComplianceStatus(response.body.status);
+                    return;
+                }
+
                 const rulesetMap = new Map();
 
                 response.body.governedPolicies.forEach((policy) => {
@@ -91,7 +95,7 @@ export default function Compliance(props) {
                 width='full'
                 title={(
                     <FormattedMessage
-                        id='Governance.Overview.Compliance.title'
+                        id='Governance.ComplianceDashboard.Compliance.title'
                         defaultMessage='Compliance Summary - {artifactName}'
                         values={{ artifactName }}
                     />
@@ -100,15 +104,15 @@ export default function Compliance(props) {
             >
                 <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: 4 }}>
                     <RouterLink
-                        to='/governance/overview'
+                        to='/governance/compliance'
                         style={{
                             display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit',
                         }}
                     >
                         <ArrowBackIcon />
                         <FormattedMessage
-                            id='Governance.Overview.Compliance.back.to.overview'
-                            defaultMessage='Back to Overview'
+                            id='Governance.ComplianceDashboard.Compliance.back.to.compliance'
+                            defaultMessage='Back to Compliance Dashboard'
                         />
                     </RouterLink>
                 </Box>
@@ -136,7 +140,7 @@ export default function Compliance(props) {
                         sx={{ fontWeight: 'medium' }}
                     >
                         <FormattedMessage
-                            id='Governance.Overview.Compliance.check.progress'
+                            id='Governance.ComplianceDashboard.Compliance.check.progress'
                             defaultMessage='Compliance Check in Progress'
                         />
                     </Typography>
@@ -146,7 +150,7 @@ export default function Compliance(props) {
                         align='center'
                     >
                         <FormattedMessage
-                            id='Governance.Overview.Compliance.check.progress.message'
+                            id='Governance.ComplianceDashboard.Compliance.check.progress.message'
                             defaultMessage='The compliance check is currently in progress. This may take a few moments.'
                         />
                     </Typography>
@@ -160,7 +164,7 @@ export default function Compliance(props) {
             width='full'
             title={(
                 <FormattedMessage
-                    id='Governance.Overview.Compliance.title'
+                    id='Governance.ComplianceDashboard.Compliance.title'
                     defaultMessage='Compliance Summary - {artifactName}'
                     values={{ artifactName }}
                 />
@@ -175,20 +179,20 @@ export default function Compliance(props) {
             }}
             >
                 <RouterLink
-                    to='/governance/overview'
+                    to='/governance/compliance'
                     style={{
                         display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit',
                     }}
                 >
                     <ArrowBackIcon />
                     <FormattedMessage
-                        id='Governance.Overview.Compliance.back.to.overview'
-                        defaultMessage='Back to Overview'
+                        id='Governance.ComplianceDashboard.Compliance.back.to.compliance'
+                        defaultMessage='Back to Compliance Dashboard'
                     />
                 </RouterLink>
                 <Typography variant='body2'>
                     <FormattedMessage
-                        id='Governance.Overview.Compliance.api.owner'
+                        id='Governance.ComplianceDashboard.Compliance.api.owner'
                         defaultMessage='API Owner: {owner}'
                         values={{ owner: artifactOwner }}
                     />
@@ -221,7 +225,7 @@ export default function Compliance(props) {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 <FormattedMessage
-                                    id='Governance.Overview.Compliance.policy.adherence.summary'
+                                    id='Governance.ComplianceDashboard.Compliance.policy.adherence.summary'
                                     defaultMessage='Policy Adherence Summary'
                                 />
                             </Typography>
@@ -239,18 +243,18 @@ export default function Compliance(props) {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 <FormattedMessage
-                                    id='Governance.Overview.Compliance.ruleset.adherence'
+                                    id='Governance.ComplianceDashboard.Compliance.ruleset.adherence'
                                     defaultMessage='Ruleset Adherence'
                                 />
                             </Typography>
                             <DonutChart
-                                colors={['#2E96FF', '#FF5252', 'grey']}
+                                colors={['#00B81D', '#FF5252', 'grey']}
                                 data={[
                                     {
                                         id: 0,
                                         value: statusCounts.passed,
                                         label: `${intl.formatMessage({
-                                            id: 'Governance.Overview.Compliance.passed',
+                                            id: 'Governance.ComplianceDashboard.Compliance.passed',
                                             defaultMessage: 'Passed',
                                         })} (${statusCounts.passed})`,
                                     },
@@ -258,7 +262,7 @@ export default function Compliance(props) {
                                         id: 1,
                                         value: statusCounts.failed,
                                         label: `${intl.formatMessage({
-                                            id: 'Governance.Overview.Compliance.failed',
+                                            id: 'Governance.ComplianceDashboard.Compliance.failed',
                                             defaultMessage: 'Failed',
                                         })} (${statusCounts.failed})`,
                                     },
@@ -291,7 +295,7 @@ export default function Compliance(props) {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 <FormattedMessage
-                                    id='Governance.Overview.Compliance.ruleset.adherence.summary'
+                                    id='Governance.ComplianceDashboard.Compliance.ruleset.adherence.summary'
                                     defaultMessage='Ruleset Adherence Summary'
                                 />
                             </Typography>

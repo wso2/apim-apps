@@ -61,7 +61,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             <Tooltip title={
                 intl.formatMessage(
                     {
-                        id: 'Governance.Overview.APICompliance.RulesetAdherence.violations.tooltip',
+                        id: 'Governance.ComplianceDashboard.APICompliance.RulesetAdherence.violations.tooltip',
                         defaultMessage: 'Errors: {error}, Warnings: {warn}, Info: {info}',
                     },
                     { error, warn, info },
@@ -100,7 +100,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RulesetAdherence.column.ruleset',
+                id: 'Governance.ComplianceDashboard.APICompliance.RulesetAdherence.column.ruleset',
                 defaultMessage: 'Ruleset',
             }),
             options: {
@@ -126,7 +126,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         {
             name: 'status',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RulesetAdherence.column.status',
+                id: 'Governance.ComplianceDashboard.APICompliance.RulesetAdherence.column.status',
                 defaultMessage: 'Status',
             }),
             options: {
@@ -172,7 +172,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
         {
             name: 'violationsSummary',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RulesetAdherence.column.violations',
+                id: 'Governance.ComplianceDashboard.APICompliance.RulesetAdherence.column.violations',
                 defaultMessage: 'Violations',
             }),
             options: {
@@ -227,7 +227,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 sx={{ fontWeight: 'medium' }}
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RulesetAdherence.empty.title',
+                    id: 'Governance.ComplianceDashboard.APICompliance.RulesetAdherence.empty.title',
                     defaultMessage: 'No Rulesets Found',
                 })}
             </Typography>
@@ -237,7 +237,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
                 align='center'
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RulesetAdherence.empty.helper',
+                    id: 'Governance.ComplianceDashboard.APICompliance.RulesetAdherence.empty.helper',
                     defaultMessage: 'No governance rulesets have been applied for this API.',
                 })}
             </Typography>

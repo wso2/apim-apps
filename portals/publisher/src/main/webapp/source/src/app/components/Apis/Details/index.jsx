@@ -62,7 +62,7 @@ import Operations from './Operations/Operations';
 import APIOperations from './Resources/APIOperations';
 import APIProductOperations from './ProductResources/APIProductOperations';
 import ProductResourcesEdit from './ProductResources/ProductResourcesEdit';
-import Endpoints from './Endpoints/Endpoints';
+import Endpoint from './Endpoints';
 import Environments from './Environments/Environments';
 import Subscriptions from './Subscriptions/Subscriptions';
 import Comments from './Comments/Comments';
@@ -788,16 +788,18 @@ class Details extends Component {
                                 head='valueOnly'
                                 id='left-menu-overview'
                             />
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.compliance',
-                                    defaultMessage: 'compliance',
-                                })}
-                                to={pathPrefix + 'compliance'}
-                                Icon={<PolicyIcon />}
-                                head='valueOnly'
-                                id='left-menu-compliance'
-                            />
+                            {!isAPIProduct && !api.isGraphql() && !api.isSOAPToREST() && !api.isSOAP() && (
+                                <LeftMenuItem
+                                    text={intl.formatMessage({
+                                        id: 'Apis.Details.index.compliance',
+                                        defaultMessage: 'compliance',
+                                    })}
+                                    to={pathPrefix + 'compliance'}
+                                    Icon={<PolicyIcon />}
+                                    head='valueOnly'
+                                    id='left-menu-compliance'
+                                />
+                            )}
                             <Typography className={classes.headingText}>
                                 <FormattedMessage id='Apis.Details.index.develop.title'
                                     defaultMessage='Develop' />
@@ -810,7 +812,7 @@ class Details extends Component {
                                 getLeftMenuItemForDefinitionByType={this.getLeftMenuItemForDefinitionByType}
                                 componentValidator=
                                     {settings && settings.gatewayFeatureCatalog
-                                        .gatewayFeatures[api.gatewayType]}
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']}
                             />
                             <Divider />
                             {!isAPIProduct && (
@@ -855,7 +857,8 @@ class Details extends Component {
                             )}
                             {!readOnlyUser && (isAPIProduct || (!isAPIProduct && !api.isWebSocket()
                                 && !api.isGraphql() && !isAsyncAPI)) &&
-                            (settings && settings.gatewayFeatureCatalog.gatewayFeatures[api.gatewayType]
+                            (settings && settings.gatewayFeatureCatalog
+                                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                 .tryout.includes('tryout')) && (
                                 <div>
                                     <Divider />
@@ -1013,7 +1016,7 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.ENDPOINTS}
-                                        component={() => <Endpoints api={api} />}
+                                        component={() => <Endpoint />}
                                     />
                                     <Route
                                         path={Details.subPaths.ENVIRONMENTS}
@@ -1028,7 +1031,8 @@ class Details extends Component {
                                         component={() => <Operations api={api}
                                             componentValidator={settings &&
                                                 settings.gatewayFeatureCatalog
-                                                    .gatewayFeatures[api.gatewayType].resources}
+                                                    .gatewayFeatures
+                                                    [api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources}
                                             updateAPI={this.updateAPI} />}
                                     />
                                     <Route
@@ -1047,7 +1051,7 @@ class Details extends Component {
                                         component={APIOperations}
                                     />
                                     {settings && settings.gatewayFeatureCatalog
-                                        .gatewayFeatures[api.gatewayType]
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                         .localScopes.includes("operationScopes") &&
                                         <Route path={Details.subPaths.SCOPES} component={() =>
                                             <Scope api={api} />} />
@@ -1061,7 +1065,7 @@ class Details extends Component {
                                         component={() => <Documents api={api} />}
                                     />
                                     {settings && settings.gatewayFeatureCatalog
-                                        .gatewayFeatures[api.gatewayType]
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                         .subscriptions.includes("subscriptions") &&
                                         <Route
                                             path={Details.subPaths.SUBSCRIPTIONS}
@@ -1104,7 +1108,7 @@ class Details extends Component {
                                     <Route path={Details.subPaths.SUBSCRIPTIONS} component={() =>
                                         <Subscriptions />} />
                                     {settings && settings.gatewayFeatureCatalog
-                                        .gatewayFeatures[api.gatewayType]
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                         .monetization.includes("monetization") &&
                                         <Route
                                             path={Details.subPaths.MONETIZATION}
@@ -1135,7 +1139,19 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.COMPLIANCE}
-                                        component={() => <Compliance api={api} />}
+                                        component={() => {
+                                            return (
+                                                !isAPIProduct &&
+                                                !api.isGraphql() &&
+                                                !api.isSOAPToREST() &&
+                                                !api.isSOAP() ? 
+                                                    (
+                                                        <Compliance api={api} />
+                                                    ) : (
+                                                        <ResourceNotFound />
+                                                    )
+                                            )
+                                        }}
                                     />
                                 </Switch>
                             </div>

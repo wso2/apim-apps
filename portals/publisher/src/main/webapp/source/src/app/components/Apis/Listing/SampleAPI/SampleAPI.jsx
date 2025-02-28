@@ -326,9 +326,9 @@ const SampleAPI = (props) => {
                                 </>
                             )}
                             {anyErrors && (
-                                <>
-                                    <Grid item xs={8} />
-                                    <Grid item xs={2}>
+                                <Grid container justifyContent='flex-end' gap={2}
+                                    paddingRight={1} paddingBottom={1} alignItems='center'>
+                                    <Grid item>
                                         <Button
                                             onClick={() => {
                                                 setShowStatus(false);
@@ -343,8 +343,9 @@ const SampleAPI = (props) => {
                                         </Button>
                                     </Grid>
                                     {newSampleAPI && (
-                                        <Grid item xs={2}>
+                                        <Grid item>
                                             <Link
+                                                variant='body2'
                                                 underline='none'
                                                 component={RouterLink}
                                                 to={`/apis/${newSampleAPI.id}/overview`}
@@ -356,7 +357,7 @@ const SampleAPI = (props) => {
                                             </Link>
                                         </Grid>
                                     )}
-                                </>
+                                </Grid>
                             )}
                         </Grid>
                     </Box>

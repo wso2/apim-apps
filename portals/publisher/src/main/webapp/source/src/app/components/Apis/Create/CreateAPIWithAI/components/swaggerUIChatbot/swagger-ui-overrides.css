@@ -1,0 +1,16 @@
+.swagger-ui .copy-to-clipboard {
+    display: none !important;
+  }
+  
+
+.swagger-ui .authorization__btn {
+    display: none !important;
+  }
+
+.swagger-ui .servers {
+    display: none !important;
+  }
+
+.swagger-ui .scheme-container {
+    display: none !important;
+  }

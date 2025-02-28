@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -24,6 +23,7 @@ import Send from '@mui/icons-material/SendOutlined';
 import { styled } from '@mui/system';
 import TextInput from './TextInput/TextInput';
 import { createPortal } from 'react-dom';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 const PREFIX = 'ApiChatExecute';
 
@@ -93,6 +93,7 @@ const MentionMenu = ({
                 width: '250px',
                 maxHeight: '100px',
                 fontSize: '14px',
+                fontFamily: 'Open Sans',
                 border: 'solid 1px #E0E0E0',
                 borderRadius: '8px',
                 background: 'white',
@@ -144,6 +145,7 @@ interface ApiChatExecuteProps {
     ) => void;
     handleExecute: () => Promise<void>;
     paths?: string[]; 
+    loading?: boolean;
 }
 
 const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
@@ -152,6 +154,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
     handleQueryChange,
     handleExecute,
     paths = [],
+    loading = false,
 }) => {
     const intl = useIntl();
     const QUERY_CHARACTER_LIMIT = 500;
@@ -163,6 +166,9 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
     } | null>(null);
     const [mentionIndex, setMentionIndex] = useState<number>(0);
     const [dynamicCharacters, setDynamicCharacters] = useState<string[]>([]);
+    const { data: settings }: any = usePublisherSettings();
+    const aiAuthTokenProvided = settings?.aiAuthTokenProvided;
+    const designAssistantEnabled = settings?.designAssistantEnabled;
 
     useEffect(() => {
         const transformedPaths = paths.map(path => 
@@ -266,7 +272,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
         <Root>
             <Box className={classes.tryAiBottom}>
                 <Box className={classes.tryAiBottomInner}>
-                    <Box className={classes.tryAiBottomTextInputWrap} pl={2}>
+                    <Box className={classes.tryAiBottomTextInputWrap} pl={2} pr={2}>
                         <TextInput
                             ref={textareaRef}
                             fullWidth
@@ -274,12 +280,13 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                             value={inputQuery}
                             placeholder={intl.formatMessage({
                                 id: 'Apis.Details.ApiChat.components.ApiChatExecute.queryInput.placeholder',
-                                defaultMessage: 'Type the test scenario here...',
+                                defaultMessage: 'Describe your API design requirements...',
                             })}
                             onChange={handleInputChange}
                             onKeyDown={handleKeyDown}
                             testId='nl-query-input'
                             multiline
+                            disabled={!aiAuthTokenProvided||!designAssistantEnabled}
                             sx={{
                                 '& .TextInput-textarea': {
                                     resize: 'none',
@@ -298,22 +305,16 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                                     color='primary'
                                     onClick={handleExecute}
                                     id='run-agent-button'
-                                    startIcon={<ExecuteQuery />}
-                                    sx={{
-                                        marginLeft: 1,
-                                    }}
+                                    disabled={loading}
                                 >
-                                    <FormattedMessage
-                                        id='Apis.Details.ApiChat.components.ApiChatExecute.executeButton.label'
-                                        defaultMessage='Execute'
-                                    />
+                                <ExecuteQuery />
                                 </Button>
                             )}
                             inputProps={{
                                 maxLength: QUERY_CHARACTER_LIMIT,
                             }}
                         />
-                        <Box display='flex' justifyContent='flex-end' mt={1} mr={2}>
+                        <Box display='flex' justifyContent='flex-end' mt={1} mr={2} >
                             <Typography variant='caption'>
                                 {inputQuery.length}
                                 /

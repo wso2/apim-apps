@@ -1263,14 +1263,7 @@ function EndpointOverview(props) {
                                                                                             apiId={api.id}
                                                                                             componentValidator={componentValidator}
                                                                                         />
-                                                                                        {endpointCategory.sandbox && // eslint-disable-line
-                                                                                            api.subtypeConfiguration?.subtype === 'AIAPI' && // eslint-disable-line
-                                                                                            (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter) && // eslint-disable-line
-                                                                                            (<AIEndpointAuth
-                                                                                                api={api}
-                                                                                                saveEndpointSecurityConfig={saveEndpointSecurityConfig} // eslint-disable-line
-                                                                                                apiKeyParamConfig={apiKeyParamConfig} // eslint-disable-line
-                                                                                        />)}</> // eslint-disable-line
+                                                                                        </>
                                                                                     )}
                                                                             </Collapse>
                                                                         </>}
@@ -1397,6 +1390,7 @@ function EndpointOverview(props) {
                                     onChangeEndpointAuth={handleEndpointSecurityChange}
                                     saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                                     closeEndpointSecurityConfig={closeEndpointSecurityConfig}
+                                    endpointSecurityTypes={endpointSecurityTypes}
                                 />
                             )}
                         </DialogContent>

@@ -158,10 +158,12 @@ export default function CustomizedStepper() {
     const [api, updateAPI] = useAPI();
     const [isUpdating, setUpdating] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
+    const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
     const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct && api.endpointConfig !== null
-    && api.endpointConfig.implementation_status === 'prototyped';
-    const isEndpointAvailable = api.endpointConfig !== null;
-    const isEndpointSecurityConfigured = api.endpointConfig && api.endpointConfig.endpoint_security;
+        && api.endpointConfig.implementation_status === 'prototyped';
+    const isEndpointAvailable = api.subtypeConfiguration?.subtype === 'AIAPI'
+        ? (api.primaryProductionEndpointId || api.primarySandboxEndpointId)
+        : api.endpointConfig !== null;
     const isTierAvailable = api.policies.length !== 0;
     const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
@@ -182,7 +184,7 @@ export default function CustomizedStepper() {
         // TODO: tmkasun need to handle is loading
         devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
     }
-    const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI())
+    const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI() || api.gatewayVendor !== 'wso2')
         ? ['Develop', 'Deploy', 'Publish'] : ['Develop', 'Deploy', 'Test', 'Publish'];
     const forceComplete = [];
     if (isPublished) {
@@ -227,6 +229,49 @@ export default function CustomizedStepper() {
         });
     }, []);
 
+    useEffect(() => {
+        const checkEndpointSecurity = async () => {
+            try {
+                const hasProductionEndpoint = !!api.primaryProductionEndpointId;
+                const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
+                let isProductionSecure = false;
+                let isSandboxSecure = false;
+
+                if (hasProductionEndpoint) {
+                    if (api.primaryProductionEndpointId === `${api.id}--PRODUCTION`) {
+                        isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
+                    } else {
+                        const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
+                        isProductionSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.production;
+                    }
+                }
+
+                if (hasSandboxEndpoint) {
+                    if (api.primarySandboxEndpointId === `${api.id}--SANDBOX`) {
+                        isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
+                    } else {
+                        const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
+                        isSandboxSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox;
+                    }
+                }
+
+                if (hasProductionEndpoint && hasSandboxEndpoint) {
+                    setIsEndpointSecurityConfigured(isProductionSecure && isSandboxSecure);
+                } else if (hasProductionEndpoint) {
+                    setIsEndpointSecurityConfigured(isProductionSecure);
+                } else if (hasSandboxEndpoint) {
+                    setIsEndpointSecurityConfigured(isSandboxSecure);
+                } else {
+                    setIsEndpointSecurityConfigured(false);
+                }
+            } catch (error) {
+                console.error('Error checking endpoint security:', error);
+                setIsEndpointSecurityConfigured(false);
+            }
+        };
+        checkEndpointSecurity();
+    }, [api]);
+
     /**
  * Update the LifeCycle state of the API
  *
@@ -257,12 +302,42 @@ export default function CustomizedStepper() {
             .finally(() => setUpdating(false))
             .catch((errorResponse) => {
                 if (errorResponse.response?.body?.code === 903300) {
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.LifeCycle.Policies.update.error.governance',
-                        defaultMessage: 'One or more governance policies have been'
-                            + ' violated. Please try using the publish option in the Lifecycle'
-                            + ' tab to get more details.',
-                    }));
+                    Alert.error(
+                        <Box sx={{ width: '100%' }}>
+                            <Typography>
+                                <FormattedMessage
+                                    id='Apis.Details.LifeCycle.Policies.update.error.governance'
+                                    defaultMessage={'One or more governance policies have been violated. '
+                                    + 'Please try using the publish option in the Lifecycle page for more details.'}
+                                />
+                            </Typography>
+                            <Box sx={{ 
+                                display: 'flex', 
+                                justifyContent: 'flex-end',
+                                mt: 1
+                            }}>
+                                <Link
+                                    component={RouterLink}
+                                    to={`/apis/${api.id}/lifecycle`}
+                                    sx={{
+                                        color: 'inherit',
+                                        fontWeight: 600,
+                                        textDecoration: 'none',
+                                        transition: 'all 0.3s',
+                                        '&:hover': {
+                                            transform: 'translateY(-2px)',
+                                            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                        },
+                                    }}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.LifeCycle.Policies.update.error.governance.link'
+                                        defaultMessage='Go to Lifecycle page'
+                                    />
+                                </Link>
+                            </Box>
+                        </Box>
+                    );
                 } else {
                     console.log(errorResponse);
                     Alert.error(JSON.stringify(errorResponse.message));

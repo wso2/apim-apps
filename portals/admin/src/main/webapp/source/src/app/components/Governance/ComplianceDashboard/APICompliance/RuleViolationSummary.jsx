@@ -197,7 +197,7 @@ export default function RuleViolationSummary({ artifactId }) {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RuleViolation.column.rule',
+                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.rule',
                 defaultMessage: 'Rule',
             }),
             options: {
@@ -209,10 +209,11 @@ export default function RuleViolationSummary({ artifactId }) {
         {
             name: 'violatedPath',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RuleViolation.column.path',
+                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.path',
                 defaultMessage: 'Path',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value.path}</Typography>
                 ),
@@ -221,10 +222,11 @@ export default function RuleViolationSummary({ artifactId }) {
         {
             name: 'message',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RuleViolation.column.message',
+                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.message',
                 defaultMessage: 'Message',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value}</Typography>
                 ),
@@ -237,7 +239,7 @@ export default function RuleViolationSummary({ artifactId }) {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RuleViolation.column.rule',
+                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.rule',
                 defaultMessage: 'Rule',
             }),
             options: {
@@ -249,10 +251,11 @@ export default function RuleViolationSummary({ artifactId }) {
         {
             name: 'description',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RuleViolation.column.description',
+                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.description',
                 defaultMessage: 'Description',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value}</Typography>
                 ),
@@ -404,22 +407,22 @@ export default function RuleViolationSummary({ artifactId }) {
         switch (tabIndex) {
             case 0:
                 return intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.errors',
+                    id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.empty.errors',
                     defaultMessage: 'No Error violations found',
                 });
             case 1:
                 return intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.warnings',
+                    id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.empty.warnings',
                     defaultMessage: 'No Warning violations found',
                 });
             case 2:
                 return intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.info',
+                    id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.empty.info',
                     defaultMessage: 'No Info violations found',
                 });
             case 3:
                 return intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.passed',
+                    id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.empty.passed',
                     defaultMessage: 'No Passed rules found',
                 });
             default:
@@ -482,7 +485,7 @@ export default function RuleViolationSummary({ artifactId }) {
                     icon={<ReportIcon color='error' />}
                     iconPosition='start'
                     label={intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.errors',
+                        id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.tab.errors',
                         defaultMessage: 'Errors ({count})',
                     }, { count: getTotalRuleCount(complianceData.errors) })}
                 />
@@ -490,7 +493,7 @@ export default function RuleViolationSummary({ artifactId }) {
                     icon={<WarningIcon color='warning' />}
                     iconPosition='start'
                     label={intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.warnings',
+                        id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.tab.warnings',
                         defaultMessage: 'Warnings ({count})',
                     }, { count: getTotalRuleCount(complianceData.warnings) })}
                 />
@@ -498,7 +501,7 @@ export default function RuleViolationSummary({ artifactId }) {
                     icon={<InfoIcon color='info' />}
                     iconPosition='start'
                     label={intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.info',
+                        id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.tab.info',
                         defaultMessage: 'Info ({count})',
                     }, { count: getTotalRuleCount(complianceData.info) })}
                 />
@@ -506,7 +509,7 @@ export default function RuleViolationSummary({ artifactId }) {
                     icon={<CheckCircleIcon color='success' />}
                     iconPosition='start'
                     label={intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.passed',
+                        id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.tab.passed',
                         defaultMessage: 'Passed ({count})',
                     }, { count: getTotalRuleCount(complianceData.passed) })}
                 />

@@ -80,8 +80,8 @@ function APIRateLimiting(props) {
     const [apiThrottlingPolicy, setApiThrottlingPolicy] = useState(currentApiThrottlingPolicy);
     const [isSaving, setIsSaving] = useState(false);
     const [componentValidator, setComponentValidator] = useState([]);
-    const [isResourceLevel, setIsResourceLevel] = useState(false);
-    const [rateLimitingLevel, setRateLimitingLevel] = useState(RateLimitingLevels.API);
+    const [isResourceLevel, setIsResourceLevel] = useState(true);
+    const [rateLimitingLevel, setRateLimitingLevel] = useState(RateLimitingLevels.RESOURCE);
     const [apiFromContext] = useAPI();
 
     // Following effect is used to handle the controlled component case, If user provide onChange handler to
@@ -97,14 +97,17 @@ function APIRateLimiting(props) {
     }, [onChange, currentApiThrottlingPolicy]); // Do not expect to change the onChange during the runtime
 
     useEffect(() => {
-        setIsResourceLevel(apiThrottlingPolicy === null || !componentValidator.includes('apiLevelRateLimiting'));
-        setRateLimitingLevel(isResourceLevel ? RateLimitingLevels.RESOURCE : RateLimitingLevels.API);
-    }, [apiThrottlingPolicy, isResourceLevel]);
+        const isResource = apiThrottlingPolicy === null;
+        setIsResourceLevel(isResource);
+        setRateLimitingLevel(isResource ? RateLimitingLevels.RESOURCE : RateLimitingLevels.API);
+    }, [apiThrottlingPolicy, isLoading]);
+
 
     useEffect(() => {
         if (!isLoading) {
-            setComponentValidator(publisherSettings.gatewayFeatureCatalog
-                .gatewayFeatures[api.gatewayType].resources);
+            const validator = publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources
+            setComponentValidator(validator);
         }
     }, [isLoading]);
 

@@ -455,6 +455,7 @@ Cypress.Commands.add('modifyGraphqlSchemaDefinition', (filepath) => {
     var uploadedDefinitionPanel = null;
 
     cy.contains('button', 'Import Definition').click();
+    cy.get('#graphql-file-select-radio').contains('GraphQL File/Archive').click();
     // upload the graphql file
     cy.get('[data-testid="browse-to-upload-btn"]')
     cy.get('input[type="file"]').attachFile(filepath);

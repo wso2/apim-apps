@@ -29,7 +29,7 @@ const LoadingDots: React.FC = () => {
 
   const containerStyle: React.CSSProperties = {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'left',
     gap: '10px',
   };
 
@@ -42,7 +42,7 @@ const LoadingDots: React.FC = () => {
     fontSize: '15px',
     color: '#34445e',
     fontWeight: '600',
-    marginLeft: '55px',
+    marginLeft: '16px',
     fontFamily: 'Arial, sans-serif',
   };
 
@@ -63,7 +63,7 @@ const LoadingDots: React.FC = () => {
         {keyframesStyle}
       </style>
       <div style={containerStyle}>
-        <span style={textStyle}>Assistant is thinking</span>
+        <span style={textStyle}>Generating a response</span>
         <div style={dotsStyle}>
           <span style={{ ...dotStyle, animationDelay: '-0.32s' }}></span>
           <span style={{ ...dotStyle, animationDelay: '-0.16s' }}></span>

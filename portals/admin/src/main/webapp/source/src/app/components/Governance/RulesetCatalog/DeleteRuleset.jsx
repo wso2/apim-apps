@@ -23,6 +23,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import DialogContentText from '@mui/material/DialogContentText';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
+import Alert from 'AppComponents/Shared/Alert';
 
 /**
  * Renders delete dialog box
@@ -43,7 +44,19 @@ function DeleteRuleset({ updateList, dataRow }) {
                 />
             ))
             .catch((error) => {
-                throw new Error(error.response.body.description);
+                const { response, message } = error;
+                if (message) {
+                    Alert.error(message);
+                } else if (response && response.body) {
+                    Alert.error(response.body.description);
+                } else {
+                    Alert.error(
+                        intl.formatMessage({
+                            id: 'AdminPages.Governance.Ruleset.Delete.form.delete.error',
+                            defaultMessage: 'Something went wrong while deleting the Ruleset',
+                        }),
+                    );
+                }
             })
             .finally(() => {
                 updateList();

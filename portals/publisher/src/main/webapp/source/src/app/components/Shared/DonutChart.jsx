@@ -52,6 +52,7 @@ const DonutChart = ({
                 colors={colors}
                 series={[{
                     data,
+                    valueFormatter: () => '',
                     innerRadius: 50,
                     outerRadius: 100,
                     paddingAngle: 5,

@@ -34,6 +34,12 @@ import { green } from '@mui/material/colors';
 
 const PREFIX = 'DefaultAPIForm';
 
+const gatewayTypeMap = {
+    'Regular': 'wso2/synapse',
+    'APK': 'wso2/apk',
+    'AWS': 'AWS',
+}
+
 const classes = {
     mandatoryStar: `${PREFIX}-mandatoryStar`,
     helperTextContext: `${PREFIX}-helperTextContext`,
@@ -157,7 +163,7 @@ export default function DefaultAPIForm(props) {
     const {
         onChange, onValidate, api, isAPIProduct, multiGateway,
         isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
-        readOnlyAPIEndpoint,
+        readOnlyAPIEndpoint, settings,
     } = props;
 
     const [validity, setValidity] = useState({});
@@ -165,6 +171,11 @@ export default function DefaultAPIForm(props) {
     const [statusCode, setStatusCode] = useState('');
     const [isUpdating, setUpdating] = useState(false);
     const [isErrorCode, setIsErrorCode] = useState(false);
+    const [gatewayToEnvMap, setGatewayToEnvMap] = useState({
+        'wso2/synapse': true,
+        'wso2/apk': true,
+        'AWS': true,
+    });
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 
     const getBorderColor = (gatewayType) => {
@@ -178,6 +189,30 @@ export default function DefaultAPIForm(props) {
         onValidate(Boolean(api.name)
             && (Boolean(api.version))
             && Boolean(api.context));
+
+        if (multiGateway) {
+            const settingsEnvList = settings && settings.environment;
+            multiGateway.forEach((gateway) => {
+                if (settings && settings.gatewayTypes.length >= 2 && Object
+                    .values(gatewayTypeMap).includes(gateway.value)) {
+                    for (const env of settingsEnvList) {
+                        const tmpEnv = gatewayTypeMap[env.gatewayType];
+                        if (tmpEnv === gateway.value) {
+                            setGatewayToEnvMap((prevMap) => ({
+                                ...prevMap,
+                                [gateway.value]: true,
+                            }));
+                            break;
+                        }
+                        setGatewayToEnvMap((prevMap) => ({
+                            ...prevMap,
+                            [gateway.value]: false,
+                        }));
+                    }
+                }
+            });
+        }
+        
     }, []);
 
     const updateValidity = (newState) => {
@@ -669,11 +704,13 @@ export default function DefaultAPIForm(props) {
                                 onChange={onChange}
                             >
                                 {multiGateway.map((gateway) =>
-                                    <Grid item xs={Math.floor(12 / multiGateway.length)} key={gateway.value} >
+                                    <Grid container xs={Math.floor(12 / multiGateway.length)} key={gateway.value} 
+                                        alignItems='stretch' >
                                         <FormControlLabel
                                             value={gateway.value}
                                             className={classes.radioOutline}
                                             control={<Radio />}
+                                            disabled = {!gatewayToEnvMap[gateway.value]}
                                             label={(
                                                 <div>
                                                     <span>

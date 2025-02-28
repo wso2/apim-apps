@@ -23,20 +23,15 @@ import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Tooltip from '@mui/material/Tooltip';
 import Grid from '@mui/material/Grid';
-import Chip from '@mui/material/Chip';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import DangerousIcon from '@mui/icons-material/Dangerous';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
-import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import { styled, alpha } from '@mui/material/styles';
 import { CircularProgress, Typography } from '@mui/material';
 import xmlFormat from 'xml-formatter';
 import Utils from 'AppData/Utils';
-import CustomIcon from 'AppComponents/Shared/CustomIcon';
-import IconButton from '@mui/material/IconButton';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CustomizedAccordions from './CustomizedAccordions';
 import Button from '@mui/material/Button';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
@@ -184,11 +179,6 @@ const Root = styled('div')(({ theme }) => ({
         setCopyBtnText(copyText);
     };
 
-    const handleCurlCopyClick = (curl: string) => {
-        setCopyBtnText(copiedText);
-        navigator.clipboard.writeText(curl);
-    };
-
     /**
      * Infer the content type of the response.
      *
@@ -267,7 +257,7 @@ const Root = styled('div')(({ theme }) => ({
             {messages.map((message, index) => (
                 <Box key={index} display="flex" justifyContent={message.role === 'user' ? 'flex-end' : 'flex-start'}>
                     {message.role === 'system' ? (
-                        <Box ml={6} mr={6} mt={-2.5}>
+                        <Box ml={2} mr={6} mt={-2.5}>
                             <Box 
                                 sx={{ 
                                     display: 'flex', 

@@ -691,6 +691,24 @@ class Utils {
         const validationState = CONSTS.RULESET_VALIDATION_STATES.find((t) => t.value === state);
         return validationState?.label || state;
     }
+
+    /**
+     * Download data as a JSON file
+     * @param {Object} data - Data object to be downloaded as JSON
+     * @param {string} filename - Name of the file without extension
+     */
+    static downloadAsJSON(data, filename) {
+        const jsonString = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${filename}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    }
 }
 
 Utils.CONST = {

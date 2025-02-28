@@ -60,7 +60,11 @@ export default function Compliance() {
 
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then((response) => {
-                setComplianceStatus(response.body.status);
+                if (response.body.governedPolicies.length === 0) {
+                    setComplianceStatus(response.body.status);
+                    return;
+                }
+                
                 const rulesetMap = new Map();
 
                 response.body.governedPolicies.forEach((policy) => {
@@ -238,7 +242,7 @@ export default function Compliance() {
                                 />
                             </Typography>
                             <DonutChart
-                                colors={['#2E96FF', '#FF5252', 'grey']}
+                                colors={['#00B81D', '#FF5252', 'grey']}
                                 data={[
                                     {
                                         id: 0,
