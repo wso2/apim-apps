@@ -228,7 +228,7 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
         variant="contained"
         onClick={handleClickOpen}
         sx={{ marginRight: '10px', minWidth: '120px',  height: '35px', display: 'flex', gap:1, alignItems: 'center'}}  
-        disabled={loading || taskStatus == ''}
+        disabled={loading || taskStatus === '' || spec === ''}
       >
         {intl.formatMessage({
           id: 'Apis.Create.Default.APICreateDefault.create.btn',
