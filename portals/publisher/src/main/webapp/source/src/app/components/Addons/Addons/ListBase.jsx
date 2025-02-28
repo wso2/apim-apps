@@ -260,9 +260,11 @@ function ListBase(props) {
         ...props.options,
     };
 
-    // If no apiCall and no initialData is provided OR,
-    // retrieved data is empty, display an information card.
-    if ((!apiCall && !initialData) || (data && data.length === 0)) {
+    // Show empty state if:
+    // No apiCall and initialData is undefined OR
+    // No apiCall and initialData is empty array OR
+    // Data exists and it's an empty array
+    if ((!apiCall && (initialData === undefined || initialData?.length === 0)) || (data && data.length === 0)) {
         const content = (
             <Card>
                 <CardContent>
@@ -282,8 +284,10 @@ function ListBase(props) {
         ) : content;
     }
 
-    // If apiCall is provided and data is not retrieved yet, display progress component
-    if (!error && apiCall && !data) {
+    // If apiCall is provided and data is not retrieved yet OR
+    // If apiCall is not provided and initialData is null
+    // display progress component
+    if ((!error && apiCall && !data) || (!apiCall && initialData === null)) {
         const content = <InlineProgress />;
         return useContentBase ? (
             <ContentBase pageStyle='paperLess'>{content}</ContentBase>
