@@ -76,7 +76,6 @@ export default function ApiComplianceTable() {
         }
 
         const percentage = (followed / total) * 100;
-        const isComplete = followed === total;
 
         return (
             <Box sx={{ width: '100%' }}>
@@ -96,7 +95,7 @@ export default function ApiComplianceTable() {
                         borderRadius: 1,
                         backgroundColor: '#e0e0e0',
                         '& .MuiLinearProgress-bar': {
-                            backgroundColor: isComplete ? '#00B81D' : '#FF5252',
+                            backgroundColor: '#00B81D',
                             borderRadius: 1,
                         },
                     }}
