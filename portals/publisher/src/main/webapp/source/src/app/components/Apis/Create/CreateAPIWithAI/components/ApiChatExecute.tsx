@@ -93,6 +93,7 @@ const MentionMenu = ({
                 width: '250px',
                 maxHeight: '100px',
                 fontSize: '14px',
+                fontFamily: 'Open Sans',
                 border: 'solid 1px #E0E0E0',
                 borderRadius: '8px',
                 background: 'white',

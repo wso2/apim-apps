@@ -132,9 +132,22 @@ const ApiCreateWithAI = () => {
     };
 
     const generateSessionId = () => {
-        return `${Date.now()}`;
+        const uuid = (function() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        })();
+    
+        const dateTime = new Date().toISOString();
+        const sessionId = `${uuid}-${dateTime}`;
+        const encodedSessionId = btoa(sessionId);
+        const modifiedSessionId = encodedSessionId.slice(0, -2);
+    
+        return encodedSessionId;
     };
-
+    
     const authTokenNotProvidedWarning = (
         <FormattedMessage
             id='Apis.Details.ApiChat.warning.authTokenMissing'
@@ -252,7 +265,7 @@ const ApiCreateWithAI = () => {
                         content = 'Apologies for the inconvenience. It appears that the token limit has been exceeded.';
                         break;
                     case 504: // Handle gateway timeout scenario
-                        content = 'Apologies for the inconvenience. The request has timed out. Please try again later.';
+                        content = 'Apologies for the inconvenience. The request has timed out. Please try again.';
                         break;
                     default:
                         content = 'Apologies for the inconvenience. It seems that something went wrong with the'
