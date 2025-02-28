@@ -1256,7 +1256,7 @@ function AddEditKeyManager(props) {
                                                 onChange={onChange}
                                                 helperText={intl.formatMessage({
                                                     id: 'KeyManagers.AddEditKeyManager.form.authorizeEndpoint.help',
-                                                    defaultMessage: 'E.g., https://localhost:9443/oauth2/userinfo',
+                                                    defaultMessage: 'E.g., https://localhost:9443/oauth2/authorize',
                                                 })}
                                             />
                                             <TextField
