@@ -419,10 +419,20 @@ function APICreateDefault(props) {
                                     });
                                 }
                             },
-                            error: () => intl.formatMessage({
-                                id: 'Apis.Create.Default.APICreateDefault.error.otherStatus',
-                                defaultMessage: 'Error while publishing the API',
-                            }),
+
+                            error: (error) => {
+                                if (error.response.body.code === complianceErrorCode) {
+                                    return intl.formatMessage({
+                                        id: 'Apis.Create.Default.APICreateDefault.error.governance.violation',
+                                        defaultMessage: 'Revision creation failed due to governance violations',
+                                    });
+                                } else {
+                                    return intl.formatMessage({
+                                        id: 'Apis.Create.Default.APICreateDefault.error.otherStatus',
+                                        defaultMessage: 'Error while publishing the API',
+                                    })
+                                }
+                            },
                         });
                         promisedPublish.then(() => history.push(`/apis/${api.id}/overview`))
                             .finally(() => {
