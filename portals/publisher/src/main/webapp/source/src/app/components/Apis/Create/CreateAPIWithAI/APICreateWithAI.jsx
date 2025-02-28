@@ -143,6 +143,7 @@ const ApiCreateWithAI = () => {
         const dateTime = new Date().toISOString();
         const sessionId = `${uuid}-${dateTime}`;
         const encodedSessionId = btoa(sessionId);
+        const modifiedSessionId = encodedSessionId.slice(0, -2);
     
         return encodedSessionId;
     };
