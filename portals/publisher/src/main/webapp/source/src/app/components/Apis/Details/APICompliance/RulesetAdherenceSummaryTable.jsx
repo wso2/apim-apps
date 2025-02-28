@@ -256,6 +256,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             useContentBase={false}
             options={{
                 elevation: 0,
+                rowsPerPage: 5,
             }}
         />
     );

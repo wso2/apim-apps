@@ -297,6 +297,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             useContentBase={false}
             options={{
                 elevation: 0,
+                rowsPerPage: 5,
             }}
             enableCollapsable
             renderExpandableRow={renderExpandableRow}

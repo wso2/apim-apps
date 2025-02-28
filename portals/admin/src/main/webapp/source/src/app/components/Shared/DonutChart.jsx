@@ -59,7 +59,7 @@ const DonutChart = ({
                     cornerRadius: 5,
                     cx: 100,
                     startAngle: 90,
-                    endAngle: 470,
+                    endAngle: -270,
                 }]}
                 width={width}
                 height={height}
