@@ -337,23 +337,33 @@ const ApiCreateWithAI = () => {
                                     <Box>
                                         <WelcomeMessage/>
                                         <Stack 
-                                            direction='row' 
-                                            spacing={7} 
-                                            justifyContent='center'
-                                            marginTop= '40px'
+                                            direction="column" 
+                                            spacing={2} 
+                                            justifyContent="center"
+                                            sx={{ 
+                                                width: '420px', 
+                                                display: 'flex', 
+                                                marginTop: '40px', 
+                                                marginLeft: 'auto', 
+                                                marginRight: 'auto', 
+                                                marginBottom: '0' 
+                                            }}
                                         >
                                             <SampleQueryCard 
                                                 onExecuteClick={handleExecuteSampleQuery} 
-                                                queryHeading='Create a REST API' 
-                                                queryData='Create an API for a banking transaction' 
+                                                queryHeading='Create an API for a banking transaction' 
                                                 sx={{ textAlign: 'left' }} 
                                             />
                                             <SampleQueryCard 
                                                 onExecuteClick={handleExecuteSampleQuery} 
-                                                queryHeading='Create a SSE API' 
-                                                queryData='Create an API for live sports scores' 
+                                                queryHeading='Create a GraphQL schema to query patient data' 
                                                 sx={{ textAlign: 'left' }} 
-                                            />
+                                            />  
+                                            <SampleQueryCard 
+                                                onExecuteClick={handleExecuteSampleQuery} 
+                                                queryHeading='Create an API for live sports scores' 
+                                                sx={{ textAlign: 'left' }} 
+                                            />                                          
                                         </Stack>
                                     </Box>
                                 )}
