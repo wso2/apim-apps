@@ -42,7 +42,6 @@ export default function RuleViolationSummary({ complianceData }) {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    // Remove the mock complianceData and use state instead
     const [complianceDataState, setComplianceData] = useState({
         errors: [],
         warnings: [],
