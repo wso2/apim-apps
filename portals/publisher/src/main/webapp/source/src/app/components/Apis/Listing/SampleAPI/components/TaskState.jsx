@@ -12,6 +12,7 @@ import CircularProgress from '@mui/material/CircularProgress';
  * @return {*}
  */
 export default function TaskState(props) {
+    const complianceErrorCode = 903300;
     const {
         pending, completed, errors, inProgress, children, pendingMessage, completedMessage, inProgressMessage,
     } = props;
@@ -39,8 +40,7 @@ export default function TaskState(props) {
         severity = 'error';
         if (errors.response) {
             const { body } = errors.response;
-            if (body.description && body.description.includes('violatedPath')) { 
-                // TODO: Use the code for governance violations
+            if (body.code === complianceErrorCode) {
                 message = (
                     <>
                         <b>Governance Policy Violation</b>
@@ -48,7 +48,7 @@ export default function TaskState(props) {
                         <FormattedMessage
                             id='Apis.Listing.TaskState.governance.violation'
                             defaultMessage={'One or more governance polices have been violated.'
-                            + ' Please check the configurations.'}
+                                + ' Please check the configurations.'}
                         />
                     </>
                 );

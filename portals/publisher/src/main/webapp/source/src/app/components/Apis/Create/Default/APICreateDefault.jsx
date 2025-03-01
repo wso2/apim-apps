@@ -36,6 +36,7 @@ import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm'
 import APIProduct from 'AppData/APIProduct';
 import AuthManager from 'AppData/AuthManager';
 import Progress from 'AppComponents/Shared/Progress';
+import Utils from 'AppData/Utils';
 
 const gatewayTypeMap = {
     'Regular': 'wso2/synapse',
@@ -293,14 +294,45 @@ function APICreateDefault(props) {
                 error: (error) => {
                     console.error(error);
                     if (error.response) {
-                        // TODO: Use the code to check for the governance error
                         if (error.response.body.code === complianceErrorCode) {
-                            // TODO: Check whether we need to display the violations table
-                            // TODO: Improve the error alert
-                            return intl.formatMessage({
-                                id: 'Apis.Create.Default.APICreateDefault.error.governance.violation',
-                                defaultMessage: 'Revision creation failed due to governance violations',
-                            });
+                            const violations = JSON.parse(error.response.body.description).blockingViolations;
+                            return (
+                                <Box sx={{ width: '100%' }}>
+                                    <Typography>
+                                        <FormattedMessage
+                                            id='Apis.Create.Default.APICreateDefault.error.governance.violation'
+                                            defaultMessage={'Failed to create the API Revision due to '
+                                                + 'governance violations'}
+                                        />
+                                    </Typography>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        mt: 1
+                                    }}>
+                                        <Button
+                                            onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
+                                            sx={{
+                                                color: 'inherit',
+                                                fontWeight: 600,
+                                                textDecoration: 'none',
+                                                transition: 'all 0.3s',
+                                                '&:hover': {
+                                                    backgroundColor: 'inherit',
+                                                    transform: 'translateY(-2px)',
+                                                    textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                },
+                                            }}
+                                        >
+                                            <FormattedMessage
+                                                id={'Apis.Create.Default.APICreateDefault.error.'
+                                                    + 'governance.violation.download'}
+                                                defaultMessage='Download Violations'
+                                            />
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            )
                         } else {
                             setPageError(error.response.body);
                             return error.response.body.description;
@@ -369,14 +401,45 @@ function APICreateDefault(props) {
                     error: (error) => {
                         console.error(error);
                         if (error.response) {
-                            // TODO: Use the code to check for the governance error
                             if (error.response.body.code === complianceErrorCode) {
-                                // TODO: Check whether we need to display the violations list
-                                // TODO: Improve the error alert
-                                return intl.formatMessage({
-                                    id: 'Apis.Create.Default.APICreateDefault.error.governance.violation',
-                                    defaultMessage: 'Deployment failed due to governance violations',
-                                });
+                                const violations = JSON.parse(error.response.body.description).blockingViolations;
+                                return (
+                                    <Box sx={{ width: '100%' }}>
+                                        <Typography>
+                                            <FormattedMessage
+                                                id='Apis.Create.Default.APICreateDefault.error.governance.violation'
+                                                defaultMessage='Deployment failed due to governance violations'
+                                            />
+                                        </Typography>
+                                        <Box sx={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                            mt: 1
+                                        }}>
+                                            <Button
+                                                onClick={() =>
+                                                    Utils.downloadAsJSON(violations, 'governance-violations')}
+                                                sx={{
+                                                    color: 'inherit',
+                                                    fontWeight: 600,
+                                                    textDecoration: 'none',
+                                                    transition: 'all 0.3s',
+                                                    '&:hover': {
+                                                        backgroundColor: 'inherit',
+                                                        transform: 'translateY(-2px)',
+                                                        textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                    },
+                                                }}
+                                            >
+                                                <FormattedMessage
+                                                    id={'Apis.Create.Default.APICreateDefault.error.'
+                                                        + 'governance.violation.download'}
+                                                    defaultMessage='Download Violations'
+                                                />
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                )
                             } else {
                                 setPageError(error.response.body);
                                 return error.response.body.description;
@@ -419,13 +482,48 @@ function APICreateDefault(props) {
                                     });
                                 }
                             },
-
                             error: (error) => {
                                 if (error.response.body.code === complianceErrorCode) {
-                                    return intl.formatMessage({
-                                        id: 'Apis.Create.Default.APICreateDefault.error.governance.violation',
-                                        defaultMessage: 'Revision creation failed due to governance violations',
-                                    });
+                                    const violations = JSON.parse(error.response.body.description).blockingViolations;
+                                    return (
+                                        <Box sx={{ width: '100%' }}>
+                                            <Typography>
+                                                <FormattedMessage
+                                                    id={'Apis.Create.Default.APICreateDefault.error.'
+                                                        + 'governance.violation'}
+                                                    defaultMessage={'Failed to publish the API due to '
+                                                        + 'governance violations'}
+                                                />
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                justifyContent: 'flex-end',
+                                                mt: 1
+                                            }}>
+                                                <Button
+                                                    onClick={() =>
+                                                        Utils.downloadAsJSON(violations, 'governance-violations')}
+                                                    sx={{
+                                                        color: 'inherit',
+                                                        fontWeight: 600,
+                                                        textDecoration: 'none',
+                                                        transition: 'all 0.3s',
+                                                        '&:hover': {
+                                                            backgroundColor: 'inherit',
+                                                            transform: 'translateY(-2px)',
+                                                            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                        },
+                                                    }}
+                                                >
+                                                    <FormattedMessage
+                                                        id={'Apis.Create.Default.APICreateDefault.error.'
+                                                            + 'governance.violation.download'}
+                                                        defaultMessage='Download Violations'
+                                                    />
+                                                </Button>
+                                            </Box>
+                                        </Box>
+                                    )
                                 } else {
                                     return intl.formatMessage({
                                         id: 'Apis.Create.Default.APICreateDefault.error.otherStatus',
