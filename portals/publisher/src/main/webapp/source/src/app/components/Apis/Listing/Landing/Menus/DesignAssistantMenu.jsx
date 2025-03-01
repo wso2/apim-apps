@@ -17,37 +17,35 @@
  * under the License.
  */
 import React from 'react';
-import { Box, Button, Typography } from '@mui/material';
+import { Box, Button, Typography, useTheme } from '@mui/material';
+import Paper from '@mui/material/Paper';
 import { FormattedMessage } from 'react-intl';
 import { Link } from 'react-router-dom';
 import { app } from 'Settings';
 import { isRestricted } from 'AppData/AuthManager';
-import { styled } from '@mui/material/styles';
-
-const PREFIX = 'DesignAssistantMenu';
-
-const classes = {
-    root: `${PREFIX}-root`,
-};
-
-const StyledBox = styled(Box)(({ theme }) => ({
-    [`&`]: {
-        display: 'flex',
-        justifyContent: 'center', 
-        alignItems: 'center',
-        border: '1px solid #e5e5e5',
-        backgroundColor: '#fff',
-        padding: theme.spacing(3),
-        borderRadius: theme.spacing(1),
-    },
-}));
+import useMediaQuery from '@mui/material/useMediaQuery';
 
 const DesignAssistantMenu = () => {
+    const theme = useTheme();    
+    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'));
+    const isMediumScreen = useMediaQuery(theme.breakpoints.between('md', 'lg'));
 
     return (
-        <StyledBox>
-            <Box
-                sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center', }}>
+        <Paper
+            square={false}
+            elevation={4}
+            sx={{
+                maxWidth: isSmallScreen ? 250 : isMediumScreen ? 400 : 500,
+                height: isSmallScreen ? 140 : isMediumScreen ? 150 : 140, 
+                display: 'flex',
+                justifyContent: 'center', alignItems: 'center',
+                transition: 'all 0.3s ease-in-out',
+                padding: isSmallScreen ? 1 : 2,
+                borderRadius: isSmallScreen ? 2 : 4,
+            }}
+        >
+            <Box p={1} border={0} borderRadius={1}
+                sx={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
                 <img
                     alt='API Design Assistant'
                     src={`${app.context}/site/public/images/ai/APIchatassistantImageWithColour.svg`}
@@ -79,7 +77,7 @@ const DesignAssistantMenu = () => {
                     </Button>
                 </Box>
             </Box>
-        </StyledBox>
+        </Paper>
     );
 };
 
