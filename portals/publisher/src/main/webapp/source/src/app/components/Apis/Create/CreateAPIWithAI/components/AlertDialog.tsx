@@ -245,11 +245,11 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
         aria-describedby="alert-dialog-description"
       >
         <DialogTitle id="alert-dialog-title">
-          {"Satisfied with the design?"}
+          {"Create API"}
         </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Click 'Yes' to proceed to the API Creation Wizard
+            Are you ready to create your API and move to the API Creation Wizard?
           </DialogContentText>
         </DialogContent>
 
