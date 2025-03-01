@@ -24,36 +24,12 @@ import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import ErrorIcon from '@mui/icons-material/Error';
 import WarningIcon from '@mui/icons-material/Warning';
 import InfoIcon from '@mui/icons-material/Info';
-import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import Utils from 'AppData/Utils';
 
-export default function RulesetAdherenceSummaryTable({ artifactId }) {
+export default function RulesetAdherenceSummaryTable({ complianceData }) {
     const intl = useIntl();
-
-    const apiCall = () => {
-        const restApi = new GovernanceAPI();
-        return restApi.getComplianceByAPIId(artifactId)
-            .then((response) => {
-                // Get unique ruleset IDs from all policies
-                const rulesetIds = [...new Set(
-                    response.body.governedPolicies.flatMap(
-                        (policy) => policy.rulesetValidationResults.map((result) => result.id),
-                    ),
-                )];
-
-                // Get validation results for each ruleset
-                return Promise.all(
-                    rulesetIds.map((rulesetId) => restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
-                        .then((result) => result.body)),
-                );
-            })
-            .catch((error) => {
-                console.error('Error fetching ruleset adherence data:', error);
-                return [];
-            });
-    };
 
     const renderComplianceIcons = (violations) => {
         const { error, warn, info } = violations;
@@ -247,7 +223,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
     return (
         <ListBase
             columProps={RulesetColumProps}
-            apiCall={apiCall}
+            initialData={complianceData ? complianceData.rulesets : null}
             searchProps={false}
             emptyBoxProps={{
                 content: emptyStateContent,
@@ -257,6 +233,7 @@ export default function RulesetAdherenceSummaryTable({ artifactId }) {
             useContentBase={false}
             options={{
                 elevation: 0,
+                rowsPerPage: 5,
             }}
         />
     );
