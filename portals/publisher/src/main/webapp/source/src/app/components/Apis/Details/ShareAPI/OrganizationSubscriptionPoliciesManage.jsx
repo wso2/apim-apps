@@ -104,7 +104,11 @@ function OrganizationSubscriptionPoliciesManage(props) {
 
         policyPromise
             .then((res) => {
-                setSubscriptionPolicies(res.body.list);
+                const policies = res.body.list.map(policy => ({
+                    ...policy,
+                    name: policy.name || policy.policyName,
+                }));
+                setSubscriptionPolicies(policies);
             })
             .catch((error) => {
                 console.error(error);
@@ -125,7 +129,7 @@ function OrganizationSubscriptionPoliciesManage(props) {
 
     const handlePolicyChange = (organizationId, selectedPolicies) => {
 
-        let selectedPolicyNames = selectedPolicies.map(policy => policy.name);
+        let selectedPolicyNames = selectedPolicies.map(policy => policy.name || policy.policyName);
         if (selectedPolicyNames.length > 1 ) {
             selectedPolicyNames = selectedPolicyNames.filter((policy) =>
                 !policy.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
