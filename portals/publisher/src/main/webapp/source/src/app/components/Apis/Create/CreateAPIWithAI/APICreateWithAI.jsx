@@ -35,6 +35,7 @@ import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { FormattedMessage } from 'react-intl';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Alert from '@mui/material/Alert';
+import findBestMatchingAnswer from './components/SimilaritySearch';
 
 /**
  * Renders the Create API with AI UI.
@@ -208,47 +209,57 @@ const ApiCreateWithAI = () => {
         setLoading(true);
 
         try {
-            const jsonResponse = await sendQuery(query, currentSessionId);
-            
-            const {
-                backendResponse,
-                isSuggestions,
-                typeOfApi,
-                code,
-                paths,
-                apiTypeSuggestion,
-                missingValues,
-                state
-            } = jsonResponse;
+            const queryText = query.trim().toLowerCase();
+            const response = findBestMatchingAnswer(queryText);
 
-            setFinalOutcome(backendResponse);
-            setIsSuggestion(isSuggestions);
-            setApiType(typeOfApi);
-            setFinalOutcomeCode(code);
-            setPaths(paths);
-            setApiTypeSuggestion(apiTypeSuggestion);
-            setMissingValues(missingValues);
-            setTaskStatus(state);
-
-            if (backendResponse) {
+            if (response) {
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { role: 'system', content: backendResponse, suggestions: isSuggestions }
+                    { role: 'system', content: response, suggestions: false }
                 ]);
-            }
+            } else {
+                const jsonResponse = await sendQuery(query, currentSessionId);
+                
+                const {
+                    backendResponse,
+                    isSuggestions,
+                    typeOfApi,
+                    code,
+                    paths,
+                    apiTypeSuggestion,
+                    missingValues,
+                    state
+                } = jsonResponse;
 
-            if (apiTypeSuggestion) {
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { role: 'system', content: apiTypeSuggestion, suggestions: false }
-                ]);
-            }
+                setFinalOutcome(backendResponse);
+                setIsSuggestion(isSuggestions);
+                setApiType(typeOfApi);
+                setFinalOutcomeCode(code);
+                setPaths(paths);
+                setApiTypeSuggestion(apiTypeSuggestion);
+                setMissingValues(missingValues);
+                setTaskStatus(state);
 
-            if (missingValues) {
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { role: 'system', content: missingValues, suggestions: false }
-                ]);
+                if (backendResponse) {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { role: 'system', content: backendResponse, suggestions: isSuggestions }
+                    ]);
+                }
+
+                if (apiTypeSuggestion) {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { role: 'system', content: apiTypeSuggestion, suggestions: false }
+                    ]);
+                }
+
+                if (missingValues) {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { role: 'system', content: missingValues, suggestions: false }
+                    ]);
+                }
             }
 
         } catch (error) {
@@ -288,6 +299,7 @@ const ApiCreateWithAI = () => {
             setLoading(false);
         }
     };
+
     const handleBack = () => {
         if (window.history.length > 1) {
             history.goBack();
