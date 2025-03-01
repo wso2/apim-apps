@@ -39,11 +39,12 @@ const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType, se
   const [showCode, setShowCode] = useState(false);
 
   const handleDownload = () => {
-    const blob = new Blob([finalOutcomeCode], { type: 'text/yaml' });
+    const fileExtension = apiType === 'GraphQL' ? 'graphql' : 'yaml';
+    const blob = new Blob([finalOutcomeCode], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `api-source.yaml`;
+    a.download = `api-source.${fileExtension}`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
