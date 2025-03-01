@@ -77,7 +77,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
     const [config, setConfig] = useState<WeightedRoundRobinConfig>({
         production: [],
         sandbox: [],
-        suspendDuration: 0,
+        suspendDuration: undefined,
     });
     const [modelList, setModelList] = useState<string[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);

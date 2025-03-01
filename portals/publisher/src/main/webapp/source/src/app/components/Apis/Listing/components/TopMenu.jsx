@@ -30,7 +30,7 @@ import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { isRestricted } from 'AppData/AuthManager';
-import SmartToyIcon from '@mui/icons-material/SmartToy';
+import { app } from 'Settings';
 import APICreateMenu from './APICreateMenu';
 
 const PREFIX = 'TopMenu';
@@ -193,20 +193,25 @@ function TopMenu(props) {
                         </APICreateMenu>
                     )} 
                     {/* Button to Create API with AI */}
-                    <Button
-                        variant='outlined'
-                        color='primary'
-                        component={Link}
-                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        to='/apis/design-assistant'
-                        sx={{ marginLeft: '10px' }}
-                    >
-                        <FormattedMessage
-                            id='Apis.Listing.components.TopMenu.create.api.with.ai'
-                            defaultMessage='Create API with AI'
-                        />
-                        <SmartToyIcon sx={{ marginLeft: 1, fontSize: 15 }} />
-                    </Button>                              
+                    {!query && !isAPIProduct && !isRestricted(['apim:api_create']) && (
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            component={Link}
+                            to='/apis/design-assistant'
+                            sx={{ marginLeft: '10px' }}
+                        >
+                            <FormattedMessage
+                                id='Apis.Listing.components.TopMenu.create.api.with.ai'
+                                defaultMessage='Create API with AI'
+                            />
+                            <img
+                                alt='API Design Assistant'
+                                src={`${app.context}/site/public/images/ai/DesignAssistant.svg`}
+                                style={{ marginLeft: 8, width: 15, height: 15 }}
+                            />
+                        </Button>
+                    )}
                 </div>
                 {showToggle && (
                     <Box height={32} m='auto' mr={8}>

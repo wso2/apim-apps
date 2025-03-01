@@ -17,36 +17,27 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
-import { Grid, Card, CardContent, Typography } from '@mui/material';
-import DonutChart from 'AppComponents/Shared/DonutChart';
-import { FormattedMessage, useIntl } from 'react-intl';
+import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
+import { Link as RouterLink } from 'react-router-dom';
+import {
+    Grid, Card, CardContent, Typography,
+} from '@mui/material';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { Box } from '@mui/system';
 import GovernanceAPI from 'AppData/GovernanceAPI';
-import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import { FormattedMessage, useIntl } from 'react-intl';
+import DonutChart from 'AppComponents/Shared/DonutChart';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
-import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
-import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
 import RuleViolationSummary from './RuleViolationSummary';
+import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
+import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
 
-const PREFIX = 'Compliance';
-
-const classes = {
-    root: `${PREFIX}-root`,
-};
-
-const Root = styled('div')(({ theme }) => ({
-    [`& .${classes.root}`]: {
-        ...theme.mixins.gutters(),
-        paddingTop: theme.spacing(2),
-        paddingBottom: theme.spacing(2),
-    },
-}));
-
-export default function Compliance() {
+export default function Compliance(props) {
     const intl = useIntl();
-    const [api] = useAPI();
-    const artifactId = api.id;
+    const { match: { params: { id: artifactId } } } = props;
     const [statusCounts, setStatusCounts] = useState({ passed: 0, failed: 0, unapplied: 0 });
+    const [artifactName, setArtifactName] = useState('');
+    const [artifactOwner, setArtifactOwner] = useState('');
     const [policyAdherence, setPolicyAdherence] = useState({
         followedPolicies: 0,
         violatedPolicies: 0,
@@ -64,16 +55,16 @@ export default function Compliance() {
     });
 
     useEffect(() => {
-        // Skip the API call if this is a revision
-        if (api.isRevision) {
-            return undefined;
-        }
-
         const abortController = new AbortController();
         const restApi = new GovernanceAPI();
 
         restApi.getComplianceByAPIId(artifactId, { signal: abortController.signal })
             .then(async (response) => {
+                setArtifactName(
+                    response.body.info.name + ' :'
+                    + response.body.info.version,
+                );
+                setArtifactOwner(response.body.info.owner);
                 if (response.body.governedPolicies.length === 0) {
                     setComplianceStatus(response.body.status);
                     return;
@@ -81,7 +72,7 @@ export default function Compliance() {
 
                 // Check if all policies are pending
                 const isPending = response.body.governedPolicies.every(
-                    policy => policy.status === 'PENDING'
+                    (policy) => policy.status === 'PENDING',
                 );
                 setAllPoliciesPending(isPending);
 
@@ -92,7 +83,9 @@ export default function Compliance() {
                     if (policy.status === 'PENDING') acc.pendingPolicies += 1;
                     if (policy.status === 'UNAPPLIED') acc.unAppliedPolicies += 1;
                     return acc;
-                }, { followedPolicies: 0, violatedPolicies: 0, pendingPolicies: 0, unAppliedPolicies: 0 });
+                }, {
+                    followedPolicies: 0, violatedPolicies: 0, pendingPolicies: 0, unAppliedPolicies: 0,
+                });
                 setPolicyAdherence(policyCounts);
 
                 const rulesetMap = new Map();
@@ -106,10 +99,10 @@ export default function Compliance() {
                 });
 
                 // Get validation results and ruleset details for each ruleset
-                const rulesetPromises = Array.from(rulesetMap.keys()).map(async rulesetId => {
+                const rulesetPromises = Array.from(rulesetMap.keys()).map(async (rulesetId) => {
                     const [validationResult, rulesetResult] = await Promise.all([
                         restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId),
-                        restApi.getRulesetById(rulesetId)
+                        restApi.getRulesetById(rulesetId),
                     ]);
                     return {
                         ...validationResult.body,
@@ -131,7 +124,7 @@ export default function Compliance() {
                 // Calculate rule adherence counts
                 const ruleCounts = rulesets.reduce((acc, ruleset) => {
                     // Count violated rules by severity
-                    ruleset.violatedRules.forEach(rule => {
+                    ruleset.violatedRules.forEach((rule) => {
                         if (rule.severity === 'ERROR') acc.errors += 1;
                         if (rule.severity === 'WARN') acc.warnings += 1;
                         if (rule.severity === 'INFO') acc.info += 1;
@@ -139,26 +132,30 @@ export default function Compliance() {
                     // Count passed rules
                     acc.passed += ruleset.followedRules.length;
                     return acc;
-                }, { errors: 0, warnings: 0, info: 0, passed: 0 });
-
+                }, {
+                    errors: 0, warnings: 0, info: 0, passed: 0,
+                });
                 setRuleAdherence(ruleCounts);
                 setStatusCounts(counts);
                 setComplianceData({
                     governedPolicies: response.body.governedPolicies,
-                    rulesets
+                    rulesets,
                 });
             })
             .catch((error) => {
                 if (!abortController.signal.aborted) {
                     console.error('Error fetching compliance data:', error);
                     setStatusCounts({ passed: 0, failed: 0, unapplied: 0 });
+                    setArtifactName('');
                     setPolicyAdherence({
                         followedPolicies: 0,
                         violatedPolicies: 0,
                         pendingPolicies: 0,
-                        unAppliedPolicies: 0
+                        unAppliedPolicies: 0,
                     });
-                    setRuleAdherence({ errors: 0, warnings: 0, info: 0, passed: 0 });
+                    setRuleAdherence({
+                        errors: 0, warnings: 0, info: 0, passed: 0,
+                    });
                     setComplianceData(null);
                 }
             });
@@ -166,55 +163,35 @@ export default function Compliance() {
         return () => {
             abortController.abort();
         };
-    }, [artifactId, api.isRevision]);
-
-    if (api.isRevision) {
-        return (
-            <Root>
-                <Typography variant='h4' component='h2' align='left'>
-                    <FormattedMessage
-                        id='Apis.Details.Compliance.topic.header'
-                        defaultMessage='Compliance Summary'
-                    />
-                </Typography>
-                <Grid container spacing={4}>
-                    {/* Rule Violation Summary section */}
-                    <Grid item xs={12}>
-                        <Card elevation={3}
-
-                            sx={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                minHeight: 200,
-                                backgroundColor: 'background.paper',
-                                padding: 2,
-                                borderRadius: 1,
-                            }}
-                        >
-                            <Typography variant='h5' component='div' color='text.secondary'>
-                                <FormattedMessage
-                                    id='Apis.Details.Compliance.revision.message'
-                                    defaultMessage={'Compliance summary is not available for API revisions.'
-                                        + ' Please navigate to the current API version to view the compliance summary.'}
-                                />
-                            </Typography>
-                        </Card>
-                    </Grid>
-                </Grid>
-            </Root>
-        );
-    }
+    }, [artifactId]);
 
     if (complianceStatus === 'PENDING') {
         return (
-            <Root>
-                <Typography variant='h4' component='h2' align='left'>
+            <ContentBase
+                width='full'
+                title={(
                     <FormattedMessage
-                        id='Apis.Details.Compliance.topic.header'
-                        defaultMessage='Compliance Summary'
+                        id='Governance.ComplianceDashboard.Compliance.title'
+                        defaultMessage='Compliance Summary - {artifactName}'
+                        values={{ artifactName }}
                     />
-                </Typography>
+                )}
+                pageStyle='paperLess'
+            >
+                <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: 4 }}>
+                    <RouterLink
+                        to='/governance/compliance'
+                        style={{
+                            display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit',
+                        }}
+                    >
+                        <ArrowBackIcon />
+                        <FormattedMessage
+                            id='Governance.ComplianceDashboard.Compliance.back.to.compliance'
+                            defaultMessage='Back to Compliance Dashboard'
+                        />
+                    </RouterLink>
+                </Box>
                 <Card
                     elevation={3}
                     sx={{
@@ -239,7 +216,7 @@ export default function Compliance() {
                         sx={{ fontWeight: 'medium' }}
                     >
                         <FormattedMessage
-                            id='Apis.Details.Compliance.check.progress'
+                            id='Governance.ComplianceDashboard.Compliance.check.progress'
                             defaultMessage='Compliance Check in Progress'
                         />
                     </Typography>
@@ -249,23 +226,55 @@ export default function Compliance() {
                         align='center'
                     >
                         <FormattedMessage
-                            id='Apis.Details.Compliance.check.progress.message'
+                            id='Governance.ComplianceDashboard.Compliance.check.progress.message'
                             defaultMessage='The compliance check is currently in progress. This may take a few moments.'
                         />
                     </Typography>
                 </Card>
-            </Root>
+            </ContentBase>
         );
     }
 
     return (
-        <Root>
-            <Typography variant='h4' component='h2' align='left'>
+        <ContentBase
+            width='full'
+            title={(
                 <FormattedMessage
-                    id='Apis.Details.Compliance.topic.header'
-                    defaultMessage='Compliance Summary'
+                    id='Governance.ComplianceDashboard.Compliance.title'
+                    defaultMessage='Compliance Summary - {artifactName}'
+                    values={{ artifactName }}
                 />
-            </Typography>
+            )}
+            pageStyle='paperLess'
+        >
+            <Box sx={{
+                display: 'flex',
+                alignItems: 'center',
+                paddingBottom: 4,
+                justifyContent: 'space-between',
+            }}
+            >
+                <RouterLink
+                    to='/governance/compliance'
+                    style={{
+                        display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit',
+                    }}
+                >
+                    <ArrowBackIcon />
+                    <FormattedMessage
+                        id='Governance.ComplianceDashboard.Compliance.back.to.compliance'
+                        defaultMessage='Back to Compliance Dashboard'
+                    />
+                </RouterLink>
+                <Typography variant='body2'>
+                    <FormattedMessage
+                        id='Governance.ComplianceDashboard.Compliance.api.owner'
+                        defaultMessage='API Owner: {owner}'
+                        values={{ owner: artifactOwner }}
+                    />
+                </Typography>
+            </Box>
+
             <Grid container spacing={4}>
                 {!allPoliciesPending && (
                     <>
@@ -278,7 +287,7 @@ export default function Compliance() {
                                         sx={{ fontWeight: 'bold', mb: 2 }}
                                     >
                                         <FormattedMessage
-                                            id='Apis.Details.Compliance.policy.adherence'
+                                            id='Governance.ComplianceDashboard.Compliance.policy.adherence'
                                             defaultMessage='Policy Adherence'
                                         />
                                     </Typography>
@@ -289,33 +298,33 @@ export default function Compliance() {
                                                 id: 0,
                                                 value: policyAdherence.followedPolicies,
                                                 label: intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.followed',
+                                                    id: 'Governance.ComplianceDashboard.Compliance.followed',
                                                     defaultMessage: 'Followed ({count})',
-                                                }, { count: policyAdherence.followedPolicies })
+                                                }, { count: policyAdherence.followedPolicies }),
                                             },
                                             {
                                                 id: 1,
                                                 value: policyAdherence.violatedPolicies,
                                                 label: intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.violated',
+                                                    id: 'Governance.ComplianceDashboard.Compliance.violated',
                                                     defaultMessage: 'Violated ({count})',
-                                                }, { count: policyAdherence.violatedPolicies })
+                                                }, { count: policyAdherence.violatedPolicies }),
                                             },
                                             {
                                                 id: 2,
                                                 value: policyAdherence.pendingPolicies,
                                                 label: intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.pending',
+                                                    id: 'Governance.ComplianceDashboard.Compliance.pending',
                                                     defaultMessage: 'Pending ({count})',
-                                                }, { count: policyAdherence.pendingPolicies })
+                                                }, { count: policyAdherence.pendingPolicies }),
                                             },
                                             {
                                                 id: 3,
                                                 value: policyAdherence.unAppliedPolicies,
                                                 label: intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.not.applied',
+                                                    id: 'Governance.ComplianceDashboard.Compliance.not.applied',
                                                     defaultMessage: 'Not Applied ({count})',
-                                                }, { count: policyAdherence.unAppliedPolicies })
+                                                }, { count: policyAdherence.unAppliedPolicies }),
                                             },
                                         ]}
                                     />
@@ -330,7 +339,7 @@ export default function Compliance() {
                                         sx={{ fontWeight: 'bold', mb: 2 }}
                                     >
                                         <FormattedMessage
-                                            id='Apis.Details.Compliance.ruleset.adherence'
+                                            id='Governance.ComplianceDashboard.Compliance.ruleset.adherence'
                                             defaultMessage='Ruleset Adherence'
                                         />
                                     </Typography>
@@ -341,25 +350,25 @@ export default function Compliance() {
                                                 id: 0,
                                                 value: statusCounts.passed,
                                                 label: `${intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.passed',
-                                                    defaultMessage: 'Passed'
-                                                })} (${statusCounts.passed})`
+                                                    id: 'Governance.ComplianceDashboard.Compliance.passed',
+                                                    defaultMessage: 'Passed',
+                                                })} (${statusCounts.passed})`,
                                             },
                                             {
                                                 id: 1,
                                                 value: statusCounts.failed,
                                                 label: `${intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.failed',
-                                                    defaultMessage: 'Failed'
-                                                })} (${statusCounts.failed})`
+                                                    id: 'Governance.ComplianceDashboard.Compliance.failed',
+                                                    defaultMessage: 'Failed',
+                                                })} (${statusCounts.failed})`,
                                             },
                                             {
                                                 id: 2,
                                                 value: statusCounts.unapplied,
                                                 label: `${intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.unapplied',
-                                                    defaultMessage: 'Unapplied'
-                                                })} (${statusCounts.unapplied})`
+                                                    id: 'Governance.ComplianceDashboard.Compliance.unapplied',
+                                                    defaultMessage: 'Unapplied',
+                                                })} (${statusCounts.unapplied})`,
                                             },
                                         ]}
                                     />
@@ -374,7 +383,7 @@ export default function Compliance() {
                                         sx={{ fontWeight: 'bold', mb: 2 }}
                                     >
                                         <FormattedMessage
-                                            id='Apis.Details.Compliance.rule.adherence'
+                                            id='Governance.ComplianceDashboard.Compliance.rule.adherence'
                                             defaultMessage='Rule Adherence'
                                         />
                                     </Typography>
@@ -385,33 +394,33 @@ export default function Compliance() {
                                                 id: 0,
                                                 value: ruleAdherence.errors,
                                                 label: intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.rules.errors',
+                                                    id: 'Governance.ComplianceDashboard.Compliance.rules.errors',
                                                     defaultMessage: 'Errors ({count})',
-                                                }, { count: ruleAdherence.errors })
+                                                }, { count: ruleAdherence.errors }),
                                             },
                                             {
                                                 id: 1,
                                                 value: ruleAdherence.warnings,
                                                 label: intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.rules.warnings',
+                                                    id: 'Governance.ComplianceDashboard.Compliance.rules.warnings',
                                                     defaultMessage: 'Warnings ({count})',
-                                                }, { count: ruleAdherence.warnings })
+                                                }, { count: ruleAdherence.warnings }),
                                             },
                                             {
                                                 id: 2,
                                                 value: ruleAdherence.info,
                                                 label: intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.rules.info',
+                                                    id: 'Governance.ComplianceDashboard.Compliance.rules.info',
                                                     defaultMessage: 'Info ({count})',
-                                                }, { count: ruleAdherence.info })
+                                                }, { count: ruleAdherence.info }),
                                             },
                                             {
                                                 id: 3,
                                                 value: ruleAdherence.passed,
                                                 label: intl.formatMessage({
-                                                    id: 'Apis.Details.Compliance.rules.passed',
+                                                    id: 'Governance.ComplianceDashboard.Compliance.rules.passed',
                                                     defaultMessage: 'Passed ({count})',
-                                                }, { count: ruleAdherence.passed })
+                                                }, { count: ruleAdherence.passed }),
                                             },
                                         ]}
                                     />
@@ -433,18 +442,21 @@ export default function Compliance() {
 
                         {/* Ruleset Adherence Summary section */}
                         <Grid item xs={12} md={12}>
-                            <Card elevation={3} sx={{
-                                '& .MuiTableCell-footer': {
-                                    border: 0
-                                },
-                            }}>
+                            <Card
+                                elevation={3}
+                                sx={{
+                                    '& .MuiTableCell-footer': {
+                                        border: 0,
+                                    },
+                                }}
+                            >
                                 <CardContent>
                                     <Typography
                                         variant='body1'
                                         sx={{ fontWeight: 'bold', mb: 2 }}
                                     >
                                         <FormattedMessage
-                                            id='Apis.Details.Compliance.ruleset.adherence.summary'
+                                            id='Governance.ComplianceDashboard.Compliance.ruleset.adherence.summary'
                                             defaultMessage='Ruleset Adherence Summary'
                                         />
                                     </Typography>
@@ -460,19 +472,21 @@ export default function Compliance() {
 
                 {/* Policy Adherence Summary section - always shown */}
                 <Grid item xs={12}>
-                    <Card elevation={3}
+                    <Card
+                        elevation={3}
                         sx={{
                             '& .MuiTableCell-footer': {
-                                border: 0
+                                border: 0,
                             },
-                        }}>
+                        }}
+                    >
                         <CardContent>
                             <Typography
                                 variant='body1'
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 <FormattedMessage
-                                    id='Apis.Details.Compliance.policy.adherence.summary'
+                                    id='Governance.ComplianceDashboard.Compliance.policy.adherence.summary'
                                     defaultMessage='Policy Adherence Summary'
                                 />
                             </Typography>
@@ -484,6 +498,6 @@ export default function Compliance() {
                     </Card>
                 </Grid>
             </Grid>
-        </Root>
+        </ContentBase>
     );
 }

@@ -502,6 +502,16 @@ function AddEditGWEnvironment(props) {
         defaultMessage: 'Gateway Environment - Create new',
     });
 
+    const getDisplayName = (value) => {
+        if (value === 'Regular') {
+            return 'Universal Gateway';
+        } else if (value === 'APK') {
+            return 'Kubernetes Gateway';
+        } else {
+            return value + ' Gateway';
+        }
+    };
+
     return (
         <StyledContentBase
             pageStyle='half'
@@ -687,16 +697,11 @@ function AddEditGWEnvironment(props) {
                                     onChange={onChange}
                                     data-testid='gateway-environment-type-select'
                                 >
-                                    {settings.gatewayConfiguration
-                                        .sort((a, b) => a.displayName.localeCompare(b.displayName))
-                                        .map((gateway) => (
-                                            <MenuItem key={gateway.type} value={gateway.type}>
-                                                {gateway.displayName || gateway.type}
-                                            </MenuItem>
-                                        ))}
-                                    <MenuItem key='other' value='other' id='Admin.GatewayEnvironment.form.type.menu'>
-                                        {'Other' || 'other'}
-                                    </MenuItem>
+                                    {settings.gatewayTypes.map((item) => (
+                                        <MenuItem key={item} value={item}>
+                                            {getDisplayName(item)}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                                 <FormHelperText>
                                     {hasErrors('gatewayType', type, validating) || (

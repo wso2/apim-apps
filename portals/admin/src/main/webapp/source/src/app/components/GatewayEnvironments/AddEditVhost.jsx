@@ -156,6 +156,9 @@ function AddEditVhost(props) {
                         const keyedVhost = vhost;
                         keyedVhost.key = '' + i++;
                         keyedVhost.host = defaultHostnameTemplate;
+                        if (defaultHostnameTemplate !== '') {
+                            keyedVhost.isNew = false;
+                        }
                         return keyedVhost;
                     }));
                 } else {
@@ -172,6 +175,9 @@ function AddEditVhost(props) {
                 vhost.key = '' + id;
                 if (config && config.defaultHostnameTemplate) {
                     vhost.host = config.defaultHostnameTemplate;
+                    if (config.defaultHostnameTemplate !== '') {
+                        vhost.isNew = false;
+                    }
                 }
                 setUserVhosts([vhost]);
             }
@@ -431,19 +437,22 @@ function AddEditVhost(props) {
                     </Grid>
                 ))}
                 {/* Add new VHost */}
-                <Grid item xs={12}>
-                    <Button
-                        name='newVhost'
-                        variant='outlined'
-                        color='primary'
-                        onClick={handleNewVhost}
-                    >
-                        <FormattedMessage
-                            id='GatewayEnvironments.AddEditVhost.add.vhost.btn'
-                            defaultMessage='New VHost'
-                        />
-                    </Button>
-                </Grid>
+                {(gatewayType === 'Regular' || gatewayType === 'APK' || gatewayType === 'other')
+                    && (
+                        <Grid item xs={12}>
+                            <Button
+                                name='newVhost'
+                                variant='outlined'
+                                color='primary'
+                                onClick={handleNewVhost}
+                            >
+                                <FormattedMessage
+                                    id='GatewayEnvironments.AddEditVhost.add.vhost.btn'
+                                    defaultMessage='New VHost'
+                                />
+                            </Button>
+                        </Grid>
+                    )}
             </Grid>
         </FormGroup>
     );

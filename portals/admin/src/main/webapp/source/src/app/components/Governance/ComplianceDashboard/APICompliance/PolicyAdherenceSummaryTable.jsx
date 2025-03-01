@@ -28,34 +28,17 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { useIntl } from 'react-intl';
 import PolicyIcon from '@mui/icons-material/Policy';
 
-import GovernanceAPI from 'AppData/GovernanceAPI';
 import Utils from 'AppData/Utils';
 
-export default function PolicyAdherenceSummaryTable({ artifactId }) {
+export default function PolicyAdherenceSummaryTable({ complianceData }) {
     const intl = useIntl();
-
-    /**
-     * API call to get Policies
-     * @returns {Promise}.
-     */
-    function apiCall() {
-        const restApi = new GovernanceAPI();
-        return restApi
-            .getComplianceByAPIId(artifactId)
-            .then((result) => {
-                return result.body.governedPolicies;
-            })
-            .catch((error) => {
-                throw error;
-            });
-    }
 
     const renderProgress = (followed, total, status) => {
         if (status === 'PENDING') {
             return (
                 <Typography variant='body2' color='textSecondary'>
                     {intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.PolicyAdherence.pending',
+                        id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.pending',
                         defaultMessage: 'N/A - Waiting for policy evaluation',
                     })}
                 </Typography>
@@ -66,7 +49,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             return (
                 <Typography variant='body2' color='textSecondary'>
                     {intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.PolicyAdherence.not.applied',
+                        id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.not.applied',
                         defaultMessage: 'N/A - Policy not applied',
                     })}
                 </Typography>
@@ -74,14 +57,13 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         }
 
         const percentage = (followed / total) * 100;
-        const isComplete = followed === total;
 
         return (
             <Box sx={{ width: '100%' }}>
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant='body2' sx={{ fontWeight: 'bold' }} color='textSecondary'>
                         {intl.formatMessage({
-                            id: 'Governance.Overview.APICompliance.PolicyAdherence.followed.count',
+                            id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.followed.count',
                             defaultMessage: '{followed}/{total} Followed',
                         }, { followed, total })}
                     </Typography>
@@ -94,7 +76,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                         borderRadius: 1,
                         backgroundColor: '#e0e0e0',
                         '& .MuiLinearProgress-bar': {
-                            backgroundColor: isComplete ? '#00B81D' : '#FF5252',
+                            backgroundColor: '#00B81D',
                             borderRadius: 1,
                         },
                     }}
@@ -150,7 +132,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.policy',
+                id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.column.policy',
                 defaultMessage: 'Policy',
             }),
             options: {
@@ -176,7 +158,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         {
             name: 'status',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.status',
+                id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.column.status',
                 defaultMessage: 'Status',
             }),
             options: {
@@ -218,7 +200,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         {
             name: 'rulesetsList',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.PolicyAdherence.column.rulesets',
+                id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.column.rulesets',
                 defaultMessage: 'Rulesets',
             }),
             options: {
@@ -266,7 +248,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 sx={{ fontWeight: 'medium' }}
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.title',
+                    id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.empty.title',
                     defaultMessage: 'No Policies Applied',
                 })}
             </Typography>
@@ -276,7 +258,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                 align='center'
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.PolicyAdherence.empty.helper',
+                    id: 'Governance.ComplianceDashboard.APICompliance.PolicyAdherence.empty.helper',
                     defaultMessage: 'No governance policies have been applied to this API.',
                 })}
             </Typography>
@@ -286,7 +268,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
     return (
         <ListBase
             columProps={policyColumProps}
-            apiCall={apiCall}
+            initialData={complianceData ? complianceData.governedPolicies : null}
             searchProps={false}
             emptyBoxProps={{
                 content: emptyStateContent,
@@ -296,6 +278,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             useContentBase={false}
             options={{
                 elevation: 0,
+                rowsPerPage: 5,
             }}
             enableCollapsable
             renderExpandableRow={renderExpandableRow}

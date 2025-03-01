@@ -74,7 +74,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
     const [config, setConfig] = useState<RoundRobinConfig>({
         production: [],
         sandbox: [],
-        suspendDuration: 0,
+        suspendDuration: undefined,
     });
     const [modelList, setModelList] = useState<string[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);

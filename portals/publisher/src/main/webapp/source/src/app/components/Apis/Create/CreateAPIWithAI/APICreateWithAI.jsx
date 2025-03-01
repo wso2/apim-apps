@@ -1,4 +1,4 @@
-/* eslint-disable */
+/*eslint-disable*/
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
@@ -20,6 +20,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Stack from '@mui/material/Stack';
+import { Typography } from '@mui/material';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
 import ApiChatResponse from './components/ApiChatResponse';
@@ -30,6 +31,10 @@ import WelcomeMessage from './components/WelcomeMessage';
 import LoadingDots from './components/LoadingDots';
 import { useHistory } from 'react-router-dom';
 import API from 'AppData/api';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { FormattedMessage } from 'react-intl';
+import LaunchIcon from '@mui/icons-material/Launch';
+import Alert from '@mui/material/Alert';
 
 /**
  * Renders the Create API with AI UI.
@@ -54,9 +59,11 @@ const ApiCreateWithAI = () => {
     const [missingValues, setMissingValues] = useState('');
     const history = useHistory();
     const [lastRenderedComponent, setLastRenderedComponent] = useState(<ApiChatBanner />);
+    const { data: settings } = usePublisherSettings();
+    const [specEnrichmentError, setSpecEnrichmentError] = useState('');
+    const [specEnrichmentErrorLevel, setSpecEnrichmentErrorLevel] = useState('');
 
     const chatContainerRef = useRef(null);
-
     useEffect(() => {
         if (chatContainerRef.current) {
             const element = chatContainerRef.current;
@@ -65,7 +72,7 @@ const ApiCreateWithAI = () => {
     }, [messages]);
 
     useEffect(() => {
-        if (taskStatus === "COMPLETE") {
+        if (taskStatus === 'COMPLETE') {
             setLastRenderedComponent(
                 <DisplayCode 
                     finalOutcomeCode={finalOutcomeCode}
@@ -125,11 +132,48 @@ const ApiCreateWithAI = () => {
     };
 
     const generateSessionId = () => {
-        return `${Date.now()}`;
+        const uuid = (function() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        })();
+    
+        const dateTime = new Date().toISOString();
+        const sessionId = `${uuid}-${dateTime}`;
+        const encodedSessionId = btoa(sessionId);
+        const modifiedSessionId = encodedSessionId.slice(0, -2);
+    
+        return encodedSessionId;
     };
+    
+    const authTokenNotProvidedWarning = (
+        <FormattedMessage
+            id='Apis.Details.ApiChat.warning.authTokenMissing'
+            defaultMessage={'You must provide a token to start using API Design Assistant. To obtain one, '
+                + 'follow the steps provided under {apiAiChatDocLink} '}
+            values={{
+                apiAiChatDocLink: (
+                    <a
+                        id='api-chat-doc-link'
+                        href='https://apim.docs.wso2.com/en/4.5.0/design/create-api/create-api-with-ai/'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                    >
+                        Create APIs with AI
+                        <LaunchIcon
+                            style={{ marginLeft: '2px' }}
+                            fontSize='small'
+                        />
+                    </a>
+                ),
+            }}
+        />
+    );
 
     const handleSelectedTitles = (titles) => { 
-        const titlesString = "Modify this API to include the following features as well:\n" + 
+        const titlesString = 'Modify this API to include the following features as well:\n' + 
         titles.map(title => `- ${title}`).join('\n');
         setSelectedTitles(titlesString); 
         setLastQuery(titlesString);
@@ -149,12 +193,12 @@ const ApiCreateWithAI = () => {
             const response = await queryDesignAssistant.sendChatAPIDesignAssistant(query, sessionId);
     
             if (!response || typeof response !== 'object') {
-                throw new Error("Invalid response received from API.");
+                throw new Error('Invalid response received from API.');
             }
     
             return response;
         } catch (error) {
-            console.error("Error in sendQuery:", error);
+            console.error('Error in sendQuery:', error);
             throw error;
         }
     }
@@ -209,14 +253,37 @@ const ApiCreateWithAI = () => {
 
         } catch (error) {
             console.error('Error:', error);
-            setFinalOutcome('An error occurred while fetching the data.');
+
+            let content;
+            try {
+                switch (error.response.status) {
+                    case 401: // Unauthorized
+                        content = 'Apologies for the inconvenience. It appears that your token is invalid or expired. Please'
+                        + ' provide a valid token or upgrade your subscription plan.';
+                        break;
+                    case 429: // Token limit exceeded
+                        content = 'Apologies for the inconvenience. It appears that the token limit has been exceeded.';
+                        break;
+                    case 504: // Handle gateway timeout scenario
+                        content = 'Apologies for the inconvenience. The request has timed out. Please try again.';
+                        break;
+                    default:
+                        content = 'Apologies for the inconvenience. It seems that something went wrong with the'
+                        + ' API Design Assistant. Please try again.';
+                        break;
+                }
+
+            } catch (err) {
+                content = 'Apologies for the inconvenience. It seems that something went wrong with the'
+                + ' API Design Assistant. Please try again.';
+            }
 
             setMessages((prevMessages) => [
                 ...prevMessages,
-                { role: 'system', content: 'It is taking longer than expected. Please try again.', isSuggestions: false }
+                { role: 'system', content: content, isSuggestions: false }
             ]);
 
-            setTaskStatus('ERROR');
+            throw error;
         } finally {
             setLoading(false);
         }
@@ -232,114 +299,157 @@ const ApiCreateWithAI = () => {
     
     return (
         <div>
-            <Stack direction='column' sx={{ width: '100%', height: 'calc(100vh - 99px)', minHeight: 'calc(100vh - 99px)' }}>
+            <Stack 
+                direction='column' 
+                sx={{ width: '100%', height: 'calc(100vh - 99px)', minHeight: 'calc(100vh - 99px)' }}>
                 <Box sx={{
                     display: 'flex',
                     flex: 9,
                     flexDirection: 'row',
                     paddingTop:'10px',
                     marginTop:'10px',
-                    overflow: 'hidden',
+                    overflow: 'auto',
                 }}>
-                <Stack
-                    direction="row"
-                    sx={{ width: '100%', height: '100%' }}
-                >
-                    <Box 
-                        sx={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            paddingTop:'10px',
-                            paddingBottom:'10px',
-                            marginLeft: '20px',
-                            borderLeft: '1px solid #dee0e8',
-                            borderBottom: '1px solid #dee0e8',
-                            borderTop: '1px solid #dee0e8',
-                            borderRight: '1px solid #dee0e8',
-                            minwidth:'50%'
-                        }}
+                    <Stack
+                        direction='row'
+                        sx={{ width: '100%', height: '100%', overflow: 'auto' }}
                     >
-                        <Stack direction='column' sx={{ width: '100%', height: '100%'}}>
-                            {!lastQuery && (
-                                <Box>
-                                    <WelcomeMessage/>
-                                    <Stack 
-                                        direction='row' 
-                                        spacing={7} 
-                                        justifyContent='center'
-                                        marginTop= '40px'
-                                    >
-                                        <SampleQueryCard 
-                                            onExecuteClick={handleExecuteSampleQuery} 
-                                            queryHeading='Create a REST API' 
-                                            queryData='Create an API for a banking transaction' 
-                                            sx={{ textAlign: 'left' }} 
-                                        />
-                                        <SampleQueryCard 
-                                            onExecuteClick={handleExecuteSampleQuery} 
-                                            queryHeading='Create a SSE API' 
-                                            queryData='Create an API for live sports scores' 
-                                            sx={{ textAlign: 'left' }} 
+                        <Box 
+                            sx={{
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                paddingTop:'10px',
+                                paddingBottom:'10px',
+                                marginLeft: '20px',
+                                borderLeft: '1px solid #dee0e8',
+                                borderBottom: '1px solid #dee0e8',
+                                borderTop: '1px solid #dee0e8',
+                                borderRight: '1px solid #dee0e8',
+                                minwidth:'50%'
+                            }}
+                        >
+                            <Stack
+                                direction='column' 
+                                sx={{ width: '100%', height: '100%', overflowY: 'auto', overflowX: 'hidden' }}
+                            >
+                                {!lastQuery && (
+                                    <Box>
+                                        <WelcomeMessage/>
+                                        <Stack 
+                                            direction='row' 
+                                            spacing={7} 
+                                            justifyContent='center'
+                                            marginTop= '40px'
+                                        >
+                                            <SampleQueryCard 
+                                                onExecuteClick={handleExecuteSampleQuery} 
+                                                queryHeading='Create a REST API' 
+                                                queryData='Create an API for a banking transaction' 
+                                                sx={{ textAlign: 'left' }} 
                                             />
-                                    </Stack>
-                                </Box>
-                            )}
-                            <Box ref={chatContainerRef} sx={{ flexGrow: 1, textAlign: 'left', overflowY: 'auto', overflowX: 'auto', scrollBehavior: 'smooth' }}>
-                                {(lastQuery || finalOutcome) && (
-                                    <ApiChatResponse 
-                                        messages={messages} 
-                                        onTitlesSelected={handleSelectedTitles}
-                                        taskStatus={taskStatus}
-                                    />
+                                            <SampleQueryCard 
+                                                onExecuteClick={handleExecuteSampleQuery} 
+                                                queryHeading='Create a SSE API' 
+                                                queryData='Create an API for live sports scores' 
+                                                sx={{ textAlign: 'left' }} 
+                                            />
+                                        </Stack>
+                                    </Box>
                                 )}
-                                {loading && <LoadingDots />}
-                            </Box>
-                            <Box>
-                                <ApiChatExecute
-                                    lastQuery={lastQuery}
-                                    inputQuery={inputQuery}
-                                    handleExecute={handleExecute}
-                                    handleQueryChange={handleQueryChange}
-                                    paths={paths} 
-                                    loading={loading}
-                                />
-                            </Box>
-                            
-                        </Stack>
-                    </Box>
-                    <Box 
-                        sx={{
-                            flex: 1,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'center',
-                            alignItems: 'center',
-                            textAlign: 'left',
-                            borderLeft: '1px solid #dee0e8',
-                            borderRight: '1px solid #dee0e8',
-                            borderBottom: '1px solid #dee0e8',
-                            borderTop: '1px solid #dee0e8',
-                            paddingLeft: '10px',
-                            paddingRight: '10px',
-                            backgroundColor: '#fff',
-                            marginRight: '20px',
-                            minwidth:'50%'
-                        }}
-                    >
-                        {lastRenderedComponent}
-                    </Box>
-                 </Stack>
+                                <Box 
+                                    ref={chatContainerRef} 
+                                    sx={{ 
+                                        flexGrow: 1, 
+                                        textAlign: 'left', 
+                                        overflowY: 'auto', 
+                                        overflowX: 'auto', 
+                                        scrollBehavior: 'smooth' }}
+                                >
+                                    {(lastQuery || finalOutcome) && (
+                                        <ApiChatResponse 
+                                            messages={messages} 
+                                            onTitlesSelected={handleSelectedTitles}
+                                            taskStatus={taskStatus}
+                                        />
+                                    )}
+                                    {loading && <LoadingDots />}
+                                </Box>
+                                <Box>
+                                    <Box 
+                                        display='flex' 
+                                        alignItems='center' 
+                                        flexDirection='column' 
+                                        marginTop={1} 
+                                        marginBottom={2}
+                                    >
+                                        {/* Handle prepare call failed scenario */}
+                                        {specEnrichmentError && specEnrichmentErrorLevel && (
+                                            <Alert severity={specEnrichmentErrorLevel}>
+                                                <Typography variant='body1'>
+                                                    {specEnrichmentError}
+                                                </Typography>
+                                            </Alert>
+                                        )}
+                                        {/* Handle auth token not provided scenario */}
+                                        {settings && !settings?.aiAuthTokenProvided && (
+                                            <Alert severity='warning'>
+                                                <Typography variant='body1'>
+                                                    {authTokenNotProvidedWarning}
+                                                </Typography>
+                                            </Alert>
+                                        )}
+                                    </Box>
+                                    <Box>
+                                        <ApiChatExecute
+                                            lastQuery={lastQuery}
+                                            inputQuery={inputQuery}
+                                            handleExecute={handleExecute}
+                                            handleQueryChange={handleQueryChange}
+                                            paths={paths} 
+                                            loading={loading}
+                                        />
+                                    </Box>
+                                </Box>
+                                
+                            </Stack>
+                        </Box>
+                        <Box 
+                            sx={{
+                                flex: 1,
+                                display: 'flex',
+                                flexDirection: 'column',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                textAlign: 'left',
+                                borderLeft: '1px solid #dee0e8',
+                                borderRight: '1px solid #dee0e8',
+                                borderBottom: '1px solid #dee0e8',
+                                borderTop: '1px solid #dee0e8',
+                                paddingLeft: '10px',
+                                paddingRight: '10px',
+                                backgroundColor: '#fff',
+                                marginRight: '20px',
+                                minwidth:'50%',
+                                overflowY: 'auto',
+                                overflowX: 'hidden'
+
+
+                            }}
+                        >
+                            {lastRenderedComponent}
+                        </Box>
+                    </Stack>
                 </Box>
-                <Box sx={{ 
-                            display: 'flex',
-                            backgroundColor: '#fff',
-                            flex: 1,
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'flex-end',
-                            padding:'10px 20px',
-                        }}
+                <Box
+                    sx={{ 
+                        display: 'flex',
+                        flex: 1,
+                        flexDirection: 'row',
+                        alignItems: 'center',
+                        justifyContent: 'flex-end',
+                        padding:'10px 20px',
+                    }}
                 >
                     <Button
                         size='small'

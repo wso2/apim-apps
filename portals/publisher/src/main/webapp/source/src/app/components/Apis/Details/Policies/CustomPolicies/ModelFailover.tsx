@@ -45,8 +45,8 @@ interface ModelConfig {
 interface FailoverConfig {
     production: ModelConfig;
     sandbox: ModelConfig;
-    requestTimeout: number;
-    suspendDuration: number;
+    requestTimeout?: number;
+    suspendDuration?: number;
 }
 
 interface ModelFailoverProps {
@@ -92,8 +92,8 @@ const ModelFailover: FC<ModelFailoverProps> = ({
             },
             fallbackModels: [],
         },
-        requestTimeout: 0,
-        suspendDuration: 0,
+        requestTimeout: undefined,
+        suspendDuration: undefined,
     });
     const [modelList, setModelList] = useState<string[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
