@@ -6,6 +6,7 @@ import Configurations from 'Config';
 import Fade from '@mui/material/Fade';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import { blue } from '@mui/material/colors';
 
 const PREFIX = 'LandingMenu';
 
@@ -22,20 +23,16 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
     },
 
     [`& .${classes.boxTransition}`]: {
-        transition: '0.5s',
+        transition: 'box-shadow 0.9s cubic-bezier(.25,.8,.25,1)',
         cursor: 'pointer',
-        border: '1px solid #e5e5e5',
-        '&:hover': {
-            border: '1px solid #ccc',
-        },
     },
 
     [`& .${classes.overlayBox}`]: {
         cursor: 'auto',
         outline: 'none',
-        backgroundColor: 'rgba(255, 255, 255, 0.75)',
-        backdropFilter: 'blur(5px)',
-        borderRadius: theme.spacing(1),
+        'border-color': '#f9f9f9', // TODO: take from theme ~tmkb
+        'box-shadow': '0 0 6px 4px #f9f9f9',
+        'border-radius': '5px',
     },
 
     [`& .${classes.overlayCloseButton}`]: {
@@ -47,8 +44,16 @@ const LandingMenu = (props) => {
     const {
         title, icon, children, id,
     } = props;
+    const [isHover, setIsHover] = useState(false);
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isFadeOut, setIsFadeOut] = useState(true);
+
+    const onMouseOver = () => {
+        setIsHover(true);
+    };
+    const onMouseOut = () => {
+        setIsHover(false);
+    };
 
     return (
         <StyledGrid
@@ -62,13 +67,19 @@ const LandingMenu = (props) => {
             <Box
                 id={id}
                 className={classes.boxTransition}
+                onMouseOver={onMouseOver}
+                onMouseOut={onMouseOut}
                 bgcolor='background.paper'
                 justifyContent='center'
                 alignItems='center'
                 borderRadius='8px'
+                borderColor='grey.300'
                 display='flex'
+                border={1}
+                boxShadow={isHover ? 4 : 1}
                 minHeight={340}
                 p={1}
+                color={blue[900]}
                 fontSize='h4.fontSize'
                 fontFamily='fontFamily'
                 flexDirection='row'
@@ -92,10 +103,10 @@ const LandingMenu = (props) => {
                             <img
                                 style={{
                                     maxWidth: '100%',
+                                    height: 'auto',
                                     objectFit: 'contain',
-                                    width: '100px',
-                                    height: '100px',
-
+                                    minWidth: '150px',
+                                    minHeight: '150px',
                                 }}
                                 src={Configurations.app.context
                                     + icon}
@@ -111,6 +122,7 @@ const LandingMenu = (props) => {
                     top={5}
                     left={5}
                     height='97%'
+                    bgcolor='#f8f8fb'
                     textAlign='center'
                     width='97%'
                     className={classes.overlayBox}
