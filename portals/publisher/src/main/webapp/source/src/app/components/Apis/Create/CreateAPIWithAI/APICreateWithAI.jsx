@@ -441,10 +441,8 @@ const ApiCreateWithAI = () => {
                                 backgroundColor: '#fff',
                                 marginRight: '20px',
                                 minwidth:'50%',
-                                overflowY: 'auto',
+                                overflowY: 'hidden',
                                 overflowX: 'hidden'
-
-
                             }}
                         >
                             {lastRenderedComponent}
