@@ -22,6 +22,7 @@ import { useIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import YAML from 'js-yaml';
 import API from 'AppData/api';
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 
 interface AlertDialogProps {
   loading?: boolean;
@@ -31,11 +32,20 @@ interface AlertDialogProps {
 }
 
 const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, spec, apiType}) => {
+  const [open, setOpen] = React.useState(false);
   const [showProgress, setShowProgress] = React.useState(false);
   const intl = useIntl();
   const history = useHistory();
 
-    /**
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  /**
    * Method to handle error scenarios
    * 
    * @param messageId messageId
@@ -213,10 +223,10 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
   };
 
   return (
-    <React.Fragment>
+    <React.Fragment>      
       <Button
         variant="contained"
-        onClick={handleCreate}
+        onClick={handleClickOpen}
         sx={{ marginRight: '10px', minWidth: '120px',  height: '35px', display: 'flex', gap:1, alignItems: 'center'}}  
         disabled={loading || taskStatus == ''}
       >
@@ -227,6 +237,37 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
         {' '}
         {showProgress &&  <CircularProgress size={16} color='inherit'/> }
       </Button>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Satisfied with the design?"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Click 'Yes' to proceed to the API Creation Wizard
+          </DialogContentText>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={handleClose}>
+            NO
+          </Button>
+          <Button
+            onClick={handleCreate}
+            sx={{
+              border: '1px solid #1C7EA7'
+            }}
+            autoFocus
+          >
+            YES
+          </Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 };
