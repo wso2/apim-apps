@@ -60,19 +60,12 @@ const classes = {
     root: `${PREFIX}-root`,
     titleWrapper: `${PREFIX}-titleWrapper`,
     titleLink: `${PREFIX}-titleLink`,
-    FormControl: `${PREFIX}-FormControl`,
-    FormControlOdd: `${PREFIX}-FormControlOdd`,
-    FormControlLabel: `${PREFIX}-FormControlLabel`,
-    buttonSection: `${PREFIX}-buttonSection`,
     saveButton: `${PREFIX}-saveButton`,
     helpText: `${PREFIX}-helpText`,
     extraPadding: `${PREFIX}-extraPadding`,
     actionButtonSection: `${PREFIX}-actionButtonSection`,
-    titleGrid: `${PREFIX}-titleGrid`,
     progress: `${PREFIX}-progress`,
-    endpointCardWrapper: `${PREFIX}-endpointCardWrapper`,
     textField: `${PREFIX}-textField`,
-    btn: `${PREFIX}-btn`,
     iconButton: `${PREFIX}-iconButton`,
     iconButtonValid: `${PREFIX}-iconButtonValid`,
     endpointValidChip: `${PREFIX}-endpointValidChip`,
@@ -103,29 +96,6 @@ const StyledGrid = styled(Grid)((
         marginRight: theme.spacing(1),
     },
 
-    [`& .${classes.FormControl}`]: {
-        padding: `0 0 0 ${theme.spacing(1)}`,
-        width: '100%',
-        marginTop: 0,
-    },
-
-    [`& .${classes.FormControlOdd}`]: {
-        padding: `0 0 0 ${theme.spacing(1)}`,
-        backgroundColor: theme.palette.background.paper,
-        width: '100%',
-        marginTop: 0,
-    },
-
-    [`& .${classes.FormControlLabel}`]: {
-        marginBottom: theme.spacing(1),
-        marginTop: theme.spacing(1),
-        fontSize: theme.typography.caption.fontSize,
-    },
-
-    [`& .${classes.buttonSection}`]: {
-        paddingTop: theme.spacing(3),
-    },
-
     [`& .${classes.saveButton}`]: {
         marginRight: theme.spacing(1),
     },
@@ -143,29 +113,12 @@ const StyledGrid = styled(Grid)((
         paddingTop: 20,
     },
 
-    [`& .${classes.titleGrid}`]: {
-        ' & .MuiGrid-item': {
-            padding: 0,
-            margin: 0,
-        },
-    },
-
     [`& .${classes.progress}`]: {
         marginLeft: theme.spacing(1),
     },
 
-    [`& .${classes.endpointCardWrapper}`]: {
-        display: 'flex',
-        flexDirection: 'row',
-        alignItems: 'center',
-    },
-
     [`& .${classes.textField}`]: {
         width: '100%',
-    },
-
-    [`& .${classes.btn}`]: {
-        marginRight: theme.spacing(0.5),
     },
 
     [`& .${classes.iconButton}`]: {
@@ -1020,7 +973,7 @@ const AddEditAIEndpoint = ({
                                 onClick={formSave}
                                 disabled={
                                     isRestricted(['apim:api_create'], apiObject)
-                                    || formHasErrors(validating)
+                                    || formHasErrors(validating || isEditing)
                                     || apiObject.isRevision
                                 }
                                 className={classes.saveButton}

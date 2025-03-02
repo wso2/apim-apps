@@ -37,7 +37,7 @@ import { Link } from 'react-router-dom';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+const StyledAccordionSummary = styled(AccordionSummary)(() => ({
     minHeight: 48,
     maxHeight: 48,
     '&.Mui-expanded': {

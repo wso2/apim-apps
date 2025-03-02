@@ -54,7 +54,7 @@ interface ModelFailoverProps {
     manualPolicyConfig: string;
 }
 
-const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+const StyledAccordionSummary = styled(AccordionSummary)(() => ({
     minHeight: 48,
     maxHeight: 48,
     '&.Mui-expanded': {

@@ -24,6 +24,7 @@ import {
     styled,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
+import PropTypes from 'prop-types';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -305,6 +306,26 @@ const AIEndpoints = ({
             </Grid>
         </Grid>
     );
+}
+
+AIEndpoints.propTypes = {
+    apiObject: PropTypes.shape({
+        id: PropTypes.string,
+        primaryProductionEndpointId: PropTypes.string,
+        primarySandboxEndpointId: PropTypes.string,
+        endpointConfig: PropTypes.shape({
+            production_endpoints: PropTypes.shape({
+                url: PropTypes.string,
+            }),
+            sandbox_endpoints: PropTypes.shape({
+                url: PropTypes.string,
+            }),
+            endpoint_security: PropTypes.shape({
+                production: PropTypes.bool,
+                sandbox: PropTypes.bool,
+            }),
+        }),
+    }).isRequired,
 }
 
 export default AIEndpoints;
