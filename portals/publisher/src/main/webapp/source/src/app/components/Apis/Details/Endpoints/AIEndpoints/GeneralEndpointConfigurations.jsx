@@ -39,11 +39,8 @@ const classes = {
     configHeaderContainer: `${PREFIX}-configHeaderContainer`,
     generalConfigContent: `${PREFIX}-generalConfigContent`,
     secondaryHeading: `${PREFIX}-secondaryHeading`,
-    heading: `${PREFIX}-heading`,
     endpointConfigSection: `${PREFIX}-endpointConfigSection`,
     generalConfigPanel: `${PREFIX}-generalConfigPanel`,
-    securityHeading: `${PREFIX}-securityHeading`,
-    sandboxEndpointSwitch: `${PREFIX}-sandboxEndpointSwitch`
 };
 
 const Root = styled('div')((
@@ -66,13 +63,6 @@ const Root = styled('div')((
         display: 'flex',
     },
 
-    [`& .${classes.heading}`]: {
-        fontSize: theme.typography.pxToRem(15),
-        flexBasis: '33.33%',
-        flexShrink: 0,
-        fontWeight: '900',
-    },
-
     [`& .${classes.endpointConfigSection}`]: {
         padding: '10px',
     },
@@ -80,14 +70,6 @@ const Root = styled('div')((
     [`& .${classes.generalConfigPanel}`]: {
         width: '100%',
     },
-
-    [`& .${classes.securityHeading}`]: {
-        fontWeight: 600,
-    },
-
-    [`& .${classes.sandboxEndpointSwitch}`]: {
-        marginLeft: theme.spacing(2),
-    }
 }));
 
 const GeneralEndpointConfigurations = ({
@@ -140,11 +122,13 @@ const GeneralEndpointConfigurations = ({
                 return Promise.reject(err);
             });
     };
+
     /**
      * Method to delete the selected certificate.
      *
-     * @param {string} alias The alias of the certificate to be deleted.
-     * */
+     * @param {string} alias The alias of the certifcate to be deleted
+     * @returns {Promise} promise
+     */
     const deleteCertificate = (alias) => {
         return API.deleteEndpointCertificate(alias)
             .then((resp) => {

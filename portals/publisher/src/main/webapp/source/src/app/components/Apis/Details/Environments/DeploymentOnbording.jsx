@@ -35,6 +35,7 @@ import PropTypes from 'prop-types';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { CircularProgress, useTheme } from '@mui/material';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import API from 'AppData/api';
 import Checkbox from '@mui/material/Checkbox';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -152,14 +153,22 @@ export default function DeploymentOnboarding(props) {
     const [internalGateways, setInternalGateways] = useState([]);
     const [externalGateways, setExternalGateways] = useState([]);
     const [selectedExternalGateway, setSelectedExternalGateway] = useState([]);
-    const isEndpointAvailable = api.endpointConfig !== null;
-
-    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || api.workflowStatus === 'CREATED');
-
+    const isEndpointAvailable = api.subtypeConfiguration?.subtype === 'AIAPI'
+        ? (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null)
+        : api.endpointConfig !== null;
+    const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
     const [descriptionOpen, setDescriptionOpen] = useState(false);
     const [selectedEnvironment, setSelectedEnvironment] = useState([]);
     const [selectedVhostDeploy, setVhostsDeploy] = useState(null);
+
+
+    const isDeployButtonDisabled = ((api.type !== 'WEBSUB' && !(
+        isEndpointAvailable &&
+        (api.subtypeConfiguration?.subtype === 'AIAPI'
+            ? isEndpointSecurityConfigured
+            : true
+        )
+    )) || api.workflowStatus === 'CREATED');
 
     useEffect(() => {
         let gatewayType;
@@ -221,21 +230,48 @@ export default function DeploymentOnboarding(props) {
         
     }, []);
 
+    useEffect(() => {
+        const checkEndpointSecurity = async () => {
+            try {
+                const hasProductionEndpoint = !!api.primaryProductionEndpointId;
+                const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
+                let isProductionSecure = false;
+                let isSandboxSecure = false;
 
-    // /**
-    //  * Get Organization value of external gateways
-    //  * @param {Object} additionalProperties the additionalProperties list
-    //  * @return String organization name
-    //  */
-    // function getOrganizationFromAdditionalProperties(additionalProperties) {
-    //     let organization;
-    //     additionalProperties.forEach((property) => {
-    //         if (property.key === 'Organization') {
-    //             organization = property.value;
-    //         }
-    //     });
-    //     return organization;
-    // }
+                if (hasProductionEndpoint) {
+                    if (api.primaryProductionEndpointId === `${api.id}--PRODUCTION`) {
+                        isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
+                    } else {
+                        const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
+                        isProductionSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.production;
+                    }
+                }
+
+                if (hasSandboxEndpoint) {
+                    if (api.primarySandboxEndpointId === `${api.id}--SANDBOX`) {
+                        isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
+                    } else {
+                        const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
+                        isSandboxSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox;
+                    }
+                }
+
+                if (hasProductionEndpoint && hasSandboxEndpoint) {
+                    setIsEndpointSecurityConfigured(isProductionSecure && isSandboxSecure);
+                } else if (hasProductionEndpoint) {
+                    setIsEndpointSecurityConfigured(isProductionSecure);
+                } else if (hasSandboxEndpoint) {
+                    setIsEndpointSecurityConfigured(isSandboxSecure);
+                } else {
+                    setIsEndpointSecurityConfigured(false);
+                }
+            } catch (error) {
+                console.error('Error checking endpoint security:', error);
+                setIsEndpointSecurityConfigured(false);
+            }
+        };
+        checkEndpointSecurity();
+    }, [api]);
 
     /**
      * Handle Description
