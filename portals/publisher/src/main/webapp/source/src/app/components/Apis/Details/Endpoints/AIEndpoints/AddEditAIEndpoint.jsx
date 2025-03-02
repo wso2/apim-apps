@@ -865,7 +865,8 @@ const AddEditAIEndpoint = ({
                                                                     interactive
                                                                     title={(
                                                                         <FormattedMessage
-                                                                            id='Apis.Details.Endpoints.endpoint.check'
+                                                                            id={'Apis.Details.Endpoints.AIEndpoints.' +
+                                                                                'AddEditAIEndpoint.test.endpoint'}
                                                                             defaultMessage='Check endpoint status'
                                                                         />
                                                                     )}
@@ -887,7 +888,8 @@ const AddEditAIEndpoint = ({
                                                             interactive
                                                             title={(
                                                                 <FormattedMessage
-                                                                    id='Apis.Details.Endpoints.endpoint.configuration'
+                                                                    id={'Apis.Details.Endpoints.AIEndpoints.' +
+                                                                        'AddEditAIEndpoint.endpoint.configuration'}
                                                                     defaultMessage='Endpoint configurations'
                                                                 />
                                                             )}
@@ -907,12 +909,13 @@ const AddEditAIEndpoint = ({
                                     disabled
                                     label={apiKeyParamConfig.authHeader ? (
                                         <FormattedMessage
-                                            id='Apis.Details.Endpoints.Security.api.key.header'
+                                            id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.api.key.header'
                                             defaultMessage='Authorization Header'
                                         />
                                     ) : (
                                         <FormattedMessage
-                                            id='Apis.Details.Endpoints.Security.api.key.query.param'
+                                            id={'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.' +
+                                                'api.key.query.param'}
                                             defaultMessage='Authorization Query Param'
                                         />
                                     )}
@@ -931,13 +934,13 @@ const AddEditAIEndpoint = ({
                                 <TextField
                                     disabled={isRestricted(['apim:api_create'], apiObject)}
                                     label={<FormattedMessage
-                                        id='Apis.Details.Endpoints.Security.api.key.value.value'
+                                        id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.api.key.value'
                                         defaultMessage='API Key'
                                     />}
                                     id='api-key-value'
                                     value={apiKeyValue}
                                     placeholder={intl.formatMessage({
-                                        id: 'Apis.Details.Endpoints.Security.api.key.value.placeholder',
+                                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.api.key.placeholder',
                                         defaultMessage: 'Enter API Key',
                                     })}
                                     fullWidth
@@ -1024,7 +1027,7 @@ const AddEditAIEndpoint = ({
                     <DialogTitle>
                         <Typography className={classes.configDialogHeader}>
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.endpoint.advanced.configuration'
+                                id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.advanced.configurations'
                                 defaultMessage='Advanced Configurations'
                             />
                         </Typography>
