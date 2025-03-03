@@ -30,6 +30,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import Tooltip from '@mui/material/Tooltip';
 import WarningIcon from '@mui/icons-material/Warning';
+import PropTypes from 'prop-types';
 import { styled } from '@mui/material/styles';
 import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api';
@@ -253,6 +254,37 @@ const EndpointCard = ({
             </CardContent>
         </StyledCard>
     );
+};
+
+EndpointCard.propTypes = {
+    endpoint: PropTypes.shape({
+        id: PropTypes.string,
+        name: PropTypes.string,
+        deploymentStage: PropTypes.string,
+        endpointConfig: PropTypes.shape({
+            production_endpoints: PropTypes.shape({
+                url: PropTypes.string,
+            }),
+            sandbox_endpoints: PropTypes.shape({
+                url: PropTypes.string,
+            }),
+            endpoint_security: PropTypes.shape({
+                production: PropTypes.shape({}),
+                sandbox: PropTypes.shape({}),
+            }),
+        }),
+    }).isRequired,
+    apiObject: PropTypes.shape({
+        id: PropTypes.string,
+        apiType: PropTypes.string,
+        primaryProductionEndpointId: PropTypes.string,
+        primarySandboxEndpointId: PropTypes.string,
+    }).isRequired,
+    isPrimary: PropTypes.bool.isRequired,
+    isDeleting: PropTypes.bool.isRequired,
+    onDelete: PropTypes.func.isRequired,
+    onSetPrimary: PropTypes.func.isRequired,
+    onRemovePrimary: PropTypes.func.isRequired,
 };
 
 export default EndpointCard;
