@@ -69,7 +69,7 @@ const ModelCard: FC<ModelCardProps> = ({
                         <Select
                             labelId='model-label'
                             id='model'
-                            value={model}
+                            value={modelData.model || ""}
                             label='Model'
                             name='model'
                             onChange={(e: any) => handleChange(e)}
