@@ -25,7 +25,9 @@ import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import SwaggerUI from './swaggerUIChatbot/SwaggerUI';
 import { Typography } from '@mui/material';
+import { FormattedMessage, injectIntl } from 'react-intl';
 import 'swagger-ui-react/swagger-ui.css';
+import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 
 interface DisplayCodeProps {
   finalOutcomeCode: string;
@@ -36,6 +38,19 @@ interface DisplayCodeProps {
 const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType, sessionId }) => {
   const [showCode, setShowCode] = useState(false);
 
+  const handleDownload = () => {
+    const fileExtension = apiType === 'GraphQL' ? 'graphql' : 'yaml';
+    const blob = new Blob([finalOutcomeCode], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `api-source.${fileExtension}`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
   return (
     <Box sx={{ width: '100%', height: '85vh' }}>
       <Stack spacing={0} sx={{ height: '100%', mt: 2 }}>
@@ -45,10 +60,10 @@ const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType, se
             display: 'flex',
             justifyContent: 'flex-end',
             alignItems: 'flex-end',
-            paddingRight: '20px',
+            paddingRight: '0px',
+            paddingBottom: '10px',
           }}
         >
-          {/* <Stack direction="row" spacing={1}> */}
             {apiType === 'REST' && (
 
                   <FormControlLabel
@@ -64,9 +79,19 @@ const DisplayCode: React.FC<DisplayCodeProps> = ({ finalOutcomeCode, apiType, se
                       />
                   }
                   labelPlacement='start'
+                  sx={{ marginRight: '20px' }}
                   />
             )}
-          {/* </Stack> */}
+            <Button
+                size="small"
+                variant="outlined"
+                color="primary"
+                onClick={handleDownload}
+                sx={{ marginRight: '0px', minWidth: '100px', height: '35px', px: 2, }}
+            >
+                Download
+                <CloudDownloadRounded sx={{ marginLeft: '8px' }} />
+            </Button>
         </Box>
 
         {apiType === 'REST' ? (

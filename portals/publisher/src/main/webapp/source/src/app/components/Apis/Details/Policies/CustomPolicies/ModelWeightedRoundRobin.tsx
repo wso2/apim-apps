@@ -37,7 +37,7 @@ import { Link } from 'react-router-dom';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 
-const StyledAccordionSummary = styled(AccordionSummary)(({ theme }) => ({
+const StyledAccordionSummary = styled(AccordionSummary)(() => ({
     minHeight: 48,
     maxHeight: 48,
     '&.Mui-expanded': {
@@ -79,7 +79,8 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
         sandbox: [],
         suspendDuration: undefined,
     });
-    const [modelList, setModelList] = useState<string[]>([]);
+    const [productionModelList, setProductionModelList] = useState<string[]>([]);
+    const [sandboxModelList, setSandboxModelList] = useState<string[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState<Endpoint[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -136,8 +137,10 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
     const fetchModelList = () => {
         const modelListPromise = API.getLLMProviderModelList(JSON.parse(apiFromContext.subtypeConfiguration.configuration).llmProviderId);
         modelListPromise
-            .then((response) => {
-                setModelList(response.body);
+            .then((response) => { 
+                const modelList = response.body;
+                setProductionModelList(modelList);
+                setSandboxModelList(modelList);
             }).catch((error) => {
                 console.error(error);
             });
@@ -182,17 +185,36 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
     }
 
     const handleDelete = (env: 'production' | 'sandbox', index: number) => {
+        // Add back deleted model to the list
+        const deletedModel = config[env][index];
+        if (env === 'production') {
+            setProductionModelList((prevList) =>
+                prevList.includes(deletedModel.model) ? prevList : [...prevList, deletedModel.model]
+            );
+        } else {
+            setSandboxModelList((prevList) =>
+                prevList.includes(deletedModel.model) ? prevList : [...prevList, deletedModel.model]
+            );
+        }
+
         setConfig((prevConfig) => ({
             ...prevConfig,
             [env]: prevConfig[env].filter((item, i) => i !== index),
-        }));
+        })); 
     }
 
     const isAddModelDisabled = (env: 'production' | 'sandbox') => {
-        if (modelList.length === 0) {
+        const modelList = env === 'production' ? productionModelList : sandboxModelList;
+        const selectedModels = config[env].map((model) => model.model);
+        const endpointList = env === 'production' ? productionEndpoints : sandboxEndpoints;
+
+        // If no available models or endpoints, disable adding
+        if (modelList.length === 0 || endpointList.length === 0) {
             return true;
         }
-        return env === 'production' ? productionEndpoints.length === 0 : sandboxEndpoints.length === 0;
+
+        // Disable if all models in modelList are already in selected
+        return modelList.every((model) => selectedModels.includes(model));
     };
 
     const getEndpointsUrl = () => {
@@ -261,7 +283,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
-                        {modelList.length === 0 && (
+                        {productionModelList.length === 0 && (
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.ModelWeightedRoundRobin.no.models'
@@ -298,17 +320,24 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
                                 defaultMessage='Add Model'
                             />
                         </Button>
-                        {config.production.map((model, index) => (
-                            <ModelCard
-                                key={index}
-                                modelData={model}
-                                modelList={modelList}
-                                endpointList={productionEndpoints}
-                                isWeightApplicable={true}
-                                onUpdate={(updatedModel) => handleUpdate('production', index, updatedModel)}
-                                onDelete={() => handleDelete('production', index)}
-                            />
-                        ))}
+                        {config.production.map((model, index) => {
+                            // Filter productionModelList to exclude already selected models except the one in the current card
+                            const modelList = productionModelList.filter(
+                                (m) => !config.production.some((item, i) => i !== index && item.model === m) || model.model === m
+                            );
+
+                            return (
+                                <ModelCard
+                                    key={index}
+                                    modelData={model}
+                                    modelList={modelList}
+                                    endpointList={productionEndpoints}
+                                    isWeightApplicable={true}
+                                    onUpdate={(updatedModel) => handleUpdate('production', index, updatedModel)}
+                                    onDelete={() => handleDelete('production', index)}
+                                />
+                            );
+                        })}
                     </AccordionDetails>
                 </Accordion>
                 <Accordion 
@@ -338,7 +367,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
-                        {modelList.length === 0 && (
+                        {sandboxModelList.length === 0 && (
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.ModelWeightedRoundRobin.no.models'
@@ -375,17 +404,24 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
                                 defaultMessage='Add Model'
                             />
                         </Button>
-                        {config.sandbox.map((model, index) => (
-                            <ModelCard
-                                key={index}
-                                modelData={model}
-                                modelList={modelList}
-                                endpointList={sandboxEndpoints}
-                                isWeightApplicable={true}
-                                onUpdate={(updatedModel) => handleUpdate('sandbox', index, updatedModel)}
-                                onDelete={() => handleDelete('sandbox', index)}
-                            />
-                        ))}
+                        {config.sandbox.map((model, index) => {
+                            // Filter sandboxModelList to exclude already selected models except the one in the current card
+                            const modelList = sandboxModelList.filter(
+                                (m) => !config.sandbox.some((item, i) => i !== index && item.model === m) || model.model === m
+                            );
+
+                            return (
+                                <ModelCard
+                                    key={index}
+                                    modelData={model}
+                                    modelList={modelList}
+                                    endpointList={sandboxEndpoints}
+                                    isWeightApplicable={true}
+                                    onUpdate={(updatedModel) => handleUpdate('sandbox', index, updatedModel)}
+                                    onDelete={() => handleDelete('sandbox', index)}
+                                />
+                            );
+                        })}
                     </AccordionDetails>
                 </Accordion>
                 <TextField

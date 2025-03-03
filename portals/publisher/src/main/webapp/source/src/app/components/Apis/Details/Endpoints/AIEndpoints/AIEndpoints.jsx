@@ -24,6 +24,7 @@ import {
     styled,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
+import PropTypes from 'prop-types';
 import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -94,7 +95,7 @@ const AIEndpoints = ({
             .catch((error) => {
                 console.error(error);
                 Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoints.fetch.error',
+                    id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.fetch.error',
                     defaultMessage: 'Something went wrong while fetching endpoints',
                 }));
             })
@@ -110,7 +111,7 @@ const AIEndpoints = ({
         if (endpoint.id === apiObject.primaryProductionEndpointId ||
             endpoint.id === apiObject.primarySandboxEndpointId) {
             Alert.error(intl.formatMessage({
-                id: 'Apis.Details.Endpoints.endpoint.delete.primary.error',
+                id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.delete.primary.error',
                 defaultMessage: 'Cannot delete primary endpoint. Please remove primary status first.',
             }));
             return;
@@ -153,14 +154,14 @@ const AIEndpoints = ({
 
 
                 Alert.success(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoint.delete.success',
+                    id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.endpoint.delete.success',
                     defaultMessage: 'Endpoint deleted successfully',
                 }));
             })
             .catch((error) => {
                 console.error('Error deleting endpoint:', error);
                 Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoint.delete.error',
+                    id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.endpoint.delete.error',
                     defaultMessage: 'Error deleting endpoint',
                 }));
             })
@@ -180,14 +181,14 @@ const AIEndpoints = ({
         updateAPI(updatedApi)
             .then(() => {
                 Alert.success(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoint.primary.set.success',
+                    id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.set.success',
                     defaultMessage: 'Primary endpoint updated successfully',
                 }));
             })
             .catch((error) => {
                 console.error(error);
                 Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoint.primary.set.error',
+                    id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.set.error',
                     defaultMessage: 'Error setting primary endpoint',
                 }));
             });
@@ -196,7 +197,7 @@ const AIEndpoints = ({
     const handleRemovePrimary = (endpoint) => {
         if (!apiObject.primaryProductionEndpointId || !apiObject.primarySandboxEndpointId) {
             Alert.error(intl.formatMessage({
-                id: 'Apis.Details.Endpoints.endpoint.primary.remove.error',
+                id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.remove.error',
                 defaultMessage: 'At least one endpoint has to be a primary endpoint.',
             }));
             return;
@@ -211,14 +212,14 @@ const AIEndpoints = ({
         updateAPI(updatedApi)
             .then(() => {
                 Alert.success(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoint.primary.update.success',
+                    id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.update.success',
                     defaultMessage: 'Primary endpoint updated successfully',
                 }));
             })
             .catch((error) => {
                 console.error(error);
                 Alert.error(intl.formatMessage({
-                    id: 'Apis.Details.Endpoints.endpoint.primary.update.error',
+                    id: 'Apis.Details.Endpoints.AIEndpoints.AIEndpoints.primary.update.error',
                     defaultMessage: 'Error updating primary endpoint',
                 }));
             });
@@ -234,7 +235,7 @@ const AIEndpoints = ({
                 <StyledPaper elevation={0} variant='outlined'>
                     <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
                         <FormattedMessage
-                            id='Apis.Details.Endpoints.AIEndpoints.production.endpoints.label'
+                            id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.production.endpoints.label'
                             defaultMessage='Production Endpoints'
                         />
                     </Typography>
@@ -254,7 +255,7 @@ const AIEndpoints = ({
                     ) : (
                         <Typography variant='body1'>
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.AIEndpoints.no.production.endpoints'
+                                id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.no.production.endpoints'
                                 defaultMessage='No production endpoints configured'
                             />
                         </Typography>
@@ -265,7 +266,7 @@ const AIEndpoints = ({
                 <StyledPaper elevation={0} variant='outlined'>
                     <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
                         <FormattedMessage
-                            id='Apis.Details.Endpoints.AIEndpoints.sandbox.endpoints.label'
+                            id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.sandbox.endpoints.label'
                             defaultMessage='Sandbox Endpoints'
                         />
                     </Typography>
@@ -285,7 +286,7 @@ const AIEndpoints = ({
                     ) : (
                         <Typography variant='body1'>
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.AIEndpoints.no.sandbox.endpoints'
+                                id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.no.sandbox.endpoints'
                                 defaultMessage='No sandbox endpoints configured'
                             />
                         </Typography>
@@ -296,7 +297,7 @@ const AIEndpoints = ({
                 <StyledPaper elevation={0} variant='outlined'>
                     <Typography variant='h5' component='h2' gutterBottom sx={{ mb: 3 }}>
                         <FormattedMessage
-                            id='Apis.Details.Endpoints.AIEndpoints.general.config.header'
+                            id='Apis.Details.Endpoints.AIEndpoints.AIEndpoints.general.config.header'
                             defaultMessage='General Endpoint Configurations'
                         />
                     </Typography>
@@ -305,6 +306,26 @@ const AIEndpoints = ({
             </Grid>
         </Grid>
     );
+}
+
+AIEndpoints.propTypes = {
+    apiObject: PropTypes.shape({
+        id: PropTypes.string,
+        primaryProductionEndpointId: PropTypes.string,
+        primarySandboxEndpointId: PropTypes.string,
+        endpointConfig: PropTypes.shape({
+            production_endpoints: PropTypes.shape({
+                url: PropTypes.string,
+            }),
+            sandbox_endpoints: PropTypes.shape({
+                url: PropTypes.string,
+            }),
+            endpoint_security: PropTypes.shape({
+                production: PropTypes.bool,
+                sandbox: PropTypes.bool,
+            }),
+        }),
+    }).isRequired,
 }
 
 export default AIEndpoints;
