@@ -180,7 +180,13 @@ export default function Compliance(props) {
                 )}
                 pageStyle='paperLess'
             >
-                <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: 4 }}>
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingBottom: 4,
+                    justifyContent: 'space-between',
+                }}
+                >
                     <RouterLink
                         to='/governance/compliance'
                         style={{
@@ -193,6 +199,13 @@ export default function Compliance(props) {
                             defaultMessage='Back to Compliance Dashboard'
                         />
                     </RouterLink>
+                    <Typography variant='body2'>
+                        <FormattedMessage
+                            id='Governance.ComplianceDashboard.Compliance.api.owner'
+                            defaultMessage='API Owner: {owner}'
+                            values={{ owner: artifactOwner }}
+                        />
+                    </Typography>
                 </Box>
                 <Card
                     elevation={3}
@@ -251,7 +264,13 @@ export default function Compliance(props) {
                 )}
                 pageStyle='paperLess'
             >
-                <Box sx={{ display: 'flex', alignItems: 'center', paddingBottom: 4 }}>
+                <Box sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    paddingBottom: 4,
+                    justifyContent: 'space-between',
+                }}
+                >
                     <RouterLink
                         to='/governance/compliance'
                         style={{
@@ -264,6 +283,13 @@ export default function Compliance(props) {
                             defaultMessage='Back to Compliance Dashboard'
                         />
                     </RouterLink>
+                    <Typography variant='body2'>
+                        <FormattedMessage
+                            id='Governance.ComplianceDashboard.Compliance.api.owner'
+                            defaultMessage='API Owner: {owner}'
+                            values={{ owner: artifactOwner }}
+                        />
+                    </Typography>
                 </Box>
                 <Card
                     elevation={3}
