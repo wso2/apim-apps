@@ -49,7 +49,6 @@ const classes = {
     iconButton: `${PREFIX}-iconButton`,
     iconButtonValid: `${PREFIX}-iconButtonValid`,
     radioOutline: `${PREFIX}-radioOutline`,
-    label: `${PREFIX}-label`,
     newLabel: `${PREFIX}-newLabel`,
 };
 
@@ -96,30 +95,27 @@ const StyledGrid = styled(Grid)(({ theme }) => ({
     [`& .${classes.radioOutline}`]: {
         display: 'flex',
         alignItems: 'center',
-        padding: '10px', // Adjust the padding for the desired outline size
-        marginTop: '10px',
-        marginLeft: '15px',
-        marginRight: '8px',
-        borderRadius: '8px', // Adjust the border-radius for a square outline
-        transition: 'border 0.3s', // Add transition for a smooth color change
+        padding: '10px',
+        paddingRight: '15px',
+        marginTop: '8px',
+        marginLeft: 0,
+        marginRight: 0,
+        borderRadius: '8px',
+        transition: 'border 0.3s',
         '&.Mui-checked': {
             border: `2px solid ${theme.palette.primary.main}`, // Change to blue when selected
         },
     },
 
-    [`& .${classes.label}`]: {
-        marginLeft: '10px', // Adjust as needed for spacing between the radio button and label
-    },
-
     [`& .${classes.newLabel}`]: {
-        backgroundColor: 'green', // Blue color
+        backgroundColor: 'green',
         color: 'white',
         fontWeight: 'bold',
         fontSize: '0.6rem',
-        padding: '2px 4px', // Adjust padding as needed
-        borderRadius: '4px', // Adjust border-radius for rounded corners
-        marginLeft: '10px', // Adjust margin as needed
-        display: 'inline-block', // Ensure inline display
+        padding: '2px 4px',
+        borderRadius: '4px',
+        marginLeft: '10px',
+        display: 'inline-block',
     },
 
 }));
@@ -180,7 +176,7 @@ export default function DefaultAPIForm(props) {
 
     const getBorderColor = (gatewayType) => {
         return api.gatewayType === gatewayType
-            ? '2px solid #1976D2'
+            ? '2px solid #006E9C'
             : '2px solid gray';
     };
 
@@ -212,7 +208,7 @@ export default function DefaultAPIForm(props) {
                 }
             });
         }
-        
+
     }, []);
 
     const updateValidity = (newState) => {
@@ -687,10 +683,10 @@ export default function DefaultAPIForm(props) {
                         }}
                     />
                 )}
-                {multiGateway && multiGateway.length > 1 && 
-                    <Grid container spacing={2}>
-                        <FormControl component='fieldset'>
-                            <FormLabel sx={{ marginLeft: '15px', marginTop: '20px' }}>
+                {multiGateway && multiGateway.length > 1 &&
+                    <Grid container xs={12} ml={0} spacing={2}>
+                        <FormControl component='fieldset' fullWidth>
+                            <FormLabel sx={{ marginTop: '20px' }}>
                                 <FormattedMessage
                                     id='Apis.Create.Components.DefaultAPIForm.select.gateway.type'
                                     defaultMessage='Select Gateway type'
@@ -703,22 +699,24 @@ export default function DefaultAPIForm(props) {
                                 value={api.gatewayType}
                                 onChange={onChange}
                             >
-                                {multiGateway.map((gateway) =>
-                                    <Grid container xs={Math.floor(12 / multiGateway.length)} key={gateway.value} 
-                                        alignItems='stretch' >
+                                {multiGateway.map((gateway, index) =>
+                                    <Grid item xs={Math.floor(12 / multiGateway.length)}
+                                        key={gateway.value}
+                                        display='grid'
+                                        paddingRight={index === multiGateway.length - 1 ? 0 : 1}
+                                        paddingLeft={index === 0 ? 0 : 1} >
                                         <FormControlLabel
                                             value={gateway.value}
                                             className={classes.radioOutline}
                                             control={<Radio />}
-                                            disabled = {!gatewayToEnvMap[gateway.value]}
+                                            disabled={!gatewayToEnvMap[gateway.value]}
                                             label={(
                                                 <div>
                                                     <span>
                                                         {gateway.name}
                                                     </span>
                                                     {gateway.isNew && (
-                                                        <span className={`${classes.label} 
-                                                            ${classes.newLabel}`}>New</span>
+                                                        <span className={`${classes.newLabel}`}>New</span>
                                                     )}
                                                     <Typography variant='body2' color='textSecondary'>
                                                         {gateway.description}
@@ -730,11 +728,12 @@ export default function DefaultAPIForm(props) {
                                     </Grid>
                                 )}
                             </RadioGroup>
-                            <FormHelperText sx={{ marginLeft: '15px' }}><FormattedMessage
-                                id={'Apis.Create.Components.DefaultAPIForm.'
-                                    + 'select.gateway.type.helper.text'}
-                                defaultMessage='Select the gateway type where your API will run.'
-                            />
+                            <FormHelperText sx={{ marginLeft: 0 }}>
+                                <FormattedMessage
+                                    id={'Apis.Create.Components.DefaultAPIForm.'
+                                        + 'select.gateway.type.helper.text'}
+                                    defaultMessage='Select the gateway type where your API will run.'
+                                />
                             </FormHelperText>
                         </FormControl>
                     </Grid>
