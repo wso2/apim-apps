@@ -16,22 +16,13 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useEffect, useState } from 'react';
-import { FormattedMessage, useIntl } from 'react-intl';
-import Accordion from '@mui/material/Accordion';
-import AccordionSummary from '@mui/material/AccordionSummary';
-import AccordionDetails from '@mui/material/AccordionDetails';
-import Tooltip from '@mui/material/Tooltip';
-import Grid from '@mui/material/Grid';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import DangerousIcon from '@mui/icons-material/Dangerous';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import React, { useState } from 'react';
+import { useIntl } from 'react-intl';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import Box from '@mui/material/Box';
 import { styled, alpha } from '@mui/material/styles';
-import { CircularProgress, Typography } from '@mui/material';
+import { Typography } from '@mui/material';
 import xmlFormat from 'xml-formatter';
-import Utils from 'AppData/Utils';
 import CustomizedAccordions from './CustomizedAccordions';
 import Button from '@mui/material/Button';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
