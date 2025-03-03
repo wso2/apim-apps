@@ -2249,6 +2249,7 @@
   "Workflow.SubscriptionUpdate.help.link.one": "Create a subscription update request",
   "Workflow.SubscriptionUpdate.permission.denied.content": "You dont have enough permission to view Subscription Update - Approval Tasks. Please contact the site administrator.",
   "Workflow.SubscriptionUpdate.permission.denied.title": "Permission Denied",
+  "Workflow.SubscriptionUpdate.table.button.approve": "Approve",
   "Workflow.subscriptionupdate.updateStatus.has.errors": "Unable to complete subscription update approve/reject process.",
   "api.console.security.heading": "Security",
   "app.components.Shared.Banner.back": "Back",
