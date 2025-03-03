@@ -247,12 +247,8 @@ export default function ProvideOpenAPI(props) {
     }, [inputType]);
 
     useEffect(() => {
-        if (inputValue) {
-            if (inputType === ProvideOpenAPI.INPUT_TYPES.FILE) {
-                onDrop([inputValue]);
-            } else if (inputType === ProvideOpenAPI.INPUT_TYPES.URL) {
-                validateURL(inputValue);
-            }
+        if (inputValue && inputType === ProvideOpenAPI.INPUT_TYPES.FILE) {
+            onDrop([inputValue]);
         }
     }, [inputType, inputValue]);
 

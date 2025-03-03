@@ -205,13 +205,8 @@ export default function ProvideGraphQL(props) {
     }
 
     useEffect(() => {
-        if (inputValue) {
-            if (inputType === ProvideGraphQL.INPUT_TYPES.FILE) {
-                onDrop([inputValue]);
-            } else if (inputType === ProvideGraphQL.INPUT_TYPES.URL ||
-                inputType === ProvideGraphQL.INPUT_TYPES.ENDPOINT) {
-                validateURL(inputValue);
-            }
+        if (inputValue && inputType === ProvideGraphQL.INPUT_TYPES.FILE) {
+            onDrop([inputValue]);
         }
     }, [inputType, inputValue]);
 
