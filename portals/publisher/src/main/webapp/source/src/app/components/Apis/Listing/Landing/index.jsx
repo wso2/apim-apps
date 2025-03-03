@@ -135,23 +135,32 @@ const APILanding = () => {
                                     }
                                     <AIAPIMenu icon={aiApiIcon} />
                                 </Grid>
-                                <Divider 
-                                    variant='middle' 
-                                    sx={{
-                                        backgroundColor: '#A0A5A3', 
-                                        height: 1,
-                                        width: '85%',
-                                        mt: '30px', 
-                                        mb: '10px', 
-                                        marginX: 'auto',
-                                    }}
-                                />
-                                <Grid
-                                    item
-                                    sx={{ display: 'flex', justifyContent: 'center', width: '100%' }}
-                                >
-                                    <DesignAssistantMenu />
-                                </Grid>
+                                {settings.designAssistantEnabled && (
+                                    <Divider 
+                                        variant='middle' 
+                                        sx={{
+                                            backgroundColor: '#A0A5A3', 
+                                            height: 1,
+                                            width: '85%',
+                                            mt: '30px', 
+                                            mb: '10px', 
+                                            marginX: 'auto',
+                                        }}
+                                    />
+                                )}
+                                {settings.designAssistantEnabled && (
+                                    <Grid
+                                        item
+                                        sx={{ 
+                                            display: 'flex', 
+                                            justifyContent: 'center', 
+                                            width: '100%',
+
+                                        }}
+                                    >
+                                        <DesignAssistantMenu />
+                                    </Grid>
+                                )}
                             </Grid>
                         </Box>
                     </Grid>
