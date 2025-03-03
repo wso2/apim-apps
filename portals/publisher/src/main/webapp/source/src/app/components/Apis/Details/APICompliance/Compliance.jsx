@@ -181,7 +181,6 @@ export default function Compliance() {
                     {/* Rule Violation Summary section */}
                     <Grid item xs={12}>
                         <Card elevation={3}
-
                             sx={{
                                 display: 'flex',
                                 justifyContent: 'center',
@@ -202,6 +201,40 @@ export default function Compliance() {
                         </Card>
                     </Grid>
                 </Grid>
+            </Root>
+        );
+    }
+
+    if ((complianceStatus === 'NOT_APPLICABLE' && complianceData?.governedPolicies.length === 0)
+        || (complianceStatus === 'NOT_APPLICABLE' && !complianceData)) {
+        return (
+            <Root>
+                <Typography variant='h4' component='h2' align='left'>
+                    <FormattedMessage
+                        id='Apis.Details.Compliance.topic.header'
+                        defaultMessage='Compliance Summary'
+                    />
+                </Typography>
+                <Card
+                    elevation={3}
+                    sx={{
+                        mt: 2,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        minHeight: 200,
+                        backgroundColor: 'background.paper',
+                        padding: 2,
+                        borderRadius: 1,
+                    }}
+                >
+                    <Typography variant='h5' component='div' color='text.secondary'>
+                        <FormattedMessage
+                            id='Apis.Details.Compliance.not.applicable.message'
+                            defaultMessage='No governance policies have been attached to this API.'
+                        />
+                    </Typography>
+                </Card>
             </Root>
         );
     }
