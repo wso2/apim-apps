@@ -557,8 +557,6 @@ export default function Environments() {
                 });
                 setVhosts(defaultVhosts);
                 setVhostsDeploy(defaultVhosts);
-                setSelectedEnvironment(selectedInternalGateways.length === 1 ?
-                    [selectedInternalGateways[0].name] : []);
             } else {
                 const external = settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
                 const selectedExternalGateways = external.filter((p) =>
@@ -580,8 +578,6 @@ export default function Environments() {
                     });
                     setVhosts(defaultVhosts);
                     setVhostsDeploy(defaultVhosts);
-                    setSelectedEnvironment(selectedExternalGateways.length === 1 ?
-                        [selectedExternalGateways[0].name] : []);
                 } else {
                     setNoEnv(true);
                 }
