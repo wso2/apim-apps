@@ -155,7 +155,6 @@ const APILanding = () => {
                                             display: 'flex', 
                                             justifyContent: 'center', 
                                             width: '100%',
-
                                         }}
                                     >
                                         <DesignAssistantMenu />
