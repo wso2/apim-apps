@@ -261,9 +261,9 @@ export default function ImportDefinition(props) {
         if (inputType === ProvideGraphQL.INPUT_TYPES.FILE) {
             validationPromise = API.validateGraphQLFile(inputValue);
         } else if (inputType === ProvideGraphQL.INPUT_TYPES.URL) {
-            validationPromise = API.validateGraphQLByUrl(inputValue);
+            validationPromise = API.validateGraphQL(inputValue);
         } else if (inputType === ProvideGraphQL.INPUT_TYPES.ENDPOINT) {
-            validationPromise = API.validateGraphQLByEndpoint(inputValue, { useIntrospection: true });
+            validationPromise = API.validateGraphQL(inputValue, { useIntrospection: true });
         }
 
         validationPromise
