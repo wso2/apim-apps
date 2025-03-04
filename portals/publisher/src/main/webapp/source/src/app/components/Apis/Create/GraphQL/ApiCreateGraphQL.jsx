@@ -47,8 +47,8 @@ export default function ApiCreateGraphQL(props) {
     let { multiGateway } = props;
     const [wizardStep, setWizardStep] = useState(0);
     const location = useLocation();
-    const { data: assistantInfo, settings: assistantSettings, 
-            multiGateway: assistantMultiGateway } = location.state || {};
+    const { data: assistantInfo, settings: assistantSettings,
+        multiGateway: assistantMultiGateway } = location.state || {};
     const history = useHistory();
     const [policies, setPolicies] = useState([]);
     let { data: settings } = usePublisherSettings();
