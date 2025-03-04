@@ -82,6 +82,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
             targetModel: {
                 model: '',
                 endpointId: '',
+                endpointName: '',
             },
             fallbackModels: [],
         },
@@ -89,6 +90,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
             targetModel: {
                 model: '',
                 endpointId: '',
+                endpointName: '',
             },
             fallbackModels: [],
         },
@@ -191,6 +193,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
         const newModel: ModelData = {
             model: '',
             endpointId: '',
+            endpointName: '',
         };
 
         setConfig((prevConfig) => ({
@@ -271,6 +274,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                     targetModel: {
                         model: '',
                         endpointId: '',
+                        endpointName: '',
                     },
                     fallbackModels: [],
                 },
@@ -287,6 +291,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                     targetModel: {
                         model: '',
                         endpointId: '',
+                        endpointName: '',
                     },
                     fallbackModels: [],
                 },
@@ -521,8 +526,6 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                             id='request-timeout'
                             label='Request Timeout (s)'
                             size='small'
-                            // helperText={getError(spec) === '' ? spec.description : getError(spec)}
-                            // error={getError(spec) !== ''}
                             variant='outlined'
                             name='requestTimeout'
                             type='number'
@@ -536,8 +539,6 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                             id='suspend-duration'
                             label='Suspend Duration (s)'
                             size='small'
-                            // helperText={getError(spec) === '' ? spec.description : getError(spec)}
-                            // error={getError(spec) !== ''}
                             variant='outlined'
                             name='suspendDuration'
                             type='number'

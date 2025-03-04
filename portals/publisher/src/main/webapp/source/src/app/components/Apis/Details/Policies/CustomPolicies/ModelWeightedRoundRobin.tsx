@@ -169,6 +169,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
         const newModel: ModelData = {
             model: '',
             endpointId: '',
+            endpointName: '',
         };
 
         setConfig((prevConfig) => ({
@@ -429,8 +430,6 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
                     label='Suspend Duration (s)'
                     size='small'
                     sx={{ mt: 2 }}
-                    // helperText={getError(spec) === '' ? spec.description : getError(spec)}
-                    // error={getError(spec) !== ''}
                     variant='outlined'
                     name='suspendDuration'
                     type='number'
