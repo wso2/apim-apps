@@ -413,8 +413,10 @@ class APIDefinition extends React.Component {
      * Handles the yes button action of the save api definition confirmation dialog box.
      */
     handleSave() {
-        const { swaggerModified, asyncAPIModified } = this.state;
-        if (asyncAPIModified !== null) {
+        const { swaggerModified, asyncAPIModified, swaggerImporting } = this.state;
+        if (this.state.isImporting) {
+            this.setState({ openDialog: false }, () => this.updateSwaggerDefinition(swaggerImporting, '', ''));
+        } else if (asyncAPIModified !== null) {
             this.setState({ openDialog: false }, () => this.updateAsyncAPIDefinition(asyncAPIModified, '', ''));
         } else {
             this.setState({ openDialog: false }, () => this.updateSwaggerDefinition(swaggerModified, '', ''));
