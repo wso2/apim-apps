@@ -66,15 +66,20 @@ async function getAllRulesets(restApi, accumulator = []) {
 export default function ListRulesets() {
     const intl = useIntl();
     const [rulesets, setRulesets] = useState(null);
+    const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
         const restApi = new GovernanceAPI();
+        setIsLoading(true);
         getAllRulesets(restApi)
             .then((allRulesets) => {
                 setRulesets(allRulesets);
             })
             .catch((error) => {
                 console.error('Error loading rulesets:', error);
+            })
+            .finally(() => {
+                setIsLoading(false);
             });
     }, []);
 
@@ -305,7 +310,7 @@ export default function ListRulesets() {
                     }),
                     active: true,
                 }}
-                initialData={rulesets}
+                initialData={!isLoading ? rulesets : null}
                 DeleteComponent={DeleteRuleset}
                 editComponentProps={{
                     icon: <EditIcon />,

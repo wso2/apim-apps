@@ -48,8 +48,8 @@ import CategoryIcon from '@mui/icons-material/Category';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PolicyIcon from '@mui/icons-material/Policy';
 import RuleIcon from '@mui/icons-material/Rule';
-import BarChartIcon from '@mui/icons-material/BarChart';
 import BlockIcon from '@mui/icons-material/Block';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ApplicationCreation from 'AppComponents/Workflow/ApplicationCreation';
 import ApplicationDeletion from 'AppComponents/Workflow/ApplicationDeletion';
@@ -325,7 +325,7 @@ const RouteMenuMapping = (intl) => [
                 }),
                 path: '/governance/compliance',
                 component: ComplianceDashboard,
-                icon: <BarChartIcon />,
+                icon: <CheckCircleIcon />,
             },
             {
                 id: 'Policies',

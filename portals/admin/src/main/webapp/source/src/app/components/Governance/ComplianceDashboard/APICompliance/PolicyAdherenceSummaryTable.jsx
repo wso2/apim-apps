@@ -28,27 +28,10 @@ import RemoveCircleIcon from '@mui/icons-material/RemoveCircle';
 import { useIntl } from 'react-intl';
 import PolicyIcon from '@mui/icons-material/Policy';
 
-import GovernanceAPI from 'AppData/GovernanceAPI';
 import Utils from 'AppData/Utils';
 
-export default function PolicyAdherenceSummaryTable({ artifactId }) {
+export default function PolicyAdherenceSummaryTable({ complianceData }) {
     const intl = useIntl();
-
-    /**
-     * API call to get Policies
-     * @returns {Promise}.
-     */
-    function apiCall() {
-        const restApi = new GovernanceAPI();
-        return restApi
-            .getComplianceByAPIId(artifactId)
-            .then((result) => {
-                return result.body.governedPolicies;
-            })
-            .catch((error) => {
-                throw error;
-            });
-    }
 
     const renderProgress = (followed, total, status) => {
         if (status === 'PENDING') {
@@ -74,7 +57,6 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
         }
 
         const percentage = (followed / total) * 100;
-        const isComplete = followed === total;
 
         return (
             <Box sx={{ width: '100%' }}>
@@ -94,7 +76,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
                         borderRadius: 1,
                         backgroundColor: '#e0e0e0',
                         '& .MuiLinearProgress-bar': {
-                            backgroundColor: isComplete ? '#00B81D' : '#FF5252',
+                            backgroundColor: '#00B81D',
                             borderRadius: 1,
                         },
                     }}
@@ -286,7 +268,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
     return (
         <ListBase
             columProps={policyColumProps}
-            apiCall={apiCall}
+            initialData={complianceData ? complianceData.governedPolicies : null}
             searchProps={false}
             emptyBoxProps={{
                 content: emptyStateContent,
@@ -296,6 +278,7 @@ export default function PolicyAdherenceSummaryTable({ artifactId }) {
             useContentBase={false}
             options={{
                 elevation: 0,
+                rowsPerPage: 5,
             }}
             enableCollapsable
             renderExpandableRow={renderExpandableRow}

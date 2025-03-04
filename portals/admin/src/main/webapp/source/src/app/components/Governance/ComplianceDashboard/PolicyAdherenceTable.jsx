@@ -19,7 +19,7 @@
 
 import React from 'react';
 import { Box, Chip, Typography, TableRow, TableCell, LinearProgress } from '@mui/material';
-import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
+import ListBaseWithPagination from 'AppComponents/AdminPages/Addons/ListBaseWithPagination';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Link as RouterLink } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
@@ -31,18 +31,19 @@ import PolicyIcon from '@mui/icons-material/Policy';
 import Utils from 'AppData/Utils';
 
 /**
- * API call to get Policies
- * @returns {Promise}.
+ * API call to get Policies with pagination
+ * @param {Object} params Query parameters for pagination
+ * @returns {Promise} Promise resolving to paginated policies.
  */
-function apiCall() {
+function apiCall(params) {
     const restApi = new GovernanceAPI();
     return restApi
-        .getPolicyAdherenceForAllPolicies()
+        .getPolicyAdherenceForAllPolicies(params)
         .then((result) => {
             const policies = result.body.list;
+            const pagination = result.body.pagination;
 
-            // Fetch policy adherence details for each policy
-            // TODO: optimize
+            // Fetch policy adherence details for each policy in the current page
             return Promise.all(
                 policies.map(async (policy) => {
                     try {
@@ -59,7 +60,12 @@ function apiCall() {
                         };
                     }
                 })
-            );
+            ).then(policiesWithAdherence => {
+                return {
+                    list: policiesWithAdherence,
+                    pagination: pagination
+                };
+            });
         })
         .catch((error) => {
             throw error;
@@ -83,7 +89,6 @@ export default function PolicyAdherenceTable() {
         }
 
         const percentage = (followed / total) * 100;
-        const isComplete = followed === total;
 
         return (
             <Box sx={{ width: '100%' }}>
@@ -103,7 +108,7 @@ export default function PolicyAdherenceTable() {
                         borderRadius: 1,
                         backgroundColor: '#e0e0e0',
                         '& .MuiLinearProgress-bar': {
-                            backgroundColor: isComplete ? '#00B81D' : '#FF5252',
+                            backgroundColor: '#00B81D',
                             borderRadius: 1,
                         },
                     }}
@@ -292,7 +297,7 @@ export default function PolicyAdherenceTable() {
     );
 
     return (
-        <ListBase
+        <ListBaseWithPagination
             columProps={policyColumProps}
             apiCall={apiCall}
             searchProps={false}

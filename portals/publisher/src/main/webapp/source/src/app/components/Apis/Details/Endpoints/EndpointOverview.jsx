@@ -365,6 +365,21 @@ function EndpointOverview(props) {
         setEndpointSecurityInfo(endpointConfig.endpoint_security);
     }, [props]);
 
+    // If the props change while the dialog is open,
+    // re-initialize the security info and security config
+    useEffect(() => {
+        if (endpointSecurityConfig.open) {
+            const tmpSecurityInfo = !endpointSecurityInfo ? {
+                production: CONSTS.DEFAULT_ENDPOINT_SECURITY,
+                sandbox: CONSTS.DEFAULT_ENDPOINT_SECURITY,
+            } : endpointSecurityInfo;
+            setEndpointSecurityInfo(tmpSecurityInfo);
+            setEndpointSecurityConfig((prev) => ({
+                ...prev,
+                config: tmpSecurityInfo === undefined ? {} : tmpSecurityInfo,
+            }));
+        }
+    }, [props, endpointSecurityConfig.open]);
 
     const getEndpoints = (type) => {
         if (epConfig[type]) {

@@ -83,9 +83,18 @@ const StyledAPICreateBase = styled(APICreateBase)((
 export default function ApiCreateAsyncAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const location = useLocation();
-    const assistantInfo = location.state;
-    const { history, multiGateway } = props;
-    const { data: settings } = usePublisherSettings();
+    const { data: assistantInfo, settings: assistantSettings, multiGateway: assistantMultiGateway } = location.state;
+    const { history } = props;
+    let { multiGateway } = props;
+    let { data: settings } = usePublisherSettings();
+    if (!settings) {
+        settings = assistantSettings;
+    }
+
+    if (!multiGateway) {
+        multiGateway = assistantMultiGateway;
+    }
+
     // eslint-disable-next-line no-use-before-define
 
     const [hideEndpoint, setHideEndpoint] = useState(true);

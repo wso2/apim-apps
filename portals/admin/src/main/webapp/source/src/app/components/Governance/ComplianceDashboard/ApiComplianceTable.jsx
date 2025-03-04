@@ -19,7 +19,7 @@
 
 import React from 'react';
 import { Box, Chip, Typography, Tooltip, LinearProgress } from '@mui/material';
-import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
+import ListBaseWithPagination from 'AppComponents/AdminPages/Addons/ListBaseWithPagination';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Link as RouterLink } from 'react-router-dom';
 import ErrorIcon from '@mui/icons-material/Error';
@@ -31,21 +31,23 @@ import ApiIcon from '@mui/icons-material/Api';
 import Utils from 'AppData/Utils';
 
 /**
- * API call to get Policies
- * @returns {Promise}.
+ * Get the list of APIs with compliance status
+ * @param {Object} params API call parameters
+ * @returns {Promise} Promise resolving to the list of APIs
  */
-function apiCall() {
+function apiCall(params) {
     const restApi = new GovernanceAPI();
-    return restApi
-        .getComplianceStatusListOfAPIs()
-        .then((result) => {
-            return result.body.list;
+    return restApi.getComplianceStatusListOfAPIs(params)
+        .then((response) => {
+            return {
+                list: response.body.list,
+                pagination: response.body.pagination,
+            };
         })
         .catch((error) => {
             throw error;
         });
 }
-
 
 export default function ApiComplianceTable() {
     const intl = useIntl();
@@ -74,7 +76,6 @@ export default function ApiComplianceTable() {
         }
 
         const percentage = (followed / total) * 100;
-        const isComplete = followed === total;
 
         return (
             <Box sx={{ width: '100%' }}>
@@ -94,7 +95,7 @@ export default function ApiComplianceTable() {
                         borderRadius: 1,
                         backgroundColor: '#e0e0e0',
                         '& .MuiLinearProgress-bar': {
-                            backgroundColor: isComplete ? '#00B81D' : '#FF5252',
+                            backgroundColor: '#00B81D',
                             borderRadius: 1,
                         },
                     }}
@@ -316,7 +317,7 @@ export default function ApiComplianceTable() {
     );
 
     return (
-        <ListBase
+        <ListBaseWithPagination
             columProps={columProps}
             apiCall={apiCall}
             searchProps={false}

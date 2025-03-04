@@ -95,34 +95,26 @@ const SampleQueryCard: React.FC<SampleQueryCardProps> = ({
                     border: 'none',
                 }}
             >
-                <CardContent>
-                    <Box display='flex' flexDirection='column' height={1} alignItems='flex-start' >
-                        <Box mb={2}>
-                            <Typography variant='body1'>
+                <CardContent sx={{ '&:last-child': { paddingBottom: '16px' } }}>
+                    <Box display="flex" flexDirection="row" height={1} alignItems="center" justifyContent="space-between">
+                        <Box>
+                            <Typography variant="body1">
                                 {queryHeading}
                             </Typography>
-                            <Typography variant='body2' color='textSecondary' component='p' className={classes.sampleQuery}>
-                                {queryData}
-                            </Typography>
                         </Box>
-                        <Box mt='auto'>
-                            <Box>
-                                <Button
-                                    size='small'
-                                    id='sample-query-execute'
-                                    variant='outlined'
-                                    onClick={() => onExecuteClick(queryData)}
-                                    disabled={
-                                        !designAssistantEnabled
-                                        || !aiAuthTokenProvided
-                                    }
-                                >
-                                    {intl.formatMessage({
-                                        id: 'Apis.Details.ApiChat.components.SampleQueryCard.executeButton',
-                                        defaultMessage: 'Try It',
-                                    })}
-                                </Button>
-                            </Box>
+                        <Box>
+                            <Button
+                                size="small"
+                                id="sample-query-execute"
+                                variant="outlined"
+                                onClick={() => onExecuteClick(queryHeading)}
+                                disabled={!designAssistantEnabled || !aiAuthTokenProvided}
+                            >
+                                {intl.formatMessage({
+                                    id: 'Apis.Details.ApiChat.components.SampleQueryCard.executeButton',
+                                    defaultMessage: 'Try It',
+                                })}
+                            </Button>
                         </Box>
                     </Box>
                 </CardContent>

@@ -177,10 +177,11 @@ class AuthManager {
             return false;
         } else {
             const arrayLength = AuthManager.getUser().scopes.length;
-            if (arrayLength === 5) {
+            if (arrayLength === 8) {
                 return intersectionBy(AuthManager.getUser().scopes, 
                     ['apim:api_view', 'apim:publisher_settings', 'openid', 'apim:gateway_policy_view',
-                        'apim:common_operation_policy_view']);
+                        'apim:common_operation_policy_view', 'apim:gov_policy_read', 'apim:gov_result_read',
+                        'apim:gov_rule_read']);
             }
             return false;
         }

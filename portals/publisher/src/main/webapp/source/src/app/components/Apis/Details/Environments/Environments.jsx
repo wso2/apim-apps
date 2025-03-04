@@ -830,7 +830,6 @@ export default function Environments() {
                 })
                 .catch((error) => {
                     if (error.response) {
-                        // TODO: Use the error code to identify the errors thrown by governance violation
                         if (error.response.body.code === complianceErrorCode) {
                             const violations = JSON.parse(error.response.body.description).blockingViolations;
                             setGovernanceError(violations);
@@ -852,7 +851,7 @@ export default function Environments() {
                                     }}>
                                         <Link
                                             component='button'
-                                            onClick={() => 
+                                            onClick={() =>
                                                 Utils.downloadAsJSON(violations, 'governance-violations')
                                             }
                                             sx={{
@@ -1080,6 +1079,7 @@ export default function Environments() {
             displayOnDevportal,
             vhost,
         }];
+        let isBlockedByGovernanceViolation = false;
         if (api.apiType !== API.CONSTS.APIProduct) {
             setIsDeploying(true);
             restApi.deployRevision(api.id, revisionId, body).then((response) => {
@@ -1098,8 +1098,8 @@ export default function Environments() {
                 }
             }).catch((error) => {
                 if (error.response) {
-                    // TODO: Use the error code to identify the errors thrown by governance violation
                     if (error.response.body.code === complianceErrorCode) {
+                        isBlockedByGovernanceViolation = true;
                         const violations = JSON.parse(error.response.body.description).blockingViolations;
                         setGovernanceError(violations);
                         setIsGovernanceViolation(true);
@@ -1151,8 +1151,11 @@ export default function Environments() {
                 }
                 console.error(error);
             }).finally(() => {
-                getRevision();
-                getDeployedEnv();
+                // Only refresh the page if there's no governance violation
+                if (!isBlockedByGovernanceViolation) {
+                    getRevision();
+                    getDeployedEnv();
+                }
                 setIsDeploying(false);
             });
         } else {
@@ -1213,7 +1216,6 @@ export default function Environments() {
                         })
                         .catch((error) => {
                             if (error.response) {
-                                // TODO: Use the error code to identify the errors thrown by governance violation
                                 if (error.response.body.code === complianceErrorCode) {
                                     const violations = JSON.parse(error.response.body.description).blockingViolations;
                                     setGovernanceError(violations);
@@ -1235,7 +1237,7 @@ export default function Environments() {
                                             }}>
                                                 <Link
                                                     component='button'
-                                                    onClick={() => 
+                                                    onClick={() =>
                                                         Utils.downloadAsJSON(violations, 'governance-violations')
                                                     }
                                                     sx={{
@@ -1279,7 +1281,6 @@ export default function Environments() {
                 })
                 .catch((error) => {
                     if (error.response) {
-                        // TODO: Use the error code to identify the errors thrown by governance violation
                         if (error.response.body.code === complianceErrorCode) {
                             const violations = JSON.parse(error.response.body.description).blockingViolations;
                             setGovernanceError(violations);
@@ -1322,6 +1323,7 @@ export default function Environments() {
                                     </Box>
                                 </Box>
                             );
+                            setOpenDeployPopup(false);
                             return;
                         } else {
                             Alert.error(error.response.body.description);
@@ -2800,6 +2802,12 @@ export default function Environments() {
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
                                 || isRestricted(['apim:api_create', 'apim:api_publish'], api)
                                 || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                || (SelectedEnvironment.length === 1
+                                    && allEnvRevision && allEnvRevision.some(revision => {
+                                    return revision.deploymentInfo.some(deployment =>
+                                        deployment.name === SelectedEnvironment[0] &&
+                                        deployment.status === 'CREATED');
+                                }) )
                                 || isDeployButtonDisabled || isDeploying}
                         >
                             <FormattedMessage

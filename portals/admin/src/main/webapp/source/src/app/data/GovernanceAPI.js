@@ -240,12 +240,14 @@ class GovernanceAPI extends Resource {
     }
 
     /**
-     * Get policy adherence for all policies
-     * @returns {Promise} Promised policy adherence response
+     * Get policy adherence for all policies with pagination support
+     * @param {Object} params Optional parameters for pagination and search
+     * @returns {Promise} Promised policy adherence response with pagination
      */
-    getPolicyAdherenceForAllPolicies() {
+    getPolicyAdherenceForAllPolicies(params = {}) {
         return this.client.then((client) => {
             return client.apis['Policy Adherence'].getPolicyAdherenceForAllPolicies(
+                params,
                 this._requestMetaData(),
             );
         });
@@ -253,11 +255,13 @@ class GovernanceAPI extends Resource {
 
     /**
      * Get artifact compliance for all artifacts
+     * @param {Object} [params] Optional query parameters for pagination (limit, offset) and searching
      * @returns {Promise} Promised artifact compliance response
      */
-    getComplianceStatusListOfAPIs() {
+    getComplianceStatusListOfAPIs(params = {}) {
         return this.client.then((client) => {
             return client.apis['Artifact Compliance'].getComplianceStatusListOfAPIs(
+                params,
                 this._requestMetaData(),
             );
         });

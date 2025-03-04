@@ -35,6 +35,7 @@ import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { FormattedMessage } from 'react-intl';
 import LaunchIcon from '@mui/icons-material/Launch';
 import Alert from '@mui/material/Alert';
+import findBestMatchingAnswer from './components/SimilaritySearch';
 
 /**
  * Renders the Create API with AI UI.
@@ -59,9 +60,31 @@ const ApiCreateWithAI = () => {
     const [missingValues, setMissingValues] = useState('');
     const history = useHistory();
     const [lastRenderedComponent, setLastRenderedComponent] = useState(<ApiChatBanner />);
-    const { data: settings } = usePublisherSettings();
+    const { data: settings, isLoading } = usePublisherSettings();
     const [specEnrichmentError, setSpecEnrichmentError] = useState('');
     const [specEnrichmentErrorLevel, setSpecEnrichmentErrorLevel] = useState('');
+    const [multiGateway, setMultiGateway] = useState([]);
+
+    const gatewayDetails = {
+        'wso2/synapse': {
+            value: 'wso2/synapse',
+            name: 'Universal Gateway',
+            description: 'API gateway embedded in APIM runtime.',
+            isNew: false
+        },
+        'wso2/apk': {
+            value: 'wso2/apk',
+            name: 'Kubernetes Gateway',
+            description: 'API gateway running on Kubernetes.',
+            isNew: false
+        },
+        'AWS': {
+            value: 'AWS',
+            name: 'AWS Gateway',
+            description: 'API gateway offered by AWS cloud.',
+            isNew: true
+        }
+    };
 
     const chatContainerRef = useRef(null);
     useEffect(() => {
@@ -84,6 +107,20 @@ const ApiCreateWithAI = () => {
             setLastRenderedComponent(<ApiChatBanner />);
         }
     }, [taskStatus]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            const apiTypes = settings.gatewayFeatureCatalog.apiTypes;
+            const data = settings.gatewayTypes;
+            const gatewayTypes = data.map(item => {
+                if (item === "Regular") return "wso2/synapse";
+                if (item === "APK") return "wso2/apk";
+                return item;
+            });
+            setMultiGateway(apiTypes?.rest.filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]));
+
+        }
+    }, [isLoading]);
 
     const handleQueryChange = (event) => {
         const { value } = event.target;
@@ -132,9 +169,22 @@ const ApiCreateWithAI = () => {
     };
 
     const generateSessionId = () => {
-        return `${Date.now()}`;
+        const uuid = (function() {
+            return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
+        })();
+    
+        const dateTime = new Date().toISOString();
+        const sessionId = `${uuid}-${dateTime}`;
+        const encodedSessionId = btoa(sessionId);
+        const modifiedSessionId = encodedSessionId.slice(0, -2);
+    
+        return encodedSessionId;
     };
-
+    
     const authTokenNotProvidedWarning = (
         <FormattedMessage
             id='Apis.Details.ApiChat.warning.authTokenMissing'
@@ -195,47 +245,57 @@ const ApiCreateWithAI = () => {
         setLoading(true);
 
         try {
-            const jsonResponse = await sendQuery(query, currentSessionId);
-            
-            const {
-                backendResponse,
-                isSuggestions,
-                typeOfApi,
-                code,
-                paths,
-                apiTypeSuggestion,
-                missingValues,
-                state
-            } = jsonResponse;
+            const queryText = query.trim().toLowerCase();
+            const response = findBestMatchingAnswer(queryText);
 
-            setFinalOutcome(backendResponse);
-            setIsSuggestion(isSuggestions);
-            setApiType(typeOfApi);
-            setFinalOutcomeCode(code);
-            setPaths(paths);
-            setApiTypeSuggestion(apiTypeSuggestion);
-            setMissingValues(missingValues);
-            setTaskStatus(state);
-
-            if (backendResponse) {
+            if (response) {
                 setMessages((prevMessages) => [
                     ...prevMessages,
-                    { role: 'system', content: backendResponse, suggestions: isSuggestions }
+                    { role: 'system', content: response, suggestions: false }
                 ]);
-            }
+            } else {
+                const jsonResponse = await sendQuery(query, currentSessionId);
+                
+                const {
+                    backendResponse,
+                    isSuggestions,
+                    typeOfApi,
+                    code,
+                    paths,
+                    apiTypeSuggestion,
+                    missingValues,
+                    state
+                } = jsonResponse;
 
-            if (apiTypeSuggestion) {
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { role: 'system', content: apiTypeSuggestion, suggestions: false }
-                ]);
-            }
+                setFinalOutcome(backendResponse);
+                setIsSuggestion(isSuggestions);
+                setApiType(typeOfApi);
+                setFinalOutcomeCode(code);
+                setPaths(paths);
+                setApiTypeSuggestion(apiTypeSuggestion);
+                setMissingValues(missingValues);
+                setTaskStatus(state);
 
-            if (missingValues) {
-                setMessages((prevMessages) => [
-                    ...prevMessages,
-                    { role: 'system', content: missingValues, suggestions: false }
-                ]);
+                if (backendResponse) {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { role: 'system', content: backendResponse, suggestions: isSuggestions }
+                    ]);
+                }
+
+                if (apiTypeSuggestion) {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { role: 'system', content: apiTypeSuggestion, suggestions: false }
+                    ]);
+                }
+
+                if (missingValues) {
+                    setMessages((prevMessages) => [
+                        ...prevMessages,
+                        { role: 'system', content: missingValues, suggestions: false }
+                    ]);
+                }
             }
 
         } catch (error) {
@@ -252,7 +312,7 @@ const ApiCreateWithAI = () => {
                         content = 'Apologies for the inconvenience. It appears that the token limit has been exceeded.';
                         break;
                     case 504: // Handle gateway timeout scenario
-                        content = 'Apologies for the inconvenience. The request has timed out. Please try again later.';
+                        content = 'Apologies for the inconvenience. The request has timed out. Please try again.';
                         break;
                     default:
                         content = 'Apologies for the inconvenience. It seems that something went wrong with the'
@@ -275,6 +335,7 @@ const ApiCreateWithAI = () => {
             setLoading(false);
         }
     };
+
     const handleBack = () => {
         if (window.history.length > 1) {
             history.goBack();
@@ -324,23 +385,33 @@ const ApiCreateWithAI = () => {
                                     <Box>
                                         <WelcomeMessage/>
                                         <Stack 
-                                            direction='row' 
-                                            spacing={7} 
-                                            justifyContent='center'
-                                            marginTop= '40px'
+                                            direction="column" 
+                                            spacing={2} 
+                                            justifyContent="center"
+                                            sx={{ 
+                                                width: '420px', 
+                                                display: 'flex', 
+                                                marginTop: '40px', 
+                                                marginLeft: 'auto', 
+                                                marginRight: 'auto', 
+                                                marginBottom: '0' 
+                                            }}
                                         >
                                             <SampleQueryCard 
                                                 onExecuteClick={handleExecuteSampleQuery} 
-                                                queryHeading='Create a REST API' 
-                                                queryData='Create an API for a banking transaction' 
+                                                queryHeading='Create an API for a banking transaction' 
                                                 sx={{ textAlign: 'left' }} 
                                             />
                                             <SampleQueryCard 
                                                 onExecuteClick={handleExecuteSampleQuery} 
-                                                queryHeading='Create a SSE API' 
-                                                queryData='Create an API for live sports scores' 
+                                                queryHeading='Create a GraphQL API to query patient data' 
                                                 sx={{ textAlign: 'left' }} 
-                                            />
+                                            />  
+                                            <SampleQueryCard 
+                                                onExecuteClick={handleExecuteSampleQuery} 
+                                                queryHeading='Create an API for live sports scores' 
+                                                sx={{ textAlign: 'left' }} 
+                                            />                                          
                                         </Stack>
                                     </Box>
                                 )}
@@ -418,10 +489,8 @@ const ApiCreateWithAI = () => {
                                 backgroundColor: '#fff',
                                 marginRight: '20px',
                                 minwidth:'50%',
-                                overflowY: 'auto',
+                                overflowY: 'hidden',
                                 overflowX: 'hidden'
-
-
                             }}
                         >
                             {lastRenderedComponent}
@@ -453,6 +522,8 @@ const ApiCreateWithAI = () => {
                         taskStatus={taskStatus}
                         spec={finalOutcomeCode}
                         apiType={apiType}
+                        settings={settings}
+                        multiGateway={multiGateway}
                     />
                 </Box>
             </Stack>

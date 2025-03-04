@@ -22,20 +22,32 @@ import { useIntl } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import YAML from 'js-yaml';
 import API from 'AppData/api';
+import { Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 
 interface AlertDialogProps {
   loading?: boolean;
   taskStatus: string;
   spec: string;
   apiType: string;
+  settings: any;
+  multiGateway: any;
 }
 
-const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, spec, apiType}) => {
+const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, spec, apiType, settings, multiGateway}) => {
+  const [open, setOpen] = React.useState(false);
   const [showProgress, setShowProgress] = React.useState(false);
   const intl = useIntl();
   const history = useHistory();
 
-    /**
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  /**
    * Method to handle error scenarios
    * 
    * @param messageId messageId
@@ -172,7 +184,11 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.http.API', 'The provided OpenAPI definition is invalid. Please try again.');
         }
         const data = createData(apiType, definition);
-        history.push('/apis/create/openapi', data);
+        history.push('/apis/create/openapi', {
+            data: data,
+            settings: settings,
+            multiGateway: multiGateway
+        });
       } else if (['SSE', 'WebSocket', 'WebSub'].includes(apiType)) {
         const jsonContent: ParsedYAML = YAML.load(spec) as ParsedYAML;
 
@@ -189,7 +205,11 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.async.API', 'The provided AsyncAPI definition is invalid. Please try again.');
         }
         const data = createData(apiType, definition);
-        history.push('/apis/create/asyncapi', data);
+        history.push('/apis/create/asyncapi', {
+          data: data,
+          settings: settings,
+          multiGateway: multiGateway
+        });
       } else if (apiType === 'GraphQL') {
         definition = createBlobAndFile(spec, 'text/plain');
         validationResponse = await validateGraphQLSchema(definition);
@@ -198,7 +218,11 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
         if (validationResponse?.isValid) {
           graphQLInfo = validationResponse.graphQLInfo;
           const data = createData(apiType, definition, graphQLInfo);
-          history.push('/apis/create/graphQL', data);
+          history.push('/apis/create/graphQL', {
+             data: data,
+             settings: settings,
+             multiGateway: multiGateway
+          });
         } else {
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.graphql.API', 'The provided GraphQL schema is invalid. Please try again.');
         }
@@ -213,12 +237,12 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
   };
 
   return (
-    <React.Fragment>
+    <React.Fragment>      
       <Button
         variant="contained"
-        onClick={handleCreate}
+        onClick={handleClickOpen}
         sx={{ marginRight: '10px', minWidth: '120px',  height: '35px', display: 'flex', gap:1, alignItems: 'center'}}  
-        disabled={loading || taskStatus == ''}
+        disabled={loading || taskStatus === '' || spec === ''}
       >
         {intl.formatMessage({
           id: 'Apis.Create.Default.APICreateDefault.create.btn',
@@ -227,6 +251,37 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
         {' '}
         {showProgress &&  <CircularProgress size={16} color='inherit'/> }
       </Button>
+
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+      >
+        <DialogTitle id="alert-dialog-title">
+          {"Create API"}
+        </DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Are you ready to create your API and move to the API Creation Wizard?
+          </DialogContentText>
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={handleClose}>
+            NO
+          </Button>
+          <Button
+            onClick={handleCreate}
+            sx={{
+              border: '1px solid #1C7EA7'
+            }}
+            autoFocus
+          >
+            YES
+          </Button>
+        </DialogActions>
+      </Dialog>
     </React.Fragment>
   );
 };
