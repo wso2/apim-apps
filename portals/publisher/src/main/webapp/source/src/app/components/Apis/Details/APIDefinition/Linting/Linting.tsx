@@ -1,4 +1,3 @@
-/* eslint-disable */
 /*
  * Copyright (c) 2022, WSO2 Inc. (http://www.wso2.com). All Rights Reserved.
  *
@@ -119,7 +118,7 @@ export async function getLinterResultsFromContent(
         } else if (apiType) {
             params = { apiType: apiType };
         } else {
-            params = { apiType: "HTTP" };
+            params = { apiType: 'HTTP' };
         }
 
         // Validate against custom rulesets defined in tenant config
