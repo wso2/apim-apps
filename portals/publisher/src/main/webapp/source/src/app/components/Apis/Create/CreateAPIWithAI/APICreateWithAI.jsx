@@ -368,7 +368,7 @@ const ApiCreateWithAI = () => {
                                             />
                                             <SampleQueryCard 
                                                 onExecuteClick={handleExecuteSampleQuery} 
-                                                queryHeading='Create an API to query patient data' 
+                                                queryHeading='Create a GraphQL API to query patient data' 
                                                 sx={{ textAlign: 'left' }} 
                                             />  
                                             <SampleQueryCard 
