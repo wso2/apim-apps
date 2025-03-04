@@ -41,6 +41,34 @@ import RuleViolationSummary from './RuleViolationSummary';
 import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
 import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
 
+function ComplianceHelp() {
+    return (
+        <HelpBase>
+            <List component='nav'>
+                <ListItemButton>
+                    <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                        <DescriptionIcon />
+                    </ListItemIcon>
+                    <Link
+                        target='_blank'
+                        href={Configurations.app.docUrl
+                            + 'governance/api-governance-admin-capabilities/#compliance-monitoring'}
+                        underline='hover'
+                    >
+                        <ListItemText primary={(
+                            <FormattedMessage
+                                id='Governance.ComplianceDashboard.Compliance.help.link'
+                                defaultMessage='Compliance Monitoring'
+                            />
+                        )}
+                        />
+                    </Link>
+                </ListItemButton>
+            </List>
+        </HelpBase>
+    );
+}
+
 export default function Compliance(props) {
     const intl = useIntl();
     const { match: { params: { id: artifactId } } } = props;
@@ -187,6 +215,7 @@ export default function Compliance(props) {
                     />
                 )}
                 pageStyle='paperLess'
+                help={<ComplianceHelp />}
             >
                 <Box sx={{
                     display: 'flex',
@@ -271,6 +300,7 @@ export default function Compliance(props) {
                     />
                 )}
                 pageStyle='paperLess'
+                help={<ComplianceHelp />}
             >
                 <Box sx={{
                     display: 'flex',
@@ -353,31 +383,7 @@ export default function Compliance(props) {
                 />
             )}
             pageStyle='paperLess'
-            help={(
-                <HelpBase>
-                    <List component='nav'>
-                        <ListItemButton>
-                            <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
-                                <DescriptionIcon />
-                            </ListItemIcon>
-                            <Link
-                                target='_blank'
-                                href={Configurations.app.docUrl
-                                    + 'governance/api-governance-admin-capabilities/#compliance-monitoring'}
-                                underline='hover'
-                            >
-                                <ListItemText primary={(
-                                    <FormattedMessage
-                                        id='Governance.ComplianceDashboard.Compliance.help.link'
-                                        defaultMessage='Compliance Monitoring'
-                                    />
-                                )}
-                                />
-                            </Link>
-                        </ListItemButton>
-                    </List>
-                </HelpBase>
-            )}
+            help={<ComplianceHelp />}
         >
             <Box sx={{
                 display: 'flex',
