@@ -29,9 +29,11 @@ interface AlertDialogProps {
   taskStatus: string;
   spec: string;
   apiType: string;
+  settings: any;
+  multiGateway: any;
 }
 
-const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, spec, apiType}) => {
+const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, spec, apiType, settings, multiGateway}) => {
   const [open, setOpen] = React.useState(false);
   const [showProgress, setShowProgress] = React.useState(false);
   const intl = useIntl();
@@ -182,7 +184,11 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.http.API', 'The provided OpenAPI definition is invalid. Please try again.');
         }
         const data = createData(apiType, definition);
-        history.push('/apis/create/openapi', data);
+        history.push('/apis/create/openapi', {
+            data: data,
+            settings: settings,
+            multiGateway: multiGateway
+        });
       } else if (['SSE', 'WebSocket', 'WebSub'].includes(apiType)) {
         const jsonContent: ParsedYAML = YAML.load(spec) as ParsedYAML;
 
@@ -199,7 +205,11 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.async.API', 'The provided AsyncAPI definition is invalid. Please try again.');
         }
         const data = createData(apiType, definition);
-        history.push('/apis/create/asyncapi', data);
+        history.push('/apis/create/asyncapi', {
+          data: data,
+          settings: settings,
+          multiGateway: multiGateway
+        });
       } else if (apiType === 'GraphQL') {
         definition = createBlobAndFile(spec, 'text/plain');
         validationResponse = await validateGraphQLSchema(definition);
@@ -208,7 +218,11 @@ const AlertDialog: React.FC<AlertDialogProps> = ({loading = false, taskStatus, s
         if (validationResponse?.isValid) {
           graphQLInfo = validationResponse.graphQLInfo;
           const data = createData(apiType, definition, graphQLInfo);
-          history.push('/apis/create/graphQL', data);
+          history.push('/apis/create/graphQL', {
+             data: data,
+             settings: settings,
+             multiGateway: multiGateway
+          });
         } else {
           handleError('CreateAPIWithAI.components.AlertDialog.error.create.graphql.API', 'The provided GraphQL schema is invalid. Please try again.');
         }

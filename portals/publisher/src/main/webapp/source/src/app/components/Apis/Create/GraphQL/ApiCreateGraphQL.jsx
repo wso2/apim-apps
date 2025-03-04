@@ -44,13 +44,21 @@ import ProvideGraphQL from './Steps/ProvideGraphQL';
  */
 export default function ApiCreateGraphQL(props) {
     const intl = useIntl();
-    const { multiGateway } = props;
+    let { multiGateway } = props;
     const [wizardStep, setWizardStep] = useState(0);
     const location = useLocation();
-    const assistantInfo = location.state;
+    const { data: assistantInfo, settings: assistantSettings, multiGateway: assistantMultiGateway } = location.state;
     const history = useHistory();
     const [policies, setPolicies] = useState([]);
-    const { data: settings } = usePublisherSettings();
+    let { data: settings } = usePublisherSettings();
+
+    if (!settings) {
+        settings = assistantSettings;
+    }
+
+    if (!multiGateway) {
+        multiGateway = assistantMultiGateway;
+    }
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
