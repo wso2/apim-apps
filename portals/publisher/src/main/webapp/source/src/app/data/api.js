@@ -2370,12 +2370,12 @@ class API extends Resource {
     }
 
     /**
-     * Get settings of an API
+     * Get the list of custom rules (Custom linter rules in the tenant config and applicable governance rulesets)
      */
-     static getLinterCustomRules() {
+    static getLinterCustomRules(params) {
         const apiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         const promisedLinterCustomeRules = apiClient.then(client => {
-            return client.apis['Linter Custom Rules'].getLinterCustomRules();
+            return client.apis['Linter Custom Rules'].getLinterCustomRules(params);
         });
         return promisedLinterCustomeRules.then(response => response.body);
     }

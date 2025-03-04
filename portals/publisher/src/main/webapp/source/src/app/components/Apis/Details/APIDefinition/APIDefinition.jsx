@@ -357,7 +357,7 @@ class APIDefinition extends React.Component {
             }
         }
 
-        getLinterResultsFromContent(modifiedContent).then((results) => {
+        getLinterResultsFromContent(modifiedContent, this.props.api.id).then((results) => {
             this.setState({ linterResults: results });
         });
     }
@@ -468,7 +468,7 @@ class APIDefinition extends React.Component {
      * */
     openEditor() {
         this.setState({ isImporting: false, linterSelectedLine: null });
-        getLinterResultsFromContent(this.state.swaggerModified).then((results) => {
+        getLinterResultsFromContent(this.state.swaggerModified, this.props.api.id).then((results) => {
             this.setState({ linterResults: results, openEditor: true });
         });
         
@@ -477,7 +477,7 @@ class APIDefinition extends React.Component {
     openEditorToImport(importingSwagger, linterSelectedLine) {
         this.setState({ isImporting: true, swaggerImporting: importingSwagger, 
             linterSelectedLine, isSwaggerUI: false });
-        getLinterResultsFromContent(importingSwagger).then((results) => {
+        getLinterResultsFromContent(importingSwagger, this.props.api.id).then((results) => {
             this.setState({ linterResults: results, openEditor: true });
         });
     }
