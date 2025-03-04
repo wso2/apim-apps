@@ -83,7 +83,8 @@ const StyledAPICreateBase = styled(APICreateBase)((
 export default function ApiCreateAsyncAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const location = useLocation();
-    const { data: assistantInfo, settings: assistantSettings, multiGateway: assistantMultiGateway } = location.state;
+    const { data: assistantInfo, settings: assistantSettings,
+        multiGateway: assistantMultiGateway } = location.state || {};
     const { history } = props;
     let { multiGateway } = props;
     let { data: settings } = usePublisherSettings();
