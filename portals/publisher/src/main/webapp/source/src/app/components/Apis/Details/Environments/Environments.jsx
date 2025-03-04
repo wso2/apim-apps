@@ -2802,6 +2802,12 @@ export default function Environments() {
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
                                 || isRestricted(['apim:api_create', 'apim:api_publish'], api)
                                 || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                || (SelectedEnvironment.length === 1
+                                    && allEnvRevision && allEnvRevision.some(revision => {
+                                    return revision.deploymentInfo.some(deployment =>
+                                        deployment.name === SelectedEnvironment[0] &&
+                                        deployment.status === 'CREATED');
+                                }) )
                                 || isDeployButtonDisabled || isDeploying}
                         >
                             <FormattedMessage
