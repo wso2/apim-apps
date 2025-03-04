@@ -91,7 +91,7 @@ export default function ProvideOpenAPI(props) {
     function lint(content) {
         // Validate and linting
         setIsLinting(true);
-        getLinterResultsFromContent(content).then((results)=>{
+        getLinterResultsFromContent(content, null, 'HTTP').then((results)=>{
             if (results) {
                 setLinterResults(results);
             } else {
