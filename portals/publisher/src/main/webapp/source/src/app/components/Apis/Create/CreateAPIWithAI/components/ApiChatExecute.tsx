@@ -88,7 +88,7 @@ const MentionMenu = ({
         <div
             style={{
                 position: 'fixed',
-                top: top,
+                top: top + 120,
                 left: left + 100,
                 width: '250px',
                 maxHeight: '100px',

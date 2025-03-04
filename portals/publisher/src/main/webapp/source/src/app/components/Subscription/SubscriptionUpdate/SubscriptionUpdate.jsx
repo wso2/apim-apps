@@ -54,6 +54,7 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import WarningBase from 'AppComponents/Addons/Addons/WarningBase';
+import EastIcon from '@mui/icons-material/EastRounded';
 import { Dialog, DialogActions, DialogContent, DialogContentText, 
     DialogTitle, Alert as MUIAlert } from '@mui/material';
 
@@ -279,7 +280,7 @@ function ListLabels() {
             name: 'requestedTier',
             label: intl.formatMessage({
                 id: 'Workflow.SubscriptionCreation.table.header.Tier',
-                defaultMessage: 'Tier',
+                defaultMessage: 'Tier Transition',
             }),
             options: {
                 sort: false,
@@ -288,8 +289,12 @@ function ListLabels() {
                     const dataRow = data[tableMeta.rowIndex];
                     const { properties } = dataRow;
                     return (
-                        <div>
-                            {properties.currentTier} : {properties.requestedTier}
+                        <div style={{ display: 'flex', alignItems: 'center' }}>
+                            {properties.currentTier} 
+                            <EastIcon 
+                                sx={{ mx: 1, fontSize: '1rem' }}
+                            />
+                            {properties.requestedTier}
                         </div>
                     );
                 },
@@ -347,6 +352,10 @@ function ListLabels() {
                                     disabled={isUpdating}
                                 >
                                     <CheckIcon />
+                                    <FormattedMessage
+                                        id='Workflow.SubscriptionUpdate.table.button.approve'
+                                        defaultMessage='Approve'
+                                    />
                                     {(isUpdating && buttonValue === 'APPROVED') && <CircularProgress size={15} /> }
                                 </Button>
                                 &nbsp;&nbsp;

@@ -52,6 +52,13 @@ const ModelCard: FC<ModelCardProps> = ({
         const { name, value } = event.target;
         const updatedModel = { ...modelData, [name]: name === "weight" ? parseFloat(value) : value };
 
+        if (name === 'endpointId') {
+            const selectedEndpoint = endpointList.find((endpoint) => endpoint.id === value);
+            if (selectedEndpoint) {
+                updatedModel.endpointName = selectedEndpoint.name;
+            }
+        }
+
         onUpdate(updatedModel);
     }
 

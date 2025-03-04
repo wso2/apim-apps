@@ -31,6 +31,7 @@ import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { isRestricted } from 'AppData/AuthManager';
 import { app } from 'Settings';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import APICreateMenu from './APICreateMenu';
 
 const PREFIX = 'TopMenu';
@@ -122,7 +123,11 @@ function getTitleForArtifactType(props, count) {
 function TopMenu(props) {
     const {
         data, setListType, count, isAPIProduct, listType, showToggle, query,
-    } = props;   
+    } = props;
+
+    const { data: settings } = usePublisherSettings();
+    const designAssistantEnabled = settings?.designAssistantEnabled;
+      
     if (count > 0) {
         return (
             <Root className={classes.root}>
@@ -193,7 +198,7 @@ function TopMenu(props) {
                         </APICreateMenu>
                     )} 
                     {/* Button to Create API with AI */}
-                    {!query && !isAPIProduct && !isRestricted(['apim:api_create']) && (
+                    {!query && !isAPIProduct && !isRestricted(['apim:api_create']) && designAssistantEnabled && (
                         <Button
                             variant='contained'
                             color='primary'
