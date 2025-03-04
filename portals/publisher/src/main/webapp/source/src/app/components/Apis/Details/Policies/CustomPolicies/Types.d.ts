@@ -27,5 +27,6 @@ export type Endpoint = {
 export type ModelData = {
     model: string;
     endpointId: string;
+    endpointName: string;
     weight?: number;
 }

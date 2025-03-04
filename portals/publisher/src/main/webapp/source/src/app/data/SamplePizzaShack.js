@@ -296,7 +296,7 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
         type: 'http',
     },
     'x-wso2-basePath': '/pizzashack/1.0.0',
-    'x-wso2-transports': ['http', 'https'],
+    'x-wso2-transports': ['https'],
     'x-wso2-application-security': {
         'security-types': ['oauth2'],
         optional: false,

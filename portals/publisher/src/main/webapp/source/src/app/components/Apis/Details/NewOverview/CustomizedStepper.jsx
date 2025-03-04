@@ -162,7 +162,7 @@ export default function CustomizedStepper() {
     const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct && api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped';
     const isEndpointAvailable = api.subtypeConfiguration?.subtype === 'AIAPI'
-        ? (api.primaryProductionEndpointId || api.primarySandboxEndpointId)
+        ? (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null)
         : api.endpointConfig !== null;
     const isTierAvailable = api.policies.length !== 0;
     const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
@@ -513,8 +513,16 @@ export default function CustomizedStepper() {
     || (!api.isAPIProduct() && !isEndpointAvailable)
     || (!isMutualSslOnly && !isTierAvailable)
     || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT');
-    const isDeployLinkDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || api.workflowStatus === 'CREATED' || lifecycleState === 'RETIRED');
+    const isDeployLinkDisabled =
+        (api.type !== 'WEBSUB' &&
+            !(
+                isEndpointAvailable &&
+                (api.subtypeConfiguration?.subtype === 'AIAPI'
+                    ? isEndpointSecurityConfigured
+                    : true)
+            )) ||
+        api.workflowStatus === 'CREATED' ||
+        lifecycleState === 'RETIRED';
     let deployLinkToolTipTitle = '';
     if (lifecycleState === 'RETIRED') {
         deployLinkToolTipTitle = intl.formatMessage({
