@@ -41,11 +41,19 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
+    List,
+    ListItemButton,
+    ListItemIcon,
+    Link,
+    ListItemText,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import Configurations from 'Config';
 import PropTypes from 'prop-types';
 import cloneDeep from 'lodash.clonedeep';
 import GovernanceAPI from 'AppData/GovernanceAPI';
@@ -586,7 +594,31 @@ function AddEditPolicy(props) {
                     defaultMessage: 'Governance Policy - Create new',
                 })
             }
-        // help={<div>TODO: Link Doc</div>}
+            help={(
+                <HelpBase>
+                    <List component='nav'>
+                        <ListItemButton>
+                            <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                                <DescriptionIcon />
+                            </ListItemIcon>
+                            <Link
+                                target='_blank'
+                                href={Configurations.app.docUrl
+                                    + 'governance/api-governance-admin-capabilities/#create-and-manage-policies'}
+                                underline='hover'
+                            >
+                                <ListItemText primary={(
+                                    <FormattedMessage
+                                        id='Governance.Policies.AddEdit.help.link'
+                                        defaultMessage='Create and Manage Policies'
+                                    />
+                                )}
+                                />
+                            </Link>
+                        </ListItemButton>
+                    </List>
+                </HelpBase>
+            )}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>

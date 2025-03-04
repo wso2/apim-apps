@@ -20,7 +20,13 @@ import React, { useState, useEffect } from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
-import { Chip, Button, Tooltip } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import Configurations from 'Config';
+import {
+    Chip, Button, Tooltip, List, ListItemButton, ListItemIcon, Link,
+    ListItemText,
+} from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import GovernanceAPI from 'AppData/GovernanceAPI';
@@ -214,6 +220,31 @@ export default function ListRulesets() {
                 'Find comprehensive governance rulesets designed to ensure'
                 + ' the consistency, security and reliability for your APls',
         }),
+        help: (
+            <HelpBase>
+                <List component='nav'>
+                    <ListItemButton>
+                        <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                            <DescriptionIcon />
+                        </ListItemIcon>
+                        <Link
+                            target='_blank'
+                            href={Configurations.app.docUrl
+                                + 'governance/api-governance-admin-capabilities/#create-and-manage-rulesets'}
+                            underline='hover'
+                        >
+                            <ListItemText primary={(
+                                <FormattedMessage
+                                    id='Governance.Rulesets.List.help.link'
+                                    defaultMessage='Create and Manage Rulesets'
+                                />
+                            )}
+                            />
+                        </Link>
+                    </ListItemButton>
+                </List>
+            </HelpBase>
+        ),
     };
 
     const addButtonProps = {

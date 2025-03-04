@@ -21,6 +21,11 @@ import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import { Link as RouterLink } from 'react-router-dom';
 import {
     Grid, Card, CardContent, Typography,
+    List,
+    ListItemButton,
+    ListItemIcon,
+    Link,
+    ListItemText,
 } from '@mui/material';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import { Box } from '@mui/system';
@@ -28,10 +33,41 @@ import GovernanceAPI from 'AppData/GovernanceAPI';
 import { FormattedMessage, useIntl } from 'react-intl';
 import DonutChart from 'AppComponents/Shared/DonutChart';
 import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import Configurations from 'Config';
 import AssignmentLateIcon from '@mui/icons-material/AssignmentLate';
 import RuleViolationSummary from './RuleViolationSummary';
 import RulesetAdherenceSummaryTable from './RulesetAdherenceSummaryTable';
 import PolicyAdherenceSummaryTable from './PolicyAdherenceSummaryTable';
+
+function ComplianceHelp() {
+    return (
+        <HelpBase>
+            <List component='nav'>
+                <ListItemButton>
+                    <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                        <DescriptionIcon />
+                    </ListItemIcon>
+                    <Link
+                        target='_blank'
+                        href={Configurations.app.docUrl
+                            + 'governance/api-governance-admin-capabilities/#compliance-monitoring'}
+                        underline='hover'
+                    >
+                        <ListItemText primary={(
+                            <FormattedMessage
+                                id='Governance.ComplianceDashboard.Compliance.help.link'
+                                defaultMessage='Compliance Monitoring'
+                            />
+                        )}
+                        />
+                    </Link>
+                </ListItemButton>
+            </List>
+        </HelpBase>
+    );
+}
 
 export default function Compliance(props) {
     const intl = useIntl();
@@ -179,6 +215,7 @@ export default function Compliance(props) {
                     />
                 )}
                 pageStyle='paperLess'
+                help={<ComplianceHelp />}
             >
                 <Box sx={{
                     display: 'flex',
@@ -263,6 +300,7 @@ export default function Compliance(props) {
                     />
                 )}
                 pageStyle='paperLess'
+                help={<ComplianceHelp />}
             >
                 <Box sx={{
                     display: 'flex',
@@ -345,6 +383,7 @@ export default function Compliance(props) {
                 />
             )}
             pageStyle='paperLess'
+            help={<ComplianceHelp />}
         >
             <Box sx={{
                 display: 'flex',

@@ -21,11 +21,19 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import {
     Chip, Stack, Tooltip, Button,
+    List,
+    ListItemButton,
+    ListItemIcon,
+    Link,
+    ListItemText,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import Configurations from 'Config';
 import Utils from 'AppData/Utils';
 import API from 'AppData/api';
 import DeletePolicy from './DeletePolicy';
@@ -254,6 +262,31 @@ export default function ListPolicies() {
             defaultMessage: 'Create governance policies using rulesets from the catalog'
                 + ' to standardize and regulate your APls effectively',
         }),
+        help: (
+            <HelpBase>
+                <List component='nav'>
+                    <ListItemButton>
+                        <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                            <DescriptionIcon />
+                        </ListItemIcon>
+                        <Link
+                            target='_blank'
+                            href={Configurations.app.docUrl
+                                + 'governance/api-governance-admin-capabilities/#create-and-manage-policies'}
+                            underline='hover'
+                        >
+                            <ListItemText primary={(
+                                <FormattedMessage
+                                    id='Governance.Policies.List.help.link'
+                                    defaultMessage='Create and Manage Policies'
+                                />
+                            )}
+                            />
+                        </Link>
+                    </ListItemButton>
+                </List>
+            </HelpBase>
+        ),
     };
 
     const addButtonProps = {

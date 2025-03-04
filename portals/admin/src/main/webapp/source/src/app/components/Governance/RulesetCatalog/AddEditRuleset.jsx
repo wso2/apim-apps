@@ -21,6 +21,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import {
     Box,
     Button,
@@ -36,13 +37,20 @@ import {
     DialogActions,
     DialogContentText,
     Alert as MuiAlert,
+    ListItemIcon,
+    List,
+    ListItemButton,
+    ListItemText,
+    Link,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Editor from '@monaco-editor/react';
 import cloneDeep from 'lodash.clonedeep';
 import PropTypes from 'prop-types';
+import Configurations from 'Config';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import DescriptionIcon from '@mui/icons-material/Description';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import CONSTS from 'AppData/Constants';
 import AuthManager from 'AppData/AuthManager';
@@ -393,7 +401,31 @@ function AddEditRuleset(props) {
                     />
                 )
             }
-            // help={<div>TODO: Link Doc</div>}
+            help={(
+                <HelpBase>
+                    <List component='nav'>
+                        <ListItemButton>
+                            <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                                <DescriptionIcon />
+                            </ListItemIcon>
+                            <Link
+                                target='_blank'
+                                href={Configurations.app.docUrl
+                                    + 'governance/api-governance-admin-capabilities/#create-and-manage-rulesets'}
+                                underline='hover'
+                            >
+                                <ListItemText primary={(
+                                    <FormattedMessage
+                                        id='Governance.Rulesets.AddEdit.help.link'
+                                        defaultMessage='Create and Manage Rulesets'
+                                    />
+                                )}
+                                />
+                            </Link>
+                        </ListItemButton>
+                    </List>
+                </HelpBase>
+            )}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
