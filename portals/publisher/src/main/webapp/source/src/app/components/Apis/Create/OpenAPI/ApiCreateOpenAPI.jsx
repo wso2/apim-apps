@@ -79,9 +79,18 @@ function apiInputsReducer(currentState, inputAction) {
 export default function ApiCreateOpenAPI(props) {
     const [wizardStep, setWizardStep] = useState(0);
     const location = useLocation();
-    const assistantInfo = location.state;
-    const { history, multiGateway } = props;
-    const { data: settings } = usePublisherSettings();
+    const { data: assistantInfo, settings: assistantSettings, multiGateway: assistantMultiGateway } = location.state;
+    const { history } = props;
+    let { multiGateway } = props;
+    let { data: settings } = usePublisherSettings();
+
+    if (!settings) {
+        settings = assistantSettings;
+    }
+
+    if (!multiGateway) {
+        multiGateway = assistantMultiGateway;
+    }
 
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         type: 'ApiCreateOpenAPI',

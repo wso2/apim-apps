@@ -60,9 +60,31 @@ const ApiCreateWithAI = () => {
     const [missingValues, setMissingValues] = useState('');
     const history = useHistory();
     const [lastRenderedComponent, setLastRenderedComponent] = useState(<ApiChatBanner />);
-    const { data: settings } = usePublisherSettings();
+    const { data: settings, isLoading } = usePublisherSettings();
     const [specEnrichmentError, setSpecEnrichmentError] = useState('');
     const [specEnrichmentErrorLevel, setSpecEnrichmentErrorLevel] = useState('');
+    const [multiGateway, setMultiGateway] = useState([]);
+
+    const gatewayDetails = {
+        'wso2/synapse': {
+            value: 'wso2/synapse',
+            name: 'Universal Gateway',
+            description: 'API gateway embedded in APIM runtime.',
+            isNew: false
+        },
+        'wso2/apk': {
+            value: 'wso2/apk',
+            name: 'Kubernetes Gateway',
+            description: 'API gateway running on Kubernetes.',
+            isNew: false
+        },
+        'AWS': {
+            value: 'AWS',
+            name: 'AWS Gateway',
+            description: 'API gateway offered by AWS cloud.',
+            isNew: true
+        }
+    };
 
     const chatContainerRef = useRef(null);
     useEffect(() => {
@@ -85,6 +107,20 @@ const ApiCreateWithAI = () => {
             setLastRenderedComponent(<ApiChatBanner />);
         }
     }, [taskStatus]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            const apiTypes = settings.gatewayFeatureCatalog.apiTypes;
+            const data = settings.gatewayTypes;
+            const gatewayTypes = data.map(item => {
+                if (item === "Regular") return "wso2/synapse";
+                if (item === "APK") return "wso2/apk";
+                return item;
+            });
+            setMultiGateway(apiTypes?.rest.filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]));
+
+        }
+    }, [isLoading]);
 
     const handleQueryChange = (event) => {
         const { value } = event.target;
@@ -486,6 +522,8 @@ const ApiCreateWithAI = () => {
                         taskStatus={taskStatus}
                         spec={finalOutcomeCode}
                         apiType={apiType}
+                        settings={settings}
+                        multiGateway={multiGateway}
                     />
                 </Box>
             </Stack>
