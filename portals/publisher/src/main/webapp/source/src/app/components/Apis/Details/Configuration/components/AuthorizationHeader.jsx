@@ -119,6 +119,9 @@ export default function AuthorizationHeader(props) {
 }
 
 AuthorizationHeader.propTypes = {
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        authorizationHeader: PropTypes.string,
+    }).isRequired,
     configDispatcher: PropTypes.func.isRequired,
+    oauth2Enabled: PropTypes.bool.isRequired,
 };

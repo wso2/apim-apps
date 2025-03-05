@@ -122,6 +122,9 @@ export default function ApiKeyHeader(props) {
 }
 
 ApiKeyHeader.propTypes = {
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        apiKeyHeader: PropTypes.string,
+    }).isRequired,
     configDispatcher: PropTypes.func.isRequired,
+    apiKeyEnabled: PropTypes.bool.isRequired,
 };
