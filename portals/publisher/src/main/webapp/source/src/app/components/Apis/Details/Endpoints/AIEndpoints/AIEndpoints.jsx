@@ -29,6 +29,7 @@ import { Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import Alert from 'AppComponents/Shared/Alert';
+import CONSTS from 'AppData/Constants';
 import GeneralEndpointConfigurations from './GeneralEndpointConfigurations';
 import EndpointCard from './EndpointCard';
 
@@ -57,7 +58,7 @@ const AIEndpoints = ({
 
                 if (apiObject.endpointConfig?.production_endpoints) {
                     defaultEndpoints.push({
-                        id: `${apiObject.id}--PRODUCTION`,
+                        id: CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION,
                         name: 'Default Production Endpoint',
                         deploymentStage: 'PRODUCTION',
                         endpointConfig: {
@@ -69,7 +70,7 @@ const AIEndpoints = ({
 
                 if (apiObject.endpointConfig?.sandbox_endpoints) {
                     defaultEndpoints.push({
-                        id: `${apiObject.id}--SANDBOX`,
+                        id: CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX,
                         name: 'Default Sandbox Endpoint',
                         deploymentStage: 'SANDBOX',
                         endpointConfig: {
@@ -118,9 +119,8 @@ const AIEndpoints = ({
         }
 
         setIsDeleting(true);
-        const isGeneralEndpoint =
-            endpoint.id === `${apiObject.id}--PRODUCTION` ||
-            endpoint.id === `${apiObject.id}--SANDBOX`;
+        const isGeneralEndpoint = endpoint.id === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION ||
+            endpoint.id === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX;
 
         let deletePromise;
         if (isGeneralEndpoint) {

@@ -76,6 +76,10 @@ const CONSTS = {
         production: 'PRODUCTION',
         sandbox: 'SANDBOX',
     },
+    DEFAULT_ENDPOINT_ID: {
+        PRODUCTION: 'default_production_endpoint',
+        SANDBOX: 'default_sandbox_endpoint',
+    },
     GATEWAY_TYPE: {
         synapse: 'Synapse',
         choreoConnect: 'ChoreoConnect',
