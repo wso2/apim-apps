@@ -41,6 +41,7 @@ import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { isRestricted } from 'AppData/AuthManager';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
+import CONSTS from 'AppData/Constants';
 
 const PREFIX = 'DeploymentOnbording';
 
@@ -239,7 +240,7 @@ export default function DeploymentOnboarding(props) {
                 let isSandboxSecure = false;
 
                 if (hasProductionEndpoint) {
-                    if (api.primaryProductionEndpointId === `${api.id}--PRODUCTION`) {
+                    if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
                         isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
                     } else {
                         const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
@@ -248,7 +249,7 @@ export default function DeploymentOnboarding(props) {
                 }
 
                 if (hasSandboxEndpoint) {
-                    if (api.primarySandboxEndpointId === `${api.id}--SANDBOX`) {
+                    if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
                         isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
                     } else {
                         const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);

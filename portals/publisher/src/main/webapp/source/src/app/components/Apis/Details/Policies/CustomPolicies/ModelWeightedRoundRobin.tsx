@@ -36,6 +36,7 @@ import Alert from '@mui/material/Alert';
 import { Link } from 'react-router-dom';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import CONSTS from 'AppData/Constants';
 
 const StyledAccordionSummary = styled(AccordionSummary)(() => ({
     minHeight: 48,
@@ -97,7 +98,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
 
                 if (apiFromContext.endpointConfig?.production_endpoints) {
                     defaultEndpoints.push({
-                        id: `${apiFromContext.id}--PRODUCTION`,
+                        id: CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION,
                         name: 'Default Production Endpoint',
                         deploymentStage: 'PRODUCTION',
                         endpointConfig: {
@@ -109,7 +110,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
 
                 if (apiFromContext.endpointConfig?.sandbox_endpoints) {
                     defaultEndpoints.push({
-                        id: `${apiFromContext.id}--SANDBOX`,
+                        id: CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX,
                         name: 'Default Sandbox Endpoint',
                         deploymentStage: 'SANDBOX',
                         endpointConfig: {
