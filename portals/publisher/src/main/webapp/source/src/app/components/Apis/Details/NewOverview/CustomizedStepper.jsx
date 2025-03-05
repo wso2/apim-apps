@@ -238,7 +238,7 @@ export default function CustomizedStepper() {
                 let isSandboxSecure = false;
 
                 if (hasProductionEndpoint) {
-                    if (api.primaryProductionEndpointId === `${api.id}--PRODUCTION`) {
+                    if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
                         isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
                     } else {
                         const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
@@ -247,7 +247,7 @@ export default function CustomizedStepper() {
                 }
 
                 if (hasSandboxEndpoint) {
-                    if (api.primarySandboxEndpointId === `${api.id}--SANDBOX`) {
+                    if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
                         isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
                     } else {
                         const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);

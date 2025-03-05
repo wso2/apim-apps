@@ -36,6 +36,7 @@ import Alert from '@mui/material/Alert';
 import { Link } from 'react-router-dom';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import CONSTS from 'AppData/Constants';
 
 interface ModelConfig {
     targetModel: ModelData;
@@ -115,7 +116,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
 
                 if (apiFromContext.endpointConfig?.production_endpoints) {
                     defaultEndpoints.push({
-                        id: `${apiFromContext.id}--PRODUCTION`,
+                        id: CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION,
                         name: 'Default Production Endpoint',
                         deploymentStage: 'PRODUCTION',
                         endpointConfig: {
@@ -127,7 +128,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
 
                 if (apiFromContext.endpointConfig?.sandbox_endpoints) {
                     defaultEndpoints.push({
-                        id: `${apiFromContext.id}--SANDBOX`,
+                        id: CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX,
                         name: 'Default Sandbox Endpoint',
                         deploymentStage: 'SANDBOX',
                         endpointConfig: {
@@ -249,7 +250,9 @@ const ModelFailover: FC<ModelFailoverProps> = ({
 
     const isAddModelDisabled = (env: 'production' | 'sandbox') => {
         const modelList = env === 'production' ? productionModelList : sandboxModelList;
-        const selectedModels = config[env].fallbackModels.map((model) => model.model);
+        const selectedFallbackModels = config[env].fallbackModels.map((model) => model.model);
+        const selectedTargetModel = config[env].targetModel.model;
+        const selectedModels = [...selectedFallbackModels, selectedTargetModel];
         const endpointList = env === 'production' ? productionEndpoints : sandboxEndpoints;
 
         // If no available models or endpoints, disable adding
