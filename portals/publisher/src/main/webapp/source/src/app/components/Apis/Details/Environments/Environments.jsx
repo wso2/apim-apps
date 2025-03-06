@@ -3073,7 +3073,7 @@ export default function Environments() {
                                     <TableCell>
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.visibility.permission'
-                                            defaultMessage='Visibility Permission'
+                                            defaultMessage='Visibility'
                                         />
                                         <Tooltip
                                             title={(
@@ -3292,7 +3292,7 @@ export default function Environments() {
                                     <TableCell>
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.visibility.permission'
-                                            defaultMessage='Visibility Permission'
+                                            defaultMessage='Visibility'
                                         />
                                         <Tooltip
                                             title={(

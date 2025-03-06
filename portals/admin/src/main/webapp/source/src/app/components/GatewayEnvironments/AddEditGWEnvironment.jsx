@@ -330,18 +330,6 @@ function AddEditGWEnvironment(props) {
                     error = false;
                 }
                 break;
-            case 'displayName':
-                if (!value) {
-                    error = (
-                        intl.formatMessage({
-                            id: 'AdminPagesGatewayEnvironments.AddEditGWEnvironment.form.environment.displayName.empty',
-                            defaultMessage: 'Display Name is Empty',
-                        })
-                    );
-                } else {
-                    error = false;
-                }
-                break;
             case 'vhosts': {
                 if (value === undefined) {
                     error = false;
@@ -601,7 +589,7 @@ function AddEditGWEnvironment(props) {
                                                         id='GatewayEnvironments.AddEditGWEnvironment.form.displayName'
                                                         defaultMessage='Display Name'
                                                     />
-                                                    <StyledSpan>*</StyledSpan>
+                                                    {/* <StyledSpan>*</StyledSpan> */}
                                                 </span>
                                             )}
                                             error={hasErrors('displayName', state.displayName, true)}
@@ -890,13 +878,13 @@ function AddEditGWEnvironment(props) {
                                             defaultMessage='Public'
                                         />
                                     </MenuItem>
-                                    <MenuItem key='ALLOW' value='ALLOW'>
+                                    <MenuItem key='Restricted' value='ALLOW'>
                                         <FormattedMessage
                                             id='GatewayEnvironments.AddEditGWEnvironment.form.visibility.allow.option'
                                             defaultMessage='Allow for role(s)'
                                         />
                                     </MenuItem>
-                                    <MenuItem key='DENY' value='DENY'>
+                                    <MenuItem key='Restricted' value='DENY'>
                                         <FormattedMessage
                                             id='GatewayEnvironments.AddEditGWEnvironment.form.visibility.deny.option'
                                             defaultMessage='Deny for role(s)'
