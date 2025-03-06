@@ -47,12 +47,12 @@ describe("publisher-021-07 : Lint when importing API with swagger file", () => {
         APIDefinitionPage.openFileSelectRadioButton().click()
         cy.wait(3000)
         // // provide the swagger url
-        cy.intercept('GET', '**/linter-custom-rules').as('linter-custom-rules');
+        cy.intercept('GET', '**/linter-custom-rules?apiType=HTTP').as('linter-custom-rules');
         cy.get(APIDefinitionPage.browseToUploadButton()).wait(3000).then(function () {
             const filepath = 'api_artifacts/petstore_open_api_3.json'
             APIDefinitionPage.fileUploadInput().attachFile(filepath);
         });
-        cy.wait('@linter-custom-rules',{timeout: 25000}).its('response.statusCode').should('equal', 204)
+        cy.wait('@linter-custom-rules',{timeout: 25000}).its('response.statusCode').should('equal', 200)
         APIDefinitionPage.linterResultDivBlock().should('be.visible');
        // TODO : click on errors, warnings toggle buttons and verify it loads, currently there is an issue on this
 

@@ -42,13 +42,14 @@ describe("publisher-021-02 : Lint when creating API with swagger URL", () => {
 
         // provide the swagger url
         OpenAPIPage.openAPIURLTextBox().type('https://petstore.swagger.io/v2/swagger.json')
+        cy.get('body').click(0, 0);
         OpenAPIPage.waitUntilGetUrlValidatedDiv(30000)
         
         // check linter results
 
         OpenAPIPage.linterResultDivBlock().should('be.visible');
-        OpenAPIPage.errorsToggleButton().contains("1")
-        OpenAPIPage.warningToggleButton().contains("22")
+        OpenAPIPage.errorsToggleButton().contains("6")
+        OpenAPIPage.warningToggleButton().contains("46")
         
         // Verify detail warning messages is display after clik on warning toggle button
         // since tab is not working to leave from the text box click twice

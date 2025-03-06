@@ -47,6 +47,7 @@ describe("publisher-021-08 : Lint when importing API with swagger v2 URL", () =>
         cy.wait(2000)
         // // provide the swagger url
         APIDefinitionPage.openAPIURLTextBox().type('https://petstore.swagger.io/v2/swagger.json')
+        cy.get('body').click(0, 0);
         APIDefinitionPage.waitUntilGetUrlValidatedDiv(30000)
         APIDefinitionPage.linterResultDivBlock().should('be.visible');
        // TODO : click on errors, warnings toggle buttons and verify it loads, currently there is an issue on this
