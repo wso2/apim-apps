@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import {
@@ -39,29 +39,36 @@ import API from 'AppData/api';
 import DeletePolicy from './DeletePolicy';
 
 /**
- * Get all policies recursively
- * @param {Object} restApi GovernanceAPI instance
- * @param {Array} accumulator Accumulated policies
- * @returns {Promise} Promise resolving to all policies
+ * API call to get Policies
+ * @returns {Promise}.
  */
-async function getAllPolicies(restApi, accumulator = []) {
-    try {
-        const params = {
-            limit: 25,
-            offset: accumulator.length,
-        };
-        const response = await restApi.getGovernancePolicies(params);
-        const { list, pagination } = response.body;
-        const newAccumulator = [...accumulator, ...list];
+function apiCall() {
+    const restApi = new GovernanceAPI();
+    const adminApi = new API();
 
-        if (pagination.total > newAccumulator.length) {
-            return getAllPolicies(restApi, newAccumulator);
-        }
-        return newAccumulator;
-    } catch (error) {
-        console.error('Error fetching policies:', error);
-        throw error;
-    }
+    // First get the labels
+    return adminApi.labelsListGet()
+        .then((labelsResponse) => {
+            const labelsList = labelsResponse.body.list || [];
+            // Get the policies
+            return restApi.getGovernancePolicies({ limit: 100, offset: 0 })
+                .then((result) => {
+                    // Map label IDs to names
+                    return result.body.list.map((policy) => {
+                        return {
+                            ...policy,
+                            labels: policy.labels.map((labelId) => {
+                                if (labelId === 'GLOBAL') return labelId;
+                                const label = labelsList.find((l) => l.id === labelId);
+                                return label ? label.name : labelId;
+                            }),
+                        };
+                    });
+                });
+        })
+        .catch((error) => {
+            throw error;
+        });
 }
 
 /**
@@ -70,41 +77,6 @@ async function getAllPolicies(restApi, accumulator = []) {
  */
 export default function ListPolicies() {
     const intl = useIntl();
-    const [policies, setPolicies] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
-
-    useEffect(() => {
-        const restApi = new GovernanceAPI();
-        const adminApi = new API();
-        setIsLoading(true);
-
-        // First get all policies
-        getAllPolicies(restApi)
-            .then((allPolicies) => {
-                // Then get labels and map them
-                adminApi.labelsListGet()
-                    .then((labelsResponse) => {
-                        const labelsList = labelsResponse.body.list || [];
-                        // Map label IDs to names
-                        const policiesWithLabels = allPolicies.map((policy) => ({
-                            ...policy,
-                            labels: policy.labels.map((labelId) => {
-                                if (labelId === 'GLOBAL') return 'ALL';
-                                const label = labelsList.find((l) => l.id === labelId);
-                                return label ? label.name : labelId;
-                            }),
-                        }));
-                        setPolicies(policiesWithLabels);
-                    })
-                    .finally(() => {
-                        setIsLoading(false);
-                    });
-            })
-            .catch((error) => {
-                console.error('Error loading policies:', error);
-                setIsLoading(false);
-            });
-    }, []);
 
     const columProps = [
         {
@@ -352,7 +324,7 @@ export default function ListPolicies() {
             addButtonProps={addButtonProps}
             searchProps={searchProps}
             emptyBoxProps={emptyBoxProps}
-            initialData={!isLoading ? policies : null}
+            apiCall={apiCall}
             DeleteComponent={DeletePolicy}
             editComponentProps={{
                 icon: <EditIcon />,
