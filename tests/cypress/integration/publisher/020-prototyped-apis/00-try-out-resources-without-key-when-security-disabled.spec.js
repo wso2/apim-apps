@@ -74,9 +74,8 @@ describe("prototype apis with security disabled", () => {
             //cy.get('[data-testid="Defaultgateway-select-btn"]', {timeout: Cypress.config().largeTimeout}).click();
             // NOTE: Seems when running on server configuration, we donlt get Defaultgateway dialog box option, instead getting
             // production and sandbox option
-            cy.get('span[data-testid*="-select-btn"]', { timeout: Cypress.config().largeTimeout }).click();
-            cy.intercept('GET', '**/revisions?query=deployed**').as('revisionDeployed');
             cy.get('[data-testid="btn-deploy"]').click();
+            cy.intercept('GET', '**/revisions?query=deployed**').as('revisionDeployed');
             cy.wait('@revisionDeployed', { timeout: 15000 }).its('response.statusCode').should('equal', 200)
 
             cy.intercept('GET', '**/revisions?query=deployed**').as('revisionDeployed2');
