@@ -165,7 +165,7 @@ export default function ApiComplianceTable() {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
                         <RouterLink to={`/governance/compliance/api/${tableMeta.rowData[0]}`} style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}>
-                            {tableMeta.rowData[1].name}
+                            {tableMeta.rowData[1].name + ' - ' + tableMeta.rowData[1].version}
                             <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
                         </RouterLink>
                     </Box>

@@ -45,10 +45,10 @@ function DeleteRuleset({ updateList, dataRow }) {
             ))
             .catch((error) => {
                 const { response, message } = error;
-                if (message) {
+                if (response && response.body) {
+                    Alert.error(response.body.message);
+                } else if (message) {
                     Alert.error(message);
-                } else if (response && response.body) {
-                    Alert.error(response.body.description);
                 } else {
                     Alert.error(
                         intl.formatMessage({
