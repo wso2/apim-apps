@@ -46,12 +46,12 @@ describe("publisher-021-10 : Lint when importing API with errounous swagger file
         APIDefinitionPage.openFileSelectRadioButton().click()
         cy.wait(2000)
         // // provide the swagger url
-        cy.intercept('GET', '**/linter-custom-rules').as('linter-custom-rules');
+        cy.intercept('GET', '**/linter-custom-rules?apiType=HTTP').as('linter-custom-rules');
         cy.get(APIDefinitionPage.browseToUploadButton()).wait(3000).then(function () {
             const filepath = 'api_artifacts/errornous_petstore_open_api_3.json'
             APIDefinitionPage.fileUploadInput().attachFile(filepath);
         });
-        cy.wait('@linter-custom-rules', { timeout: 25000 }).its('response.statusCode').should('equal', 204)
+        cy.wait('@linter-custom-rules', { timeout: 25000 }).its('response.statusCode').should('equal', 200)
         cy.wait(5000)
         cy.contains("attribute info2 is unexpected")
         cy.contains("attribute info is missing")

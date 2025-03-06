@@ -26,6 +26,7 @@ describe("Create api with swagger file super tenant", () => {
     cy.wait(5000)
     // upload the swagger
     cy.get('[data-testid="swagger-url-endpoint"]', { timeout: Cypress.config().largeTimeout }).type(url)
+    cy.get('body').click(0, 0);
     // go to the next step
     cy.get('#url-validated', { timeout: 30000 });
     cy.get('#open-api-create-next-btn').click();
