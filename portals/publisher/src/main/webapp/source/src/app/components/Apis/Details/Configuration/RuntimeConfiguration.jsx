@@ -708,7 +708,7 @@ export default function RuntimeConfiguration() {
                                                 )}
                                             </>
                                         )}
-                                        {!api.isAPIProduct() && (
+                                        {!(api.isAPIProduct() || api.subtypeConfiguration?.subtype === 'AIAPI') && (
                                             <>
                                                 { !isWebSub && (
                                                     <Endpoints api={api} endpointSecurity={endpointSecurity} />
