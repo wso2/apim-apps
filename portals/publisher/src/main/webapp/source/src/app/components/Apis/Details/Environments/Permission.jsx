@@ -17,9 +17,10 @@
  */
 
 import * as React from 'react';
-import Box from '@mui/material/Box';
-import Button from '@mui/material/Button';
-import Popper from '@mui/material/Popper';
+import Chip from '@mui/material/Chip';
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
+import { useState } from 'react';
 
 /**
  * Renders a Permission list
@@ -31,39 +32,69 @@ export default function SimplePopper(props) {
         type,
         roles,
     } = props;
-    const [anchorEl, setAnchorEl] = React.useState(null);
 
-    let msg = roles?.toString();
+    let msg = '';
     if (type === 'PUBLIC') {
         msg = 'No Visibility Restrictions!';
+    } else if (type === 'ALLOW') {
+        msg = 'Allowed for : ' + roles.toString();
+    } else {
+        msg = 'Denied for : ' + roles.toString();
     }
 
-    const handleClick = (event) => {
-        setAnchorEl(anchorEl ? null : event.currentTarget);
+    const displayType = type === 'ALLOW' || type === 'DENY' ? 'RESTRICTED' : type;
+
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handlePopoverOpen = (event) => {
+        setAnchorEl(event.currentTarget);
     };
 
-    const open = Boolean(anchorEl);
-    const id = open ? 'simple-popper' : undefined;
+    const handlePopoverClose = () => {
+        setAnchorEl(null);
+    };
+
+    const openPopover = Boolean(anchorEl);
 
     return (
         <div>
-            <Button aria-describedby={id} type='button' onClick={handleClick}>
-                {type}
-            </Button>
-            <Popper id={id} open={open} anchorEl={anchorEl}>
-                <Box sx={{ 
-                    fontFamily: 'sans-serif',
-                    border: 'lightgray 1px solid',
-                    p: 1,
-                    fontSize: '12px',
-                    padding: '8px',
-                    backgroundColor: 'rgb(255, 255, 255)',
-                    borderRadius: '4px',
+            <Chip
+                size='small'
+                label={displayType}
+                sx={{ cursor: 'default' }}
+                onMouseEnter={handlePopoverOpen}
+                onMouseLeave={handlePopoverClose}
+            />
+            <Popover
+                id='mouse-over-popover'
+                sx={{ pointerEvents: 'none' }}
+                open={openPopover}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
                 }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                onClose={handlePopoverClose}
+                disableRestoreFocus
+            >
+                <Typography
+                    sx={{
+                        p: 1,
+                        backgroundColor: 'white',
+                        color: 'black',
+                        border: '1px solid #ccc',
+                        maxWidth: '300px',
+                        wordWrap: 'break-word',
+                        whiteSpace: 'normal',
+                    }}
                 >
                     {msg}
-                </Box>
-            </Popper>
+                </Typography>
+            </Popover>
         </div>
     );
 }
