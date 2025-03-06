@@ -380,7 +380,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                             <ModelCard
                                 key={index}
                                 modelData={model}
-                                modelList={modelList.filter(m => m !== config.production.targetModel.model)}
+                                modelList={modelList}
                                 endpointList={productionEndpoints}
                                 isWeightApplicable={false}
                                 onUpdate={(updatedModel) => handleFallbackModelUpdate('production', index, updatedModel)}
@@ -476,7 +476,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                             <ModelCard
                                 key={index}
                                 modelData={model}
-                                modelList={modelList.filter(m => m !== config.sandbox.targetModel.model)}
+                                modelList={modelList}
                                 endpointList={sandboxEndpoints}
                                 isWeightApplicable={false}
                                 onUpdate={(updatedModel) => handleFallbackModelUpdate('sandbox', index, updatedModel)}
