@@ -107,6 +107,10 @@ function EditableRow(props) {
         setEditing(true);
         resetText();
     };
+    const handleCancel = () => {
+        setEditMode(false);
+        setEditing(false);
+    };
     const handleKeyChange = (event) => {
         const { value } = event.target;
         setKey(value);
@@ -250,7 +254,7 @@ function EditableRow(props) {
                                 />
                             </Typography>
                         </Button>
-                        <Button onClick={updateEditMode} className={classes.cancelButton}>
+                        <Button onClick={handleCancel} className={classes.cancelButton}>
                             <Typography variant='caption' component='div'>
                                 <FormattedMessage
                                     id='Apis.Details.Properties.Properties.editable.cancel'
