@@ -418,10 +418,12 @@ function Properties(props) {
         if (additionalPropertiesCopy !== additionalProperties) {
             setIsAdditionalPropertiesStale(true);
         }
-        if (additionalPropertiesCopy.length === 0 && customPropertiesTemp?.length === 0) {
-            setIsAdditionalPropertiesStale(false);
-        } else if (additionalPropertiesCopy.length === 0 && customPropertiesTemp?.length !== 0) {
-            setShowAddProperty(true);
+        if (additionalPropertiesCopy.length === 0) {
+            if (customPropertiesTemp?.length === 0) {
+                setIsAdditionalPropertiesStale(false);
+            } else {
+                setShowAddProperty(true);
+            }
         }
     };
     const validateBeforeAdd = (fieldKey, fieldValue, additionalPropertiesCopy, action = 'add', oldKey) => {
