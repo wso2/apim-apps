@@ -296,13 +296,13 @@ const AddEditAIEndpoint = ({
         if (endpointId) {
             setIsEditing(true);
             // Check if this is a default endpoint
-            const isDefaultEndpoint = endpointId === `${apiObject.id}--PRODUCTION`
-                || endpointId === `${apiObject.id}--SANDBOX`;
+            const isDefaultEndpoint = endpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION ||
+                endpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX;
 
             if (isDefaultEndpoint) {
                 // Load from API object's endpointConfig
                 const { endpointConfig } = apiObject;
-                const isProd = endpointId === `${apiObject.id}--PRODUCTION`;
+                const isProd = endpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION;
 
                 const endpoint = {
                     id: endpointId,
@@ -664,8 +664,8 @@ const AddEditAIEndpoint = ({
 
         if (isEditing) {
             // Check if this is a default endpoint
-            const isDefaultEndpoint = endpointId === `${apiObject.id}--PRODUCTION`
-                || endpointId === `${apiObject.id}--SANDBOX`;
+            const isDefaultEndpoint = endpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION
+                || endpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX;
 
             if (isDefaultEndpoint) {
                 // For default endpoints, use updateAPI to update the API's endpointConfig
