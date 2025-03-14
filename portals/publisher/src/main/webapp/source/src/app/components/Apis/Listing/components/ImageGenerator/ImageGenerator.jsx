@@ -113,6 +113,6 @@ ImageGenerator.propTypes = {
 };
 
 export default ((props) => {
-    const { theme } = useTheme();
+    const theme = useTheme();
     return <ImageGenerator {...props} theme={theme} />;
 });
