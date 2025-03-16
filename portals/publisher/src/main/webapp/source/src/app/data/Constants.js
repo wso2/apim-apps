@@ -55,6 +55,8 @@ const CONSTS = {
         connectionTimeoutDuration: -1,
         connectionRequestTimeoutDuration: -1,
         socketTimeoutDuration: -1,
+        connectionTimeoutConfigType: 'GLOBAL',
+        proxyConfigType: 'GLOBAL',
         proxyConfigs: {
             proxyEnabled: '',
             proxyHost: '',
