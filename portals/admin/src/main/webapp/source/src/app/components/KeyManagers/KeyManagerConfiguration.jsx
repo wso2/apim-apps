@@ -29,7 +29,7 @@ const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.d
 export default function KeyManagerConfiguration(props) {
     const {
         keymanagerConnectorConfigurations, additionalProperties,
-        setAdditionalProperties, hasErrors, validating,
+        setAdditionalProperties, hasErrors, validating, keyManagerId,
     } = props;
 
     const onChange = (e) => {
@@ -57,13 +57,15 @@ export default function KeyManagerConfiguration(props) {
     };
     const getComponent = (keymanagerConnectorConfiguration) => {
         let value = '';
+        const disabled = (keymanagerConnectorConfiguration.updateDisabled
+            && keyManagerId) || false;
         if (additionalProperties[keymanagerConnectorConfiguration.name]) {
             value = additionalProperties[keymanagerConnectorConfiguration.name];
         }
         if (keymanagerConnectorConfiguration.type === 'input') {
             if (keymanagerConnectorConfiguration.mask) {
                 return (
-                    <FormControl variant='outlined' fullWidth>
+                    <FormControl variant='outlined' fullWidth disabled={disabled}>
                         <InputLabel sx={{ bgcolor: 'white' }}>
                             {keymanagerConnectorConfiguration.label}
                             {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
@@ -100,11 +102,12 @@ export default function KeyManagerConfiguration(props) {
                     value={value}
                     defaultValue={keymanagerConnectorConfiguration.default}
                     onChange={onChange}
+                    disabled={disabled}
                 />
             );
         } else if (keymanagerConnectorConfiguration.type === 'select') {
             return (
-                <FormControl variant='standard' component='fieldset'>
+                <FormControl variant='standard' component='fieldset' disabled={disabled}>
                     <FormLabel component='legend'>
                         <span>
                             {keymanagerConnectorConfiguration.label}
@@ -131,8 +134,13 @@ export default function KeyManagerConfiguration(props) {
             );
         } else if (keymanagerConnectorConfiguration.type === 'checkbox') {
             return (
-                <FormControl variant='standard' component='fieldset'>
-                    <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
+                <FormControl variant='standard' component='fieldset' disabled={disabled}>
+                    <FormLabel component='legend'>
+                        <span>
+                            {keymanagerConnectorConfiguration.label}
+                            {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
+                        </span>
+                    </FormLabel>
                     <FormGroup>
                         {keymanagerConnectorConfiguration.values.map((selection) => (
                             <FormControlLabel
@@ -153,8 +161,13 @@ export default function KeyManagerConfiguration(props) {
             );
         } else if (keymanagerConnectorConfiguration.type === 'options') {
             return (
-                <FormControl variant='standard' component='fieldset'>
-                    <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
+                <FormControl variant='standard' component='fieldset' disabled={disabled}>
+                    <FormLabel component='legend'>
+                        <span>
+                            {keymanagerConnectorConfiguration.label}
+                            {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
+                        </span>
+                    </FormLabel>
                     <RadioGroup
                         aria-label={keymanagerConnectorConfiguration.label}
                         name={keymanagerConnectorConfiguration.name}
@@ -180,6 +193,7 @@ export default function KeyManagerConfiguration(props) {
                     value={value}
                     defaultValue={keymanagerConnectorConfiguration.default}
                     onChange={onChange}
+                    disabled={disabled}
                 />
             );
         }
