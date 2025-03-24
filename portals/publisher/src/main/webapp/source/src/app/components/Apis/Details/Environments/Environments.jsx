@@ -1979,7 +1979,7 @@ export default function Environments() {
                         margin='dense'
                         variant='outlined'
                         style={{ width: '50%' }}
-                        disabled={api.isRevision ||
+                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
                             !allRevisions || allRevisions.length === 0}
                     >
@@ -1991,6 +1991,7 @@ export default function Environments() {
                         className={classes.button2}
                         disabled={
                             api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                            isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
                             !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                             !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                             (api.advertiseInfo && api.advertiseInfo.advertised) ||
@@ -2091,7 +2092,7 @@ export default function Environments() {
                     margin='dense'
                     variant='outlined'
                     style={{ width: '50%' }}
-                    disabled={api.isRevision ||
+                    disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
                         (settings && settings.portalConfigurationOnlyModeEnabled) ||
                         !filteredRevisions || filteredRevisions.length === 0}
                 >
@@ -2103,6 +2104,7 @@ export default function Environments() {
                     className={classes.button2}
                     disabled={
                         api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                        isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
                         !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                         !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                         (api.advertiseInfo && api.advertiseInfo.advertised) ||
