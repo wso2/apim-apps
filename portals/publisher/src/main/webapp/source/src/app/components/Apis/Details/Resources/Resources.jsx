@@ -144,6 +144,14 @@ export default function Resources(props) {
                 setSelectedOperation({});
                 return Object.entries(newData).reduce((resourceAcc, [resourceKey, verbObj]) => {
                     const verbList = Object.entries(verbObj).reduce((verbListAcc, [verbKey, operation]) => {
+                        // Preserve the "parameters" array without modification
+                        if (verbKey === 'parameters') {
+                            const newVerbListAcc = { ...verbListAcc };
+                            newVerbListAcc[verbKey] = operation;
+                            return newVerbListAcc;
+                        }
+            
+                        // Update the "x-auth-type" field for each operation
                         const newOperation = { ...operation };
                         newOperation['x-auth-type'] = data.disable ? 'None' : 'Any';
                         const newVerbListAcc = { ...verbListAcc };
