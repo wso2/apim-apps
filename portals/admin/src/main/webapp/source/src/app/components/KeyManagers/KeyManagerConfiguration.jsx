@@ -61,6 +61,17 @@ export default function KeyManagerConfiguration(props) {
             && keyManagerId) || false;
         if (additionalProperties[keymanagerConnectorConfiguration.name]) {
             value = additionalProperties[keymanagerConnectorConfiguration.name];
+        } else if (!keyManagerId
+            && keymanagerConnectorConfiguration.default
+            && typeof keymanagerConnectorConfiguration.default === 'string'
+        ) {
+            onChange({
+                target: {
+                    name: keymanagerConnectorConfiguration.name,
+                    value: keymanagerConnectorConfiguration.default,
+                    type: keymanagerConnectorConfiguration.type,
+                },
+            });
         }
         if (keymanagerConnectorConfiguration.type === 'input') {
             if (keymanagerConnectorConfiguration.mask) {
