@@ -150,7 +150,7 @@ export default function DeploymentOnboarding(props) {
     const [api] = useAPI();
     const theme = useTheme();
     const { maxCommentLength } = theme.custom;
-    const { settings: { environment: environments } } = useAppContext();
+    const { settings: { environment: environments, gatewayTypes } } = useAppContext();
     const [internalGateways, setInternalGateways] = useState([]);
     const [externalGateways, setExternalGateways] = useState([]);
     const [selectedExternalGateway, setSelectedExternalGateway] = useState([]);
@@ -161,7 +161,6 @@ export default function DeploymentOnboarding(props) {
     const [descriptionOpen, setDescriptionOpen] = useState(false);
     const [selectedEnvironment, setSelectedEnvironment] = useState([]);
     const [selectedVhostDeploy, setVhostsDeploy] = useState(null);
-
 
     const isDeployButtonDisabled = ((api.type !== 'WEBSUB' && !(
         isEndpointAvailable &&
@@ -187,7 +186,11 @@ export default function DeploymentOnboarding(props) {
                     gatewayType = 'AWS';
                     break;
                 default:
-                    gatewayType = 'Regular';
+                    if (gatewayTypes.includes(api.gatewayType)) {
+                        gatewayType = api.gatewayType;
+                    } else {
+                        gatewayType = 'Regular';
+                    }
             }
         }
         const internalGatewaysFiltered = environments.filter((p) => p.provider.toLowerCase().includes('wso2'));
