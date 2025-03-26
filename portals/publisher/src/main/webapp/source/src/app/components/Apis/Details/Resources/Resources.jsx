@@ -146,21 +146,15 @@ export default function Resources(props) {
                     const verbList = Object.entries(verbObj).reduce((verbListAcc, [verbKey, operation]) => {
                         // Preserve the "parameters" array without modification
                         if (verbKey === 'parameters') {
-                            const newVerbListAcc = { ...verbListAcc };
-                            newVerbListAcc[verbKey] = operation;
-                            return newVerbListAcc;
+                            return { ...verbListAcc, parameters: operation };
                         }
             
                         // Update the "x-auth-type" field for each operation
-                        const newOperation = { ...operation };
-                        newOperation['x-auth-type'] = data.disable ? 'None' : 'Any';
-                        const newVerbListAcc = { ...verbListAcc };
-                        newVerbListAcc[verbKey] = newOperation;
-                        return newVerbListAcc;
+                        const newOperation = { ...operation, 'x-auth-type': data.disable ? 'None' : 'Any' };
+                        return { ...verbListAcc, [verbKey]: newOperation };
                     }, {});
-                    const newResourceListAcc = { ...resourceAcc };
-                    newResourceListAcc[resourceKey] = verbList;
-                    return newResourceListAcc;
+            
+                    return { ...resourceAcc, [resourceKey]: verbList };
                 }, {});
             case 'description':
             case 'summary':
