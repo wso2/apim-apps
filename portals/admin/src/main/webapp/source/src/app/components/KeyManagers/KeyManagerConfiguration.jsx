@@ -57,21 +57,30 @@ export default function KeyManagerConfiguration(props) {
     };
     const getComponent = (keymanagerConnectorConfiguration) => {
         let value = '';
-        const disabled = (keymanagerConnectorConfiguration.updateDisabled
-            && keyManagerId) || false;
+        const disabled = Boolean(keymanagerConnectorConfiguration.updateDisabled && keyManagerId);
         if (additionalProperties[keymanagerConnectorConfiguration.name]) {
             value = additionalProperties[keymanagerConnectorConfiguration.name];
-        } else if (!keyManagerId
-            && keymanagerConnectorConfiguration.default
-            && typeof keymanagerConnectorConfiguration.default === 'string'
-        ) {
-            onChange({
-                target: {
-                    name: keymanagerConnectorConfiguration.name,
-                    value: keymanagerConnectorConfiguration.default,
-                    type: keymanagerConnectorConfiguration.type,
-                },
-            });
+        } else if (!keyManagerId && keymanagerConnectorConfiguration.default) {
+            if (typeof keymanagerConnectorConfiguration.default === 'string'
+                && ['input', 'select', 'options'].includes(keymanagerConnectorConfiguration.type)
+            ) {
+                onChange({
+                    target: {
+                        name: keymanagerConnectorConfiguration.name,
+                        value: keymanagerConnectorConfiguration.default,
+                        type: keymanagerConnectorConfiguration.type,
+                    },
+                });
+            } else if (typeof keymanagerConnectorConfiguration.default === 'boolean'
+                && keymanagerConnectorConfiguration.type === 'checkbox'
+            ) {
+                onChangeCheckBox({
+                    target: {
+                        name: keymanagerConnectorConfiguration.name,
+                        checked: keymanagerConnectorConfiguration.default,
+                    },
+                });
+            }
         }
         if (keymanagerConnectorConfiguration.type === 'input') {
             if (keymanagerConnectorConfiguration.mask) {
