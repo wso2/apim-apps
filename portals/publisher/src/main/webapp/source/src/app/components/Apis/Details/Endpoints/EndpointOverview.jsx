@@ -764,6 +764,17 @@ function EndpointOverview(props) {
         [swaggerDef],
     );
 
+    /**
+     * Method to update the resource paths object in the swagger.
+     * @param {any} paths The updated paths object.
+     * */
+    const updateMockDB = useCallback(
+        (mockDB) => {
+            updateSwagger({ ...swaggerDef, ...mockDB });
+        },
+        [swaggerDef],
+    );
+
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 
     /**
@@ -812,9 +823,10 @@ function EndpointOverview(props) {
                         iff(Object.keys(swaggerDef.paths).length !== 0, 
                             <MockImplEndpoints 
                                 key={endpointType.key}
-                                paths={swaggerDef.paths} 
+                                paths={swaggerDef.paths}
                                 swagger={swaggerDef} 
-                                updatePaths={updatePaths} 
+                                updatePaths={updatePaths}
+                                updateMockDB={updateMockDB} 
                                 endpointType={endpointType.key} 
                                 endpointConfig={endpointConfig}
                                 endpointsDispatcher={endpointsDispatcher}

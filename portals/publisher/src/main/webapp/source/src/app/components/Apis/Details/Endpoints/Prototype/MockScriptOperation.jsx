@@ -19,6 +19,7 @@
 import React, {
     Suspense,
     useContext,
+    useEffect,
     useState,
 } from 'react';
 import { styled } from '@mui/material/styles';
@@ -97,8 +98,16 @@ function MockScriptOperation(props) {
     };
 
     const mediationScript = operation[xMediationScriptProperty];
-    const script = mediationScript === undefined ? defaultScript : mediationScript;
-    const originalScript = getGeneratedMockScriptOfAPI(mockScripts, resourcePath, resourceMethod);
+    const [script, setScript] = useState(mediationScript === undefined ? defaultScript : mediationScript);
+    let originalScript;
+
+    useEffect(() => {
+        originalScript = getGeneratedMockScriptOfAPI(mockScripts, resourcePath, resourceMethod);
+        if (originalScript) {
+            setScript(originalScript);
+            onScriptChange(originalScript, resourcePath, resourceMethod);
+        }
+    }, [mockScripts]);
 
     return (
         <StyledGrid container direction='column'>

@@ -189,7 +189,7 @@ function Endpoints(props) {
                 const config = createEndpointConfig(endpointType);
                 if (endpointType === 'prototyped') {
                     if (implementationType === 'mock') {
-                        api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
+                        api.getGeneratedMockScriptsOfAPI(api.id).then((res) => { // generates mock/sample payloads
                             setSwagger(res.obj);
                         });
                         return { ...initState, endpointConfig: config, endpointImplementationType: 'INLINE' };

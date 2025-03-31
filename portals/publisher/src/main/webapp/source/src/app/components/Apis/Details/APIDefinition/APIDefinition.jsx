@@ -555,7 +555,7 @@ class APIDefinition extends React.Component {
                         .then((response) => {
                             const { endpointImplementationType } = api;
                             if (endpointImplementationType === 'INLINE') {
-                                api.generateMockScripts(api.id);
+                                api.getGeneratedMockScriptsOfAPI(api.id);
                             }
                             if (response) {
                                 Alert.success(intl.formatMessage({
