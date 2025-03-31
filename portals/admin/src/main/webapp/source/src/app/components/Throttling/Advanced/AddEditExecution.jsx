@@ -54,7 +54,13 @@ function AddEditExecution(props) {
     }
     const update = (e) => {
         if (onChange) {
-            onChange(e);
+            if (e.target.name === 'requestCount' || e.target.name === 'dataAmount') {
+                if (e.target.value === '' || Number(e.target.value) >= 0) {
+                    onChange(e);
+                }
+            } else {
+                onChange(e);
+            }
             return;
         }
         const field = e.target.name;

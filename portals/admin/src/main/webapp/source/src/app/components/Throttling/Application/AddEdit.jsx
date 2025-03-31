@@ -232,6 +232,13 @@ function AddEdit(props) {
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
+    const onDefaultLimitChange = (e) => {
+        const { name, value } = e.target;
+        if (value === '' || Number(value) >= 0) {
+            dispatch({ field: name, value });
+        }
+    };
+
     const getAllFormErrors = () => {
         let errorText = '';
         const policyNameErrors = validate('policyName', policyName);
@@ -518,7 +525,7 @@ function AddEdit(props) {
                         fullWidth
                         value={requestCount}
                         type='number'
-                        onChange={onChange}
+                        onChange={onDefaultLimitChange}
                         variant='outlined'
                         required
                         InputProps={{
@@ -552,7 +559,7 @@ function AddEdit(props) {
                             type='number'
                             variant='outlined'
                             value={dataAmount}
-                            onChange={onChange}
+                            onChange={onDefaultLimitChange}
                             InputProps={{
                                 id: 'dataAmount',
                                 onBlur: ({ target: { value } }) => {
@@ -684,7 +691,7 @@ function AddEdit(props) {
                     name='rateLimitCount'
                     value={rateLimitCount}
                     type='number'
-                    onChange={onChange}
+                    onChange={onDefaultLimitChange}
                     label={(
                         <FormattedMessage
                             id='Throttling.Application.AddEdit.form.request.rate'
