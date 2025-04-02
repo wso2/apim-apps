@@ -54,8 +54,9 @@ function AddEditExecution(props) {
     }
     const update = (e) => {
         if (onChange) {
-            if (e.target.name === 'requestCount' || e.target.name === 'dataAmount') {
-                if (e.target.value === '' || Number(e.target.value) >= 0) {
+            const { name, value } = e.target;
+            if (name === 'requestCount' || name === 'dataAmount') {
+                if (value === '' || Number(value) >= 0) {
                     onChange(e);
                 }
             } else {
