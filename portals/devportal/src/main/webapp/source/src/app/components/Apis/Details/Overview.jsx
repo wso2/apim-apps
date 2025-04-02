@@ -50,6 +50,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import API from 'AppData/api';
 import CONSTANTS from 'AppData/Constants';
 import View from 'AppComponents/Apis/Details/Documents/View';
+import Settings from 'Settings';
 import SolaceEndpoints from './SolaceEndpoints';
 import Environments from './Environments';
 import Comments from './Comments/Comments';
@@ -261,7 +262,7 @@ function Overview() {
 
     const getSubscriptionPolicies = () => {
         const restApi = new API();
-        return restApi.getAllTiers('subscription')
+        return restApi.getAllTiers('subscription', Settings.app.throttlingPolicyLimit)
             .then((response) => {
                 try {
                     // Filter policies base on async or not.
