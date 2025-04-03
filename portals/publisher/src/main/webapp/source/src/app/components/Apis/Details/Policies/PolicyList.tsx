@@ -26,6 +26,7 @@ import Tab from '@mui/material/Tab';
 import CardContent from '@mui/material/CardContent';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
+import { isRestricted } from 'AppData/AuthManager';
 import { AddCircle } from '@mui/icons-material';
 import { Button , Theme } from '@mui/material';
 import CONSTS from 'AppData/Constants';
@@ -108,7 +109,7 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                         {!isChoreoConnectEnabled && (
                             <Button
                                 onClick={handleAddPolicy}
-                                disabled={false}
+                                disabled={isRestricted(['apim:api_create', 'apim:api_publish'])}
                                 variant='outlined'
                                 color='primary'
                                 data-testid='add-new-api-specific-policy'
