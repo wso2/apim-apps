@@ -112,27 +112,20 @@ const StyledDiv = styled('div')({});
 const ApisTableContent = ({ apis, updateApiList }) => {
     const restApi = new API();
     const [provider, setProvider] = useState('');
-    const [editableRows, setEditableRows] = useState(new Set());
+    const [editableRow, setEditableRow] = useState(null);
 
-    const handleEditClick = (apiId) => {
-        setEditableRows((prevRows) => {
-            const newRows = new Set(prevRows);
-            newRows.add(apiId);
-            return newRows;
-        });
+    const handleEditClick = (apiId, currentProvider) => {
+        setEditableRow(apiId);
+        setProvider(currentProvider);
     };
 
-    const handleCancelClick = (apiId) => {
-        setEditableRows((prevRows) => {
-            const newRows = new Set(prevRows);
-            newRows.delete(apiId);
-            return newRows;
-        });
+    const handleCancelClick = () => {
+        setEditableRow(null);
         setProvider('');
     };
 
-    const handleSubmitClick = (apiId, apiProvider) => {
-        if (apiProvider === '') {
+    const handleSubmitClick = (apiId) => {
+        if (provider.trim() === '') {
             return (
                 Alert.error(
                     <FormattedMessage
@@ -142,7 +135,7 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                 )
             );
         } else {
-            return restApi.updateApiProvider(apiId, apiProvider.trim())
+            return restApi.updateApiProvider(apiId, provider.trim())
                 .then(() => {
                     return (
                         Alert.success(
@@ -166,6 +159,16 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                                 />,
                             )
                         );
+                    // error code: 901300 for tenant not found
+                    } else if (response?.body?.code === 901300) {
+                        return (
+                            Alert.error(
+                                <FormattedMessage
+                                    id='AdminPages.ApiSettings.EditApi.form.edit.user.notvalid'
+                                    defaultMessage='Given Tenant name is not valid.'
+                                />,
+                            )
+                        );
                     } else {
                         return (
                             Alert.error(
@@ -179,7 +182,7 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                 })
                 .finally(() => {
                     updateApiList();
-                    handleCancelClick(apiId);
+                    handleCancelClick();
                 });
         }
     };
@@ -197,15 +200,15 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                         </StyledDiv>
                     </StyledTableCell>
                     <StyledTableCell align='left'>
-                        {!editableRows.has(api.id) && (
+                        {editableRow !== api.id && (
                             <StyledDiv>
                                 { api.provider }
-                                <IconButton color='primary' onClick={() => handleEditClick(api.id)}>
+                                <IconButton color='primary' onClick={() => handleEditClick(api.id, api.provider)}>
                                     <EditIcon aria-label='edit-api-settings' />
                                 </IconButton>
                             </StyledDiv>
                         )}
-                        { editableRows.has(api.id) && (
+                        {editableRow === api.id && (
                             <StyledDiv sx={styles.tableActionBtnContainer}>
                                 <TextField
                                     id='standard-basic'
@@ -217,14 +220,14 @@ const ApisTableContent = ({ apis, updateApiList }) => {
                                     )}
                                     variant='standard'
                                     size='small'
-                                    defaultValue={api.provider}
+                                    value={provider}
                                     sx={styles.textfield}
                                     onChange={(e) => { setProvider(e.target.value); }}
                                 />
-                                <IconButton color='primary' onClick={() => handleSubmitClick(api.id, provider)}>
+                                <IconButton color='primary' onClick={() => handleSubmitClick(api.id)}>
                                     <SaveIcon aria-label='edit-api-settings' />
                                 </IconButton>
-                                <IconButton onClick={() => handleCancelClick(api.id)}>
+                                <IconButton onClick={handleCancelClick}>
                                     <CancelIcon aria-label='edit-api-settings' />
                                 </IconButton>
                             </StyledDiv>
