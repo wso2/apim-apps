@@ -14,31 +14,28 @@ import {
 
 const AIMockConfiguration = ({ open, onClose, configuration, setConfiguration, currentConfig }) => {
     const [mockConfig, setMockConfig] = useState({});
-    const [currentPath, setCurrentPath] = useState(null);
-    const [currentMethod, setCurrentMethod] = useState(null);
+    const [currentEndpoint, setCurrentEndpoint] = useState(null);
 
     useEffect(() => {
-        if (currentConfig !== 'api') {
-            const [path, method] = currentConfig.split(' - ');
-            setCurrentPath(path);
-            setCurrentMethod(method);
-            setMockConfig(
-                configuration?.[path]?.[method] || {
-                    context: '',
-                    latency: 0,
-                    errorSimulation: 'none',
-                }
-            );
-        } else {
-            setCurrentPath(null);
-            setCurrentMethod(null);
-            setMockConfig(
-                configuration?.api || {
-                    context: '',
-                    latency: 0,
-                    errorSimulation: 'none',
-                }
-            );
+        if (open) {  // Only update when dialog opens
+            if (currentConfig.path) {
+                const {path, method} = currentConfig
+                setCurrentEndpoint({ path, method });
+                setMockConfig(
+                    configuration?.config?.simulationDetails?.[path]?.[method] || {
+                        latency: 0,
+                        error: 'none',
+                    }
+                );
+            } else {
+                setCurrentEndpoint(null);
+                setMockConfig(
+                    configuration.config?.simulationDetails?.api || {
+                        latency: 0,
+                        error: 'none',
+                    }
+                );
+            }
         }
     }, [currentConfig, configuration, open]);
 
@@ -51,36 +48,29 @@ const AIMockConfiguration = ({ open, onClose, configuration, setConfiguration, c
     ];
 
     const handleChange = (event) => {
+        console.log(event.target)
         const { name, value } = event.target;
-        setMockConfig({
-            ...mockConfig,
-            [name]: value,
-        });
+        setMockConfig((prev) => {
+            return {
+                ...prev,
+                [name]: value
+            }
+        }
+        )
     };
 
     const handleSave = () => {
-        setConfiguration((prevConfig) => {
-            if (currentPath && currentMethod) {
-                return {
-                    ...prevConfig,
-                    [currentPath]: {
-                        ...prevConfig[currentPath],
-                        [currentMethod]: {
-                            ...prevConfig[currentPath]?.[currentMethod],
-                            ...mockConfig,
-                        },
-                    },
-                };
-            } else {
-                return {
-                    ...prevConfig,
-                    api: {
-                        ...prevConfig.api,
-                        ...mockConfig,
-                    },
-                };
+        const tempConfig = configuration
+        if (currentEndpoint){
+            const {path, method} = currentEndpoint
+            if (!tempConfig?.config?.simulationDetails[path]){
+                tempConfig.config.simulationDetails[path] = {}
             }
-        });
+            tempConfig.config.simulationDetails[path][method] = mockConfig;
+        }else{
+            tempConfig.config.simulationDetails.api = mockConfig;
+        }
+        setConfiguration(tempConfig);
         onClose();
     };
 
@@ -95,32 +85,18 @@ const AIMockConfiguration = ({ open, onClose, configuration, setConfiguration, c
                 <TextField
                     fullWidth
                     margin='normal'
-                    label='Context'
-                    name='context'
-                    value={
-                        mockConfig?.context || ''
-                    }
-                    onChange={handleChange}
-                    helperText='Enter the mock context'
-                />
-                <TextField
-                    fullWidth
-                    margin='normal'
                     label='Latency (ms)'
                     name='latency'
                     type='number'
-                    value={
-                        mockConfig?.latency || 0
-                    }
+                    value={mockConfig?.latency || 0}
                     onChange={handleChange}
                     helperText='Enter response delay in milliseconds'
                 />
                 <FormControl fullWidth margin='normal'>
                     <InputLabel>Error Simulation</InputLabel>
                     <Select
-                        name='errorSimulation'
-                        value={mockConfig?.errorSimulation || 'none'
-                        }
+                        name='error'
+                        value={mockConfig?.error || 'none'}
                         onChange={handleChange}
                         label='Error Simulation'
                     >
