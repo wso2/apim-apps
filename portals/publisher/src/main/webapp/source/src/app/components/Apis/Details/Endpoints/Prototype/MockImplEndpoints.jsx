@@ -28,7 +28,7 @@ import GenericOperation from 'AppComponents/Apis/Details/Resources/components/Ge
 import GroupOfOperations from 'AppComponents/Apis/Details/Resources/components/GroupOfOperations';
 import CONSTS from 'AppData/Constants';
 import { Progress, Alert } from 'AppComponents/Shared';
-import { AutoAwesome, Settings } from '@mui/icons-material';
+import { AutoAwesome, Refresh, Settings } from '@mui/icons-material';
 import MockConfiguration from 'AppComponents/Apis/Details/Endpoints/Prototype/MockConfiguration';
 import {
     app
@@ -62,6 +62,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         },
     });
     const [, forceUpdate] = useReducer(x => x + 1, 0)
+    const [showInstructions, setShowInstructions] = useState(false);
 
     const splitSimulationPart = (content) => {
         const simulationMarker = '// Simulation Of Errors and Latency';
@@ -146,27 +147,48 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         }
     }, []);
 
-    const generateMockScripts = async (useAI, payload) => {
+    const generateMockScripts = async (useAI, payload, modify = undefined) => {
         const response = await api.generateMockScripts(api.id, useAI, payload);
         const tmpScripts = [];
         const tmpPaths = paths;
-        Object.entries(response.obj.paths).forEach(([path, methods]) => {
-            Object.entries(methods).forEach(([method, data]) => {
-                if (method === 'parameters') {
-                    return; // Skip this loop iteration
+        if (modify){
+            const {simulationPart} =
+            splitSimulationPart(paths[modify.path][modify.method][xMediationScriptProperty]);
+            tmpPaths[modify.path][modify.method][xMediationScriptProperty] = 
+            response.obj.paths[modify.path][modify.method][xMediationScriptProperty] + 
+            '// Simulation Of Errors and Latency' + simulationPart;
+            mockScripts.forEach((methodObj) => {
+                if (methodObj.path === modify.path && methodObj.verb.toLowerCase() === modify.method) {
+                    console.log('Modifying script for path:', modify.path, 'and method:', modify.method);
+                    console.log('New script content:', 
+                        response.obj.paths[modify.path][modify.method][xMediationScriptProperty], simulationPart);
+                    tmpScripts.push({
+                        ...methodObj,
+                        content: response.obj.paths[modify.path][modify.method][xMediationScriptProperty],
+                    });
+                } else {
+                    tmpScripts.push(methodObj);
                 }
-                const {content, simulationPart} = 
+            });            
+        }else {
+            Object.entries(response.obj.paths).forEach(([path, methods]) => {
+                Object.entries(methods).forEach(([method, data]) => {
+                    if (method === 'parameters') {
+                        return; // Skip this loop iteration
+                    }
+                    const {content, simulationPart} = 
                     splitSimulationPart(data[xMediationScriptProperty],path, method);
-                setSimulationConfig(simulationPart,path,method)
-                tmpScripts.push({
-                    path,
-                    verb: method.toUpperCase(),
-                    content,
-                    simulationPart
+                    setSimulationConfig(simulationPart,path,method)
+                    tmpScripts.push({
+                        path,
+                        verb: method.toUpperCase(),
+                        content,
+                        simulationPart
+                    });
+                    tmpPaths[path][method][xMediationScriptProperty] = data[xMediationScriptProperty];
                 });
-                tmpPaths[path][method][xMediationScriptProperty] = data[xMediationScriptProperty];
             });
-        });
+        }
         setMockScripts(tmpScripts);
         updatePaths(tmpPaths);
         return response;
@@ -174,22 +196,22 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
 
     const handleModifyMethod = async (path,method,instructions) => {
         if (instructions === ''){
-            Alert.warning('No Instructions to modify');
+            Alert.error('No Instructions to modify');
             return;
         }
+        setProgress(true);
         const script = paths[path][method][xMediationScriptProperty];
-        const {content} = splitSimulationPart(script)
+        const {content, simulationPart} = splitSimulationPart(script)
         const payload = {
             instructions,
             script: content,
             modify: {path,method}
         }
-        console.log(payload);
         try {
-            await generateMockScripts(true, payload)
-            // if (useAI) updateMockDB({ [xWso2MockDBProperty]: response.obj[xWso2MockDBProperty] });
+            await generateMockScripts(true, payload, payload.modify);
+            setSimulationConfig(simulationPart, path, method);
             forceUpdate();
-            Alert.info('Successfully generated mock scripts!');
+            Alert.info('Successfully Modified the mock script!');
         } catch (e) {
             Alert.error('Error generating mock scripts!');
         } finally {
@@ -202,13 +224,15 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         setProgress(true);
         try {
             const payload = {
-                instructions: mockConfig.config.instructions
+                instructions: showInstructions ?  mockConfig.config.instructions : undefined
             }
             const response = await generateMockScripts(useAI, payload)
             if (useAI) updateMockDB({ [xWso2MockDBProperty]: response.obj[xWso2MockDBProperty] });
+            else updateMockDB({ [xWso2MockDBProperty]: undefined });
             forceUpdate();
             Alert.info('Successfully generated mock scripts!');
             setMockConfig({...mockConfig,useAI})
+            setShowInstructions(false);
         } catch (e) {
             console.error(e);
             if (useAI){
@@ -246,62 +270,136 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                 </IconButton>
                             </Tooltip>
                         </Stack>
-                        {!mockConfig.useAI ? (
-                            <Stack direction='row' mt={2} spacing={2} alignItems='center' justifyContent='center'>
-                                <Paper
-                                    sx={{
-                                        p: 3,
-                                        width: '100%',
-                                        borderRadius: 2,
-                                        boxShadow: 1,
-                                    }}
-                                >
+                        <Stack direction='row' mt={2} spacing={2} alignItems='center' justifyContent='center'>
+                            <Paper
+                                sx={{
+                                    p: 3,
+                                    width: '100%',
+                                    borderRadius: 2,
+                                    boxShadow: 1,
+                                }}
+                            >
                                 
-                                    <Stack direction='row' spacing={2} 
-                                        alignItems='center' justifyContent='space-between'>
-                                        <div style={{ flex: 1 }}>
-                                            <Typography
-                                                variant='h6'
-                                                sx={{
-                                                    fontWeight: 500,
-                                                    mb: 1,
-                                                }}
-                                            >
-                                                Want a More Realistic Mock Server?
-                                            </Typography>
-                                            <Typography
-                                                variant='body1'
-                                                color='textSecondary'
-                                            >
-                                                Try our AI-powered Mock Server generation for 
-                                                realistic responses and simulating API behavior effortlessly.
-                                            </Typography>
-                                            <div style={{ marginTop: '16px' }}>
+                                <Stack direction='row' spacing={2} 
+                                    alignItems='center' justifyContent='space-between'>
+                                    <div style={{ flex: 1 }}>
+                                        <Typography
+                                            variant='h6'
+                                            sx={{
+                                                fontWeight: 500,
+                                                mb: 1,
+                                            }}
+                                        >
+                                            {mockConfig.useAI
+                                                ? 'AI-Powered Mock Server is Ready!'
+                                                : 'Want a More Realistic Mock Server?'}
+                                        </Typography>
+                                        <Typography
+                                            variant='body1'
+                                            color='textSecondary'
+                                        >
+                                            {mockConfig.useAI
+                                                ? 'Your AI-powered Mock Server is ready to generate '+
+                                                'realistic responses and simulate API behavior.'
+                                                : 'Try our AI-powered Mock Server generation for '+
+                                                'realistic responses and simulating API behavior effortlessly.'}
+                                        </Typography>
+                                        {showInstructions && (
+                                            <div style={{ marginTop: '16px', transition: 'all 0.3s ease-in-out' }}>
+                                                <TextField
+                                                    fullWidth
+                                                    sx={{maxWidth: 'calc(100% - 100px)'}}
+                                                    label='Instructions'
+                                                    placeholder='e.g. Pre-populate the mock DB with 4 records'
+                                                    value={mockConfig?.config?.instructions} 
+                                                    onChange={(e) =>
+                                                        setMockConfig((prev) => ({ ...prev, 
+                                                            config: {
+                                                                ...prev.config,
+                                                                instructions: e.target.value,
+                                                            },
+                                                        }))
+                                                    }
+                                                />
+                                            </div>
+                                        )}
+                                        <div style={{ marginTop: '16px' }}>
+                                            {!mockConfig.useAI ? (<>
                                                 <Button
                                                     variant='contained'
                                                     onClick={()=>{
                                                         handleGenerateScripts(true)}}
                                                     disabled={progress}
                                                     endIcon={<AutoAwesome />}
+                                                    title='Generate AI-powered mock scripts'
                                                 >
-                                                    {!mockConfig.useAI && progress ? 'AI is Thinking...': 'Try It'}
+                                                    {progress ? 'AI is Thinking...': 'Try It'}
                                                 </Button>
-                                            </div>
+                                                <Button
+                                                    variant='text'
+                                                    sx={{ ml: 2 }}
+                                                    onClick={() => setShowInstructions(!showInstructions)}
+                                                    title='Provide custom instructions for AI'
+                                                >
+                                                    {showInstructions ? 'Let AI Decide' : 
+                                                        'Tell AI What to Do'}
+                                                </Button></>
+                                            ) : (
+                                                <>
+                                                    <Button
+                                                        variant='contained'
+                                                        onClick={()=>{
+                                                            handleGenerateScripts(true)}}
+                                                        disabled={progress}
+                                                        endIcon={<><Refresh/><AutoAwesome/></>}
+                                                        sx={{ ml: 'auto' }}
+                                                        title='Re-generate AI-powered mock scripts'
+                                                    >
+                                                        {!mockConfig.useAI && progress ? 'AI is Thinking...': 
+                                                            'Re-Generate'}
+                                                    </Button>
+                                                    <Button
+                                                        variant='text'
+                                                        sx={{ ml: 2 }}
+                                                        disabled={progress}
+                                                        onClick={() => setShowInstructions(!showInstructions)}
+                                                        title='Provide custom instructions for AI'
+                                                    >
+                                                        {showInstructions ? 'Let AI Decide' : 
+                                                            'Tell AI What to Do'}
+                                                    </Button>
+                                                    <Tooltip title='Fallback to default mock scripts if AI-generated 
+                                                        scripts are not suitable'>
+                                                        <Button
+                                                            variant='outlined'
+                                                            color='inherit'
+                                                            onClick={() => {
+                                                                handleGenerateScripts(false);
+                                                            }}
+                                                            disabled={progress}
+                                                            sx={{ ml: 18 }}
+                                                        >
+                                                            {progress ? 'Reverting...' : 
+                                                                'Fallback to Default Mock Scripts'}
+                                                        </Button>
+                                                    </Tooltip>
+                                                </>)}
                                         </div>
-                                        <img
-                                            alt='API Mock Assistant'
-                                            src={`${
-                                                app.context
-                                            }/site/public/images/ai/APIchatassistantImageWithColour.svg`}
-                                            style={{
-                                                width: '70px',
-                                                height: 'auto',
-                                                borderRadius: '4px',
-                                            }}
-                                        />
-                                    </Stack>
-                                </Paper>
-                            </Stack>) : null}
+                                    </div>
+                                    <img
+                                        alt='API Mock Assistant'
+                                        src={`${
+                                            app.context
+                                        }/site/public/images/ai/APIchatassistantImageWithColour.svg`}
+                                        style={{
+                                            width: '80px',
+                                            height: 'auto',
+                                            borderRadius: '4px',
+                                        }}
+                                    />
+                                </Stack>
+                            </Paper>
+                        </Stack>
                         {progress ? <Progress /> : (
                             <Grid container spacing={2} mt={2}>
                                 {Object.entries(paths).map(([path, methods]) => (
@@ -318,7 +416,12 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                                                     <div>
                                                                         <TextField
                                                                             fullWidth
+                                                                            sx={{maxWidth: 'calc(100% - 250px)',
+                                                                                my: 2
+                                                                            }}
                                                                             label='Modify With AI'
+                                                                            placeholder=
+                                                                                'e.g. Respond with Capitalized letters'
                                                                             value={mockConfig?.config?.
                                                                                 modifyDetails?.[path]?.[method]} 
                                                                             onChange={(e) =>
