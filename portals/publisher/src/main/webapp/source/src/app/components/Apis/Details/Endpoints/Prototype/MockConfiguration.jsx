@@ -180,7 +180,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                 <TextField
                     fullWidth
                     margin='normal'
-                    label='Latency (ms)'
+                    label='Latency Simulation (ms)'
                     name='latency'
                     type='number'
                     value={mockSimulation?.latency || 0}
