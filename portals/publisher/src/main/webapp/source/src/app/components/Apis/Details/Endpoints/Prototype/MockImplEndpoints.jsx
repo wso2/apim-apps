@@ -181,8 +181,8 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         const {content} = splitSimulationPart(script)
         const payload = {
             instructions,
-            content,
-            modifyPath: {path,method}
+            script: content,
+            modify: {path,method}
         }
         console.log(payload);
         try {
