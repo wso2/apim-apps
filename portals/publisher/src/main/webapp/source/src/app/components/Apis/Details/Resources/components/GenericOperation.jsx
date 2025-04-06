@@ -26,10 +26,12 @@ import {
     Typography,
     Accordion, 
     AccordionSummary, 
-    AccordionDetails
+    AccordionDetails,
+    IconButton,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Utils from 'AppData/Utils';
+import { Settings } from '@mui/icons-material';
 
 const PREFIX = 'GenericOperation';
 
@@ -81,6 +83,7 @@ function GenericOperation(props) {
     const {
         target,
         verb,
+        handleConfigClick,
         children,
     } = props;
     const [isExpanded, setIsExpanded] = useState(false);
@@ -139,6 +142,13 @@ function GenericOperation(props) {
                             </Typography>
                         </Grid>
                     </Grid>
+                    <IconButton onClick={(e) => {
+                        handleConfigClick();
+                        e.stopPropagation();
+                    }
+                    }>
+                        <Settings />
+                    </IconButton>
                 </AccordionSummary>
                 <Divider sx={{ backgroundColor }} />
                 <AccordionDetails>
@@ -152,6 +162,7 @@ function GenericOperation(props) {
 GenericOperation.propTypes = {
     target: PropTypes.string.isRequired,
     verb: PropTypes.string.isRequired,
+    handleConfigClick: PropTypes.func.isRequired,
     children: PropTypes.element.isRequired,
 };
 
