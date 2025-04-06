@@ -159,9 +159,6 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
             '// Simulation Of Errors and Latency' + simulationPart;
             mockScripts.forEach((methodObj) => {
                 if (methodObj.path === modify.path && methodObj.verb.toLowerCase() === modify.method) {
-                    console.log('Modifying script for path:', modify.path, 'and method:', modify.method);
-                    console.log('New script content:', 
-                        response.obj.paths[modify.path][modify.method][xMediationScriptProperty], simulationPart);
                     tmpScripts.push({
                         ...methodObj,
                         content: response.obj.paths[modify.path][modify.method][xMediationScriptProperty],
@@ -337,6 +334,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                                 </Button>
                                                 <Button
                                                     variant='text'
+                                                    disabled={progress}
                                                     sx={{ ml: 2 }}
                                                     onClick={() => setShowInstructions(!showInstructions)}
                                                     title='Provide custom instructions for AI'
@@ -345,29 +343,32 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                                         'Tell AI What to Do'}
                                                 </Button></>
                                             ) : (
-                                                <>
-                                                    <Button
-                                                        variant='contained'
-                                                        onClick={()=>{
-                                                            handleGenerateScripts(true)}}
-                                                        disabled={progress}
-                                                        endIcon={<><Refresh/><AutoAwesome/></>}
-                                                        sx={{ ml: 'auto' }}
-                                                        title='Re-generate AI-powered mock scripts'
-                                                    >
-                                                        {!mockConfig.useAI && progress ? 'AI is Thinking...': 
-                                                            'Re-Generate'}
-                                                    </Button>
-                                                    <Button
-                                                        variant='text'
-                                                        sx={{ ml: 2 }}
-                                                        disabled={progress}
-                                                        onClick={() => setShowInstructions(!showInstructions)}
-                                                        title='Provide custom instructions for AI'
-                                                    >
-                                                        {showInstructions ? 'Let AI Decide' : 
-                                                            'Tell AI What to Do'}
-                                                    </Button>
+                                                <div style={{ display: 'flex', justifyContent: 'space-between',
+                                                    alignItems: 'center'}}>
+                                                    <div>
+                                                        <Button
+                                                            variant='contained'
+                                                            onClick={()=>{
+                                                                handleGenerateScripts(true)}}
+                                                            disabled={progress}
+                                                            endIcon={<><Refresh/><AutoAwesome/></>}
+                                                            sx={{ ml: 'auto' }}
+                                                            title='Re-generate AI-powered mock scripts'
+                                                        >
+                                                            {!mockConfig.useAI && progress ? 'AI is Thinking...': 
+                                                                'Re-Generate'}
+                                                        </Button>
+                                                        <Button
+                                                            variant='text'
+                                                            sx={{ ml: 2 }}
+                                                            disabled={progress}
+                                                            onClick={() => setShowInstructions(!showInstructions)}
+                                                            title='Provide custom instructions for AI'
+                                                        >
+                                                            {showInstructions ? 'Let AI Decide' : 
+                                                                'Tell AI What to Do'}
+                                                        </Button>
+                                                    </div>
                                                     <Tooltip title='Fallback to default mock scripts if AI-generated 
                                                         scripts are not suitable'>
                                                         <Button
@@ -377,13 +378,13 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                                                 handleGenerateScripts(false);
                                                             }}
                                                             disabled={progress}
-                                                            sx={{ ml: 18 }}
+                                                            sx={{ mr: 4 }}
                                                         >
-                                                            {progress ? 'Reverting...' : 
+                                                            {progress ? 'Generating...' : 
                                                                 'Fallback to Default Mock Scripts'}
                                                         </Button>
                                                     </Tooltip>
-                                                </>)}
+                                                </div>)}
                                         </div>
                                     </div>
                                     <img
