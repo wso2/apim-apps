@@ -29,7 +29,7 @@ import GroupOfOperations from 'AppComponents/Apis/Details/Resources/components/G
 import CONSTS from 'AppData/Constants';
 import { Progress, Alert } from 'AppComponents/Shared';
 import { AutoAwesome, Settings } from '@mui/icons-material';
-import AIMockConfiguration from './AIMockConfiguration';
+import MockConfiguration from 'AppComponents/Apis/Details/Endpoints/Prototype/MockConfiguration';
 
 
 /**
@@ -48,24 +48,85 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
     const [openConfig, setOpenConfig] = useState(false);
     const xMediationScriptProperty = 'x-mediation-script';
     const xWso2MockDBProperty = 'x-wso2-mockDB';
-    const [aiConfig, setAIConfig] = useState({
+    const [mockConfig, setMockConfig] = useState({
         useAI: false,
         config: {
             instructions: '',
             simulationDetails: {
                 api: {latency: 0, error: 'none'}
             },
-            modifyDetails: {
-                modifyPath: undefined,
-            }
+            modifyDetails: {}
         },
     });
     const [, forceUpdate] = useReducer(x => x + 1, 0)
+
+    const splitSimulationPart = (content) => {
+        const simulationMarker = '// Simulation Of Errors and Latency';
+        const index = content.indexOf(simulationMarker);
+        if (index === -1) {
+            return { content, simulationPart: '' };
+        }
+        const simulationPart = content.substring(index + simulationMarker.length).trim() || null;
+        return { content: content.substring(0, index).trim(), simulationPart };
+    };
+
+    const setSimulationConfig = (simulationPart, path, verb) => {
+        const method = verb.toLowerCase();
+        if (simulationPart !== null) {
+            const apiSimMatch = simulationPart.match(/const apiSim = (true|false)/);
+            const latencyMatch = simulationPart.match(/sleepFor\((\d+)\);/);
+            if (latencyMatch) {
+                const latency = parseInt(latencyMatch[1], 10);
+                if (apiSimMatch && apiSimMatch[1] === 'true') { // API-level config
+                    setMockConfig((prev) => ({
+                        ...prev,
+                        config: {
+                            ...prev.config,
+                            simulationDetails: {
+                                ...prev.config.simulationDetails,
+                                api: {
+                                    latency,
+                                    error: 'none',
+                                },
+                            },
+                        },
+                    }));
+                } else { // Method-level config
+                    setMockConfig((prev) => ({
+                        ...prev,
+                        config: {
+                            ...prev.config,
+                            simulationDetails: {
+                                ...prev.config.simulationDetails,
+                                [path]: {
+                                    ...(prev.config.simulationDetails?.[path] || {}),
+                                    [method]: {
+                                        latency,
+                                        error: 'none',
+                                    },
+                                },
+                            },
+                        },
+                    }));
+                }
+            }
+        }
+    };
 
     useEffect(() => {
         const fetchMockScripts = async () => {
             try {
                 const response = await api.getGeneratedMockScriptsOfAPI(api.id);
+                response.obj.list = response.obj.list.map((methodObj) => {
+                    const {content, simulationPart} = 
+                        splitSimulationPart(methodObj.content, methodObj.path, methodObj.verb);
+                    setSimulationConfig(simulationPart, methodObj.path, methodObj.verb)
+                    return {
+                        ...methodObj,
+                        content,
+                        simulationPart
+                    };
+                });
                 setMockScripts(response.obj.list);
             } catch (e) {
                 console.error(e);
@@ -78,30 +139,60 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         };
         fetchMockScripts();
         if (swagger[xWso2MockDBProperty]) {
-            setAIConfig((prev) => ({ ...prev, useAI: true }));
+            setMockConfig((prev) => ({ ...prev, useAI: true }));
         }
     }, []);
+
+    const generateMockScripts = async (useAI, payload) => {
+        const response = await api.generateMockScripts(api.id, useAI, payload);
+        const tmpScripts = [];
+        const tmpPaths = paths;
+        Object.entries(response.obj.paths).forEach(([path, methods]) => {
+            Object.entries(methods).forEach(([method, data]) => {
+                if (method === 'parameters') {
+                    return; // Skip this loop iteration
+                }
+                const {content, simulationPart} = 
+                    splitSimulationPart(data[xMediationScriptProperty],path, method);
+                setSimulationConfig(simulationPart,path,method)
+                tmpScripts.push({
+                    path,
+                    verb: method.toUpperCase(),
+                    content,
+                    simulationPart
+                });
+                tmpPaths[path][method][xMediationScriptProperty] = data[xMediationScriptProperty];
+            });
+        });
+        setMockScripts(tmpScripts);
+        updatePaths(tmpPaths);
+        return response;
+    }
+
+    const handleModifyMethod = async (path,method,instructions) => {
+        if (instructions === ''){
+            Alert.warning('No Instructions to modify');
+            return;
+        }
+        const script = paths[path][method][xMediationScriptProperty];
+        const {content} = splitSimulationPart(script)
+        const payload = {
+            instructions,
+            content,
+            modifyPath: {path,method}
+        }
+        console.log(payload);
+    }
 
     const handleGenerateScripts = async () => {
         setProgress(true);
         try {
-            const response = await api.generateMockScripts(api.id, aiConfig.useAI, aiConfig.config);
-            const tmpScripts = [];
-            const tmpPaths = paths;
-            Object.entries(response.obj.paths).forEach(([path, methods]) => {
-                Object.entries(methods).forEach(([method, data]) => {
-                    tmpScripts.push({
-                        path,
-                        verb: method.toUpperCase(),
-                        content: data[xMediationScriptProperty],
-                    });
-                    tmpPaths[path][method][xMediationScriptProperty] = data[xMediationScriptProperty];
-                });
-            });
-            setMockScripts(tmpScripts);
-            updatePaths(paths);
-            if (aiConfig.useAI) updateMockDB({ [xWso2MockDBProperty]: response.obj[xWso2MockDBProperty] });
-            forceUpdate()
+            const payload = {
+                instructions: mockConfig.config.instructions
+            }
+            const response = await generateMockScripts(mockConfig.useAI, payload)
+            if (mockConfig.useAI) updateMockDB({ [xWso2MockDBProperty]: response.obj[xWso2MockDBProperty] });
+            forceUpdate();
             Alert.info('Successfully generated mock scripts!');
         } catch (e) {
             console.error(e);
@@ -111,14 +202,9 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         }
     };
 
-    const handleConfigClick = (endpointConfig = null) => {
-        if (endpointConfig?.path && endpointConfig?.method) {
-            const {path} = endpointConfig;
-            const {method} = endpointConfig;
-            setCurrentConfig({path,method})
-        } else {
-            setCurrentConfig({path:undefined,method:undefined})
-        }
+    const handleConfigClick = (endpointConfig = {}) => {
+        const {path,method} = endpointConfig;
+        setCurrentConfig({path,method})
         setOpenConfig(true);
     };
 
@@ -133,24 +219,24 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                         <Stack direction='row' spacing={2} alignItems='center'>
                             <ToggleButtonGroup
                                 color='primary'
-                                value={aiConfig.useAI ? 'ai' : 'static'}
+                                value={mockConfig.useAI ? 'ai' : 'static'}
                                 exclusive
                                 onChange={(e, value) =>
-                                    setAIConfig((prev) => ({ ...prev, useAI: value === 'ai' }))
+                                    setMockConfig((prev) => ({ ...prev, useAI: value === 'ai' }))
                                 }
                                 aria-label='Mock type selection'
                             >
                                 <ToggleButton value='static'>Static</ToggleButton>
                                 <ToggleButton value='ai'>AI</ToggleButton>
                             </ToggleButtonGroup>
-                            {aiConfig.useAI ? (
+                            {mockConfig.useAI ? (
                                 <>
                                     <TextField
                                         fullWidth
                                         label='Instructions'
-                                        value={aiConfig.config.instructions} 
+                                        value={mockConfig.config.instructions} 
                                         onChange={(e) =>
-                                            setAIConfig((prev) => ({ ...prev, config: 
+                                            setMockConfig((prev) => ({ ...prev, config: 
                                                 {...prev.config, instructions: e.target.value }}))
                                         } // Update instructions on change
                                         InputProps={{
@@ -169,9 +255,6 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                             ),
                                         }}
                                     />
-                                    <IconButton onClick={() => handleConfigClick()}>
-                                        <Settings />
-                                    </IconButton>
                                 </>
                             ) : (
                                 <Button
@@ -182,6 +265,9 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                     Generate
                                 </Button>
                             )}
+                            <IconButton onClick={() => handleConfigClick()}>
+                                <Settings />
+                            </IconButton>
                         </Stack>
                         {progress ? <Progress /> : (
                             <Grid container spacing={2} mt={2}>
@@ -193,56 +279,70 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                                     CONSTS.HTTP_METHODS.includes(method) && (
                                                         <Grid item key={`${path}/${method}`}>
                                                             <GenericOperation target={path} verb={method}>
-                                                                {aiConfig.useAI && (
-                                                                    <>
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            label='Modify With AI'
-                                                                            value={aiConfig?.config?.
-                                                                                modifyDetails?.
-                                                                                    [path]?.[method] || ''} 
-                                                                            onChange={(e) =>
-                                                                                setAIConfig((prev) => ({ ...prev, 
-                                                                                    config: {
-                                                                                        ...prev.config,
-                                                                                        modifyDetails: {
-                                                                                            ...prev.
-                                                                                                config.modifyDetails,
-                                                                                            [path]: {
-                                                                                                ...(prev.
-                                                                                                    config.
-                                                                                                    modifyDetails[path] 
-                                                                                                    || {}),
-                                                                                                [method]: 
-                                                                                                e.target.value,
+                                                                <div>
+                                                                    {mockConfig.useAI && (
+                                                                        <div>
+                                                                            <TextField
+                                                                                fullWidth
+                                                                                label='Modify With AI'
+                                                                                value={mockConfig?.config?.
+                                                                                    modifyDetails?.[path]?.[method]} 
+                                                                                onChange={(e) =>
+                                                                                    setMockConfig((prev) => ({ ...prev, 
+                                                                                        config: {
+                                                                                            ...prev.config,
+                                                                                            modifyDetails: {
+                                                                                                ...prev.config.
+                                                                                                    modifyDetails,
+                                                                                                [path]: {
+                                                                                                    ...prev.config.
+                                                                                                        modifyDetails
+                                                                                                        [path],
+                                                                                                    [method]: 
+                                                                                                    e.target.value,
+                                                                                                },
                                                                                             },
                                                                                         },
-                                                                                    },
-                                                                                }))
-                                                                            } // Update instructions on change
-                                                                            InputProps={{
-                                                                                endAdornment: ( 
-                                                                                    <InputAdornment position='end'
-                                                                                        sx={{ alignItems: 'center', 
-                                                                                            display: 'flex' }}>
-                                                                                        <Button
-                                                                                            variant='contained'
-                                                                                            onClick={
-                                                                                                handleGenerateScripts}
-                                                                                            disabled={progress}
-                                                                                            endIcon={<AutoAwesome />}
-                                                                                        >
-                                                                                            Modify
-                                                                                        </Button>
-                                                                                    </InputAdornment>
-                                                                                ),
-                                                                            }}
-                                                                        />
-                                                                        <IconButton onClick={() => handleConfigClick()}>
-                                                                            <Settings />
-                                                                        </IconButton>
-                                                                    </>
-                                                                )}
+                                                                                    }))
+                                                                                } // Update instructions on change
+                                                                                InputProps={{
+                                                                                    endAdornment: ( 
+                                                                                        <InputAdornment position='end'
+                                                                                            sx={{ alignItems: 'center',
+                                                                                                display: 'flex' }}>
+                                                                                            <Button
+                                                                                                variant='contained'
+                                                                                                onClick={()=>{
+                                                                                                    const ins = 
+                                                                                                    mockConfig.
+                                                                                                        config.
+                                                                                                        modifyDetails
+                                                                                                        ?.[path]
+                                                                                                        ?.[method]
+                                                                                                        || ''
+                                                                                                    handleModifyMethod(
+                                                                                                        path,
+                                                                                                        method,
+                                                                                                        ins
+                                                                                                    )}}
+                                                                                                disabled={progress}
+                                                                                                endIcon={
+                                                                                                    <AutoAwesome />
+                                                                                                }
+                                                                                            >
+                                                                                                Modify
+                                                                                            </Button>
+                                                                                        </InputAdornment>
+                                                                                    ),
+                                                                                }}
+                                                                            />
+                                                                        </div>
+                                                                    )}
+                                                                    <IconButton onClick={() => 
+                                                                        handleConfigClick({ path, method })}>
+                                                                        <Settings />
+                                                                    </IconButton>
+                                                                </div>
                                                                 <MockScriptOperation
                                                                     key={forceUpdate}
                                                                     resourcePath={path}
@@ -252,10 +352,6 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                                                     paths={paths}
                                                                     mockScripts={mockScripts}
                                                                 />
-                                                                <Button size='small'
-                                                                    onClick={() => handleConfigClick({ path, method })}>
-                                                                    Configure
-                                                                </Button>
                                                             </GenericOperation>
                                                         </Grid>
                                                     )
@@ -269,12 +365,16 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                     </Paper>
                 </Grid>
             </Grid>
-            <AIMockConfiguration
+            <MockConfiguration
                 open={openConfig}
                 onClose={() => setOpenConfig(false)}
                 currentConfig={currentConfig}
-                configuration={aiConfig}
-                setConfiguration={setAIConfig}
+                configuration={mockConfig}
+                setConfiguration={setMockConfig}
+                mockScripts={mockScripts}
+                setMockScripts={setMockScripts}
+                paths={paths}
+                updatePaths={updatePaths}
             />
         </>
     );
