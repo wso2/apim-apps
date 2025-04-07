@@ -33,6 +33,7 @@ import MockConfiguration from 'AppComponents/Apis/Details/Endpoints/Prototype/Mo
 import {
     app
 } from 'Settings';
+import { LoadingButton } from '@mui/lab';
 
 
 /**
@@ -63,6 +64,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
     });
     const [, forceUpdate] = useReducer(x => x + 1, 0)
     const [showInstructions, setShowInstructions] = useState(false);
+    const [aiLoadingStates, setAiLoadingStates] = useState({}); // Track AI loading state for individual endpoints
 
     const splitSimulationPart = (content) => {
         const simulationMarker = '// Simulation Of Errors and Latency';
@@ -196,7 +198,8 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
             Alert.error('No Instructions to modify');
             return;
         }
-        setProgress(true);
+        setAiLoadingStates((prev) => (
+            { ...prev, [`${path}_${method}`]: true })); // Set AI loading state for this endpoint
         const script = paths[path][method][xMediationScriptProperty];
         const {content, simulationPart} = splitSimulationPart(script)
         const payload = {
@@ -212,7 +215,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         } catch (e) {
             Alert.error('Error generating mock scripts!');
         } finally {
-            setProgress(false);
+            setAiLoadingStates((prev) => ({ ...prev, [`${path}_${method}`]: false })); // Reset AI loading state
         }
 
     }
@@ -448,7 +451,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                                                                     <InputAdornment position='end'
                                                                                         sx={{ alignItems: 'center',
                                                                                             display: 'flex' }}>
-                                                                                        <Button
+                                                                                        <LoadingButton
                                                                                             variant='contained'
                                                                                             onClick={()=>{
                                                                                                 handleModifyMethod(
@@ -461,28 +464,35 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                                                                                         ?.[method]
                                                                                                         || ''
                                                                                                 )}}
-                                                                                            disabled={progress}
-                                                                                            endIcon={
-                                                                                                <AutoAwesome />
-                                                                                            }
+                                                                                            loading={aiLoadingStates[
+                                                                                                `${path}_${method}`]}
+                                                                                            loadingPosition='end'
+                                                                                            disabled={aiLoadingStates[
+                                                                                                `${path}_${method}`]}
+                                                                                            endIcon={<AutoAwesome />}
                                                                                         >
-                                                                                            Modify
-                                                                                        </Button>
+                                                                                            {aiLoadingStates[
+                                                                                                `${path}_${method}`] 
+                                                                                                ? 'Modifying...' : 
+                                                                                                'Modify'}
+                                                                                        </LoadingButton>
                                                                                     </InputAdornment>
                                                                                 ),
                                                                             }}
                                                                         />
                                                                     </div>
                                                                 )}
-                                                                <MockScriptOperation
-                                                                    key={forceUpdate}
-                                                                    resourcePath={path}
-                                                                    resourceMethod={method}
-                                                                    operation={operation}
-                                                                    updatePaths={updatePaths}
-                                                                    paths={paths}
-                                                                    mockScripts={mockScripts}
-                                                                />
+                                                                {!aiLoadingStates[`${path}_${method}`] && (
+                                                                    <MockScriptOperation
+                                                                        key={forceUpdate}
+                                                                        resourcePath={path}
+                                                                        resourceMethod={method}
+                                                                        operation={operation}
+                                                                        updatePaths={updatePaths}
+                                                                        paths={paths}
+                                                                        mockScripts={mockScripts}
+                                                                    />
+                                                                )}
                                                             </GenericOperation>
                                                         </Grid>
                                                     )
