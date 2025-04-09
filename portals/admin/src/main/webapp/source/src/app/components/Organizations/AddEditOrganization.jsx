@@ -76,7 +76,6 @@ function AddEditOrganization(props) {
         description: '',
     });
     const [state, dispatch] = useReducer(reducer, initialState);
-    const [editMode, setIsEditMode] = useState(false);
     const {
         referenceId, displayName, description,
     } = state;
@@ -185,7 +184,7 @@ function AddEditOrganization(props) {
 
         const promiseAPICall = dataRow
             ? new API().updateOrganization(
-                dataRow.externalOrganizationId,
+                referenceId,
                 dataRow.organizationId,
                 displayName,
                 description,
@@ -227,7 +226,6 @@ function AddEditOrganization(props) {
                 displayName: originalName,
                 description: originalDescription,
             } = dataRow;
-            setIsEditMode(true);
             dispatch({
                 field: 'editDetails',
                 value: {
@@ -293,7 +291,6 @@ function AddEditOrganization(props) {
                         fullWidth
                         error={hasErrors('referenceId', referenceId)}
                         variant='outlined'
-                        disabled={editMode}
                     />
                     <Tooltip
                         title={(
