@@ -41,7 +41,6 @@ import Paper from '@mui/material/Paper';
 import Subscriptions from './Subscriptions';
 import InfoBar from './InfoBar';
 import Overview from './Overview';
-import WebHookDetails from './WebHookDetails';
 
 const PREFIX = 'index';
 
@@ -474,10 +473,6 @@ class Details extends Component {
                             <Route
                                 path='/applications/:applicationId/overview'
                                 component={Overview}
-                            />
-                            <Route
-                                path='/applications/:applicationId/webhooks/:apiId'
-                                component={WebHookDetails}
                             />
                             <Route
                                 path='/applications/:applicationId/productionkeys/oauth'

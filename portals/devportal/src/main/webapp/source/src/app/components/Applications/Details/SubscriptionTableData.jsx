@@ -41,7 +41,9 @@ import CONSTANTS from 'AppData/Constants';
 import Subscription from 'AppData/Subscription';
 import { mdiOpenInNew } from '@mdi/js';
 import { Icon as MDIcon } from '@mdi/react';
+import Popover from '@mui/material/Popover';
 import Invoice from './Invoice';
+import WebHookDetails from './WebHookDetails';
 
 /**
  *
@@ -64,6 +66,8 @@ class SubscriptionTableData extends React.Component {
             isDynamicUsagePolicy: false,
             tiers: [],
             selectedTier: '',
+            isWebhookAPI: false,
+            callbackLinkAnchor: null,
         };
         this.handleRequestClose = this.handleRequestClose.bind(this);
         this.handleRequestOpen = this.handleRequestOpen.bind(this);
@@ -75,12 +79,16 @@ class SubscriptionTableData extends React.Component {
         this.handleRequestCloseEditMenu = this.handleRequestCloseEditMenu.bind(this);
         this.handleRequestOpenEditMenu = this.handleRequestOpenEditMenu.bind(this);
         this.setSelectedTier = this.setSelectedTier.bind(this);
+        this.checkIfWebhookAPI = this.checkIfWebhookAPI.bind(this);
+        this.handleOpenCallbackURLs = this.handleOpenCallbackURLs.bind(this);
+        this.handleCloseCallbackURLs = this.handleCloseCallbackURLs.bind(this);
     }
 
     componentDidMount() {
         this.checkIfMonetizedAPI(this.props.subscription.apiId);
         this.checkIfDynamicUsagePolicy(this.props.subscription.subscriptionId);
         this.populateSubscriptionTiers(this.props.subscription.apiId);
+        this.checkIfWebhookAPI();
     }
 
     /**
@@ -218,6 +226,30 @@ class SubscriptionTableData extends React.Component {
     }
 
     /**
+     * Check if the API is a webhook API
+     */
+    checkIfWebhookAPI() {
+        this.setState({ isWebhookAPI: this.props.subscription.apiInfo.type === CONSTANTS.API_TYPES.WEBSUB });
+    }
+
+    /**
+     * Handle open click for view webhook URLs
+     * @param {*} event click event
+     * @memberof SubscriptionTableData
+     */
+    handleOpenCallbackURLs(event) {
+        this.setState({ callbackLinkAnchor: event.currentTarget });
+    }
+
+    /**
+     * Handle close for view webhook URLs
+     * @memberof SubscriptionTableData
+     */
+    handleCloseCallbackURLs() {
+        this.setState({ callbackLinkAnchor: null });
+    }
+
+    /**
     * @inheritdoc
     * @memberof SubscriptionTableData
     */
@@ -228,7 +260,7 @@ class SubscriptionTableData extends React.Component {
             },
         } = this.props;
         const {
-            openMenu, isMonetizedAPI, isDynamicUsagePolicy, openMenuEdit, selectedTier, tiers,
+            openMenu, isMonetizedAPI, isDynamicUsagePolicy, openMenuEdit, selectedTier, tiers, isWebhookAPI, callbackLinkAnchor,
         } = this.state;
         const isSubValidationDisabled = tiers && tiers.length === 1
             && tiers[0].value.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
@@ -242,11 +274,47 @@ class SubscriptionTableData extends React.Component {
                 <MDIcon path={mdiOpenInNew} size='12px' />
             </Link>
         );
+        const openWebhookURL = Boolean(callbackLinkAnchor);
+        const webhookURLPopoverId = openWebhookURL ? 'simple-popover' : undefined;
+        const callBackUrlLink = (
+            <a
+                aria-describedby={webhookURLPopoverId}
+                style={{
+                    fontSize: '0.6rem', color: '#072938', textDecoration: 'underline', paddingLeft: '10px',
+                }}
+                onClick={(event) => this.handleOpenCallbackURLs(event)}
+                onKeyDown={(event) => (event.key === 'Enter') && this.handleOpenCallbackURLs(event)}
+                role='button'
+                tabIndex={0}
+            >
+                View Callback URLs
+            </a>
+        );
         return (
             !isSubValidationDisabled && (
                 <TableRow hover>
                     <TableCell>
                         {link}
+                        {isWebhookAPI && (
+                            <>
+                                {callBackUrlLink}
+                                <Popover
+                                    id={webhookURLPopoverId}
+                                    open={openWebhookURL}
+                                    anchorEl={callbackLinkAnchor}
+                                    onClose={this.handleCloseCallbackURLs}
+                                    anchorOrigin={{
+                                        vertical: 'bottom',
+                                        horizontal: 'left',
+                                    }}
+                                >
+                                    <WebHookDetails
+                                        applicationId={this.props.subscription.applicationId}
+                                        apiId={this.props.subscription.apiId}
+                                    />
+                                </Popover>
+                            </>
+                        )}
                     </TableCell>
                     <TableCell>{apiInfo.lifeCycleStatus}</TableCell>
                     {throttlingPolicy.includes(CONSTANTS.DEFAULT_SUBSCRIPTIONLESS_PLAN) ? (
