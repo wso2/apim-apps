@@ -53,12 +53,13 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
     const [openConfig, setOpenConfig] = useState(false);
     const xMediationScriptProperty = 'x-mediation-script';
     const xWso2MockDBProperty = 'x-wso2-mockDB';
+    const simulationSplitString = '// Simulation Of Errors and Latency'
     const [mockConfig, setMockConfig] = useState({
         useAI: false,
         config: {
             instructions: '',
             simulationDetails: {
-                api: { latency: 0, error: 'none' }
+                api: { latency: 0, error: '0' }
             },
             modifyDetails: {}
         },
@@ -71,22 +72,23 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
     const hasAuthToken = settings && settings?.aiAuthTokenProvided
 
     const splitSimulationPart = (content) => {
-        const simulationMarker = '// Simulation Of Errors and Latency';
-        const index = content.indexOf(simulationMarker);
+        const index = content.indexOf(simulationSplitString);
         if (index === -1) {
             return { content, simulationPart: '' };
         }
-        const simulationPart = content.substring(index + simulationMarker.length).trim() || null;
+        const simulationPart = content.substring(index + simulationSplitString.length).trim() || null;
         return { content: content.substring(0, index).trim(), simulationPart };
     };
 
     const setSimulationConfig = (simulationPart, path, verb) => {
         const method = verb.toLowerCase();
         if (simulationPart !== null) {
-            const apiSimMatch = simulationPart.match(/const apiSim = (true|false)/);
+            const apiSimMatch = simulationPart.match(/var apiSim = (true|false)/);
             const latencyMatch = simulationPart.match(/sleepFor\((\d+)\);/);
-            if (latencyMatch) {
-                const latency = parseInt(latencyMatch[1], 10);
+            const errorMatch = simulationPart.match(/var errSim = '(\d+)';/);
+            if (latencyMatch || errorMatch) {
+                const latencySim = latencyMatch ? parseInt(latencyMatch[1], 10) : 0;
+                const errorSim = errorMatch ? errorMatch[1] : '0';
                 if (apiSimMatch && apiSimMatch[1] === 'true') { // API-level config
                     setMockConfig((prev) => ({
                         ...prev, config: {
@@ -94,8 +96,8 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                             simulationDetails: {
                                 ...prev.config.simulationDetails,
                                 api: {
-                                    latency,
-                                    error: 'none',
+                                    latency: latencySim,
+                                    error: errorSim,
                                 },
                             },
                         },
@@ -110,8 +112,8 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                 [path]: {
                                     ...(prev.config.simulationDetails?.[path] || {}),
                                     [method]: {
-                                        latency,
-                                        error: 'none',
+                                        latency: latencySim,
+                                        error: errorSim,
                                     },
                                 },
                             },
@@ -164,7 +166,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                 splitSimulationPart(paths[modify.path][modify.method][xMediationScriptProperty]);
             tmpPaths[modify.path][modify.method][xMediationScriptProperty] =
                 response.obj.paths[modify.path][modify.method][xMediationScriptProperty] +
-                '// Simulation Of Errors and Latency' + simulationPart;
+                simulationSplitString + simulationPart;
             mockScripts.forEach((methodObj) => {
                 if (methodObj.path === modify.path && methodObj.verb.toLowerCase() === modify.method) {
                     tmpScripts.push({
@@ -338,7 +340,9 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                     operation={operation}
                     updatePaths={updatePaths}
                     paths={paths}
-                    mockScripts={mockScripts} />
+                    mockScripts={mockScripts}
+                    simulationSplitString={simulationSplitString}
+                />
             )}
         </GenericOperation>;
     }
@@ -560,6 +564,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                 setMockScripts={setMockScripts}
                 paths={paths}
                 updatePaths={updatePaths}
+                simulationSplitString={simulationSplitString}
             />
         </>
     );

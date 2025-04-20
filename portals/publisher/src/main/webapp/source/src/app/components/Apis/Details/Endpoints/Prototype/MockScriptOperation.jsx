@@ -79,13 +79,13 @@ function getGeneratedMockScriptOfAPI(mockScripts, path, method) {
  * */
 function MockScriptOperation(props) {
     const {
-        resourcePath, resourceMethod, operation, updatePaths, paths, mockScripts
+        resourcePath, resourceMethod, operation, updatePaths, paths, mockScripts, simulationSplitString
     } = props;
     const { api } = useContext(APIContext);
     const [showReset, setShowReset] = useState(false);
 
     const scriptRef = useRef(
-        operation[xMediationScriptProperty]?.split('// Simulation Of Errors and Latency')[0].trim() 
+        operation[xMediationScriptProperty]?.split(simulationSplitString)[0].trim() 
             ?? defaultScript);
 
     const { originalScript = defaultScript, simulationPart = '' } = 
@@ -94,7 +94,7 @@ function MockScriptOperation(props) {
     const onScriptChange = useCallback(
         (value) => {
             // Modify the script before storing it in paths
-            const modifiedScript = value + `\n\n// Simulation Of Errors and Latency\n${simulationPart}`;
+            const modifiedScript = value + `\n\n${simulationSplitString}\n${simulationPart}`;
 
             // Update paths without causing a re-render
             const tmpPaths = { ...paths };
@@ -167,6 +167,7 @@ MockScriptOperation.propTypes = {
     updatePaths: PropTypes.func.isRequired,
     operation: PropTypes.shape({}).isRequired,
     mockScripts: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.shape({}), PropTypes.string])).isRequired,
+    simulationSplitString: PropTypes.string.isRequired,
 };
 
 export default React.memo(MockScriptOperation);

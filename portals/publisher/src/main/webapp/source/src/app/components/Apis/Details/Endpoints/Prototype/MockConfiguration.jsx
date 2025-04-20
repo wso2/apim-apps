@@ -31,7 +31,7 @@ import {
 import { Alert } from 'AppComponents/Shared';
 
 const MockConfiguration = ({ open, onClose, configuration, setConfiguration, 
-    currentConfig, mockScripts, setMockScripts, paths, updatePaths }) => {
+    currentConfig, mockScripts, setMockScripts, paths, updatePaths, simulationSplitString }) => {
     const [mockSimulation, setMockSimulation] = useState({});
     const [currentEndpoint, setCurrentEndpoint] = useState(null);
     const xMediationScriptProperty = 'x-mediation-script';
@@ -45,7 +45,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                 setMockSimulation(
                     configuration?.config?.simulationDetails?.[path]?.[method] || {
                         latency: 0,
-                        error: 'none',
+                        error: '0',
                     }
                 );
             } else {
@@ -53,7 +53,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                 setMockSimulation(
                     configuration.config?.simulationDetails?.api || {
                         latency: 0,
-                        error: 'none',
+                        error: '0',
                     }
                 );
             }
@@ -61,7 +61,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
     }, [currentConfig, configuration, open]);
 
     const errorOptions = [
-        { value: 'none', label: 'No Error' },
+        { value: '0', label: 'No Error' },
         { value: '404', label: '404 Not Found' },
         { value: '500', label: '500 Internal Server Error' },
         { value: '400', label: '400 Bad Request' },
@@ -93,7 +93,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
     
             // Get existing script without simulation part
             let finalScript = (tempPaths[path][method][xMediationScriptProperty] || "")
-                .split('// Simulation Of Errors and Latency')[0].trim();
+                .split(simulationSplitString)[0].trim();
     
             // Initialize simulation details if they don't exist
             if (!tempConfig.config.simulationDetails[path]) {
@@ -102,36 +102,53 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
     
             // Determine whether to apply the API-wide simulation or the endpoint-specific one
             const useApiSimulation = apiSim || 
-                (simulation.latency === 0 && simulation.error === 'none' &&
-                 mockSimulation.latency !== 0 && mockSimulation.error !== 'none');
+                (simulation.latency === 0 && simulation.error === '0' &&
+                 mockSimulation.latency !== 0 && mockSimulation.error !== '0');
     
             const appliedSimulation = useApiSimulation ? mockSimulation : simulation;
     
-            if (appliedSimulation.latency !== 0 || appliedSimulation.error !== 'none') {
+            if (appliedSimulation.latency !== 0 || appliedSimulation.error !== '0') {
                 // Update simulation details
                 tempConfig.config.simulationDetails[path][method] = appliedSimulation;
-    
-                const latencySimulationPart = '// Simulation Of Errors and Latency\n'+
-                `const apiSim = ${apiSim};\n` +
-                'function sleepFor(ms){\n' +
-                '   var start = new Date().getTime();\n' +
-                '   var end = start;\n' +
-                '   while(end < start + ms) {\n' +
-                '       end = new Date().getTime();\n' +
-                '   }\n'+
-                '}\n' +
-                `sleepFor(${parseInt(appliedSimulation.latency, 10) || 0});`;
+                let latencySimulationPart = '';
+                let errorSimulationPart = '';
+
+                if (appliedSimulation.latency !== 0) {
+                    latencySimulationPart = 
+                    `var apiSim = ${apiSim};\n` +
+                    'function sleepFor(ms){\n' +
+                    '   var start = new Date().getTime();\n' +
+                    '   var end = start;\n' +
+                    '   while(end < start + ms) {\n' +
+                    '       end = new Date().getTime();\n' +
+                    '   }\n'+
+                    '}\n' +
+                    `sleepFor(${parseInt(appliedSimulation.latency, 10)});\n` +
+                    '\n';
+                }
+
+                if (appliedSimulation.error !== '0') {
+                    errorSimulationPart = 
+                    `var errSim = '${appliedSimulation.error}';\n` +
+                    `var errorPayloadJson = { "error": "${errorOptions.find(
+                        option => option.value === appliedSimulation.error).label}" };\n` +
+                    "mc.setProperty('HTTP_SC', errSim);\n" +
+                    "mc.setPayloadJSON(errorPayloadJson);";
+                }
+
+                const simulationPart = simulationSplitString + 
+                '\n' + latencySimulationPart + '\n' + errorSimulationPart;
     
                 // Update mock scripts
                 tempMockScripts = tempMockScripts.map((methodObj) => {
                     if (methodObj.path === path && methodObj.verb.toLowerCase() === method) {
-                        return { ...methodObj, simulationPart: latencySimulationPart };
+                        return { ...methodObj, simulationPart };
                     }
                     return methodObj;
                 });
     
                 // Append the script for simulation
-                finalScript += `\n\n${latencySimulationPart}`;
+                finalScript += `\n\n${simulationPart}`;
             } else if (tempConfig.config.simulationDetails[path]) { // Remove simulation settings if no latency or error
                 delete tempConfig.config.simulationDetails[path][method];
                 // Clean up empty path objects
@@ -171,7 +188,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                 
                 if (hasEndpointSimulation && 
                     (configuration.config.simulationDetails[path][method].latency !== 0 || 
-                     configuration.config.simulationDetails[path][method].error !== 'none')) {
+                     configuration.config.simulationDetails[path][method].error !== '0')) {
                     // Keep endpoint-specific simulation
                     applySimForEndpoint(path, method, configuration.config.simulationDetails[path][method], false);
                 } else {
@@ -215,7 +232,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                     <InputLabel>Error Simulation</InputLabel>
                     <Select
                         name='error'
-                        value={mockSimulation?.error || 'none'}
+                        value={mockSimulation?.error || '0'}
                         onChange={handleChange}
                         label='Error Simulation'
                     >
