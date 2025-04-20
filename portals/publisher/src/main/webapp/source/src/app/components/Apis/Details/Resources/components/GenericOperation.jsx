@@ -24,10 +24,9 @@ import {
     Divider,
     Grid,
     Typography,
-    Accordion, 
-    AccordionSummary, 
+    Accordion,
+    AccordionSummary,
     AccordionDetails,
-    IconButton,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Utils from 'AppData/Utils';
@@ -89,7 +88,7 @@ function GenericOperation(props) {
     const [isExpanded, setIsExpanded] = useState(false);
     const theme = useTheme();
     const backgroundColor = theme.custom.resourceChipColors[verb];
-    
+
 
 
     /**
@@ -142,13 +141,12 @@ function GenericOperation(props) {
                             </Typography>
                         </Grid>
                     </Grid>
-                    <IconButton onClick={(e) => {
+                    <Button onClick={(e) => {
                         handleConfigClick();
                         e.stopPropagation();
-                    }
-                    }>
-                        <Settings />
-                    </IconButton>
+                    }} style={{ whiteSpace: 'nowrap' }} sx={{px:2}} color='inherit' endIcon={<Settings />}>
+                        Simulations
+                    </Button>
                 </AccordionSummary>
                 <Divider sx={{ backgroundColor }} />
                 <AccordionDetails>

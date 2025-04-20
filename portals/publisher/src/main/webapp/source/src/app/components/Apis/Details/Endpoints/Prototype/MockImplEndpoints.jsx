@@ -19,8 +19,7 @@ import React, { useContext, useEffect, useState, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import {
     Button, Grid, Paper, Tooltip,
-    Typography, Stack, TextField, InputAdornment,
-    IconButton
+    Typography, Stack, TextField, InputAdornment, Alert as MUIAlert
 } from '@mui/material';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import MockScriptOperation from 'AppComponents/Apis/Details/Endpoints/Prototype/MockScriptOperation';
@@ -28,12 +27,14 @@ import GenericOperation from 'AppComponents/Apis/Details/Resources/components/Ge
 import GroupOfOperations from 'AppComponents/Apis/Details/Resources/components/GroupOfOperations';
 import CONSTS from 'AppData/Constants';
 import { Progress, Alert } from 'AppComponents/Shared';
-import { AutoAwesome, Refresh, Settings } from '@mui/icons-material';
+import { AutoAwesome, Refresh, Settings, Launch } from '@mui/icons-material';
 import MockConfiguration from 'AppComponents/Apis/Details/Endpoints/Prototype/MockConfiguration';
 import {
     app
 } from 'Settings';
 import { LoadingButton } from '@mui/lab';
+import { FormattedMessage } from 'react-intl';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 
 /**
@@ -57,7 +58,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         config: {
             instructions: '',
             simulationDetails: {
-                api: {latency: 0, error: 'none'}
+                api: { latency: 0, error: 'none' }
             },
             modifyDetails: {}
         },
@@ -65,6 +66,9 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
     const [, forceUpdate] = useReducer(x => x + 1, 0)
     const [showInstructions, setShowInstructions] = useState(false);
     const [aiLoadingStates, setAiLoadingStates] = useState({}); // Track AI loading state for individual endpoints
+    const [hasNullInScripts, setHasNullInScripts] = useState(false);
+    const { data: settings } = usePublisherSettings();
+    const hasAuthToken = settings && settings?.aiAuthTokenProvided
 
     const splitSimulationPart = (content) => {
         const simulationMarker = '// Simulation Of Errors and Latency';
@@ -85,8 +89,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                 const latency = parseInt(latencyMatch[1], 10);
                 if (apiSimMatch && apiSimMatch[1] === 'true') { // API-level config
                     setMockConfig((prev) => ({
-                        ...prev,
-                        config: {
+                        ...prev, config: {
                             ...prev.config,
                             simulationDetails: {
                                 ...prev.config.simulationDetails,
@@ -124,7 +127,10 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
             try {
                 const response = await api.getGeneratedMockScriptsOfAPI(api.id);
                 response.obj.list = response.obj.list.map((methodObj) => {
-                    const {content, simulationPart} = 
+                    if (methodObj.content === '') {
+                        setHasNullInScripts(true);
+                    }
+                    const { content, simulationPart } =
                         splitSimulationPart(methodObj.content, methodObj.path, methodObj.verb);
                     setSimulationConfig(simulationPart, methodObj.path, methodObj.verb)
                     return {
@@ -153,12 +159,12 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         const response = await api.generateMockScripts(api.id, useAI, payload);
         const tmpScripts = [];
         const tmpPaths = paths;
-        if (modify){
-            const {simulationPart} =
-            splitSimulationPart(paths[modify.path][modify.method][xMediationScriptProperty]);
-            tmpPaths[modify.path][modify.method][xMediationScriptProperty] = 
-            response.obj.paths[modify.path][modify.method][xMediationScriptProperty] + 
-            '// Simulation Of Errors and Latency' + simulationPart;
+        if (modify) {
+            const { simulationPart } =
+                splitSimulationPart(paths[modify.path][modify.method][xMediationScriptProperty]);
+            tmpPaths[modify.path][modify.method][xMediationScriptProperty] =
+                response.obj.paths[modify.path][modify.method][xMediationScriptProperty] +
+                '// Simulation Of Errors and Latency' + simulationPart;
             mockScripts.forEach((methodObj) => {
                 if (methodObj.path === modify.path && methodObj.verb.toLowerCase() === modify.method) {
                     tmpScripts.push({
@@ -168,16 +174,16 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                 } else {
                     tmpScripts.push(methodObj);
                 }
-            });            
-        }else {
+            });
+        } else {
             Object.entries(response.obj.paths).forEach(([path, methods]) => {
                 Object.entries(methods).forEach(([method, data]) => {
                     if (method === 'parameters') {
                         return; // Skip this loop iteration
                     }
-                    const {content, simulationPart} = 
-                    splitSimulationPart(data[xMediationScriptProperty],path, method);
-                    setSimulationConfig(simulationPart,path,method)
+                    const { content, simulationPart } =
+                        splitSimulationPart(data[xMediationScriptProperty], path, method);
+                    setSimulationConfig(simulationPart, path, method)
                     tmpScripts.push({
                         path,
                         verb: method.toUpperCase(),
@@ -193,19 +199,19 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         return response;
     }
 
-    const handleModifyMethod = async (path,method,instructions) => {
-        if (instructions === ''){
+    const handleModifyMethod = async (path, method, instructions) => {
+        if (instructions === '') {
             Alert.error('No Instructions to modify');
             return;
         }
         setAiLoadingStates((prev) => (
             { ...prev, [`${path}_${method}`]: true })); // Set AI loading state for this endpoint
         const script = paths[path][method][xMediationScriptProperty];
-        const {content, simulationPart} = splitSimulationPart(script)
+        const { content, simulationPart } = splitSimulationPart(script)
         const payload = {
             instructions,
             script: content,
-            modify: {path,method}
+            modify: { path, method, defaultScript: !mockConfig.useAI }
         }
         try {
             await generateMockScripts(true, payload, payload.modify);
@@ -224,18 +230,19 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
         setProgress(true);
         try {
             const payload = {
-                instructions: showInstructions ?  mockConfig.config.instructions : undefined
+                instructions: showInstructions ? mockConfig.config.instructions : undefined
             }
             const response = await generateMockScripts(useAI, payload)
             if (useAI) updateMockDB({ [xWso2MockDBProperty]: response.obj[xWso2MockDBProperty] });
             else updateMockDB({ [xWso2MockDBProperty]: undefined });
             forceUpdate();
             Alert.info('Successfully generated mock scripts!');
-            setMockConfig({...mockConfig,useAI})
+            setMockConfig({ ...mockConfig, useAI })
             setShowInstructions(false);
+            setHasNullInScripts(false);
         } catch (e) {
             console.error(e);
-            if (useAI){
+            if (useAI) {
                 Alert.error('Error generating mock scripts with AI!. Please try again.')
                 setMockConfig({
                     ...mockConfig, useAI: false
@@ -250,10 +257,91 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
     };
 
     const handleConfigClick = (endpointConfig = {}) => {
-        const {path,method} = endpointConfig;
-        setCurrentConfig({path,method})
+        const { path, method } = endpointConfig;
+        setCurrentConfig({ path, method })
         setOpenConfig(true);
     };
+
+    const authTokenNotProvidedWarning = (
+        <FormattedMessage
+            id='Apis.Details.Endpoints.Prototype.MockedOAS.warning.authTokenMissing'
+            defaultMessage={'You must provide a token to start using the AI Assisted API Mock Server. To obtain one, '
+                + 'follow the steps provided under {apiAiChatDocLink} '}
+            values={{
+                apiAiChatDocLink: (
+                    <a
+                        id='api-chat-doc-link'
+                        href='https://apim.docs.wso2.com/en/4.5.0/design/create-api/create-api-with-ai/'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                    >
+                        Create APIs with AI
+                        <Launch
+                            style={{ marginLeft: '2px' }}
+                            fontSize='small'
+                        />
+                    </a>
+                ),
+            }}
+        />
+    );
+
+    function GenericOperationPerResource(path, method, operation) {
+        return <GenericOperation target={path} verb={method}
+            handleConfigClick={() => handleConfigClick({ path, method })}>
+            {mockConfig.useAI && hasAuthToken && (
+                <div>
+                    <TextField
+                        fullWidth
+                        sx={{ maxWidth: 'calc(100% - 250px)', my: 2 }}
+                        label='Modify With AI'
+                        placeholder='e.g. Respond with Capitalized letters'
+                        value={mockConfig?.config?.modifyDetails?.[path]?.[method]}
+                        onChange={(e) => setMockConfig((prev) => ({
+                            ...prev, config: {
+                                ...prev.config, modifyDetails: {
+                                    ...prev.config.modifyDetails,
+                                    [path]: {
+                                        ...prev.config.modifyDetails[path],
+                                        [method]: e.target.value,
+                                    },
+                                },
+                            },
+                        }))} // Update instructions on change
+                        InputProps={{
+                            endAdornment: (
+                                <InputAdornment position='end' sx={{ alignItems: 'center', display: 'flex' }}>
+                                    <LoadingButton
+                                        variant='contained'
+                                        onClick={() => {
+                                            handleModifyMethod(path, method,
+                                                mockConfig.config.modifyDetails?.[path]?.[method] || ''
+                                            );
+                                        }}
+                                        loading={aiLoadingStates[`${path}_${method}`]}
+                                        loadingPosition='end'
+                                        disabled={aiLoadingStates[`${path}_${method}`] || progress}
+                                        endIcon={<AutoAwesome />}
+                                    >
+                                        {aiLoadingStates[`${path}_${method}`] ? 'Modifying...' : 'Modify'}
+                                    </LoadingButton>
+                                </InputAdornment>
+                            ),
+                        }} />
+                </div>
+            )}
+            {!aiLoadingStates[`${path}_${method}`] && (
+                <MockScriptOperation
+                    key={forceUpdate}
+                    resourcePath={path}
+                    resourceMethod={method}
+                    operation={operation}
+                    updatePaths={updatePaths}
+                    paths={paths}
+                    mockScripts={mockScripts} />
+            )}
+        </GenericOperation>;
+    }
 
     return (
         <>
@@ -265,146 +353,182 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                 Mock Implementation Endpoints
                             </Typography>
                             <Tooltip title='Configure Simulations of Mock Endpoints'>
-                                <IconButton onClick={() => handleConfigClick()}>
-                                    <Settings />
-                                </IconButton>
+                                <Button disabled={progress} color='inherit'
+                                    onClick={() => handleConfigClick()} endIcon={<Settings />}>
+                                    Simulations for the API
+                                </Button>
                             </Tooltip>
                         </Stack>
-                        <Stack direction='row' mt={2} spacing={2} alignItems='center' justifyContent='center'>
-                            <Paper
-                                sx={{
-                                    p: 3,
-                                    width: '100%',
-                                    borderRadius: 2,
-                                    boxShadow: 1,
-                                }}
-                            >
-                                
-                                <Stack direction='row' spacing={2} 
-                                    alignItems='center' justifyContent='space-between'>
-                                    <div style={{ flex: 1 }}>
-                                        <Typography
-                                            variant='h6'
-                                            sx={{
-                                                fontWeight: 500,
-                                                mb: 1,
-                                            }}
-                                        >
-                                            {mockConfig.useAI
-                                                ? 'AI-Powered Mock Server is Ready!'
-                                                : 'Want a More Realistic Mock Server?'}
+                        {progress ? <Progress message='Generating Mocks' /> : (<>
+                            {hasNullInScripts && (
+                                <MUIAlert severity='warning' sx={{ my: 1 }}>
+                                    <Stack direction='row' alignItems='center' spacing={2}>
+                                        <Typography variant='body1'>
+                                            Some mock scripts are missing. Please Re-Generate.
                                         </Typography>
-                                        <Typography
-                                            variant='body1'
-                                            color='textSecondary'
+                                        <Button
+                                            variant='contained'
+                                            onClick={() => handleGenerateScripts(mockConfig.useAI)}
+                                            disabled={progress || (mockConfig.useAI && !hasAuthToken)}
+                                            endIcon={<Refresh />}
                                         >
-                                            {mockConfig.useAI
-                                                ? 'Your AI-powered Mock Server is ready to generate '+
-                                                'realistic responses and simulate API behavior.'
-                                                : 'Try our AI-powered Mock Server generation for '+
-                                                'realistic responses and simulating API behavior effortlessly.'}
-                                        </Typography>
-                                        {showInstructions && (
-                                            <div style={{ marginTop: '16px', transition: 'all 0.3s ease-in-out' }}>
-                                                <TextField
-                                                    fullWidth
-                                                    sx={{maxWidth: 'calc(100% - 100px)'}}
-                                                    label='Instructions'
-                                                    placeholder='e.g. Pre-populate the mock DB with 4 records'
-                                                    value={mockConfig?.config?.instructions} 
-                                                    onChange={(e) =>
-                                                        setMockConfig((prev) => ({ ...prev, 
-                                                            config: {
-                                                                ...prev.config,
-                                                                instructions: e.target.value,
-                                                            },
-                                                        }))
-                                                    }
-                                                />
-                                            </div>
-                                        )}
-                                        <div style={{ marginTop: '16px' }}>
-                                            {!mockConfig.useAI ? (<>
-                                                <Button
-                                                    variant='contained'
-                                                    onClick={()=>{
-                                                        handleGenerateScripts(true)}}
-                                                    disabled={progress}
-                                                    endIcon={<AutoAwesome />}
-                                                    title='Generate AI-powered mock scripts'
-                                                >
-                                                    {progress ? 'AI is Thinking...': 'Try It'}
-                                                </Button>
-                                                <Button
-                                                    variant='text'
-                                                    disabled={progress}
-                                                    sx={{ ml: 2 }}
-                                                    onClick={() => setShowInstructions(!showInstructions)}
-                                                    title='Provide custom instructions for AI'
-                                                >
-                                                    {showInstructions ? 'Let AI Decide' : 
-                                                        'Tell AI What to Do'}
-                                                </Button></>
-                                            ) : (
-                                                <div style={{ display: 'flex', justifyContent: 'space-between',
-                                                    alignItems: 'center'}}>
+                                            Re-Generate
+                                        </Button>
+                                    </Stack>
+                                </MUIAlert>
+                            )}
+                            <Stack direction='row' mt={2} spacing={2} alignItems='center' justifyContent='center'>
+                                <Paper
+                                    sx={{
+                                        p: 3,
+                                        width: '100%',
+                                        borderRadius: 2,
+                                        boxShadow: 1,
+                                    }}
+                                >
+
+                                    <Stack direction='row' spacing={2}
+                                        alignItems='center' justifyContent='space-between'>
+                                        <div style={{ flex: 1 }}>
+                                            <Typography
+                                                variant='h6'
+                                                sx={{
+                                                    fontWeight: 500,
+                                                    mb: 1,
+                                                }}
+                                            >
+                                                {mockConfig.useAI
+                                                    ? 'AI-Powered Mock Server is Ready!'
+                                                    : 'Want a More Realistic Mock Server?'}
+                                            </Typography>
+                                            <Typography
+                                                variant='body1'
+                                                color='textSecondary'
+                                            >
+                                                {mockConfig.useAI
+                                                    ? 'Your AI-powered Mock Server is ready to generate ' +
+                                                    'realistic responses and simulate API behavior.'
+                                                    : 'Try our AI-powered Mock Server generation for ' +
+                                                    'realistic responses and simulating API behavior effortlessly.'}
+                                            </Typography>
+                                            {!hasAuthToken && (
+                                                <MUIAlert severity='warning' sx={{ my: 1 }}>
+                                                    <Typography variant='body1'>
+                                                        {authTokenNotProvidedWarning}
+                                                    </Typography>
+                                                </MUIAlert>
+                                            )}
+                                            <div style={{ marginTop: '16px' }}>
+                                                <div style={{
+                                                    display: 'flex', justifyContent: 'space-between',
+                                                    alignItems: 'center'
+                                                }}>
                                                     <div>
                                                         <Button
                                                             variant='contained'
-                                                            onClick={()=>{
-                                                                handleGenerateScripts(true)}}
-                                                            disabled={progress}
-                                                            endIcon={<><Refresh/><AutoAwesome/></>}
+                                                            onClick={() => {
+                                                                handleGenerateScripts(true)
+                                                            }}
+                                                            disabled={progress || showInstructions || !hasAuthToken}
+                                                            endIcon={mockConfig.useAI ? <Refresh /> : <AutoAwesome />}
                                                             sx={{ ml: 'auto' }}
-                                                            title='Re-generate AI-powered mock scripts'
+                                                            title={mockConfig.useAI
+                                                                ? 'Re-generate AI-powered mock scripts'
+                                                                : 'Generate AI-powered mock scripts'}
                                                         >
-                                                            {!mockConfig.useAI && progress ? 'AI is Thinking...': 
-                                                                'Re-Generate'}
+                                                            {mockConfig.useAI ? 'Re-Generate' :
+                                                                'Try It'}
                                                         </Button>
                                                         <Button
                                                             variant='text'
                                                             sx={{ ml: 2 }}
-                                                            disabled={progress}
+                                                            disabled={progress || !hasAuthToken}
                                                             onClick={() => setShowInstructions(!showInstructions)}
-                                                            title='Provide custom instructions for AI'
+                                                            title='Provide custom instructions 
+                                                            when Generating Mock Scripts'
                                                         >
-                                                            {showInstructions ? 'Let AI Decide' : 
-                                                                'Tell AI What to Do'}
+                                                            {showInstructions ? 'Remove custom Instructions' :
+                                                                'Add custom Instructions'}
                                                         </Button>
                                                     </div>
-                                                    <Tooltip title='Fallback to default mock scripts if AI-generated 
+                                                    {mockConfig.useAI &&
+                                                        <Tooltip title='Fallback to default mock scripts 
+                                                        if AI-generated 
                                                         scripts are not suitable'>
-                                                        <Button
-                                                            variant='outlined'
-                                                            color='inherit'
-                                                            onClick={() => {
-                                                                handleGenerateScripts(false);
-                                                            }}
-                                                            disabled={progress}
-                                                            sx={{ mr: 4 }}
-                                                        >
-                                                            {progress ? 'Generating...' : 
-                                                                'Fallback to Default Mock Scripts'}
-                                                        </Button>
-                                                    </Tooltip>
-                                                </div>)}
+                                                            <Button
+                                                                variant='outlined'
+                                                                color='inherit'
+                                                                onClick={() => {
+                                                                    handleGenerateScripts(false);
+                                                                }}
+                                                                disabled={progress}
+                                                            // sx={{ mr: '50px' }}
+                                                            >
+                                                                Fallback to Default Mock Scripts
+                                                            </Button>
+                                                        </Tooltip>
+                                                    }
+                                                </div>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <img
-                                        alt='API Mock Assistant'
-                                        src={`${
-                                            app.context
-                                        }/site/public/images/ai/APIchatassistantImageWithColour.svg`}
-                                        style={{
-                                            width: '80px',
-                                            height: 'auto',
-                                            borderRadius: '4px',
-                                        }}
-                                    />
-                                </Stack>
-                            </Paper>
-                        </Stack>
-                        {progress ? <Progress /> : (
+                                        <img
+                                            alt='API Mock Assistant'
+                                            src={`${app.context
+                                            }/site/public/images/ai/APIchatassistantImageWithColour.svg`}
+                                            style={{
+                                                width: '80px',
+                                                height: 'auto',
+                                                borderRadius: '4px',
+                                            }}
+                                        />
+                                    </Stack>
+                                    {showInstructions && hasAuthToken && (
+                                        <div style={{ marginTop: '16px', transition: 'all 0.3s ease-in-out' }}>
+                                            <TextField
+                                                fullWidth
+                                                label='Instructions'
+                                                placeholder='e.g. Pre-populate the mock DB with 4 records'
+                                                value={mockConfig?.config?.instructions}
+                                                InputProps={{
+                                                    endAdornment: (
+                                                        <InputAdornment position='end'
+                                                            sx={{
+                                                                alignItems: 'center',
+                                                                display: 'flex'
+                                                            }}>
+                                                            <Button
+                                                                variant='contained'
+                                                                onClick={() => {
+                                                                    handleGenerateScripts(true)
+                                                                }}
+                                                                disabled={progress}
+                                                                endIcon={mockConfig.useAI ? <Refresh />
+                                                                    : <AutoAwesome />}
+                                                                sx={{ ml: 'auto' }}
+                                                                title={`${mockConfig.useAI ? 'Re-generate' : 'Generate'}
+                                                                    AI-powered mock scripts With Custom Instructions`}
+                                                            >
+                                                                {mockConfig.useAI ? 'Re-Generate'
+                                                                    : 'Generate'}
+                                                            </Button>
+                                                        </InputAdornment>
+                                                    ),
+                                                }}
+                                                onChange={(e) =>
+                                                    setMockConfig((prev) => ({
+                                                        ...prev,
+                                                        config: {
+                                                            ...prev.config,
+                                                            instructions: e.target.value,
+                                                        },
+                                                    }))
+                                                }
+                                            />
+                                        </div>
+                                    )}
+                                </Paper>
+                            </Stack>
+
                             <Grid container spacing={2} mt={2}>
                                 {Object.entries(paths).map(([path, methods]) => (
                                     <Grid item xs={12} key={path}>
@@ -413,87 +537,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                                 {Object.entries(methods).map(([method, operation]) => (
                                                     CONSTS.HTTP_METHODS.includes(method) && (
                                                         <Grid item key={`${path}/${method}`}>
-                                                            <GenericOperation target={path} verb={method} 
-                                                                handleConfigClick={() => handleConfigClick(
-                                                                    {path, method})}>
-                                                                {mockConfig.useAI && (
-                                                                    <div>
-                                                                        <TextField
-                                                                            fullWidth
-                                                                            sx={{maxWidth: 'calc(100% - 250px)',
-                                                                                my: 2
-                                                                            }}
-                                                                            label='Modify With AI'
-                                                                            placeholder=
-                                                                                'e.g. Respond with Capitalized letters'
-                                                                            value={mockConfig?.config?.
-                                                                                modifyDetails?.[path]?.[method]} 
-                                                                            onChange={(e) =>
-                                                                                setMockConfig((prev) => ({ ...prev, 
-                                                                                    config: {
-                                                                                        ...prev.config,
-                                                                                        modifyDetails: {
-                                                                                            ...prev.config.
-                                                                                                modifyDetails,
-                                                                                            [path]: {
-                                                                                                ...prev.config.
-                                                                                                    modifyDetails
-                                                                                                    [path],
-                                                                                                [method]: 
-                                                                                                    e.target.value,
-                                                                                            },
-                                                                                        },
-                                                                                    },
-                                                                                }))
-                                                                            } // Update instructions on change
-                                                                            InputProps={{
-                                                                                endAdornment: ( 
-                                                                                    <InputAdornment position='end'
-                                                                                        sx={{ alignItems: 'center',
-                                                                                            display: 'flex' }}>
-                                                                                        <LoadingButton
-                                                                                            variant='contained'
-                                                                                            onClick={()=>{
-                                                                                                handleModifyMethod(
-                                                                                                    path,
-                                                                                                    method,
-                                                                                                    mockConfig.
-                                                                                                        config.
-                                                                                                        modifyDetails
-                                                                                                        ?.[path]
-                                                                                                        ?.[method]
-                                                                                                        || ''
-                                                                                                )}}
-                                                                                            loading={aiLoadingStates[
-                                                                                                `${path}_${method}`]}
-                                                                                            loadingPosition='end'
-                                                                                            disabled={aiLoadingStates[
-                                                                                                `${path}_${method}`]}
-                                                                                            endIcon={<AutoAwesome />}
-                                                                                        >
-                                                                                            {aiLoadingStates[
-                                                                                                `${path}_${method}`] 
-                                                                                                ? 'Modifying...' : 
-                                                                                                'Modify'}
-                                                                                        </LoadingButton>
-                                                                                    </InputAdornment>
-                                                                                ),
-                                                                            }}
-                                                                        />
-                                                                    </div>
-                                                                )}
-                                                                {!aiLoadingStates[`${path}_${method}`] && (
-                                                                    <MockScriptOperation
-                                                                        key={forceUpdate}
-                                                                        resourcePath={path}
-                                                                        resourceMethod={method}
-                                                                        operation={operation}
-                                                                        updatePaths={updatePaths}
-                                                                        paths={paths}
-                                                                        mockScripts={mockScripts}
-                                                                    />
-                                                                )}
-                                                            </GenericOperation>
+                                                            {GenericOperationPerResource(path, method, operation)}
                                                         </Grid>
                                                     )
                                                 ))}
@@ -502,7 +546,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB }) {
                                     </Grid>
                                 ))}
                             </Grid>
-                        )}
+                        </>)}
                     </Paper>
                 </Grid>
             </Grid>

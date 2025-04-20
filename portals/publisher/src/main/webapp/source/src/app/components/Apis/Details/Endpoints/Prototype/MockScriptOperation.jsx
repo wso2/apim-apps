@@ -85,7 +85,7 @@ function MockScriptOperation(props) {
     const [showReset, setShowReset] = useState(false);
 
     const scriptRef = useRef(
-        operation[xMediationScriptProperty].split('// Simulation Of Errors and Latency')[0].trim() 
+        operation[xMediationScriptProperty]?.split('// Simulation Of Errors and Latency')[0].trim() 
             ?? defaultScript);
 
     const { originalScript = defaultScript, simulationPart = '' } = 
@@ -93,8 +93,6 @@ function MockScriptOperation(props) {
 
     const onScriptChange = useCallback(
         (value) => {
-            setShowReset(true);
-
             // Modify the script before storing it in paths
             const modifiedScript = value + `\n\n// Simulation Of Errors and Latency\n${simulationPart}`;
 
@@ -152,7 +150,9 @@ function MockScriptOperation(props) {
                             readOnly: isRestricted(['apim:api_create'], api),
                         }}
                         language='javascript'
-                        onChange={(content) => onScriptChange(content)}
+                        onChange={(content) => {
+                            setShowReset(true);
+                            onScriptChange(content)}}
                     />
                 </Suspense>
             </Grid>
