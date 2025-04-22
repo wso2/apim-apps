@@ -16,6 +16,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import PropTypes from 'prop-types';
 import {
     Dialog,
     DialogTitle,
@@ -41,7 +42,6 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
             if (currentConfig.path) {
                 const {path, method} = currentConfig
                 setCurrentEndpoint({ path, method });
-                console.log(configuration?.config)
                 setMockSimulation(
                     configuration?.config?.simulationDetails?.[path]?.[method] || {
                         latency: 0,
@@ -62,22 +62,20 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
 
     const errorOptions = [
         { value: '0', label: 'No Error' },
-        { value: '404', label: '404 Not Found' },
-        { value: '500', label: '500 Internal Server Error' },
-        { value: '400', label: '400 Bad Request' },
-        { value: '403', label: '403 Forbidden' }
+        { value: '400', label: '400-Bad Request' },
+        { value: '401', label: '401-Unauthorized' },
+        { value: '403', label: '403-Forbidden' },
+        { value: '404', label: '404-Not Found' },
+        { value: '500', label: '500-Internal Server Error' },
+        { value: '501', label: '501-Not Implemented' },
     ];
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
-        setMockSimulation((prev) => {
-            return {
-                ...prev,
-                [name]: value
-            }
-        }
-        )
+    const handleChange = ({ target: { name, value } }) => {
+        if (name === 'latency' && !/^\d*$/.test(value)) return;
+        setMockSimulation(prev => ({ ...prev, [name]: value }));
     };
+    
+    
 
     const handleSave = () => {
         const applySimForEndpoint = (path, method, simulation, apiSim = false) => {
@@ -131,7 +129,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                     errorSimulationPart = 
                     `var errSim = '${appliedSimulation.error}';\n` +
                     `var errorPayloadJson = { "error": "${errorOptions.find(
-                        option => option.value === appliedSimulation.error).label}" };\n` +
+                        option => option.value === appliedSimulation.error).label.split('-')[1]}" };\n` +
                     "mc.setProperty('HTTP_SC', errSim);\n" +
                     "mc.setPayloadJSON(errorPayloadJson);";
                 }
@@ -223,10 +221,10 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                     type='number'
                     InputProps={{
                         endAdornment: <span>ms</span>,
+                        inputProps: { min: 0 }
                     }}
                     value={mockSimulation?.latency || 0}
                     onChange={handleChange}
-                    helperText='Enter response delay in milliseconds'
                 />
                 <FormControl fullWidth margin='normal'>
                     <InputLabel>Error Simulation</InputLabel>
@@ -252,6 +250,22 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
             </DialogActions>
         </Dialog>
     );
+};
+
+MockConfiguration.propTypes = {
+    open: PropTypes.bool.isRequired, 
+    onClose: PropTypes.func.isRequired, 
+    configuration: PropTypes.shape({config: PropTypes.shape(
+        {simulationDetails: PropTypes.shape(
+            {api: PropTypes.shape({})}).isRequired})}).isRequired, 
+    setConfiguration: PropTypes.func.isRequired, 
+    currentConfig: PropTypes.shape({path: PropTypes.string.isRequired, 
+        method: PropTypes.string.isRequired}).isRequired, 
+    mockScripts: PropTypes.shape([]).isRequired, 
+    setMockScripts: PropTypes.func.isRequired, 
+    paths: PropTypes.shape({}).isRequired, 
+    updatePaths: PropTypes.func.isRequired,
+    simulationSplitString: PropTypes.string.isRequired
 };
 
 export default MockConfiguration;

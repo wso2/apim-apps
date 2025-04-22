@@ -216,9 +216,9 @@ function Endpoints(props) {
             case 'set_inline_or_mocked_oas': {
                 const { endpointImplementationType, endpointConfig } = value;
                 if (endpointImplementationType === 'INLINE') {
-                    api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
-                        setSwagger(res.obj);
-                    });
+                    // api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
+                    //     setSwagger(res.obj);
+                    // });
                 }
                 return { ...initState, endpointConfig, endpointImplementationType };
             }

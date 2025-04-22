@@ -18,7 +18,7 @@
 import React, { useContext, useEffect, useState, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import {
-    Button, Grid, Paper, Tooltip,
+    Button, Grid, Paper, Tooltip, Chip,
     Typography, Stack, TextField, InputAdornment, Alert as MUIAlert
 } from '@mui/material';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -52,7 +52,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
     const [currentConfig, setCurrentConfig] = useState({});
     const [openConfig, setOpenConfig] = useState(false);
     const xMediationScriptProperty = 'x-mediation-script';
-    const xWso2MockDBProperty = 'x-wso2-mockDB';
+    const xWso2MockDBProperty = 'x-wso2-mockdb';
     const simulationSplitString = '// Simulation Of Errors and Latency'
     const [mockConfig, setMockConfig] = useState({
         useAI: false,
@@ -77,7 +77,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
         if (index === -1) {
             return { content, simulationPart: '' };
         }
-        const simulationPart = content.substring(index + simulationSplitString.length).trim() || null;
+        const simulationPart = content.substring(index + simulationSplitString.length).trim() || '';
         return { content: content.substring(0, index).trim(), simulationPart };
     };
 
@@ -171,7 +171,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
         const tmpPaths = paths;
         if (modify) {
             const { simulationPart } =
-                splitSimulationPart(paths[modify.path][modify.method][xMediationScriptProperty]);
+                splitSimulationPart(paths[modify.path][modify.method][xMediationScriptProperty] || '');
             tmpPaths[modify.path][modify.method][xMediationScriptProperty] =
                 response.obj.paths[modify.path][modify.method][xMediationScriptProperty] +
                 simulationSplitString + simulationPart;
@@ -185,6 +185,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                     tmpScripts.push(methodObj);
                 }
             });
+
         } else {
             Object.entries(response.obj.paths).forEach(([path, methods]) => {
                 Object.entries(methods).forEach(([method, data]) => {
@@ -220,20 +221,23 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
         const script = paths[path][method][xMediationScriptProperty] || '';
         const { content, simulationPart } = splitSimulationPart(script)
         const payload = {
-            instructions : isThisScriptNull ? 'Generate mock scripts for the specified endpoint' : instructions,
+            instructions: isThisScriptNull ? 'Generate mock scripts for the specified endpoint' : instructions,
             script: content.length === 0 ? 'No Script' : content,
             modify: { path, method, defaultScript: !mockConfig.useAI }
         }
         try {
             await generateMockScripts(true, payload, payload.modify);
             setSimulationConfig(simulationPart, path, method);
+            if (nullScripts.includes(`${method} - ${path}`)) {
+                setNullScripts(prev => prev.filter(item => item !== `${method} - ${path}`));
+            }
             forceUpdate();
             Alert.info('Successfully Modified the mock script!');
         } catch (e) {
             Alert.error('Error generating mock scripts!');
         } finally {
             setAiLoadingStates(null); // Reset AI loading state
-            if (aiLoadingStates === null){
+            if (aiLoadingStates === null) {
                 setIsUpdating(false);
             }
         }
@@ -254,7 +258,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
             Alert.info('Successfully generated mock scripts!');
             setMockConfig({ ...mockConfig, useAI })
             setShowInstructions(false);
-            setNullScripts(false);
+            setNullScripts([]);
         } catch (e) {
             console.error(e);
             if (useAI) {
@@ -340,7 +344,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                                             variant='contained'
                                             onClick={() => {
                                                 handleModifyMethod(
-                                                    path, method, 
+                                                    path, method,
                                                     mockConfig.config.modifyDetails?.[path]?.[method] || '');
                                             }}
                                             loading={aiLoadingStates === currentKey}
@@ -352,7 +356,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                                             }
                                             endIcon={<AutoAwesome />}
                                         >
-                                            {aiLoadingStates === currentKey ? 
+                                            {aiLoadingStates === currentKey ?
                                                 'Modifying...' : `${isThisScriptNull ? 'Generate' : 'Modify'}`}
                                         </LoadingButton>
                                     </InputAdornment>
@@ -396,30 +400,24 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                         {progress ? <Progress message='Generating Mocks' /> : (<>
                             {nullScripts.length > 0 && (
                                 <MUIAlert severity='warning' sx={{ my: 1 }}>
-                                    <Stack direction='row' spacing={1}>
+                                    <Stack direction='row' alignItems='center' spacing={1} flexWrap='wrap'>
                                         <Typography variant='body1'>
                                             Mock scripts are missing for:
                                         </Typography>
-                                        {nullScripts.map((entry) => {
-                                            const key = entry;
-                                            return (
-                                                <Typography
-                                                    key={key}
-                                                    variant='body1'
-                                                    component='span'
-                                                    sx={{ mr: 1 }}
-                                                >
-                                                    <strong>
-                                                        {entry}
-                                                    </strong>
-                                                </Typography>
-                                            );
-                                        })}
+                                        {nullScripts.map((entry) => (
+                                            <Chip
+                                                key={entry}
+                                                label={entry}
+                                                size='small'
+                                                variant='outlined'
+                                            />
+                                        ))}
                                         <Typography variant='body1'>
-                                            Please Re-Generate.
+                                            Please Re-generate.
                                         </Typography>
                                     </Stack>
                                 </MUIAlert>
+
                             )}
                             <Stack direction='row' mt={2} spacing={2} alignItems='center' justifyContent='center'>
                                 <Paper
