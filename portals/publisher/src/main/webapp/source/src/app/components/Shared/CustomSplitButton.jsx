@@ -22,7 +22,7 @@ export default function CustomSplitButton(props) {
     const [open, setOpen] = React.useState(false);
     const {
         advertiseInfo, handleSave, handleSaveAndDeploy, isUpdating, api, id, isValidSequenceBackend,
-        isCustomBackendSelected
+        isCustomBackendSelected, disabled
     } = props;
     const intl = useIntl();
     const options = [
@@ -93,7 +93,7 @@ export default function CustomSplitButton(props) {
                         color='primary'
                         ref={anchorRef}
                         aria-label='split button'
-                        disabled={isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)}
+                        disabled={disabled || isUpdating || (!isValidSequenceBackend && isCustomBackendSelected)}
                         style={{ width: '200px' }}
                     >
                         <Button
@@ -155,12 +155,14 @@ export default function CustomSplitButton(props) {
 CustomSplitButton.defaultProps = {
     isCustomBackendSelected: false,
     isValidSequenceBackend: true,
+    disabled: false,
 };
 CustomSplitButton.propTypes = {
     api: PropTypes.shape({}).isRequired,
     handleSave: PropTypes.shape({}).isRequired,
     handleSaveAndDeploy: PropTypes.shape({}).isRequired,
     isUpdating: PropTypes.bool.isRequired,
+    disabled: PropTypes.bool,
     isValidSequenceBackend: PropTypes.bool,
     isCustomBackendSelected: PropTypes.bool,
 };

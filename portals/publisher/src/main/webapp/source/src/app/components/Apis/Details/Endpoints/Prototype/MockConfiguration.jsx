@@ -209,8 +209,8 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
         <Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
             <DialogTitle>
                 {currentEndpoint !== null
-                    ? `Simulation Configuration for ${currentEndpoint.method} - ${currentEndpoint.path}`
-                    : 'API Simulation Configuration'}
+                    ? `Configuration for ${currentEndpoint.method} - ${currentEndpoint.path} Simulation`
+                    : 'Configuration for API Simulation'}
             </DialogTitle>
             <DialogContent>
                 <TextField

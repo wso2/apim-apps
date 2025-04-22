@@ -31,7 +31,7 @@ import {
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Utils from 'AppData/Utils';
-import { Settings } from '@mui/icons-material';
+import { Tune } from '@mui/icons-material';
 
 const PREFIX = 'GenericOperation';
 
@@ -146,7 +146,7 @@ function GenericOperation(props) {
                         <Button onClick={(e) => {
                             handleConfigClick();
                             e.stopPropagation();
-                        }} style={{ whiteSpace: 'nowrap' }} sx={{ px: 2 }} color='inherit' endIcon={<Settings />}>
+                        }} style={{ whiteSpace: 'nowrap' }} sx={{ px: 2 }} color='inherit' endIcon={<Tune />}>
                             Simulations
                         </Button>
                     </Tooltip>
