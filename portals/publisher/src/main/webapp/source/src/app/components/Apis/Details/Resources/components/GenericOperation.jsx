@@ -27,6 +27,7 @@ import {
     Accordion,
     AccordionSummary,
     AccordionDetails,
+    Tooltip
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Utils from 'AppData/Utils';
@@ -141,12 +142,14 @@ function GenericOperation(props) {
                             </Typography>
                         </Grid>
                     </Grid>
-                    <Button onClick={(e) => {
-                        handleConfigClick();
-                        e.stopPropagation();
-                    }} style={{ whiteSpace: 'nowrap' }} sx={{px:2}} color='inherit' endIcon={<Settings />}>
-                        Simulations
-                    </Button>
+                    <Tooltip title={`Configure Simulations of ${verb} - ${target}`}>
+                        <Button onClick={(e) => {
+                            handleConfigClick();
+                            e.stopPropagation();
+                        }} style={{ whiteSpace: 'nowrap' }} sx={{ px: 2 }} color='inherit' endIcon={<Settings />}>
+                            Simulations
+                        </Button>
+                    </Tooltip>
                 </AccordionSummary>
                 <Divider sx={{ backgroundColor }} />
                 <AccordionDetails>

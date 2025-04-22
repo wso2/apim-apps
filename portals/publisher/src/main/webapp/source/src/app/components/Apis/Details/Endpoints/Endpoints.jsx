@@ -827,6 +827,7 @@ function Endpoints(props) {
                                             apiKeyParamConfig={apiKeyParamConfig}
                                             componentValidator={componentValidator}
                                             endpointSecurityTypes={endpointSecurityTypes}
+                                            setIsUpdating={(val) => setUpdating(val)}
                                         />
                                     </Grid>
                                 </Grid>

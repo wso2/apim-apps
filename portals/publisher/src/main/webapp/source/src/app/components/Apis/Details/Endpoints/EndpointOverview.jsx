@@ -193,6 +193,7 @@ function EndpointOverview(props) {
         apiKeyParamConfig,
         componentValidator,
         endpointSecurityTypes,
+        setIsUpdating
     } = props;
     const { endpointConfig } = api;
     const [endpointType, setEndpointType] = useState(endpointTypes[0]);
@@ -335,7 +336,7 @@ function EndpointOverview(props) {
         }).catch((error) => {
             if (error.response) {
                 Alert.error(error.response.body.description);
-            } else {
+            } else { 
                 Alert.error(
                     <FormattedMessage
                         id='Apis.Details.APIDefinition.Addservice.service.retrieve.error'
@@ -830,6 +831,7 @@ function EndpointOverview(props) {
                                 endpointType={endpointType.key} 
                                 endpointConfig={endpointConfig}
                                 endpointsDispatcher={endpointsDispatcher}
+                                setIsUpdating={setIsUpdating}
                             />, 
                             <Progress />)
                         : (
@@ -1490,6 +1492,7 @@ EndpointOverview.propTypes = {
     setIsValidSequenceBackend: PropTypes.func.isRequired,
     isCustomBackendSelected: PropTypes.bool,
     setIsCustomBackendSelected: PropTypes.func,
+    setIsUpdating: PropTypes.func
 };
 
 export default injectIntl((EndpointOverview));
