@@ -27,8 +27,10 @@ import GenericOperation from 'AppComponents/Apis/Details/Resources/components/Ge
 import GroupOfOperations from 'AppComponents/Apis/Details/Resources/components/GroupOfOperations';
 import CONSTS from 'AppData/Constants';
 import { Progress, Alert } from 'AppComponents/Shared';
-import { AutoAwesome, Refresh, Launch, Memory, 
-    SmartToy, Speed, DataObject, SyncAlt, Tune } from '@mui/icons-material';
+import {
+    AutoAwesome, Refresh, Launch, Memory,
+    SmartToy, Speed, DataObject, SyncAlt, Settings
+} from '@mui/icons-material';
 import MockConfiguration from 'AppComponents/Apis/Details/Endpoints/Prototype/MockConfiguration';
 import {
     app
@@ -289,7 +291,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
     const authTokenNotProvidedWarning = (
         <FormattedMessage
             id='Apis.Details.Endpoints.Prototype.MockedOAS.warning.authTokenMissing'
-            defaultMessage={'You must provide a token to start using the AI Assisted API Mock Server. To obtain one, '
+            defaultMessage={'You must provide a token to start using the AI-Assisted API Mock Server. To obtain one, '
                 + 'follow the steps provided under {apiAiChatDocLink} '}
             values={{
                 apiAiChatDocLink: (
@@ -317,7 +319,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
             <GenericOperation target={path} verb={method} handleConfigClick={() => handleConfigClick({ path, method })}>
                 {hasAuthToken && (
                     <div>
-                        <Stack direction='column' maxWidth='calc(100% - 250px)' 
+                        <Stack direction='column' maxWidth='calc(100% - 250px)'
                             spacing={2} alignItems='flex-start' sx={{ my: 2 }}>
                             <TextField
                                 fullWidth
@@ -327,7 +329,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                                 label={isThisScriptNull ? 'Generate With AI' : 'Modify With AI'}
                                 placeholder='e.g. Respond with Capitalized letters'
                                 value={mockConfig?.config?.modifyDetails?.[path]?.[method] || ''}
-                                disabled={isThisScriptNull || 
+                                disabled={isThisScriptNull ||
                                     (aiLoadingStates !== null && aiLoadingStates !== currentKey)}
                                 onChange={(e) =>
                                     setMockConfig((prev) => ({
@@ -368,7 +370,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                                         endIcon={<AutoAwesome />}
                                         sx={{ whiteSpace: 'nowrap' }}
                                     >
-                                        {aiLoadingStates === currentKey ? 
+                                        {aiLoadingStates === currentKey ?
                                             'Modifying...' : `${isThisScriptNull ? 'Generate' : 'Modify'}`}
                                     </LoadingButton>
                                 </span>
@@ -401,8 +403,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
         );
 
         return (
-            <Stack spacing={5} sx={{ maxWidth: 1000, mx: 'auto', px: 3, py: 6 }}>
-                {/* Header */}
+            <Stack spacing={2} sx={{ maxWidth: 1000, mx: 'auto', px: 3, py: 6 }}>
                 <Stack
                     direction='row'
                     alignItems='center'
@@ -410,7 +411,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                     spacing={4}
                     sx={{ textAlign: 'center' }}
                 >
-                    <Typography variant='h4' sx={{ fontWeight: 500 }}>
+                    <Typography variant='h4' sx={{ fontWeight: 600 }}>
                         How Would You Like Your Mock Server to Behave?
                     </Typography>
                     <img
@@ -420,9 +421,14 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                     />
                 </Stack>
 
-                {/* Options Grid */}
+                {!hasAuthToken && 
+                <MUIAlert severity='warning' sx={{my:0}}>
+                    <Typography variant='body1'>
+                        {authTokenNotProvidedWarning}
+                    </Typography>
+                </MUIAlert>}
+
                 <Stack direction={{ xs: 'column', md: 'row' }} spacing={4}>
-                    {/* AI Option */}
                     <Paper
                         elevation={6}
                         sx={{
@@ -441,26 +447,26 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                             <Stack direction='row' alignItems='center' spacing={1}>
                                 <SmartToy fontSize='large' color='primary' />
                                 <Typography variant='h6' sx={{ fontWeight: 600 }}>
-                                    AI-Powered Mock Server
+                                    AI-Assisted Mock Server
                                 </Typography>
                             </Stack>
 
                             <Typography variant='body1'>
-                                Smart, realistic mocks tailored from your API — 
+                                Smart, realistic mocks tailored from your API —
                                 great for demos, testing, and better feedback.
                             </Typography>
 
                             <Divider />
 
                             <Stack spacing={1} mt={1}>
-                                <FeatureItem icon={<AutoAwesome color='primary' />} 
-                                    text='Realistic, AI-generated responses' />
-                                <FeatureItem icon={<DataObject color='primary' />} 
+                                <FeatureItem icon={<AutoAwesome color='primary' />}
+                                    text='Realistic responses' />
+                                <FeatureItem icon={<DataObject color='primary' />}
                                     text='Pre-populated data for testing' />
-                                <FeatureItem icon={<SyncAlt color='primary' />} 
+                                <FeatureItem icon={<SyncAlt color='primary' />}
                                     text='Data persistence across endpoints' />
-                                <FeatureItem icon={<Tune color='primary' />} 
-                                    text='Supports latency & error simulation' />
+                                <FeatureItem icon={<Settings color='primary' />}
+                                    text='Latency & error simulation' />
                             </Stack>
                         </Stack>
 
@@ -469,13 +475,13 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                             size='large'
                             fullWidth
                             onClick={() => handleGenerateScripts(true)}
+                            disabled={!hasAuthToken || progress}
                             sx={{ mt: 3, fontWeight: 600 }}
                         >
                             Use AI Mock Server
                         </Button>
                     </Paper>
 
-                    {/* Static Option */}
                     <Paper
                         elevation={2}
                         sx={{
@@ -503,10 +509,10 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                             <Divider />
 
                             <Stack spacing={1} mt={1}>
-                                <FeatureItem icon={<Speed color='disabled' />} 
+                                <FeatureItem icon={<Speed color='disabled' />}
                                     text='Instant setup, minimal config' />
-                                <FeatureItem icon={<Tune color='disabled' />} 
-                                    text='Supports latency & error simulation' />
+                                <FeatureItem icon={<Settings color='disabled' />}
+                                    text='Latency & error simulation' />
                             </Stack>
                         </Stack>
 
@@ -541,7 +547,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                             </Typography>
                             <Tooltip title='Configure Simulations of Mock Endpoints'>
                                 <Button disabled={progress || isFirstTimeSelection} color='inherit'
-                                    onClick={() => handleConfigClick()} endIcon={<Tune />}>
+                                    onClick={() => handleConfigClick()} endIcon={<Settings />}>
                                     Simulations for the API
                                 </Button>
                             </Tooltip>
@@ -590,7 +596,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                                                     }}
                                                 >
                                                     {mockConfig.useAI
-                                                        ? 'AI-Powered Mock Server is Ready!'
+                                                        ? 'AI-Assisted Mock Server is Ready!'
                                                         : 'Want a More Realistic Mock Server?'}
                                                 </Typography>
                                                 <Typography
@@ -598,9 +604,9 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                                                     color='textSecondary'
                                                 >
                                                     {mockConfig.useAI
-                                                        ? 'Your AI-powered Mock Server is ready to generate ' +
+                                                        ? 'Your AI-Assisted Mock Server is ready to generate ' +
                                                         'realistic responses.'
-                                                        : 'Try our AI-powered Mock Server for ' +
+                                                        : 'Try our AI-Assisted Mock Server for ' +
                                                         'realistic responses.'}
                                                 </Typography>
                                                 {!hasAuthToken && (
@@ -617,8 +623,8 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                                                     }}>
                                                         <div>
                                                             <Tooltip title={mockConfig.useAI
-                                                                ? 'Re-generate AI-powered mock scripts'
-                                                                : 'Generate AI-powered mock scripts'}>
+                                                                ? 'Re-generate AI-Assisted mock scripts'
+                                                                : 'Generate AI-Assisted mock scripts'}>
                                                                 <Button
                                                                     variant='contained'
                                                                     onClick={() => {
@@ -669,8 +675,8 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                                             </div>
                                             <img
                                                 alt='API Mock Assistant'
-                                                src={`${app.context
-                                                }/site/public/images/ai/APIchatassistantImageWithColour.svg`}
+                                                src={app.context +
+                                                    '/site/public/images/ai/APIchatassistantImageWithColour.svg'}
                                                 style={{
                                                     width: '80px',
                                                     height: 'auto',
@@ -702,13 +708,13 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                                                     <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
                                                         <Tooltip
                                                             title={`${mockConfig.useAI ? 'Re-generate' : 'Generate'} 
-                                                                AI-powered mock scripts with Custom Instructions`}
+                                                                AI-Assisted mock scripts with Custom Instructions`}
                                                         >
                                                             <Button
                                                                 variant='contained'
                                                                 onClick={() => handleGenerateScripts(true)}
                                                                 disabled={progress}
-                                                                endIcon={mockConfig.useAI ? <Refresh /> 
+                                                                endIcon={mockConfig.useAI ? <Refresh />
                                                                     : <AutoAwesome />}
                                                             >
                                                                 {mockConfig.useAI ? 'Re-Generate' : 'Generate'}
