@@ -153,6 +153,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                 setMockScripts(response.obj.list);
                 if (tempNullScripts.length !== response.obj.list.length) {
                     setIsFirstTimeSelection(false);
+                    setIsUpdating(false);
                 }
             } catch (e) {
                 console.error(e);
@@ -161,7 +162,6 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                 console.log(error)
             } finally {
                 setProgress(false);
-                setIsUpdating(false);
             }
         };
         fetchMockScripts();
@@ -263,7 +263,8 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
             Alert.info('Successfully generated mock scripts!');
             setMockConfig({ ...mockConfig, useAI })
             setShowInstructions(false);
-            setIsFirstTimeSelection(false)
+            setIsFirstTimeSelection(false);
+            setIsUpdating(false);
             setNullScripts([]);
         } catch (e) {
             console.error(e);
@@ -278,7 +279,6 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
             }
         } finally {
             setProgress(false);
-            setIsUpdating(false);
         }
     };
 
@@ -439,8 +439,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                             borderColor: 'primary.main',
                             display: 'flex',
                             flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            bgcolor: 'background.paper'
+                            justifyContent: 'space-between'
                         }}
                     >
                         <Stack spacing={2}>
@@ -490,8 +489,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                             borderRadius: 4,
                             display: 'flex',
                             flexDirection: 'column',
-                            justifyContent: 'space-between',
-                            bgcolor: 'background.default'
+                            justifyContent: 'space-between'
                         }}
                     >
                         <Stack spacing={2}>
@@ -530,8 +528,6 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
             </Stack>
         );
     };
-
-
 
     return (
         <>

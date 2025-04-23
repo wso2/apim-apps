@@ -135,6 +135,7 @@ function Endpoints(props) {
     });
     const [componentValidator, setComponentValidator] = useState([]);
     const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
+    const [isMockAndNoScripts, setIsMockAndNoScripts] = useState(false);
 
     useEffect(() => {
         if (api.subtypeConfiguration?.subtype === 'AIAPI') {
@@ -160,6 +161,7 @@ function Endpoints(props) {
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
         const { action, value } = configAction;
+        setIsMockAndNoScripts(action === 'set_inline_or_mocked_oas')
         switch (action) {
             case 'production_endpoints':
             case 'sandbox_endpoints': {
@@ -219,6 +221,12 @@ function Endpoints(props) {
                     // api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
                     //     setSwagger(res.obj);
                     // });
+                    // const noScripts = !Object.values(swagger.paths).some(methods =>
+                    //     Object.values(methods).some(data =>
+                    //         data?.['x-mediation-script']?.trim()
+                    //     )
+                    // );                   
+                    // setIsMockAndNoScripts(noScripts);
                 }
                 return { ...initState, endpointConfig, endpointImplementationType };
             }
@@ -827,7 +835,7 @@ function Endpoints(props) {
                                             apiKeyParamConfig={apiKeyParamConfig}
                                             componentValidator={componentValidator}
                                             endpointSecurityTypes={endpointSecurityTypes}
-                                            setIsUpdating={(val) => setUpdating(val)}
+                                            setIsUpdating={(val) => setIsMockAndNoScripts(val)}
                                         />
                                     </Grid>
                                 </Grid>
@@ -850,7 +858,7 @@ function Endpoints(props) {
                                     className={classes.buttonSection}
                                 >
                                     <Grid item>
-                                        {api.isRevision || !endpointValidity.isValid
+                                        {api.isRevision || !endpointValidity.isValid || isMockAndNoScripts
                                             || (settings && settings.portalConfigurationOnlyModeEnabled)
                                             || isRestricted(['apim:api_create'], api) ? (
                                                 <Button
