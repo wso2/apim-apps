@@ -47,7 +47,7 @@ import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
  * @param {any} props The input props.
  * @return {any} The JSX representation of the component.
  * */
-function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpdating }) {
+function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveDisable }) {
     const { api } = useContext(APIContext);
     const [error, setError] = useState(null);
     const [progress, setProgress] = useState(true);
@@ -132,7 +132,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
     useEffect(() => {
         const fetchMockScripts = async () => {
             try {
-                setIsUpdating(true)
+                setSaveDisable(true)
                 const response = await api.getGeneratedMockScriptsOfAPI(api.id);
                 const tempNullScripts = []
                 response.obj.list = response.obj.list.map((methodObj) => {
@@ -153,7 +153,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
                 setMockScripts(response.obj.list);
                 if (tempNullScripts.length !== response.obj.list.length) {
                     setIsFirstTimeSelection(false);
-                    setIsUpdating(false);
+                    setSaveDisable(false);
                 }
             } catch (e) {
                 console.error(e);
@@ -222,7 +222,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
             return;
         }
         setAiLoadingStates(`${path}_${method}`); // Set AI loading state for this endpoint
-        setIsUpdating(true);
+        setSaveDisable(true);
         const script = paths[path][method][xMediationScriptProperty] || '';
         const { content, simulationPart } = splitSimulationPart(script)
         const payload = {
@@ -243,7 +243,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
         } finally {
             setAiLoadingStates(null); // Reset AI loading state
             if (aiLoadingStates === null) {
-                setIsUpdating(false);
+                setSaveDisable(false);
             }
         }
 
@@ -251,7 +251,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
 
     const handleGenerateScripts = async (useAI) => {
         setProgress(true);
-        setIsUpdating(true);
+        setSaveDisable(true);
         try {
             const payload = {
                 instructions: showInstructions ? mockConfig.config.instructions : undefined
@@ -264,7 +264,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setIsUpd
             setMockConfig({ ...mockConfig, useAI })
             setShowInstructions(false);
             setIsFirstTimeSelection(false);
-            setIsUpdating(false);
+            setSaveDisable(false);
             setNullScripts([]);
         } catch (e) {
             console.error(e);
@@ -769,7 +769,7 @@ MockImplEndpoints.propTypes = {
     endpointConfig: PropTypes.shape({}).isRequired,
     swagger: PropTypes.shape({}).isRequired,
     updateMockDB: PropTypes.func.isRequired,
-    setIsUpdating: PropTypes.func.isRequired
+    setSaveDisable: PropTypes.func.isRequired
 };
 
 export default React.memo(MockImplEndpoints);

@@ -835,7 +835,7 @@ function Endpoints(props) {
                                             apiKeyParamConfig={apiKeyParamConfig}
                                             componentValidator={componentValidator}
                                             endpointSecurityTypes={endpointSecurityTypes}
-                                            setIsUpdating={(val) => setIsMockAndNoScripts(val)}
+                                            setIsMockAndNoScripts={(val) => setIsMockAndNoScripts(val)}
                                         />
                                     </Grid>
                                 </Grid>
