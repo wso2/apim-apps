@@ -466,8 +466,6 @@ const ApiChat = () => {
             const response = await fetch(url, fetchOptions);
             const contentType = response.headers[CONTENT_TYPE] || null;
 
-            const backendQuery = generatedRequest.inputs.requestBody.query;
-
             // Check if response is JSON
             if (contentType && contentType.includes(APPLICATION_JSON)) {
                 const data = await response.json().catch(() => ({}));
@@ -479,7 +477,6 @@ const ApiChat = () => {
                         body: data, // Return the JSON data
                     },
                     curlCommand,
-                    backendQuery,
                 };
             }
 
@@ -494,7 +491,6 @@ const ApiChat = () => {
                         body: text, // Return the XML data
                     },
                     curlCommand,
-                    backendQuery,
                 };
             }
 
@@ -508,7 +504,6 @@ const ApiChat = () => {
                     body: text,
                 },
                 curlCommand,
-                backendQuery,
             };
         } catch (error) {
             return {
@@ -520,13 +515,12 @@ const ApiChat = () => {
                         + ' This could be due to CORS restrictions or network connectivity issues.',
                 },
                 curlCommand: null,
-                backendQuery: null,
             };
         }
     };
 
     const sendSubsequentRequest = async (requestId, resource) => {
-        const { responseObj: executionResponseForAiAgent, curlCommand, backendQuery } = await invokeAPI(resource);
+        const { responseObj: executionResponseForAiAgent, curlCommand } = await invokeAPI(resource);
         setExecutionResults((prevState) => {
             return [
                 ...prevState,
@@ -534,7 +528,6 @@ const ApiChat = () => {
                     ...executionResponseForAiAgent,
                     method: resource.method,
                     curlCommand,
-                    query: backendQuery,
                 },
             ];
         });

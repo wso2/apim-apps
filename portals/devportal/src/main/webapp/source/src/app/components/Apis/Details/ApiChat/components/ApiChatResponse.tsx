@@ -366,7 +366,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                                         <Typography variant="h6">Query</Typography>
                                                         <Divider />
                                                         <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                                                            {executionResult.query || 'No query available'}
+                                                            {lastQuery || 'No query available'}
                                                         </Typography>
                                                     </Box>
                                                     {/* Response Section */}
