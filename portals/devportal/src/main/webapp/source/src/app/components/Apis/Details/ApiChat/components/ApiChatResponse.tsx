@@ -363,9 +363,18 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                                     <Box flex={1}>
                                                         <Typography variant="h6">Query</Typography>
                                                         <Divider />
-                                                        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
-                                                            {executionResult.query || 'No query available'}
-                                                        </Typography>
+                                                        <MonacoEditor
+                                                            width="100%"
+                                                            height="200"
+                                                            language="graphql" 
+                                                            value={executionResult.query || 'No query available'}
+                                                            options={{
+                                                                readOnly: true, 
+                                                                minimap: { enabled: false }, 
+                                                                scrollBeyondLastLine: false, 
+                                                                wordWrap: 'on', 
+                                                            }}
+                                                        />
                                                     </Box>
                                                     {/* Response Section */}
                                                     <Box flex={1}>
