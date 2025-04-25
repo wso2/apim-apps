@@ -991,7 +991,7 @@
   "Apis.Details.Endpoints.Prototype.MockedOAS.Response.NotProvided": "Responses are not provided in the API definition",
   "Apis.Details.Endpoints.Prototype.MockedOAS.subTitle": "Mocked examples generated from OAS",
   "Apis.Details.Endpoints.Prototype.MockedOAS.title": "Responses",
-  "Apis.Details.Endpoints.Prototype.MockedOAS.warning.authTokenMissing": "You must provide a token to start using the AI Assisted API Mock Server. To obtain one, follow the steps provided under {apiAiChatDocLink}",
+  "Apis.Details.Endpoints.Prototype.MockedOAS.warning.authTokenMissing": "You must provide a token to start using the AI-Assisted API Mock Server. To obtain one, follow the steps provided under {apiAiChatDocLink}",
   "Apis.Details.Endpoints.SequenceBackend.AddCertificat": "Add Sequence Backend",
   "Apis.Details.Endpoints.SequenceBackend.AddSequence": "Add Sequence Backend",
   "Apis.Details.Endpoints.SequenceBackend.delete.cancel.button": "Cancel",
