@@ -757,6 +757,7 @@ const ApiChat = () => {
                             isAgentRunning={isAgentRunning}
                             isAgentTerminating={isAgentTerminating}
                             isExecutionError={isExecutionError}
+                            apiType={api.type}
                         />
                     )}
                     {!lastQuery && (

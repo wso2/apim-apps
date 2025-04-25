@@ -38,6 +38,9 @@ import Utils from 'AppData/Utils';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import IconButton from '@mui/material/IconButton';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import PropTypes from 'prop-types';
+import Divider from '@mui/material/Divider';
+import CONSTANTS from 'AppData/Constants';
 
 const PREFIX = 'ApiChatResponse';
 const CONTENT_TYPE: string = 'Content-Type';
@@ -141,6 +144,7 @@ interface ApiChatResponseProps {
     isAgentRunning: boolean;
     isAgentTerminating: boolean;
     isExecutionError: boolean;
+    apiType: string;
 }
 
 /**
@@ -154,6 +158,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
     isAgentRunning,
     isAgentTerminating,
     isExecutionError,
+    apiType,
 }) => {
     const intl = useIntl();
     const [user, setUser] = useState('You');
@@ -352,9 +357,28 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                             </Box>
                                         </AccordionSummary>
                                         <AccordionDetails>
-                                            <Typography variant='body1'>
-                                                {renderExecutionResultBody(executionResult)}
-                                            </Typography>
+                                            {apiType === CONSTANTS.API_TYPES.GRAPHQL ? (
+                                                <Box display="flex" flexDirection="row" gap={2} width="100%">
+                                                    {/* Query Section */}
+                                                    <Box flex={1}>
+                                                        <Typography variant="h6">Query</Typography>
+                                                        <Divider />
+                                                        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                                                            {lastQuery || 'No query available'}
+                                                        </Typography>
+                                                    </Box>
+                                                    {/* Response Section */}
+                                                    <Box flex={1}>
+                                                        <Typography variant="h6">Response</Typography>
+                                                        <Divider />
+                                                        {renderExecutionResultBody(executionResult)}
+                                                    </Box>
+                                                </Box>
+                                            ) : (
+                                                <Typography variant='body1'>
+                                                    {renderExecutionResultBody(executionResult)}
+                                                </Typography>
+                                            )}
                                         </AccordionDetails>
                                     </Accordion>
                                 );
