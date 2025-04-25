@@ -666,7 +666,9 @@ class DetailsLegacy extends React.Component {
                                                     open={open}
                                                     id='left-menu-test'
                                                 />
-                                                {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi && apiChatEnabled
+                                                {(api.type === CONSTANTS.API_TYPES.GRAPHQL
+                                                || (!isAsyncApi && api.type !== CONSTANTS.API_TYPES.GRAPHQL))
+                                                && apiChatEnabled
                                                 && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
                                                     <LeftMenuItem
                                                         text={(
