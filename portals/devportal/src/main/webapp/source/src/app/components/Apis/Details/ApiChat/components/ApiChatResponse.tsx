@@ -365,25 +365,9 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                                     <Box flex={1}>
                                                         <Typography variant="h6">Query</Typography>
                                                         <Divider />
-                                                        <MonacoEditor
-                                                            width="100%"
-                                                            height="200"
-                                                            language="graphql" 
-                                                            value={
-                                                                executionResult.query
-                                                                    ? prettier.format(executionResult.query, {
-                                                                          parser: 'graphql', 
-                                                                          plugins: [parserGraphql], 
-                                                                      })
-                                                                    : 'No query available'
-                                                            } 
-                                                            options={{
-                                                                readOnly: true, 
-                                                                minimap: { enabled: false }, 
-                                                                scrollBeyondLastLine: false, 
-                                                                wordWrap: 'on', 
-                                                            }}
-                                                        />
+                                                        <Typography variant="body1" sx={{ whiteSpace: 'pre-wrap' }}>
+                                                            {executionResult.query || 'No query available'}
+                                                        </Typography>
                                                     </Box>
                                                     {/* Response Section */}
                                                     <Box flex={1}>
