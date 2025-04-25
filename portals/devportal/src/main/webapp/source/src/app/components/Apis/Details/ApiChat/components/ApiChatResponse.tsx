@@ -41,6 +41,8 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import PropTypes from 'prop-types';
 import Divider from '@mui/material/Divider';
 import CONSTANTS from 'AppData/Constants';
+import prettier from 'prettier/standalone';
+import parserGraphql from 'prettier/parser-graphql';
 
 const PREFIX = 'ApiChatResponse';
 const CONTENT_TYPE: string = 'Content-Type';
@@ -367,7 +369,14 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                                             width="100%"
                                                             height="200"
                                                             language="graphql" 
-                                                            value={executionResult.query || 'No query available'}
+                                                            value={
+                                                                executionResult.query
+                                                                    ? prettier.format(executionResult.query, {
+                                                                          parser: 'graphql', 
+                                                                          plugins: [parserGraphql], 
+                                                                      })
+                                                                    : 'No query available'
+                                                            } 
                                                             options={{
                                                                 readOnly: true, 
                                                                 minimap: { enabled: false }, 
