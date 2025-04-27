@@ -112,7 +112,7 @@ const ApiChatExecute: React.FC<ApiChatExecuteProps> = ({
                                 variant='outlined'
                                 onClick={handleStopAndReExecute}
                                 id='stop-reexecute-button'
-                                disabled={specEnrichmentError !== '' || isAgentTerminating}
+                                disabled={specEnrichmentError !== '' || isAgentTerminating || isAgentRunning || isExecuteDisabled}
                             >
                                 {isAgentRunning ? (
                                     <FormattedMessage
