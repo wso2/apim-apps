@@ -38,9 +38,13 @@ const CONSTS = {
         CATEGORY_MANAGER: ['apim:api_category', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
         KEY_MANAGER: ['apim:keymanagers_manage', 'openid', 'apim:tenantInfo', 'apim:admin_settings'],
         GATEWAY_MANAGER: ['apim:environment_manage', 'openid', 'apim:admin_settings', 'apim:environment_read'],
+        GOVERNANCE_MANAGER: ['apim:gov_policy_read', 'apim:gov_policy_manage', 'apim:gov_result_read',
+            'apim:gov_rule_read', 'apim:gov_rule_manage'],
         SETTINGS_MANAGER: ['apim:app_owner_change', 'apim:admin_application_view',
             'apim:scope_manage', 'openid', 'apim:admin_settings', 'apim:tenantInfo', 'apim:api_provider_change',
         ],
+        ORGANIZATION_MANAGER: ['apim:organization_manage', 'apim:organization_read', 'openid',
+            'apim:tenantInfo', 'apim:admin_settings'],
     },
     DEFAULT_SUBSCRIPTIONLESS_PLAN: 'DefaultSubscriptionless',
     DEFAULT_ASYNC_SUBSCRIPTIONLESS_PLAN: 'AsyncDefaultSubscriptionless',
@@ -67,16 +71,19 @@ const CONSTS = {
     COMPLIANCE_STATES: [
         { value: 'NOT_APPLICABLE', label: 'Not Applicable' },
         { value: 'COMPLIANT', label: 'Compliant' },
+        { value: 'PENDING', label: 'Pending' },
         { value: 'NON_COMPLIANT', label: 'Non Compliant' },
     ],
     POLICY_ADHERENCE_STATES: [
         { value: 'FOLLOWED', label: 'Followed' },
         { value: 'VIOLATED', label: 'Violated' },
+        { value: 'PENDING', label: 'Pending' },
         { value: 'UNAPPLIED', label: 'Unapplied' },
     ],
     RULESET_VALIDATION_STATES: [
         { value: 'PASSED', label: 'Passed' },
         { value: 'FAILED', label: 'Failed' },
+        { value: 'UNAPPLIED', label: 'Unapplied' },
     ],
     GOVERNANCE_ACTIONS: {
         BLOCK: 'BLOCK',

@@ -57,7 +57,7 @@ const StyledGrid = styled(Grid)((
  * @returns
  */
 export default function Transports(props) {
-    const { api, configDispatcher, securityScheme } = props;
+    const { api, configDispatcher, securityScheme, componentValidator } = props;
     const [apiFromContext] = useAPI();
 
     const isMutualSSLEnabled = securityScheme.includes(API_SECURITY_MUTUAL_SSL);
@@ -92,39 +92,44 @@ export default function Transports(props) {
                         />
                     </FormLabel>
                     <FormGroup style={{ display: 'flow-root' }}>
-                        <FormControlLabel
-                            control={(
-                                <Checkbox
-                                    disabled={isRestricted(['apim:api_create'], apiFromContext) || isMutualSSLEnabled}
-                                    checked={api.transport
-                                        ? api.transport.includes('http') && !isMutualSSLEnabled : null}
-                                    onChange={({ target: { checked } }) => configDispatcher({
-                                        action: 'transport',
-                                        event: { checked, value: 'http' },
-                                    })}
-                                    value='http'
-                                    color='primary'
-                                    id='http-transport'
-                                />
-                            )}
-                            label='HTTP'
-                        />
-                        <FormControlLabel
-                            control={(
-                                <Checkbox
-                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                    checked={api.transport
-                                        ? api.transport.includes('https') : null}
-                                    onChange={({ target: { checked } }) => configDispatcher({
-                                        action: 'transport',
-                                        event: { checked, value: 'https' },
-                                    })}
-                                    value='https'
-                                    color='primary'
-                                />
-                            )}
-                            label='HTTPS'
-                        />
+                        {componentValidator.includes('transportsHTTP') && 
+                            <FormControlLabel
+                                control={(
+                                    <Checkbox
+                                        disabled={isRestricted(['apim:api_create'], apiFromContext) || 
+                                            isMutualSSLEnabled}
+                                        checked={api.transport
+                                            ? api.transport.includes('http') && !isMutualSSLEnabled : null}
+                                        onChange={({ target: { checked } }) => configDispatcher({
+                                            action: 'transport',
+                                            event: { checked, value: 'http' },
+                                        })}
+                                        value='http'
+                                        color='primary'
+                                        id='http-transport'
+                                    />
+                                )}
+                                label='HTTP'
+                            />
+                        }
+                        {componentValidator.includes('transportsHTTPS') && 
+                            <FormControlLabel
+                                control={(
+                                    <Checkbox
+                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                        checked={api.transport
+                                            ? api.transport.includes('https') : null}
+                                        onChange={({ target: { checked } }) => configDispatcher({
+                                            action: 'transport',
+                                            event: { checked, value: 'https' },
+                                        })}
+                                        value='https'
+                                        color='primary'
+                                    />
+                                )}
+                                label='HTTPS'
+                            />
+                        }
                     </FormGroup>
                 </FormControl>
             </Grid>

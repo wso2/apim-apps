@@ -19,7 +19,7 @@
 
 import React from 'react';
 import { Box, Chip, Typography, TableRow, TableCell, LinearProgress } from '@mui/material';
-import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
+import ListBaseWithPagination from 'AppComponents/AdminPages/Addons/ListBaseWithPagination';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Link as RouterLink } from 'react-router-dom';
 import Stack from '@mui/material/Stack';
@@ -31,18 +31,19 @@ import PolicyIcon from '@mui/icons-material/Policy';
 import Utils from 'AppData/Utils';
 
 /**
- * API call to get Policies
- * @returns {Promise}.
+ * API call to get Policies with pagination
+ * @param {Object} params Query parameters for pagination
+ * @returns {Promise} Promise resolving to paginated policies.
  */
-function apiCall() {
+function apiCall(params) {
     const restApi = new GovernanceAPI();
     return restApi
-        .getPolicyAdherenceForAllPolicies()
+        .getPolicyAdherenceForAllPolicies(params)
         .then((result) => {
             const policies = result.body.list;
+            const pagination = result.body.pagination;
 
-            // Fetch policy adherence details for each policy
-            // TODO: optimize
+            // Fetch policy adherence details for each policy in the current page
             return Promise.all(
                 policies.map(async (policy) => {
                     try {
@@ -59,7 +60,12 @@ function apiCall() {
                         };
                     }
                 })
-            );
+            ).then(policiesWithAdherence => {
+                return {
+                    list: policiesWithAdherence,
+                    pagination: pagination
+                };
+            });
         })
         .catch((error) => {
             throw error;
@@ -70,12 +76,12 @@ export default function PolicyAdherenceTable() {
     const intl = useIntl();
 
     // TODO: reuse this function in other components
-    const renderProgress = (followed, total) => {
-        if (total === 0) {
+    const renderProgress = (followed, total, status) => {
+        if (status === 'UNAPPLIED') {
             return (
                 <Typography variant="body2" color="textSecondary">
                     {intl.formatMessage({
-                        id: 'Governance.Overview.PolicyAdherence.no.apis',
+                        id: 'Governance.ComplianceDashboard.PolicyAdherence.no.apis',
                         defaultMessage: 'N/A - No APIs to evaluate',
                     })}
                 </Typography>
@@ -83,14 +89,13 @@ export default function PolicyAdherenceTable() {
         }
 
         const percentage = (followed / total) * 100;
-        const isComplete = followed === total;
 
         return (
             <Box sx={{ width: '100%' }}>
                 <Box sx={{ display: 'flex', mb: 0.5 }}>
                     <Typography variant="body2" sx={{ fontWeight: 'bold' }} color="textSecondary">
                         {intl.formatMessage({
-                            id: 'Governance.Overview.PolicyAdherence.compliant.count',
+                            id: 'Governance.ComplianceDashboard.PolicyAdherence.compliant.count',
                             defaultMessage: '{followed}/{total} Compliant',
                         }, { followed, total })}
                     </Typography>
@@ -103,7 +108,7 @@ export default function PolicyAdherenceTable() {
                         borderRadius: 1,
                         backgroundColor: '#e0e0e0',
                         '& .MuiLinearProgress-bar': {
-                            backgroundColor: isComplete ? '#00B81D' : '#FF5252',
+                            backgroundColor: '#00B81D',
                             borderRadius: 1,
                         },
                     }}
@@ -120,21 +125,13 @@ export default function PolicyAdherenceTable() {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.policy',
+                id: 'Governance.ComplianceDashboard.PolicyAdherence.column.policy',
                 defaultMessage: 'Policy',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => (
                     <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                        <RouterLink
-                            to={`/governance/policies/${tableMeta.rowData[0]}`}
-                            style={{ display: 'flex', alignItems: 'center', textDecoration: 'none', color: 'inherit' }}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            {value}
-                            <OpenInNewIcon sx={{ ml: 0.5, fontSize: 16 }} />
-                        </RouterLink>
+                        {value}
                     </Box>
                 ),
                 setCellProps: () => ({
@@ -157,7 +154,7 @@ export default function PolicyAdherenceTable() {
         {
             name: 'status',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.status',
+                id: 'Governance.ComplianceDashboard.PolicyAdherence.column.status',
                 defaultMessage: 'Status',
             }),
             options: {
@@ -195,14 +192,15 @@ export default function PolicyAdherenceTable() {
         {
             name: 'progress',
             label: intl.formatMessage({
-                id: 'Governance.Overview.PolicyAdherence.column.apis',
+                id: 'Governance.ComplianceDashboard.PolicyAdherence.column.apis',
                 defaultMessage: 'APIs',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
                     const followed = tableMeta.rowData[3]?.compliant || 0;
                     const total = (tableMeta.rowData[3]?.nonCompliant + followed) || 0;
-                    return renderProgress(followed, total);
+                    const status = tableMeta.rowData[2];
+                    return renderProgress(followed, total, status);
                 },
                 setCellHeaderProps: () => ({
                     sx: {
@@ -239,7 +237,7 @@ export default function PolicyAdherenceTable() {
                                     <CancelIcon color="error" sx={{ fontSize: 16 }} />
                                 }
                                 <RouterLink
-                                    to={`/governance/overview/api/${artifact.id}`}
+                                    to={`/governance/compliance/api/${artifact.id}`}
                                     style={{
                                         display: 'flex',
                                         alignItems: 'center',
@@ -281,7 +279,7 @@ export default function PolicyAdherenceTable() {
                 sx={{ fontWeight: 'medium' }}
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.PolicyAdherence.empty.content',
+                    id: 'Governance.ComplianceDashboard.PolicyAdherence.empty.content',
                     defaultMessage: 'No Governance Policies Available',
                 })}
             </Typography>
@@ -291,7 +289,7 @@ export default function PolicyAdherenceTable() {
                 align="center"
             >
                 {intl.formatMessage({
-                    id: 'Governance.Overview.PolicyAdherence.empty.helper',
+                    id: 'Governance.ComplianceDashboard.PolicyAdherence.empty.helper',
                     defaultMessage: 'Create a new governance policy to start governing the APIs.',
                 })}
             </Typography>
@@ -299,7 +297,7 @@ export default function PolicyAdherenceTable() {
     );
 
     return (
-        <ListBase
+        <ListBaseWithPagination
             columProps={policyColumProps}
             apiCall={apiCall}
             searchProps={false}

@@ -267,10 +267,10 @@ export default class API extends Resource {
      * @param callback {function} Function which needs to be called upon success
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    getAllTiers(policyLevel, callback = null) {
+    getAllTiers(policyLevel, limit, callback = null) {
         const promiseGetAll = this.client.then((client) => {
             return client.apis['Throttling Policies'].get_throttling_policies__policyLevel_(
-                { policyLevel },
+                { policyLevel, limit },
                 this._requestMetaData(),
             );
         });
@@ -984,6 +984,14 @@ export default class API extends Resource {
                 },
                 this._requestMetaData(),
             );
+        });
+    }
+    /**
+     * Get the Organization information to which the user belongs to
+     */
+    getUserOrganizationInfo() {
+        return this.client.then((client) => {
+            return client.apis.Users.organizationInformation(this._requestMetaData());
         });
     }
 }

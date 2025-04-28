@@ -606,6 +606,6 @@ ThumbnailView.propTypes = {
 };
 
 export default injectIntl(withAPI((props) => {
-    const { theme } = useTheme();
+    const theme = useTheme();
     return <ThumbnailView {...props} theme={theme} />;
 }));

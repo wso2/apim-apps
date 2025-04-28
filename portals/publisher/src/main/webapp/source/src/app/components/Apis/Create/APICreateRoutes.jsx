@@ -15,11 +15,12 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Route, Switch } from 'react-router-dom';
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { Progress } from 'AppComponents/Shared';
 import APICreateDefault from './Default/APICreateDefault';
 import APIProductCreateWrapper from './APIProduct/APIProductCreateWrapper';
 import ApiCreateSwagger from './OpenAPI/ApiCreateOpenAPI';
@@ -42,6 +43,27 @@ const Root = styled('div')({
     },
 });
 
+const gatewayDetails = {
+    'wso2/synapse': { 
+        value: 'wso2/synapse',
+        name: 'Universal Gateway',
+        description: 'API gateway embedded in APIM runtime.', 
+        isNew: false 
+    },
+    'wso2/apk': { 
+        value: 'wso2/apk',
+        name: 'Kubernetes Gateway',
+        description: 'API gateway running on Kubernetes.', 
+        isNew: false 
+    },
+    'AWS': { 
+        value: 'AWS',
+        name: 'AWS Gateway', 
+        description: 'API gateway offered by AWS cloud.', 
+        isNew: true 
+    }
+};
+
 // Wrapper component to pass additional props
 const WithSomeValue = (Component, additionalProps) => (routeProps) => (
     <Component {...routeProps} {...additionalProps} />
@@ -54,41 +76,64 @@ const WithSomeValue = (Component, additionalProps) => (routeProps) => (
  * @returns @inheritdoc
  */
 function APICreateRoutes() {
-    const { data: settings } = usePublisherSettings();
-    const [gateway, setGatewayType] = useState(false);
-    
-    const getGatewayType = () => {
-        if (settings != null) {
-            if (settings.gatewayTypes && settings.gatewayTypes.length === 2 ) {
-                setGatewayType(true);
-            } else {
-                setGatewayType(false);
-            }
-        }
-    };
+    const { data: publisherSettings, isLoading } = usePublisherSettings();
+    const [apiTypes, setApiTypes] = useState(null);
+    const [gatewayTypes, setGatewayTypes] = useState(null);
 
     useEffect(() => {
-        getGatewayType();
-    }, [settings]);
+        if (!isLoading) {
+            setApiTypes(publisherSettings.gatewayFeatureCatalog.apiTypes);
+            const data = publisherSettings.gatewayTypes;
+            const updatedData = data.map(item => {
+                if (item === "Regular") return "wso2/synapse";
+                if (item === "APK") return "wso2/apk";
+                return item;
+            });
+            setGatewayTypes(updatedData);
+        }
+    }, [isLoading]);
+
+    if (isLoading) {
+        return <Progress per={80} message='Loading app settings ...' />;
+    }
     
     return (
         <Root className={classes.content}>
             <Switch>
-                <Route path='/apis/create/rest' component={WithSomeValue(APICreateDefault, { multiGateway: gateway })}/>
+                <Route path='/apis/create/rest' component={WithSomeValue(APICreateDefault, 
+                    { multiGateway: apiTypes?.rest
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                />
                 <Route path='/api-products/create' component={APIProductCreateWrapper} />
                 <Route path='/apis/create/graphQL' component={WithSomeValue(ApiCreateGraphQL,
-                    { multiGateway: gateway })}
+                    { multiGateway: apiTypes?.graphql
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
                 />
                 <Route path='/apis/create/openapi' component={WithSomeValue(ApiCreateSwagger,
-                    { multiGateway: gateway })}
+                    { multiGateway: apiTypes?.rest
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
                 />
-                <Route path='/apis/create/wsdl' component={ApiCreateWSDL} />
+                <Route path='/apis/create/wsdl' component={WithSomeValue(ApiCreateWSDL,
+                    { multiGateway: apiTypes?.soap
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                />
                 {/* TODO: Remove ApiCreateWebSocket components and associated routes */}
-                <Route path='/apis/create/ws' component={ApiCreateWebSocket} />
-                <Route path='/apis/create/streamingapi/:apiType' component={APICreateStreamingAPI} />
-                <Route path='/apis/create/asyncapi' component={APICreateAsyncAPI} />
+                <Route path='/apis/create/ws' component={WithSomeValue(ApiCreateWebSocket,
+                    { multiGateway: apiTypes?.ws
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                />
+                <Route path='/apis/create/streamingapi/:apiType' component={WithSomeValue(APICreateStreamingAPI,
+                    { multiGateway: apiTypes?.ws
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                />
+                <Route path='/apis/create/asyncapi' component={WithSomeValue(APICreateAsyncAPI,
+                    { multiGateway: apiTypes?.ws
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                />
                 <Route path='/apis/create/ai-api' component={WithSomeValue(ApiCreateAIAPI,
-                    { multiGateway: gateway })}/>
+                    { multiGateway: apiTypes?.ai
+                        .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
+                />
                 <Route component={ResourceNotFound} />
             </Switch>
         </Root>

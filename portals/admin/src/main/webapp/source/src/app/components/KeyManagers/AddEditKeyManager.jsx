@@ -167,6 +167,7 @@ function AddEditKeyManager(props) {
     const { isGlobal } = (location && location.state) || false;
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
     const [validOrgs, setValidOrgs] = useState([]);
+    const [orgSelectionType, setOrgSelectionType] = useState(null);
 
     const defaultKMType = (settings.keyManagerConfiguration
         && settings.keyManagerConfiguration.length > 0)
@@ -335,18 +336,25 @@ function AddEditKeyManager(props) {
                     }
                 }
                 setValidOrgs(result.body.allowedOrganizations);
+                if (result.body.allowedOrganizations.includes('ALL') || result.body.allowedOrganizations.length === 0) {
+                    setOrgSelectionType('ALL');
+                } else if (result.body.allowedOrganizations.includes('NONE')) {
+                    setOrgSelectionType('NONE');
+                } else {
+                    setOrgSelectionType('SELECT');
+                }
                 setValidRoles(result.body.permissions
                     && result.body.permissions.roles
                     ? result.body.permissions.roles
                     : []);
                 dispatch({ field: 'all', value: editState });
                 updateKeyManagerConnectorConfiguration(editState.type);
-                getOrganizations();
             });
         } else {
             updateKeyManagerConnectorConfiguration(defaultKMType);
-            getOrganizations();
+            setOrgSelectionType('ALL'); // by default all KMs are allowed for all orgs
         }
+        getOrganizations();
     }, []);
 
     const hasErrors = (fieldName, fieldValue, validatingActive) => {
@@ -381,6 +389,14 @@ function AddEditKeyManager(props) {
                     error = intl.formatMessage({
                         id: 'KeyManagers.AddEditKeyManager.is.empty.error.key.config',
                         defaultMessage: 'Required field is empty.',
+                    });
+                }
+                break;
+            case 'selectOrgs':
+                if (orgSelectionType === 'SELECT' && validOrgs.length === 0) {
+                    error = intl.formatMessage({
+                        id: 'KeyManagers.AddEditKeyManager.form.orgs.error',
+                        defaultMessage: 'At least one organization should be selected.',
                     });
                 }
                 break;
@@ -445,7 +461,8 @@ function AddEditKeyManager(props) {
                 || hasErrors('revokeEndpoint', revokeEndpoint, validatingActive)
                 || hasErrors('enableDirectToken', enableDirectToken, validatingActive)
                 || hasErrors('userInfoEndpoint', userInfoEndpoint, validatingActive)
-                || hasErrors('scopeManagementEndpoint', scopeManagementEndpoint, validatingActive);
+                || hasErrors('scopeManagementEndpoint', scopeManagementEndpoint, validatingActive)
+                || hasErrors('selectOrgs', validOrgs, validatingActive);
         } else {
             return hasErrors('name', name, validatingActive)
                 || hasErrors('displayName', displayName, validatingActive)
@@ -617,8 +634,28 @@ function AddEditKeyManager(props) {
         });
     }
 
+    useEffect(() => {
+        setValidOrgs((prevValidOrgs) => {
+            if (orgSelectionType === 'ALL') return ['ALL'];
+            if (orgSelectionType === 'NONE') return ['NONE'];
+            if (validOrgs.length > 0 && !validOrgs.includes('ALL') && !validOrgs.includes('NONE')) {
+                return prevValidOrgs;
+            }
+            return [];
+        });
+    }, [orgSelectionType]);
+
     const handleOrganizationAddition = (event, newValue) => {
-        setValidOrgs(newValue.map((org) => org.organizationId));
+        const selectedOrgs = newValue.map((org) => org.organizationId);
+        if (selectedOrgs.length === 0) {
+            setOrgSelectionType('NONE');
+        } else {
+            setValidOrgs(selectedOrgs);
+        }
+    };
+
+    const handleOrgSelectionChange = (event) => {
+        setOrgSelectionType(event.target.value);
     };
 
     return (
@@ -1219,7 +1256,7 @@ function AddEditKeyManager(props) {
                                                 onChange={onChange}
                                                 helperText={intl.formatMessage({
                                                     id: 'KeyManagers.AddEditKeyManager.form.authorizeEndpoint.help',
-                                                    defaultMessage: 'E.g., https://localhost:9443/oauth2/userinfo',
+                                                    defaultMessage: 'E.g., https://localhost:9443/oauth2/authorize',
                                                 })}
                                             />
                                             <TextField
@@ -1904,100 +1941,129 @@ function AddEditKeyManager(props) {
                             </>
                         )
                     }
-                    {
-                        settings.orgAccessControlEnabled && (
-                            <>
-                                <Grid item xs={12} md={12} lg={3}>
-                                    <Typography
-                                        color='inherit'
-                                        variant='subtitle2'
-                                        component='div'
-                                        id='KeyManagers.AddEditKeyManager.certificate.header'
-                                    >
-                                        <FormattedMessage
-                                            id='KeyManagers.AddEditKeyManager.orgs'
-                                            defaultMessage='Available Organizations'
-                                        />
-                                    </Typography>
-                                    <Typography
-                                        color='inherit'
-                                        variant='caption'
-                                        component='p'
-                                        id='KeyManagers.AddEditKeyManager.certificate.body'
-                                    >
-                                        <FormattedMessage
-                                            id='KeyManagers.AddEditKeyManager.org.description'
-                                            defaultMessage='Make this key manager available to selected organizations.'
-                                        />
-                                    </Typography>
-                                </Grid>
-                                <Grid item xs={12} md={12} lg={9}>
-                                    <Box display='flex' flexDirection='row' alignItems='center'>
-                                        <Autocomplete
-                                            disabled={organizations.length === 0}
-                                            multiple
-                                            fullWidth
-                                            limitTags={5}
-                                            options={organizations}
-                                            getOptionLabel={(option) => option.displayName}
-                                            noOptionsText='No registered organizations'
-                                            disableCloseOnSelect
-                                            value={
-                                                organizations.filter((org) => validOrgs.includes(org.organizationId))
-                                            }
-                                            onChange={handleOrganizationAddition}
-                                            renderOption={(options, organization, { selected }) => (
-                                                <div>
-                                                    <li {...options}>
-                                                        <Checkbox
-                                                            id={organization.organizationId}
-                                                            key={organization.organizationId}
-                                                            icon={icon}
-                                                            checkedIcon={checkedIcon}
-                                                            style={{ marginRight: 8 }}
-                                                            checked={selected}
-                                                        />
-                                                        {organization.displayName}
-                                                    </li>
-                                                </div>
-                                            )}
-                                            renderInput={(params) => (
-                                                <TextField
-                                                    {...params}
-                                                    disabled={organizations.length === 0}
-                                                    fullWidth
-                                                    label={organizations.length !== 0 ? (
-                                                        <FormattedMessage
-                                                            id='Apis.Details.Configurations.organizations'
-                                                            defaultMessage='Organizations'
-                                                        />
-                                                    ) : (
-                                                        <FormattedMessage
-                                                            id='Apis.Details.Configurations.organizations.empty'
-                                                            defaultMessage='No Organizations Registered.'
-                                                        />
-                                                    )}
-                                                    placeholder={intl.formatMessage({
-                                                        id:
-                                                        'Apis.Details.Configurations.organizations.placeholder.text',
-                                                        defaultMessage: 'Search Organizations',
-                                                    })}
-                                                    margin='normal'
-                                                    variant='outlined'
-                                                    id='Organizations'
-                                                />
-                                            )}
-                                        />
-                                    </Box>
-                                </Grid>
-                                <Grid item xs={12}>
-                                    <Box marginTop={2} marginBottom={2}>
-                                        <StyledHr />
-                                    </Box>
-                                </Grid>
-                            </>
-                        )
-                    }
+                    {settings.orgAccessControlEnabled && organizations.length !== 0 && (
+                        <>
+                            <Grid item xs={12} md={12} lg={3}>
+                                <Typography
+                                    color='inherit'
+                                    variant='subtitle2'
+                                    component='div'
+                                    id='KeyManagers.AddEditKeyManager.certificate.header'
+                                >
+                                    <FormattedMessage
+                                        id='KeyManagers.AddEditKeyManager.orgs'
+                                        defaultMessage='Available Organizations'
+                                    />
+                                </Typography>
+                                <Typography
+                                    color='inherit'
+                                    variant='caption'
+                                    component='p'
+                                    id='KeyManagers.AddEditKeyManager.certificate.body'
+                                >
+                                    <FormattedMessage
+                                        id='KeyManagers.AddEditKeyManager.org.description'
+                                        defaultMessage='Make this key manager available to selected organizations.'
+                                    />
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={9}>
+                                <Box component='div' m={1}>
+                                    <FormControl variant='standard' component='fieldset'>
+                                        <RadioGroup
+                                            style={{ flexDirection: 'row' }}
+                                            aria-label='organization'
+                                            name='selection'
+                                            value={orgSelectionType}
+                                            onChange={handleOrgSelectionChange}
+                                        >
+                                            <FormControlLabel
+                                                id='none'
+                                                value='NONE'
+                                                control={<Radio />}
+                                                label='None'
+                                            />
+                                            <FormControlLabel
+                                                id='select'
+                                                value='SELECT'
+                                                control={<Radio />}
+                                                label='Select'
+                                            />
+                                            <FormControlLabel
+                                                id='all'
+                                                value='ALL'
+                                                control={<Radio />}
+                                                label='All'
+                                            />
+                                        </RadioGroup>
+                                    </FormControl>
+                                    {orgSelectionType === 'SELECT' && (
+                                        <Box display='flex' flexDirection='row' alignItems='center'>
+                                            <Autocomplete
+                                                multiple
+                                                fullWidth
+                                                limitTags={5}
+                                                options={organizations}
+                                                getOptionLabel={(option) => option.displayName}
+                                                noOptionsText='No registered organizations'
+                                                disableCloseOnSelect
+                                                value={
+                                                    organizations.filter(
+                                                        (org) => validOrgs.includes(org.organizationId),
+                                                    )
+                                                }
+                                                onChange={handleOrganizationAddition}
+                                                renderOption={(options, organization, { selected }) => (
+                                                    <div>
+                                                        <li {...options}>
+                                                            <Checkbox
+                                                                id={organization.organizationId}
+                                                                key={organization.organizationId}
+                                                                icon={icon}
+                                                                checkedIcon={checkedIcon}
+                                                                style={{ marginRight: 8 }}
+                                                                checked={selected}
+                                                            />
+                                                            {organization.displayName}
+                                                        </li>
+                                                    </div>
+                                                )}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        name='selectOrgs'
+                                                        fullWidth
+                                                        label={(
+                                                            <FormattedMessage
+                                                                id='Apis.Details.Configurations.organizations'
+                                                                defaultMessage='Organizations'
+                                                            />
+                                                        )}
+                                                        placeholder={intl.formatMessage({
+                                                            id:
+                                                            'Apis.Details.Configurations.organizations.placeholder.'
+                                                            + 'text',
+                                                            defaultMessage: 'Search Organizations',
+                                                        })}
+                                                        margin='normal'
+                                                        variant='outlined'
+                                                        id='Organizations'
+                                                        error={hasErrors('selectOrgs', validOrgs, validating)}
+                                                        helperText={hasErrors('selectOrgs', validOrgs, validating)}
+                                                    />
+                                                )}
+                                            />
+                                        </Box>
+                                    )}
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Box marginTop={2} marginBottom={2}>
+                                    <StyledHr />
+                                </Box>
+                            </Grid>
+                        </>
+                    )}
                     <Grid item xs={12} md={12} lg={3}>
                         <Typography
                             color='inherit'

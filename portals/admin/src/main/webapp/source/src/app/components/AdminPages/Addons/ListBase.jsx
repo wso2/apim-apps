@@ -48,7 +48,8 @@ function ListBase(props) {
     const {
         EditComponent, editComponentProps, DeleteComponent, showActionColumn,
         columProps, pageProps, addButtonProps, addButtonOverride,
-        searchProps: { active: searchActive, searchPlaceholder }, apiCall, emptyBoxProps: {
+        searchProps: { active: searchActive, searchPlaceholder }, apiCall, initialData,
+        emptyBoxProps: {
             title: emptyBoxTitle,
             content: emptyBoxContent,
         },
@@ -60,7 +61,7 @@ function ListBase(props) {
     } = props;
 
     const [searchText, setSearchText] = useState('');
-    const [data, setData] = useState(null);
+    const [data, setData] = useState(initialData || null);
     const [error, setError] = useState(null);
     const intl = useIntl();
 
@@ -92,6 +93,10 @@ function ListBase(props) {
     };
 
     const fetchData = () => {
+        if (initialData) {
+            setData(initialData);
+            return;
+        }
         // Fetch data from backend when an apiCall is provided
         setData(null);
         if (apiCall) {
@@ -115,8 +120,14 @@ function ListBase(props) {
     };
 
     useEffect(() => {
-        fetchData();
+        if (!initialData) {
+            fetchData();
+        }
     }, []);
+
+    useEffect(() => {
+        setData(initialData);
+    }, [initialData]);
 
     useLayoutEffect(() => {
         let i;
@@ -155,16 +166,33 @@ function ListBase(props) {
                                 const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
                                 const isAI = tableMeta.rowData[1] === 'AI API Quota';
                                 return (
-                                    <div data-testid={`${itemName}-actions`}>
+                                    <div style={{ display: 'flex', gap: '4px' }} data-testid={`${itemName}-actions`}>
                                         <RouterLink
                                             to={{
                                                 pathname: editComponentProps.routeTo + artifactId,
                                                 state: { isAI },
                                             }}
                                         >
-                                            <IconButton color='primary' component='span' size='large'>
-                                                <EditIcon aria-label={`edit-policies+${artifactId}`} />
-                                            </IconButton>
+
+                                            {(dataRow.isReadOnly)
+                                                ? (
+                                                    <IconButton
+                                                        color='primary'
+                                                        component='span'
+                                                        size='large'
+                                                        disabled
+                                                    >
+                                                        <EditIcon aria-label={`edit-policies+${artifactId}`} />
+                                                    </IconButton>
+                                                ) : (
+                                                    <IconButton
+                                                        color='primary'
+                                                        component='span'
+                                                        size='large'
+                                                    >
+                                                        <EditIcon aria-label={`edit-policies+${artifactId}`} />
+                                                    </IconButton>
+                                                )}
                                         </RouterLink>
                                         {DeleteComponent && (
                                             <DeleteComponent
@@ -185,7 +213,7 @@ function ListBase(props) {
                             }
                         }
                         return (
-                            <div data-testid={`${itemName}-actions`}>
+                            <div style={{ display: 'flex', gap: '4px' }} data-testid={`${itemName}-actions`}>
                                 {EditComponent && (
                                     <EditComponent
                                         dataRow={dataRow}
@@ -249,9 +277,11 @@ function ListBase(props) {
         ...props.options,
     };
 
-    // If no apiCall is provided OR,
-    // retrieved data is empty, display an information card.
-    if (!apiCall || (data && data.length === 0)) {
+    // Show empty state if:
+    // No apiCall and initialData is undefined OR
+    // No apiCall and initialData is empty array OR
+    // Data exists and it's an empty array
+    if ((!apiCall && (initialData === undefined || initialData?.length === 0)) || (data && data.length === 0)) {
         const content = (
             <Card>
                 <CardContent>
@@ -271,8 +301,10 @@ function ListBase(props) {
         ) : content;
     }
 
-    // If apiCall is provided and data is not retrieved yet, display progress component
-    if (!error && apiCall && !data) {
+    // If apiCall is provided and data is not retrieved yet OR
+    // If apiCall is not provided and initialData is null
+    // display progress component
+    if ((!error && apiCall && !data) || (!apiCall && initialData === null)) {
         const content = <InlineProgress />;
         return useContentBase ? (
             <ContentBase pageStyle='paperLess'>{content}</ContentBase>
@@ -400,6 +432,7 @@ ListBase.defaultProps = {
     ),
     showActionColumn: true,
     apiCall: null,
+    initialData: null,
     EditComponent: null,
     DeleteComponent: null,
     editComponentProps: {},
@@ -423,6 +456,7 @@ ListBase.propTypes = {
         active: PropTypes.bool.isRequired,
     }),
     apiCall: PropTypes.func,
+    initialData: PropTypes.shape([]),
     emptyBoxProps: PropTypes.shape({
         title: PropTypes.element.isRequired,
         content: PropTypes.element.isRequired,

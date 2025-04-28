@@ -20,7 +20,13 @@ import React from 'react';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
-import { Chip, Button } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import Configurations from 'Config';
+import {
+    Chip, Button, Tooltip, List, ListItemButton, ListItemIcon, Link,
+    ListItemText,
+} from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import GovernanceAPI from 'AppData/GovernanceAPI';
@@ -34,7 +40,7 @@ import DeleteRuleset from './DeleteRuleset';
 function apiCall() {
     const restApi = new GovernanceAPI();
     return restApi
-        .getRulesetsList()
+        .getRulesets({ limit: 100, offset: 0 })
         .then((result) => {
             return result.body.list;
         })
@@ -63,17 +69,24 @@ export default function ListRulesets() {
                 customBodyRender: (value, tableMeta) => {
                     const dataRow = tableMeta.rowData;
                     return (
-                        // TODO: Add text wrapping + tooltip for long descriptions
-                        <>
-                            <Typography>{value}</Typography>
-                            <Typography
-                                variant='caption'
-                                display='block'
-                                color='textSecondary'
-                            >
-                                {dataRow[1]}
-                            </Typography>
-                        </>
+                        <Tooltip title={dataRow[1]} arrow>
+                            <div>
+                                <Typography>{value}</Typography>
+                                <Typography
+                                    variant='caption'
+                                    display='block'
+                                    color='textSecondary'
+                                    sx={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        maxWidth: '320px',
+                                    }}
+                                >
+                                    {dataRow[1]}
+                                </Typography>
+                            </div>
+                        </Tooltip>
                     );
                 },
                 setCellProps: () => ({
@@ -180,6 +193,31 @@ export default function ListRulesets() {
                 'Find comprehensive governance rulesets designed to ensure'
                 + ' the consistency, security and reliability for your APls',
         }),
+        help: (
+            <HelpBase>
+                <List component='nav'>
+                    <ListItemButton>
+                        <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                            <DescriptionIcon />
+                        </ListItemIcon>
+                        <Link
+                            target='_blank'
+                            href={Configurations.app.docUrl
+                                + 'governance/api-governance-admin-capabilities/#create-and-manage-rulesets'}
+                            underline='hover'
+                        >
+                            <ListItemText primary={(
+                                <FormattedMessage
+                                    id='Governance.Rulesets.List.help.link'
+                                    defaultMessage='Create and Manage Rulesets'
+                                />
+                            )}
+                            />
+                        </Link>
+                    </ListItemButton>
+                </List>
+            </HelpBase>
+        ),
     };
 
     const addButtonProps = {

@@ -30,7 +30,7 @@ import SubscriptionThrottlingPolicies from 'AppComponents/Throttling/Subscriptio
 import APICategories from 'AppComponents/APICategories/ListApiCategories';
 import BlacklistThrottlingPolicies from 'AppComponents/Throttling/Blacklist/List';
 import ListApplications from 'AppComponents/ApplicationSettings/ListApplications';
-import GatewayEnvironments from 'AppComponents/GatewayEnvironments/ListGWEnviornments';
+import GatewayEnvironments from 'AppComponents/GatewayEnvironments';
 import AdvancedThrottlePolicies from 'AppComponents/Throttling/Advanced';
 import CustomThrottlingPolicies from 'AppComponents/Throttling/Custom';
 import TenantTheme from 'AppComponents/TenantTheme/UploadTheme';
@@ -40,7 +40,6 @@ import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
 import Policies from 'AppComponents/Governance/Policies';
 import RulesetCatalog from 'AppComponents/Governance/RulesetCatalog';
-import Overview from 'AppComponents/Governance/Overview';
 import BusinessIcon from '@mui/icons-material/Business';
 import Organizations from 'AppComponents/Organizations/ListOrganizations';
 
@@ -49,8 +48,8 @@ import CategoryIcon from '@mui/icons-material/Category';
 import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PolicyIcon from '@mui/icons-material/Policy';
 import RuleIcon from '@mui/icons-material/Rule';
-import BarChartIcon from '@mui/icons-material/BarChart';
 import BlockIcon from '@mui/icons-material/Block';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ApplicationCreation from 'AppComponents/Workflow/ApplicationCreation';
 import ApplicationDeletion from 'AppComponents/Workflow/ApplicationDeletion';
@@ -70,6 +69,7 @@ import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import ListApis from '../APISettings/ListApis';
 import UsageReport from '../APISettings/UsageReport';
 import ListLabels from '../Labels/ListLabels';
+import ComplianceDashboard from '../Governance/ComplianceDashboard';
 
 const RouteMenuMapping = (intl) => [
     {
@@ -205,6 +205,24 @@ const RouteMenuMapping = (intl) => [
         path: '/settings/environments',
         component: GatewayEnvironments,
         icon: <GamesIcon />,
+        addEditPageDetails: [
+            {
+                id: 'Add Gateway Environment',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.gateways.items.Adding',
+                    defaultMessage: 'Gateway Environment',
+                }),
+                path: '/settings/gateways/create',
+            },
+            {
+                id: 'Edit Gateway Environment',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.gateways.items.Editing',
+                    defaultMessage: 'Edit Gateway Environment',
+                }),
+                path: '/settings/gateways/(.*?)$',
+            },
+        ],
     },
     {
         id: 'API Categories',
@@ -283,6 +301,16 @@ const RouteMenuMapping = (intl) => [
         ],
     },
     {
+        id: 'Labels',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.labels',
+            defaultMessage: 'Labels',
+        }),
+        path: '/settings/labels',
+        component: ListLabels,
+        icon: <BookmarksIcon />,
+    },
+    {
         id: 'Governance',
         displayText: intl.formatMessage({
             id: 'Base.RouteMenuMapping.governance',
@@ -290,14 +318,14 @@ const RouteMenuMapping = (intl) => [
         }),
         children: [
             {
-                id: 'Overview',
+                id: 'Compliance',
                 displayText: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.overview',
-                    defaultMessage: 'Overview',
+                    id: 'Base.RouteMenuMapping.compliance',
+                    defaultMessage: 'Compliance',
                 }),
-                path: '/governance/overview',
-                component: Overview,
-                icon: <BarChartIcon />,
+                path: '/governance/compliance',
+                component: ComplianceDashboard,
+                icon: <CheckCircleIcon />,
             },
             {
                 id: 'Policies',
@@ -320,16 +348,6 @@ const RouteMenuMapping = (intl) => [
                 icon: <RuleIcon />,
             },
         ],
-    },
-    {
-        id: 'Labels',
-        displayText: intl.formatMessage({
-            id: 'Base.RouteMenuMapping.labels',
-            defaultMessage: 'Labels',
-        }),
-        path: '/settings/labels',
-        component: ListLabels,
-        icon: <BookmarksIcon />,
     },
     {
         id: 'Tasks',

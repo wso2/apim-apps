@@ -41,6 +41,7 @@ const PREFIX = 'Sdk';
 const classes = {
     genericMessageWrapper: `${PREFIX}-genericMessageWrapper`,
     titleSub: `${PREFIX}-titleSub`,
+    searchBox: `${PREFIX}-searchBox`,
     gridRoot: `${PREFIX}-gridRoot`,
     titleWrappper: `${PREFIX}-titleWrappper`,
     cardTitle: `${PREFIX}-cardTitle`,
@@ -58,9 +59,15 @@ const Root = styled('div')((
 
     [`& .${classes.titleSub}`]: {
         marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(3),
         paddingTop: theme.spacing(2),
         paddingBottom: theme.spacing(2),
         color: theme.palette.getContrastText(theme.palette.background.default),
+    },
+
+    [`& .${classes.searchBox}`]: {
+        marginLeft: theme.spacing(3),
+        marginRight: theme.spacing(3),
     },
 
     [`& .${classes.gridRoot}`]: {
@@ -260,6 +267,7 @@ class SdkLegacy extends React.Component {
                             })}
                             type='text'
                             margin='normal'
+                            className={classes.searchBox}
                             name='searchSdk'
                             onChange={this.handleChange}
                         />

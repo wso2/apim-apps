@@ -602,7 +602,8 @@ function TryOutController(props) {
         <Root>
             <Grid x={12} md={6} className={classes.centerItems}>
                 <Box>
-                    {securitySchemeType !== 'TEST' && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                    {securitySchemeType !== 'TEST' && (!api.advertiseInfo || !api.advertiseInfo.advertised) 
+                        && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
                         <>
                             <Box mb={1}>
                                 <Typography variant='body1'>
@@ -638,7 +639,8 @@ function TryOutController(props) {
                         </>
                     )}
                     {((isApiKeyEnabled || isBasicAuthEnabled || isOAuthEnabled) && showSecurityType)
-                        && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                        && (!api.advertiseInfo || !api.advertiseInfo.advertised) 
+                        && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
                         <>
                             <Typography variant='h5' component='h2' color='textPrimary' className={classes.categoryHeading}>
                                 <FormattedMessage
@@ -714,6 +716,7 @@ function TryOutController(props) {
                         || (subscriptions.length > 0 && !isSubValidationDisabled))
                         && securitySchemeType !== 'BASIC' && securitySchemeType !== 'TEST'
                         && (!api.advertiseInfo || !api.advertiseInfo.advertised)
+                        && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)
                         && (
                             <SelectAppPanel
                                 subscriptions={subscriptions}
@@ -726,7 +729,7 @@ function TryOutController(props) {
                             />
                         )}
                     {subscriptions && subscriptions.length === 0 && securitySchemeType !== 'TEST'
-                    && securitySchemeType !== 'BASIC'
+                    && securitySchemeType !== 'BASIC' && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)
                         && (!api.advertiseInfo || !api.advertiseInfo.advertised) && !isSubValidationDisabled ? (
                             <Grid x={8} md={6} className={classes.tokenType} item>
                                 <Box mb={1} alignItems='center'>
@@ -745,7 +748,7 @@ function TryOutController(props) {
                             </Grid>
                         ) : (
                             (!ksGenerated && securitySchemeType === 'OAUTH') && (!api.advertiseInfo
-                                || !api.advertiseInfo.advertised) && (
+                                || !api.advertiseInfo.advertised) && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
                                 <Grid x={8} md={6} className={classes.tokenType} item>
                                     <Box mb={1} alignItems='center'>
                                         <Typography variant='body1'>
@@ -765,7 +768,8 @@ function TryOutController(props) {
                                 </Grid>
                             )
                         )}
-                    {(!api.advertiseInfo || !api.advertiseInfo.advertised) ? (
+                    {((!api.advertiseInfo || !api.advertiseInfo.advertised) 
+                        && (api.gatewayVendor === 'wso2' || !api.gatewayVendor)) ? (
                         <Box display='block' justifyContent='center'>
                             <Grid x={8} md={6} className={classes.tokenType} item>
                                 {securitySchemeType === 'BASIC' && (
@@ -929,7 +933,8 @@ function TryOutController(props) {
                             api={api}
                         />
                     )}
-                    {(!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                    {(!api.advertiseInfo || !api.advertiseInfo.advertised) 
+                        && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
                         <Box display='flex' justifyContent='center' className={classes.gatewayEnvironment}>
                             <Grid xs={12} md={6} item>
                                 {(environments && environments.length > 0) && (

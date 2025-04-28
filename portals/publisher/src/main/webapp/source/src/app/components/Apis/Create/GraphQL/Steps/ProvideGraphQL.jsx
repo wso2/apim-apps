@@ -118,6 +118,7 @@ export default function ProvideGraphQL(props) {
         inputsDispatcher({ action: 'inputValue', value: null });
         inputsDispatcher({ action: 'isFormValid', value: false });
         inputsDispatcher({ action: 'endpoint', value: '' });
+        inputsDispatcher({ action: 'isValid', value: null });
     }
 
     const isInvalidURL = Boolean(isValid.url);
@@ -204,13 +205,8 @@ export default function ProvideGraphQL(props) {
     }
 
     useEffect(() => {
-        if (inputValue) {
-            if (inputType === ProvideGraphQL.INPUT_TYPES.FILE) {
-                onDrop([inputValue]);
-            } else if (inputType === ProvideGraphQL.INPUT_TYPES.URL ||
-                inputType === ProvideGraphQL.INPUT_TYPES.ENDPOINT) {
-                validateURL(inputValue);
-            }
+        if (inputValue && inputType === ProvideGraphQL.INPUT_TYPES.FILE) {
+            onDrop([inputValue]);
         }
     }, [inputType, inputValue]);
 
@@ -237,10 +233,10 @@ export default function ProvideGraphQL(props) {
                         <RadioGroup
                             aria-label='Input Source'
                             value={apiInputs.inputType === '' ? 'url' : apiInputs.inputType}
-                            onChange={(event) => inputsDispatcher({
-                                action: 'inputType',
-                                value: event.target.value
-                            })}
+                            onChange={(event) => {
+                                inputsDispatcher({ action: 'inputType', value: event.target.value });
+                                setValidity({ file: null });
+                            }}
                         >
                             <FormControlLabel
                                 disabled={isValidating}
@@ -279,7 +275,7 @@ export default function ProvideGraphQL(props) {
                 </Grid>
                 {isValid.file
                     && (
-                        <Grid item md={12}>
+                        <Grid item md={12} sx={{ mb: 2}}>
                             <Banner
                                 onClose={() => setValidity({ file: null })}
                                 disableActions

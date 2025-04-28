@@ -21,7 +21,6 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import { FormattedMessage, useIntl } from 'react-intl';
-import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
@@ -32,6 +31,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { API_SECURITY_API_KEY }
     from 'AppComponents/Apis/Details/Configuration/components/APISecurity/components/apiSecurityConstants';
 import ProvideAIOpenAPI from './Steps/ProvideAIOpenAPI';
@@ -86,6 +86,8 @@ export default function ApiCreateAIAPI(props) {
         type: 'ApiCreateAIAPI',
         inputValue: '',
         formValidity: false,
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
 
     const intl = useIntl();
@@ -124,20 +126,12 @@ export default function ApiCreateAIAPI(props) {
         const {
             name, version, context, endpoint, gatewayType, policies = ["Unlimited"], inputValue, llmProviderId,
         } = apiInputs;
-        let defaultGatewayType;
-        if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
-            defaultGatewayType = 'wso2/synapse';
-        } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')) {
-            defaultGatewayType = 'wso2/apk';
-        } else {
-            defaultGatewayType = 'default';
-        }
 
         const additionalProperties = {
             name,
             version,
             context,
-            gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
+            gatewayType,
             policies,
             subtypeConfiguration: {
                 subtype: 'AIAPI',
@@ -239,6 +233,7 @@ export default function ApiCreateAIAPI(props) {
                             api={apiInputs}
                             isAPIProduct={false}
                             hideEndpoint
+                            settings={settings}
                         />
                     )}
                 </Grid>

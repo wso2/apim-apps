@@ -661,6 +661,16 @@ class Utils {
     }
 
     /**
+     * Maps rule type value to its label
+     * @param {String} value - The value to be mapped
+     * @returns {String} The corresponding label
+     */
+    static mapRuleTypeToLabel(value) {
+        const ruleType = CONSTS.RULESET_TYPES.find((t) => t.value === value);
+        return ruleType?.label || value;
+    }
+
+    /**
      * Maps a policy adherence state value to its label
      * @param {string} state The value of the policy adherence state
      * @returns {string} The label of the policy adherence state
@@ -680,6 +690,24 @@ class Utils {
     static mapRulesetValidationStateToLabel(state) {
         const validationState = CONSTS.RULESET_VALIDATION_STATES.find((t) => t.value === state);
         return validationState?.label || state;
+    }
+
+    /**
+     * Download data as a JSON file
+     * @param {Object} data - Data object to be downloaded as JSON
+     * @param {string} filename - Name of the file without extension
+     */
+    static downloadAsJSON(data, filename) {
+        const jsonString = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${filename}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
     }
 }
 

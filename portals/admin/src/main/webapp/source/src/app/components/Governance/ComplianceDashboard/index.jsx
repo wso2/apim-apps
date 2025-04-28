@@ -27,14 +27,14 @@ import Compliance from './APICompliance/Compliance';
  * Render a list
  * @returns {JSX} Header AppBar components.
  */
-function Overview() {
+function ComplianceDashboard() {
     return (
         <Switch>
-            <Route exact path='/governance/overview' component={Summary} />
-            <Route exact path='/governance/overview/api/:id' component={Compliance} />
+            <Route exact path='/governance/compliance' component={Summary} />
+            <Route exact path='/governance/compliance/api/:id' component={Compliance} />
             <Route component={ResourceNotFound} />
         </Switch>
     );
 }
 
-export default withRouter(Overview);
+export default withRouter(ComplianceDashboard);

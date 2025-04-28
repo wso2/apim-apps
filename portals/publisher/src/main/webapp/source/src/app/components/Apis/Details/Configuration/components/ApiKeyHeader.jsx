@@ -37,7 +37,7 @@ import APIValidation from 'AppData/APIValidation';
  */
 
 export default function ApiKeyHeader(props) {
-    const { api, configDispatcher } = props;
+    const { api, configDispatcher, apiKeyEnabled } = props;
     const [apiFromContext] = useAPI();
     const loadAPIKeyHeader = apiFromContext.type==="HTTP" || apiFromContext.apiType===API.CONSTS.APIProduct;
     const [isHeaderNameValid, setIsHeaderNameValid] = useState(true);
@@ -60,7 +60,7 @@ export default function ApiKeyHeader(props) {
             <Grid container spacing={1} alignItems='center'>
                 <Grid item xs={11}>
                     <TextField
-                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                        disabled={isRestricted(['apim:api_create'], apiFromContext) || !apiKeyEnabled}
                         id='outlined-name'
                         label={(
                             <FormattedMessage
@@ -82,14 +82,19 @@ export default function ApiKeyHeader(props) {
                         InputProps={{
                             id: 'itest-id-apiKeyHeaderName-input',
                             onBlur: ({ target: { value } }) => {
-                                validateHeader(value);
+                                if (value.trim() === '') {
+                                    configDispatcher({ action: 'apiKeyHeader', value: 'ApiKey' });
+                                } else{
+                                    validateHeader(value);
+                                }
                             },
                         }}
                         margin='normal'
                         variant='outlined'
                         onChange={({ target: { value } }) => configDispatcher({
                             action: 'apiKeyHeader',
-                            value: value === '' ? 'ApiKeys' : value })}
+                            value
+                        })}
                         style={{ display: 'flex' }}
                     />
                 </Grid>
@@ -117,6 +122,9 @@ export default function ApiKeyHeader(props) {
 }
 
 ApiKeyHeader.propTypes = {
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        apiKeyHeader: PropTypes.string,
+    }).isRequired,
     configDispatcher: PropTypes.func.isRequired,
+    apiKeyEnabled: PropTypes.bool.isRequired,
 };

@@ -25,6 +25,8 @@ import LinkIcon from '@mui/icons-material/Link';
 import API from 'AppData/api';
 import { grey } from '@mui/material/colors';
 import styled from '@emotion/styled';
+import IconButton from '@mui/material/IconButton';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 
 const PREFIX = 'CustomizedStepper';
 
@@ -157,11 +159,14 @@ function ColorlibStepIcon(props) {
 export default function CustomizedStepper() {
     const [api, updateAPI] = useAPI();
     const [isUpdating, setUpdating] = useState(false);
+    const [isMandatoryPropertiesAvailable, setIsMandatoryPropertiesAvailable] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
+    const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
     const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct && api.endpointConfig !== null
-    && api.endpointConfig.implementation_status === 'prototyped';
-    const isEndpointAvailable = api.endpointConfig !== null;
-    const isEndpointSecurityConfigured = api.endpointConfig && api.endpointConfig.endpoint_security;
+        && api.endpointConfig.implementation_status === 'prototyped';
+    const isEndpointAvailable = api.subtypeConfiguration?.subtype === 'AIAPI'
+        ? (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null)
+        : api.endpointConfig !== null;
     const isTierAvailable = api.policies.length !== 0;
     const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
@@ -182,7 +187,7 @@ export default function CustomizedStepper() {
         // TODO: tmkasun need to handle is loading
         devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
     }
-    const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI())
+    const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI() || api.gatewayVendor !== 'wso2')
         ? ['Develop', 'Deploy', 'Publish'] : ['Develop', 'Deploy', 'Test', 'Publish'];
     const forceComplete = [];
     if (isPublished) {
@@ -202,6 +207,33 @@ export default function CustomizedStepper() {
         && (isEndpointAvailable || api.type === 'WEBSUB' || isPrototypedAvailable)
         && (isTierAvailable || isMutualSslOnly) && deploymentsAvailable) {
         activeStep = steps.length;
+    }
+
+    function validateMandatoryCustomProperties() {
+        api.getSettings()
+            .then((response) => {
+                const { customProperties } = response;
+                let mandatoryPropsAvailable;
+                if (customProperties && customProperties.length > 0) {
+                    const requiredPropertyNames = customProperties
+                        .filter(property => property.Required)
+                        .map(property => property.Name);
+                    if (requiredPropertyNames.length > 0) {
+                        mandatoryPropsAvailable = requiredPropertyNames.every(propertyName => {
+                            const property = api.additionalProperties.find(prop => prop.name === propertyName);
+                            return property && property.value !== '';
+                        });
+                    } else {
+                        mandatoryPropsAvailable = true;
+                    }
+                } else {
+                    mandatoryPropsAvailable = true;
+                }
+                setIsMandatoryPropertiesAvailable(mandatoryPropsAvailable);
+            })
+            .catch((error) => {
+                console.error('Error validating mandatory custom properties:', error);
+            });
     }
 
     useEffect(() => {
@@ -225,7 +257,51 @@ export default function CustomizedStepper() {
             }
 
         });
+        validateMandatoryCustomProperties();
     }, []);
+
+    useEffect(() => {
+        const checkEndpointSecurity = async () => {
+            try {
+                const hasProductionEndpoint = !!api.primaryProductionEndpointId;
+                const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
+                let isProductionSecure = false;
+                let isSandboxSecure = false;
+
+                if (hasProductionEndpoint) {
+                    if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
+                        isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
+                    } else {
+                        const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
+                        isProductionSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.production;
+                    }
+                }
+
+                if (hasSandboxEndpoint) {
+                    if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
+                        isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
+                    } else {
+                        const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
+                        isSandboxSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox;
+                    }
+                }
+
+                if (hasProductionEndpoint && hasSandboxEndpoint) {
+                    setIsEndpointSecurityConfigured(isProductionSecure && isSandboxSecure);
+                } else if (hasProductionEndpoint) {
+                    setIsEndpointSecurityConfigured(isProductionSecure);
+                } else if (hasSandboxEndpoint) {
+                    setIsEndpointSecurityConfigured(isSandboxSecure);
+                } else {
+                    setIsEndpointSecurityConfigured(false);
+                }
+            } catch (error) {
+                console.error('Error checking endpoint security:', error);
+                setIsEndpointSecurityConfigured(false);
+            }
+        };
+        checkEndpointSecurity();
+    }, [api]);
 
     /**
  * Update the LifeCycle state of the API
@@ -256,8 +332,47 @@ export default function CustomizedStepper() {
             })
             .finally(() => setUpdating(false))
             .catch((errorResponse) => {
-                console.log(errorResponse);
-                Alert.error(JSON.stringify(errorResponse.message));
+                if (errorResponse.response?.body?.code === 903300) {
+                    Alert.error(
+                        <Box sx={{ width: '100%' }}>
+                            <Typography>
+                                <FormattedMessage
+                                    id='Apis.Details.LifeCycle.Policies.update.error.governance'
+                                    defaultMessage={'One or more governance policies have been violated. '
+                                    + 'Please try using the publish option in the Lifecycle page for more details.'}
+                                />
+                            </Typography>
+                            <Box sx={{ 
+                                display: 'flex', 
+                                justifyContent: 'flex-end',
+                                mt: 1
+                            }}>
+                                <Link
+                                    component={RouterLink}
+                                    to={`/apis/${api.id}/lifecycle`}
+                                    sx={{
+                                        color: 'inherit',
+                                        fontWeight: 600,
+                                        textDecoration: 'none',
+                                        transition: 'all 0.3s',
+                                        '&:hover': {
+                                            transform: 'translateY(-2px)',
+                                            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                        },
+                                    }}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.LifeCycle.Policies.update.error.governance.link'
+                                        defaultMessage='Go to Lifecycle page'
+                                    />
+                                </Link>
+                            </Box>
+                        </Box>
+                    );
+                } else {
+                    console.log(errorResponse);
+                    Alert.error(JSON.stringify(errorResponse.message));
+                }
             });
     }
 
@@ -394,24 +509,37 @@ export default function CustomizedStepper() {
                                 {isUpdating && <CircularProgress size={20} />}
                             </Button>
                         ) : (
-                            <Button
-                                size='small'
-                                variant='contained'
-                                color='primary'
-                                data-testid='publish-state-button'
-                                onClick={() => updateLCStateOfAPI(api.id, 'Publish')}
-                                disabled={((api.type !== 'WEBSUB' && !isEndpointAvailable)
-                                    || (!isMutualSslOnly && !isTierAvailable))
-                                    || !deploymentsAvailable
-                                    || api.isRevision || AuthManager.isNotPublisher()
-                                    || api.workflowStatus === 'CREATED'}
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.Overview.CustomizedStepper.btn.publish'
-                                    defaultMessage='Publish'
-                                />
-                                {isUpdating && <CircularProgress size={20} />}
-                            </Button>
+                            <>
+                                <Button
+                                    size='small'
+                                    variant='contained'
+                                    color='primary'
+                                    data-testid='publish-state-button'
+                                    onClick={() => updateLCStateOfAPI(api.id, 'Publish')}
+                                    disabled={((api.type !== 'WEBSUB' && !isEndpointAvailable)
+                                        || (!isMutualSslOnly && !isTierAvailable))
+                                        || !deploymentsAvailable
+                                        || api.isRevision || AuthManager.isNotPublisher()
+                                        || api.workflowStatus === 'CREATED'
+                                        || !isMandatoryPropertiesAvailable}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.Overview.CustomizedStepper.btn.publish'
+                                        defaultMessage='Publish'
+                                    />
+                                    {isUpdating && <CircularProgress size={20} />}
+                                </Button>
+                                {deploymentsAvailable && !isMandatoryPropertiesAvailable && (
+                                    <Tooltip
+                                        title='Mandatory API Properties should be provided to publish an API.'
+                                        placement='bottom'
+                                    >
+                                        <IconButton color='inherit' size='small' aria-label='delete'>
+                                            <InfoOutlinedIcon fontSize='small' />
+                                        </IconButton>
+                                    </Tooltip>
+                                )}
+                            </>
                         )}
                         {api.workflowStatus === 'CREATED' && (
                             <Typography variant='caption' color='error'>
@@ -429,8 +557,16 @@ export default function CustomizedStepper() {
     || (!api.isAPIProduct() && !isEndpointAvailable)
     || (!isMutualSslOnly && !isTierAvailable)
     || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT');
-    const isDeployLinkDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || api.workflowStatus === 'CREATED' || lifecycleState === 'RETIRED');
+    const isDeployLinkDisabled =
+        (api.type !== 'WEBSUB' &&
+            !(
+                isEndpointAvailable &&
+                (api.subtypeConfiguration?.subtype === 'AIAPI'
+                    ? isEndpointSecurityConfigured
+                    : true)
+            )) ||
+        api.workflowStatus === 'CREATED' ||
+        lifecycleState === 'RETIRED';
     let deployLinkToolTipTitle = '';
     if (lifecycleState === 'RETIRED') {
         deployLinkToolTipTitle = intl.formatMessage({

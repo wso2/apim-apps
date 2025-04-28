@@ -21,6 +21,7 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from 'AppComponents/Shared/Alert';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
 import {
     Box,
     Button,
@@ -35,15 +36,25 @@ import {
     DialogContent,
     DialogActions,
     DialogContentText,
+    Alert as MuiAlert,
+    ListItemIcon,
+    List,
+    ListItemButton,
+    ListItemText,
+    Link,
 } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Editor from '@monaco-editor/react';
 import cloneDeep from 'lodash.clonedeep';
 import PropTypes from 'prop-types';
+import Configurations from 'Config';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
+import CloudDownloadIcon from '@mui/icons-material/CloudDownload';
+import DescriptionIcon from '@mui/icons-material/Description';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import CONSTS from 'AppData/Constants';
 import AuthManager from 'AppData/AuthManager';
+import Utils from 'AppData/Utils';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 const StyledHr = styled('hr')({ border: 'solid 1px #efefef' });
@@ -91,9 +102,9 @@ function AddEditRuleset(props) {
     const [saving, setSaving] = useState(false);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [pendingFile, setPendingFile] = useState(null);
+    const [rulesetValidationError, setRulesetValidationError] = useState(null);
     const intl = useIntl();
     const { match: { params: { id } }, history } = props;
-    const editMode = id !== undefined;
 
     const initialState = {
         name: '',
@@ -120,7 +131,7 @@ function AddEditRuleset(props) {
         if (id) {
             // Get ruleset metadata
             restApi
-                .getRuleset(id)
+                .getRulesetById(id)
                 .then((result) => {
                     const { body } = result;
                     return body;
@@ -198,6 +209,18 @@ function AddEditRuleset(props) {
     const handleCancelOverwrite = () => {
         setPendingFile(null);
         setOpenConfirmDialog(false);
+    };
+
+    const handleDownload = () => {
+        if (!rulesetContent) {
+            Alert.warning(intl.formatMessage({
+                id: 'Governance.Rulesets.AddEdit.download.empty',
+                defaultMessage: 'No content to download',
+            }));
+            return;
+        }
+
+        Utils.downloadContent(rulesetContent, `${name || 'ruleset'}.yaml`);
     };
 
     const hasErrors = (fieldName, fieldValue, validatingActive) => {
@@ -298,6 +321,7 @@ function AddEditRuleset(props) {
 
     const formSave = () => {
         setValidating(true);
+        setRulesetValidationError(null);
         if (formHasErrors(true)) {
             Alert.error(intl.formatMessage({
                 id: 'Governance.Rulesets.AddEdit.form.has.errors',
@@ -312,6 +336,7 @@ function AddEditRuleset(props) {
         const body = {
             ...state,
             provider: AuthManager.getUser().name,
+            ruleCategory: 'SPECTRAL',
             rulesetContent: file,
         };
 
@@ -320,7 +345,7 @@ function AddEditRuleset(props) {
         let promiseAPICall = null;
 
         if (id) {
-            promiseAPICall = restApi.updateRuleset(id, body)
+            promiseAPICall = restApi.updateRulesetById(id, body)
                 .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.edit.success',
@@ -328,7 +353,7 @@ function AddEditRuleset(props) {
                     });
                 });
         } else {
-            promiseAPICall = restApi.addRuleset(body)
+            promiseAPICall = restApi.createRuleset(body)
                 .then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Rulesets.AddEdit.add.success',
@@ -343,7 +368,12 @@ function AddEditRuleset(props) {
         }).catch((error) => {
             const { response, message } = error;
             if (response && response.body) {
-                Alert.error(response.body.description);
+                if (response.body.code === 990120) {
+                    setRulesetValidationError(response.body.description);
+                    Alert.error(response.body.message);
+                } else {
+                    Alert.error(response.body.description);
+                }
             } else if (message) {
                 Alert.error(message);
             }
@@ -371,12 +401,36 @@ function AddEditRuleset(props) {
                     />
                 )
             }
-            help={<div>TODO: Link Doc</div>}
+            help={(
+                <HelpBase>
+                    <List component='nav'>
+                        <ListItemButton>
+                            <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                                <DescriptionIcon />
+                            </ListItemIcon>
+                            <Link
+                                target='_blank'
+                                href={Configurations.app.docUrl
+                                    + 'governance/api-governance-admin-capabilities/#create-and-manage-rulesets'}
+                                underline='hover'
+                            >
+                                <ListItemText primary={(
+                                    <FormattedMessage
+                                        id='Governance.Rulesets.AddEdit.help.link'
+                                        defaultMessage='Create and Manage Rulesets'
+                                    />
+                                )}
+                                />
+                            </Link>
+                        </ListItemButton>
+                    </List>
+                </HelpBase>
+            )}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
                     {/* General Details Section */}
-                    <Grid item xs={12} md={12} lg={3}>
+                    <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px', paddingTop: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Rulesets.AddEdit.general.details'
@@ -412,7 +466,6 @@ function AddEditRuleset(props) {
                                 error={hasErrors('name', name, validating)}
                                 helperText={hasErrors('name', name, validating)}
                                 variant='outlined'
-                                disabled={editMode}
                             />
                             <TextField
                                 margin='dense'
@@ -431,6 +484,9 @@ function AddEditRuleset(props) {
                                 multiline
                                 rows={3}
                                 variant='outlined'
+                                InputProps={{
+                                    style: { padding: 0 },
+                                }}
                             />
                             <TextField
                                 margin='dense'
@@ -512,7 +568,7 @@ function AddEditRuleset(props) {
                     </Grid>
 
                     {/* Ruleset Content Section */}
-                    <Grid item xs={12} md={12} lg={5}>
+                    <Grid item xs={12} md={12} lg={5} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Rulesets.AddEdit.content.title'
@@ -531,23 +587,36 @@ function AddEditRuleset(props) {
                         <Box component='div' m={1}>
                             <Paper variant='outlined'>
                                 <EditorToolbar>
-                                    <Button
-                                        component='label'
-                                        variant='contained'
-                                        startIcon={<CloudUploadIcon />}
-                                        size='small'
-                                    >
-                                        <FormattedMessage
-                                            id='Governance.Rulesets.AddEdit.button.upload'
-                                            defaultMessage='Upload File'
-                                        />
-                                        <input
-                                            type='file'
-                                            hidden
-                                            accept='.yaml,.yml,.json'
-                                            onChange={handleFileUpload}
-                                        />
-                                    </Button>
+                                    <Box sx={{ display: 'flex', gap: 1 }}>
+                                        <Button
+                                            component='label'
+                                            variant='contained'
+                                            startIcon={<CloudUploadIcon />}
+                                            size='small'
+                                        >
+                                            <FormattedMessage
+                                                id='Governance.Rulesets.AddEdit.button.upload'
+                                                defaultMessage='Upload File'
+                                            />
+                                            <input
+                                                type='file'
+                                                hidden
+                                                accept='.yaml,.yml,.json'
+                                                onChange={handleFileUpload}
+                                            />
+                                        </Button>
+                                        <Button
+                                            variant='contained'
+                                            startIcon={<CloudDownloadIcon />}
+                                            size='small'
+                                            onClick={handleDownload}
+                                        >
+                                            <FormattedMessage
+                                                id='Governance.Rulesets.AddEdit.button.download'
+                                                defaultMessage='Download'
+                                            />
+                                        </Button>
+                                    </Box>
                                 </EditorToolbar>
                                 <EditorContainer>
                                     <Editor
@@ -568,6 +637,13 @@ function AddEditRuleset(props) {
                         {validating && hasErrors('rulesetContent', rulesetContent, true) && (
                             <Box sx={{ color: 'error.main', pl: 2, pb: 1 }}>
                                 {hasErrors('rulesetContent', rulesetContent, true)}
+                            </Box>
+                        )}
+                        {rulesetValidationError && (
+                            <Box sx={{ m: 1 }}>
+                                <MuiAlert severity='error' style={{ whiteSpace: 'pre-line' }}>
+                                    {rulesetValidationError}
+                                </MuiAlert>
                             </Box>
                         )}
                     </Grid>

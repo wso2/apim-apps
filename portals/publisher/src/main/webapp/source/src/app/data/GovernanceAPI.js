@@ -107,6 +107,20 @@ class GovernanceAPI extends Resource {
             );
         });
     }
+
+    /**
+     * Get ruleset by id
+     * @param {string} rulesetId Ruleset id
+     * @returns {Promise} Promised ruleset response
+     */
+    getRulesetById(rulesetId) {
+        return this.client.then((client) => {
+            return client.apis['Rulesets'].getRulesetById(
+                { rulesetId: rulesetId },
+                this._requestMetaData(),
+            );
+        });
+    }
 }
 
 export default GovernanceAPI;

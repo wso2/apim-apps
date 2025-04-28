@@ -19,17 +19,15 @@
 import React, { useState, useEffect } from 'react';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { styled } from '@mui/material/styles';
-import { useTheme } from '@mui/material';
+import { useTheme, Divider, Box, Grid  } from '@mui/material';
 import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import Grid from '@mui/material/Grid';
 import { FormattedMessage } from 'react-intl';
 import useMediaQuery from '@mui/material/useMediaQuery';
-
 import RestAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/RestAPIMenu';
 import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';
 import GraphqlAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/GraphqlAPIMenu';
 import StreamingAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/StreamingAPIMenu';
+import DesignAssistantMenu from './Menus/DesignAssistantMenu';
 import AIAPIMenu from './Menus/AIAPIMenu';
 
 const PREFIX = 'APILanding';
@@ -49,7 +47,7 @@ const APILanding = () => {
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const { data: settings } = usePublisherSettings();
     const [gateway, setGatewayType] = useState(true);
-    
+
     const getGatewayType = () => {
         if (settings != null) {
             if (settings.gatewayTypes && settings.gatewayTypes.includes('Regular')) {
@@ -89,7 +87,7 @@ const APILanding = () => {
                             defaultMessage='Let’s get started !'
                         />
                         {settings && settings.portalConfigurationOnlyModeEnabled ? (
-                            <Box color='text.secondary' pt={2}>
+                            <Box color='text.secondary' pt={1}>
                                 <Typography display='block' gutterBottom align='center' variant='body1'>
                                     <FormattedMessage
                                         id='Apis.Listing.SampleAPI.SampleAPI.no.apis.deployed'
@@ -98,11 +96,11 @@ const APILanding = () => {
                                 </Typography>
                             </Box>
                         ) : (
-                            <Box color='text.secondary' pt={2}>
+                            <Box color='text.secondary' pt={1}>
                                 <Typography display='block' gutterBottom align='center' variant='body1'>
                                     <FormattedMessage
                                         id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
-                                        defaultMessage='Choose your option to create an API '
+                                        defaultMessage='Choose your option to create an API'
                                     />
                                 </Typography>
                             </Box>
@@ -112,27 +110,61 @@ const APILanding = () => {
 
                 {settings && !settings.portalConfigurationOnlyModeEnabled && (
                     <Grid item xs={12} md={2} lg={2} xl={2}>
-                        <Box pt={isXsOrBelow ? 2 : 7} pb={5} >
+                        <Box pt={isXsOrBelow ? 1 : 6} pb={4} >
                             <Grid
                                 container
-                                direction='row'
+                                direction='column'
                                 justifyContent='center'
                                 alignItems='flex-start'
                                 spacing={3}
                             >
-                                <RestAPIMenu icon={restApiIcon} />
-                                {gateway &&
-                                    <SoapAPIMenu icon={soapApiIcon} />
-                                }
-                                <GraphqlAPIMenu icon={graphqlIcon} />
-                                {gateway &&
-                                    <StreamingAPIMenu icon={streamingApiIcon} />
-                                }
-                                <AIAPIMenu icon={aiApiIcon} />
+                                <Grid
+                                    container
+                                    direction='row'
+                                    justifyContent='center'
+                                    alignItems='flex-start'
+                                    spacing={3}
+                                >
+                                    <RestAPIMenu icon={restApiIcon} />
+                                    {gateway &&
+                                        <SoapAPIMenu icon={soapApiIcon} />
+                                    }
+                                    <GraphqlAPIMenu icon={graphqlIcon} />
+                                    {gateway &&
+                                        <StreamingAPIMenu icon={streamingApiIcon} />
+                                    }
+                                    <AIAPIMenu icon={aiApiIcon} />
+                                </Grid>
+                                {settings.designAssistantEnabled && (
+                                    <Divider 
+                                        variant='middle' 
+                                        sx={{
+                                            backgroundColor: '#A0A5A3', 
+                                            height: 1,
+                                            width: '85%',
+                                            mt: '30px', 
+                                            mb: '10px', 
+                                            marginX: 'auto',
+                                        }}
+                                    />
+                                )}
+                                {settings.designAssistantEnabled && (
+                                    <Grid
+                                        item
+                                        sx={{ 
+                                            display: 'flex', 
+                                            justifyContent: 'center', 
+                                            width: '100%',
+                                        }}
+                                    >
+                                        <DesignAssistantMenu />
+                                    </Grid>
+                                )}
                             </Grid>
                         </Box>
                     </Grid>
                 )}
+
             </Grid>
         </Root>
     );

@@ -52,13 +52,14 @@ const DonutChart = ({
                 colors={colors}
                 series={[{
                     data,
+                    valueFormatter: () => '',
                     innerRadius: 50,
                     outerRadius: 100,
                     paddingAngle: 5,
                     cornerRadius: 5,
                     cx: 100,
                     startAngle: 90,
-                    endAngle: 470,
+                    endAngle: -270,
                 }]}
                 width={width}
                 height={height}
@@ -81,7 +82,7 @@ DonutChart.propTypes = {
 DonutChart.defaultProps = {
     height: 200,
     width: 400,
-    colors: ['#2E96FF', '#FF5252', 'grey'],
+    colors: ['#00B81D', '#FF5252', 'grey'],
 };
 
 export default DonutChart;

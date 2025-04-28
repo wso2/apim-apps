@@ -33,7 +33,6 @@ import Box from '@mui/material/Box';
 import {
     Checkbox,
     Chip,
-    Divider,
     IconButton,
     List,
     ListItem,
@@ -66,7 +65,7 @@ import StoreVisibility from './components/StoreVisibility';
 import Tags from './components/Tags';
 import Social from './components/Social';
 import APICategories from './components/APICategories';
-import SharedOrganizations from './components/SharedOrganizations';
+import APIDescription from './components/APIDescription';
 
 const PREFIX = 'DesignConfigurations';
 
@@ -341,7 +340,6 @@ export default function DesignConfigurations() {
     const [searchResult, setSearchResult] = useState({});
     const [updatedLabels, setUpdatedLabels] = useState([]);
     const [unselectedLabels, setUnselectedLabels] = useState([]);
-    const [descriptionType, setDescriptionType] = useState('');
     const [overview, setOverview] = useState('');
     const [overviewDocument, setOverviewDocument] = useState(null);
     const [isOpen, setIsOpen] = useState(false);
@@ -362,26 +360,8 @@ export default function DesignConfigurations() {
         setAnchorEl(null);
     }
 
-    const handleChange = (event) => {
-        const type = event.target.value;
-        if (type === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {
-            if (apiConfig.description === null) {
-                configDispatcher({ action: CONSTS.DESCRIPTION_TYPES.DESCRIPTION, value: overview });
-            }
-        } else if (type === CONSTS.DESCRIPTION_TYPES.OVERVIEW) {
-            if (overviewDocument === null) {
-                setOverview(apiConfig.description);
-            }
-        }
-        setDescriptionType(type);
-    };
     const updateContent = (content) => {
-        if (descriptionType === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {
-            configDispatcher({ action: CONSTS.DESCRIPTION_TYPES.DESCRIPTION, value: content });
-        } else if (descriptionType === CONSTS.DESCRIPTION_TYPES.OVERVIEW) {
-            configDispatcher({ action: CONSTS.DESCRIPTION_TYPES.DESCRIPTION, value: null });
-            setOverview(content);
-        }
+        setOverview(content);
     };
     const loadContentForDoc = (documentId) => {
         const { apiType } = api.apiType;
@@ -454,9 +434,6 @@ export default function DesignConfigurations() {
                     const doc = overviewDoc[0];
                     setOverviewDocument(doc);
                     loadContentForDoc(doc.documentId);
-                    setDescriptionType(CONSTS.DESCRIPTION_TYPES.OVERVIEW); // Only one doc we can render
-                } else {
-                    setDescriptionType(CONSTS.DESCRIPTION_TYPES.DESCRIPTION);
                 }
             })
             .catch((error) => {
@@ -520,13 +497,13 @@ export default function DesignConfigurations() {
                     }));
                 }
             });
-        if (descriptionType === CONSTS.DESCRIPTION_TYPES.DESCRIPTION) {
+        if (overview.trim() === '') {
             if (overviewDocument) {
                 deleteOverviewDocument();
             }
         }
 
-        if (descriptionType === CONSTS.DESCRIPTION_TYPES.OVERVIEW) {
+        else {
             let document = overviewDocument;
             if (document === null) {
                 document = await addDocument();
@@ -614,19 +591,29 @@ export default function DesignConfigurations() {
                 );
             } else {
                 return (
-                    <MenuItem disabled sx={{ width: '350px' }} id='label-menu-search-result-no-labels'>
+                    <ListItem sx={{ width: '350px' }} id='label-menu-search-result-no-labels'>
                         <ListItemIcon />
-                        <ListItemText primary='No Labels Found' />
-                    </MenuItem>
+                        <Typography variant='body1' color='textPrimary'>
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.Configuration.Design.no.labels.found'
+                                defaultMessage='No Labels Found'
+                            />
+                        </Typography>
+                    </ListItem>
                 );
             }
         }
 
         return (
             <span>
-                <MenuItem disabled>
-                    <ListItemText primary='Attached Labels' />
-                </MenuItem>
+                <ListItem >
+                    <Typography variant='body1' color='textPrimary' sx={{ fontWeight: 'bold' }}>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.Configuration.Design.attached.labels'
+                            defaultMessage='Attached Labels'
+                        />
+                    </Typography>
+                </ListItem>
                 <List sx={{ width: '350px' }}>
                     {updatedLabels && updatedLabels.length !== 0 ? (
                         updatedLabels.map((label) => (
@@ -641,15 +628,25 @@ export default function DesignConfigurations() {
                             </MenuItem>
                         ))
                     ) : (
-                        <MenuItem disabled>
+                        <ListItem >
                             <ListItemIcon />
-                            <ListItemText primary='No Labels Attached' />
-                        </MenuItem>
+                            <Typography variant='body2' color='textPrimary'>
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.Configuration.Design.no.labels'
+                                    defaultMessage='No Labels Attached'
+                                />
+                            </Typography>
+                        </ListItem>
                     )}
                 </List>
-                <MenuItem disabled>
-                    <ListItemText primary='Unattached Labels' />
-                </MenuItem>
+                <ListItem >
+                    <Typography variant='body1' color='textPrimary' sx={{ fontWeight: 'bold' }}>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.Configuration.Design.unattached.labels'
+                            defaultMessage='Unattached Labels'
+                        />
+                    </Typography>
+                </ListItem>
                 <List sx={{ width: '350px' }}>
                     {unselectedLabels && unselectedLabels.length !== 0 ? (
                         unselectedLabels.map((label) => (
@@ -664,10 +661,15 @@ export default function DesignConfigurations() {
                             </MenuItem>
                         ))
                     ) : (
-                        <MenuItem disabled>
+                        <ListItem >
                             <ListItemIcon />
-                            <ListItemText primary='No More Labels to Attach' />
-                        </MenuItem>
+                            <Typography variant='body2' color='textPrimary'>
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.Configuration.Design.no.more.labels'
+                                    defaultMessage='No More Labels Available'
+                                />
+                            </Typography>
+                        </ListItem>
                     )}
                 </List>
             </span>
@@ -713,7 +715,6 @@ export default function DesignConfigurations() {
                         </Grid>
                     </Grid>
                 </ListItem>
-                <Divider />
                 {labels.list && labels.list.length !== 0 ? (
                     <LabelMenu />
                 ) : (
@@ -774,12 +775,16 @@ export default function DesignConfigurations() {
                                                 <DescriptionEditor
                                                     api={apiConfig}
                                                     updateContent={updateContent}
-                                                    descriptionType={descriptionType}
-                                                    handleChange={handleChange}
                                                     overview={overview}
                                                 />
                                             </Grid>
                                         </Grid>
+                                    </Box>
+                                    <Box py={1}>
+                                        <APIDescription
+                                            api={apiConfig}
+                                            configDispatcher={configDispatcher}                                        
+                                        />
                                     </Box>
                                     <Box py={1}>
                                         <AccessControl api={apiConfig} configDispatcher={configDispatcher}
@@ -808,7 +813,10 @@ export default function DesignConfigurations() {
                                         />
                                     </Box>
                                     <Box py={1}>
-                                        {api.apiType !== API.CONSTS.APIProduct && (
+                                        {api.apiType !== API.CONSTS.APIProduct &&
+                                            settings && settings.gatewayFeatureCatalog
+                                            .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
+                                            .basic.includes("advertised") && (
                                             <AdvertiseInfo
                                                 oldApi={api}
                                                 api={apiConfig}
@@ -818,21 +826,15 @@ export default function DesignConfigurations() {
                                             />
                                         )}
                                     </Box>
-                                    { settings && settings.orgAccessControlEnabled && (
-                                        <Box py={1}>
-                                            <SharedOrganizations
-                                                api={apiConfig}
-                                                configDispatcher={configDispatcher}
-                                                organizations={api.visibleOrganizations}
-                                            />
-                                        </Box>
-                                    )}
-                                    { settings && !settings.portalConfigurationOnlyModeEnabled && (
-                                        <Box py={1}>
-                                            <DefaultVersion
-                                                api={apiConfig} configDispatcher={configDispatcher} />
-                                        </Box>
-                                    )}
+                                    { settings && !settings.portalConfigurationOnlyModeEnabled &&
+                                        settings.gatewayFeatureCatalog
+                                            .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
+                                            .basic.includes("defaultVersion") &&
+                                            <Box py={1}>
+                                                <DefaultVersion api={apiConfig}
+                                                    configDispatcher={configDispatcher} />
+                                            </Box>
+                                    }
                                     <Box pt={2}>
                                         <Button
                                             disabled={

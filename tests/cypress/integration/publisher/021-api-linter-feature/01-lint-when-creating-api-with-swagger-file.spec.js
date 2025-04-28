@@ -43,17 +43,17 @@ describe("publisher-021-01 : Lint when creating API with swagger file", () => {
         OpenAPIPage.openFileSelectRadioButton().click()
         cy.wait(3000)
         // upload the swagger
-        cy.intercept('GET', '**/linter-custom-rules').as('linter-custom-rules');
+        cy.intercept('GET', '**/linter-custom-rules?apiType=HTTP').as('linter-custom-rules');
         OpenAPIPage.browseToUploadButton().wait(3000).then(function () {
             const filepath = `api_artifacts/petstore_open_api_3.json`
             OpenAPIPage.fileUploadInput().wait(3000).attachFile(filepath)
         });
-        cy.wait('@linter-custom-rules', { timeout: 25000 }).its('response.statusCode').should('equal', 204)
+        cy.wait('@linter-custom-rules', { timeout: 25000 }).its('response.statusCode').should('equal', 200)
 
         // check linter results
         OpenAPIPage.linterResultDivBlock().should('be.visible');
         OpenAPIPage.errorsToggleButton().contains("0")
-        OpenAPIPage.warningToggleButton().contains("8")
+        OpenAPIPage.warningToggleButton().contains("16")
 
     });
 

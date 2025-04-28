@@ -50,6 +50,7 @@ import Progress from 'AppComponents/Shared/Progress';
 import API from 'AppData/api';
 import CONSTANTS from 'AppData/Constants';
 import OverviewMarkdown from 'AppComponents/Apis/Details/Documents/OverviewMarkdown';
+import Settings from 'Settings';
 import SolaceEndpoints from './SolaceEndpoints';
 import Environments from './Environments';
 import Comments from './Comments/Comments';
@@ -260,7 +261,7 @@ function Overview() {
 
     const getSubscriptionPolicies = () => {
         const restApi = new API();
-        return restApi.getAllTiers('subscription')
+        return restApi.getAllTiers('subscription', Settings.app.throttlingPolicyLimit)
             .then((response) => {
                 try {
                     // Filter policies base on async or not.
@@ -552,7 +553,8 @@ function Overview() {
                                     </InlineMessage>
                                 </Box>
                             )}
-                            {api.gatewayVendor === 'wso2' && allPolicies && allPolicies.length > 0 && !isSubValidationDisabled && (
+                            {(api.gatewayVendor === 'wso2' || !api.gatewayVendor)
+                                && allPolicies && allPolicies.length > 0 && !isSubValidationDisabled && (
                                 <>
                                     <Box mt={6}>
                                         <Typography variant='subtitle2' component='h3' className={classes.sectionTitle}>

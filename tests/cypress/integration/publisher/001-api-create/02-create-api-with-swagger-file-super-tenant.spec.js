@@ -31,7 +31,7 @@ describe("Create api with swagger file super tenant", () => {
         cy.get('#browse-to-upload-btn').then(function () {
 
             cy.intercept('POST', '**/apis/validate-openapi').as('validateOpenApi');
-            cy.intercept('GET', '**/linter-custom-rules').as('lintRules');
+            cy.intercept('GET', '**/linter-custom-rules?apiType=HTTP').as('lintRules');
             const filepath = `api_artifacts/swagger_2.0.json`
 
             cy.get('input[type="file"]').attachFile(filepath);

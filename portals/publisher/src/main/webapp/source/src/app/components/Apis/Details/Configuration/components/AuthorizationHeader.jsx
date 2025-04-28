@@ -26,7 +26,6 @@ import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import APIValidation from 'AppData/APIValidation';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 /**
  *
@@ -37,11 +36,10 @@ import { useAppContext } from 'AppComponents/Shared/AppContext';
  */
 
 export default function AuthorizationHeader(props) {
-    const { api, configDispatcher } = props;
+    const { api, configDispatcher, oauth2Enabled} = props;
     const [apiFromContext] = useAPI();
     const [isHeaderNameValid, setIsHeaderNameValid] = useState(true);
-    const { settings } = useAppContext();
-    const authorizationHeaderValue = api.authorizationHeader ? api.authorizationHeader : settings?.authorizationHeader;
+    const authorizationHeaderValue = api.authorizationHeader;
 
     function validateHeader(value) {
         const headerValidity = APIValidation.authorizationHeader.required()
@@ -59,7 +57,7 @@ export default function AuthorizationHeader(props) {
         <Grid container spacing={1} alignItems='center'>
             <Grid item xs={11}>
                 <TextField
-                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                    disabled={isRestricted(['apim:api_create'], apiFromContext) || !oauth2Enabled}
                     id='outlined-name'
                     label={(
                         <FormattedMessage
@@ -81,14 +79,20 @@ export default function AuthorizationHeader(props) {
                     InputProps={{
                         id: 'itest-id-headerName-input',
                         onBlur: ({ target: { value } }) => {
-                            validateHeader(value);
+                            if (value.trim() === '' ) {
+                                configDispatcher({ action: 'authorizationHeader', value: 'Authorization' });
+                            } else{
+                                validateHeader(value);
+                            }
+
                         },
                     }}
                     margin='normal'
                     variant='outlined'
                     onChange={({ target: { value } }) => configDispatcher({
                         action: 'authorizationHeader',
-                        value: value === '' ? 'Authorization' : value })}
+                        value
+                    })}
                     style={{ display: 'flex' }}
                 />
             </Grid>
@@ -115,6 +119,9 @@ export default function AuthorizationHeader(props) {
 }
 
 AuthorizationHeader.propTypes = {
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        authorizationHeader: PropTypes.string,
+    }).isRequired,
     configDispatcher: PropTypes.func.isRequired,
+    oauth2Enabled: PropTypes.bool.isRequired,
 };

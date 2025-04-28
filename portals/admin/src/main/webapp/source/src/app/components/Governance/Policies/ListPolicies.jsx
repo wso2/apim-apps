@@ -21,12 +21,21 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
 import {
     Chip, Stack, Tooltip, Button,
+    List,
+    ListItemButton,
+    ListItemIcon,
+    Link,
+    ListItemText,
 } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
 import EditIcon from '@mui/icons-material/Edit';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import GovernanceAPI from 'AppData/GovernanceAPI';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import Configurations from 'Config';
 import Utils from 'AppData/Utils';
+import API from 'AppData/api';
 import DeletePolicy from './DeletePolicy';
 
 /**
@@ -35,10 +44,27 @@ import DeletePolicy from './DeletePolicy';
  */
 function apiCall() {
     const restApi = new GovernanceAPI();
-    return restApi
-        .getPoliciesList()
-        .then((result) => {
-            return result.body.list;
+    const adminApi = new API();
+
+    // First get the labels
+    return adminApi.labelsListGet()
+        .then((labelsResponse) => {
+            const labelsList = labelsResponse.body.list || [];
+            // Get the policies
+            return restApi.getGovernancePolicies({ limit: 100, offset: 0 })
+                .then((result) => {
+                    // Map label IDs to names
+                    return result.body.list.map((policy) => {
+                        return {
+                            ...policy,
+                            labels: policy.labels.map((labelId) => {
+                                if (labelId === 'GLOBAL') return labelId;
+                                const label = labelsList.find((l) => l.id === labelId);
+                                return label ? label.name : labelId;
+                            }),
+                        };
+                    });
+                });
         })
         .catch((error) => {
             throw error;
@@ -64,17 +90,24 @@ export default function ListPolicies() {
                 customBodyRender: (value, tableMeta) => {
                     const dataRow = tableMeta.rowData;
                     return (
-                        <>
-                            {/* TODO: Add text wrapping */}
-                            <Typography>{value}</Typography>
-                            <Typography
-                                variant='caption'
-                                display='block'
-                                color='textSecondary'
-                            >
-                                {dataRow[1]}
-                            </Typography>
-                        </>
+                        <Tooltip title={dataRow[1]} arrow>
+                            <div>
+                                <Typography>{value}</Typography>
+                                <Typography
+                                    variant='caption'
+                                    display='block'
+                                    color='textSecondary'
+                                    sx={{
+                                        overflow: 'hidden',
+                                        textOverflow: 'ellipsis',
+                                        whiteSpace: 'nowrap',
+                                        maxWidth: '320px',
+                                    }}
+                                >
+                                    {dataRow[1]}
+                                </Typography>
+                            </div>
+                        </Tooltip>
                     );
                 },
                 setCellProps: () => ({
@@ -201,6 +234,31 @@ export default function ListPolicies() {
             defaultMessage: 'Create governance policies using rulesets from the catalog'
                 + ' to standardize and regulate your APls effectively',
         }),
+        help: (
+            <HelpBase>
+                <List component='nav'>
+                    <ListItemButton>
+                        <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                            <DescriptionIcon />
+                        </ListItemIcon>
+                        <Link
+                            target='_blank'
+                            href={Configurations.app.docUrl
+                                + 'governance/api-governance-admin-capabilities/#create-and-manage-policies'}
+                            underline='hover'
+                        >
+                            <ListItemText primary={(
+                                <FormattedMessage
+                                    id='Governance.Policies.List.help.link'
+                                    defaultMessage='Create and Manage Policies'
+                                />
+                            )}
+                            />
+                        </Link>
+                    </ListItemButton>
+                </List>
+            </HelpBase>
+        ),
     };
 
     const addButtonProps = {

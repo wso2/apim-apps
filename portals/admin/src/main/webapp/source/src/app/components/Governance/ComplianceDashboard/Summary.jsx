@@ -18,10 +18,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useIntl } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
-import { Grid, Card, CardContent, Typography } from '@mui/material';
+import { Grid, Card, CardContent, Typography, List, ListItemButton, ListItemIcon, Link, ListItemText } from '@mui/material';
 import DonutChart from 'AppComponents/Shared/DonutChart';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import Configurations from 'Config';
 import ApiComplianceTable from './ApiComplianceTable';
 import PolicyAdherenceTable from './PolicyAdherenceTable';
 import GovernanceAPI from 'AppData/GovernanceAPI';
@@ -36,7 +39,8 @@ export default function Summary() {
     const [apiCompliance, setApiCompliance] = useState({
         compliantArtifacts: 0,
         nonCompliantArtifacts: 0,
-        notApplicableArtifacts: 0
+        notApplicableArtifacts: 0,
+        pendingArtifacts: 0
     });
 
     useEffect(() => {
@@ -58,7 +62,8 @@ export default function Summary() {
                 setApiCompliance({
                     compliantArtifacts: artifactResponse.body.compliant || 0,
                     nonCompliantArtifacts: artifactResponse.body.nonCompliant || 0,
-                    notApplicableArtifacts: artifactResponse.body.notApplicable || 0
+                    notApplicableArtifacts: artifactResponse.body.notApplicable || 0,
+                    pendingArtifacts: artifactResponse.body.pending || 0
                 });
             })
             .catch((error) => {
@@ -70,10 +75,35 @@ export default function Summary() {
         <ContentBase
             width='full'
             title={intl.formatMessage({
-                id: 'Governance.Overview.title',
-                defaultMessage: 'Overview',
+                id: 'Governance.Compliance.title',
+                defaultMessage: 'Compliance Dashboard',
             })}
             pageStyle='paperLess'
+            help={(
+                <HelpBase>
+                    <List component='nav'>
+                        <ListItemButton>
+                            <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                                <DescriptionIcon />
+                            </ListItemIcon>
+                            <Link
+                                target='_blank'
+                                href={Configurations.app.docUrl
+                                    + 'governance/api-governance-admin-capabilities/#compliance-monitoring'}
+                                underline='hover'
+                            >
+                                <ListItemText primary={(
+                                    <FormattedMessage
+                                        id='Governance.ComplianceDashboard.Summary.help.link'
+                                        defaultMessage='Compliance Monitoring'
+                                    />
+                                )}
+                                />
+                            </Link>
+                        </ListItemButton>
+                    </List>
+                </HelpBase>
+            )}
         >
             <Grid container spacing={4} alignItems='left'>
                 <Grid item xs={12} md={6} lg={4}>
@@ -84,7 +114,7 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Overview.Summary.policy.adherence',
+                                    id: 'Governance.ComplianceDashboard.Summary.policy.adherence',
                                     defaultMessage: 'Policy Adherence',
                                 })}
                             </Typography>
@@ -94,7 +124,7 @@ export default function Summary() {
                                         id: 0,
                                         value: policyAdherence.followedPolicies,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.policy.followed',
+                                            id: 'Governance.ComplianceDashboard.Summary.policy.followed',
                                             defaultMessage: 'Followed ({count})',
                                         }, { count: policyAdherence.followedPolicies })
                                     },
@@ -102,7 +132,7 @@ export default function Summary() {
                                         id: 1,
                                         value: policyAdherence.violatedPolicies,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.policy.violated',
+                                            id: 'Governance.ComplianceDashboard.Summary.policy.violated',
                                             defaultMessage: 'Violated ({count})',
                                         }, { count: policyAdherence.violatedPolicies })
                                     },
@@ -110,7 +140,7 @@ export default function Summary() {
                                         id: 2,
                                         value: policyAdherence.unAppliedPolicies,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.policy.not.applied',
+                                            id: 'Governance.ComplianceDashboard.Summary.policy.not.applied',
                                             defaultMessage: 'Not Applied ({count})',
                                         }, { count: policyAdherence.unAppliedPolicies })
                                     }
@@ -127,7 +157,7 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Overview.Summary.api.compliance',
+                                    id: 'Governance.ComplianceDashboard.Summary.api.compliance',
                                     defaultMessage: 'API Compliance',
                                 })}
                             </Typography>
@@ -137,7 +167,7 @@ export default function Summary() {
                                         id: 0,
                                         value: apiCompliance.compliantArtifacts,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.api.compliant',
+                                            id: 'Governance.ComplianceDashboard.Summary.api.compliant',
                                             defaultMessage: 'Compliant ({count})',
                                         }, { count: apiCompliance.compliantArtifacts })
                                     },
@@ -145,19 +175,28 @@ export default function Summary() {
                                         id: 1,
                                         value: apiCompliance.nonCompliantArtifacts,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.api.non.compliant',
+                                            id: 'Governance.ComplianceDashboard.Summary.api.non.compliant',
                                             defaultMessage: 'Non-Compliant ({count})',
                                         }, { count: apiCompliance.nonCompliantArtifacts })
                                     },
                                     {
                                         id: 2,
+                                        value: apiCompliance.pendingArtifacts,
+                                        label: intl.formatMessage({
+                                            id: 'Governance.ComplianceDashboard.Summary.api.pending',
+                                            defaultMessage: 'Pending ({count})',
+                                        }, { count: apiCompliance.pendingArtifacts })
+                                    },
+                                    {
+                                        id: 3,
                                         value: apiCompliance.notApplicableArtifacts,
                                         label: intl.formatMessage({
-                                            id: 'Governance.Overview.Summary.api.not.applicable',
+                                            id: 'Governance.ComplianceDashboard.Summary.api.not.applicable',
                                             defaultMessage: 'Not Applicable ({count})',
                                         }, { count: apiCompliance.notApplicableArtifacts })
                                     }
                                 ]}
+                                colors={['#00B81D', '#FF5252', '#FFC107', 'grey']}
                             />
                         </CardContent>
                     </Card>
@@ -175,7 +214,7 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Overview.Summary.api.compliance.details',
+                                    id: 'Governance.ComplianceDashboard.Summary.api.compliance.details',
                                     defaultMessage: 'API Compliance Details',
                                 })}
                             </Typography>
@@ -196,7 +235,7 @@ export default function Summary() {
                                 sx={{ fontWeight: 'bold', mb: 2 }}
                             >
                                 {intl.formatMessage({
-                                    id: 'Governance.Overview.Summary.policy.adherence.details',
+                                    id: 'Governance.ComplianceDashboard.Summary.policy.adherence.details',
                                     defaultMessage: 'Policy Adherence Details',
                                 })}
                             </Typography>

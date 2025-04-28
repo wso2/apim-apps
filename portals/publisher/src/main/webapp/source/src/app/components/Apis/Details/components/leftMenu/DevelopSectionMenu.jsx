@@ -114,7 +114,8 @@ const AccordionDetails = MuiAccordionDetails;
  */
 export default function DevelopSectionMenu(props) {
     const {
-        pathPrefix, isAPIProduct, api, getLeftMenuItemForResourcesByType, getLeftMenuItemForDefinitionByType,
+        pathPrefix, isAPIProduct, api, getLeftMenuItemForResourcesByType, getLeftMenuItemForDefinitionByType, 
+        componentValidator,
     } = props;
     const user = useUser();
     const [portalConfigsExpanded, setPortalConfigsExpanded] = useState(user
@@ -175,7 +176,7 @@ export default function DevelopSectionMenu(props) {
                             id='left-menu-itembusinessinfo'
                             route='business-info'
                         />
-                        {!isAPIProduct && (
+                        {(componentValidator.subscriptions.includes("subscriptions") && !isAPIProduct) && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.subscriptions',
@@ -258,7 +259,7 @@ export default function DevelopSectionMenu(props) {
                         root: classes.root2
                     }}>
                     <div>
-                        {!isAPIProduct && !api.isWebSocket() && (api.gatewayVendor === 'wso2') && (
+                        {!isAPIProduct && !api.isWebSocket() && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.runtime.configs',
@@ -308,7 +309,8 @@ export default function DevelopSectionMenu(props) {
                                 id='left-menu-itemendpoints'
                             />
                         )}
-                        {!isAPIProduct && (api.gatewayVendor === 'wso2') && (
+                        {(componentValidator.localScopes.includes("operationScopes") 
+                            && (!isAPIProduct)) && 
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.left.menu.scope',
@@ -319,7 +321,7 @@ export default function DevelopSectionMenu(props) {
                                 Icon={<ScopesIcon />}
                                 id='left-menu-itemLocalScopes'
                             />
-                        )}
+                        }
                         {api.advertiseInfo && !api.advertiseInfo.advertised && !isAPIProduct
                             && (api.type === 'HTTP' || api.type === 'SOAP' || api.type === 'SOAPTOREST') && (
                             <LeftMenuItem
@@ -345,9 +347,10 @@ export default function DevelopSectionMenu(props) {
                             id='left-menu-itemproperties'
                         />
 
-                        {!api.isWebSocket() && !isRestricted(['apim:api_publish'], api) && (
+                        {(componentValidator.monetization.includes("monetization") && 
+                            (!api.isWebSocket() && !isRestricted(['apim:api_publish'], api))) && (
                             <>
-                                {!isAPIProduct && (api.gatewayVendor === 'wso2') && (
+                                {!isAPIProduct && (
                                     <LeftMenuItem
                                         text={intl.formatMessage({
                                             id: 'Apis.Details.index.monetization',

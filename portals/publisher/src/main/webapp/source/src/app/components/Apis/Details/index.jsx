@@ -62,7 +62,7 @@ import Operations from './Operations/Operations';
 import APIOperations from './Resources/APIOperations';
 import APIProductOperations from './ProductResources/APIProductOperations';
 import ProductResourcesEdit from './ProductResources/ProductResourcesEdit';
-import Endpoints from './Endpoints/Endpoints';
+import Endpoint from './Endpoints';
 import Environments from './Environments/Environments';
 import Subscriptions from './Subscriptions/Subscriptions';
 import Comments from './Comments/Comments';
@@ -78,6 +78,7 @@ import Policies from './Policies/Policies';
 import ExternalStores from './ExternalStores/ExternalStores';
 import { APIProvider } from './components/ApiContext';
 import CreateNewVersion from './NewVersion/NewVersion';
+import ShareAPI from './ShareAPI/ShareAPI';
 import TryOutConsole from './TryOut/TryOutConsole';
 import Compliance from './APICompliance/Compliance';
 
@@ -766,7 +767,8 @@ class Details extends Component {
                 >
                     <Box className={classes.LeftMenu}>
                         <nav name='secondaryNavigation' aria-label='secondary navigation'>
-                            <Link to={'/' + (isAPIProduct ? 'api-products' : 'apis') + '/'} aria-label='ALL APIs'>
+                            <Link to={'/' + (isAPIProduct ? 'api-products' : 'apis') + '/'}
+                                aria-label='ALL APIs'>
                                 <div className={classes.leftLInkMain}>
                                     <CustomIcon
                                         className={classes.customIcon}
@@ -786,18 +788,21 @@ class Details extends Component {
                                 head='valueOnly'
                                 id='left-menu-overview'
                             />
-                            <LeftMenuItem
-                                text={intl.formatMessage({
-                                    id: 'Apis.Details.index.compliance',
-                                    defaultMessage: 'compliance',
-                                })}
-                                to={pathPrefix + 'compliance'}
-                                Icon={<PolicyIcon />}
-                                head='valueOnly'
-                                id='left-menu-compliance'
-                            />
+                            {!isAPIProduct && !api.isGraphql() && !api.isSOAPToREST() && !api.isSOAP() && (
+                                <LeftMenuItem
+                                    text={intl.formatMessage({
+                                        id: 'Apis.Details.index.compliance',
+                                        defaultMessage: 'compliance',
+                                    })}
+                                    to={pathPrefix + 'compliance'}
+                                    Icon={<PolicyIcon />}
+                                    head='valueOnly'
+                                    id='left-menu-compliance'
+                                />
+                            )}
                             <Typography className={classes.headingText}>
-                                <FormattedMessage id='Apis.Details.index.develop.title' defaultMessage='Develop' />
+                                <FormattedMessage id='Apis.Details.index.develop.title'
+                                    defaultMessage='Develop' />
                             </Typography>
                             <DevelopSectionMenu
                                 pathPrefix={pathPrefix}
@@ -805,6 +810,9 @@ class Details extends Component {
                                 api={api}
                                 getLeftMenuItemForResourcesByType={this.getLeftMenuItemForResourcesByType}
                                 getLeftMenuItemForDefinitionByType={this.getLeftMenuItemForDefinitionByType}
+                                componentValidator=
+                                    {settings && settings.gatewayFeatureCatalog
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']}
                             />
                             <Divider />
                             {!isAPIProduct && (
@@ -847,8 +855,11 @@ class Details extends Component {
                                     />
                                 </>
                             )}
-                            {!readOnlyUser && (isAPIProduct || (!isAPIProduct && !api.isWebSocket() && !api.isGraphql()
-                                && !isAsyncAPI)) && (
+                            {!readOnlyUser && (isAPIProduct || (!isAPIProduct && !api.isWebSocket()
+                                && !api.isGraphql() && !isAsyncAPI)) &&
+                            (settings && settings.gatewayFeatureCatalog
+                                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
+                                .tryout.includes('tryout')) && (
                                 <div>
                                     <Divider />
                                     <Typography className={classes.headingText}>
@@ -948,7 +959,8 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.API_DEFINITION}
-                                        component={() => <APIDefinition api={api} updateAPI={this.updateAPI} />}
+                                        component={() => <APIDefinition api={api}
+                                            updateAPI={this.updateAPI} />}
                                     />
                                     <Route
                                         path={Details.subPaths.WSDL}
@@ -964,7 +976,8 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.ASYNCAPI_DEFINITION}
-                                        component={() => <APIDefinition api={api} updateAPI={this.updateAPI} />}
+                                        component={() => <APIDefinition api={api}
+                                            updateAPI={this.updateAPI} />}
                                     />
                                     <Route
                                         path={Details.subPaths.LIFE_CYCLE}
@@ -976,7 +989,8 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.CONFIGURATION}
-                                        component={() => <DesignConfigurations api={api} updateAPI={this.updateAPI}/>}
+                                        component={() => <DesignConfigurations api={api}
+                                            updateAPI={this.updateAPI}/>}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION}
@@ -988,11 +1002,13 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.TOPICS}
-                                        component={() => <Topics api={api} updateAPI={this.updateAPI} />}
+                                        component={() => <Topics api={api}
+                                            updateAPI={this.updateAPI} />}
                                     />
                                     <Route
                                         path={Details.subPaths.CONFIGURATION_PRODUCT}
-                                        component={() => <DesignConfigurations api={api} updateAPI={this.updateAPI}/>}
+                                        component={() => <DesignConfigurations api={api}
+                                            updateAPI={this.updateAPI}/>}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION_PRODUCT}
@@ -1000,7 +1016,7 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.ENDPOINTS}
-                                        component={() => <Endpoints api={api} />}
+                                        component={() => <Endpoint />}
                                     />
                                     <Route
                                         path={Details.subPaths.ENVIRONMENTS}
@@ -1012,7 +1028,12 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.OPERATIONS}
-                                        component={() => <Operations api={api} updateAPI={this.updateAPI} />}
+                                        component={() => <Operations api={api}
+                                            componentValidator={settings &&
+                                                settings.gatewayFeatureCatalog
+                                                    .gatewayFeatures
+                                                    [api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources}
+                                            updateAPI={this.updateAPI} />}
                                     />
                                     <Route
                                         exact
@@ -1029,8 +1050,12 @@ class Details extends Component {
                                         key={Details.subPaths.RESOURCES}
                                         component={APIOperations}
                                     />
-
-                                    <Route path={Details.subPaths.SCOPES} component={() => <Scope api={api} />} />
+                                    {settings && settings.gatewayFeatureCatalog
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
+                                        .localScopes.includes("operationScopes") &&
+                                        <Route path={Details.subPaths.SCOPES} component={() =>
+                                            <Scope api={api} />} />
+                                    }
                                     <Route
                                         path={Details.subPaths.DOCUMENTS}
                                         component={() => <Documents api={api} />}
@@ -1039,16 +1064,24 @@ class Details extends Component {
                                         path={Details.subPaths.DOCUMENTS_PRODUCT}
                                         component={() => <Documents api={api} />}
                                     />
-                                    <Route
-                                        path={Details.subPaths.SUBSCRIPTIONS}
-                                        component={() => <Subscriptions api={api} updateAPI={this.updateAPI} />}
-                                    />
+                                    {settings && settings.gatewayFeatureCatalog
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
+                                        .subscriptions.includes("subscriptions") &&
+                                        <Route
+                                            path={Details.subPaths.SUBSCRIPTIONS}
+                                            component={() => <Subscriptions api={api}
+                                                updateAPI={this.updateAPI} />}
+                                        />
+                                    }
                                     <Route
                                         path={Details.subPaths.SUBSCRIPTIONS_PRODUCT}
-                                        component={() => <Subscriptions api={api} updateAPI={this.updateAPI} />}
+                                        component={() => <Subscriptions api={api}
+                                            updateAPI={this.updateAPI} />}
                                     />
-                                    <Route path={Details.subPaths.SECURITY} component={() => <Security api={api} />} />
-                                    <Route path={Details.subPaths.COMMENTS} component={() => <Comments api={api} />} />
+                                    <Route path={Details.subPaths.SECURITY} component={() =>
+                                        <Security api={api} />} />
+                                    <Route path={Details.subPaths.COMMENTS} component={() =>
+                                        <Comments api={api} />} />
                                     <Route
                                         path={Details.subPaths.BUSINESS_INFO}
                                         component={() => <BusinessInformation api={api} />}
@@ -1065,16 +1098,23 @@ class Details extends Component {
                                         path={Details.subPaths.PROPERTIES_PRODUCT}
                                         component={() => <Properties api={api} />}
                                     />
+                                    <Route path={Details.subPaths.SHARE} component={() => <ShareAPI
+                                        api={api} updateAPI={this.updateAPI} />} />
                                     <Route path={Details.subPaths.NEW_VERSION} component={() => <CreateNewVersion />} />
                                     <Route
                                         path={Details.subPaths.NEW_VERSION_PRODUCT}
                                         component={() => <CreateNewVersion />} />
 
-                                    <Route path={Details.subPaths.SUBSCRIPTIONS} component={() => <Subscriptions />} />
-                                    <Route
-                                        path={Details.subPaths.MONETIZATION}
-                                        component={() => <Monetization api={api} />}
-                                    />
+                                    <Route path={Details.subPaths.SUBSCRIPTIONS} component={() =>
+                                        <Subscriptions />} />
+                                    {settings && settings.gatewayFeatureCatalog
+                                        .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
+                                        .monetization.includes("monetization") &&
+                                        <Route
+                                            path={Details.subPaths.MONETIZATION}
+                                            component={() => <Monetization api={api} />}
+                                        />
+                                    }
                                     <Route
                                         path={Details.subPaths.MONETIZATION_PRODUCT}
                                         component={() => <Monetization api={api} />}
@@ -1087,7 +1127,8 @@ class Details extends Component {
                                         path={Details.subPaths.TRYOUT_PRODUCT}
                                         component={() => <TryOutConsole apiObj={api} />}
                                     />
-                                    <Route path={Details.subPaths.EXTERNAL_STORES} component={ExternalStores} />
+                                    <Route path={Details.subPaths.EXTERNAL_STORES}
+                                        component={ExternalStores} />
                                     <Route
                                         path={Details.subPaths.COMMENTS}
                                         component={() => <Comments apiObj={api} />}
@@ -1098,7 +1139,19 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.COMPLIANCE}
-                                        component={() => <Compliance api={api} />}
+                                        component={() => {
+                                            return (
+                                                !isAPIProduct &&
+                                                !api.isGraphql() &&
+                                                !api.isSOAPToREST() &&
+                                                !api.isSOAP() ? 
+                                                    (
+                                                        <Compliance api={api} />
+                                                    ) : (
+                                                        <ResourceNotFound />
+                                                    )
+                                            )
+                                        }}
                                     />
                                 </Switch>
                             </div>
@@ -1150,6 +1203,7 @@ Details.subPaths = {
     PROPERTIES_PRODUCT: '/api-products/:apiprod_uuid/properties',
     NEW_VERSION: '/apis/:api_uuid/new_version',
     NEW_VERSION_PRODUCT: '/api-products/:api_uuid/new_version',
+    SHARE: '/apis/:api_uuid/share',
     MONETIZATION: '/apis/:api_uuid/monetization',
     MONETIZATION_PRODUCT: '/api-products/:apiprod_uuid/monetization',
     EXTERNAL_STORES: '/apis/:api_uuid/external-devportals',

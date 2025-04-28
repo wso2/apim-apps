@@ -24,6 +24,8 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
 import {
     Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress,
+    Box,
+    Typography,
 } from '@mui/material';
 import PropTypes from 'prop-types';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
@@ -38,6 +40,8 @@ import Configurations from 'Config';
 import APIProduct from 'AppData/APIProduct';
 import Progress from 'AppComponents/Shared/Progress';
 import GovernanceViolations from 'AppComponents/Shared/Governance/GovernanceViolations';
+import Utils from 'AppData/Utils';
+import Link from '@mui/material/Link';
 import LifeCycleImage from './LifeCycleImage';
 import CheckboxLabels from './CheckboxLabels';
 import LifecyclePending from './LifecyclePending';
@@ -53,7 +57,6 @@ const classes = {
     subHeading: `${PREFIX}-subHeading`,
     mandatoryStar: `${PREFIX}-mandatoryStar`
 };
-
 const StyledGrid = styled(Grid)((
     {
         theme
@@ -216,6 +219,7 @@ class LifeCycleUpdate extends Component {
     updateLCStateOfAPI(apiUUID, action) {
         this.setState({ isUpdating: action });
         let promisedUpdate;
+        const complianceErrorCode = 903300;
         const { intl } = this.props;
         const lifecycleChecklist = this.props.checkList.map((item) => item.value + ':' + item.checked);
         const { isAPIProduct } = this.props;
@@ -274,18 +278,49 @@ class LifeCycleUpdate extends Component {
             })
             .catch((error) => {
                 if (error.response) {
-                    if (error.response.body.code === 903300) {
+                    if (error.response.body.code === complianceErrorCode) {
                         // Handle governance violation
-                        const errorDescription = error.response.body.description
-                            .replace('Compliance violation error.', '');
+                        const errorDescription = error.response.body.description;
+                        const violations = JSON.parse(errorDescription).blockingViolations;
                         this.setState({
-                            governanceError: JSON.parse(errorDescription),
+                            governanceError: violations,
                             isGovernanceViolation: true,
                         });
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.LifeCycle.LifeCycleUpdate.error.governance',
-                            defaultMessage: 'Lifecycle update failed. Governance policy violations found',
-                        }));
+                        Alert.error(
+                            <Box sx={{ width: '100%' }}>
+                                <Typography>
+                                    <FormattedMessage
+                                        id='Apis.Details.LifeCycle.LifeCycleUpdate.error.governance'
+                                        defaultMessage='Lifecycle update failed. Governance policy violations found.'
+                                    />
+                                </Typography>
+                                <Box sx={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    mt: 1
+                                }}>
+                                    <Link
+                                        component='button'
+                                        onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
+                                        sx={{
+                                            color: 'inherit',
+                                            fontWeight: 600,
+                                            textDecoration: 'none',
+                                            transition: 'all 0.3s',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                            },
+                                        }}
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.LifeCycle.LifeCycleUpdate.error.governance.download'
+                                            defaultMessage='Download Violations'
+                                        />
+                                    </Link>
+                                </Box>
+                            </Box>
+                        );
                     } else {
                         Alert.error(error.response.body.description);
                         this.setState({ pageError: error.response.body });
@@ -604,7 +639,7 @@ class LifeCycleUpdate extends Component {
                 </Grid>
                 {/* Page error banner */}
                 {isGovernanceViolation ? (
-                    <Grid item xs={11}>
+                    <Grid item xs={12}>
                         <GovernanceViolations violations={governanceError} />
                     </Grid>
                 ) : pageError && (

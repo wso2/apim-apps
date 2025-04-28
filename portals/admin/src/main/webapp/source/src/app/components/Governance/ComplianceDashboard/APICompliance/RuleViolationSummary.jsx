@@ -16,9 +16,10 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
     Grid, Card, CardContent, Typography, Box, Tabs, Tab, Collapse, IconButton,
+    TablePagination, Chip,
 } from '@mui/material';
 import ReportIcon from '@mui/icons-material/Report';
 import WarningIcon from '@mui/icons-material/Warning';
@@ -29,114 +30,93 @@ import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import LabelIcon from '@mui/icons-material/Label';
 import RuleIcon from '@mui/icons-material/Rule';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
-import GovernanceAPI from 'AppData/GovernanceAPI';
 import { useIntl } from 'react-intl';
+import CircularProgress from '@mui/material/CircularProgress';
+import Utils from '../../../../data/Utils';
 
-// TODO: Improve the component
-export default function RuleViolationSummary({ artifactId }) {
+export default function RuleViolationSummary({ complianceData }) {
     const intl = useIntl();
-    const [selectedTab, setSelectedTab] = React.useState(0);
-    const [expandedItems, setExpandedItems] = React.useState([]);
+    const [selectedTab, setSelectedTab] = useState(0);
+    const [expandedItems, setExpandedItems] = useState([]);
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
 
-    // TODO: Optimize + simplify
-    const apiCall = () => {
-        const restApi = new GovernanceAPI();
-        return restApi.getComplianceByAPIId(artifactId)
-            .then((response) => {
-                // Get unique ruleset IDs from all policies
-                const rulesetIds = [...new Set(
-                    response.body.governedPolicies.flatMap(
-                        (policy) => policy.rulesetValidationResults.map((result) => result.id),
-                    ),
-                )];
-
-                // Get validation results for each ruleset
-                return Promise.all(
-                    rulesetIds.map((rulesetId) => restApi.getRulesetValidationResultsByAPIId(artifactId, rulesetId)
-                        .then((result) => result.body)),
-                ).then((rulesets) => {
-                    // Create rulesets array with severities catagorized
-                    const rulesetCategories = rulesets.map((ruleset) => ({
-                        id: ruleset.id,
-                        rulesetName: ruleset.name,
-                        error: ruleset.violatedRules.filter((rule) => rule.severity === 'ERROR'),
-                        warn: ruleset.violatedRules.filter((rule) => rule.severity === 'WARN'),
-                        info: ruleset.violatedRules.filter((rule) => rule.severity === 'INFO'),
-                        passed: ruleset.followedRules,
-                    }));
-
-                    // Group by severity level
-                    const severityGroups = {
-                        errors: [],
-                        warnings: [],
-                        info: [],
-                        passed: [],
-                    };
-
-                    rulesetCategories.forEach((ruleset) => {
-                        if (ruleset.error.length > 0) {
-                            severityGroups.errors.push({
-                                id: ruleset.id,
-                                rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
-                                rules: ruleset.error,
-                            });
-                        }
-                        if (ruleset.warn.length > 0) {
-                            severityGroups.warnings.push({
-                                id: ruleset.id,
-                                rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
-                                rules: ruleset.warn,
-                            });
-                        }
-                        if (ruleset.info.length > 0) {
-                            severityGroups.info.push({
-                                id: ruleset.id,
-                                rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
-                                rules: ruleset.info,
-                            });
-                        }
-                        if (ruleset.passed.length > 0) {
-                            severityGroups.passed.push({
-                                id: ruleset.id,
-                                rulesetName: ruleset.rulesetName,
-                                // tag: ruleset.tag,
-                                rules: ruleset.passed,
-                            });
-                        }
-                    });
-
-                    return severityGroups;
-                });
-            })
-            .catch((error) => {
-                console.error('Error fetching ruleset adherence data:', error);
-                return {
-                    errors: [],
-                    warnings: [],
-                    info: [],
-                    passed: [],
-                };
-            });
-    };
-
-    // Remove the mock complianceData and use state instead
-    const [complianceData, setComplianceData] = React.useState({
+    const [complianceDataState, setComplianceData] = useState({
         errors: [],
         warnings: [],
         info: [],
         passed: [],
     });
 
-    React.useEffect(() => {
-        apiCall().then(setComplianceData);
-    }, [artifactId]);
+    useEffect(() => {
+        if (!complianceData) return;
+
+        // Create rulesets array with severities categorized
+        const rulesetCategories = complianceData.rulesets.map((ruleset) => ({
+            id: ruleset.id,
+            rulesetName: ruleset.name,
+            ruleType: ruleset.ruleType,
+            documentationLink: ruleset.documentationLink,
+            error: ruleset.violatedRules.filter((rule) => rule.severity === 'ERROR'),
+            warn: ruleset.violatedRules.filter((rule) => rule.severity === 'WARN'),
+            info: ruleset.violatedRules.filter((rule) => rule.severity === 'INFO'),
+            passed: ruleset.followedRules,
+        }));
+
+        // Group by severity level
+        const severityGroups = {
+            errors: [],
+            warnings: [],
+            info: [],
+            passed: [],
+        };
+
+        rulesetCategories.forEach((ruleset) => {
+            if (ruleset.error.length > 0) {
+                severityGroups.errors.push({
+                    id: ruleset.id,
+                    rulesetName: ruleset.rulesetName,
+                    documentationLink: ruleset.documentationLink,
+                    ruleType: ruleset.ruleType,
+                    rules: ruleset.error,
+                });
+            }
+            if (ruleset.warn.length > 0) {
+                severityGroups.warnings.push({
+                    id: ruleset.id,
+                    rulesetName: ruleset.rulesetName,
+                    documentationLink: ruleset.documentationLink,
+                    ruleType: ruleset.ruleType,
+                    rules: ruleset.warn,
+                });
+            }
+            if (ruleset.info.length > 0) {
+                severityGroups.info.push({
+                    id: ruleset.id,
+                    rulesetName: ruleset.rulesetName,
+                    documentationLink: ruleset.documentationLink,
+                    ruleType: ruleset.ruleType,
+                    rules: ruleset.info,
+                });
+            }
+            if (ruleset.passed.length > 0) {
+                severityGroups.passed.push({
+                    id: ruleset.id,
+                    rulesetName: ruleset.rulesetName,
+                    documentationLink: ruleset.documentationLink,
+                    ruleType: ruleset.ruleType,
+                    rules: ruleset.passed,
+                });
+            }
+        });
+
+        setComplianceData(severityGroups);
+    }, [complianceData]);
 
     const handleTabChange = (e, newValue) => {
         setSelectedTab(newValue);
         setExpandedItems([]); // Reset expanded items when tab changes
+        setPage(0); // Reset to first page when changing tabs
     };
 
     const handleExpandClick = (id) => {
@@ -146,6 +126,23 @@ export default function RuleViolationSummary({ artifactId }) {
                 ? prev.filter((i) => i !== id)
                 : [...prev, id];
         });
+    };
+
+    const handlePageChange = (event, newPage) => {
+        setPage(newPage);
+        setExpandedItems([]); // Reset expanded items when page changes
+    };
+
+    const handleChangeRowsPerPage = (event) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+        setExpandedItems([]);
+    };
+
+    const paginateRulesets = (rulesets) => {
+        const startIndex = page * rowsPerPage;
+        const endIndex = startIndex + rowsPerPage;
+        return rulesets.slice(startIndex, endIndex);
     };
 
     const getRuleData = (rules) => {
@@ -165,7 +162,7 @@ export default function RuleViolationSummary({ artifactId }) {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RuleViolation.column.rule',
+                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.rule',
                 defaultMessage: 'Rule',
             }),
             options: {
@@ -177,10 +174,11 @@ export default function RuleViolationSummary({ artifactId }) {
         {
             name: 'violatedPath',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RuleViolation.column.path',
+                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.path',
                 defaultMessage: 'Path',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value.path}</Typography>
                 ),
@@ -189,10 +187,11 @@ export default function RuleViolationSummary({ artifactId }) {
         {
             name: 'message',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RuleViolation.column.message',
+                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.message',
                 defaultMessage: 'Message',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value}</Typography>
                 ),
@@ -205,7 +204,7 @@ export default function RuleViolationSummary({ artifactId }) {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RuleViolation.column.rule',
+                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.rule',
                 defaultMessage: 'Rule',
             }),
             options: {
@@ -217,10 +216,11 @@ export default function RuleViolationSummary({ artifactId }) {
         {
             name: 'description',
             label: intl.formatMessage({
-                id: 'Governance.Overview.APICompliance.RuleViolation.column.description',
+                id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.column.description',
                 defaultMessage: 'Description',
             }),
             options: {
+                sort: false,
                 customBodyRender: (value) => (
                     <Typography variant='body2'>{value}</Typography>
                 ),
@@ -229,16 +229,21 @@ export default function RuleViolationSummary({ artifactId }) {
     ];
 
     const renderComplianceCards = (rulesets, isPassed = false) => {
+        const paginatedRulesets = paginateRulesets(rulesets);
+
         return (
             <>
                 <Grid container spacing={2}>
-                    {rulesets.map((item) => (
+                    {paginatedRulesets.map((item) => (
                         <Grid item xs={12} key={item.id}>
                             <Card>
-                                <CardContent sx={{
-                                    py: 0.5,
-                                    '&:last-child': { pb: 0.5 },
-                                }}
+                                <CardContent
+                                    onClick={() => handleExpandClick(item.id)}
+                                    sx={{
+                                        py: 0.5,
+                                        '&:last-child': { pb: 0.5 },
+                                        cursor: 'pointer',
+                                    }}
                                 >
                                     <Box sx={{
                                         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -254,15 +259,26 @@ export default function RuleViolationSummary({ artifactId }) {
                                                 {item.rules.length}
                                                 )
                                             </Typography>
-                                            {/* <Chip
-                                                label={item.tag}
-                                                size="small"
-                                                color="primary"
-                                                variant="outlined"
-                                            /> */}
+                                            <Chip
+                                                label={Utils.mapRuleTypeToLabel(item.ruleType)}
+                                                size='small'
+                                                color='primary'
+                                                variant='outlined'
+                                                style={{
+                                                    height: '18px',
+                                                    '& .MuiChip-label': {
+                                                        padding: '0 6px',
+                                                        fontSize: '0.625rem',
+                                                        lineHeight: 1,
+                                                    },
+                                                }}
+                                            />
                                         </Box>
                                         <IconButton
-                                            onClick={() => handleExpandClick(item.id)}
+                                            onClick={(e) => {
+                                                e.stopPropagation(); // Prevent card click event
+                                                handleExpandClick(item.id);
+                                            }}
                                             aria-expanded={expandedItems.includes(item.id)}
                                             aria-label='show more'
                                         >
@@ -304,6 +320,18 @@ export default function RuleViolationSummary({ artifactId }) {
                         </Grid>
                     ))}
                 </Grid>
+                {rulesets.length > 5 && (
+                    <TablePagination
+                        component='div'
+                        count={rulesets.length}
+                        page={page}
+                        onPageChange={handlePageChange}
+                        rowsPerPage={rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                        rowsPerPageOptions={[5, 10, 25]}
+                        sx={{ mt: 2 }}
+                    />
+                )}
             </>
         );
     };
@@ -344,27 +372,47 @@ export default function RuleViolationSummary({ artifactId }) {
         switch (tabIndex) {
             case 0:
                 return intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.errors',
+                    id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.empty.errors',
                     defaultMessage: 'No Error violations found',
                 });
             case 1:
                 return intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.warnings',
+                    id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.empty.warnings',
                     defaultMessage: 'No Warning violations found',
                 });
             case 2:
                 return intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.info',
+                    id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.empty.info',
                     defaultMessage: 'No Info violations found',
                 });
             case 3:
                 return intl.formatMessage({
-                    id: 'Governance.Overview.APICompliance.RuleViolation.empty.passed',
+                    id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.empty.passed',
                     defaultMessage: 'No Passed rules found',
                 });
             default:
                 return '';
         }
+    };
+
+    const renderTabContent = (data, emptyMessage, isPassed = false) => {
+        if (!complianceData) {
+            return (
+                <Box sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    minHeight: 200,
+                }}
+                >
+                    <CircularProgress />
+                </Box>
+            );
+        }
+
+        return data.length > 0
+            ? renderComplianceCards(data, isPassed)
+            : renderEmptyContent(emptyMessage);
     };
 
     return (
@@ -422,55 +470,39 @@ export default function RuleViolationSummary({ artifactId }) {
                     icon={<ReportIcon color='error' />}
                     iconPosition='start'
                     label={intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.errors',
+                        id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.tab.errors',
                         defaultMessage: 'Errors ({count})',
-                    }, { count: getTotalRuleCount(complianceData.errors) })}
+                    }, { count: getTotalRuleCount(complianceDataState.errors) })}
                 />
                 <Tab
                     icon={<WarningIcon color='warning' />}
                     iconPosition='start'
                     label={intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.warnings',
+                        id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.tab.warnings',
                         defaultMessage: 'Warnings ({count})',
-                    }, { count: getTotalRuleCount(complianceData.warnings) })}
+                    }, { count: getTotalRuleCount(complianceDataState.warnings) })}
                 />
                 <Tab
                     icon={<InfoIcon color='info' />}
                     iconPosition='start'
                     label={intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.info',
+                        id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.tab.info',
                         defaultMessage: 'Info ({count})',
-                    }, { count: getTotalRuleCount(complianceData.info) })}
+                    }, { count: getTotalRuleCount(complianceDataState.info) })}
                 />
                 <Tab
                     icon={<CheckCircleIcon color='success' />}
                     iconPosition='start'
                     label={intl.formatMessage({
-                        id: 'Governance.Overview.APICompliance.RuleViolation.tab.passed',
+                        id: 'Governance.ComplianceDashboard.APICompliance.RuleViolation.tab.passed',
                         defaultMessage: 'Passed ({count})',
-                    }, { count: getTotalRuleCount(complianceData.passed) })}
+                    }, { count: getTotalRuleCount(complianceDataState.passed) })}
                 />
             </Tabs>
-            {selectedTab === 0 && (
-                complianceData.errors.length > 0
-                    ? renderComplianceCards(complianceData.errors)
-                    : renderEmptyContent(getEmptyMessage(0))
-            )}
-            {selectedTab === 1 && (
-                complianceData.warnings.length > 0
-                    ? renderComplianceCards(complianceData.warnings)
-                    : renderEmptyContent(getEmptyMessage(1))
-            )}
-            {selectedTab === 2 && (
-                complianceData.info.length > 0
-                    ? renderComplianceCards(complianceData.info)
-                    : renderEmptyContent(getEmptyMessage(2))
-            )}
-            {selectedTab === 3 && (
-                complianceData.passed.length > 0
-                    ? renderComplianceCards(complianceData.passed, true)
-                    : renderEmptyContent(getEmptyMessage(3))
-            )}
+            {selectedTab === 0 && renderTabContent(complianceDataState.errors, getEmptyMessage(0))}
+            {selectedTab === 1 && renderTabContent(complianceDataState.warnings, getEmptyMessage(1))}
+            {selectedTab === 2 && renderTabContent(complianceDataState.info, getEmptyMessage(2))}
+            {selectedTab === 3 && renderTabContent(complianceDataState.passed, getEmptyMessage(3), true)}
         </>
     );
 }

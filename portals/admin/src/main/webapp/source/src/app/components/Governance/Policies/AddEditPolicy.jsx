@@ -41,17 +41,26 @@ import {
     RadioGroup,
     FormControlLabel,
     Radio,
+    List,
+    ListItemButton,
+    ListItemIcon,
+    Link,
+    ListItemText,
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import { styled } from '@mui/material/styles';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import DescriptionIcon from '@mui/icons-material/Description';
+import HelpBase from 'AppComponents/AdminPages/Addons/HelpBase';
+import Configurations from 'Config';
 import PropTypes from 'prop-types';
 import cloneDeep from 'lodash.clonedeep';
 import GovernanceAPI from 'AppData/GovernanceAPI';
 import API from 'AppData/api';
 import Utils from 'AppData/Utils';
 import CONSTS from 'AppData/Constants';
+import Tooltip from '@mui/material/Tooltip';
 import ActionConfigDialog from './ActionConfigDialog';
 import RulesetSelector from './RulesetSelector';
 
@@ -123,7 +132,8 @@ function reducer(state, { field, value }) {
             return nextState;
         case 'labels':
             if (Array.isArray(value)) {
-                nextState.labels = value;
+                // Store only the IDs in the state
+                nextState.labels = value.map((label) => (typeof label === 'object' ? label.id : label));
             }
             return nextState;
         case 'rulesets':
@@ -158,15 +168,31 @@ function AddEditPolicy(props) {
     const [selectedRulesets, setSelectedRulesets] = useState([]); // Store full ruleset objects for UI
     const [availableLabels, setAvailableLabels] = useState([]);
     const [labelMode, setLabelMode] = useState('all');
+    const [originalLabels, setOriginalLabels] = useState([]);
     const intl = useIntl();
     const { match: { params: { id: policyId } }, history } = props;
-    const editMode = policyId !== undefined;
 
     const initialState = {
         name: '',
         description: '',
         labels: ['GLOBAL'],
-        actions: [],
+        actions: [
+            {
+                state: 'API_UPDATE',
+                ruleSeverity: 'ERROR',
+                type: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+            },
+            {
+                state: 'API_UPDATE',
+                ruleSeverity: 'WARN',
+                type: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+            },
+            {
+                state: 'API_UPDATE',
+                ruleSeverity: 'INFO',
+                type: CONSTS.GOVERNANCE_ACTIONS.NOTIFY,
+            },
+        ],
         rulesets: [], // Store only IDs
     };
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -184,6 +210,30 @@ function AddEditPolicy(props) {
         editAction: null,
     });
 
+    // Add this function inside the component before useEffect
+    const fetchAllRulesets = async (restApi, offset = 0, accumulator = []) => {
+        try {
+            const params = {
+                limit: 25,
+                offset,
+            };
+
+            const response = await restApi.getRulesets(params);
+            const { list, pagination } = response.body;
+            const newAccumulator = [...accumulator, ...list];
+
+            // If we haven't fetched all items yet, fetch the next page
+            if (pagination.total > offset + params.limit) {
+                return fetchAllRulesets(restApi, offset + params.limit, newAccumulator);
+            }
+
+            return newAccumulator;
+        } catch (error) {
+            console.error('Error fetching rulesets:', error);
+            throw error;
+        }
+    };
+
     useEffect(() => {
         const restApi = new GovernanceAPI();
         const adminApi = new API();
@@ -192,7 +242,7 @@ function AddEditPolicy(props) {
         adminApi.labelsListGet()
             .then((response) => {
                 const labelList = response.body.list || [];
-                setAvailableLabels(labelList.map((label) => label.name));
+                setAvailableLabels(labelList); // Store full label objects
             })
             .catch((error) => {
                 console.error('Error loading labels:', error);
@@ -202,17 +252,17 @@ function AddEditPolicy(props) {
                 }));
             });
 
-        restApi.getRulesetsList()
-            .then((response) => {
-                const rulesetList = response.body.list;
-                setAvailableRulesets(rulesetList);
+        // Fetch all rulesets recursively
+        fetchAllRulesets(restApi)
+            .then((allRulesets) => {
+                setAvailableRulesets(allRulesets);
 
                 if (policyId) {
-                    return restApi.getPolicy(policyId)
+                    return restApi.getGovernancePolicyById(policyId)
                         .then((policyResponse) => {
                             const { body } = policyResponse;
                             const fullRulesets = body.rulesets.map((rulesetId) => {
-                                const foundRuleset = rulesetList.find((r) => r.id === rulesetId);
+                                const foundRuleset = allRulesets.find((r) => r.id === rulesetId);
                                 return foundRuleset || { id: rulesetId, name: 'Unknown Ruleset' };
                             });
                             setSelectedRulesets(fullRulesets);
@@ -224,6 +274,7 @@ function AddEditPolicy(props) {
                                 setLabelMode('none');
                             } else {
                                 setLabelMode('specific');
+                                setOriginalLabels(body.labels);
                             }
 
                             return dispatch({
@@ -262,8 +313,12 @@ function AddEditPolicy(props) {
                 dispatch({ field: 'labels', value: [] });
                 break;
             case 'specific':
-                // TODO: should load the saved labels instead of clearing
-                dispatch({ field: 'labels', value: [] });
+                // Restore original labels when switching to specific mode
+                if (originalLabels?.length > 0) {
+                    dispatch({ field: 'labels', value: originalLabels });
+                } else {
+                    dispatch({ field: 'labels', value: [] });
+                }
                 break;
             default:
                 break;
@@ -390,7 +445,7 @@ function AddEditPolicy(props) {
 
         if (policyId) {
             promiseAPICall = restApi
-                .updatePolicy(body).then(() => {
+                .updateGovernancePolicyById(body).then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.edit.success',
                         defaultMessage: 'Policy Updated Successfully',
@@ -398,7 +453,7 @@ function AddEditPolicy(props) {
                 });
         } else {
             promiseAPICall = restApi
-                .addPolicy(body).then(() => {
+                .createGovernancePolicy(body).then(() => {
                     return intl.formatMessage({
                         id: 'Governance.Policies.AddEdit.add.success',
                         defaultMessage: 'Policy Added Successfully',
@@ -424,32 +479,28 @@ function AddEditPolicy(props) {
     };
 
     const groupActionsByState = (actionsList) => {
-        return actionsList.reduce((acc, action) => {
-            const existingStateIndex = acc.findIndex((item) => item.state === action.state);
-            if (existingStateIndex === -1) {
-                acc.push({
+        // Create a map of all actions by state
+        const actionMap = actionsList.reduce((acc, action) => {
+            const existingState = acc.get(action.state);
+            if (!existingState) {
+                acc.set(action.state, {
                     state: action.state,
                     error: action.ruleSeverity === 'ERROR' ? action.type : null,
                     warn: action.ruleSeverity === 'WARN' ? action.type : null,
                     info: action.ruleSeverity === 'INFO' ? action.type : null,
                 });
             } else {
-                switch (action.ruleSeverity) {
-                    case 'ERROR':
-                        acc[existingStateIndex].error = action.type;
-                        break;
-                    case 'WARN':
-                        acc[existingStateIndex].warn = action.type;
-                        break;
-                    case 'INFO':
-                        acc[existingStateIndex].info = action.type;
-                        break;
-                    default:
-                        break;
-                }
+                if (action.ruleSeverity === 'ERROR') existingState.error = action.type;
+                if (action.ruleSeverity === 'WARN') existingState.warn = action.type;
+                if (action.ruleSeverity === 'INFO') existingState.info = action.type;
             }
             return acc;
-        }, []);
+        }, new Map());
+
+        // Return array in GOVERNABLE_STATES order
+        return CONSTS.GOVERNABLE_STATES
+            .filter((st) => actionMap.has(st.value))
+            .map((st) => actionMap.get(st.value));
     };
 
     const handleActionSave = (actionConfig) => {
@@ -520,6 +571,17 @@ function AddEditPolicy(props) {
         setSelectedRulesets(selectedRulesets.filter((r) => r.id !== ruleset.id));
     };
 
+    // Get existing states from current actions
+    const getExistingStates = () => {
+        return [...new Set(actions.map((action) => action.state))];
+    };
+
+    // Add this helper function to check if all states are configured
+    const areAllStatesConfigured = () => {
+        const existingStates = getExistingStates();
+        return CONSTS.GOVERNABLE_STATES.every((st) => existingStates.includes(st.value));
+    };
+
     return (
         <StyledContentBase
             pageStyle='half'
@@ -532,11 +594,35 @@ function AddEditPolicy(props) {
                     defaultMessage: 'Governance Policy - Create new',
                 })
             }
-            help={<div>TODO: Link Doc</div>}
+            help={(
+                <HelpBase>
+                    <List component='nav'>
+                        <ListItemButton>
+                            <ListItemIcon sx={{ minWidth: 'auto', marginRight: 1 }}>
+                                <DescriptionIcon />
+                            </ListItemIcon>
+                            <Link
+                                target='_blank'
+                                href={Configurations.app.docUrl
+                                    + 'governance/api-governance-admin-capabilities/#create-and-manage-policies'}
+                                underline='hover'
+                            >
+                                <ListItemText primary={(
+                                    <FormattedMessage
+                                        id='Governance.Policies.AddEdit.help.link'
+                                        defaultMessage='Create and Manage Policies'
+                                    />
+                                )}
+                                />
+                            </Link>
+                        </ListItemButton>
+                    </List>
+                </HelpBase>
+            )}
         >
             <Box component='div' m={2} sx={{ mb: 15 }}>
                 <Grid container spacing={2}>
-                    <Grid item xs={12} md={12} lg={3}>
+                    <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px', paddingTop: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.general.details'
@@ -556,7 +642,6 @@ function AddEditPolicy(props) {
                                 autoFocus
                                 margin='dense'
                                 name='name'
-                                disabled={editMode}
                                 value={name}
                                 onChange={onChange}
                                 label={(
@@ -587,12 +672,16 @@ function AddEditPolicy(props) {
                                 })}
                                 fullWidth
                                 multiline
+                                rows={3}
                                 error={hasErrors('description', description, validating)}
                                 helperText={hasErrors('description', description, validating) || intl.formatMessage({
                                     id: 'Governance.Policies.AddEdit.form.description.help',
                                     defaultMessage: 'Description of the governance policy.',
                                 })}
                                 variant='outlined'
+                                InputProps={{
+                                    style: { padding: 0 },
+                                }}
                             />
                         </Box>
                     </Grid>
@@ -603,17 +692,17 @@ function AddEditPolicy(props) {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={12} lg={3}>
+                    <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.labels.title'
-                                defaultMessage='Applicability'
+                                defaultMessage='Attachment'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.labels.description'
-                                defaultMessage={'Choose whether to apply this policy to'
+                                defaultMessage={'Choose whether to attach this policy to'
                                     + ' all APIs or only to APIs with specific labels'}
                             />
                         </Typography>
@@ -631,7 +720,7 @@ function AddEditPolicy(props) {
                                         control={<Radio />}
                                         label={intl.formatMessage({
                                             id: 'Governance.Policies.AddEdit.labels.applyAll',
-                                            defaultMessage: 'Apply to all APIs',
+                                            defaultMessage: 'All APIs',
                                         })}
                                     />
                                     <FormControlLabel
@@ -639,7 +728,7 @@ function AddEditPolicy(props) {
                                         control={<Radio />}
                                         label={intl.formatMessage({
                                             id: 'Governance.Policies.AddEdit.labels.applySpecific',
-                                            defaultMessage: 'Apply to APIs with specific labels',
+                                            defaultMessage: 'APIs with specific labels',
                                         })}
                                     />
                                     <FormControlLabel
@@ -647,7 +736,7 @@ function AddEditPolicy(props) {
                                         control={<Radio />}
                                         label={intl.formatMessage({
                                             id: 'Governance.Policies.AddEdit.labels.applyNone',
-                                            defaultMessage: 'Apply to none',
+                                            defaultMessage: 'None',
                                         })}
                                     />
                                 </RadioGroup>
@@ -657,9 +746,22 @@ function AddEditPolicy(props) {
                                     multiple
                                     id='governance-policy-labels'
                                     options={availableLabels}
-                                    value={labels}
+                                    value={
+                                        labels.map((labelId) => {
+                                            const labelObject = availableLabels.find((l) => l.id === labelId);
+                                            return labelObject || labelId;
+                                        })
+                                    }
                                     onChange={(event, newValue) => {
                                         dispatch({ field: 'labels', value: newValue });
+                                    }}
+                                    getOptionLabel={(option) => {
+                                        return typeof option === 'object' ? option.name : option;
+                                    }}
+                                    isOptionEqualTo={(option, value) => {
+                                        return typeof option === 'object' && typeof value === 'object'
+                                            ? option.id === value.id
+                                            : option === value;
                                     }}
                                     renderInput={(params) => (
                                         <TextField
@@ -674,16 +776,21 @@ function AddEditPolicy(props) {
                                                 id: 'Governance.Policies.AddEdit.labels.helper',
                                                 defaultMessage:
                                                     'Select one or more labels to determine'
-                                                    + ' which APIs this policy applies to',
+                                                    + ' which APIs this policy attaches to',
                                             })}
                                         />
                                     )}
                                     renderTags={(value, getTagProps) => value.map((option, index) => (
                                         <Chip
-                                            label={option}
+                                            label={typeof option === 'object' ? option.name : option}
                                             {...getTagProps({ index })}
                                         />
                                     ))}
+                                    sx={{
+                                        '& .MuiOutlinedInput-root .MuiAutocomplete-input': {
+                                            padding: '4px 4px 4px 5px',
+                                        },
+                                    }}
                                 />
                             )}
                         </Box>
@@ -695,33 +802,47 @@ function AddEditPolicy(props) {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={12} lg={3}>
+                    <Grid item xs={12} md={12} lg={3} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.enforcement.title'
-                                defaultMessage='Enforcement Details'
+                                defaultMessage='Enforcement'
                             />
                         </Typography>
                         <Typography color='inherit' variant='caption' component='p'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.enforcement.description'
-                                defaultMessage='Provide details of when the policy will be applied'
+                                defaultMessage={'Choose when the policy should be applied and the action '
+                                    + 'that should be taken based on the severity of the rule violation.'}
                             />
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
-                            <Button
-                                variant='outlined'
-                                color='primary'
-                                startIcon={<AddIcon />}
-                                onClick={handleAddAction}
+                            <Tooltip title={
+                                areAllStatesConfigured()
+                                    ? intl.formatMessage({
+                                        id: 'Governance.Policies.AddEdit.enforcement.add.disabled.tooltip',
+                                        defaultMessage: 'All available states have been configured',
+                                    })
+                                    : ''
+                            }
                             >
-                                {intl.formatMessage({
-                                    id: 'Governance.Policies.AddEdit.action.add',
-                                    defaultMessage: 'Add Action Configuration',
-                                })}
-                            </Button>
+                                <span>
+                                    <Button
+                                        variant='outlined'
+                                        color='primary'
+                                        startIcon={<AddIcon />}
+                                        onClick={handleAddAction}
+                                        disabled={areAllStatesConfigured()}
+                                    >
+                                        {intl.formatMessage({
+                                            id: 'Governance.Policies.AddEdit.enforcement.add.button',
+                                            defaultMessage: 'Add Enforcement Criteria',
+                                        })}
+                                    </Button>
+                                </span>
+                            </Tooltip>
                         </Box>
                         <Box component='div' m={1}>
                             {actions && actions.length > 0 && (
@@ -756,7 +877,7 @@ function AddEditPolicy(props) {
                                                 <TableCell align='right'>
                                                     {intl.formatMessage({
                                                         id: 'Governance.Policies.AddEdit.action.table.actions',
-                                                        defaultMessage: 'Actions',
+                                                        defaultMessage: 'Edit / Delete',
                                                     })}
                                                 </TableCell>
                                             </TableRow>
@@ -813,13 +934,30 @@ function AddEditPolicy(props) {
                                                         />
                                                     </TableCell>
                                                     <TableCell align='right'>
-                                                        <IconButton
-                                                            onClick={() => handleEditAction(groupedAction)}
-                                                            size='small'
-                                                            sx={{ mr: 1 }}
+                                                        <Tooltip title={
+                                                            (groupedAction.state === 'API_UPDATE'
+                                                                || groupedAction.state === 'API_CREATE')
+                                                                ? intl.formatMessage({
+                                                                    id: 'Governance.Policies.AddEdit.action.edit.'
+                                                                        + 'disabled.tooltip',
+                                                                    defaultMessage: 'Cannot edit as only notify action'
+                                                                        + ' is allowed',
+                                                                })
+                                                                : ''
+                                                        }
                                                         >
-                                                            <EditIcon />
-                                                        </IconButton>
+                                                            <span>
+                                                                <IconButton
+                                                                    onClick={() => handleEditAction(groupedAction)}
+                                                                    size='small'
+                                                                    sx={{ mr: 1 }}
+                                                                    disabled={groupedAction.state === 'API_UPDATE'
+                                                                        || groupedAction.state === 'API_CREATE'}
+                                                                >
+                                                                    <EditIcon />
+                                                                </IconButton>
+                                                            </span>
+                                                        </Tooltip>
                                                         <IconButton
                                                             onClick={() => {
                                                                 const newActions = actions.filter(
@@ -852,7 +990,7 @@ function AddEditPolicy(props) {
                         </Box>
                     </Grid>
 
-                    <Grid item xs={12} md={12} lg={12}>
+                    <Grid item xs={12} md={12} lg={12} style={{ paddingLeft: '24px' }}>
                         <Typography color='inherit' variant='subtitle2' component='div'>
                             <FormattedMessage
                                 id='Governance.Policies.AddEdit.rulesets.title'
@@ -931,6 +1069,7 @@ function AddEditPolicy(props) {
                 onClose={handleCloseDialog}
                 onSave={handleActionSave}
                 editAction={dialogConfig.editAction}
+                existingStates={getExistingStates()}
             />
         </StyledContentBase>
     );
