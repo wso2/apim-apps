@@ -24,10 +24,10 @@ import CardContent from '@mui/material/CardContent';
 import CardMedia from '@mui/material/CardMedia';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
+import BaseThumbnail from '../BaseThumbnail';
 
 import { green } from '@mui/material/colors';
 import { useTheme } from '@emotion/react';
-import BaseThumbnail from '../BaseThumbnail';
 
 const PREFIX = 'DocThumbClassic copy';
 

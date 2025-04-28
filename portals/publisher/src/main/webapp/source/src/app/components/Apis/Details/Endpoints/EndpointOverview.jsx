@@ -336,7 +336,7 @@ function EndpointOverview(props) {
         }).catch((error) => {
             if (error.response) {
                 Alert.error(error.response.body.description);
-            } else { 
+            } else {
                 Alert.error(
                     <FormattedMessage
                         id='Apis.Details.APIDefinition.Addservice.service.retrieve.error'
@@ -766,7 +766,7 @@ function EndpointOverview(props) {
     );
 
     /**
-     * Method to update the resource paths object in the swagger.
+     * Method to update the x-wso2-mockdb in the swagger.
      * @param {any} paths The updated paths object.
      * */
     const updateMockDB = useCallback(

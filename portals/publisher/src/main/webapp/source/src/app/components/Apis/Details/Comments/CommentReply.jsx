@@ -24,9 +24,9 @@ import Grid from '@mui/material/Grid';
 import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
 import API from 'AppData/api';
-import { injectIntl } from 'react-intl';
 import CommentEdit from './CommentEdit';
 import CommentOptions from './CommentOptions';
+import { injectIntl } from 'react-intl';
 
 const PREFIX = 'CommentReply';
 
@@ -40,38 +40,38 @@ const classes = {
 
 const StyledConfirmDialog
  = styled(ConfirmDialog
- )((
-     {
-         theme
-     }
- ) => ({
-     [`& .${classes.link}`]: {
-         color: theme.palette.getContrastText(theme.palette.background.default),
-         cursor: 'pointer',
-     },
+)((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.link}`]: {
+        color: theme.palette.getContrastText(theme.palette.background.default),
+        cursor: 'pointer',
+    },
 
-     [`& .${classes.commentIcon}`]: {
-         color: theme.palette.getContrastText(theme.palette.background.default),
-     },
+    [`& .${classes.commentIcon}`]: {
+        color: theme.palette.getContrastText(theme.palette.background.default),
+    },
 
-     [`& .${classes.commentText}`]: {
-         color: theme.palette.getContrastText(theme.palette.background.default),
-         marginTop: theme.spacing(1),
-         width: '100%',
-         whiteSpace: 'pre-wrap',
-         overflowWrap: 'break-word',
-     },
+    [`& .${classes.commentText}`]: {
+        color: theme.palette.getContrastText(theme.palette.background.default),
+        marginTop: theme.spacing(1),
+        width: '100%',
+        whiteSpace: 'pre-wrap',
+        overflowWrap: 'break-word',
+    },
 
-     [`& .${classes.root}`]: {
-         marginTop: theme.spacing(2.5),
-     },
+    [`& .${classes.root}`]: {
+        marginTop: theme.spacing(2.5),
+    },
 
-     [`& .${classes.contentWrapper}`]: {
-         maxWidth: theme.custom.contentAreaWidth,
-         paddingLeft: theme.spacing(2),
-         paddingTop: theme.spacing(1),
-     }
- }));
+    [`& .${classes.contentWrapper}`]: {
+        maxWidth: theme.custom.contentAreaWidth,
+        paddingLeft: theme.spacing(2),
+        paddingTop: theme.spacing(1),
+    }
+}));
 
 /**
  * Display a particular comment and details
