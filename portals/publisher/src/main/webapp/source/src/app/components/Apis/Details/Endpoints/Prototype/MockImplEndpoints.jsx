@@ -451,8 +451,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                             </Stack>
 
                             <Typography variant='body1'>
-                                Smart, realistic mocks tailored from your API —
-                                great for demos, testing, and better feedback.
+                                Smart, realistic mocks tailored from your API
                             </Typography>
 
                             <Divider />

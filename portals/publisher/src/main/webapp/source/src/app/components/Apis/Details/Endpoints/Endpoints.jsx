@@ -135,7 +135,7 @@ function Endpoints(props) {
     });
     const [componentValidator, setComponentValidator] = useState([]);
     const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
-    const [isMockAndNoScripts, setIsMockAndNoScripts] = useState(false);
+    const [isMockAndDisableSave, setIsMockAndDisableSave] = useState(false);
 
     useEffect(() => {
         if (api.subtypeConfiguration?.subtype === 'AIAPI') {
@@ -161,7 +161,7 @@ function Endpoints(props) {
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
         const { action, value } = configAction;
-        setIsMockAndNoScripts(action === 'set_inline_or_mocked_oas')
+        setIsMockAndDisableSave(action === 'set_inline_or_mocked_oas')
         switch (action) {
             case 'production_endpoints':
             case 'sandbox_endpoints': {
@@ -835,7 +835,7 @@ function Endpoints(props) {
                                             apiKeyParamConfig={apiKeyParamConfig}
                                             componentValidator={componentValidator}
                                             endpointSecurityTypes={endpointSecurityTypes}
-                                            setIsMockAndNoScripts={(val) => setIsMockAndNoScripts(val)}
+                                            setIsMockAndDisableSave={(val) => setIsMockAndDisableSave(val)}
                                         />
                                     </Grid>
                                 </Grid>
@@ -858,7 +858,7 @@ function Endpoints(props) {
                                     className={classes.buttonSection}
                                 >
                                     <Grid item>
-                                        {api.isRevision || !endpointValidity.isValid || isMockAndNoScripts
+                                        {api.isRevision || !endpointValidity.isValid || isMockAndDisableSave
                                             || (settings && settings.portalConfigurationOnlyModeEnabled)
                                             || isRestricted(['apim:api_create'], api) ? (
                                                 <Button

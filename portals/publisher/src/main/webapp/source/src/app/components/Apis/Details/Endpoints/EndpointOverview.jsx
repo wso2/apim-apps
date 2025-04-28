@@ -193,7 +193,7 @@ function EndpointOverview(props) {
         apiKeyParamConfig,
         componentValidator,
         endpointSecurityTypes,
-        setIsMockAndNoScripts
+        setIsMockAndDisableSave
     } = props;
     const { endpointConfig } = api;
     const [endpointType, setEndpointType] = useState(endpointTypes[0]);
@@ -831,7 +831,7 @@ function EndpointOverview(props) {
                                 endpointType={endpointType.key} 
                                 endpointConfig={endpointConfig}
                                 endpointsDispatcher={endpointsDispatcher}
-                                setSaveDisable={setIsMockAndNoScripts}
+                                setSaveDisable={setIsMockAndDisableSave}
                             />, 
                             <Progress />)
                         : (
@@ -1492,7 +1492,7 @@ EndpointOverview.propTypes = {
     setIsValidSequenceBackend: PropTypes.func.isRequired,
     isCustomBackendSelected: PropTypes.bool,
     setIsCustomBackendSelected: PropTypes.func,
-    setIsMockAndNoScripts: PropTypes.func
+    setIsMockAndDisableSave: PropTypes.func
 };
 
 export default injectIntl((EndpointOverview));
