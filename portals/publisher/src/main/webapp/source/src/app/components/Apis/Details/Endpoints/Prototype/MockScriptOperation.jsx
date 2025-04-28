@@ -122,7 +122,8 @@ function MockScriptOperation(props) {
                         defaultMessage='Script'
                     />
                 </Typography>
-                {showReset && (
+                {showReset
+                && (
                     <Button
                         variant='contained'
                         color='primary'
@@ -147,7 +148,7 @@ function MockScriptOperation(props) {
                         value={scriptRef.current}
                         options={{
                             selectOnLineNumbers: true,
-                            readOnly: isRestricted(['apim:api_create'], api),
+                            readOnly: `${isRestricted(['apim:api_create'], api)}`,
                         }}
                         language='javascript'
                         onChange={(content) => {

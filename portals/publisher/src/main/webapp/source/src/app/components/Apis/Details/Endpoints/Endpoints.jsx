@@ -217,17 +217,6 @@ function Endpoints(props) {
             }
             case 'set_inline_or_mocked_oas': {
                 const { endpointImplementationType, endpointConfig } = value;
-                if (endpointImplementationType === 'INLINE') {
-                    // api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
-                    //     setSwagger(res.obj);
-                    // });
-                    // const noScripts = !Object.values(swagger.paths).some(methods =>
-                    //     Object.values(methods).some(data =>
-                    //         data?.['x-mediation-script']?.trim()
-                    //     )
-                    // );                   
-                    // setIsMockAndNoScripts(noScripts);
-                }
                 return { ...initState, endpointConfig, endpointImplementationType };
             }
             case 'set_prototyped': {

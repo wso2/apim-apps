@@ -154,7 +154,7 @@ export default function CustomSplitButton(props) {
 
 CustomSplitButton.defaultProps = {
     isCustomBackendSelected: false,
-    isValidSequenceBackend: true
+    isValidSequenceBackend: true,
 };
 CustomSplitButton.propTypes = {
     api: PropTypes.shape({}).isRequired,
