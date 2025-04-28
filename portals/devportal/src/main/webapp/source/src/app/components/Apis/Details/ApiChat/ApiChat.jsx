@@ -565,6 +565,33 @@ const ApiChat = () => {
                             }
                             setIsAgentRunning(false);
                             break;
+                        case 'TERMINATED':
+                            if (api.type === 'GRAPHQL') {
+                                // For GraphQL APIs, show the response but skip invoking the API
+                                if (body.result && body.result !== '') {
+                                    setFinalOutcome(body.result);
+                                } else {
+                                    setFinalOutcome(
+                                        intl.formatMessage({
+                                            id: 'Apis.Details.ApiChat.ApiChat.subsequentRequset.finalOutcome.taskTerminated',
+                                            defaultMessage: 'Task terminated',
+                                        }),
+                                    );
+                                }
+                                // Send a subsequent request without invoking the API
+                                sendSubsequentRequest(requestId, body.resource);
+                            } else {
+                                // For other APIs, follow the default case
+                                setIsExecutionError(true);
+                                setFinalOutcome(
+                                    intl.formatMessage({
+                                        id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
+                                        defaultMessage: 'An error occurred during query execution.',
+                                    }),
+                                );
+                                setIsAgentRunning(false);
+                            }
+                            break;
                         default:
                             setIsExecutionError(true);
                             setFinalOutcome(
@@ -645,6 +672,30 @@ const ApiChat = () => {
                                     intl.formatMessage({
                                         id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskCompletedOneItr',
                                         defaultMessage: 'Task completed in 1 iteration.',
+                                    }),
+                                );
+                            }
+                            setIsAgentRunning(false);
+                            break;
+                        case 'TERMINATED':
+                            if (api.type === 'GRAPHQL') {
+                                // For GraphQL APIs, show the response but skip invoking the API
+                                if (body.result && body.result !== '') {
+                                    setFinalOutcome(body.result);
+                                } else {
+                                    setFinalOutcome(
+                                        intl.formatMessage({
+                                            id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskTerminated',
+                                            defaultMessage: 'Task terminated',
+                                        }),
+                                    );
+                                }
+                            } else {
+                                setIsExecutionError(true);
+                                setFinalOutcome(
+                                    intl.formatMessage({
+                                        id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
+                                        defaultMessage: 'An error occurred during query execution.',
                                     }),
                                 );
                             }
