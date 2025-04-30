@@ -23,7 +23,8 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { FormattedMessage } from 'react-intl';
-import { Editor as MonacoEditor } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor'
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import CancelIcon from '@mui/icons-material/Cancel';
 import IconButton from '@mui/material/IconButton';
 import { orange } from '@mui/material/colors';
@@ -33,6 +34,9 @@ import LinterUI from './LinterUI/LinterUI';
 import { spectralSeverityNames } from "./Linting/Linting"
 
 const PREFIX = 'SwaggerEditorDrawer';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco })
 
 const classes = {
     editorPane: `${PREFIX}-editorPane`,
@@ -145,10 +149,10 @@ class SwaggerEditorDrawer extends React.Component {
         onEditContent(content);
     }
 
-    editorDidMount(editor, monaco) {
+    editorDidMount(editorInstance, monacoInstance) {
         const { linterSelectedLine } = this.props;
-        this.editor = editor;
-        this.monaco = monaco;
+        this.editor = editorInstance;
+        this.monaco = monacoInstance;
         if (linterSelectedLine) {
             this.handleRowClick(linterSelectedLine);
         }

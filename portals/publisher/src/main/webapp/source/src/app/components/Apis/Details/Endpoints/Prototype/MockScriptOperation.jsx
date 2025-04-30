@@ -28,9 +28,13 @@ import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import { isRestricted } from 'AppData/AuthManager';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
-import { Editor as MonacoEditor } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor'
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 
 const PREFIX = 'MockScriptOperation';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco })
 
 const classes = {
     scriptResetButton: `${PREFIX}-scriptResetButton`
