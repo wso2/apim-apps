@@ -37,7 +37,7 @@ import {
     app
 } from 'Settings';
 import { LoadingButton } from '@mui/lab';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 
@@ -50,6 +50,7 @@ import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
  * */
 function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveDisable }) {
     const { api } = useContext(APIContext);
+    const intl = useIntl();
     const [error, setError] = useState(null);
     const [progress, setProgress] = useState(true);
     const [mockScripts, setMockScripts] = useState(null);
@@ -77,25 +78,25 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
     const hasAuthToken = settings && settings?.aiAuthTokenProvided
     const [isFirstTimeSelection, setIsFirstTimeSelection] = useState(true);
 
-    const splitSimulationPart = (content) => {
+    const splitContentAndSimulation = (content) => {
         const index = content.indexOf(simulationSplitString);
         if (index === -1) {
-            return { content, simulationPart: '' };
+            return { content, simulationScript: '' };
         }
-        const simulationPart = content.substring(index + simulationSplitString.length).trim() || '';
-        return { content: content.substring(0, index).trim(), simulationPart };
+        const simulationScript = content.substring(index + simulationSplitString.length).trim() || '';
+        return { content: content.substring(0, index).trim(), simulationScript };
     };
 
-    const setSimulationConfig = (simulationPart, path, verb) => {
+    const setSimulationConfig = (simulationScript, path, verb) => {
         const method = verb.toLowerCase();
-        if (simulationPart !== null) {
-            const apiSimMatch = simulationPart.match(/var apiSim = (true|false)/);
-            const latencyMatch = simulationPart.match(/sleepFor\((\d+)\);/);
-            const errorMatch = simulationPart.match(/var errSim = '(\d+)';/);
+        if (simulationScript !== null) {
+            const apiSimulationMatch = simulationScript.match(/var apiSimulation = (true|false)/);
+            const latencyMatch = simulationScript.match(/sleepFor\((\d+)\);/);
+            const errorMatch = simulationScript.match(/var errorSimulation = '(\d+)';/);
             if (latencyMatch || errorMatch) {
                 const latencySim = latencyMatch ? parseInt(latencyMatch[1], 10) : 0;
                 const errorSim = errorMatch ? errorMatch[1] : '0';
-                if (apiSimMatch && apiSimMatch[1] === 'true') { // API-level config
+                if (apiSimulationMatch && apiSimulationMatch[1] === 'true') { // API-level config
                     setMockConfig((prev) => ({
                         ...prev, config: {
                             ...prev.config,
@@ -137,9 +138,9 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                 const response = await api.getGeneratedMockScriptsOfAPI(api.id);
                 const tempNullScripts = []
                 response.obj.list = response.obj.list.map((methodObj) => {
-                    const { content, simulationPart } =
-                        splitSimulationPart(methodObj.content, methodObj.path, methodObj.verb);
-                    setSimulationConfig(simulationPart, methodObj.path, methodObj.verb);
+                    const { content, simulationScript } =
+                        splitContentAndSimulation(methodObj.content, methodObj.path, methodObj.verb);
+                    setSimulationConfig(simulationScript, methodObj.path, methodObj.verb);
                     if (content.trim().length === 0) {
                         const newEntry = `${methodObj.verb.toLowerCase()} - ${methodObj.path}`;
                         tempNullScripts.push(newEntry);
@@ -147,7 +148,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                     return {
                         ...methodObj,
                         content,
-                        simulationPart
+                        simulationScript
                     };
                 });
                 setNullScripts(tempNullScripts);
@@ -158,7 +159,11 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                 }
             } catch (e) {
                 console.error(e);
-                Alert.error('Something went wrong while fetching example mock scripts!');
+                Alert.error(
+                    intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Prototype.MockImplEndpoints.error.fetch',
+                        defaultMessage: 'Something went wrong while fetching example mock scripts!',
+                    }));
                 setError(e);
                 console.log(error)
             } finally {
@@ -176,11 +181,11 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
         const tmpScripts = [];
         const tmpPaths = paths;
         if (modify) {
-            const { simulationPart } =
-                splitSimulationPart(paths[modify.path][modify.method][xMediationScriptProperty] || '');
+            const { simulationScript } =
+                splitContentAndSimulation(paths[modify.path][modify.method][xMediationScriptProperty] || '');
             tmpPaths[modify.path][modify.method][xMediationScriptProperty] =
                 response.obj.paths[modify.path][modify.method][xMediationScriptProperty] +
-                simulationSplitString + simulationPart;
+                simulationSplitString + simulationScript;
             mockScripts.forEach((methodObj) => {
                 if (methodObj.path === modify.path && methodObj.verb.toLowerCase() === modify.method) {
                     tmpScripts.push({
@@ -198,14 +203,14 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                     if (method === 'parameters') {
                         return; // Skip this loop iteration
                     }
-                    const { content, simulationPart } =
-                        splitSimulationPart(data[xMediationScriptProperty], path, method);
-                    setSimulationConfig(simulationPart, path, method)
+                    const { content, simulationScript } =
+                        splitContentAndSimulation(data[xMediationScriptProperty], path, method);
+                    setSimulationConfig(simulationScript, path, method)
                     tmpScripts.push({
                         path,
                         verb: method.toUpperCase(),
                         content,
-                        simulationPart
+                        simulationScript
                     });
                     tmpPaths[path][method][xMediationScriptProperty] = data[xMediationScriptProperty];
                 });
@@ -219,13 +224,18 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
     const handleModifyMethod = async (path, method, instructions) => {
         const isThisScriptNull = nullScripts.includes(`${method} - ${path}`)
         if (instructions === '' && !isThisScriptNull) {
-            Alert.error('No Instructions to modify');
+            Alert.error(
+                intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.Prototype.MockImplEndpoints.error.noInstructions',
+                    defaultMessage: 'No instructions to modify',
+                })
+            );
             return;
         }
         setAiLoadingStates(`${path}_${method}`); // Set AI loading state for this endpoint
         setSaveDisable(true);
         const script = paths[path][method][xMediationScriptProperty] || '';
-        const { content, simulationPart } = splitSimulationPart(script)
+        const { content, simulationScript } = splitContentAndSimulation(script)
         const payload = {
             instructions: isThisScriptNull ? 'Generate mock scripts for the specified endpoint' : instructions,
             script: content.length === 0 ? 'No Script' : content,
@@ -233,21 +243,30 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
         }
         try {
             await generateMockScripts(true, payload, payload.modify);
-            setSimulationConfig(simulationPart, path, method);
+            setSimulationConfig(simulationScript, path, method);
             if (nullScripts.includes(`${method} - ${path}`)) {
                 setNullScripts(prev => prev.filter(item => item !== `${method} - ${path}`));
             }
             forceUpdate();
-            Alert.info('Successfully Modified the mock script!');
+            Alert.info(
+                intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.Prototype.MockImplEndpoints.success.modify',
+                    defaultMessage: 'Successfully modified the mock script!',
+                })
+            );
         } catch (e) {
-            Alert.error('Error generating mock scripts!');
+            Alert.error(
+                intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.Prototype.MockImplEndpoints.error.generate',
+                    defaultMessage: 'Error generating mock scripts!',
+                })
+            );
         } finally {
             setAiLoadingStates(null); // Reset AI loading state
             if (aiLoadingStates === null) {
                 setSaveDisable(false);
             }
         }
-
     }
 
     const handleGenerateScripts = async (useAI) => {
@@ -261,7 +280,12 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
             if (useAI) updateMockDB({ [xWso2MockDBProperty]: response.obj[xWso2MockDBProperty] });
             else updateMockDB({ [xWso2MockDBProperty]: undefined });
             forceUpdate();
-            Alert.info('Successfully generated mock scripts!');
+            Alert.info(
+                intl.formatMessage({
+                    id: 'Apis.Details.Endpoints.Prototype.MockImplEndpoints.success.generate',
+                    defaultMessage: 'Successfully generated mock scripts!',
+                })
+            );
             setMockConfig({ ...mockConfig, useAI })
             setShowInstructions(false);
             setIsFirstTimeSelection(false);
@@ -270,13 +294,23 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
         } catch (e) {
             console.error(e);
             if (useAI) {
-                Alert.error('Error generating mock scripts with AI!. Please try again.')
+                Alert.error(
+                    intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Prototype.MockImplEndpoints.error.aiGenerate',
+                        defaultMessage: 'Error generating mock scripts with AI! Please try again.',
+                    })
+                );
                 setMockConfig({
                     ...mockConfig, useAI: false
                 })
             }
             else {
-                Alert.error('Error generating mock scripts!');
+                Alert.error(
+                    intl.formatMessage({
+                        id: 'Apis.Details.Endpoints.Prototype.MockImplEndpoints.error.staticGenerate',
+                        defaultMessage: 'Error generating mock scripts!',
+                    })
+                );
             }
         } finally {
             setProgress(false);
@@ -291,9 +325,9 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
 
     const authTokenNotProvidedWarning = (
         <FormattedMessage
-            id='Apis.Details.Endpoints.Prototype.MockedOAS.warning.authTokenMissing'
-            defaultMessage={'You must provide a token to start using the AI-Assisted API Mock Server. To obtain one, '
-                + 'follow the steps provided under {apiAiChatDocLink} '}
+            id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.warning.authTokenMissing'
+            defaultMessage={'You must provide a token to start using the AI-Assisted API mock server. To obtain one, '
+                + 'follow the steps 1 to 3 provided under {apiAiChatDocLink} '}
             values={{
                 apiAiChatDocLink: (
                     <a
@@ -413,7 +447,10 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                     sx={{ textAlign: 'center' }}
                 >
                     <Typography variant='h4' sx={{ fontWeight: 600 }}>
-                        How Would You Like Your Mock Server to Behave?
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.mockServerBehavior'
+                            defaultMessage='How would you like your mock server to behave?'
+                        />
                     </Typography>
                     <img
                         alt='API Mock Assistant'
@@ -422,12 +459,12 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                     />
                 </Stack>
 
-                {!hasAuthToken && 
-                <MUIAlert severity='warning' sx={{my:0}}>
-                    <Typography variant='body1'>
-                        {authTokenNotProvidedWarning}
-                    </Typography>
-                </MUIAlert>}
+                {!hasAuthToken &&
+                    <MUIAlert severity='warning' sx={{ my: 0 }}>
+                        <Typography variant='body1'>
+                            {authTokenNotProvidedWarning}
+                        </Typography>
+                    </MUIAlert>}
 
                 <Stack direction={{ xs: 'column', md: 'row' }} spacing={4}>
                     <Paper
@@ -447,12 +484,18 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                             <Stack direction='row' alignItems='center' spacing={1}>
                                 <SmartToy fontSize='large' color='primary' />
                                 <Typography variant='h6' sx={{ fontWeight: 600 }}>
-                                    AI-Assisted Mock Server
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.aiAssistedMockServer'
+                                        defaultMessage='AI-assisted mock server'
+                                    />
                                 </Typography>
                             </Stack>
 
                             <Typography variant='body1'>
-                                Smart, realistic mocks tailored from your API Using AI.
+                                <FormattedMessage
+                                    id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.smartRealisticMocks'
+                                    defaultMessage='Smart, realistic mocks tailored from your API using AI.'
+                                />
                             </Typography>
 
                             <Divider />
@@ -477,7 +520,10 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                             disabled={!hasAuthToken || progress}
                             sx={{ mt: 3, fontWeight: 600 }}
                         >
-                            Use AI Mock Server
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.action.useAIMockServerButton'
+                                defaultMessage='Use AI Mock Server'
+                            />
                         </Button>
                     </Paper>
 
@@ -496,12 +542,18 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                             <Stack direction='row' alignItems='center' spacing={1}>
                                 <Memory fontSize='large' color='action' />
                                 <Typography variant='h6' sx={{ fontWeight: 600 }}>
-                                    Static Mock Server
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.staticMockServer'
+                                        defaultMessage='Static mock server'
+                                    />
                                 </Typography>
                             </Stack>
 
                             <Typography variant='body1'>
-                                Basic and quick mocks for rapid setup and initial testing needs.
+                                <FormattedMessage
+                                    id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.basicQuickMocks'
+                                    defaultMessage='Basic and quick mocks for rapid setup and initial testing needs.'
+                                />
                             </Typography>
 
                             <Divider />
@@ -521,7 +573,10 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                             onClick={() => handleGenerateScripts(false)}
                             sx={{ mt: 3, fontWeight: 600 }}
                         >
-                            Use Static Mock Server
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.action.useStaticMockServerButton'
+                                defaultMessage='Use Static Mock Server'
+                            />
                         </Button>
                     </Paper>
                 </Stack>
@@ -536,15 +591,26 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                     <Paper sx={{ p: 3 }}>
                         <Stack direction='row' spacing={2} alignItems='center' justifyContent='space-between'>
                             <Typography variant='h5' gutterBottom>
-                                {isFirstTimeSelection
-                                    ? 'Mock Implementation'
-                                    : `${mockConfig.useAI ? 'AI Assisted' : 'Default'} Mock Implementation`}
-
+                                {isFirstTimeSelection ?
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.mockImplementation'
+                                        defaultMessage='Mock implementation'
+                                    /> :
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.mockImplementationType'
+                                        defaultMessage='{type} mock implementation'
+                                        values={{ type: mockConfig.useAI ? 'AI-assisted' : 'Default' }}
+                                    />
+                                }
                             </Typography>
                             <Tooltip title='Configure Simulations of Mock Endpoints'>
                                 <Button disabled={progress || isFirstTimeSelection} color='inherit'
                                     onClick={() => handleConfigClick()} endIcon={<Settings />}>
-                                    Simulations for the API
+                                    <FormattedMessage
+                                        id={'Apis.Details.Endpoints.Prototype.' +
+                                            'MockImplEndpoints.action.simulationsForAPIButton'}
+                                        defaultMessage='Configure Simulations for the API'
+                                    />
                                 </Button>
                             </Tooltip>
                         </Stack>
@@ -554,7 +620,11 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                     <MUIAlert severity='warning' sx={{ my: 1 }}>
                                         <Stack direction='row' alignItems='center' spacing={1} flexWrap='wrap'>
                                             <Typography variant='body1'>
-                                                Mock scripts are missing for:
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Endpoints.Prototype.' + 
+                                                        'MockImplEndpoints.missingScripts'}
+                                                    defaultMessage='Mock scripts are missing for:'
+                                                />
                                             </Typography>
                                             {nullScripts.map((entry) => (
                                                 <Chip
@@ -565,7 +635,11 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                 />
                                             ))}
                                             <Typography variant='body1'>
-                                                Please Re-generate.
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Endpoints.Prototype.' + 
+                                                        'MockImplEndpoints.reGeneratePrompt'}
+                                                    defaultMessage='Please re-generate.'
+                                                />
                                             </Typography>
                                         </Stack>
                                     </MUIAlert>
@@ -591,19 +665,37 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                         mb: 1,
                                                     }}
                                                 >
-                                                    {mockConfig.useAI
-                                                        ? 'AI-Assisted Mock Server is Ready!'
-                                                        : 'Want a More Realistic Mock Server?'}
+                                                    {mockConfig.useAI ?
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                'MockImplEndpoints.aiReady'}
+                                                            defaultMessage='AI-assisted mock server is ready!'
+                                                        /> :
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                'MockImplEndpoints.moreRealisticMockServer'}
+                                                            defaultMessage='Want a more realistic mock server?'
+                                                        />
+                                                    }
                                                 </Typography>
                                                 <Typography
                                                     variant='body1'
                                                     color='textSecondary'
                                                 >
-                                                    {mockConfig.useAI
-                                                        ? 'Your AI-Assisted Mock Server is ready to generate ' +
-                                                        'realistic responses.'
-                                                        : 'Try our AI-Assisted Mock Server for ' +
-                                                        'realistic responses.'}
+                                                    {mockConfig.useAI ?
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                'MockImplEndpoints.aiReadyDescription'}
+                                                            defaultMessage={'Your AI-assisted mock server is ready to' +
+                                                                            ' generate realistic responses.'}
+                                                        /> :
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                'MockImplEndpoints.tryAIDescription'}
+                                                            defaultMessage={'Try our AI-assisted mock server ' + 
+                                                                            'for realistic responses.'}
+                                                        />
+                                                    }
                                                 </Typography>
                                                 {!hasAuthToken && (
                                                     <MUIAlert severity='warning' sx={{ my: 1 }}>
@@ -618,9 +710,23 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                         alignItems: 'center'
                                                     }}>
                                                         <div>
-                                                            <Tooltip title={mockConfig.useAI
-                                                                ? 'Re-generate AI-Assisted mock scripts'
-                                                                : 'Generate AI-Assisted mock scripts'}>
+                                                            <Tooltip
+                                                                title={
+                                                                    mockConfig.useAI ?
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.reGenerate'}
+                                                                            defaultMessage={'Re-generate AI-assisted ' +
+                                                                                            'mock scripts'}
+                                                                        /> :
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.generate'}
+                                                                            defaultMessage={'Generate AI-assisted ' +
+                                                                                            'mock scripts'}
+                                                                        />
+                                                                }
+                                                            >
                                                                 <Button
                                                                     variant='contained'
                                                                     onClick={() => {
@@ -632,12 +738,38 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                                         : <AutoAwesome />}
                                                                     sx={{ ml: 'auto' }}
                                                                 >
-                                                                    {mockConfig.useAI ? 'Re-Generate' :
-                                                                        'Try It'}
+                                                                    {mockConfig.useAI ?
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.' +
+                                                                                'reGenerateButton'}
+                                                                            defaultMessage='Re-Generate'
+                                                                        /> :
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.tryItButton'}
+                                                                            defaultMessage='Try It'
+                                                                        />
+                                                                    }
                                                                 </Button>
                                                             </Tooltip>
-                                                            <Tooltip title='Provide custom instructions 
-                                                            when Generating Mock Scripts'>
+                                                            <Tooltip
+                                                                title={
+                                                                    showInstructions ?
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.' +
+                                                                                'removeInstructions'}
+                                                                            defaultMessage='Remove custom instructions'
+                                                                        /> :
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.' +
+                                                                                'addInstructions'}
+                                                                            defaultMessage='Add custom instructions'
+                                                                        />
+                                                                }
+                                                            >
                                                                 <Button
                                                                     variant='text'
                                                                     sx={{ ml: 2 }}
@@ -645,15 +777,34 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                                     onClick={() =>
                                                                         setShowInstructions(!showInstructions)}
                                                                 >
-                                                                    {showInstructions ? 'Remove custom Instructions' :
-                                                                        'Add custom Instructions'}
+                                                                    {showInstructions ?
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.' +
+                                                                                'removeInstructionsButton'}
+                                                                            defaultMessage='Remove custom instructions'
+                                                                        /> :
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.' +
+                                                                                'addInstructionsButton'}
+                                                                            defaultMessage='Add custom instructions'
+                                                                        />
+                                                                    }
                                                                 </Button>
                                                             </Tooltip>
                                                         </div>
                                                         {mockConfig.useAI &&
-                                                            <Tooltip title='Fallback to default mock scripts 
-                                                        if AI-generated 
-                                                        scripts are not suitable'>
+                                                            <Tooltip
+                                                                title={
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints.Prototype.' +
+                                                                            'MockImplEndpoints.action.fallback'}
+                                                                        defaultMessage={'Fallback to ' +
+                                                                                        'default mock scripts'}
+                                                                    />
+                                                                }
+                                                            >
                                                                 <Button
                                                                     variant='outlined'
                                                                     color='inherit'
@@ -662,7 +813,12 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                                     }}
                                                                     disabled={progress}
                                                                 >
-                                                                    Fallback to Default Mock Scripts
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints.Prototype.' +
+                                                                            'MockImplEndpoints.action.fallbackButton'}
+                                                                        defaultMessage={'Fallback to ' +
+                                                                                        'default mock scripts'}
+                                                                    />
                                                                 </Button>
                                                             </Tooltip>
                                                         }
@@ -703,8 +859,15 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                     />
                                                     <Box sx={{ display: 'flex', justifyContent: 'flex-start' }}>
                                                         <Tooltip
-                                                            title={`${mockConfig.useAI ? 'Re-generate' : 'Generate'} 
-                                                                AI-Assisted mock scripts with Custom Instructions`}
+                                                            title={
+                                                                <FormattedMessage
+                                                                    id={'Apis.Details.Endpoints.Prototype.' +
+                                                                        'MockImplEndpoints.action.' + 
+                                                                        'generateWithInstructions'}
+                                                                    defaultMessage={'Generate AI-assisted mock scripts '
+                                                                                    +'with custom instructions'}
+                                                                />
+                                                            }
                                                         >
                                                             <Button
                                                                 variant='contained'
@@ -713,7 +876,18 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                                 endIcon={mockConfig.useAI ? <Refresh />
                                                                     : <AutoAwesome />}
                                                             >
-                                                                {mockConfig.useAI ? 'Re-Generate' : 'Generate'}
+                                                                {mockConfig.useAI ?
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints.Prototype.' +
+                                                                            'MockImplEndpoints.action.reGenerateButton'}
+                                                                        defaultMessage='Re-Generate'
+                                                                    /> :
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints.Prototype.' +
+                                                                            'MockImplEndpoints.action.generateButton'}
+                                                                        defaultMessage='Generate'
+                                                                    />
+                                                                }
                                                             </Button>
                                                         </Tooltip>
                                                     </Box>

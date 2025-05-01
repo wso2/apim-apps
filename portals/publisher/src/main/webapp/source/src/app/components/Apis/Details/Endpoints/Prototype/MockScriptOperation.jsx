@@ -65,7 +65,7 @@ function getGeneratedMockScriptOfAPI(mockScripts, path, method) {
         const matchedResource = mockScripts.find(
             mockScript => (mockScript.verb.toLowerCase() === method.toLowerCase() && mockScript.path === path));
         if (matchedResource) {
-            return {originalScript: matchedResource.content, simulationPart: matchedResource.simulationPart};
+            return {originalScript: matchedResource.content, simulationScript: matchedResource.simulationScript};
         }
     }
     return null;
@@ -88,13 +88,13 @@ function MockScriptOperation(props) {
         operation[xMediationScriptProperty]?.split(simulationSplitString)[0].trim() 
             ?? defaultScript);
 
-    const { originalScript = defaultScript, simulationPart = '' } = 
+    const { originalScript = defaultScript, simulationScript = '' } = 
     getGeneratedMockScriptOfAPI(mockScripts, resourcePath, resourceMethod) || {};
 
     const onScriptChange = useCallback(
         (value) => {
             // Modify the script before storing it in paths
-            const modifiedScript = value + `\n\n${simulationSplitString}\n${simulationPart}`;
+            const modifiedScript = value + `\n\n${simulationSplitString}\n${simulationScript}`;
 
             // Update paths without causing a re-render
             const tmpPaths = { ...paths };

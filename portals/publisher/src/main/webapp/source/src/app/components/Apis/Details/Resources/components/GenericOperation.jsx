@@ -32,6 +32,7 @@ import {
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Utils from 'AppData/Utils';
 import { Settings } from '@mui/icons-material';
+import { FormattedMessage } from 'react-intl';
 
 const PREFIX = 'GenericOperation';
 
@@ -147,7 +148,11 @@ function GenericOperation(props) {
                             handleConfigClick();
                             e.stopPropagation();
                         }} style={{ whiteSpace: 'nowrap' }} sx={{ px: 2 }} color='inherit' endIcon={<Settings />}>
-                            Simulations
+                            <FormattedMessage
+                                id={'Apis.Details.Endpoints.Prototype.' +
+                                    'MockImplEndpoints.action.simulationsForResourceButton'}
+                                defaultMessage='Configure Simulations'
+                            />
                         </Button>
                     </Tooltip>
                 </AccordionSummary>
