@@ -296,7 +296,7 @@ class API extends Resource {
     }
 
     /**
-     * Update an Labels
+     * Update a Label
      */
     updateLabel(id, name, description) {
         return this.client.then((client) => {
@@ -315,7 +315,7 @@ class API extends Resource {
     }
 
     /**
-     * Delete an Labels
+     * Delete a Label
      */
     deleteLabel(id) {
         return this.client.then((client) => {
@@ -329,7 +329,7 @@ class API extends Resource {
     }
 
     /**
-     * Add an Labels
+     * Add a Label
      */
     createLabel(name, description) {
         return this.client.then((client) => {

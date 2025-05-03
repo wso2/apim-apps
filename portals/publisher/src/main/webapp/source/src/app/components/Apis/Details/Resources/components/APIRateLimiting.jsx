@@ -318,7 +318,6 @@ function APIRateLimiting(props) {
                                             id='Apis.Details.Rate.Limiting.operations.save.btn'
                                             defaultMessage='Save'
                                         />
-                                        
                                         {isSaving && <CircularProgress size={24} />}
                                     </Button>
                                     <Box display='inline' ml={1}>

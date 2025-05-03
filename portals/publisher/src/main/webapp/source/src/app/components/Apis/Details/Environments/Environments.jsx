@@ -2241,7 +2241,6 @@ export default function Environments() {
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.no.env.heading'
                             defaultMessage='No Gateway Environments Configured for the selected gateway type'
-
                         />
                     </Typography>
                 </Grid>
