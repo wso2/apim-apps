@@ -47,7 +47,6 @@ import {
 import OperationsSelector from './components/OperationsSelector';
 import SaveOperations from './components/SaveOperations';
 
-
 /**
  * This component handles the Resource page in API details though it's written in a sharable way
  * that anyone could use this to render resources in anywhere else if needed.
