@@ -545,7 +545,7 @@ class DetailsLegacy extends React.Component {
                     rootIconSize, rootIconTextVisible, rootIconVisible, position,
                 },
                 apiDetailPages: {
-                    showCredentials, showComments, showTryout, showDocuments, showSdks, showAsyncSpecification, showSolaceTopics,
+                    showCredentials, showComments, showTryout, showDocuments, showSdks, showAsyncSpecification,
                 },
                 title: {
                     prefix, sufix,
@@ -745,21 +745,6 @@ class DetailsLegacy extends React.Component {
                                         </AccordionDetails>
                                     </Accordion>
                                 </>
-                            )}
-                            {(showSolaceTopics && !isMCPServer && api.gatewayVendor === 'solace') && (
-                                <LeftMenuItem
-                                    text={(
-                                        <FormattedMessage
-                                            id='Apis.Details.index.solaceTopicsInfo'
-                                            defaultMessage='Solace Info'
-                                        />
-                                    )}
-                                    route='solaceTopicsInfo'
-                                    iconText='test'
-                                    to={pathPrefix + 'solaceTopicsInfo'}
-                                    open={open}
-                                    id='left-menu-solace-info'
-                                />
                             )}
                             {isAsyncApi && showAsyncSpecification && !isMCPServer && (
                                 <LeftMenuItem

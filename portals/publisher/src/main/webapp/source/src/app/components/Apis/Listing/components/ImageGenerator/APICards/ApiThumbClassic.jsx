@@ -325,7 +325,7 @@ class APIThumb extends Component {
         let overviewPath = '';
         const { tileDisplayInfo } = Configurations.apis;
 
-        // If the the data is coming throught the API/APIProduct/MCP Listing path, 
+        // If the the data is coming throught the API/APIProduct/MCP Listing path,
         // the apiType attribute will be automatically added before coming here.
         // If apiType is missing, that means the data is coming from the search path
         // There we can take the api.type as the apiType
