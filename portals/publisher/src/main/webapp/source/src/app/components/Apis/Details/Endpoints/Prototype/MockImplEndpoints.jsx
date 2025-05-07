@@ -139,7 +139,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                 const tempNullScripts = []
                 response.obj.list = response.obj.list.map((methodObj) => {
                     const { content, simulationScript } =
-                        splitContentAndSimulation(methodObj.content, methodObj.path, methodObj.verb);
+                        splitContentAndSimulation(methodObj.content);
                     setSimulationConfig(simulationScript, methodObj.path, methodObj.verb);
                     if (content.trim().length === 0) {
                         const newEntry = `${methodObj.verb.toLowerCase()} - ${methodObj.path}`;
@@ -204,7 +204,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                         return; // Skip this loop iteration
                     }
                     const { content, simulationScript } =
-                        splitContentAndSimulation(data[xMediationScriptProperty], path, method);
+                        splitContentAndSimulation(data[xMediationScriptProperty]);
                     setSimulationConfig(simulationScript, path, method)
                     tmpScripts.push({
                         path,
