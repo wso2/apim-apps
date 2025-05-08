@@ -43,7 +43,7 @@ const Root = styled('div')({
     },
 });
 
-const gatewayDetails = {
+let gatewayDetails = {
     'wso2/synapse': { 
         value: 'wso2/synapse',
         name: 'Universal Gateway',
@@ -90,6 +90,21 @@ function APICreateRoutes() {
                 return item;
             });
             setGatewayTypes(updatedData);
+
+            const customGateways = {};
+            updatedData.forEach((gw) => {
+                if (!gatewayDetails[gw]) {
+                    const customGateway = {
+                        value: gw,
+                        name: gw + " Gateway",
+                        description: "Custom Gateway",
+                        isNew: false
+                    };
+                    customGateways[gw] = customGateway;
+                }
+            });
+
+            gatewayDetails = {...gatewayDetails, ...customGateways};
         }
     }, [isLoading]);
 
