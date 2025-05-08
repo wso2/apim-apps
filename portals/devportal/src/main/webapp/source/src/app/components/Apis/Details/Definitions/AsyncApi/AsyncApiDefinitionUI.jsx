@@ -71,7 +71,7 @@ class AsyncApiDefinitionUI extends Component {
     render() {
         // Avoid rendering the 'servers' portion from the AsyncAPI definition, except for Solace APIs.
         const asyncApiDefinition = JSON.parse(this.context.api.apiDefinition);
-        if (this.context.api.gatewayVendor !== 'solace') {
+        if (this.context.api.gatewayType !== 'solace') {
             delete asyncApiDefinition.servers;
         }
         

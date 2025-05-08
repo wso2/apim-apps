@@ -630,7 +630,7 @@ class DetailsLegacy extends React.Component {
                                 id='left-menu-overview'
                             />
                             {user && showCredentials && !isSubValidationDisabled
-                                && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
+                                && (api.gatewayVendor === 'wso2' || !api.gatewayVendor || api.gatewayType === 'solace') && (
                                 <>
 
                                     <LeftMenuItem
@@ -650,7 +650,7 @@ class DetailsLegacy extends React.Component {
                                 </>
                             )}
                             {showTryout && (api.gatewayType !== 'wso2/apk'
-                                || (api.type === 'APIPRODUCT' && !api.gatewayVendor)) && (
+                                || (api.type === 'APIPRODUCT' && !api.gatewayVendor)) && api.gatewayType !== 'solace' && (
                                 <>
                                     <Accordion
                                         id='left-menu-try-out'

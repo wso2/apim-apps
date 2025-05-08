@@ -255,7 +255,7 @@ function Overview(props) {
                     defaultMessage='Overview'
                 />
             </Typography>
-            {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && api.gatewayVendor !== 'solace' && (
+            {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && api.gatewayType !== 'solace' && (
                 <Grid container>
                     <Grid item xs={12}>
                         <Paper className={classes.stepperWrapper}>

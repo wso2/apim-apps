@@ -35,9 +35,10 @@ import {
     Typography,
     Chip,
 } from '@mui/material';
-import APIClientFactory from "AppData/APIClientFactory";
-import Utils from "AppData/Utils";
+import APIClientFactory from 'AppData/APIClientFactory';
+import Utils from 'AppData/Utils';
 import Alert from 'AppComponents/Shared/Alert';
+import { useIntl, FormattedMessage} from 'react-intl';
 
 /**
  * This component fetches Solace Event API Products containing a single Solace Event API, and allows to choose one.
@@ -49,6 +50,7 @@ const SolaceEventAPIProductFetcher = (props) => {
     const { apiInputs, inputsDispatcher, onSolaceEventApiSelect } = props;
     const [eventApis, setEventApis] = useState([]);
     const [loading, setLoading] = useState(true);
+    const intl = useIntl();
 
     useEffect(() => {
         setLoading(true);
@@ -60,7 +62,10 @@ const SolaceEventAPIProductFetcher = (props) => {
                     setEventApis(response.body);
                 })
                 .catch((error) => {
-                    Alert.error('Error occurred while fetching Solace Event API Products');
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Create.AsyncAPI.SolaceEventApiProductFetcher.fetchError',
+                        defaultMessage: 'Error occurred while fetching Solace Event API Products',
+                    }));                    
                     console.error(error);
                 })
                 .finally(() => {
@@ -70,7 +75,7 @@ const SolaceEventAPIProductFetcher = (props) => {
     }, []);
 
     function handleOnBlur(value) {
-        const [solaceEventApiProductId, solacePlanId, solaceEventApiId] = value.split("/");
+        const [solaceEventApiProductId, solacePlanId, solaceEventApiId] = value.split('/');
         onSolaceEventApiSelect(solaceEventApiProductId, solacePlanId, solaceEventApiId);
         inputsDispatcher({action: 'isFormValid', value: true});
     }
@@ -79,7 +84,10 @@ const SolaceEventAPIProductFetcher = (props) => {
         if (eventApis.length === 0) {
             return (
                 <Typography>
-                    No Solace Event API Products containing a single Solace Event API are available
+                    <FormattedMessage
+                        id='Apis.Create.AsyncAPI.SolaceEventApiProductFetcher.noApisAvailable'
+                        defaultMessage='No Solace Event API Products containing a single Solace Event API are available'
+                    />
                 </Typography>
             );
         }
@@ -96,8 +104,18 @@ const SolaceEventAPIProductFetcher = (props) => {
                         <Table>
                             <TableHead>
                                 <TableRow>
-                                    <TableCell>Solace Event API</TableCell>
-                                    <TableCell>Solace Plans</TableCell>
+                                    <TableCell>
+                                        {intl.formatMessage({
+                                            id: 'Apis.Create.AsyncAPI.SolaceEventApiProductFetcher.eventApi',
+                                            defaultMessage: 'Solace Event API',
+                                        })}
+                                    </TableCell>
+                                    <TableCell>
+                                        {intl.formatMessage({
+                                            id: 'Apis.Create.AsyncAPI.SolaceEventApiProductFetcher.plans',
+                                            defaultMessage: 'Solace Plans',
+                                        })}
+                                    </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>

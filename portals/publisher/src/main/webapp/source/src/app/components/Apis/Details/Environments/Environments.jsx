@@ -2607,7 +2607,7 @@ export default function Environments() {
                     </Typography>
                 </MuiAlert>
             )}
-            {api.gatewayVendor === 'solace' && (
+            {api.gatewayType === 'solace' && (
                 <MuiAlert severity='info' className={classes.infoAlert}>
                     <Typography variant='body' align='left' data-testid='solace-api-deployment-dialog'>
                         <FormattedMessage

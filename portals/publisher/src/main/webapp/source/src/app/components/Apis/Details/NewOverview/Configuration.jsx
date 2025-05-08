@@ -130,7 +130,7 @@ function Configuration(props) {
                             </Grid>
                         </>
                     )}
-                    { (api.gatewayVendor === 'solace') && (
+                    { (api.gatewayType === 'solace') && (
                         <>
                             <Grid item xs={12} md={6} lg={6}>
                                 <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
