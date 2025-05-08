@@ -30,7 +30,11 @@ import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 
-import { Editor as MonacoEditor } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco });
 
 /**
  * Reducer
@@ -82,9 +86,9 @@ function TenantConfSave() {
         ]).then(() => setLoading(false));
     }, []);
 
-    const editorWillMount = (monaco) => {
+    const editorWillMount = (monacoInstance) => {
         const schemaVal = state.tenantConfSchema;
-        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        monacoInstance.languages.json.jsonDefaults.setDiagnosticsOptions({
             completion: true,
             validate: true,
             format: true,

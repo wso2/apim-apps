@@ -16,13 +16,17 @@
  * under the License.
  */
 import React from 'react';
-import { Editor as MonacoEditor } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor'
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import PropTypes from 'prop-types';
 import AsyncApiUI from './asyncApiUI/AsyncApiUI';
 
 const PREFIX = 'AsyncApiEditorDrawer';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco })
 
 const classes = {
     editorPane: `${PREFIX}-editorPane`,

@@ -31,10 +31,14 @@ import Paper from '@mui/material/Paper';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
-import { Editor as MonacoEditor } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor'
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import { FormattedMessage, useIntl } from 'react-intl';
 
 import PolicyEditor from './PolicyEditor';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco })
 
 
 /**

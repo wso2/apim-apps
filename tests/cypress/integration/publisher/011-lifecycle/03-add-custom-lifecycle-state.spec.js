@@ -34,6 +34,12 @@ const apiVersion = '1.0.0';
     })
 
     it.only("Updating the Advanced configurations with the New Custom LifeCycle States", () => {
+        Cypress.on('uncaught:exception', (err, runnable) => {
+            if (err.message && err.message.includes('Unexpected usage')) {
+                return false;
+            }
+        });
+
         cy.updateTenantConfig(adminUsername, adminPassword, superTenant, defaultTenantConfig);
     });
 

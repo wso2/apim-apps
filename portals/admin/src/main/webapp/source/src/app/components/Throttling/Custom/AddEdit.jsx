@@ -35,7 +35,11 @@ import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Joi from '@hapi/joi';
 import { green } from '@mui/material/colors';
 
-import { Editor as MonacoEditor } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco });
 
 const sampleSiddhiQuery = "FROM RequestStream SELECT userId, ( userId == 'admin@carbon.super' ) "
 + "AS isEligible , str:concat('admin@carbon.super','') as throttleKey "
