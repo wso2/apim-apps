@@ -345,7 +345,7 @@ export default function ApiCreateAsyncAPI(props) {
                     <Typography variant='h5'>
                         <FormattedMessage
                             id='Apis.Create.AsyncAPI.ApiCreateAsyncAPI.heading'
-                            defaultMessage='Create an API using an AsyncAPI definition........'
+                            defaultMessage='Create an API using an AsyncAPI definition.'
                         />
                     </Typography>
                     <Typography variant='caption'>
