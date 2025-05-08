@@ -149,6 +149,7 @@ export default function ApiCreateAsyncAPI(props) {
         inputType: 'url',
         inputValue: '',
         formValidity: false,
+        policies: ['AsyncUnlimited'], 
         gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
             'wso2/synapse' : multiGateway[0]?.value),
     });
