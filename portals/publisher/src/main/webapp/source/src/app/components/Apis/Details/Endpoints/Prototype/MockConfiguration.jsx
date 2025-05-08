@@ -253,7 +253,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                     label={
                         <FormattedMessage
                             id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.latencySimulation'
-                            defaultMessage='Latency simulation (ms)'
+                            defaultMessage='Latency simulation'
                         />
                     }
                     name='latency'

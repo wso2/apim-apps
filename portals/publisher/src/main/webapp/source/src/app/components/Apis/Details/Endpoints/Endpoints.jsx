@@ -158,6 +158,15 @@ function Endpoints(props) {
         }
     }, [isLoading]);
 
+    /**
+     * Method to update the swagger object.
+     *
+     * @param {any} swaggerObj The updated swagger object.
+     * */
+    const changeSwagger = (swaggerObj) => {
+        setSwagger(swaggerObj);
+    };
+
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
         const { action, value } = configAction;
@@ -263,6 +272,27 @@ function Endpoints(props) {
             endpointConfig.endpoint_type = 'http';
         }
         setUpdating(true);
+        if (endpointImplementationType !== 'INLINE'){
+            let isSwaggerChanged = false;
+            // remove x-wso2-mockdb and x-mediation-scripts from swagger
+            Object.keys(swagger.paths).forEach((path) => {
+                Object.keys(swagger.paths[path]).forEach((method) => {
+                    if (swagger.paths[path][method]['x-mediation-script']) {
+                        delete swagger.paths[path][method]['x-mediation-script'];
+                        isSwaggerChanged = true;
+                    }
+                });
+            });
+            if (swagger['x-wso2-mockdb']) {
+                delete swagger['x-wso2-mockdb'];
+                isSwaggerChanged = true;
+            }
+            if (isSwaggerChanged) {
+                api.updateSwagger(swagger).then((resp) => {
+                    setSwagger(resp.obj);
+                })
+            }
+        }
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0 || (productionBackendList?.length > 0
                 && productionBackendList[0].content)) {
@@ -360,6 +390,27 @@ function Endpoints(props) {
             endpointConfig.endpoint_type = 'http';
         }
         setUpdating(true);
+        if (endpointImplementationType !== 'INLINE'){
+            let isSwaggerChanged = false;
+            // remove x-wso2-mockdb and x-mediation-scripts from swagger
+            Object.keys(swagger.paths).forEach((path) => {
+                Object.keys(swagger.paths[path]).forEach((method) => {
+                    if (swagger.paths[path][method]['x-mediation-script']) {
+                        delete swagger.paths[path][method]['x-mediation-script'];
+                        isSwaggerChanged = true;
+                    }
+                });
+            });
+            if (swagger['x-wso2-mockdb']) {
+                delete swagger['x-wso2-mockdb'];
+                isSwaggerChanged = true;
+            }
+            if (isSwaggerChanged) {
+                api.updateSwagger(swagger).then((resp) => {
+                    setSwagger(resp.obj);
+                })
+            }
+        }
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0
                 || (productionBackendList?.length > 0 && productionBackendList[0].content)) {
@@ -724,14 +775,6 @@ function Endpoints(props) {
 
     const saveAndRedirect = () => {
         handleSave(true);
-    };
-    /**
-     * Method to update the swagger object.
-     *
-     * @param {any} swaggerObj The updated swagger object.
-     * */
-    const changeSwagger = (swaggerObj) => {
-        setSwagger(swaggerObj);
     };
 
     /**

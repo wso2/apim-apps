@@ -19,7 +19,7 @@
 import React, { useContext, useEffect, useState, useReducer } from 'react';
 import PropTypes from 'prop-types';
 import {
-    Button, Grid, Paper, Tooltip, Chip, Divider, Box,
+    Button, Grid, Paper, Tooltip, Chip, Box,
     Typography, Stack, TextField, Alert as MUIAlert
 } from '@mui/material';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
@@ -29,17 +29,16 @@ import GroupOfOperations from 'AppComponents/Apis/Details/Resources/components/G
 import CONSTS from 'AppData/Constants';
 import { Progress, Alert } from 'AppComponents/Shared';
 import {
-    AutoAwesome, Refresh, Launch, Memory,
-    SmartToy, Speed, DataObject, SyncAlt, Settings
+    AutoAwesome, Refresh, Launch, Settings
 } from '@mui/icons-material';
 import MockConfiguration from 'AppComponents/Apis/Details/Endpoints/Prototype/MockConfiguration';
 import {
     app
 } from 'Settings';
+import InitialMockChoice from 'AppComponents/Apis/Details/Endpoints/Prototype/InitialMockChoice';
 import { LoadingButton } from '@mui/lab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
-
 
 /**
  * The mock impl endpoints base component.
@@ -429,161 +428,6 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
         );
     }
 
-    const InitialMockChoice = () => {
-        const FeatureItem = ({ icon, text }) => (
-            <Stack direction='row' alignItems='center' spacing={1}>
-                {icon}
-                <Typography variant='body2' color='text.secondary'>{text}</Typography>
-            </Stack>
-        );
-
-        return (
-            <Stack spacing={2} sx={{ maxWidth: 1000, mx: 'auto', px: 3, py: 6 }}>
-                <Stack
-                    direction='row'
-                    alignItems='center'
-                    justifyContent='center'
-                    spacing={4}
-                    sx={{ textAlign: 'center' }}
-                >
-                    <Typography variant='h4' sx={{ fontWeight: 600 }}>
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.mockServerBehavior'
-                            defaultMessage='How would you like your mock server to behave?'
-                        />
-                    </Typography>
-                    <img
-                        alt='API Mock Assistant'
-                        src={`${app.context}/site/public/images/ai/APIchatassistantImageWithColour.svg`}
-                        style={{ width: 50, height: 'auto', borderRadius: '4px' }}
-                    />
-                </Stack>
-
-                {!hasAuthToken &&
-                    <MUIAlert severity='warning' sx={{ my: 0 }}>
-                        <Typography variant='body1'>
-                            {authTokenNotProvidedWarning}
-                        </Typography>
-                    </MUIAlert>}
-
-                <Stack direction={{ xs: 'column', md: 'row' }} spacing={4}>
-                    <Paper
-                        elevation={6}
-                        sx={{
-                            flex: 1,
-                            p: 3,
-                            borderRadius: 4,
-                            border: '2px solid',
-                            borderColor: 'primary.main',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between'
-                        }}
-                    >
-                        <Stack spacing={2}>
-                            <Stack direction='row' alignItems='center' spacing={1}>
-                                <SmartToy fontSize='large' color='primary' />
-                                <Typography variant='h6' sx={{ fontWeight: 600 }}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.aiAssistedMockServer'
-                                        defaultMessage='AI-assisted mock server'
-                                    />
-                                </Typography>
-                            </Stack>
-
-                            <Typography variant='body1'>
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.smartRealisticMocks'
-                                    defaultMessage='Smart, realistic mocks tailored from your API using AI.'
-                                />
-                            </Typography>
-
-                            <Divider />
-
-                            <Stack spacing={1} mt={1}>
-                                <FeatureItem icon={<AutoAwesome color='primary' />}
-                                    text='Realistic responses' />
-                                <FeatureItem icon={<DataObject color='primary' />}
-                                    text='Pre-populated data for testing' />
-                                <FeatureItem icon={<SyncAlt color='primary' />}
-                                    text='Data persistence across endpoints' />
-                                <FeatureItem icon={<Settings color='primary' />}
-                                    text='Latency & error simulation' />
-                            </Stack>
-                        </Stack>
-
-                        <Button
-                            variant='contained'
-                            size='large'
-                            fullWidth
-                            onClick={() => handleGenerateScripts(true)}
-                            disabled={!hasAuthToken || progress}
-                            sx={{ mt: 3, fontWeight: 600 }}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.action.useAIMockServerButton'
-                                defaultMessage='Use AI Mock Server'
-                            />
-                        </Button>
-                    </Paper>
-
-                    <Paper
-                        elevation={2}
-                        sx={{
-                            flex: 1,
-                            p: 3,
-                            borderRadius: 4,
-                            display: 'flex',
-                            flexDirection: 'column',
-                            justifyContent: 'space-between'
-                        }}
-                    >
-                        <Stack spacing={2}>
-                            <Stack direction='row' alignItems='center' spacing={1}>
-                                <Memory fontSize='large' color='action' />
-                                <Typography variant='h6' sx={{ fontWeight: 600 }}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.staticMockServer'
-                                        defaultMessage='Static mock server'
-                                    />
-                                </Typography>
-                            </Stack>
-
-                            <Typography variant='body1'>
-                                <FormattedMessage
-                                    id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.basicQuickMocks'
-                                    defaultMessage='Basic and quick mocks for rapid setup and initial testing needs.'
-                                />
-                            </Typography>
-
-                            <Divider />
-
-                            <Stack spacing={1} mt={1}>
-                                <FeatureItem icon={<Speed color='disabled' />}
-                                    text='Instant setup, minimal config' />
-                                <FeatureItem icon={<Settings color='disabled' />}
-                                    text='Latency & error simulation' />
-                            </Stack>
-                        </Stack>
-
-                        <Button
-                            variant='outlined'
-                            size='large'
-                            fullWidth
-                            onClick={() => handleGenerateScripts(false)}
-                            sx={{ mt: 3, fontWeight: 600 }}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.action.useStaticMockServerButton'
-                                defaultMessage='Use Static Mock Server'
-                            />
-                        </Button>
-                    </Paper>
-                </Stack>
-            </Stack>
-        );
-    };
-
     return (
         <>
             <Grid container spacing={2} alignItems='stretch'>
@@ -599,7 +443,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                     <FormattedMessage
                                         id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.mockImplementationType'
                                         defaultMessage='{type} mock implementation'
-                                        values={{ type: mockConfig.useAI ? 'AI-assisted' : 'Default' }}
+                                        values={{ type: mockConfig.useAI ? 'AI-assisted' : 'Static' }}
                                     />
                                 }
                             </Typography>
@@ -615,7 +459,12 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                             </Tooltip>
                         </Stack>
                         {progress ? <Progress message='Generating Mocks' /> : (<>
-                            {isFirstTimeSelection ? <InitialMockChoice /> : (<>
+                            {isFirstTimeSelection ? <InitialMockChoice 
+                                hasAuthToken={hasAuthToken}
+                                authTokenNotProvidedWarning={authTokenNotProvidedWarning}
+                                handleGenerateScripts={handleGenerateScripts}
+                                progress={progress}
+                            /> : (<>
                                 {nullScripts.length > 0 && (
                                     <MUIAlert severity='warning' sx={{ my: 1 }}>
                                         <Stack direction='row' alignItems='center' spacing={1} flexWrap='wrap'>
@@ -800,8 +649,9 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                                     <FormattedMessage
                                                                         id={'Apis.Details.Endpoints.Prototype.' +
                                                                             'MockImplEndpoints.action.fallback'}
-                                                                        defaultMessage={'Fallback to ' +
-                                                                                        'default mock scripts'}
+                                                                        defaultMessage={'Switch back to ' +
+                                                                                        'static mock scripts ' +
+                                                                                        'generated by Examples'}
                                                                     />
                                                                 }
                                                             >
@@ -816,8 +666,8 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                                     <FormattedMessage
                                                                         id={'Apis.Details.Endpoints.Prototype.' +
                                                                             'MockImplEndpoints.action.fallbackButton'}
-                                                                        defaultMessage={'Fallback to ' +
-                                                                                        'default mock scripts'}
+                                                                        defaultMessage={'Switch to ' +
+                                                                                        'static mock scripts'}
                                                                     />
                                                                 </Button>
                                                             </Tooltip>
