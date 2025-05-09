@@ -24,12 +24,15 @@ import {
     Divider,
     Grid,
     Typography,
-    Accordion, 
-    AccordionSummary, 
-    AccordionDetails
+    Accordion,
+    AccordionSummary,
+    AccordionDetails,
+    Tooltip
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Utils from 'AppData/Utils';
+import { Settings } from '@mui/icons-material';
+import { FormattedMessage } from 'react-intl';
 
 const PREFIX = 'GenericOperation';
 
@@ -81,12 +84,13 @@ function GenericOperation(props) {
     const {
         target,
         verb,
+        handleConfigClick,
         children,
     } = props;
     const [isExpanded, setIsExpanded] = useState(false);
     const theme = useTheme();
     const backgroundColor = theme.custom.resourceChipColors[verb];
-    
+
 
 
     /**
@@ -139,6 +143,18 @@ function GenericOperation(props) {
                             </Typography>
                         </Grid>
                     </Grid>
+                    <Tooltip title={`Configure Simulations of ${verb} - ${target}`}>
+                        <Button onClick={(e) => {
+                            handleConfigClick();
+                            e.stopPropagation();
+                        }} style={{ whiteSpace: 'nowrap' }} sx={{ px: 2 }} color='inherit' endIcon={<Settings />}>
+                            <FormattedMessage
+                                id={'Apis.Details.Endpoints.Prototype.' +
+                                    'MockImplEndpoints.action.simulationsForResourceButton'}
+                                defaultMessage='Configure Simulations'
+                            />
+                        </Button>
+                    </Tooltip>
                 </AccordionSummary>
                 <Divider sx={{ backgroundColor }} />
                 <AccordionDetails>
@@ -152,6 +168,7 @@ function GenericOperation(props) {
 GenericOperation.propTypes = {
     target: PropTypes.string.isRequired,
     verb: PropTypes.string.isRequired,
+    handleConfigClick: PropTypes.func.isRequired,
     children: PropTypes.element.isRequired,
 };
 

@@ -135,6 +135,7 @@ function Endpoints(props) {
     });
     const [componentValidator, setComponentValidator] = useState([]);
     const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
+    const [isMockAndDisableSave, setIsMockAndDisableSave] = useState(false);
 
     useEffect(() => {
         if (api.subtypeConfiguration?.subtype === 'AIAPI') {
@@ -157,9 +158,19 @@ function Endpoints(props) {
         }
     }, [isLoading]);
 
+    /**
+     * Method to update the swagger object.
+     *
+     * @param {any} swaggerObj The updated swagger object.
+     * */
+    const changeSwagger = (swaggerObj) => {
+        setSwagger(swaggerObj);
+    };
+
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
         const { action, value } = configAction;
+        setIsMockAndDisableSave(action === 'set_inline_or_mocked_oas')
         switch (action) {
             case 'production_endpoints':
             case 'sandbox_endpoints': {
@@ -189,9 +200,6 @@ function Endpoints(props) {
                 const config = createEndpointConfig(endpointType);
                 if (endpointType === 'prototyped') {
                     if (implementationType === 'mock') {
-                        api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
-                            setSwagger(res.obj);
-                        });
                         return { ...initState, endpointConfig: config, endpointImplementationType: 'INLINE' };
                     }
                     return { ...initState, endpointConfig: config, endpointImplementationType: 'ENDPOINT' };
@@ -215,11 +223,6 @@ function Endpoints(props) {
             }
             case 'set_inline_or_mocked_oas': {
                 const { endpointImplementationType, endpointConfig } = value;
-                if (endpointImplementationType === 'INLINE') {
-                    api.generateMockScripts(api.id).then((res) => { // generates mock/sample payloads
-                        setSwagger(res.obj);
-                    });
-                }
                 return { ...initState, endpointConfig, endpointImplementationType };
             }
             case 'set_prototyped': {
@@ -255,6 +258,31 @@ function Endpoints(props) {
     const [apiObject, apiDispatcher] = useReducer(apiReducer, api.toJSON());
 
     /**
+     * Method to remove x-mediation-scripts and x-wso2-mockdb from the swagger object.
+     */
+    const removeXmediationScriptAndMockDB = () => {
+        let isSwaggerChanged = false;
+        // remove x-wso2-mockdb and x-mediation-scripts from swagger
+        Object.keys(swagger.paths).forEach((path) => {
+            Object.keys(swagger.paths[path]).forEach((method) => {
+                if (swagger.paths[path][method]['x-mediation-script']) {
+                    delete swagger.paths[path][method]['x-mediation-script'];
+                    isSwaggerChanged = true;
+                }
+            });
+        });
+        if (swagger['x-wso2-mockdb']) {
+            delete swagger['x-wso2-mockdb'];
+            isSwaggerChanged = true;
+        }
+        if (isSwaggerChanged) {
+            api.updateSwagger(swagger).then((resp) => {
+                setSwagger(resp.obj);
+            })
+        }
+    }
+
+    /**
      * Method to update the api.
      *
      * @param {boolean} isRedirect Used for dynamic endpoints to redirect to the runtime config page.
@@ -266,6 +294,9 @@ function Endpoints(props) {
             endpointConfig.endpoint_type = 'http';
         }
         setUpdating(true);
+        if (endpointImplementationType !== 'INLINE'){
+            removeXmediationScriptAndMockDB();
+        }
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0 || (productionBackendList?.length > 0
                 && productionBackendList[0].content)) {
@@ -363,6 +394,9 @@ function Endpoints(props) {
             endpointConfig.endpoint_type = 'http';
         }
         setUpdating(true);
+        if (endpointImplementationType !== 'INLINE'){
+            removeXmediationScriptAndMockDB();
+        }
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0
                 || (productionBackendList?.length > 0 && productionBackendList[0].content)) {
@@ -728,14 +762,6 @@ function Endpoints(props) {
     const saveAndRedirect = () => {
         handleSave(true);
     };
-    /**
-     * Method to update the swagger object.
-     *
-     * @param {any} swaggerObj The updated swagger object.
-     * */
-    const changeSwagger = (swaggerObj) => {
-        setSwagger(swaggerObj);
-    };
 
     /**
      * Generate endpoint configuration based on the selected endpoint type and set to the api object.
@@ -827,6 +853,7 @@ function Endpoints(props) {
                                             apiKeyParamConfig={apiKeyParamConfig}
                                             componentValidator={componentValidator}
                                             endpointSecurityTypes={endpointSecurityTypes}
+                                            setIsMockAndDisableSave={(val) => setIsMockAndDisableSave(val)}
                                         />
                                     </Grid>
                                 </Grid>
@@ -849,7 +876,7 @@ function Endpoints(props) {
                                     className={classes.buttonSection}
                                 >
                                     <Grid item>
-                                        {api.isRevision || !endpointValidity.isValid
+                                        {api.isRevision || !endpointValidity.isValid || isMockAndDisableSave
                                             || (settings && settings.portalConfigurationOnlyModeEnabled)
                                             || isRestricted(['apim:api_create'], api) ? (
                                                 <Button

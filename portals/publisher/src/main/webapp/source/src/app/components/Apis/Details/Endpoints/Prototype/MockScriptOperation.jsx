@@ -20,6 +20,8 @@ import React, {
     Suspense,
     useContext,
     useState,
+    useRef,
+    useCallback
 } from 'react';
 import { styled } from '@mui/material/styles';
 import { Grid, Typography, Button } from '@mui/material';
@@ -63,7 +65,7 @@ function getGeneratedMockScriptOfAPI(mockScripts, path, method) {
         const matchedResource = mockScripts.find(
             mockScript => (mockScript.verb.toLowerCase() === method.toLowerCase() && mockScript.path === path));
         if (matchedResource) {
-            return matchedResource.content;
+            return {originalScript: matchedResource.content, simulationScript: matchedResource.simulationScript};
         }
     }
     return null;
@@ -77,28 +79,39 @@ function getGeneratedMockScriptOfAPI(mockScripts, path, method) {
  * */
 function MockScriptOperation(props) {
     const {
-        resourcePath, resourceMethod, operation, updatePaths, paths, mockScripts
+        resourcePath, resourceMethod, operation, updatePaths, paths, mockScripts, simulationSplitString
     } = props;
     const { api } = useContext(APIContext);
     const [showReset, setShowReset] = useState(false);
 
+    const scriptRef = useRef(
+        operation[xMediationScriptProperty]?.split(simulationSplitString)[0].trim() 
+            ?? defaultScript);
 
-    /**
-     * Handles the onChange event of the script editor.
-     *
-     * @param {string} value The editor content
-     * @param {string} path The path value of the resource.
-     * @param {string} method The resource method.
-     * */
-    const onScriptChange = (value, path, method) => {
-        const tmpPaths = JSON.parse(JSON.stringify(paths));
-        tmpPaths[path][method][xMediationScriptProperty] = value;
-        updatePaths(tmpPaths);
-    };
+    const { originalScript = defaultScript, simulationScript = '' } = 
+    getGeneratedMockScriptOfAPI(mockScripts, resourcePath, resourceMethod) || {};
 
-    const mediationScript = operation[xMediationScriptProperty];
-    const script = mediationScript === undefined ? defaultScript : mediationScript;
-    const originalScript = getGeneratedMockScriptOfAPI(mockScripts, resourcePath, resourceMethod);
+    const onScriptChange = useCallback(
+        (value) => {
+            // Modify the script before storing it in paths
+            const modifiedScript = value + `\n\n${simulationSplitString}\n${simulationScript}`;
+
+            // Update paths without causing a re-render
+            const tmpPaths = { ...paths };
+            tmpPaths[resourcePath] = {
+                ...tmpPaths[resourcePath],
+                [resourceMethod]: {
+                    ...tmpPaths[resourcePath][resourceMethod],
+                    [xMediationScriptProperty]: modifiedScript
+                }
+            };
+            updatePaths(tmpPaths);
+
+            // Store the visible script separately
+            scriptRef.current = value;
+        },
+        [paths]
+    );
 
     return (
         <StyledGrid container direction='column'>
@@ -110,21 +123,21 @@ function MockScriptOperation(props) {
                     />
                 </Typography>
                 {showReset
-                    && (
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            onClick={() => {
-                                setShowReset(false);
-                                onScriptChange(originalScript, resourcePath, resourceMethod);
-                            }}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.script.reset'
-                                defaultMessage='Reset'
-                            />
-                        </Button>
-                    )}
+                && (
+                    <Button
+                        variant='contained'
+                        color='primary'
+                        onClick={() => {
+                            setShowReset(false);
+                            onScriptChange(originalScript);
+                        }}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.script.reset'
+                            defaultMessage='Reset'
+                        />
+                    </Button>
+                )}
             </Grid>
             <Grid item>
                 <Suspense fallback={<CircularProgress />}>
@@ -132,7 +145,7 @@ function MockScriptOperation(props) {
                         height='50vh'
                         width='calc(100% - 250px)'
                         theme='vs-dark'
-                        value={script}
+                        value={scriptRef.current}
                         options={{
                             selectOnLineNumbers: true,
                             readOnly: `${isRestricted(['apim:api_create'], api)}`,
@@ -140,8 +153,7 @@ function MockScriptOperation(props) {
                         language='javascript'
                         onChange={(content) => {
                             setShowReset(true);
-                            onScriptChange(content, resourcePath, resourceMethod);
-                        }}
+                            onScriptChange(content)}}
                     />
                 </Suspense>
             </Grid>
@@ -156,6 +168,7 @@ MockScriptOperation.propTypes = {
     updatePaths: PropTypes.func.isRequired,
     operation: PropTypes.shape({}).isRequired,
     mockScripts: PropTypes.arrayOf(PropTypes.oneOfType([PropTypes.shape({}), PropTypes.string])).isRequired,
+    simulationSplitString: PropTypes.string.isRequired,
 };
 
 export default React.memo(MockScriptOperation);
