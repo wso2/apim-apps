@@ -39,7 +39,6 @@ import InitialMockChoice from 'AppComponents/Apis/Details/Endpoints/Prototype/In
 import { LoadingButton } from '@mui/lab';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
-
 /**
  * The mock impl endpoints base component.
  * This component lists the api resources to add custom mediation scripts.
@@ -269,12 +268,13 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
         }
     }
 
-    const handleGenerateScripts = async (useAI) => {
+    const handleGenerateScripts = async (useAI, usePreviousScripts = false) => {
         setProgress(true);
         setSaveDisable(true);
         try {
             const payload = {
-                instructions: showInstructions ? mockConfig.config.instructions : undefined
+                instructions: showInstructions ? mockConfig.config.instructions : undefined,
+                usePreviousScripts
             }
             const response = await generateMockScripts(useAI, payload)
             if (useAI) updateMockDB({ [xWso2MockDBProperty]: response.obj[xWso2MockDBProperty] });
@@ -580,7 +580,9 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                                 <Button
                                                                     variant='contained'
                                                                     onClick={() => {
-                                                                        handleGenerateScripts(true)
+                                                                        handleGenerateScripts(
+                                                                            true, mockConfig.useAI
+                                                                        )
                                                                     }}
                                                                     disabled={progress ||
                                                                         showInstructions || !hasAuthToken}
@@ -722,7 +724,8 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                                                         >
                                                             <Button
                                                                 variant='contained'
-                                                                onClick={() => handleGenerateScripts(true)}
+                                                                onClick={() => handleGenerateScripts(
+                                                                    true, mockConfig.useAI)}
                                                                 disabled={progress}
                                                                 endIcon={mockConfig.useAI ? <Refresh />
                                                                     : <AutoAwesome />}
