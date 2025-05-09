@@ -74,7 +74,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
     const [aiLoadingStates, setAiLoadingStates] = useState(null);
     const [nullScripts, setNullScripts] = useState([]);
     const { data: settings } = usePublisherSettings();
-    const hasAuthToken = settings && settings?.aiAuthTokenProvided
+    const hasAuthToken = settings?.aiAuthTokenProvided
     const [isFirstTimeSelection, setIsFirstTimeSelection] = useState(true);
 
     const splitContentAndSimulation = (content) => {
@@ -254,6 +254,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
                 })
             );
         } catch (e) {
+            setError(e);
             Alert.error(
                 intl.formatMessage({
                     id: 'Apis.Details.Endpoints.Prototype.MockImplEndpoints.error.generate',

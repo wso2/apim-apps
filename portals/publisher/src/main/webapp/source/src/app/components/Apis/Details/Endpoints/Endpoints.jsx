@@ -200,9 +200,6 @@ function Endpoints(props) {
                 const config = createEndpointConfig(endpointType);
                 if (endpointType === 'prototyped') {
                     if (implementationType === 'mock') {
-                        api.getGeneratedMockScriptsOfAPI(api.id).then((res) => { // generates mock/sample payloads
-                            setSwagger(res.obj);
-                        });
                         return { ...initState, endpointConfig: config, endpointImplementationType: 'INLINE' };
                     }
                     return { ...initState, endpointConfig: config, endpointImplementationType: 'ENDPOINT' };
@@ -261,6 +258,31 @@ function Endpoints(props) {
     const [apiObject, apiDispatcher] = useReducer(apiReducer, api.toJSON());
 
     /**
+     * Method to remove x-mediation-scripts and x-wso2-mockdb from the swagger object.
+     */
+    const removeXmediationScriptAndMockDB = () => {
+        let isSwaggerChanged = false;
+        // remove x-wso2-mockdb and x-mediation-scripts from swagger
+        Object.keys(swagger.paths).forEach((path) => {
+            Object.keys(swagger.paths[path]).forEach((method) => {
+                if (swagger.paths[path][method]['x-mediation-script']) {
+                    delete swagger.paths[path][method]['x-mediation-script'];
+                    isSwaggerChanged = true;
+                }
+            });
+        });
+        if (swagger['x-wso2-mockdb']) {
+            delete swagger['x-wso2-mockdb'];
+            isSwaggerChanged = true;
+        }
+        if (isSwaggerChanged) {
+            api.updateSwagger(swagger).then((resp) => {
+                setSwagger(resp.obj);
+            })
+        }
+    }
+
+    /**
      * Method to update the api.
      *
      * @param {boolean} isRedirect Used for dynamic endpoints to redirect to the runtime config page.
@@ -273,25 +295,7 @@ function Endpoints(props) {
         }
         setUpdating(true);
         if (endpointImplementationType !== 'INLINE'){
-            let isSwaggerChanged = false;
-            // remove x-wso2-mockdb and x-mediation-scripts from swagger
-            Object.keys(swagger.paths).forEach((path) => {
-                Object.keys(swagger.paths[path]).forEach((method) => {
-                    if (swagger.paths[path][method]['x-mediation-script']) {
-                        delete swagger.paths[path][method]['x-mediation-script'];
-                        isSwaggerChanged = true;
-                    }
-                });
-            });
-            if (swagger['x-wso2-mockdb']) {
-                delete swagger['x-wso2-mockdb'];
-                isSwaggerChanged = true;
-            }
-            if (isSwaggerChanged) {
-                api.updateSwagger(swagger).then((resp) => {
-                    setSwagger(resp.obj);
-                })
-            }
+            removeXmediationScriptAndMockDB();
         }
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0 || (productionBackendList?.length > 0
@@ -391,25 +395,7 @@ function Endpoints(props) {
         }
         setUpdating(true);
         if (endpointImplementationType !== 'INLINE'){
-            let isSwaggerChanged = false;
-            // remove x-wso2-mockdb and x-mediation-scripts from swagger
-            Object.keys(swagger.paths).forEach((path) => {
-                Object.keys(swagger.paths[path]).forEach((method) => {
-                    if (swagger.paths[path][method]['x-mediation-script']) {
-                        delete swagger.paths[path][method]['x-mediation-script'];
-                        isSwaggerChanged = true;
-                    }
-                });
-            });
-            if (swagger['x-wso2-mockdb']) {
-                delete swagger['x-wso2-mockdb'];
-                isSwaggerChanged = true;
-            }
-            if (isSwaggerChanged) {
-                api.updateSwagger(swagger).then((resp) => {
-                    setSwagger(resp.obj);
-                })
-            }
+            removeXmediationScriptAndMockDB();
         }
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0

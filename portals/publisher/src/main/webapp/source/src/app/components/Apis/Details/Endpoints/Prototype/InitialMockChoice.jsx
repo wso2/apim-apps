@@ -16,6 +16,7 @@
  * under the License.
  */
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
 import {
     Button, Paper, Divider,
@@ -29,13 +30,14 @@ import {
     SmartToy, Speed, DataObject, SyncAlt, Settings
 } from '@mui/icons-material';
 
+const FeatureItem = ({ icon, text }) => (
+    <Stack direction='row' alignItems='center' spacing={1}>
+        {icon}
+        <Typography variant='body2' color='text.secondary'>{text}</Typography>
+    </Stack>
+);
+
 const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGenerateScripts, progress}) => {
-    const FeatureItem = ({ icon, text }) => (
-        <Stack direction='row' alignItems='center' spacing={1}>
-            {icon}
-            <Typography variant='body2' color='text.secondary'>{text}</Typography>
-        </Stack>
-    );
 
     return (
         <Stack spacing={2} sx={{ maxWidth: 1000, mx: 'auto', px: 3, py: 6 }}>
@@ -185,3 +187,15 @@ const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGen
 };
 
 export default InitialMockChoice;
+
+InitialMockChoice.propTypes = {
+    hasAuthToken: PropTypes.bool.isRequired,
+    authTokenNotProvidedWarning: PropTypes.string.isRequired,
+    handleGenerateScripts: PropTypes.func.isRequired,
+    progress: PropTypes.bool.isRequired
+};
+
+FeatureItem.propTypes = {
+    icon: PropTypes.element.isRequired,
+    text: PropTypes.string.isRequired
+};
