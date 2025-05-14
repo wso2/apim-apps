@@ -371,11 +371,8 @@ export const saveConfiguration = async (
             }
         });
         
-        // Add other configuration parameters
         configPayload.detect_per_directive = false;
         configPayload.complexity_estimator = estimatorType;
-
-        console.log('Sending config payload:', configPayload);
 
         // Step 1: Send configuration settings
         const configResponse = await fetch(`${API_ENDPOINT}/set_config`, {
@@ -393,7 +390,6 @@ export const saveConfiguration = async (
             return false;
         }
         
-
         // Step 2: Get security checks payload and send it
         const securityChecks = getSecurityCheckPayload(selectedVulnerabilities);
         
@@ -411,10 +407,25 @@ export const saveConfiguration = async (
             Alert.error('Failed to save security checks. Please try again.');
             return false;
         }
-        
-        console.log('Security checks saved successfully');
 
-        // Step 3: Send reload request to apply changes
+        // Step 3: Generate dynamic schema for complexity estimator only if estimator is 'directive'
+        if (estimatorType === 'directive') {
+            const schemaResponse = await fetch(`${API_ENDPOINT}/generate_dynamic_schema`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            });
+
+            if (!schemaResponse.ok) {
+                const errorText = await schemaResponse.text();
+                console.error('Dynamic Schema API Error:', errorText);
+                Alert.error('Failed to generate dynamic schema. Please try again.');
+                return false;
+            }
+        }
+
+        // Step 4: Send reload request to apply changes
         const reloadResponse = await fetch(`${API_ENDPOINT}/reload-config`, {
             method: 'POST',
             headers: {
