@@ -536,7 +536,7 @@ const ApiChat = () => {
             const subscriptionResponse = resource.inputs.requestBody.query.replace('SUBSCRIPTION:', '').trim();
             executionResponseForAiAgent = {
                 code: 200,
-                path: '/',
+                path: '',
                 headers: {},
                 body: subscriptionResponse,
             };
@@ -545,7 +545,7 @@ const ApiChat = () => {
                     ...prevState,
                     {
                         ...executionResponseForAiAgent,
-                        method: '/',
+                        method: '',
                         curlCommand: null,
                     },
                 ];
