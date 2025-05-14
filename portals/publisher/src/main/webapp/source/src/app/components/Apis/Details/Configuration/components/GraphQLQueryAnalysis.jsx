@@ -2,9 +2,8 @@ import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { 
     Grid, Typography, Button, Paper, Dialog, DialogActions, DialogContent, 
-    DialogContentText, DialogTitle, Container, TextField, FormControlLabel, 
-    Tooltip, Divider, Box, Alert as MuiAlert, Radio, RadioGroup, FormControl, 
-    FormLabel, Chip, Checkbox, Slider
+    DialogContentText, DialogTitle, Container, Tooltip, Divider, Box, 
+    Alert as MuiAlert, Chip
 } from '@mui/material';
 import EditRounded from '@mui/icons-material/EditRounded';
 import HelpOutline from '@mui/icons-material/HelpOutline';
@@ -17,128 +16,30 @@ import { FormattedMessage } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 
-// Constants and configuration data
-const PREFIX = 'GraphQLQueryAnalysis';
-const API_ENDPOINT = 'http://127.0.0.1:8000';
+// Import constants
+import {
+    vulnerabilityTypes,
+    aiPoweredVulnerabilities,
+    vulnerabilityToThresholdMap,
+    defaultThresholds,
+    classes,
+} from './GraphQLQueryAnalysisConstants';
+
+// Import components and services
+import {
+    SectionHeader,
+    VulnerabilityCheckboxes,
+    ComplexityEstimatorSelector,
+    ThresholdSlider,
+    ThresholdField,
+    sendSchemaToService,
+    saveConfiguration,
+    fetchAIRecommendations,
+} from './GraphQLQueryAnalysisComponents';
 
 const apiClient = new API();
 
-// Define vulnerability types by category
-const statisticalVulnerabilities = [
-    'Alias overloading', 'Batch overloading', 'Deep circular queries',
-    'Directive overloading', 'Introspection queries', 'Excessive complexity',
-    'Excessive query depth', 'Query payload inflation'
-];
-
-const aiPoweredVulnerabilities = [
-    'SQL injections', 'XSS exploits', 'OS command injections', 'SSRF attempts'
-];
-
-// Combined vulnerability types (used in existing code)
-const vulnerabilityTypes = [...statisticalVulnerabilities, ...aiPoweredVulnerabilities];
-
-const vulnerabilityTooltips = {
-    'Alias overloading': 'Detects attacks that use excessive aliases to cause denial of service.',
-    'Batch overloading': 'Identifies requests with multiple operations to prevent resource exhaustion.',
-    'Deep circular queries': 'Prevents recursive query patterns that could cause infinite loops.',
-    'Directive overloading': 'Blocks queries with excessive directives that might overload resolvers.',
-    'Introspection queries': 'Identifies and blocks schema introspection attempts that expose API structure.',
-    'Excessive complexity': 'Prevents computationally expensive queries that could impact performance.',
-    'Excessive query depth': 'Stops deeply nested queries that may cause server resource exhaustion.',
-    'Query payload inflation': 'Prevents oversized queries that could consume excessive bandwidth or memory.',
-    'SQL injections': 'Uses AI to detect potential SQL injection attempts in query variables or arguments.',
-    'XSS exploits': 'Identifies cross-site scripting patterns that could lead to client-side attacks.',
-    'OS command injections': 'Detects attempts to execute operating system commands via GraphQL queries.',
-    'SSRF attempts': 'Identifies server-side request forgery attempts that could access internal resources.'
-};
-
-// Map of vulnerability types to their corresponding threshold keys
-const vulnerabilityToThresholdMap = {
-    'Alias overloading': ['ALIAS_THRESHOLD'],
-    'Batch overloading': ['BATCH_THRESHOLD'],
-    'Deep circular queries': ['CIRCULAR_QUERY_THRESHOLD'],
-    'Directive overloading': ['DIRECTIVE_THRESHOLD'],
-    'Excessive complexity': ['SIMPLE_ESTIMATOR_COMPLEXITY', 'SIMPLE_ESTIMATOR_THRESHOLD'],
-    'Excessive query depth': ['QUERY_DEPTH_THRESHOLD'],
-    'Query payload inflation': ['TOKEN_LIMIT_THRESHOLD'],
-    'Introspection queries': [],
-    'SQL injections': [],
-    'XSS exploits': [],
-    'OS command injections': [],
-    'SSRF attempts': []
-};
-
-// Map vulnerability types to API parameter keys
-const vulnerabilityToApiKeyMap = {
-    'Directive overloading': 'detect_directive_overloading',
-    'Alias overloading': 'detect_alias_overloading',
-    'Batch overloading': 'detect_batch_overloading',
-    'Deep circular queries': 'detect_circular_query',
-    'Introspection queries': 'check_introspection_query',
-    'Excessive query depth': 'detect_query_depth',
-    'Query payload inflation': 'detect_token_limit',
-    'Excessive complexity': 'detect_complex_query',
-    'SQL injections': 'detect_sqli',
-    'XSS exploits': 'detect_xss_exploit',
-    'OS command injections': 'detect_osi',
-    'SSRF attempts': 'check_ssrf'
-};
-
-// Configuration and threshold settings
-const thresholdLabels = {
-    ALIAS_THRESHOLD: 'Maximum Aliases Allowed',
-    BATCH_THRESHOLD: 'Maximum Batch Size',
-    CIRCULAR_QUERY_THRESHOLD: 'Maximum Circular References',
-    DIRECTIVE_THRESHOLD: 'Maximum Directives per Query',
-    SIMPLE_ESTIMATOR_COMPLEXITY: 'Complexity Multiplier',
-    SIMPLE_ESTIMATOR_THRESHOLD: 'Maximum Query Complexity',
-    QUERY_DEPTH_THRESHOLD: 'Maximum Query Depth',
-    TOKEN_LIMIT_THRESHOLD: 'Maximum Tokens per Query',
-    MODEL_CONFIDENT_THRESHOLD: 'AI Confidence Threshold'
-};
-
-const thresholdTooltips = {
-    ALIAS_THRESHOLD: 'Limits number of alias fields in a query to prevent alias overloading attacks',
-    BATCH_THRESHOLD: 'Controls maximum number of operations per request to prevent batch overloading',
-    CIRCULAR_QUERY_THRESHOLD: 'Restricts recursive queries that could cause denial of service',
-    DIRECTIVE_THRESHOLD: 'Limits directive usage to prevent directive-based attacks',
-    SIMPLE_ESTIMATOR_COMPLEXITY: 'Base multiplier for query complexity calculations',
-    SIMPLE_ESTIMATOR_THRESHOLD: 'Maximum allowed query complexity score before rejection',
-    QUERY_DEPTH_THRESHOLD: 'Controls maximum nesting depth of queries to prevent deep query attacks',
-    TOKEN_LIMIT_THRESHOLD: 'Maximum query size in tokens to prevent oversized payloads',
-    MODEL_CONFIDENT_THRESHOLD: 'Minimum confidence level required for AI-powered checks to flag malicious queries'
-};
-
-const defaultThresholds = {
-    ALIAS_THRESHOLD: 5,
-    BATCH_THRESHOLD: 5,
-    CIRCULAR_QUERY_THRESHOLD: 3,
-    DIRECTIVE_THRESHOLD: 5,
-    SIMPLE_ESTIMATOR_COMPLEXITY: 1,
-    SIMPLE_ESTIMATOR_THRESHOLD: 40,
-    QUERY_DEPTH_THRESHOLD: 8,
-    TOKEN_LIMIT_THRESHOLD: 1200,
-    MODEL_CONFIDENT_THRESHOLD: 0.5
-};
-
 // Styled components
-const classes = {
-    content: `${PREFIX}-content`,
-    itemWrapper: `${PREFIX}-itemWrapper`,
-    FormControl: `${PREFIX}-FormControl`,
-    subTitle: `${PREFIX}-subTitle`,
-    subTitleDescription: `${PREFIX}-subTitleDescription`,
-    flowWrapper: `${PREFIX}-flowWrapper`,
-    subHeading: `${PREFIX}-subHeading`,
-    heading: `${PREFIX}-heading`,
-    paper: `${PREFIX}-paper`,
-    editIcon: `${PREFIX}-editIcon`,
-    thresholdField: `${PREFIX}-thresholdField`,
-    thresholdGroup: `${PREFIX}-thresholdGroup`,
-    thresholdLabel: `${PREFIX}-thresholdLabel`,
-    iconSpace: `${PREFIX}-iconSpace`,
-};
-
 const Root = styled('div')(({ theme }) => ({
     [`& .${classes.content}`]: {
         flexGrow: 1,
@@ -211,292 +112,6 @@ const StyledDialog = styled(Dialog)(() => ({
     }
 }));
 
-// Reusable Component for Section Header
-const SectionHeader = ({ icon, title }) => (
-    <Grid container spacing={2} alignItems='center' sx={{ mb: 2 }}>
-        <Grid item>{icon}</Grid>
-        <Grid item>
-            <Typography variant='h6'>{title}</Typography>
-        </Grid>
-    </Grid>
-);
-
-// Updated Vulnerability Selection Component with Categories
-const VulnerabilityCheckboxes = ({ selectedChecks, onChange }) => {
-    
-    return (
-        <Box sx={{ 
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2, 
-            mt: 2
-        }}>
-            {/* Statistical vulnerability checks section */}
-            <Box sx={{
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 1,
-                p: 2
-            }}>
-                <Typography variant='subtitle1' fontWeight='bold' gutterBottom>
-                    Statistical Security Checks
-                </Typography>
-                <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
-                    These checks use threshold values to detect potentially malicious queries 
-                    based on their structure and complexity.
-                </Typography>
-                
-                <Grid container spacing={1}>
-                    {statisticalVulnerabilities.map((vulnerability) => (
-                        <Grid item xs={12} sm={6} md={4} key={vulnerability}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox 
-                                        checked={selectedChecks[vulnerability]} 
-                                        onChange={() => onChange(vulnerability)}
-                                        color='primary'
-                                        size='small'
-                                    />
-                                }
-                                label={vulnerability}
-                                
-                            />
-                            <Tooltip 
-                                title={vulnerabilityTooltips[vulnerability] || ''}
-                                placement='top'
-                                arrow
-                            >
-                                <HelpOutline fontSize='small'/>
-                            </Tooltip>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Box>
-            
-            {/* AI-powered vulnerability checks section */}
-            <Box sx={{
-                border: '1px solid',
-                borderColor: 'divider',
-                borderRadius: 1,
-                p: 2,
-            }}>
-                <Typography variant='subtitle1' fontWeight='bold' gutterBottom>
-                    AI-Powered Security Checks
-                </Typography>
-                <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
-                    AI security checks detect advanced attacks but are not perfect. 
-                    False positives and false negatives are possible. 
-                    Review by security professionals is needed for 
-                    critical environments.
-                </Typography>
-                
-                <Grid container spacing={1}>
-                    {aiPoweredVulnerabilities.map((vulnerability) => (
-                        <Grid item xs={12} sm={6} md={4} key={vulnerability}>
-                            <FormControlLabel
-                                control={
-                                    <Checkbox 
-                                        checked={selectedChecks[vulnerability]} 
-                                        onChange={() => onChange(vulnerability)}
-                                        color='primary'
-                                        size='small'
-                                    />
-                                }
-                                label={vulnerability}
-                            />
-                            <Tooltip 
-                                title={vulnerabilityTooltips[vulnerability] || ''}
-                                placement='top'
-                                arrow
-                            >
-                                <HelpOutline fontSize='small'/>
-                            </Tooltip>
-                        </Grid>
-                    ))}
-                </Grid>
-            </Box>
-        </Box>
-    );
-};
-
-// Reusable Component for Threshold Input Fields
-const ThresholdField = ({ keyName, value, onChange }) => (
-    <Grid item xs={12} sm={6} md={4} key={keyName}>
-        <Tooltip 
-            title={thresholdTooltips[keyName] || ''}
-            placement='top'
-            arrow
-        >
-            <TextField
-                label={thresholdLabels[keyName] || keyName.replace(/_/g, ' ')}
-                type='number'
-                value={value}
-                onChange={(e) => onChange(keyName, e.target.value)}
-                inputProps={{ min: 0 }}
-                fullWidth
-                className={classes.thresholdField}
-                variant='outlined'
-                size='small'
-            />
-        </Tooltip>
-    </Grid>
-);
-
-// Reusable Component for Complexity Estimator Selection
-const ComplexityEstimatorSelector = ({ value, onChange, title }) => (
-    <FormControl component='fieldset'>
-        <FormLabel component='legend' sx={{ mb: 1 }}>
-            {title || 'Select Complexity Estimator'}
-        </FormLabel>
-        <RadioGroup
-            row
-            name='complexity-estimator'
-            value={value}
-            onChange={(e) => onChange(e.target.value)}
-        >
-            <FormControlLabel 
-                value='simple' 
-                control={<Radio color='primary' />} 
-                label='Static' 
-            />
-            <FormControlLabel 
-                value='directive' 
-                control={<Radio color='primary' />} 
-                label='Dynamic' 
-            />
-        </RadioGroup>
-    </FormControl>
-);
-
-// Reusable Component for AI Confidence Threshold Slider
-const ThresholdSlider = ({ value, onChange }) => {
-    // Local state to handle input field value
-    const [inputValue, setInputValue] = React.useState(value);
-    
-    // Update local state when props change
-    React.useEffect(() => {
-        setInputValue(value);
-    }, [value]);
-
-    // Handle slider change
-    const handleSliderChange = (e, newValue) => {
-        setInputValue(newValue);
-        onChange('MODEL_CONFIDENT_THRESHOLD', newValue);
-    };
-    
-    // Handle direct input change
-    const handleInputChange = (e) => {
-        const newValue = e.target.value === '' ? 0 : Number(e.target.value);
-        setInputValue(newValue);
-    };
-
-    // Handle input blur to validate and apply value
-    const handleBlur = () => {
-        let finalValue = inputValue;
-        // Clamp value between 0 and 1
-        if (finalValue < 0) finalValue = 0;
-        if (finalValue > 1) finalValue = 1;
-        setInputValue(finalValue);
-        onChange('MODEL_CONFIDENT_THRESHOLD', finalValue);
-    };
-
-    // Check if the threshold is below the recommended minimum value
-    const isLowThreshold = inputValue < 0.4;
-
-    return (
-        <Box sx={{ px: 1, py: 1 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
-                <Typography variant='subtitle2' sx={{ 
-                    fontWeight: 500, 
-                    display: 'flex', 
-                    alignItems: 'center',
-                    fontSize: '0.875rem'
-                }}>
-                    {thresholdLabels.MODEL_CONFIDENT_THRESHOLD}
-                    <Tooltip 
-                        title={thresholdTooltips.MODEL_CONFIDENT_THRESHOLD || ''}
-                        placement='top'
-                        arrow
-                    >
-                        <HelpOutline fontSize='small' sx={{ ml: 0.5, fontSize: '0.875rem' }} />
-                    </Tooltip>
-                </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', ml: 1 }}>
-                    <TextField
-                        value={inputValue}
-                        onChange={handleInputChange}
-                        onBlur={handleBlur}
-                        type='number'
-                        inputProps={{
-                            min: 0,
-                            max: 1,
-                            step: 0.01,
-                            style: { textAlign: 'center', padding: '4px 8px' }
-                        }}
-                        sx={{
-                            width: '70px',
-                            '& .MuiOutlinedInput-root': {
-                                '& fieldset': { borderColor: isLowThreshold ?
-                                    'warning.main' : 'primary.light' },
-                                '&:hover fieldset': { borderColor: isLowThreshold ? 
-                                    'warning.dark' : 'primary.main' },
-                                '&.Mui-focused fieldset': { borderColor: isLowThreshold ?
-                                    'warning.dark' : 'primary.main' },
-                            },
-                        }}
-                        size='small'
-                        variant='outlined'
-                    />
-                </Box>
-            </Box>
-
-            <Box sx={{ display: 'flex', alignItems: 'center', px: 1 }}>
-                <Typography variant='caption' color='text.secondary' sx={{ mr: 1, width: '30px', textAlign: 'center' }}>
-                    0
-                </Typography>
-                <Slider
-                    value={typeof inputValue === 'number' ? inputValue : 0}
-                    onChange={handleSliderChange}
-                    step={0.01}
-                    min={0}
-                    max={1}
-                    sx={{ 
-                        flexGrow: 1,
-                        '& .MuiSlider-markActive[data-index="1"]': {
-                            backgroundColor: 'warning.main',
-                            width: 2,
-                            height: 16,
-                            marginTop: -7
-                        }
-                    }}
-                    size='small'
-                />
-            </Box>
-            
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', px: 1, mt: 0.5 }}>
-                <Typography variant='caption' color='text.secondary'>
-                    Higher sensitivity
-                </Typography>
-                <Typography variant='caption' color='text.secondary'>
-                    Higher precision
-                </Typography>
-            </Box>
-
-            {isLowThreshold && (
-                <MuiAlert 
-                    severity='warning' 
-                    sx={{ mt: 2, py: 0.5 }}
-                >
-                    <Typography variant='caption'>
-                        Lower values will flag more potential threats but may increase false positives.
-                        Consider using a higher threshold in production environments.
-                    </Typography>
-                </MuiAlert>
-            )}
-        </Box>
-    );
-};
-
 // Main Component
 export default function GraphQLQueryAnalysis(props) {
     const { api } = props;
@@ -526,186 +141,6 @@ export default function GraphQLQueryAnalysis(props) {
             ...selectedVulnerabilities,
             [vulnerability]: !selectedVulnerabilities[vulnerability]
         });
-    };
-    
-    // Get security checks payload for API
-    const getSecurityCheckPayload = () => {
-        const checks = {};
-        
-        // Explicitly set all options to 'disable' first
-        Object.values(vulnerabilityToApiKeyMap).forEach(apiKey => {
-            checks[apiKey] = 'disable';
-        });
-        
-        // Then set selected ones to 'enable'
-        Object.entries(selectedVulnerabilities).forEach(([vulnerability, isSelected]) => {
-            const apiKey = vulnerabilityToApiKeyMap[vulnerability];
-            if (apiKey && isSelected) {
-                checks[apiKey] = 'enable';
-            }
-        });
-        
-        return checks;
-    };
-
-    // API interaction handlers
-    const sendSchemaToService = async (schema) => {
-        try {
-            const response = await fetch(`${API_ENDPOINT}/set_schema`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                    graphql_schema: schema,
-                }),
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to send schema');
-            }
-            return true;
-        } catch (error) {
-            console.error('Error sending schema:', error);
-            Alert.error('Error occurred while sending schema');
-            return false;
-        }
-    };
-
-    const saveConfiguration = async () => {
-        try {
-            Alert.info('Saving configuration...');
-            
-            // Create configuration payload with thresholds
-            const configPayload = {};
-            
-            // Set thresholds based on selected vulnerabilities
-            Object.entries(thresholds).forEach(([key, value]) => {
-                // Special handling for MODEL_CONFIDENT_THRESHOLD - always include it with its current value
-                if (key === 'MODEL_CONFIDENT_THRESHOLD') {
-                    configPayload[key.toLowerCase()] = value;
-                    return;
-                }
-                
-                // For other thresholds, use the regular logic
-                const relatedVulnerability = Object.entries(vulnerabilityToThresholdMap)
-                    .find(([, thresholdList]) => thresholdList.includes(key));
-                
-                // If threshold has a related vulnerability and it's selected, use defined value
-                if (relatedVulnerability && selectedVulnerabilities[relatedVulnerability[0]]) {
-                    configPayload[key.toLowerCase()] = value;
-                } else {
-                    configPayload[key.toLowerCase()] = 10000;
-                }
-            });
-            
-            // Add other configuration parameters
-            configPayload.detect_per_directive = false;
-            configPayload.complexity_estimator = estimatorType;
-
-            console.log('Sending config payload:', configPayload); // Debug log
-
-            // Step 1: Send configuration settings
-            const configResponse = await fetch(`${API_ENDPOINT}/set_config`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(configPayload),
-            });
-
-            if (!configResponse.ok) {
-                const errorText = await configResponse.text();
-                console.error('Config API Error:', errorText);
-                Alert.error('Failed to save configuration. Please try again.');
-                return false;
-            }
-            
-
-            // Step 2: Get security checks payload and send it
-            const securityChecks = getSecurityCheckPayload();
-            
-            const checksResponse = await fetch(`${API_ENDPOINT}/set_checks`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(securityChecks),
-            });
-
-            if (!checksResponse.ok) {
-                const errorText = await checksResponse.text();
-                console.error('Security Checks API Error:', errorText);
-                Alert.error('Failed to save security checks. Please try again.');
-                return false;
-            }
-            
-            console.log('Security checks saved successfully');
-
-            // Step 3: Send reload request to apply changes
-            const reloadResponse = await fetch(`${API_ENDPOINT}/reload-config`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-            
-            if (!reloadResponse.ok) {
-                const errorText = await reloadResponse.text();
-                console.error('Reload API Error:', errorText);
-                Alert.error('Failed to reload configuration. Please try again.');
-                return false;
-            }
-
-            // Get the reload response data to confirm settings were applied
-            const reloadData = await reloadResponse.json();
-            console.log('Configuration reloaded successfully:', reloadData);
-            
-            // Add a small delay to ensure settings are fully applied
-            await new Promise(resolve => setTimeout(resolve, 500));
-            
-            Alert.success('Security configuration saved and applied successfully!');
-            return true;
-
-        } catch (error) {
-            console.error('Error saving configuration:', error);
-            Alert.error(`Error occurred: ${error.message || 'Unknown error'}`);
-            return false;
-        }
-    };
-
-    const fetchAIRecommendations = async () => {
-        try {
-            Alert.info('Generating AI recommendations...');
-            const response = await fetch(`${API_ENDPOINT}/generate_config`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Failed to retrieve AI-generated configuration');
-            }
-
-            const data = await response.json();
-            
-            // Update thresholds with AI recommendations
-            const aiRecommendedValues = {
-                ...defaultThresholds,
-                ...data.THRESHOLDS
-            };
-            
-            setEstimatorType(data.MODE.COMPLEXITY_ESTIMATOR);
-            setThresholds(aiRecommendedValues);
-            setAiRecommendationsGenerated(true);
-            Alert.success('AI-generated configuration retrieved successfully!');
-            return true;
-        } catch (error) {
-            console.error('Error retrieving AI configuration:', error);
-            Alert.error('Error retrieving AI configuration. Using default values.');
-            return false;
-        }
     };
 
     // UI Event Handlers
@@ -767,7 +202,11 @@ export default function GraphQLQueryAnalysis(props) {
 
     const handleConfirmSave = async () => {
         setSaveConfirmDialogOpen(false);
-        const success = await saveConfiguration();
+        const success = await saveConfiguration(
+            thresholds, 
+            selectedVulnerabilities, 
+            estimatorType, 
+            vulnerabilityToThresholdMap);
         if (success) {
             setOpen(false);
         }
@@ -778,7 +217,15 @@ export default function GraphQLQueryAnalysis(props) {
             setAiRecommendationsGenerated(false);
         }
 
-        await fetchAIRecommendations();
+        const aiConfig = await fetchAIRecommendations();
+        if (aiConfig) {
+            setEstimatorType(aiConfig.MODE.COMPLEXITY_ESTIMATOR);
+            setThresholds({
+                ...defaultThresholds,
+                ...aiConfig.THRESHOLDS
+            });
+            setAiRecommendationsGenerated(true);
+        }
     };
 
     // Filter threshold fields based on selected vulnerabilities
@@ -796,15 +243,15 @@ export default function GraphQLQueryAnalysis(props) {
     };
 
     // Check if any relevant threshold fields are visible
-    const hasVisibleThresholdFields = () =>{
+    const hasVisibleThresholdFields = () => {
         return getRelevantThresholdKeys().length > 0;
-    }
+    };
 
-    // Modified ThresholdFields component to show only relevant fields
-    const ThresholdFields = ({ thresholdsData, estimatorTypeValue, onThresholdChange }) => {
+    // Custom ThresholdFields implementation - kept in main component as it uses local state/functions
+    const ThresholdFieldsGroup = () => {
         const relevantKeys = getRelevantThresholdKeys();
         const showComplexitySettings = selectedVulnerabilities['Excessive complexity'] 
-                                            && estimatorTypeValue === 'simple';
+                                            && estimatorType === 'simple';
         
         return (
             <>
@@ -812,18 +259,18 @@ export default function GraphQLQueryAnalysis(props) {
                     <Grid container spacing={2} sx={{ mt: 1 }}>
                         <ThresholdField 
                             keyName='SIMPLE_ESTIMATOR_COMPLEXITY'
-                            value={thresholdsData.SIMPLE_ESTIMATOR_COMPLEXITY}
-                            onChange={onThresholdChange}
+                            value={thresholds.SIMPLE_ESTIMATOR_COMPLEXITY}
+                            onChange={handleThresholdChange}
                         />
                         <ThresholdField 
                             keyName='SIMPLE_ESTIMATOR_THRESHOLD'
-                            value={thresholdsData.SIMPLE_ESTIMATOR_THRESHOLD}
-                            onChange={onThresholdChange}
+                            value={thresholds.SIMPLE_ESTIMATOR_THRESHOLD}
+                            onChange={handleThresholdChange}
                         />
                     </Grid>
                 )}
                 
-                {estimatorTypeValue !== 'simple' && selectedVulnerabilities['Excessive complexity'] && (
+                {estimatorType !== 'simple' && selectedVulnerabilities['Excessive complexity'] && (
                     <MuiAlert severity='info' sx={{ mt: 2 }}>
                         Your schema will be analyzed by AI and complexity values will be 
                         assigned for each field dynamically.
@@ -843,8 +290,8 @@ export default function GraphQLQueryAnalysis(props) {
                                     <ThresholdField 
                                         key={key}
                                         keyName={key}
-                                        value={thresholdsData[key]}
-                                        onChange={onThresholdChange}
+                                        value={thresholds[key]}
+                                        onChange={handleThresholdChange}
                                     />
                                 );
                             })}
@@ -876,7 +323,7 @@ export default function GraphQLQueryAnalysis(props) {
         </Box>
     );
 
-    // Combined configuration section instead of separate AI and manual options
+    // Combined configuration section
     const renderConfigurationSection = () => (
         <Box sx={{ mb: 4 }}>
             <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -918,11 +365,7 @@ export default function GraphQLQueryAnalysis(props) {
                     />
                 )}
                 
-                <ThresholdFields 
-                    thresholdsData={thresholds} 
-                    estimatorTypeValue={estimatorType} 
-                    onThresholdChange={handleThresholdChange} 
-                />
+                <ThresholdFieldsGroup />
                 
                 {hasAnyAIPoweredCheckSelected() && (
                     <Box sx={{ 
@@ -934,7 +377,7 @@ export default function GraphQLQueryAnalysis(props) {
                         width: 400
                     }}>
                         <ThresholdSlider
-                            value={thresholds.MODEL_CONFIDENT_THRESHOLD}
+                            value={thresholds.MODEL_CONFIDENT_THRESHOLD || 0.5}
                             onChange={handleThresholdChange}
                         />
                     </Box>
@@ -966,7 +409,6 @@ export default function GraphQLQueryAnalysis(props) {
                             >
                                 <HelpOutline className={classes.iconSpace} />
                             </Tooltip>
-                        
                         </Typography>
                         
                         {/* New feature badge */}
@@ -1097,7 +539,7 @@ export default function GraphQLQueryAnalysis(props) {
                                 Protects Against:
                             </Typography>
                             <Grid container spacing={1}>
-                                {vulnerabilityTypes.slice(0,).map((threat) => (
+                                {vulnerabilityTypes.map((threat) => (
                                     <Grid item xs={6} key={threat} sx={
                                         { display: 'flex', alignItems: 'center', gap: 1 }}>
                                         <Box component='span' sx={{ 
