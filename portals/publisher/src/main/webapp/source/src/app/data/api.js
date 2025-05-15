@@ -757,13 +757,22 @@ class API extends Resource {
      *
      * @param id {String} The api id.
      */
-    generateMockScripts(id = this.id) {
+    generateMockScripts(id = this.id, generateWithAI = false, config = {}) {
         const promise_get = this.client.then(client => {
+            const payload = {
+                apiId: id,
+                'Content-Type': 'application/json',
+            };
+            const requestBody = {
+                requestBody: {
+                    generateWithAI,
+                    config
+                }
+            };
             return client.apis['APIs'].generateMockScripts(
-                {
-                    apiId: id,
-                },
-                this._requestMetaData(),
+                payload,
+                requestBody,
+                this._requestMetaData()
             );
         });
         return promise_get;
