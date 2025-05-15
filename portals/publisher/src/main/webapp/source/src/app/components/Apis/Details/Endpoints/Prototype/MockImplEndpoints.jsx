@@ -174,10 +174,11 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
         }
     }, []);
 
-    const generateMockScripts = async (useAI, payload, modify = undefined) => {
+    const generateMockScripts = async (useAI, payload) => {
         const response = await api.generateMockScripts(api.id, useAI, payload);
         const tmpScripts = [];
         const tmpPaths = paths;
+        const modify = payload?.modify;
         if (modify) {
             const { simulationScript } =
                 splitContentAndSimulation(paths[modify.path][modify.method][xMediationScriptProperty] || '');
@@ -240,7 +241,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDB, setSaveD
             modify: { path, method, defaultScript: !mockConfig.useAI }
         }
         try {
-            await generateMockScripts(true, payload, payload.modify);
+            await generateMockScripts(true, payload);
             setSimulationConfig(simulationScript, path, method);
             if (nullScripts.includes(`${method} - ${path}`)) {
                 setNullScripts(prev => prev.filter(item => item !== `${method} - ${path}`));
