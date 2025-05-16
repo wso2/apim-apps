@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { FormattedMessage, useIntl } from 'react-intl';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -157,12 +157,35 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
 }) => {
     const intl = useIntl();
     const [user, setUser] = useState('You');
+    const editorContainerRef = useRef<HTMLDivElement>(null); 
+    const editorRef = useRef<any>(null); 
 
     useEffect(() => {
         const loggedInUser = Utils.getUser();
         if (loggedInUser) {
             setUser(loggedInUser);
         }
+    }, []);
+
+    useEffect(() => {
+        const resizeObserver = new ResizeObserver(() => {
+            if (editorRef.current && editorContainerRef.current) {
+                const { offsetWidth, offsetHeight } = editorContainerRef.current;
+                if (offsetWidth > 0 && offsetHeight > 0) {
+                    editorRef.current.layout({ width: offsetWidth, height: offsetHeight });
+                }
+            }
+        });
+
+        if (editorContainerRef.current) {
+            resizeObserver.observe(editorContainerRef.current);
+        }
+
+        return () => {
+            if (editorContainerRef.current) {
+                resizeObserver.unobserve(editorContainerRef.current);
+            }
+        };
     }, []);
 
     const copyText = intl.formatMessage({
@@ -228,38 +251,72 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
 
         if (contentType.includes(APPLICATION_JSON) && executionResult.body !== '') {
             return (
-                <MonacoEditor
-                    width='100%'
-                    height='200'
-                    language='json'
-                    value={JSON.stringify(JSON.parse(executionResult.body), null, 2)}
-                    options={{
-                        readOnly: true,
-                        minimap: { enabled: false },
-                        scrollBeyondLastLine: false,
-                        wordWrap: 'on',
+                <Box
+                    ref={editorContainerRef}
+                    sx={{
+                        width: '100%',
+                        height: '200px',
+                        overflowX: 'auto',
+                        overflowY: 'hidden',
+                        position: 'relative',
+                        whiteSpace: 'nowrap',
                     }}
-                />
+                >
+                    <MonacoEditor
+                        language='json'
+                        value={JSON.stringify(JSON.parse(executionResult.body), null, 2)}
+                        options={{
+                            readOnly: true,
+                            minimap: { enabled: false },
+                            scrollBeyondLastLine: false,
+                            wordWrap: 'off',
+                        }}
+                        editorDidMount={(editor) => {
+                            editorRef.current = editor; 
+                            if (editorContainerRef.current) {
+                                const { offsetWidth, offsetHeight } = editorContainerRef.current;
+                                editor.layout({ width: offsetWidth, height: offsetHeight });
+                            }
+                        }}
+                    />
+                </Box>
             );
         } else if (contentType.includes(APPLICATION_XML) && executionResult.body !== '') {
             const formattedMessage = xmlFormat(executionResult.body);
             return (
-                <MonacoEditor
-                    width='100%'
-                    height='200'
-                    language='xml'
-                    value={formattedMessage}
-                    options={{
-                        readOnly: true,
-                        minimap: { enabled: false },
-                        scrollBeyondLastLine: false,
-                        wordWrap: 'on',
+                <Box
+                    ref={editorContainerRef}
+                    sx={{
+                        width: '100%',
+                        height: '200px',
+                        overflowX: 'auto',
+                        overflowY: 'hidden',
+                        position: 'relative',
+                        whiteSpace: 'nowrap',
                     }}
-                />
+                >
+                    <MonacoEditor
+                        language='xml'
+                        value={formattedMessage}
+                        options={{
+                            readOnly: true,
+                            minimap: { enabled: false },
+                            scrollBeyondLastLine: false,
+                            wordWrap: 'off',
+                        }}
+                        editorDidMount={(editor) => {
+                            editorRef.current = editor; 
+                            if (editorContainerRef.current) {
+                                const { offsetWidth, offsetHeight } = editorContainerRef.current;
+                                editor.layout({ width: offsetWidth, height: offsetHeight });
+                            }
+                        }}
+                    />
+                </Box>
             );
         } else {
             return (
-                <Typography variant='body1'>
+                <Typography variant='body1'sx={{ wordWrap: 'break-word' }}>
                     {executionResult.body}
                 </Typography>
             );
@@ -305,7 +362,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                         <AccordionSummary
                                             expandIcon={<ExpandMoreIcon />}
                                         >
-                                            <Box display='flex' justifyContent='space-between' alignItems='center' width='100%'>
+                                            <Box display='flex' flexDirection='row' justifyContent='space-between' alignItems='center' width='100%'>
                                                 <Box display='flex' alignItems='center'>
                                                     {(executionResult.code >= 200 && executionResult.code < 300) ? (
                                                         <Chip
@@ -324,7 +381,7 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                                             size='small'
                                                         />
                                                     )}
-                                                    <Typography variant='body1' ml={2} sx={{ alignContent: 'center' }}>
+                                                    <Typography variant='body1' ml={2} sx={{ alignContent: 'center', wordWrap: 'break-word' }}>
                                                         {'Executed ' + executionResult.method + ' ' + executionResult.path}
                                                     </Typography>
                                                 </Box>

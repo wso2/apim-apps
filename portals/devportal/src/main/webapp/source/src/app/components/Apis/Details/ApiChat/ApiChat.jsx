@@ -520,17 +520,50 @@ const ApiChat = () => {
     };
 
     const sendSubsequentRequest = async (requestId, resource) => {
-        const { responseObj: executionResponseForAiAgent, curlCommand } = await invokeAPI(resource);
-        setExecutionResults((prevState) => {
-            return [
-                ...prevState,
-                {
-                    ...executionResponseForAiAgent,
-                    method: resource.method,
-                    curlCommand,
-                },
-            ];
-        });
+        const isGraphQL = api.type === 'GRAPHQL';
+        const isSubscriptionResponse = isGraphQL
+        && resource.inputs
+        && resource.inputs.requestBody
+        && resource.inputs.requestBody.query
+        && resource.inputs.requestBody.query.startsWith('SUBSCRIPTION:');
+        let executionResponseForAiAgent = {
+            code: null,
+            path: '',
+            headers: {},
+            body: null,
+        };
+        if (isSubscriptionResponse) {
+            const subscriptionResponse = resource.inputs.requestBody.query.replace('SUBSCRIPTION:', '').trim();
+            executionResponseForAiAgent = {
+                code: 200,
+                path: '',
+                headers: {},
+                body: subscriptionResponse,
+            };
+            setExecutionResults((prevState) => {
+                return [
+                    ...prevState,
+                    {
+                        ...executionResponseForAiAgent,
+                        method: '',
+                        curlCommand: null,
+                    },
+                ];
+            });
+        } else {
+            const { responseObj, curlCommand } = await invokeAPI(resource);
+            executionResponseForAiAgent = responseObj;
+            setExecutionResults((prevState) => {
+                return [
+                    ...prevState,
+                    {
+                        ...executionResponseForAiAgent,
+                        method: resource.method,
+                        curlCommand,
+                    },
+                ];
+            });
+        }
         const executePromise = apiClient.runAiAgentSubsequentIterations(
             api.id,
             requestId,
@@ -564,6 +597,33 @@ const ApiChat = () => {
                                 );
                             }
                             setIsAgentRunning(false);
+                            break;
+                        case 'TERMINATED':
+                            if (isGraphQL) {
+                                // For GraphQL APIs, show the response and send it to the backend
+                                if (body.result && body.result !== '') {
+                                    setFinalOutcome(body.result);
+                                } else {
+                                    setFinalOutcome(
+                                        intl.formatMessage({
+                                            id: 'Apis.Details.ApiChat.ApiChat.subsequentRequest.finalOutcome.taskTerminated',
+                                            defaultMessage: 'An error occurred during query execution.',
+                                        }),
+                                    );
+                                }
+                                // Send a subsequent request to the backend
+                                sendSubsequentRequest(requestId, body.resource);
+                            } else {
+                                // For other APIs, follow the default case
+                                setIsExecutionError(true);
+                                setFinalOutcome(
+                                    intl.formatMessage({
+                                        id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
+                                        defaultMessage: 'An error occurred during query execution.',
+                                    }),
+                                );
+                                setIsAgentRunning(false);
+                            }
                             break;
                         default:
                             setIsExecutionError(true);
@@ -645,6 +705,30 @@ const ApiChat = () => {
                                     intl.formatMessage({
                                         id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskCompletedOneItr',
                                         defaultMessage: 'Task completed in 1 iteration.',
+                                    }),
+                                );
+                            }
+                            setIsAgentRunning(false);
+                            break;
+                        case 'TERMINATED':
+                            if (api.type === 'GRAPHQL') {
+                                // For GraphQL APIs, show the response but skip invoking the API
+                                if (body.result && body.result !== '') {
+                                    setFinalOutcome(body.result);
+                                } else {
+                                    setFinalOutcome(
+                                        intl.formatMessage({
+                                            id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskTerminated',
+                                            defaultMessage: 'Task terminated',
+                                        }),
+                                    );
+                                }
+                            } else {
+                                setIsExecutionError(true);
+                                setFinalOutcome(
+                                    intl.formatMessage({
+                                        id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
+                                        defaultMessage: 'An error occurred during query execution.',
                                     }),
                                 );
                             }
