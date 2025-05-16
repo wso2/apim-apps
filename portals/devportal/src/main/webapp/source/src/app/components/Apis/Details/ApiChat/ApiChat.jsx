@@ -600,7 +600,7 @@ const ApiChat = () => {
                             break;
                         case 'TERMINATED':
                             if (isGraphQL) {
-                                // For GraphQL APIs, show the response but skip invoking the API
+                                // For GraphQL APIs, show the response and send it to the backend
                                 if (body.result && body.result !== '') {
                                     setFinalOutcome(body.result);
                                 } else {
@@ -611,7 +611,7 @@ const ApiChat = () => {
                                         }),
                                     );
                                 }
-                                // Send a subsequent request without invoking the API
+                                // Send a subsequent request to the backend
                                 sendSubsequentRequest(requestId, body.resource);
                             } else {
                                 // For other APIs, follow the default case
