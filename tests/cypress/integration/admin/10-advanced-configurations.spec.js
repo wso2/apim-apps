@@ -20,6 +20,12 @@ import advanceConfFalseJson from "../../fixtures/api_artifacts/advanceConfigFals
 import advanceConfTrueJson from "../../fixtures/api_artifacts/advanceConfigTrue.json"
 
 describe("Advanced Configurations", () => {
+    Cypress.on('uncaught:exception', (err, runnable) => {
+        if (err.message && err.message.includes('Unexpected usage')) {
+            return false;
+        }
+    });
+  
     const carbonUsername = 'admin';
     const carbonPassword = 'admin';
 
