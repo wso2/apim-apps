@@ -6,7 +6,8 @@ import {
 } from '@mui/material';
 import HelpOutline from '@mui/icons-material/HelpOutline';
 import Alert from 'AppComponents/Shared/Alert';
-
+import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
+import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
 import {
     statisticalVulnerabilities, aiPoweredVulnerabilities,
     vulnerabilityTooltips, thresholdLabels, thresholdTooltips,
@@ -39,7 +40,11 @@ export const VulnerabilityCheckboxes = ({ selectedChecks, onChange }) => {
                 borderRadius: 1,
                 p: 2
             }}>
-                <Typography variant='subtitle1' fontWeight='bold' gutterBottom>
+                <Typography variant='subtitle1' fontWeight='bold' gutterBottom sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center' 
+                }}>
+                    <CandlestickChartIcon fontSize='medium' sx={{ mr: 1 }} />
                     Statistical Security Checks
                 </Typography>
                 <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
@@ -72,15 +77,17 @@ export const VulnerabilityCheckboxes = ({ selectedChecks, onChange }) => {
                     ))}
                 </Grid>
             </Box>
-            
-            {/* AI-powered vulnerability checks section */}
             <Box sx={{
                 border: '1px solid',
                 borderColor: 'divider',
                 borderRadius: 1,
                 p: 2,
             }}>
-                <Typography variant='subtitle1' fontWeight='bold' gutterBottom>
+                <Typography variant='subtitle1' fontWeight='bold' gutterBottom sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center' 
+                }}>
+                    <SettingsSuggestIcon fontSize='medium' sx={{ mr: 1 }} />
                     AI-Powered Security Checks
                 </Typography>
                 <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>

@@ -3,7 +3,7 @@ import { styled } from '@mui/material/styles';
 import { 
     Grid, Typography, Button, Paper, Dialog, DialogActions, DialogContent, 
     DialogContentText, DialogTitle, Container, Tooltip, Divider, Box, 
-    Alert as MuiAlert, Chip
+    Alert as MuiAlert, Chip, Card
 } from '@mui/material';
 import EditRounded from '@mui/icons-material/EditRounded';
 import HelpOutline from '@mui/icons-material/HelpOutline';
@@ -326,25 +326,69 @@ export default function GraphQLQueryAnalysis(props) {
     // Combined configuration section
     const renderConfigurationSection = () => (
         <Box sx={{ mb: 4 }}>
-            <Grid container spacing={2} sx={{ mb: 3 }}>
-                <Grid item>
-                    <SectionHeader 
-                        icon={<SettingsIcon color='primary' />} 
-                        title='Security Configuration'
-                    />
-                </Grid>
-                <Grid item sx={{ ml: 'auto' }}>
-                    <Button
-                        variant='outlined'
-                        color='primary'
-                        startIcon={aiRecommendationsGenerated ? <RefreshIcon /> : <AutoAwesomeIcon />}
-                        onClick={handleAIConfiguration}
-                        disabled={!hasVisibleThresholdFields()}
-                    >
-                        {aiRecommendationsGenerated ? 'Regenerate' : 'Get AI Recommendations'}
-                    </Button>
-                </Grid>
-            </Grid>
+            <SectionHeader 
+                icon={<SettingsIcon color='primary' />} 
+                title='Security Configuration'
+            />
+
+            {hasVisibleThresholdFields() && (
+                <Card 
+                    sx={{ 
+                        mb: 4, 
+                        mt: 2, 
+                        border: '1px solid',
+                        borderColor: 'primary.light',
+                        borderRadius: 2,
+                        position: 'relative',
+                        overflow: 'visible'
+                    }}
+                >
+                    <Box sx={{ p: 3 }}>
+                        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+                            <img
+                                alt='API Security Assistant'
+                                src='/site/public/images/ai/APIchatassistantImageWithColour.svg'
+                                style={{ width: '60px', height: 'auto' }}
+                            />
+                            
+                            <Box>
+                                <Typography variant='h6' sx={{ mb: 1, fontWeight: 500 }}>
+                                    Let AI Configure Your Security Settings
+                                </Typography>
+                                
+                                <Typography variant='body2' sx={{ mb: 2 }}>
+                                    Our AI engine will analyze your GraphQL schema and recommend optimal security 
+                                    settings based on your API structure and common security threats.
+                                </Typography>
+                                
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    size='large'
+                                    startIcon={aiRecommendationsGenerated ? <RefreshIcon /> : <AutoAwesomeIcon />}
+                                    onClick={handleAIConfiguration}
+                                    disabled={!hasVisibleThresholdFields()}
+                                    sx={{
+                                        background: theme => 
+                                            `linear-gradient(90deg, 
+                                        ${theme.palette.primary.dark} 0%, 
+                                        ${theme.palette.primary.main} 100%)`,
+                                        '&:hover': {
+                                            background: theme => 
+                                                `linear-gradient(90deg, 
+                                            ${theme.palette.primary.dark} 0%, 
+                                            ${theme.palette.primary.main} 70%)`,
+                                        }
+                                    }}
+                                >
+                                    {aiRecommendationsGenerated 
+                                        ? 'Regenerate Recommendations' : 'Get AI Recommendations'}
+                                </Button>
+                            </Box>
+                        </Box>
+                    </Box>
+                </Card>
+            )}
 
             {aiRecommendationsGenerated && (
                 <MuiAlert severity='success' sx={{ mb: 3 }}>
@@ -456,7 +500,6 @@ export default function GraphQLQueryAnalysis(props) {
                 PaperProps={{
                     sx: {
                         borderRadius: 2,
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
                         overflow: 'hidden',
                     }
                 }}
@@ -570,10 +613,6 @@ export default function GraphQLQueryAnalysis(props) {
                         color='primary' 
                         variant='contained'
                         startIcon={<SecurityIcon />}
-                        sx={{ 
-                            px: 3,
-                            boxShadow: 2,
-                        }}
                     >
                         Enable Protection
                     </Button>
@@ -613,7 +652,7 @@ export default function GraphQLQueryAnalysis(props) {
                         color='primary'
                         onClick={handleSave}
                     >
-                        Set
+                        Save Configuration
                     </Button>
                     <Button onClick={handleClose} color='primary'>
                         Cancel
@@ -630,7 +669,6 @@ export default function GraphQLQueryAnalysis(props) {
                 PaperProps={{
                     sx: {
                         borderRadius: 2,
-                        boxShadow: '0 8px 32px rgba(0, 0, 0, 0.2)',
                     }
                 }}
             >
