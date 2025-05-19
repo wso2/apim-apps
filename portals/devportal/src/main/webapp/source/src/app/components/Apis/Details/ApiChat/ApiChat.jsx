@@ -73,6 +73,7 @@ const ApiChat = () => {
     const [specEnrichmentError, setSpecEnrichmentError] = useState('');
     const [specEnrichmentErrorLevel, setSpecEnrichmentErrorLevel] = useState('');
     const [enrichedSpec, setEnrichedSpec] = useState({});
+    const [schemaDefinition, setSchemaDefinition] = useState({});
     const [sampleQueries, setSampleQueries] = useState([]);
     const [inputQuery, setInputQuery] = useState('');
     const [lastQuery, setLastQuery] = useState('');
@@ -325,6 +326,7 @@ const ApiChat = () => {
                     } else {
                         setEnrichedSpec(body.apiSpec);
                         setSampleQueries(body.queries);
+                        setSchemaDefinition(body.schemaDefinition);
                         setIsEnrichingSpec(false);
                     }
                 }).catch((error) => {
@@ -522,10 +524,11 @@ const ApiChat = () => {
     const sendSubsequentRequest = async (requestId, resource) => {
         const isGraphQL = api.type === 'GRAPHQL';
         const isSubscriptionResponse = isGraphQL
-        && resource.inputs
-        && resource.inputs.requestBody
-        && resource.inputs.requestBody.query
-        && resource.inputs.requestBody.query.startsWith('SUBSCRIPTION:');
+            && resource.inputs
+            && resource.inputs.requestBody
+            && resource.inputs.requestBody.query
+            && resource.inputs.requestBody.query.startsWith('SUBSCRIPTION:');
+
         let executionResponseForAiAgent = {
             code: null,
             path: '',
@@ -598,33 +601,6 @@ const ApiChat = () => {
                             }
                             setIsAgentRunning(false);
                             break;
-                        case 'TERMINATED':
-                            if (isGraphQL) {
-                                // For GraphQL APIs, show the response and send it to the backend
-                                if (body.result && body.result !== '') {
-                                    setFinalOutcome(body.result);
-                                } else {
-                                    setFinalOutcome(
-                                        intl.formatMessage({
-                                            id: 'Apis.Details.ApiChat.ApiChat.subsequentRequest.finalOutcome.taskTerminated',
-                                            defaultMessage: 'An error occurred during query execution.',
-                                        }),
-                                    );
-                                }
-                                // Send a subsequent request to the backend
-                                sendSubsequentRequest(requestId, body.resource);
-                            } else {
-                                // For other APIs, follow the default case
-                                setIsExecutionError(true);
-                                setFinalOutcome(
-                                    intl.formatMessage({
-                                        id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
-                                        defaultMessage: 'An error occurred during query execution.',
-                                    }),
-                                );
-                                setIsAgentRunning(false);
-                            }
-                            break;
                         default:
                             setIsExecutionError(true);
                             setFinalOutcome(
@@ -644,7 +620,7 @@ const ApiChat = () => {
         }).catch((error) => {
             setIsExecutionError(true);
             const statusCode = error?.response?.status;
-            if (statusCode === 401) { // Hanlde on-prem key vaidation failed scenario
+            if (statusCode === 401) { // Handle on-prem key validation failed scenario
                 setExecutionErrorMessage(getUnauthorizedErrorMessage());
             } else if (statusCode === 429) { // Handle throttled out scenario
                 setExecutionErrorMessage(getTooManyRequestsErrorMessage());
@@ -680,6 +656,7 @@ const ApiChat = () => {
             requestId,
             query,
             enrichedSpec,
+            schemaDefinition,
         );
         executePromise.then((response) => {
             const { data } = response;
@@ -705,30 +682,6 @@ const ApiChat = () => {
                                     intl.formatMessage({
                                         id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskCompletedOneItr',
                                         defaultMessage: 'Task completed in 1 iteration.',
-                                    }),
-                                );
-                            }
-                            setIsAgentRunning(false);
-                            break;
-                        case 'TERMINATED':
-                            if (api.type === 'GRAPHQL') {
-                                // For GraphQL APIs, show the response but skip invoking the API
-                                if (body.result && body.result !== '') {
-                                    setFinalOutcome(body.result);
-                                } else {
-                                    setFinalOutcome(
-                                        intl.formatMessage({
-                                            id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskTerminated',
-                                            defaultMessage: 'Task terminated',
-                                        }),
-                                    );
-                                }
-                            } else {
-                                setIsExecutionError(true);
-                                setFinalOutcome(
-                                    intl.formatMessage({
-                                        id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
-                                        defaultMessage: 'An error occurred during query execution.',
                                     }),
                                 );
                             }
