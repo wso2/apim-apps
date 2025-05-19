@@ -258,11 +258,11 @@ function Endpoints(props) {
     const [apiObject, apiDispatcher] = useReducer(apiReducer, api.toJSON());
 
     /**
-     * Method to remove x-mediation-scripts and x-wso2-mockdb from the swagger object.
+     * Method to remove x-mediation-scripts from the swagger object.
      */
-    const removeXmediationScriptAndMockDB = () => {
+    const removeXmediationScripts = () => {
         let isSwaggerChanged = false;
-        // remove x-wso2-mockdb and x-mediation-scripts from swagger
+        // remove x-wso2-mock-dataset and x-mediation-scripts from swagger
         Object.keys(swagger.paths).forEach((path) => {
             Object.keys(swagger.paths[path]).forEach((method) => {
                 if (swagger.paths[path][method]['x-mediation-script']) {
@@ -271,8 +271,24 @@ function Endpoints(props) {
                 }
             });
         });
-        if (swagger['x-wso2-mockdb']) {
-            delete swagger['x-wso2-mockdb'];
+        if (swagger['x-wso2-mock-dataset']) {
+            delete swagger['x-wso2-mock-dataset'];
+            isSwaggerChanged = true;
+        }
+        if (isSwaggerChanged) {
+            api.updateSwagger(swagger).then((resp) => {
+                setSwagger(resp.obj);
+            })
+        }
+    }
+
+    /**
+     * Method to remove x-wso2-mock-dataset from the swagger object.
+     */
+    const removeMockDataset = () => {
+        let isSwaggerChanged = false;
+        if (swagger['x-wso2-mock-dataset']) {
+            delete swagger['x-wso2-mock-dataset'];
             isSwaggerChanged = true;
         }
         if (isSwaggerChanged) {
@@ -295,7 +311,7 @@ function Endpoints(props) {
         }
         setUpdating(true);
         if (endpointImplementationType !== 'INLINE'){
-            removeXmediationScriptAndMockDB();
+            removeXmediationScripts();
         }
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0 || (productionBackendList?.length > 0
@@ -395,7 +411,8 @@ function Endpoints(props) {
         }
         setUpdating(true);
         if (endpointImplementationType !== 'INLINE'){
-            removeXmediationScriptAndMockDB();
+            removeXmediationScripts();
+            removeMockDataset();
         }
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0

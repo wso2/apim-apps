@@ -18,17 +18,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { FormattedMessage } from 'react-intl';
-import {
-    Button, Paper, Divider,
-    Typography, Stack, Alert as MUIAlert
-} from '@mui/material';
-import {
-    app
-} from 'Settings';
-import {
-    AutoAwesome, Memory,
-    SmartToy, Speed, DataObject, SyncAlt, Settings
-} from '@mui/icons-material';
+import { Button, Paper, Divider, Typography, Stack, Alert as MUIAlert } from '@mui/material';
+import { app } from 'Settings';
+import { AutoAwesome, Memory, SmartToy, Speed, DataObject, SyncAlt, Settings } from '@mui/icons-material';
 
 const FeatureItem = ({ icon, text }) => (
     <Stack direction='row' alignItems='center' spacing={1}>
@@ -37,8 +29,7 @@ const FeatureItem = ({ icon, text }) => (
     </Stack>
 );
 
-const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGenerateScripts, progress}) => {
-
+const MockLandingPage = ({ hasAuthToken, authTokenNotProvidedWarning, handleGenerateScripts, progress }) => {
     return (
         <Stack spacing={2} sx={{ maxWidth: 1000, mx: 'auto', px: 3, py: 6 }}>
             <Stack
@@ -50,7 +41,7 @@ const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGen
             >
                 <Typography variant='h4' sx={{ fontWeight: 600 }}>
                     <FormattedMessage
-                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.mockServerBehavior'
+                        id='Apis.Details.Endpoints.Prototype.MockLandingPage.mockServerBehavior'
                         defaultMessage='How would you like your mock server to behave?'
                     />
                 </Typography>
@@ -87,7 +78,7 @@ const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGen
                             <SmartToy fontSize='large' color='primary' />
                             <Typography variant='h6' sx={{ fontWeight: 600 }}>
                                 <FormattedMessage
-                                    id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.aiAssistedMockServer'
+                                    id='Apis.Details.Endpoints.Prototype.MockLandingPage.aiAssistedMockServer'
                                     defaultMessage='AI-assisted mock server'
                                 />
                             </Typography>
@@ -95,7 +86,7 @@ const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGen
 
                         <Typography variant='body1'>
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.smartRealisticMocks'
+                                id='Apis.Details.Endpoints.Prototype.MockLandingPage.smartRealisticMocks'
                                 defaultMessage='Smart, realistic mocks tailored from your API definition using AI.'
                             />
                         </Typography>
@@ -123,18 +114,19 @@ const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGen
                         sx={{ mt: 3, fontWeight: 600 }}
                     >
                         <FormattedMessage
-                            id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.action.useAIMockServerButton'
-                            defaultMessage='Use AI Mock Server'
+                            id='Apis.Details.Endpoints.Prototype.MockLandingPage.action.useAIMockServerButton'
+                            defaultMessage='Use AI mock server'
                         />
                     </Button>
                 </Paper>
 
                 <Paper
-                    elevation={2}
+                    elevation={4}
                     sx={{
                         flex: 1,
                         p: 3,
                         borderRadius: 4,
+                        border: '1px solid',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'space-between'
@@ -145,7 +137,7 @@ const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGen
                             <Memory fontSize='large' color='action' />
                             <Typography variant='h6' sx={{ fontWeight: 600 }}>
                                 <FormattedMessage
-                                    id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.staticMockServer'
+                                    id='Apis.Details.Endpoints.Prototype.MockLandingPage.staticMockServer'
                                     defaultMessage='Static mock server'
                                 />
                             </Typography>
@@ -153,7 +145,7 @@ const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGen
 
                         <Typography variant='body1'>
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.basicQuickMocks'
+                                id='Apis.Details.Endpoints.Prototype.MockLandingPage.basicQuickMocks'
                                 defaultMessage='Basic and quick mocks for rapid setup and initial testing needs.'
                             />
                         </Typography>
@@ -176,8 +168,8 @@ const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGen
                         sx={{ mt: 3, fontWeight: 600 }}
                     >
                         <FormattedMessage
-                            id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.action.useStaticMockServerButton'
-                            defaultMessage='Use Static Mock Server'
+                            id='Apis.Details.Endpoints.Prototype.MockLandingPage.action.useStaticMockServerButton'
+                            defaultMessage='Use static mock server'
                         />
                     </Button>
                 </Paper>
@@ -186,9 +178,9 @@ const InitialMockChoice = ({hasAuthToken, authTokenNotProvidedWarning, handleGen
     );
 };
 
-export default InitialMockChoice;
+export default MockLandingPage;
 
-InitialMockChoice.propTypes = {
+MockLandingPage.propTypes = {
     hasAuthToken: PropTypes.bool.isRequired,
     authTokenNotProvidedWarning: PropTypes.string.isRequired,
     handleGenerateScripts: PropTypes.func.isRequired,

@@ -16,13 +16,7 @@
  *  under the License.
  */
 
-import React, {
-    Suspense,
-    useContext,
-    useState,
-    useRef,
-    useCallback
-} from 'react';
+import React, { Suspense, useContext, useState, useRef, useCallback } from 'react';
 import { styled } from '@mui/material/styles';
 import { Grid, Typography, Button } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -65,7 +59,7 @@ function getGeneratedMockScriptOfAPI(mockScripts, path, method) {
         const matchedResource = mockScripts.find(
             mockScript => (mockScript.verb.toLowerCase() === method.toLowerCase() && mockScript.path === path));
         if (matchedResource) {
-            return {originalScript: matchedResource.content, simulationScript: matchedResource.simulationScript};
+            return { originalScript: matchedResource.content, simulationScript: matchedResource.simulationScript };
         }
     }
     return null;
@@ -85,11 +79,11 @@ function MockScriptOperation(props) {
     const [showReset, setShowReset] = useState(false);
 
     const scriptRef = useRef(
-        operation[xMediationScriptProperty]?.split(simulationSplitString)[0].trim() 
-            ?? defaultScript);
+        operation[xMediationScriptProperty]?.split(simulationSplitString)[0].trim()
+        ?? defaultScript);
 
-    const { originalScript = defaultScript, simulationScript = '' } = 
-    getGeneratedMockScriptOfAPI(mockScripts, resourcePath, resourceMethod) || {};
+    const { originalScript = defaultScript, simulationScript = '' } =
+        getGeneratedMockScriptOfAPI(mockScripts, resourcePath, resourceMethod) || {};
 
     const onScriptChange = useCallback(
         (value) => {
@@ -123,27 +117,28 @@ function MockScriptOperation(props) {
                     />
                 </Typography>
                 {showReset
-                && (
-                    <Button
-                        variant='contained'
-                        color='primary'
-                        onClick={() => {
-                            setShowReset(false);
-                            onScriptChange(originalScript);
-                        }}
-                    >
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.script.reset'
-                            defaultMessage='Reset'
-                        />
-                    </Button>
-                )}
+                    && (
+                        <Button
+                            sx={{ mr: 1 }}
+                            variant='contained'
+                            color='primary'
+                            onClick={() => {
+                                setShowReset(false);
+                                onScriptChange(originalScript);
+                            }}
+                        >
+                            <FormattedMessage
+                                id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.script.reset'
+                                defaultMessage='Reset'
+                            />
+                        </Button>
+                    )}
             </Grid>
             <Grid item>
                 <Suspense fallback={<CircularProgress />}>
                     <MonacoEditor
                         height='50vh'
-                        width='calc(100% - 250px)'
+                        width='calc(100% - 9px)'
                         theme='vs-dark'
                         value={scriptRef.current}
                         options={{
@@ -153,7 +148,8 @@ function MockScriptOperation(props) {
                         language='javascript'
                         onChange={(content) => {
                             setShowReset(true);
-                            onScriptChange(content)}}
+                            onScriptChange(content)
+                        }}
                     />
                 </Suspense>
             </Grid>

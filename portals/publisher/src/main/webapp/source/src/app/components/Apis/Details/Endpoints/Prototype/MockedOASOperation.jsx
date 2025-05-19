@@ -18,14 +18,7 @@
 
 import React, { Suspense, useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import {
-    CircularProgress,
-    Divider,
-    Grid,
-    MenuItem,
-    TextField,
-    Typography,
-} from '@mui/material';
+import { CircularProgress, Divider, Grid, MenuItem, TextField, Typography } from '@mui/material';
 import { ArrowDropDown } from '@mui/icons-material';
 import { FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
@@ -82,7 +75,8 @@ function MockedOASOperation(props) {
                             responseCode={responseCode} />
                     </Grid>
                 ))}
-            </StyledGrid> : <FormattedMessage
+            </StyledGrid> : 
+            <FormattedMessage
                 id='Apis.Details.Endpoints.Prototype.MockedOAS.Response.NotProvided'
                 defaultMessage='Responses are not provided in the API definition'
             />

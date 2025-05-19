@@ -19,16 +19,7 @@
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import {
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    TextField,
-    Button,
-    Select,
-    MenuItem,
-    FormControl,
-    InputLabel,
+    Dialog, DialogTitle, DialogContent, DialogActions, TextField, Button, Select, MenuItem, FormControl, InputLabel,
 } from '@mui/material';
 import { Alert } from 'AppComponents/Shared';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -39,6 +30,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
     const [mockSimulation, setMockSimulation] = useState({});
     const [currentEndpoint, setCurrentEndpoint] = useState(null);
     const xMediationScriptProperty = 'x-mediation-script';
+    const [isSaveDisabled, setIsSaveDisabled] = useState(true);
 
     useEffect(() => {
         if (open) {  // Only update when dialog opens
@@ -65,17 +57,18 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
 
     const errorOptions = [
         { value: '0', label: 'No Error' },
-        { value: '400', label: '400-Bad Request' },
-        { value: '401', label: '401-Unauthorized' },
-        { value: '403', label: '403-Forbidden' },
-        { value: '404', label: '404-Not Found' },
-        { value: '500', label: '500-Internal Server Error' },
-        { value: '501', label: '501-Not Implemented' },
+        { value: '400', label: '400 [Bad Request]' },
+        { value: '401', label: '401 [Unauthorized]' },
+        { value: '403', label: '403 [Forbidden]' },
+        { value: '404', label: '404 [Not Found]' },
+        { value: '500', label: '500 [Internal Server Error]' },
+        { value: '501', label: '501 [Not Implemented]' },
     ];
 
     const handleChange = ({ target: { name, value } }) => {
         if (name === 'latency' && !/^\d*$/.test(value)) return;
         setMockSimulation(prev => ({ ...prev, [name]: value }));
+        setIsSaveDisabled(false);
     };
 
 
@@ -224,12 +217,17 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
             })
         );
 
+        setIsSaveDisabled(true);
         onClose();
     };
 
 
     return (
-        <Dialog open={open} onClose={onClose} maxWidth='sm' fullWidth>
+        <Dialog open={open} onClose={
+            () => {
+                setIsSaveDisabled(true);
+                onClose()
+            }} maxWidth='sm' fullWidth>
             <DialogTitle>
                 {currentEndpoint !== null ?
                     <FormattedMessage
@@ -287,13 +285,16 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                 </FormControl>
             </DialogContent>
             <DialogActions>
-                <Button onClick={onClose}>
+                <Button onClick={() => {
+                    setIsSaveDisabled(true);
+                    onClose()
+                }}>
                     <FormattedMessage
                         id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.cancel'
                         defaultMessage='Cancel'
                     />
                 </Button>
-                <Button onClick={handleSave} variant='contained' color='primary'>
+                <Button onClick={handleSave} variant='contained' color='primary' disabled={isSaveDisabled}>
                     <FormattedMessage
                         id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.save'
                         defaultMessage='Save'

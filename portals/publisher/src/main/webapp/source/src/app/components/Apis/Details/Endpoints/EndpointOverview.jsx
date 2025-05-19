@@ -766,12 +766,12 @@ function EndpointOverview(props) {
     );
 
     /**
-     * Method to update the x-wso2-mockdb in the swagger.
+     * Method to update the x-wso2-mock-dataset in the swagger.
      * @param {any} paths The updated paths object.
      * */
-    const updateMockDB = useCallback(
-        (mockDB) => {
-            updateSwagger({ ...swaggerDef, ...mockDB });
+    const updateMockDataset = useCallback(
+        (mockDataset) => {
+            updateSwagger({ ...swaggerDef, ...mockDataset });
         },
         [swaggerDef],
     );
@@ -827,7 +827,7 @@ function EndpointOverview(props) {
                                 paths={swaggerDef.paths}
                                 swagger={swaggerDef} 
                                 updatePaths={updatePaths}
-                                updateMockDB={updateMockDB} 
+                                updateMockDataset={updateMockDataset} 
                                 endpointType={endpointType.key} 
                                 endpointConfig={endpointConfig}
                                 endpointsDispatcher={endpointsDispatcher}
