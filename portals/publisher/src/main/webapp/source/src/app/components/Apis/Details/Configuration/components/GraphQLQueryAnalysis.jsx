@@ -392,8 +392,10 @@ export default function GraphQLQueryAnalysis(props) {
                                 
                                 <Typography variant='body2' sx={{ mb: 2 }}>
                                     <FormattedMessage
-                                        id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
-                                        ai.config.description'
+                                        id={
+                                            'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' +
+                                            'ai.config.description'
+                                        }
                                         defaultMessage={
                                             'Our AI engine will analyze your GraphQL schema and recommend ' +
                                             'optimal security thresholds based on your API structure and ' +
@@ -405,15 +407,19 @@ export default function GraphQLQueryAnalysis(props) {
                                 <TextField
                                     label={
                                         <FormattedMessage
-                                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
-                                            use.case.label'
+                                            id={
+                                                'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' +
+                                                'use.case.label'
+                                            }
                                             defaultMessage='Describe your API use case (optional)'
                                         />
                                     }
                                     placeholder={
                                         <FormattedMessage
-                                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
-                                            use.case.placeholder'
+                                            id={
+                                                'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' +
+                                                'use.case.placeholder'
+                                            }
                                             defaultMessage={
                                                 "E.g., 'This API provides product data and allows deep " + 
                                                 "access to inventory information'"
@@ -429,8 +435,10 @@ export default function GraphQLQueryAnalysis(props) {
                                     sx={{ mb: 2 }}
                                     helperText={
                                         <FormattedMessage
-                                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
-                                            use.case.helper'
+                                            id={
+                                                'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' +
+                                                'use.case.helper'
+                                            }
                                             defaultMessage={
                                                 'Describe how deep data access will be, expected usage patterns, ' +
                                                 'and any specific concerns for optimal recommendations.'
@@ -464,14 +472,18 @@ export default function GraphQLQueryAnalysis(props) {
                                 >
                                     {aiRecommendationsGenerated ?
                                         <FormattedMessage
-                                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
-                                            btn.regenerate'
+                                            id={
+                                                'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' +
+                                                'btn.regenerate'
+                                            }
                                             defaultMessage='Regenerate Recommendations'
                                         />
                                         :
                                         <FormattedMessage
-                                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
-                                            btn.ai.recommend'
+                                            id={
+                                                'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' +
+                                                'btn.ai.recommend'
+                                            }
                                             defaultMessage='Get AI Recommendations'
                                         />
                                     }
@@ -486,8 +498,10 @@ export default function GraphQLQueryAnalysis(props) {
                 <MuiAlert severity='success' sx={{ mb: 3 }}>
                     <Typography variant='body2'>
                         <FormattedMessage
-                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
-                            ai.success'
+                            id={
+                                'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' +
+                                'ai.success'
+                            }
                             defaultMessage={'AI has analyzed your schema and recommended ' +
                             'optimal security settings for your API.'}
                         />
@@ -502,14 +516,18 @@ export default function GraphQLQueryAnalysis(props) {
                         onChange={setEstimatorType}
                         title={aiRecommendationsGenerated ? 
                             <FormattedMessage
-                                id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
-                                complexity.selector.title.ai'
+                                id={
+                                    'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' +
+                                    'complexity.selector.title.ai'
+                                }
                                 defaultMessage='AI-Recommended Complexity Estimator'
                             />
                             : 
                             <FormattedMessage
-                                id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
-                                complexity.selector.title'
+                                id={
+                                    'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' +
+                                    'complexity.selector.title'
+                                }
                                 defaultMessage='Select Complexity Estimator'
                             />
                         }
@@ -552,7 +570,7 @@ export default function GraphQLQueryAnalysis(props) {
                             <Tooltip
                                 title={
                                     <FormattedMessage
-                                        id='Apis.Details.Configuration.components.graphql.query.analysis.tooltip'
+                                        id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.helper.text'
                                         defaultMessage={
                                             'Enable the query analysis for GraphQL ' +
                                             'APIs using an external service'
@@ -712,8 +730,10 @@ export default function GraphQLQueryAnalysis(props) {
                                 marginBottom: '10px'
                             }}>
                                 <FormattedMessage
-                                    id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
-                                    dialog.protects.title'
+                                    id={
+                                        'Apis.Details.Configuration.components.GraphQLQueryAnalysis.'+
+                                        'dialog.protects.title'
+                                    }
                                     defaultMessage='Protects Against:'
                                 />
                             </Typography>

@@ -25,6 +25,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 import Alert from 'AppComponents/Shared/Alert';
 import CandlestickChartIcon from '@mui/icons-material/CandlestickChart';
 import SettingsSuggestIcon from '@mui/icons-material/SettingsSuggest';
+import { FormattedMessage } from 'react-intl';
 import {
     statisticalVulnerabilities, aiPoweredVulnerabilities,
     vulnerabilityTooltips, thresholdLabels, thresholdTooltips,
@@ -62,11 +63,25 @@ export const VulnerabilityCheckboxes = ({ selectedChecks, onChange }) => {
                     alignItems: 'center' 
                 }}>
                     <CandlestickChartIcon fontSize='medium' sx={{ mr: 1 }} />
-                    Statistical Security Checks
+                    <FormattedMessage
+                        id={
+                            'Apis.Details.Configuration.components.GraphQL.' +
+                            'Components.statistical.checks.title'
+                        }
+                        defaultMessage='Statistical Security Checks'
+                    />
                 </Typography>
                 <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
-                    These checks use threshold values to detect potentially malicious queries 
-                    based on their structure and complexity.
+                    <FormattedMessage
+                        id={'Apis.Details.Configuration.components.GraphQL.'+ 
+                        'Components.statistical.checks.description'
+                        }
+                        defaultMessage={
+                            'These checks use threshold values to detect' + 
+                            'potentially malicious queries based on their '+
+                            'structure and complexity.'
+                        }
+                    />
                 </Typography>
                 
                 <Grid container spacing={1}>
@@ -105,13 +120,24 @@ export const VulnerabilityCheckboxes = ({ selectedChecks, onChange }) => {
                     alignItems: 'center' 
                 }}>
                     <SettingsSuggestIcon fontSize='medium' sx={{ mr: 1 }} />
-                    AI-Powered Security Checks
+                    <FormattedMessage
+                        id='Apis.Details.Configuration.components.GraphQL.Components.ai.checks.title'
+                        defaultMessage='AI-Powered Security Checks'
+                    />
                 </Typography>
                 <Typography variant='body2' color='text.secondary' sx={{ mb: 2 }}>
-                    AI security checks detect advanced attacks but are not perfect. 
-                    False positives and false negatives are possible. 
-                    Review by security professionals is needed for 
-                    critical environments.
+                    <FormattedMessage
+                        id={
+                            'Apis.Details.Configuration.components.GraphQL.'+
+                            'Components.ai.checks.description'
+                        }
+                        defaultMessage={
+                            'AI security checks detect advanced attacks '+
+                            'but are not perfect. False positives and false ' +
+                            'negatives are possible. Review by security professionals ' +
+                            'is needed for critical environments.'
+                        }
+                    />
                 </Typography>
                 
                 <Grid container spacing={1}>
@@ -170,7 +196,14 @@ export const ThresholdField = ({ keyName, value, onChange }) => (
 export const ComplexityEstimatorSelector = ({ value, onChange, title }) => (
     <FormControl component='fieldset'>
         <FormLabel component='legend' sx={{ mb: 1 }}>
-            {title || 'Select Complexity Estimator'}
+            {title || (
+                <FormattedMessage
+                    id={'Apis.Details.Configuration.components.GraphQL.' + 
+                    'Components.complexity.estimator.title'
+                    }
+                    defaultMessage='Select Complexity Estimator'
+                />
+            )}
         </FormLabel>
         <RadioGroup
             row
@@ -181,12 +214,28 @@ export const ComplexityEstimatorSelector = ({ value, onChange, title }) => (
             <FormControlLabel 
                 value='simple' 
                 control={<Radio color='primary' />} 
-                label='Static' 
+                label={
+                    <FormattedMessage
+                        id={
+                            'Apis.Details.Configuration.components.GraphQL.' + 
+                            'Components.estimator.static'
+                        }
+                        defaultMessage='Static'
+                    />
+                } 
             />
             <FormControlLabel 
                 value='directive' 
                 control={<Radio color='primary' />} 
-                label='Dynamic' 
+                label={
+                    <FormattedMessage
+                        id={
+                            'Apis.Details.Configuration.components.GraphQL.' + 
+                            'Components.estimator.dynamic'
+                        }
+                        defaultMessage='Dynamic'
+                    />
+                } 
             />
         </RadioGroup>
     </FormControl>
@@ -299,10 +348,16 @@ export const ThresholdSlider = ({ value, onChange }) => {
             
             <Box sx={{ display: 'flex', justifyContent: 'space-between', px: 1, mt: 0.5 }}>
                 <Typography variant='caption' color='text.secondary'>
-                    Higher sensitivity
+                    <FormattedMessage
+                        id='Apis.Details.Configuration.components.GraphQL.Components.threshold.higher.sensitivity'
+                        defaultMessage='Higher sensitivity'
+                    />
                 </Typography>
                 <Typography variant='caption' color='text.secondary'>
-                    Higher precision
+                    <FormattedMessage
+                        id='Apis.Details.Configuration.components.GraphQL.Components.threshold.higher.precision'
+                        defaultMessage='Higher precision'
+                    />
                 </Typography>
             </Box>
 
@@ -312,8 +367,13 @@ export const ThresholdSlider = ({ value, onChange }) => {
                     sx={{ mt: 2, py: 0.5 }}
                 >
                     <Typography variant='caption'>
-                        Lower values will flag more potential threats but may increase false positives.
-                        Consider using a higher threshold in production environments.
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQL.Components.low.threshold.warning'
+                            defaultMessage={
+                                'Lower values will flag more potential threats '+ 
+                                'but may increase false positives. Consider using a higher ' + 
+                                'threshold in production environments.'}
+                        />
                     </Typography>
                 </MuiAlert>
             )}
@@ -340,7 +400,12 @@ export const sendSchemaToService = async (schema) => {
         return true;
     } catch (error) {
         console.error('Error sending schema:', error);
-        Alert.error('Error occurred while sending schema');
+        Alert.error(
+            <FormattedMessage
+                id='Apis.Details.Configuration.components.GraphQL.Components.error.send.schema'
+                defaultMessage='Error occurred while sending schema'
+            />
+        );
         return false;
     }
 };
@@ -370,14 +435,19 @@ export const saveConfiguration = async (
     estimatorType, 
     vulnerabilityToThresholdMap) => {
     try {
-        Alert.info('Saving configuration...');
+        Alert.info(
+            <FormattedMessage
+                id='Apis.Details.Configuration.components.GraphQL.Components.saving.configuration'
+                defaultMessage='Saving configuration...'
+            />
+        );
         
         // Create configuration payload with thresholds
         const configPayload = {};
         
         // Set thresholds based on selected vulnerabilities
         Object.entries(thresholds).forEach(([key, value]) => {
-            // Special handling for MODEL_CONFIDENT_THRESHOLD - always include it with its current value
+            // For MODEL_CONFIDENT_THRESHOLD - always include it with its current value
             if (key === 'MODEL_CONFIDENT_THRESHOLD') {
                 configPayload[key.toLowerCase()] = value;
                 return;
@@ -410,7 +480,12 @@ export const saveConfiguration = async (
         if (!configResponse.ok) {
             const errorText = await configResponse.text();
             console.error('Config API Error:', errorText);
-            Alert.error('Failed to save configuration. Please try again.');
+            Alert.error(
+                <FormattedMessage
+                    id='Apis.Details.Configuration.components.GraphQL.Components.error.save.config'
+                    defaultMessage='Failed to save configuration. Please try again.'
+                />
+            );
             return false;
         }
         
@@ -428,7 +503,12 @@ export const saveConfiguration = async (
         if (!checksResponse.ok) {
             const errorText = await checksResponse.text();
             console.error('Security Checks API Error:', errorText);
-            Alert.error('Failed to save security checks. Please try again.');
+            Alert.error(
+                <FormattedMessage
+                    id='Apis.Details.Configuration.components.GraphQL.Components.error.save.checks'
+                    defaultMessage='Failed to save security checks. Please try again.'
+                />
+            );
             return false;
         }
 
@@ -444,7 +524,12 @@ export const saveConfiguration = async (
             if (!schemaResponse.ok) {
                 const errorText = await schemaResponse.text();
                 console.error('Dynamic Schema API Error:', errorText);
-                Alert.error('Failed to generate dynamic schema. Please try again.');
+                Alert.error(
+                    <FormattedMessage
+                        id='Apis.Details.Configuration.components.GraphQL.Components.error.dynamic.schema'
+                        defaultMessage='Failed to generate dynamic schema. Please try again.'
+                    />
+                );
                 return false;
             }
         }
@@ -460,7 +545,12 @@ export const saveConfiguration = async (
         if (!reloadResponse.ok) {
             const errorText = await reloadResponse.text();
             console.error('Reload API Error:', errorText);
-            Alert.error('Failed to reload configuration. Please try again.');
+            Alert.error(
+                <FormattedMessage
+                    id='Apis.Details.Configuration.components.GraphQL.Components.error.reload.config'
+                    defaultMessage='Failed to reload configuration. Please try again.'
+                />
+            );
             return false;
         }
 
@@ -471,7 +561,12 @@ export const saveConfiguration = async (
         // Add a small delay to ensure settings are fully applied
         await new Promise(resolve => setTimeout(resolve, 500));
         
-        Alert.success('Security configuration saved and applied successfully!');
+        Alert.success(
+            <FormattedMessage
+                id='Apis.Details.Configuration.components.GraphQL.Components.success.save.config'
+                defaultMessage='Security configuration saved and applied successfully!'
+            />
+        );
         return true;
 
     } catch (error) {
@@ -483,7 +578,12 @@ export const saveConfiguration = async (
 
 export const fetchAIRecommendations = async ( customPrompt ) => {
     try {
-        Alert.info('Generating AI recommendations...');
+        Alert.info(
+            <FormattedMessage
+                id='Apis.Details.Configuration.components.GraphQL.Components.generating.ai.recommendations'
+                defaultMessage='Generating AI recommendations...'
+            />
+        );
         const response = await fetch(`${API_ENDPOINT}/generate_config`, {
             method: 'POST',
             headers: {
@@ -496,15 +596,30 @@ export const fetchAIRecommendations = async ( customPrompt ) => {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to retrieve AI-generated configuration');
+            throw new Error(
+                <FormattedMessage
+                    id='Apis.Details.Configuration.components.GraphQL.Components.error.retrieve.ai.config'
+                    defaultMessage='Failed to retrieve AI-generated configuration'
+                />
+            );
         }
 
         const data = await response.json();
-        Alert.success('AI-generated configuration retrieved successfully!');
+        Alert.success(
+            <FormattedMessage
+                id='Apis.Details.Configuration.components.GraphQL.Components.success.ai.config'
+                defaultMessage='AI-generated configuration retrieved successfully!'
+            />
+        );
         return data;
     } catch (error) {
         console.error('Error retrieving AI configuration:', error);
-        Alert.error('Error retrieving AI configuration. Using default values.');
+        Alert.error(
+            <FormattedMessage
+                id='Apis.Details.Configuration.components.GraphQL.Components.error.ai.config.defaults'
+                defaultMessage='Error retrieving AI configuration. Using default values.'
+            />
+        );
         return null;
     }
 };
