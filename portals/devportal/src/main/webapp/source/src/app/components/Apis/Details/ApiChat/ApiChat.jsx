@@ -538,7 +538,7 @@ const ApiChat = () => {
         if (isSubscriptionResponse) {
             const subscriptionResponse = resource.inputs.requestBody.query.replace('SUBSCRIPTION:', '').trim();
             executionResponseForAiAgent = {
-                code: 200,
+                code: 501,
                 path: '',
                 headers: {},
                 body: subscriptionResponse,
@@ -600,6 +600,37 @@ const ApiChat = () => {
                                 );
                             }
                             setIsAgentRunning(false);
+                            break;
+                        case 'TERMINATED':
+                            if (api.type === 'GRAPHQL') {
+                                // For GraphQL APIs, directly set the result from backend
+                                if (body.result && body.result !== '') {
+                                    setFinalOutcome(body.result);
+                                } else {
+                                    setFinalOutcome(
+                                        intl.formatMessage({
+                                            id: 'Apis.Details.ApiChat.ApiChat.subsequentRequest.finalOutcome.taskTerminated',
+                                            defaultMessage: 'Request terminated.',
+                                        }),
+                                    );
+                                }
+                                // If there's more resources to process, continue
+                                if (body.resource) {
+                                    sendSubsequentRequest(requestId, body.resource);
+                                } else {
+                                    setIsAgentRunning(false);
+                                }
+                            } else {
+                                // For other API types, set error and stop execution
+                                setIsExecutionError(true);
+                                setFinalOutcome(
+                                    intl.formatMessage({
+                                        id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
+                                        defaultMessage: 'An error occurred during query execution.',
+                                    }),
+                                );
+                                setIsAgentRunning(false);
+                            }
                             break;
                         default:
                             setIsExecutionError(true);
@@ -686,6 +717,31 @@ const ApiChat = () => {
                                 );
                             }
                             setIsAgentRunning(false);
+                            break;
+                        case 'TERMINATED':
+                            if (api.type === 'GRAPHQL') {
+                                // For GraphQL APIs, directly set the result from backend
+                                if (body.result && body.result !== '') {
+                                    setFinalOutcome(body.result);
+                                } else {
+                                    setFinalOutcome(
+                                        intl.formatMessage({
+                                            id: 'Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskTerminated',
+                                            defaultMessage: 'Request terminated due to an error.',
+                                        }),
+                                    );
+                                }
+                            } else {
+                                // For other API types, set error and stop execution
+                                setIsExecutionError(true);
+                                setFinalOutcome(
+                                    intl.formatMessage({
+                                        id: 'Apis.Details.ApiChat.components.finalOutcome.taskExecutionDefault',
+                                        defaultMessage: 'An error occurred during query execution.',
+                                    }),
+                                );
+                                setIsAgentRunning(false);
+                            }
                             break;
                         default:
                             setIsExecutionError(true);

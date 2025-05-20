@@ -9,7 +9,7 @@
   "Apis.Details.APIConsole.APIConsole.download.postman": "Postman collection",
   "Apis.Details.APIConsole.APIConsole.download.swagger": "Swagger ( /swagger.json )",
   "Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskCompletedOneItr": "Task completed in 1 iteration.",
-  "Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskTerminated": "Task terminated",
+  "Apis.Details.ApiChat.ApiChat.initialRequest.finalOutcome.taskTerminated": "Request terminated due to an error.",
   "Apis.Details.ApiChat.ApiChat.loadingSpecEnrichmentMessage": "We are in the process of preparing the API specification for API Chat.",
   "Apis.Details.ApiChat.ApiChat.subsequentRequest.finalOutcome.taskTerminated": "Request terminated.",
   "Apis.Details.ApiChat.ApiChat.subsequentRequset.finalOutcome.taskCompleted": "Task completed",
