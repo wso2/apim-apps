@@ -228,7 +228,6 @@ export default function DeploymentOnboarding(props) {
                 setVhostsDeploy(defaultVhosts);
             }
         }
-        
     }, []);
 
     useEffect(() => {
