@@ -610,15 +610,9 @@ const ApiChat = () => {
                                     setFinalOutcome(
                                         intl.formatMessage({
                                             id: 'Apis.Details.ApiChat.ApiChat.subsequentRequest.finalOutcome.taskTerminated',
-                                            defaultMessage: 'Request terminated.',
+                                            defaultMessage: 'Request terminated due to an error.',
                                         }),
                                     );
-                                }
-                                // If there's more resources to process, continue
-                                if (body.resource) {
-                                    sendSubsequentRequest(requestId, body.resource);
-                                } else {
-                                    setIsAgentRunning(false);
                                 }
                             } else {
                                 // For other API types, set error and stop execution
