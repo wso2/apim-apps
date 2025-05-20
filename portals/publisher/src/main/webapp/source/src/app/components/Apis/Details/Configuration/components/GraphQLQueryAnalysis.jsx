@@ -1,9 +1,26 @@
+/*
+ * Copyright (c) 2025, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 Inc. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
 import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { 
     Grid, Typography, Button, Paper, Dialog, DialogActions, DialogContent, 
     DialogContentText, DialogTitle, Container, Tooltip, Divider, Box, 
-    Alert as MuiAlert, Chip, Card
+    Alert as MuiAlert, Chip, Card, TextField
 } from '@mui/material';
 import EditRounded from '@mui/icons-material/EditRounded';
 import HelpOutline from '@mui/icons-material/HelpOutline';
@@ -16,16 +33,14 @@ import { FormattedMessage } from 'react-intl';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
 
-// Import constants
 import {
     vulnerabilityTypes,
     aiPoweredVulnerabilities,
     vulnerabilityToThresholdMap,
     defaultThresholds,
     classes,
-} from './GraphQLQueryAnalysisConstants';
+} from './GraphQL/Constants';
 
-// Import components and services
 import {
     SectionHeader,
     VulnerabilityCheckboxes,
@@ -35,11 +50,10 @@ import {
     sendSchemaToService,
     saveConfiguration,
     fetchAIRecommendations,
-} from './GraphQLQueryAnalysisComponents';
+} from './GraphQL/Components';
 
 const apiClient = new API();
 
-// Styled components
 const Root = styled('div')(({ theme }) => ({
     [`& .${classes.content}`]: {
         flexGrow: 1,
@@ -123,6 +137,7 @@ export default function GraphQLQueryAnalysis(props) {
     const [estimatorType, setEstimatorType] = useState('simple');
     const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
     const [saveConfirmDialogOpen, setSaveConfirmDialogOpen] = useState(false);
+    const [customPrompt, setCustomPrompt] = useState('');
     const [selectedVulnerabilities, setSelectedVulnerabilities] = useState(
         vulnerabilityTypes.reduce((acc, vulnerability) => {
             acc[vulnerability] = false;
@@ -142,7 +157,7 @@ export default function GraphQLQueryAnalysis(props) {
             [vulnerability]: !selectedVulnerabilities[vulnerability]
         });
     };
-
+    
     // UI Event Handlers
     const handleEditClick = () => {
         setConfirmDialogOpen(true);
@@ -217,7 +232,7 @@ export default function GraphQLQueryAnalysis(props) {
             setAiRecommendationsGenerated(false);
         }
 
-        const aiConfig = await fetchAIRecommendations();
+        const aiConfig = await fetchAIRecommendations(customPrompt);
         if (aiConfig) {
             setEstimatorType(aiConfig.MODE.COMPLEXITY_ESTIMATOR);
             setThresholds({
@@ -272,8 +287,11 @@ export default function GraphQLQueryAnalysis(props) {
                 
                 {estimatorType !== 'simple' && selectedVulnerabilities['Excessive complexity'] && (
                     <MuiAlert severity='info' sx={{ mt: 2 }}>
-                        Your schema will be analyzed by AI and complexity values will be 
-                        assigned for each field dynamically.
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.complexity.info'
+                            defaultMessage='Your schema will be analyzed by AI and complexity 
+                            values will be assigned for each field dynamically.'
+                        />
                     </MuiAlert>
                 )}
                 
@@ -301,7 +319,10 @@ export default function GraphQLQueryAnalysis(props) {
 
                 {relevantKeys.length === 0 && (
                     <MuiAlert severity='info' sx={{ mt: 2 }}>
-                        No threshold settings required for the selected vulnerabilities.
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.no.thresholds.info'
+                            defaultMessage='No threshold settings required for the selected vulnerabilities.'
+                        />
                     </MuiAlert>
                 )}
             </>
@@ -313,7 +334,12 @@ export default function GraphQLQueryAnalysis(props) {
         <Box sx={{ mb: 4 }}>
             <SectionHeader 
                 icon={<SecurityIcon color='primary' />} 
-                title='GraphQL Security Protection'
+                title={
+                    <FormattedMessage
+                        id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.security.protection.title'
+                        defaultMessage='GraphQL Security Protection'
+                    />
+                }
             />
             
             <VulnerabilityCheckboxes
@@ -328,7 +354,12 @@ export default function GraphQLQueryAnalysis(props) {
         <Box sx={{ mb: 4 }}>
             <SectionHeader 
                 icon={<SettingsIcon color='primary' />} 
-                title='Security Configuration'
+                title={
+                    <FormattedMessage
+                        id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.security.config.title'
+                        defaultMessage='Security Configuration'
+                    />
+                }
             />
 
             {hasVisibleThresholdFields() && (
@@ -353,13 +384,60 @@ export default function GraphQLQueryAnalysis(props) {
                             
                             <Box>
                                 <Typography variant='h6' sx={{ mb: 1, fontWeight: 500 }}>
-                                    Let AI Configure Your Security Settings
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.ai.config.title'
+                                        defaultMessage='Let AI Configure Your Security Thresholds'
+                                    />
                                 </Typography>
                                 
                                 <Typography variant='body2' sx={{ mb: 2 }}>
-                                    Our AI engine will analyze your GraphQL schema and recommend optimal security 
-                                    settings based on your API structure and common security threats.
+                                    <FormattedMessage
+                                        id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
+                                        ai.config.description'
+                                        defaultMessage={
+                                            'Our AI engine will analyze your GraphQL schema and recommend ' +
+                                            'optimal security thresholds based on your API structure and ' +
+                                            'common security threats.'
+                                        }
+                                    />
                                 </Typography>
+                                
+                                <TextField
+                                    label={
+                                        <FormattedMessage
+                                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
+                                            use.case.label'
+                                            defaultMessage='Describe your API use case (optional)'
+                                        />
+                                    }
+                                    placeholder={
+                                        <FormattedMessage
+                                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
+                                            use.case.placeholder'
+                                            defaultMessage={
+                                                "E.g., 'This API provides product data and allows deep " + 
+                                                "access to inventory information'"
+                                            }
+                                        />
+                                    }
+                                    variant='outlined'
+                                    fullWidth
+                                    multiline
+                                    rows={3}
+                                    value={customPrompt}
+                                    onChange={(e) => setCustomPrompt(e.target.value)}
+                                    sx={{ mb: 2 }}
+                                    helperText={
+                                        <FormattedMessage
+                                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
+                                            use.case.helper'
+                                            defaultMessage={
+                                                'Describe how deep data access will be, expected usage patterns, ' +
+                                                'and any specific concerns for optimal recommendations.'
+                                            }
+                                        />
+                                    }
+                                />
                                 
                                 <Button
                                     variant='contained'
@@ -369,6 +447,9 @@ export default function GraphQLQueryAnalysis(props) {
                                     onClick={handleAIConfiguration}
                                     disabled={!hasVisibleThresholdFields()}
                                     sx={{
+                                        px: 3,
+                                        py: 1,
+                                        boxShadow: 3,
                                         background: theme => 
                                             `linear-gradient(90deg, 
                                         ${theme.palette.primary.dark} 0%, 
@@ -381,8 +462,19 @@ export default function GraphQLQueryAnalysis(props) {
                                         }
                                     }}
                                 >
-                                    {aiRecommendationsGenerated 
-                                        ? 'Regenerate Recommendations' : 'Get AI Recommendations'}
+                                    {aiRecommendationsGenerated ?
+                                        <FormattedMessage
+                                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
+                                            btn.regenerate'
+                                            defaultMessage='Regenerate Recommendations'
+                                        />
+                                        :
+                                        <FormattedMessage
+                                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
+                                            btn.ai.recommend'
+                                            defaultMessage='Get AI Recommendations'
+                                        />
+                                    }
                                 </Button>
                             </Box>
                         </Box>
@@ -393,7 +485,12 @@ export default function GraphQLQueryAnalysis(props) {
             {aiRecommendationsGenerated && (
                 <MuiAlert severity='success' sx={{ mb: 3 }}>
                     <Typography variant='body2'>
-                        AI has analyzed your schema and recommended optimal security settings for your API.
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
+                            ai.success'
+                            defaultMessage={'AI has analyzed your schema and recommended ' +
+                            'optimal security settings for your API.'}
+                        />
                     </Typography>
                 </MuiAlert>
             )}
@@ -404,8 +501,18 @@ export default function GraphQLQueryAnalysis(props) {
                         value={estimatorType}
                         onChange={setEstimatorType}
                         title={aiRecommendationsGenerated ? 
-                            'AI-Recommended Complexity Estimator' 
-                            : 'Select Complexity Estimator'}
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
+                                complexity.selector.title.ai'
+                                defaultMessage='AI-Recommended Complexity Estimator'
+                            />
+                            : 
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
+                                complexity.selector.title'
+                                defaultMessage='Select Complexity Estimator'
+                            />
+                        }
                     />
                 )}
                 
@@ -438,15 +545,20 @@ export default function GraphQLQueryAnalysis(props) {
                 <Grid container spacing={2} alignItems='flex-start'>
                     <Grid item md={12} style={{ position: 'relative', display: 'inline-flex' }}>
                         <Typography className={classes.subHeading} variant='h6'>
-                            GraphQL Query Configurations
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.main.title'
+                                defaultMessage='GraphQL Query Configurations'
+                            />
                             <Tooltip
-                                title={(
+                                title={
                                     <FormattedMessage
                                         id='Apis.Details.Configuration.components.graphql.query.analysis.tooltip'
-                                        defaultMessage={'Enable the query analysis for '
-                                            + 'GraphQL APIs using an external service'}
+                                        defaultMessage={
+                                            'Enable the query analysis for GraphQL ' +
+                                            'APIs using an external service'
+                                        }
                                     />
-                                )}
+                                }
                                 aria-label='Schema Validation helper text'
                                 placement='right-end'
                                 interactive
@@ -458,7 +570,12 @@ export default function GraphQLQueryAnalysis(props) {
                         {/* New feature badge */}
                         <Chip 
                             icon={<ScienceIcon />} 
-                            label='Experimental' 
+                            label={
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.badge.experimental'
+                                    defaultMessage='Experimental'
+                                />
+                            }
                             size='small' 
                             color='primary'
                             variant='outlined'
@@ -514,7 +631,10 @@ export default function GraphQLQueryAnalysis(props) {
                 }}>
                     <SecurityIcon fontSize='large' />
                     <Typography variant='h5' sx={{ fontWeight: 500 }}>
-                        Enhanced GraphQL Security
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.dialog.title'
+                            defaultMessage='Enhanced GraphQL Security'
+                        />
                     </Typography>
                 </Box>
                 <DialogContent sx={{ py: 4, px: 3 }}>
@@ -524,7 +644,10 @@ export default function GraphQLQueryAnalysis(props) {
                         gap: 3 
                     }}>
                         <Typography variant='h6' sx={{ fontWeight: 500 }}>
-                            Add an Intelligent Security Layer to Protect Your GraphQL API
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.dialog.subtitle'
+                                defaultMessage='Add an Intelligent Security Layer to Protect Your GraphQL API'
+                            />
                         </Typography>
 
                         <Box sx={{ 
@@ -535,7 +658,6 @@ export default function GraphQLQueryAnalysis(props) {
                             gap: '20px',
                             border: '1px solid',
                             borderRadius: 2,
-
                         }}>
                             <Box>
                                 <img
@@ -545,10 +667,15 @@ export default function GraphQLQueryAnalysis(props) {
                                 />
                             </Box>
                             <Typography variant='body2'>
-                                Our AI-powered protection system analyzes query patterns to detect and
-                                block malicious requests before they reach your backend. To provide optimal 
-                                security settings, your GraphQL schema will be analyzed by our
-                                threat detection service.
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.dialog.description'
+                                    defaultMessage={
+                                        'Our AI-powered protection system analyzes query patterns to detect and ' +
+                                        'block malicious requests before they reach your backend. To provide optimal ' +
+                                        'security settings, your GraphQL schema will be analyzed by our ' +
+                                        'threat detection service.'
+                                    }
+                                />
                             </Typography>
                         </Box>
 
@@ -560,8 +687,13 @@ export default function GraphQLQueryAnalysis(props) {
                                 }
                             }}
                         >
-                            This security feature may slightly increase query latency.
-                            Performance impact varies based on query complexity.
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.dialog.warning'
+                                defaultMessage={
+                                    'This security feature may slightly increase query latency. ' +
+                                    'Performance impact varies based on query complexity.'
+                                }
+                            />
                         </MuiAlert>
 
                         <Box sx={{ 
@@ -579,7 +711,11 @@ export default function GraphQLQueryAnalysis(props) {
                                 fontWeight: 700, 
                                 marginBottom: '10px'
                             }}>
-                                Protects Against:
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.
+                                    dialog.protects.title'
+                                    defaultMessage='Protects Against:'
+                                />
                             </Typography>
                             <Grid container spacing={1}>
                                 {vulnerabilityTypes.map((threat) => (
@@ -592,7 +728,9 @@ export default function GraphQLQueryAnalysis(props) {
                                             bgcolor: 'primary.main', 
                                             display: 'inline-block' 
                                         }} />
-                                        <Typography variant='body1'>{threat}</Typography>
+                                        <Typography variant='body1'>
+                                            {threat}
+                                        </Typography>
                                     </Grid>
                                 ))}
                             </Grid>
@@ -606,7 +744,10 @@ export default function GraphQLQueryAnalysis(props) {
                         color='inherit'
                         sx={{ px: 3 }}
                     >
-                        Skip for now
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.btn.skip'
+                            defaultMessage='Skip for now'
+                        />
                     </Button>
                     <Button 
                         onClick={handleConfirmSendSchema} 
@@ -614,7 +755,10 @@ export default function GraphQLQueryAnalysis(props) {
                         variant='contained'
                         startIcon={<SecurityIcon />}
                     >
-                        Enable Protection
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.btn.enable'
+                            defaultMessage='Enable Protection'
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -634,7 +778,10 @@ export default function GraphQLQueryAnalysis(props) {
             >
                 <DialogTitle id='responsive-dialog-title'>
                     <Typography className={classes.subHeading} variant='h4'>
-                        Configure GraphQL Query Security
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.config.dialog.title'
+                            defaultMessage='Configure GraphQL Query Security'
+                        />
                     </Typography>
                 </DialogTitle>
                 <DialogContent dividers>
@@ -652,10 +799,16 @@ export default function GraphQLQueryAnalysis(props) {
                         color='primary'
                         onClick={handleSave}
                     >
-                        Save Configuration
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.btn.save.config'
+                            defaultMessage='Save Configuration'
+                        />
                     </Button>
                     <Button onClick={handleClose} color='primary'>
-                        Cancel
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.btn.cancel'
+                            defaultMessage='Cancel'
+                        />
                     </Button>
                 </DialogActions>
             </StyledDialog>
@@ -680,29 +833,63 @@ export default function GraphQLQueryAnalysis(props) {
                     gap: 1
                 }}>
                     <SecurityIcon />
-                    <Typography variant='h6'>Activating Protection</Typography>
+                    <Typography variant='h6'>
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.save.dialog.title'
+                            defaultMessage='Activating Protection'
+                        />
+                    </Typography>
                 </DialogTitle>
                 <DialogContent sx={{ pt: 3, pb: 2 }}>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, marginTop: 2 }}>
                         <Typography variant='body1'>
-                            Activating GraphQL protection will apply security rules to your API and 
-                            may take several minutes to complete.
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.save.dialog.desc'
+                                defaultMessage={
+                                    'Activating GraphQL protection will apply security rules to your API ' +
+                                    'and may take several minutes to complete.'
+                                }
+                            />
                         </Typography>
                         <MuiAlert severity='warning'>
                             <Typography variant='body2'>
-                                While the protection is being activated:
+                                <FormattedMessage
+                                    id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.save.dialog.warning'
+                                    defaultMessage='While the protection is being activated:'
+                                />
                             </Typography>
                             <Box component='ul' sx={{ mt: 1, pl: 2 }}>
                                 <Box component='li'>
-                                    Your API will continue to function with previous configurations.
+                                    <FormattedMessage
+                                        id={
+                                            'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' + 
+                                            'save.dialog.warning.point1'
+                                        }
+                                        defaultMessage={
+                                            'Your API will continue to function with ' + 
+                                            'previous configurations.'
+                                        }
+                                    />
                                 </Box>
                                 <Box component='li'>
-                                    You will not be able to modify security settings until the process completes
+                                    <FormattedMessage
+                                        id={
+                                            'Apis.Details.Configuration.components.GraphQLQueryAnalysis.' + 
+                                            'save.dialog.warning.point2'
+                                        }
+                                        defaultMessage={
+                                            'You will not be able to modify security settings until the ' +
+                                            'process completes'
+                                        }
+                                    />
                                 </Box>
                             </Box>
                         </MuiAlert>
                         <Typography variant='body1'>
-                            Do you want to proceed with activating the protection?
+                            <FormattedMessage
+                                id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.save.dialog.confirm'
+                                defaultMessage='Do you want to proceed with activating the protection?'
+                            />
                         </Typography>
                     </Box>
                 </DialogContent>
@@ -712,7 +899,10 @@ export default function GraphQLQueryAnalysis(props) {
                         variant='outlined'
                         color='inherit'
                     >
-                        Cancel
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.save.dialog.btn.cancel'
+                            defaultMessage='Cancel'
+                        />
                     </Button>
                     <Button 
                         onClick={handleConfirmSave}
@@ -720,7 +910,10 @@ export default function GraphQLQueryAnalysis(props) {
                         variant='contained'
                         startIcon={<SecurityIcon />}
                     >
-                        Activate Protection
+                        <FormattedMessage
+                            id='Apis.Details.Configuration.components.GraphQLQueryAnalysis.save.dialog.btn.activate'
+                            defaultMessage='Activate Protection'
+                        />
                     </Button>
                 </DialogActions>
             </Dialog>
