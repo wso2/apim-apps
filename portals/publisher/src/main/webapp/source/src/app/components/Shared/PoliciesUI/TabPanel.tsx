@@ -77,7 +77,7 @@ const TabPanelShared: FC<TabPanelSharedProps> = ({
                 id={`${currentFlow}-tabpanel`}
                 aria-labelledby={`${currentFlow}-tab`}
             >
-                <Accordion id='tabPanel-common-policies'>
+                <Accordion id='tabPanel-common-policies' defaultExpanded>
                     <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                         <Typography variant='subtitle1'>
                             <FormattedMessage

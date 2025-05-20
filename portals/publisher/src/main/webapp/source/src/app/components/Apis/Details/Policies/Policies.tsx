@@ -98,8 +98,29 @@ const Policies: React.FC = () => {
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
     const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType !== 'wso2/synapse');
     const { showMultiVersionPolicies } = Configurations.apis;
-    const [selectedTab, setSelectedTab] = useState((api.apiPolicies != null) ? 0 : 1);
+    const [selectedTab, setSelectedTab] = useState(1);
     const [gateway, setGateway] = useState<string>("");
+
+    const operationPoliciesExist = (): boolean => {
+        for (const operation of api.operations) {
+            const { operationPolicies } = operation;
+            for (const category in operationPolicies){
+                const categoryArray = operationPolicies[category];
+                if (categoryArray.length > 0){
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    useEffect(() => {
+        if((api.apiPolicies == null) && operationPoliciesExist()){
+            setSelectedTab(1);
+        } else {
+            setSelectedTab(0);
+        }
+    }, [])
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
