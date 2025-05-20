@@ -24,7 +24,8 @@ import Button from '@mui/material/Button';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
-import { Editor as MonacoEditor } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor'
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import Typography from '@mui/material/Typography';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import API from 'AppData/api.js';
@@ -37,6 +38,9 @@ import ImportDefinition from './ImportDefinition';
 import DefinitionOutdated from './DefinitionOutdated';
 
 const PREFIX = 'WSDL';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco })
 
 const classes = {
     titleWrapper: `${PREFIX}-titleWrapper`,

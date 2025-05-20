@@ -18,7 +18,8 @@
 import React, { Suspense, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import { Editor as MonacoEditor } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor'
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
 import AppBar from '@mui/material/AppBar';
@@ -33,6 +34,9 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import CloseConfirmation from './CloseConfirmation';
 
 const PREFIX = 'PolicyEditor';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco })
 
 const classes = {
     appBar: `${PREFIX}-appBar`,

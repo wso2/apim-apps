@@ -58,9 +58,13 @@ import LocalOfferOutlinedIcon from '@mui/icons-material/LocalOfferOutlined';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import beautify from 'xml-beautifier';
-import { Editor as MonacoEditor } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor'
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
 
 const PREFIX = 'Overview';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco })
 
 const classes = {
     preview: `${PREFIX}-preview`,
