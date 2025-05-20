@@ -59,7 +59,12 @@ export default function OperationsSelector(props) {
     let operationWithSecurityCount = 0;
 
     Object.entries(operations).forEach(([, verbObj]) => {
-        Object.entries(verbObj).forEach(([, operation]) => {
+        Object.entries(verbObj).forEach(([verbKey, operation]) => {
+            // Skip the "parameters" array
+            if (verbKey === 'parameters') {
+                return;
+            }
+    
             if (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none') {
                 operationWithSecurityCount++;
             }

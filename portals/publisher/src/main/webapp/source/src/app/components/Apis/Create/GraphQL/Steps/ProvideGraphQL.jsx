@@ -42,7 +42,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 
 const PREFIX = 'ProvideGraphQL';
-
+const DEBOUNCE_DELAY_MS = 750;
 const classes = {
     mandatoryStar: `${PREFIX}-mandatoryStar`
 };
@@ -189,7 +189,7 @@ export default function ProvideGraphQL(props) {
             if(inputType === ProvideGraphQL.INPUT_TYPES.ENDPOINT){
                 inputsDispatcher({ action: 'endpoint', value: newURL });
             }
-        }, 750),
+        }, DEBOUNCE_DELAY_MS),
         [inputType],
     );
 
