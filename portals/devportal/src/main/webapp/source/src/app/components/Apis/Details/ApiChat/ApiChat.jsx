@@ -522,51 +522,17 @@ const ApiChat = () => {
     };
 
     const sendSubsequentRequest = async (requestId, resource) => {
-        const isGraphQL = api.type === 'GRAPHQL';
-        const isSubscriptionResponse = isGraphQL
-            && resource.inputs
-            && resource.inputs.requestBody
-            && resource.inputs.requestBody.query
-            && resource.inputs.requestBody.query.startsWith('SUBSCRIPTION:');
-
-        let executionResponseForAiAgent = {
-            code: null,
-            path: '',
-            headers: {},
-            body: null,
-        };
-        if (isSubscriptionResponse) {
-            const subscriptionResponse = resource.inputs.requestBody.query.replace('SUBSCRIPTION:', '').trim();
-            executionResponseForAiAgent = {
-                code: 501,
-                path: '',
-                headers: {},
-                body: subscriptionResponse,
-            };
-            setExecutionResults((prevState) => {
-                return [
-                    ...prevState,
-                    {
-                        ...executionResponseForAiAgent,
-                        method: '',
-                        curlCommand: null,
-                    },
-                ];
-            });
-        } else {
-            const { responseObj, curlCommand } = await invokeAPI(resource);
-            executionResponseForAiAgent = responseObj;
-            setExecutionResults((prevState) => {
-                return [
-                    ...prevState,
-                    {
-                        ...executionResponseForAiAgent,
-                        method: resource.method,
-                        curlCommand,
-                    },
-                ];
-            });
-        }
+        const { responseObj: executionResponseForAiAgent, curlCommand } = await invokeAPI(resource);
+        setExecutionResults((prevState) => {
+            return [
+                ...prevState,
+                {
+                    ...executionResponseForAiAgent,
+                    method: resource.method,
+                    curlCommand,
+                },
+            ];
+        });
         const executePromise = apiClient.runAiAgentSubsequentIterations(
             api.id,
             requestId,

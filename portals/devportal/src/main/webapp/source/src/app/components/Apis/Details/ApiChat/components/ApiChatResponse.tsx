@@ -381,11 +381,8 @@ const ApiChatResponse: React.FC<ApiChatResponseProps> = ({
                                                             size='small'
                                                         />
                                                     )}
-                                                    <Typography variant='body1' ml={2} sx={{ alignContent: 'center', wordWrap: 'break-word' }}>
-                                                        {executionResult.method === '' && executionResult.body && 
-                                                         executionResult.body.includes('Subscription operations are not supported through this chat interface. However, here is the subscription query you can use:') ? 
-                                                            'Suggested ': 
-                                                            'Executed ' + executionResult.method + ' ' + executionResult.path}
+                                                    <Typography variant='body1' ml={2} sx={{ alignContent: 'center' }}>
+                                                        {'Executed ' + executionResult.method + ' ' + executionResult.path}
                                                     </Typography>
                                                 </Box>
                                                 <Box display='flex' alignItems='center'>
