@@ -623,8 +623,8 @@ const ApiChat = () => {
                                         defaultMessage: 'An error occurred during query execution.',
                                     }),
                                 );
-                                setIsAgentRunning(false);
                             }
+                            setIsAgentRunning(false);
                             break;
                         default:
                             setIsExecutionError(true);
@@ -734,8 +734,8 @@ const ApiChat = () => {
                                         defaultMessage: 'An error occurred during query execution.',
                                     }),
                                 );
-                                setIsAgentRunning(false);
                             }
+                            setIsAgentRunning(false);
                             break;
                         default:
                             setIsExecutionError(true);
