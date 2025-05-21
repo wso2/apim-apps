@@ -112,7 +112,7 @@ function MockScriptOperation(props) {
             <Grid item className={classes.scriptResetButton}>
                 <Typography variant='subtitle2'>
                     <FormattedMessage
-                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.script'
+                        id='Apis.Details.Endpoints.Prototype.MockScriptOperation.script'
                         defaultMessage='Script'
                     />
                 </Typography>
@@ -128,7 +128,7 @@ function MockScriptOperation(props) {
                             }}
                         >
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.script.reset'
+                                id='Apis.Details.Endpoints.Prototype.MockScriptOperation.reset'
                                 defaultMessage='Reset'
                             />
                         </Button>

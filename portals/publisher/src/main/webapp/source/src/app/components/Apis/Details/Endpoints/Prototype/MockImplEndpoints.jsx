@@ -9,7 +9,7 @@
  *  http://www.apache.org/licenses/LICENSE-2.0
  *
  *  Unless required by applicable law or agreed to in writing,
- *  software distributed under the License is distributed on an 
+ *  software distributed under the License is distributed on an
  *  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
  *  KIND, either express or implied. See the License for the
  *  specific language governing permissions and limitations
@@ -165,7 +165,12 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDataset, set
     }, []);
 
     const generateMockScripts = async (useAI, payload) => {
-        const response = await api.generateMockScripts(api.id, useAI, payload);
+        let response;
+        if (useAI) {
+            response = await api.generateAIMockScripts(api.id, false, payload);
+        }else{
+            response = await api.generateMockScripts(api.id, false); // false to not update the swagger
+        }
         const tmpScripts = [];
         const tmpPaths = paths;
         const modify = payload?.modify;

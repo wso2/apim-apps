@@ -135,7 +135,7 @@ function Endpoints(props) {
     });
     const [componentValidator, setComponentValidator] = useState([]);
     const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
-    const [isMockAndDisableSave, setIsMockAndDisableSave] = useState(false);
+    const [isMockAndDisableSave, setIsMockSaveDisabled] = useState(false);
 
     useEffect(() => {
         if (api.subtypeConfiguration?.subtype === 'AIAPI') {
@@ -170,7 +170,7 @@ function Endpoints(props) {
     const apiReducer = (initState, configAction) => {
         const tmpEndpointConfig = cloneDeep(initState.endpointConfig);
         const { action, value } = configAction;
-        setIsMockAndDisableSave(action === 'set_inline_or_mocked_oas')
+        setIsMockSaveDisabled(action === 'set_inline_or_mocked_oas')
         switch (action) {
             case 'production_endpoints':
             case 'sandbox_endpoints': {
@@ -312,6 +312,7 @@ function Endpoints(props) {
         setUpdating(true);
         if (endpointImplementationType !== 'INLINE'){
             removeXmediationScripts();
+            removeMockDataset();
         }
         if (endpointConfig.endpoint_type === 'sequence_backend') {
             if (productionBackendList?.length === 0 || (productionBackendList?.length > 0
@@ -870,7 +871,7 @@ function Endpoints(props) {
                                             apiKeyParamConfig={apiKeyParamConfig}
                                             componentValidator={componentValidator}
                                             endpointSecurityTypes={endpointSecurityTypes}
-                                            setIsMockAndDisableSave={(val) => setIsMockAndDisableSave(val)}
+                                            setIsMockSaveDisabled={setIsMockSaveDisabled}
                                         />
                                     </Grid>
                                 </Grid>

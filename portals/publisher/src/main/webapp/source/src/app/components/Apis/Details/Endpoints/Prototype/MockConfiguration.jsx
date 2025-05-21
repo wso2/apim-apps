@@ -180,7 +180,6 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                 }
             };
             tempConfig.config.simulationDetails.api = mockSimulation;
-
             mockScripts.forEach((methodObj) => {
                 const { verb, path } = methodObj;
                 const method = verb.toLowerCase();
@@ -199,21 +198,17 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                     applySimulationForEndpoint(path, method, mockSimulation, true);
                 }
             });
-
             setConfiguration(tempConfig);
         }
 
         Alert.success(
             intl.formatMessage({
-                id: 'Apis.Details.Endpoints.Prototype.MockImplEndpoints.success.simulationsApplied',
+                id: 'Apis.Details.Endpoints.Prototype.MockConfiguration.success.simulationsApplied',
                 defaultMessage: 'Simulations applied successfully to {target}',
             }, {
                 target: currentEndpoint
                     ? `${currentEndpoint.method} - ${currentEndpoint.path}`
-                    : intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.Prototype.MockImplEndpoints.api',
-                        defaultMessage: 'the API',
-                    }),
+                    : 'the API'
             })
         );
 
@@ -231,7 +226,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
             <DialogTitle>
                 {currentEndpoint !== null ?
                     <FormattedMessage
-                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.dialogTitle.endpoint'
+                        id='Apis.Details.Endpoints.Prototype.MockConfiguration.dialogTitle.endpoint'
                         defaultMessage='Configuration for {method} - {path} simulation'
                         values={{
                             method: currentEndpoint.method,
@@ -239,7 +234,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                         }}
                     /> :
                     <FormattedMessage
-                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.dialogTitle.api'
+                        id='Apis.Details.Endpoints.Prototype.MockConfiguration.dialogTitle.api'
                         defaultMessage='Configuration for API simulation'
                     />
                 }
@@ -250,7 +245,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                     margin='normal'
                     label={
                         <FormattedMessage
-                            id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.latencySimulation'
+                            id='Apis.Details.Endpoints.Prototype.MockConfiguration.latencySimulation'
                             defaultMessage='Latency simulation'
                         />
                     }
@@ -266,7 +261,7 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                 <FormControl fullWidth margin='normal'>
                     <InputLabel>
                         <FormattedMessage
-                            id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.errorSimulation'
+                            id='Apis.Details.Endpoints.Prototype.MockConfiguration.errorSimulation'
                             defaultMessage='Error simulation'
                         />
                     </InputLabel>
@@ -290,13 +285,13 @@ const MockConfiguration = ({ open, onClose, configuration, setConfiguration,
                     onClose()
                 }}>
                     <FormattedMessage
-                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.cancel'
+                        id='Apis.Details.Endpoints.Prototype.MockConfiguration.cancel'
                         defaultMessage='Cancel'
                     />
                 </Button>
                 <Button onClick={handleSave} variant='contained' color='primary' disabled={isSaveDisabled}>
                     <FormattedMessage
-                        id='Apis.Details.Endpoints.Prototype.MockImplEndpoints.save'
+                        id='Apis.Details.Endpoints.Prototype.MockConfiguration.save'
                         defaultMessage='Save'
                     />
                 </Button>
