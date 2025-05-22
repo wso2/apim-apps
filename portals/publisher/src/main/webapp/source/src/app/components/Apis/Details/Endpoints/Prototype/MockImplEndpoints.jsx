@@ -263,13 +263,13 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDataset, set
         }
     }
 
-    const handleGenerateScripts = async (useAI, isUsePreviousScripts = false) => {
+    const handleGenerateScripts = async (useAI, usePreviousScripts = false) => {
         setProgress(true);
         setSaveDisable(true);
         try {
             const payload = {
                 instructions: mockConfig.config.instructions.length > 0 ? mockConfig.config.instructions : undefined,
-                isUsePreviousScripts
+                usePreviousScripts
             }
             const response = await generateMockScripts(useAI, payload)
             if (useAI) updateMockDataset({ [xWso2MockDatasetProperty]: response.obj[xWso2MockDatasetProperty] });
@@ -459,231 +459,247 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDataset, set
                                 </Button>
                             </Tooltip>
                         </Stack>
-                        {progress ? <Progress message='Generating Mocks' /> : (<>
-                            {isAllScriptsNull ? <MockLandingPage
-                                hasAuthToken={hasAuthToken}
-                                authTokenNotProvidedWarning={authTokenNotProvidedWarning}
-                                handleGenerateScripts={handleGenerateScripts}
-                                progress={progress}
-                            /> : (<>
-                                {nullScripts.length > 0 && (
-                                    <MUIAlert severity='warning' sx={{ my: 1 }}>
-                                        <Stack direction='row' alignItems='center' spacing={1} flexWrap='wrap'>
-                                            <Typography variant='body1'>
-                                                <FormattedMessage
-                                                    id={'Apis.Details.Endpoints.Prototype.' +
-                                                        'MockImplEndpoints.missingScripts'}
-                                                    defaultMessage='Mock scripts are missing for:'
-                                                />
-                                            </Typography>
-                                            {nullScripts.map((entry) => (
-                                                <Chip
-                                                    key={entry}
-                                                    label={entry}
-                                                    size='small'
-                                                    variant='outlined'
-                                                />
-                                            ))}
-                                            <Typography variant='body1'>
-                                                <FormattedMessage
-                                                    id={'Apis.Details.Endpoints.Prototype.' +
-                                                        'MockImplEndpoints.reGeneratePrompt'}
-                                                    defaultMessage='Please re-generate.'
-                                                />
-                                            </Typography>
-                                        </Stack>
-                                    </MUIAlert>
-
-                                )}
-                                <Stack direction='row' mt={2} spacing={2} alignItems='center' justifyContent='center'>
-                                    <Paper
-                                        sx={{
-                                            p: 3,
-                                            width: '100%',
-                                            borderRadius: 2,
-                                            boxShadow: 1,
-                                        }}
-                                    >
-
-                                        <Stack direction='row' spacing={2} alignItems='flex-start'>
-                                            {/* Left section */}
-                                            <Box 
-                                                flex={1} 
-                                                display='flex' 
-                                                flexDirection='column' 
-                                                justifyContent='space-between'>
-                                                <Box mb={2}>
-                                                    <Typography variant='h6' sx={{ fontWeight: 500, mb: 1 }}>
-                                                        {mockConfig.useAI ? (
-                                                            <FormattedMessage
-                                                                id={'Apis.Details.Endpoints.' +
-                                                                    'Prototype.MockImplEndpoints.aiReady'}
-                                                                defaultMessage='AI-assisted mock server is ready!'
-                                                            />
-                                                        ) : (
-                                                            <FormattedMessage
-                                                                id={'Apis.Details.Endpoints.Prototype.' +
-                                                                    'MockImplEndpoints.moreRealisticMockServer'}
-                                                                defaultMessage='Want a more realistic mock server?'
-                                                            />
-                                                        )}
+                        {progress ? <Progress message='Generating Mocks' /> : (
+                            <>
+                                {isAllScriptsNull ? <MockLandingPage
+                                    hasAuthToken={hasAuthToken}
+                                    authTokenNotProvidedWarning={authTokenNotProvidedWarning}
+                                    handleGenerateScripts={handleGenerateScripts}
+                                    progress={progress}
+                                /> : (
+                                    <>
+                                        {nullScripts.length > 0 && (
+                                            <MUIAlert severity='warning' sx={{ my: 1 }}>
+                                                <Stack direction='row' alignItems='center' spacing={1} flexWrap='wrap'>
+                                                    <Typography variant='body1'>
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                'MockImplEndpoints.missingScripts'}
+                                                            defaultMessage='Mock scripts are missing for:'
+                                                        />
                                                     </Typography>
-
-                                                    <Typography variant='body1' color='textSecondary'>
-                                                        {mockConfig.useAI ? (
-                                                            <FormattedMessage
-                                                                id={'Apis.Details.Endpoints.Prototype.' +
-                                                                    'MockImplEndpoints.aiReadyDescription'}
-                                                                defaultMessage={'Your AI-assisted mock server is ' +
-                                                                    'ready to generate realistic responses.'}
-                                                            />
-                                                        ) : (
-                                                            <FormattedMessage
-                                                                id={'Apis.Details.Endpoints.Prototype.' +
-                                                                'MockImplEndpoints.tryAIDescription'}
-                                                                defaultMessage={'Try our AI-assisted mock ' +
-                                                                    'server for realistic responses.'}
-                                                            />
-                                                        )}
-                                                    </Typography>
-
-                                                    {!hasAuthToken && (
-                                                        <MUIAlert severity='warning' sx={{ my: 1 }}>
-                                                            <Typography variant='body1'>
-                                                                {authTokenNotProvidedWarning}
-                                                            </Typography>
-                                                        </MUIAlert>
-                                                    )}
-                                                </Box>
-
-                                                {/* Instructions */}
-                                                {hasAuthToken && (
-                                                    <TextField
-                                                        fullWidth
-                                                        label='Instructions'
-                                                        multiline
-                                                        minRows={1}
-                                                        maxRows={6}
-                                                        placeholder='e.g. Make all responses in uppercase'
-                                                        value={mockConfig?.config?.instructions}
-                                                        onChange={(e) =>
-                                                            setMockConfig((prev) => ({
-                                                                ...prev,
-                                                                config: {
-                                                                    ...prev.config,
-                                                                    instructions: e.target.value,
-                                                                },
-                                                            }))
-                                                        }
-                                                    />
-                                                )}
-
-                                                {/* Buttons aligned left and right at bottom */}
-                                                <Box display='flex' justifyContent='space-between' mt={2}>
-                                                    <Tooltip
-                                                        title={
-                                                            <FormattedMessage
-                                                                id={'Apis.Details.Endpoints.Prototype.' +
-                                                                'MockImplEndpoints.action.generateWithInstructions'}
-                                                                defaultMessage={'Generate AI-assisted mock '
-                                                                    + 'scripts with custom instructions'}
-                                                            />
-                                                        }
-                                                    >
-                                                        <Button
-                                                            variant='contained'
-                                                            onClick={() => 
-                                                                handleGenerateScripts(true, mockConfig.useAI)
-                                                            }
-                                                            disabled={(mockConfig.useAI && 
-                                                                mockConfig.config.instructions.length === 0)
-                                                                || progress}
-                                                            endIcon={ <AutoAwesome />}
-                                                        >
-                                                            {mockConfig.useAI ? (
-                                                                <FormattedMessage
-                                                                    id={'Apis.Details.Endpoints.Prototype.' +
-                                                                        'MockImplEndpoints.action.generateWithAI'}
-                                                                    defaultMessage='Modify'
-                                                                />
-                                                            ) : (
-                                                                <FormattedMessage
-                                                                    id={'Apis.Details.Endpoints.Prototype.' +
-                                                                        'MockImplEndpoints.action.generateButton'}
-                                                                    defaultMessage='Generate'
-                                                                />
-                                                            )}
-                                                        </Button>
-                                                    </Tooltip>
-
-                                                    {mockConfig.useAI && (
-                                                        <Tooltip
-                                                            title={
-                                                                <FormattedMessage
-                                                                    id={'Apis.Details.Endpoints.Prototype.' +
-                                                                        'MockImplEndpoints.action.fallback'}
-                                                                    defaultMessage={'Switch back to static mock '+
-                                                                        'scripts generated by examples'}
-                                                                />
-                                                            }
-                                                        >
-                                                            <Button
-                                                                variant='outlined'
-                                                                color='inherit'
-                                                                onClick={() => handleGenerateScripts(false)}
-                                                                disabled={progress}
-                                                            >
-                                                                <FormattedMessage
-                                                                    id={'Apis.Details.Endpoints.Prototype.' +
-                                                                        'MockImplEndpoints.action.fallbackButton'}
-                                                                    defaultMessage='Switch to static mock scripts'
-                                                                />
-                                                            </Button>
-                                                        </Tooltip>
-                                                    )}
-                                                </Box>
-                                            </Box>
-
-                                            {/* Fixed Image on Right */}
-                                            <Box>
-                                                <img
-                                                    alt='API Mock Assistant'
-                                                    src={`${app.context}` +
-                                                        '/site/public/images/ai/APIchatassistantImageWithColour.svg'}
-                                                    style={{
-                                                        width: '80px',
-                                                        height: 'auto',
-                                                        borderRadius: '4px',
-                                                        position: 'sticky',
-                                                        top: '30px'
-                                                    }}
-                                                />
-                                            </Box>
-                                        </Stack>
-
-                                    </Paper>
-                                </Stack>
-
-                                <Grid container spacing={2} mt={2}>
-                                    {Object.entries(paths).map(([path, methods]) => (
-                                        <Grid item xs={12} key={path}>
-                                            <GroupOfOperations openAPI={swagger} tag={path}>
-                                                <Grid container spacing={1} direction='column'>
-                                                    {Object.entries(methods).map(([method, operation]) => (
-                                                        CONSTS.HTTP_METHODS.includes(method) && (
-                                                            <Grid item key={`${path}/${method}`}>
-                                                                {GenericOperationPerResource(path, method, operation)}
-                                                            </Grid>
-                                                        )
+                                                    {nullScripts.map((entry) => (
+                                                        <Chip
+                                                            key={entry}
+                                                            label={entry}
+                                                            size='small'
+                                                            variant='outlined'
+                                                        />
                                                     ))}
+                                                    <Typography variant='body1'>
+                                                        <FormattedMessage
+                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                'MockImplEndpoints.reGeneratePrompt'}
+                                                            defaultMessage='Please re-generate.'
+                                                        />
+                                                    </Typography>
+                                                </Stack>
+                                            </MUIAlert>
+
+                                        )}
+                                        <Stack 
+                                            direction='row' 
+                                            mt={2} spacing={2} 
+                                            alignItems='center' 
+                                            justifyContent='center'>
+                                            <Paper
+                                                sx={{
+                                                    p: 3,
+                                                    width: '100%',
+                                                    borderRadius: 2,
+                                                    boxShadow: 1,
+                                                }}
+                                            >
+
+                                                <Stack direction='row' spacing={2} alignItems='flex-start'>
+                                                    {/* Left section */}
+                                                    <Box 
+                                                        flex={1} 
+                                                        display='flex' 
+                                                        flexDirection='column' 
+                                                        justifyContent='space-between'>
+                                                        <Box mb={2}>
+                                                            <Typography variant='h6' sx={{ fontWeight: 500, mb: 1 }}>
+                                                                {mockConfig.useAI ? (
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints.' +
+                                                                            'Prototype.MockImplEndpoints.aiReady'}
+                                                                        defaultMessage={'AI-assisted mock '+ 
+                                                                            'server is ready!'}
+                                                                    />
+                                                                ) : (
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints.Prototype.' +
+                                                                            'MockImplEndpoints.moreRealisticMockServer'}
+                                                                        defaultMessage={'Want a more realistic mock ' +
+                                                                        'server?'}
+                                                                    />
+                                                                )}
+                                                            </Typography>
+
+                                                            <Typography variant='body1' color='textSecondary'>
+                                                                {mockConfig.useAI ? (
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints.Prototype.' +
+                                                                            'MockImplEndpoints.aiReadyDescription'}
+                                                                        defaultMessage={'Your AI-assisted mock ' +
+                                                                            'server is ready to generate realistic ' +
+                                                                            'responses.'}
+                                                                    />
+                                                                ) : (
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints.Prototype.' +
+                                                                        'MockImplEndpoints.tryAIDescription'}
+                                                                        defaultMessage={'Try our AI-assisted mock ' +
+                                                                            'server for realistic responses.'}
+                                                                    />
+                                                                )}
+                                                            </Typography>
+
+                                                            {!hasAuthToken && (
+                                                                <MUIAlert severity='warning' sx={{ my: 1 }}>
+                                                                    <Typography variant='body1'>
+                                                                        {authTokenNotProvidedWarning}
+                                                                    </Typography>
+                                                                </MUIAlert>
+                                                            )}
+                                                        </Box>
+
+                                                        {/* Instructions */}
+                                                        {hasAuthToken && (
+                                                            <TextField
+                                                                fullWidth
+                                                                label='Instructions'
+                                                                multiline
+                                                                minRows={1}
+                                                                maxRows={6}
+                                                                placeholder='e.g. Make all responses in uppercase'
+                                                                value={mockConfig?.config?.instructions}
+                                                                onChange={(e) =>
+                                                                    setMockConfig((prev) => ({
+                                                                        ...prev,
+                                                                        config: {
+                                                                            ...prev.config,
+                                                                            instructions: e.target.value,
+                                                                        },
+                                                                    }))
+                                                                }
+                                                            />
+                                                        )}
+
+                                                        {/* Buttons aligned left and right at bottom */}
+                                                        <Box display='flex' justifyContent='space-between' mt={2}>
+                                                            <Tooltip
+                                                                title={
+                                                                    <FormattedMessage
+                                                                        id={'Apis.Details.Endpoints.Prototype.' +
+                                                                        'MockImplEndpoints.action.' +
+                                                                        'generateWithInstructions'}
+                                                                        defaultMessage={'Generate AI-assisted mock '
+                                                                            + 'scripts with custom instructions'}
+                                                                    />
+                                                                }
+                                                            >
+                                                                <Button
+                                                                    variant='contained'
+                                                                    onClick={() => 
+                                                                        handleGenerateScripts(true, mockConfig.useAI)
+                                                                    }
+                                                                    disabled={(mockConfig.useAI && 
+                                                                        mockConfig.config.instructions.length === 0)
+                                                                        || progress}
+                                                                    endIcon={ <AutoAwesome />}
+                                                                >
+                                                                    {mockConfig.useAI ? (
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.' +
+                                                                                'generateWithAI'}
+                                                                            defaultMessage='Modify'
+                                                                        />
+                                                                    ) : (
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.' +
+                                                                                'generateButton'}
+                                                                            defaultMessage='Generate'
+                                                                        />
+                                                                    )}
+                                                                </Button>
+                                                            </Tooltip>
+
+                                                            {mockConfig.useAI && (
+                                                                <Tooltip
+                                                                    title={
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.fallback'}
+                                                                            defaultMessage={'Switch back to static '+
+                                                                                'mock scripts generated by examples'}
+                                                                        />
+                                                                    }
+                                                                >
+                                                                    <Button
+                                                                        variant='outlined'
+                                                                        color='inherit'
+                                                                        onClick={() => handleGenerateScripts(false)}
+                                                                        disabled={progress}
+                                                                    >
+                                                                        <FormattedMessage
+                                                                            id={'Apis.Details.Endpoints.Prototype.' +
+                                                                                'MockImplEndpoints.action.' +
+                                                                                'fallbackButton'}
+                                                                            defaultMessage={'Switch to ' +
+                                                                            'static mock scripts'}
+                                                                        />
+                                                                    </Button>
+                                                                </Tooltip>
+                                                            )}
+                                                        </Box>
+                                                    </Box>
+
+                                                    {/* Fixed Image on Right */}
+                                                    <Box>
+                                                        <img
+                                                            alt='API Mock Assistant'
+                                                            src={`${app.context}` +
+                                                                '/site/public/images/ai/' +
+                                                                'APIchatassistantImageWithColour.svg'}
+                                                            style={{
+                                                                width: '80px',
+                                                                height: 'auto',
+                                                                borderRadius: '4px',
+                                                                position: 'sticky',
+                                                                top: '30px'
+                                                            }}
+                                                        />
+                                                    </Box>
+                                                </Stack>
+
+                                            </Paper>
+                                        </Stack>
+
+                                        <Grid container spacing={2} mt={2}>
+                                            {Object.entries(paths).map(([path, methods]) => (
+                                                <Grid item xs={12} key={path}>
+                                                    <GroupOfOperations openAPI={swagger} tag={path}>
+                                                        <Grid container spacing={1} direction='column'>
+                                                            {Object.entries(methods).map(([method, operation]) => (
+                                                                CONSTS.HTTP_METHODS.includes(method) && (
+                                                                    <Grid item key={`${path}/${method}`}>
+                                                                        {GenericOperationPerResource(path, 
+                                                                            method, operation)}
+                                                                    </Grid>
+                                                                )
+                                                            ))}
+                                                        </Grid>
+                                                    </GroupOfOperations>
                                                 </Grid>
-                                            </GroupOfOperations>
+                                            ))}
                                         </Grid>
-                                    ))}
-                                </Grid>
-                            </>)
-                            }
-                        </>)}
+                                    </>)
+                                }
+                            </>)}
                     </Paper>
                 </Grid>
             </Grid>

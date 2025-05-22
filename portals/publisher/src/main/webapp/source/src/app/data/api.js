@@ -757,12 +757,12 @@ class API extends Resource {
      *
      * @param id {String} The api id.
      */
-    generateMockScripts(id = this.id, isUpdateSwagger = true) {
+    generateMockScripts(id = this.id, updateSwagger = true) {
         const promise_get = this.client.then(client => {
             return client.apis['APIs'].generateMockScripts(
                 {
                     apiId: id,
-                    isUpdateSwagger
+                    updateSwagger
                 },
                 this._requestMetaData(),
             );
@@ -772,15 +772,15 @@ class API extends Resource {
 
     /**
      * Mock sample responses for Inline Prototyping
-     * of a swagger OAS defintion
+     * of a swagger OAS defintion using AI
      *
      * @param id {String} The api id.
      */
-    generateAIMockScripts(id = this.id, isUpdateSwagger = true, body = {}) {
+    generateAIMockScripts(id = this.id, updateSwagger = true, body = {}) {
         const promise_get = this.client.then(client => {
             const payload = {
                 apiId: id,
-                isUpdateSwagger,
+                updateSwagger,
                 'Content-Type': 'application/json',
             };
             const requestBody = {
