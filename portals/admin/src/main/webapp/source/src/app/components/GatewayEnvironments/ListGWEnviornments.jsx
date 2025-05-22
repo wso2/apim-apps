@@ -123,7 +123,7 @@ export default function ListGWEnviornments() {
                 name: 'permissions',
                 label: intl.formatMessage({
                     id: 'AdminPages.Gateways.table.header.permission',
-                    defaultMessage: 'Visibility Permission',
+                    defaultMessage: 'Visibility',
                 }),
                 options: {
                     sort: false,
@@ -200,7 +200,7 @@ export default function ListGWEnviornments() {
                 name: 'permissions',
                 label: intl.formatMessage({
                     id: 'AdminPages.Gateways.table.header.permission',
-                    defaultMessage: 'Visibility Permission',
+                    defaultMessage: 'Visibility',
                 }),
                 options: {
                     sort: false,

@@ -990,7 +990,7 @@ class Details extends Component {
                                     <Route
                                         path={Details.subPaths.CONFIGURATION}
                                         component={() => <DesignConfigurations api={api}
-                                            updateAPI={this.updateAPI}/>}
+                                            updateAPI={this.updateAPI} />}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION}
@@ -1008,7 +1008,7 @@ class Details extends Component {
                                     <Route
                                         path={Details.subPaths.CONFIGURATION_PRODUCT}
                                         component={() => <DesignConfigurations api={api}
-                                            updateAPI={this.updateAPI}/>}
+                                            updateAPI={this.updateAPI} />}
                                     />
                                     <Route
                                         path={Details.subPaths.RUNTIME_CONFIGURATION_PRODUCT}

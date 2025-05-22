@@ -32,6 +32,7 @@ import Application from 'AppData/Application';
 import { Link } from 'react-router-dom';
 import AuthManager from 'AppData/AuthManager';
 import Progress from 'AppComponents/Shared/Progress';
+import { app } from 'Settings';
 import ApplicationCreateBase from './Create/ApplicationCreateBase';
 
 const PREFIX = 'ApplicationFormHandler';
@@ -134,7 +135,7 @@ class ApplicationFormHandler extends React.Component {
         const promisedApplication = Application.get(applicationId);
         // Get all the tires to populate the drop down.
         const api = new API();
-        const promiseTiers = api.getAllTiers('application');
+        const promiseTiers = api.getAllTiers('application', app.throttlingPolicyLimit);
         const promisedAttributes = api.getAllApplicationAttributes();
         Promise.all([promisedApplication, promiseTiers, promisedAttributes])
             .then((response) => {
@@ -177,7 +178,7 @@ class ApplicationFormHandler extends React.Component {
     initApplicationCreateState = () => {
         // Get all the tiers to populate the drop down.
         const api = new API();
-        const promiseTiers = api.getAllTiers('application');
+        const promiseTiers = api.getAllTiers('application', app.throttlingPolicyLimit);
         const promisedAttributes = api.getAllApplicationAttributes();
         Promise.all([promiseTiers, promisedAttributes])
             .then((response) => {

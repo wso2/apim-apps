@@ -29,6 +29,7 @@ import { injectIntl, FormattedMessage } from 'react-intl';
 import Button from '@mui/material/Button';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import { ApiContext } from 'AppComponents/Apis/Details/ApiContext';
+import { app } from 'Settings';
 import ButtonPanel from './ButtonPanel';
 
 const PREFIX = 'CreateAppStep';
@@ -193,7 +194,7 @@ const createAppStep = (props) => {
     useEffect(() => {
         // Get all the tiers to populate the drop down.
         const api = new API();
-        const promiseTiers = api.getAllTiers('application');
+        const promiseTiers = api.getAllTiers('application', app.throttlingPolicyLimit);
         const promisedAttributes = api.getAllApplicationAttributes();
         const promisedKeyManagers = api.getKeyManagers();
 

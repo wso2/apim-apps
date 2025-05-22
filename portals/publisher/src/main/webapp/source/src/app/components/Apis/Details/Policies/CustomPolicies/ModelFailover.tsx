@@ -36,6 +36,7 @@ import Alert from '@mui/material/Alert';
 import { Link } from 'react-router-dom';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import CONSTS from 'AppData/Constants';
 
 interface ModelConfig {
     targetModel: ModelData;
@@ -97,8 +98,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
         requestTimeout: undefined,
         suspendDuration: undefined,
     });
-    const [productionModelList, setProductionModelList] = useState<string[]>([]);
-    const [sandboxModelList, setSandboxModelList] = useState<string[]>([]);
+    const [modelList, setModelList] = useState<string[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState<Endpoint[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -115,7 +115,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
 
                 if (apiFromContext.endpointConfig?.production_endpoints) {
                     defaultEndpoints.push({
-                        id: `${apiFromContext.id}--PRODUCTION`,
+                        id: CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION,
                         name: 'Default Production Endpoint',
                         deploymentStage: 'PRODUCTION',
                         endpointConfig: {
@@ -127,7 +127,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
 
                 if (apiFromContext.endpointConfig?.sandbox_endpoints) {
                     defaultEndpoints.push({
-                        id: `${apiFromContext.id}--SANDBOX`,
+                        id: CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX,
                         name: 'Default Sandbox Endpoint',
                         deploymentStage: 'SANDBOX',
                         endpointConfig: {
@@ -156,9 +156,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
         const modelListPromise = API.getLLMProviderModelList(JSON.parse(apiFromContext.subtypeConfiguration.configuration).llmProviderId);
         modelListPromise
             .then((response) => {
-                const modelList = response.body;
-                setProductionModelList(modelList);
-                setSandboxModelList(modelList);
+                setModelList(response.body);
             }).catch((error) => {
                 console.error(error);
             });
@@ -226,18 +224,6 @@ const ModelFailover: FC<ModelFailoverProps> = ({
     }
 
     const handleFallbackModelDelete = (env: 'production' | 'sandbox', index: number) => {
-        // Add back deleted model to the list
-        const deletedModel = config[env].fallbackModels[index];
-        if (env === 'production') {
-            setProductionModelList((prevList) =>
-                prevList.includes(deletedModel.model) ? prevList : [...prevList, deletedModel.model]
-            );
-        } else {
-            setSandboxModelList((prevList) =>
-                prevList.includes(deletedModel.model) ? prevList : [...prevList, deletedModel.model]
-            );
-        }
-
         setConfig((prevConfig) => ({
             ...prevConfig,
             [env]: {
@@ -248,17 +234,10 @@ const ModelFailover: FC<ModelFailoverProps> = ({
     }
 
     const isAddModelDisabled = (env: 'production' | 'sandbox') => {
-        const modelList = env === 'production' ? productionModelList : sandboxModelList;
-        const selectedModels = config[env].fallbackModels.map((model) => model.model);
-        const endpointList = env === 'production' ? productionEndpoints : sandboxEndpoints;
-
-        // If no available models or endpoints, disable adding
-        if (modelList.length === 0 || endpointList.length === 0) {
+        if (modelList.length === 0) {
             return true;
         }
-
-        // Disable if all models in modelList are already in selected
-        return modelList.every((model) => selectedModels.includes(model));
+        return env === 'production' ? productionEndpoints.length === 0 : sandboxEndpoints.length === 0;
     };
 
     const getEndpointsUrl = () => {
@@ -341,7 +320,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
-                        {productionModelList.length === 0 && (
+                        {modelList.length === 0 && (
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.models'
@@ -372,7 +351,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                         </Typography>
                         <ModelCard
                             modelData={config.production.targetModel}
-                            modelList={productionModelList}
+                            modelList={modelList}
                             endpointList={productionEndpoints}
                             isWeightApplicable={false}
                             onUpdate={(updatedTargetModel) => handleTargetModelUpdate('production', 0, updatedTargetModel)}
@@ -397,24 +376,17 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                                 defaultMessage='Add Fallback Model'
                             />
                         </Button>
-                        {config.production.fallbackModels.map((model, index) => {
-                            // Filter productionModelList to exclude already selected models except the one in the current card
-                            const modelList = productionModelList.filter(
-                                (m) => !config.production.fallbackModels.some((item, i) => i !== index && item.model === m) || model.model === m
-                            );
-
-                            return (
-                                <ModelCard
-                                    key={index}
-                                    modelData={model}
-                                    modelList={modelList.filter(m => m !== config.production.targetModel.model)}
-                                    endpointList={productionEndpoints}
-                                    isWeightApplicable={false}
-                                    onUpdate={(updatedModel) => handleFallbackModelUpdate('production', index, updatedModel)}
-                                    onDelete={() => handleFallbackModelDelete('production', index)}
-                                />
-                            );
-                        })}
+                        {config.production.fallbackModels.map((model, index) => (
+                            <ModelCard
+                                key={index}
+                                modelData={model}
+                                modelList={modelList}
+                                endpointList={productionEndpoints}
+                                isWeightApplicable={false}
+                                onUpdate={(updatedModel) => handleFallbackModelUpdate('production', index, updatedModel)}
+                                onDelete={() => handleFallbackModelDelete('production', index)}
+                            />
+                        ))}
                     </AccordionDetails>
                 </Accordion>
                 <Accordion 
@@ -444,7 +416,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                         />
                     </StyledAccordionSummary>
                     <AccordionDetails>
-                        {sandboxModelList.length === 0 && (
+                        {modelList.length === 0 && (
                             <Alert severity="warning" sx={{ mb: 2 }}>
                                 <FormattedMessage
                                     id='Apis.Details.Policies.CustomPolicies.ModelFailover.no.models'
@@ -475,7 +447,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                         </Typography>
                         <ModelCard
                             modelData={config.sandbox.targetModel}
-                            modelList={sandboxModelList}
+                            modelList={modelList}
                             endpointList={sandboxEndpoints}
                             isWeightApplicable={false}
                             onUpdate={(updatedTargetModel) => handleTargetModelUpdate('sandbox', 0, updatedTargetModel)}
@@ -500,24 +472,17 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                                 defaultMessage='Add Fallback Model'
                             />
                         </Button>
-                        {config.sandbox.fallbackModels.map((model, index) => {
-                            // Filter sandboxModelList to exclude already selected models except the one in the current card
-                            const modelList = sandboxModelList.filter(
-                                (m) => !config.sandbox.fallbackModels.some((item, i) => i !== index && item.model === m) || model.model === m
-                            );
-
-                            return (
-                                <ModelCard
-                                    key={index}
-                                    modelData={model}
-                                    modelList={modelList.filter(m => m !== config.sandbox.targetModel.model)}
-                                    endpointList={sandboxEndpoints}
-                                    isWeightApplicable={false}
-                                    onUpdate={(updatedModel) => handleFallbackModelUpdate('sandbox', index, updatedModel)}
-                                    onDelete={() => handleFallbackModelDelete('sandbox', index)}
-                                />
-                            )
-                        })}
+                        {config.sandbox.fallbackModels.map((model, index) => (
+                            <ModelCard
+                                key={index}
+                                modelData={model}
+                                modelList={modelList}
+                                endpointList={sandboxEndpoints}
+                                isWeightApplicable={false}
+                                onUpdate={(updatedModel) => handleFallbackModelUpdate('sandbox', index, updatedModel)}
+                                onDelete={() => handleFallbackModelDelete('sandbox', index)}
+                            />
+                        ))}
                     </AccordionDetails>
                 </Accordion>
                 <Grid container mt={2}>

@@ -55,6 +55,8 @@ const CONSTS = {
         connectionTimeoutDuration: -1,
         connectionRequestTimeoutDuration: -1,
         socketTimeoutDuration: -1,
+        connectionTimeoutConfigType: 'GLOBAL',
+        proxyConfigType: 'GLOBAL',
         proxyConfigs: {
             proxyEnabled: '',
             proxyHost: '',
@@ -75,6 +77,10 @@ const CONSTS = {
     DEPLOYMENT_STAGE: {
         production: 'PRODUCTION',
         sandbox: 'SANDBOX',
+    },
+    DEFAULT_ENDPOINT_ID: {
+        PRODUCTION: 'default_production_endpoint',
+        SANDBOX: 'default_sandbox_endpoint',
     },
     GATEWAY_TYPE: {
         synapse: 'Synapse',

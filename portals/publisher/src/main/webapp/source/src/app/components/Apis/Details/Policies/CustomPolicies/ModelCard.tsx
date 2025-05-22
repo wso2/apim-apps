@@ -112,8 +112,6 @@ const ModelCard: FC<ModelCardProps> = ({
                                 id='endpoint-weight'
                                 label='Weight'
                                 size='small'
-                                // helperText={getError(spec) === '' ? spec.description : getError(spec)}
-                                // error={getError(spec) !== ''}
                                 variant='outlined'
                                 name='weight'
                                 type='number'

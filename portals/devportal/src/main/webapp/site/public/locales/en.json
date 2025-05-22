@@ -446,7 +446,7 @@
   "Applications.Details.Subscriptions.Status": "Subscription Status",
   "Applications.Details.Subscriptions.action": "Action",
   "Applications.Details.Subscriptions.api.name": "API",
-  "Applications.Details.Subscriptions.api.webhooks": "Web Hooks",
+  "Applications.Details.Subscriptions.api.webhooks": "Webhooks",
   "Applications.Details.Subscriptions.api.webhooks.delivery.time.unavailable": "Delivery data unavailable",
   "Applications.Details.Subscriptions.api.webhooks.subscriptions.unavailable": "No Webhook subscriptions available at this time.",
   "Applications.Details.Subscriptions.business.plan.updated": "Business Plan updated successfully!",

@@ -273,9 +273,9 @@ a {
 /* Progress bar styles */
 .progress-bar-striped {
   position: absolute;
-  top: 50%;
+  top: 45%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   background-color: #356eac52;
 }
 .progress-bar-striped > div {

@@ -106,6 +106,7 @@ export default function ApplicationLevel(props) {
     } = props;
     const [apiFromContext] = useAPI();
     const [oauth2Enabled, setOauth2Enabled] = useState(securityScheme.includes(DEFAULT_API_SECURITY_OAUTH2));
+    const [apiKeyEnabled, setApiKeyEnabled] = useState(securityScheme.includes(API_SECURITY_API_KEY));
     const intl = useIntl();
     const isSubValidationDisabled = apiFromContext.policies && apiFromContext.policies.length === 1 
         && apiFromContext.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
@@ -247,10 +248,13 @@ export default function ApplicationLevel(props) {
                                                 isRestricted(['apim:api_create'], apiFromContext) 
                                                 || isSubValidationDisabled
                                             }
-                                            onChange={({ target: { checked, value } }) => configDispatcher({
-                                                action: 'securityScheme',
-                                                event: { checked, value },
-                                            })}
+                                            onChange={({ target: { checked, value } }) => {
+                                                setApiKeyEnabled(checked);
+                                                configDispatcher({
+                                                    action: 'securityScheme',
+                                                    event: { checked, value },
+                                                });
+                                            }}
                                             value={API_SECURITY_API_KEY}
                                             color='primary'
                                             id='api-security-api-key-checkbox'
@@ -332,9 +336,13 @@ export default function ApplicationLevel(props) {
                             />
                         )}
                         {componentValidator.includes('oauth2') &&
-                            <AuthorizationHeader api={api} configDispatcher={configDispatcher} />
+                            <AuthorizationHeader 
+                                api={api} 
+                                configDispatcher={configDispatcher} 
+                                oauth2Enabled={oauth2Enabled} 
+                            />
                         } {componentValidator.includes('apikey') &&
-                            <ApiKeyHeader api={api} configDispatcher={configDispatcher} />
+                            <ApiKeyHeader api={api} configDispatcher={configDispatcher} apiKeyEnabled={apiKeyEnabled} />
                         }   
                         <FormControl>
                             {!hasResourceWithSecurity

@@ -430,6 +430,13 @@ function AddEdit(props) {
         dispatch({ field: e.target.name, value: e.target.value });
     };
 
+    const onDefaultLimitChange = (e) => {
+        const { name, value } = e.target;
+        if (value === '' || Number(value) >= 0) {
+            dispatch({ field: name, value });
+        }
+    };
+
     const onToggle = (e) => {
         dispatch({ field: e.target.name, value: e.target.checked });
     };
@@ -898,7 +905,7 @@ function AddEdit(props) {
                                         name='requestCount'
                                         value={requestCount}
                                         type='number'
-                                        onChange={onChange}
+                                        onChange={onDefaultLimitChange}
                                         required
                                         InputProps={{
                                             id: 'requestCount',
@@ -934,7 +941,7 @@ function AddEdit(props) {
                                             name='requestCount'
                                             value={requestCount}
                                             type='number'
-                                            onChange={onChange}
+                                            onChange={onDefaultLimitChange}
                                             required
                                             InputProps={{
                                                 id: 'requestCount',
@@ -967,7 +974,7 @@ function AddEdit(props) {
                                             name='totalTokenCount'
                                             value={totalTokenCount}
                                             type='number'
-                                            onChange={onChange}
+                                            onChange={onDefaultLimitChange}
                                             InputProps={{
                                                 id: 'totalTokenCount',
                                                 onBlur: ({ target: { value } }) => {
@@ -999,7 +1006,7 @@ function AddEdit(props) {
                                             name='promptTokenCount'
                                             value={promptTokenCount}
                                             type='number'
-                                            onChange={onChange}
+                                            onChange={onDefaultLimitChange}
                                             InputProps={{
                                                 id: 'promptTokenCount',
                                                 onBlur: ({ target: { value } }) => {
@@ -1031,7 +1038,7 @@ function AddEdit(props) {
                                             name='completionTokenCount'
                                             value={completionTokenCount}
                                             type='number'
-                                            onChange={onChange}
+                                            onChange={onDefaultLimitChange}
                                             InputProps={{
                                                 id: 'completionTokenCount',
                                                 onBlur: ({ target: { value } }) => {
@@ -1066,7 +1073,7 @@ function AddEdit(props) {
                                         name='dataAmount'
                                         value={dataAmount}
                                         type='number'
-                                        onChange={onChange}
+                                        onChange={onDefaultLimitChange}
                                         required
                                         InputProps={{
                                             id: 'dataAmount',
@@ -1111,7 +1118,7 @@ function AddEdit(props) {
                                         name='eventCount'
                                         value={eventCount}
                                         type='number'
-                                        onChange={onChange}
+                                        onChange={onDefaultLimitChange}
                                         required
                                         InputProps={{
                                             id: 'eventCount',
@@ -1245,7 +1252,7 @@ function AddEdit(props) {
                                                 name='rateLimitCount'
                                                 value={rateLimitCount}
                                                 type='number'
-                                                onChange={onChange}
+                                                onChange={onDefaultLimitChange}
                                                 label={(
                                                     <FormattedMessage
                                                         id='Throttling.Subscription.AddEdit.form.request.rate'
