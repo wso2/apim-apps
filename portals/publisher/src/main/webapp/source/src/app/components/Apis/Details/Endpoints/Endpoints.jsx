@@ -135,7 +135,7 @@ function Endpoints(props) {
     });
     const [componentValidator, setComponentValidator] = useState([]);
     const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
-    const [isMockAndDisableSave, setIsMockSaveDisabled] = useState(false);
+    const [isMockSaveDisabled, setIsMockSaveDisabled] = useState(false);
 
     useEffect(() => {
         if (api.subtypeConfiguration?.subtype === 'AIAPI') {
@@ -894,7 +894,7 @@ function Endpoints(props) {
                                     className={classes.buttonSection}
                                 >
                                     <Grid item>
-                                        {api.isRevision || !endpointValidity.isValid || isMockAndDisableSave
+                                        {api.isRevision || !endpointValidity.isValid || isMockSaveDisabled
                                             || (settings && settings.portalConfigurationOnlyModeEnabled)
                                             || isRestricted(['apim:api_create'], api) ? (
                                                 <Button

@@ -413,7 +413,7 @@ function MockImplEndpoints({ paths, swagger, updatePaths, updateMockDataset, set
                         </Stack>
                     </div>
                 )}
-                {!(aiLoadingStates === currentKey) && (
+                {(aiLoadingStates !== currentKey) && (
                     <MockScriptOperation
                         key={forceUpdate}
                         resourcePath={path}
