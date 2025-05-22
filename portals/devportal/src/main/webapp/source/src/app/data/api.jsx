@@ -881,9 +881,10 @@ export default class API extends Resource {
      * @param {string} apiChatRequestId UUID for the request
      * @param {string} command user provided natural language query for API testing
      * @param {JSON} apiSpec enriched API specification
+     * @param {JSON} schemaDefinition schema definition of the GraphQL API
      * @returns {promise} With given callback attached to the success chain else API invoke promise.
      */
-    runAiAgentInitialIteration(apiId, apiChatRequestId, command, apiSpec) {
+    runAiAgentInitialIteration(apiId, apiChatRequestId, command, apiSpec, schemaDefinition) {
         const promise = this.client.then((client) => {
             const payload = {
                 apiId,
@@ -896,6 +897,7 @@ export default class API extends Resource {
                         apiChatRequestId,
                         command,
                         apiSpec,
+                        schemaDefinition,
                     },
                 },
                 this._requestMetaData(),
