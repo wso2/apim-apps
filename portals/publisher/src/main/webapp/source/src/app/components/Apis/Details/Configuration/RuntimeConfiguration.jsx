@@ -43,6 +43,7 @@ import MaxBackendTps from './components/MaxBackendTps';
 import Endpoints from './components/Endpoints';
 import APISecurity from './components/APISecurity/APISecurity';
 import QueryAnalysis from './components/QueryAnalysis';
+import GraphQLQueryAnalysis from './components/GraphQLQueryAnalysis';
 import {
     DEFAULT_API_SECURITY_OAUTH2,
     API_SECURITY_BASIC_AUTH,
@@ -618,6 +619,13 @@ export default function RuntimeConfiguration() {
                                             componentValidator.includes("schemaValidation"))
                                             && <SchemaValidation api={apiConfig} 
                                                 configDispatcher={configDispatcher} />}
+                                        {api.type === 'GRAPHQL' && componentValidator.includes("queryAnalysis") && (
+                                            <Box mt={3}>
+                                                <GraphQLQueryAnalysis
+                                                    api={apiConfig}
+                                                />
+                                            </Box>
+                                        )}
                                         {api.type === 'GRAPHQL' && componentValidator.includes("queryAnalysis") && (
                                             <Box mt={3}>
                                                 <QueryAnalysis
