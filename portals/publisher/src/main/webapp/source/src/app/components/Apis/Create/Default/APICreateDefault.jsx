@@ -101,6 +101,15 @@ function APICreateDefault(props) {
 
     useEffect(() => {
         if (settings != null) {
+            // If the gateway type is not in the gatewayTypeMap, add it with both key and value equal to the type
+            if (settings.gatewayTypes) {
+                settings.gatewayTypes.forEach(type => {
+                    if (!(type in gatewayTypeMap)) {
+                        gatewayTypeMap[type] = type;
+                    }
+                });
+            }
+
             if (settings.gatewayTypes && settings.gatewayTypes.includes('Regular')) {
                 for (const env of settings.environment) {
                     if (env.gatewayType === 'Regular') {
