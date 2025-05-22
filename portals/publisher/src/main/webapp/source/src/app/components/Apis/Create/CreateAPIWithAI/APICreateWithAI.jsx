@@ -124,7 +124,7 @@ const ApiCreateWithAI = () => {
                     const customGateway = {
                         value: gw,
                         name: gw + " Gateway",
-                        description: "Custom Gateway",
+                        description: "Custom API Gateway for " + gw,
                         isNew: false
                     };
                     customGateways[gw] = customGateway;

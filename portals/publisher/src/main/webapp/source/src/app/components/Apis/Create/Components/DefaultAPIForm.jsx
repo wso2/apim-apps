@@ -708,34 +708,56 @@ export default function DefaultAPIForm(props) {
                                 value={api.gatewayType}
                                 onChange={onChange}
                             >
-                                {multiGateway.map((gateway, index) =>
-                                    <Grid item xs={Math.floor(12 / multiGateway.length)}
-                                        key={gateway.value}
-                                        display='grid'
-                                        paddingRight={index === multiGateway.length - 1 ? 0 : 1}
-                                        paddingLeft={index === 0 ? 0 : 1} >
-                                        <FormControlLabel
-                                            value={gateway.value}
-                                            className={classes.radioOutline}
-                                            control={<Radio />}
-                                            disabled={!gatewayToEnvMap[gateway.value]}
-                                            label={(
-                                                <div>
-                                                    <span>
-                                                        {gateway.name}
-                                                    </span>
-                                                    {gateway.isNew && (
-                                                        <span className={`${classes.newLabel}`}>New</span>
+                                {multiGateway.map((gateway, index) => {
+                                    const isStartOfNewRow = (index + 1) % 3 === 1;
+                                    const remainingElementCount = multiGateway.length - index;
+                                    const isLastElement = (index + 1) === multiGateway.length;
+                                    return (
+                                        <>
+                                            {
+                                                isStartOfNewRow &&
+                                                remainingElementCount === 1 &&
+                                                <Grid item xs={4} paddingRight={1} />
+                                            }
+                                            {
+                                                isStartOfNewRow &&
+                                                remainingElementCount === 2 &&
+                                                <Grid item xs={2} paddingRight={1} />
+                                            }
+                                            <Grid item xs={4}
+                                                key={gateway.value}
+                                                display='grid'
+                                                paddingRight={(index + 1) % 3 === 0 ? 0 : 1}
+                                                paddingLeft={
+                                                    (index + 1) % 3 === 1 && remainingElementCount >= 3 ? 0 : 1
+                                                }
+                                            >
+                                                <FormControlLabel
+                                                    value={gateway.value}
+                                                    className={classes.radioOutline}
+                                                    control={<Radio />}
+                                                    disabled={!gatewayToEnvMap[gateway.value]}
+                                                    label={(
+                                                        <div>
+                                                            <span>
+                                                                {gateway.name}
+                                                            </span>
+                                                            {gateway.isNew && (
+                                                                <span className={`${classes.newLabel}`}>New</span>
+                                                            )}
+                                                            <Typography variant='body2' color='textSecondary'>
+                                                                {gateway.description}
+                                                            </Typography>
+                                                        </div>
                                                     )}
-                                                    <Typography variant='body2' color='textSecondary'>
-                                                        {gateway.description}
-                                                    </Typography>
-                                                </div>
-                                            )}
-                                            sx={{ border: getBorderColor(gateway.value) }}
-                                        />
-                                    </Grid>
-                                )}
+                                                    sx={{ border: getBorderColor(gateway.value) }}
+                                                />
+                                            </Grid>
+                                            {isLastElement && ((index + 1) % 3  === 1) && <Grid item xs={4} />}
+                                            {isLastElement && ((index + 1) % 3  === 2) && <Grid item xs={2} />}
+                                        </>
+                                    );
+                                })}
                             </RadioGroup>
                             <FormHelperText sx={{ marginLeft: 0 }}>
                                 <FormattedMessage
