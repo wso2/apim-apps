@@ -16,6 +16,19 @@
  * under the License.
  */
 
+// TODO: 
+// 1. Enabled security checks for GraphQL APIs are not saved in the carbon, only in the external AI service.
+//    It should be saved in the backend through the api object.
+// 2. Rather than using a seperate modal for the configuration, 
+//    better to use a  new section in the left panel.
+// 3. Need to come up with a better design for the configuration section for the following scenarios.
+//    a. Manual threshold configuration
+//    b. AI powered threshold configuration
+//    c. AI powered threshold configuration with a custom prompt
+// 4. When clicking on "Enable Protection" button, velocity template for
+//    the GraphQL API should be updated with the "ExternalGraphQLQueryAnalysis" handler.
+//    Now it is by default enabled in the backend.
+
 import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { 
