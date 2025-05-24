@@ -193,6 +193,7 @@ function EndpointOverview(props) {
         apiKeyParamConfig,
         componentValidator,
         endpointSecurityTypes,
+        setIsMockSaveDisabled
     } = props;
     const { endpointConfig } = api;
     const [endpointType, setEndpointType] = useState(endpointTypes[0]);
@@ -764,6 +765,17 @@ function EndpointOverview(props) {
         [swaggerDef],
     );
 
+    /**
+     * Method to update the x-wso2-mock-dataset in the swagger.
+     * @param {any} paths The updated paths object.
+     * */
+    const updateMockDataset = useCallback(
+        (mockDataset) => {
+            updateSwagger({ ...swaggerDef, ...mockDataset });
+        },
+        [swaggerDef],
+    );
+
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 
     /**
@@ -812,12 +824,14 @@ function EndpointOverview(props) {
                         iff(Object.keys(swaggerDef.paths).length !== 0, 
                             <MockImplEndpoints 
                                 key={endpointType.key}
-                                paths={swaggerDef.paths} 
+                                paths={swaggerDef.paths}
                                 swagger={swaggerDef} 
-                                updatePaths={updatePaths} 
+                                updatePaths={updatePaths}
+                                updateMockDataset={updateMockDataset} 
                                 endpointType={endpointType.key} 
                                 endpointConfig={endpointConfig}
                                 endpointsDispatcher={endpointsDispatcher}
+                                setSaveDisable={setIsMockSaveDisabled}
                             />, 
                             <Progress />)
                         : (
@@ -1478,6 +1492,7 @@ EndpointOverview.propTypes = {
     setIsValidSequenceBackend: PropTypes.func.isRequired,
     isCustomBackendSelected: PropTypes.bool,
     setIsCustomBackendSelected: PropTypes.func,
+    setIsMockSaveDisabled: PropTypes.func
 };
 
 export default injectIntl((EndpointOverview));
