@@ -285,6 +285,82 @@ class API extends Resource {
     }
 
     /**
+     * Get list of labels
+     */
+       labelsListGet() {
+        return this.client.then((client) => {
+            return client.apis['Labels (Collection)'].getAllLabels(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update a Label
+     */
+    updateLabel(id, name, description) {
+        return this.client.then((client) => {
+            const data = {
+                name: name,
+                description: description,
+            };
+            return client.apis[
+                'Label (Individual)'
+            ].updateLabel(
+                { labelId: id },
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete a Label
+     */
+    deleteLabel(id) {
+        return this.client.then((client) => {
+            return client.apis[
+                'Label (Individual)'
+            ].deleteLabel(
+                { labelId: id },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add a Label
+     */
+    createLabel(name, description) {
+        return this.client.then((client) => {
+            const data = {
+                name: name,
+                description: description,
+            };
+            const payload = {
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Label (Individual)'].createLabel(
+                payload,
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get Label api usages
+     */
+    getLabelApiUsages(labelId) {
+        return this.client.then((client) => {
+            return client.apis['Label (Individual)'].getLabelUsage(
+                { labelId: labelId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Get Application Throttling Policies
      */
     applicationThrottlingPoliciesGet() {
@@ -480,6 +556,18 @@ class API extends Resource {
     }
 
     /**
+     * Get a Gateway Environment
+     */
+    getGatewayEnvironment(id) {
+        return this.client.then((client) => {
+            return client.apis['Environments'].get_environments__environmentId_(
+                { environmentId: id },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Delete a Gateway Environment
      */
     deleteGatewayEnvironment(id) {
@@ -494,9 +582,9 @@ class API extends Resource {
     /**
      * Add a Gateway Environment
      */
-    addGatewayEnvironment(name, displayName, type, description, gatewayType, vhosts, provider="wso2",  callback = null) {
+    addGatewayEnvironment(name, displayName, type, description, gatewayType, vhosts, permissions, additionalProperties, provider="wso2",  callback = null) {
         return this.client.then((client) => {
-            const data = { name, displayName, type, description, gatewayType, vhosts, provider };
+            const data = { name, displayName, type, description, gatewayType, vhosts, permissions, additionalProperties, provider };
             const payload = {
                 'Content-Type': 'application/json',
             };
@@ -511,9 +599,9 @@ class API extends Resource {
     /**
      * Update a Gateway Environment
      */
-    updateGatewayEnvironment(id, name, displayName, type, description, gatewayType, vhosts,  callback = null) {
+    updateGatewayEnvironment(id, name, displayName, type, description, gatewayType, vhosts, permissions, additionalProperties, provider="wso2", callback = null) {
         return this.client.then((client) => {
-            const data = { name, displayName, type, description, gatewayType, vhosts };
+            const data = { name, displayName, type, description, gatewayType, vhosts, permissions, additionalProperties, provider };
             return client.apis['Environments'].put_environments__environmentId_(
                 { environmentId: id },
                 { requestBody: data },
@@ -1079,6 +1167,170 @@ class API extends Resource {
         });
     }
 
+    /**
+     * Get list of AI Vendors Configured
+     */
+    getAiVendorsList() {
+        return this.client.then((client) => {
+            return client.apis['LLMProviders'].getLLMProviders(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get AI Vendor Configuration by id
+     * @param aiVendorId AI Vendor configuration id
+     * @returns {*}
+     */
+   aiVendorGet(aiVendorId) {
+        return this.client.then((client) => {
+            return client.apis['LLMProvider'].getLLMProvider(
+                { llmProviderId: aiVendorId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete an AI Vendor
+     * @param aiVendorId AI Vendor configuration id
+     * @returns {*}
+     */
+    deleteAiVendor(aiVendorId) {
+        return this.client.then((client) => {
+            return client.apis['LLMProvider'].deleteLLMProvider(
+                { llmProviderId: aiVendorId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add an AI Vendor
+     */
+    addAiVendor(aiVendorBody) {
+        return this.client.then((client) => {
+            const payload = {
+                'Content-Type': 'multipart/form-data',
+            };
+            return client.apis['LLMProviders'].addLLMProvider(
+                payload,
+                { requestBody: {
+                    ...aiVendorBody,
+                    modelList: JSON.stringify(aiVendorBody.modelList)
+                }},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update an AI Vendor
+     */
+    updateAiVendor(aiVendorId, aiVendorBody) {
+        return this.client.then((client) => {
+            const payload = {
+                llmProviderId: aiVendorId,
+                'Content-Type': 'multipart/form-data',
+            };
+            return client.apis['LLMProvider'].updateLLMProvider(
+                payload,
+                { requestBody: {
+                    ...aiVendorBody,
+                    llmProviderId: aiVendorId,
+                    modelList: JSON.stringify(aiVendorBody.modelList)
+                }},
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Retrieve transaction count
+     */
+    getTransactionCount(params) {
+        return this.client.then((client) => {
+            return client.apis['Transaction Records'].get_transaction_count(
+                params, this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get list of organizations
+     */
+    organizationsListGet() {
+        return this.client.then((client) => {
+            return client.apis['Organizations'].get_organizations(
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Add an organization
+     */
+    createOrganization(referenceId, name, description) {
+        return this.client.then((client) => {
+            const data = {
+                externalOrganizationId: referenceId,
+                displayName: name,
+                description: description,
+            };
+            const payload = {
+                'Content-Type': 'application/json',
+            };
+            return client.apis['Organizations'].post_organizations(
+                payload,
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update an organization
+     */
+    updateOrganization(referenceId, orgId, name, description) {
+        return this.client.then((client) => {
+            const data = {
+                externalOrganizationId: referenceId,
+                displayName: name,
+                description: description,
+            };
+            return client.apis[
+                'Organizations'
+            ].put_organizations__organizationId_(
+                { organizationId: orgId },
+                { requestBody: data },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete an organization
+     */
+    deleteOrganization(orgId, referenceId) {
+        return this.client.then((client) => {
+            return client.apis[
+                'Organizations'
+            ].delete_organizations__organizationId_(
+                { externalOrganizationId: referenceId, organizationId: orgId },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get user organization information
+     */
+    getUserOrganizationInfo() {
+        return this.client.then((client) => {
+            return client.apis['Users'].organizationInformation(this._requestMetaData());
+        });
+    }
 }
 
 API.CONSTS = {

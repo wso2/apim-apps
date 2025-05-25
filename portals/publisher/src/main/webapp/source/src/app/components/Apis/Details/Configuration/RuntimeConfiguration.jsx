@@ -32,8 +32,9 @@ import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import Api from 'AppData/api';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
-import { useAppContext } from 'AppComponents/Shared/AppContext';
+import { useAppContext, usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
+import { Progress } from 'AppComponents/Shared';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import ResponseCaching from './components/ResponseCaching';
 import CORSConfiguration from './components/CORSConfiguration';
@@ -54,6 +55,7 @@ import {
     ALL_AUDIENCES_ALLOWED,
 } from './components/APISecurity/components/apiSecurityConstants';
 import WebSubConfiguration from './components/WebSubConfiguration';
+import BackendRateLimiting from './components/AIBackendRateLimiting/BackendRateLimiting';
 
 const PREFIX = 'RuntimeConfiguration';
 
@@ -179,7 +181,6 @@ function copyAPIConfig(api) {
         accessControlRoles: [...api.accessControlRoles],
         visibleRoles: [...api.visibleRoles],
         tags: [...api.tags],
-        maxTps: api.maxTps,
         wsdlUrl: api.wsdlUrl,
         transport: [...api.transport],
         securityScheme: [...api.securityScheme],
@@ -202,6 +203,18 @@ function copyAPIConfig(api) {
             apiOwner: api.advertiseInfo.apiOwner,
             vendor: api.advertiseInfo.vendor,
         }
+    }
+    if (api.subtypeConfiguration) {
+        apiConfigJson.subtypeConfiguration = {
+            ...api.subtypeConfiguration,
+        };
+    }
+    if (api.maxTps) {
+        apiConfigJson.maxTps = {
+            ...api.maxTps,
+            tokenBasedThrottlingConfiguration: api.maxTps.tokenBasedThrottlingConfiguration ?
+                { ...api.maxTps.tokenBasedThrottlingConfiguration } : null,
+        };
     }
     return apiConfigJson;
 }
@@ -238,7 +251,6 @@ export default function RuntimeConfiguration() {
             case 'enableSchemaValidation':
             case 'accessControl':
             case 'visibility':
-            case 'maxTps':
             case 'enableSubscriberVerification':
             case 'tags':
                 nextState[action] = value;
@@ -378,11 +390,41 @@ export default function RuntimeConfiguration() {
             case 'saveButtonDisabled':
                 setSaveButtonDisabled(value);
                 return state;
+            case 'maxTps': {
+                nextState.maxTps = value;
+                if (nextState.maxTps){
+                    if (!nextState.maxTps.productionTimeUnit) {
+                        nextState.maxTps.productionTimeUnit = 'SECOND';
+                    }
+                    if (!nextState.maxTps.sandboxTimeUnit) {
+                        nextState.maxTps.sandboxTimeUnit = 'SECOND';
+                    }
+                    if (!nextState.maxTps.production) {
+                        nextState.maxTps.production = '';
+                    }
+                    if (!nextState.maxTps.sandbox) {
+                        nextState.maxTps.sandbox = '';
+                    }
+                    const { tokenBasedThrottlingConfiguration } = nextState.maxTps;
+                    if (tokenBasedThrottlingConfiguration) {
+                        tokenBasedThrottlingConfiguration.isTokenBasedThrottlingEnabled = !!(
+                            tokenBasedThrottlingConfiguration.productionMaxPromptTokenCount ||
+                            tokenBasedThrottlingConfiguration.productionMaxCompletionTokenCount ||
+                            tokenBasedThrottlingConfiguration.productionMaxTotalTokenCount ||
+                            tokenBasedThrottlingConfiguration.sandboxMaxPromptTokenCount ||
+                            tokenBasedThrottlingConfiguration.sandboxMaxCompletionTokenCount ||
+                            tokenBasedThrottlingConfiguration.sandboxMaxTotalTokenCount
+                        );
+                    }
+                }
+                return nextState;
+            }
             default:
                 return state;
         }
     }
     const { api, updateAPI } = useContext(APIContext);
+    const { data: publisherSettings, isLoading } = usePublisherSettings();
     const history = useHistory();
     const isAsyncAPI = api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC';
     const isNonWebSubAsyncAPI = api.type === 'WS' || api.type === 'SSE' || api.type === 'ASYNC';
@@ -390,6 +432,8 @@ export default function RuntimeConfiguration() {
     const [isUpdating, setIsUpdating] = useState(false);
     const [updateComplexityList, setUpdateComplexityList] = useState(null);
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
+    const [componentValidator, setComponentValidator] = useState([]);
+    const [endpointSecurity, setEndpointSecurity] = useState([]);
 
     const intl = useIntl();
     useEffect(() => {
@@ -410,6 +454,15 @@ export default function RuntimeConfiguration() {
                 });
         }
     }, []);
+
+    useEffect(() => {
+        if (!isLoading) {
+            setComponentValidator(publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].runtime);
+            setEndpointSecurity(publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].endpoints);
+        }
+    }, [isLoading]);
 
     /**
      * Update the GraphQL Query Complexity Values
@@ -512,6 +565,10 @@ export default function RuntimeConfiguration() {
             }));
     }
 
+    if (isLoading) {
+        return <Progress per={80} message='Loading app settings ...' />;
+    }
+
     return (
         <Root>
             <Box pb={3}>
@@ -525,7 +582,8 @@ export default function RuntimeConfiguration() {
             <div className={classes.contentWrapper}>
                 {(apiConfig.advertiseInfo && apiConfig.advertiseInfo.advertised) ? (
                     <Paper className={classes.paper} elevation={0}>
-                        <APISecurity api={apiConfig} configDispatcher={configDispatcher} />
+                        <APISecurity api={apiConfig} configDispatcher={configDispatcher} 
+                            componentValidator={componentValidator} />
                     </Paper>
                 ) : (
                     <Grid container direction='row' justifyContent='space-around' alignItems='stretch' 
@@ -549,16 +607,18 @@ export default function RuntimeConfiguration() {
                                 <Grid item xs={12} sx={{ mb: 3, position: 'relative' }}>
                                     <Paper elevation={0} 
                                         sx={{ p: 3, boxSizing: 'border-box' }}>
-                                        <APISecurity api={apiConfig} configDispatcher={configDispatcher} />
-                                        { api.type !== 'WS' && (
+                                        <APISecurity api={apiConfig} configDispatcher={configDispatcher} 
+                                            componentValidator={componentValidator} />
+                                        { api.type !== 'WS' && componentValidator.includes("cors") && (
                                             <CORSConfiguration api={apiConfig} 
                                                 configDispatcher={configDispatcher} />
                                         )}
 
-                                        {((api.type !== 'GRAPHQL' || !isAsyncAPI) && api.gatewayType !== 'wso2/apk')
+                                        {((api.type !== 'GRAPHQL' || !isAsyncAPI) && 
+                                            componentValidator.includes("schemaValidation"))
                                             && <SchemaValidation api={apiConfig} 
                                                 configDispatcher={configDispatcher} />}
-                                        {api.type === 'GRAPHQL' && api.gatewayType !== 'wso2/apk' && (
+                                        {api.type === 'GRAPHQL' && componentValidator.includes("queryAnalysis") && (
                                             <Box mt={3}>
                                                 <QueryAnalysis
                                                     api={apiConfig}
@@ -572,7 +632,7 @@ export default function RuntimeConfiguration() {
                                         <ArrowForwardIcon className={classes.arrowForwardIcon} />
                                     )}
                                 </Grid>
-                                { api.gatewayType !== 'wso2/apk' && !isNonWebSubAsyncAPI && (
+                                { componentValidator.includes("responseCaching") && !isNonWebSubAsyncAPI && (
                                     <>
                                         <Typography className={classes.heading} variant='h6' component='h3'>
                                             {!isWebSub ? (
@@ -632,20 +692,30 @@ export default function RuntimeConfiguration() {
                                         style={{ height: 'calc(100% - 75px)' }}
                                         elevation={0}
                                     >
-                                        {!api.isAPIProduct() && (
+                                        {api.subtypeConfiguration?.subtype === 'AIAPI' && (
+                                            <BackendRateLimiting
+                                                api={apiConfig}
+                                                configDispatcher={configDispatcher}
+                                            />
+                                        )}
+                                        {api.subtypeConfiguration?.subtype !== 'AIAPI' && !api.isAPIProduct() && (
                                             <>
-                                                {(!isAsyncAPI && api.gatewayType !== 'wso2/apk') && (
+                                                {(!isAsyncAPI && componentValidator.includes("backendThroughput")) && (
                                                     <MaxBackendTps
                                                         api={apiConfig}
                                                         configDispatcher={configDispatcher}
                                                     />
                                                 )}
+                                            </>
+                                        )}
+                                        {!(api.isAPIProduct() || api.subtypeConfiguration?.subtype === 'AIAPI') && (
+                                            <>
                                                 { !isWebSub && (
-                                                    <Endpoints api={api} />
+                                                    <Endpoints api={api} endpointSecurity={endpointSecurity} />
                                                 )}
                                             </>
                                         )}
-                                        {api.isAPIProduct() && (
+                                        {api.subtypeConfiguration?.subtype !== 'AIAPI' && api.isAPIProduct() && (
                                             <Box alignItems='center' justifyContent='center' className={classes.info}>
                                                 <Typography variant='body1'>
                                                     <FormattedMessage

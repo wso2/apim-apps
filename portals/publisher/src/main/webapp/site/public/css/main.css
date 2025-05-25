@@ -273,9 +273,9 @@ a {
 /* Progress bar styles */
 .progress-bar-striped {
   position: absolute;
-  top: 50%;
+  top: 45%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translateX(-50%);
   background-color: #356eac52;
 }
 .progress-bar-striped > div {
@@ -325,6 +325,12 @@ a {
   color: #000 !important;
 }
 /* Styles to support rendering for markdown tables */
+.markdown-content-wrapper {
+  padding-left: 20px;
+  flex-grow: 0;
+  max-width: 50%;
+  flex-basis: 50%;
+}
 .markdown-content-wrapper table{
   border-collapse: collapse;
   margin: 25px 0;

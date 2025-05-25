@@ -22,6 +22,7 @@
 <%@page import="org.wso2.carbon.apimgt.impl.dto.SystemApplicationDTO"%>
 <%@page import="com.google.gson.GsonBuilder"%>
 <%@page import="java.net.URLDecoder"%>
+<%@page import="java.net.URLEncoder" %>
 <%@page import="com.google.gson.Gson"%>
 <%@page import="com.google.gson.JsonObject"%>
 <%@page import="java.net.URI"%>
@@ -170,6 +171,7 @@
         int tokenLength = accessToken.length();
 
         String idToken = (String) tokenResponse.get("id_token");
+
         int idTokenLength = idToken.length();
 
         String idTokenPart1 = idToken.substring(0, idTokenLength / 2);
@@ -240,7 +242,7 @@
         cookie.setMaxAge((int) expiresIn);
         response.addCookie(cookie);
 
-        cookie = new Cookie("devportal_session_state", request.getParameter("session_state"));
+        cookie = new Cookie("DEVPORTAL_SESSION_STATE", request.getParameter("session_state"));
         cookie.setPath(context + "/");
         cookie.setSecure(true);
         cookie.setMaxAge(-1);

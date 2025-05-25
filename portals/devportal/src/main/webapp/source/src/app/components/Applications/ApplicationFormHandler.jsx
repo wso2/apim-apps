@@ -32,6 +32,7 @@ import Application from 'AppData/Application';
 import { Link } from 'react-router-dom';
 import AuthManager from 'AppData/AuthManager';
 import Progress from 'AppComponents/Shared/Progress';
+import { app } from 'Settings';
 import ApplicationCreateBase from './Create/ApplicationCreateBase';
 
 const PREFIX = 'ApplicationFormHandler';
@@ -72,12 +73,15 @@ class ApplicationFormHandler extends React.Component {
                 tokenType: 'JWT',
                 groups: null,
                 attributes: {},
+                visibility: '',
             },
             isNameValid: true,
             throttlingPolicyList: [],
             allAppAttributes: null,
             isApplicationSharingEnabled: true,
+            isOrgAccessControlEnabled: false,
             applicationOwner: '',
+            isOrgWideAppUpdateEnabled: false,
         };
         this.handleAddChip = this.handleAddChip.bind(this);
         this.handleDeleteChip = this.handleDeleteChip.bind(this);
@@ -99,6 +103,16 @@ class ApplicationFormHandler extends React.Component {
             this.initApplicationCreateState();
         }
         this.isApplicationGroupSharingEnabled();
+        this.isOrgWideAppUpdateEnabled();
+        this.isOrgAccessControlEnabledEnabled();
+    }
+
+    /**
+     * retrieve Settings from the context and check the org-wide application update enabled
+     */
+    isOrgWideAppUpdateEnabled = () => {
+        const { settings: { orgWideAppUpdateEnabled } } = this.context;
+        this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
     }
 
     /**
@@ -121,7 +135,7 @@ class ApplicationFormHandler extends React.Component {
         const promisedApplication = Application.get(applicationId);
         // Get all the tires to populate the drop down.
         const api = new API();
-        const promiseTiers = api.getAllTiers('application');
+        const promiseTiers = api.getAllTiers('application', app.throttlingPolicyLimit);
         const promisedAttributes = api.getAllApplicationAttributes();
         Promise.all([promisedApplication, promiseTiers, promisedAttributes])
             .then((response) => {
@@ -136,6 +150,7 @@ class ApplicationFormHandler extends React.Component {
                 newRequest.groups = application.groups;
                 newRequest.tokenType = application.tokenType;
                 newRequest.attributes = application.attributes;
+                newRequest.visibility = application.visibility;
                 this.setState({
                     isEdit: true,
                     applicationRequest: newRequest,
@@ -153,6 +168,7 @@ class ApplicationFormHandler extends React.Component {
                 }
             });
         this.isApplicationGroupSharingEnabled();
+        this.isOrgAccessControlEnabledEnabled();
     }
 
     /**
@@ -162,7 +178,7 @@ class ApplicationFormHandler extends React.Component {
     initApplicationCreateState = () => {
         // Get all the tiers to populate the drop down.
         const api = new API();
-        const promiseTiers = api.getAllTiers('application');
+        const promiseTiers = api.getAllTiers('application', app.throttlingPolicyLimit);
         const promisedAttributes = api.getAllApplicationAttributes();
         Promise.all([promiseTiers, promisedAttributes])
             .then((response) => {
@@ -409,13 +425,23 @@ class ApplicationFormHandler extends React.Component {
     }
 
     /**
+     * retrieve Settings from the context and check the application sharing enabled
+     * @param {*} settingsData required data
+     */
+    isOrgAccessControlEnabledEnabled = () => {
+        const settingsContext = this.context;
+        const enabled = settingsContext.settings.orgAccessControlEnabled;
+        this.setState({ isOrgAccessControlEnabled: enabled });
+    }
+
+    /**
      * @inheritdoc
      * @memberof ApplicationFormHandler
      */
     render() {
         const {
             throttlingPolicyList, applicationRequest, isNameValid, allAppAttributes, isApplicationSharingEnabled,
-            isEdit, applicationOwner,
+            isEdit, applicationOwner, isOrgWideAppUpdateEnabled, isOrgAccessControlEnabled,
         } = this.state;
         const { match: { params } } = this.props;
 
@@ -488,8 +514,10 @@ class ApplicationFormHandler extends React.Component {
                                     isRequiredAttribute={this.isRequiredAttribute}
                                     getAttributeValue={this.getAttributeValue}
                                     isApplicationSharingEnabled={isApplicationSharingEnabled}
+                                    isOrgAccessControlEnabled={isOrgAccessControlEnabled}
                                     handleDeleteChip={this.handleDeleteChip}
                                     handleAddChip={this.handleAddChip}
+                                    enable
                                 />
 
                                 <Box display='flex' justifyContent='flex-start' mt={4} spacing={1}>
@@ -501,7 +529,8 @@ class ApplicationFormHandler extends React.Component {
                                             onClick={isEdit ? this.saveEdit : this.saveApplication}
                                             disabled={
                                                 isEdit
-                                                && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase()
+                                                && (!isOrgWideAppUpdateEnabled
+                                                && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase())
                                             }
                                             className={classes.button}
                                         >

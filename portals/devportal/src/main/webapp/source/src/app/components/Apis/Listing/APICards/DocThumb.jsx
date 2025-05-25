@@ -16,245 +16,173 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
-import Typography from '@mui/material/Typography';
-import { Link } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import classNames from 'classnames';
-import { FormattedMessage } from 'react-intl';
-import MaterialIcons from 'MaterialIcons';
 import { useTheme } from '@mui/material';
+import Typography from '@mui/material/Typography';
+import { useHistory } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import { FormattedMessage } from 'react-intl';
 import ImageGenerator from './ImageGenerator';
-import { ApiContext } from '../../Details/ApiContext';
 
 const PREFIX = 'DocThumbLegacy';
 
 const classes = {
-    thumbContent: `${PREFIX}-thumbContent`,
-    thumbLeft: `${PREFIX}-thumbLeft`,
-    thumbRight: `${PREFIX}-thumbRight`,
-    thumbInfo: `${PREFIX}-thumbInfo`,
-    thumbHeader: `${PREFIX}-thumbHeader`,
-    contextBox: `${PREFIX}-contextBox`,
-    thumbWrapper: `${PREFIX}-thumbWrapper`,
-    deleteIcon: `${PREFIX}-deleteIcon`,
-    textWrapper: `${PREFIX}-textWrapper`,
-    imageWrapper: `${PREFIX}-imageWrapper`,
-    imageOverlap: `${PREFIX}-imageOverlap`,
+    root: `${PREFIX}-root`,
+    media: `${PREFIX}-media`,
+    content: `${PREFIX}-content`,
+    actions: `${PREFIX}-actions`,
+    header: `${PREFIX}-header`,
+    info: `${PREFIX}-info`,
+    apiName: `${PREFIX}-apiName`,
+    version: `${PREFIX}-version`,
+    subtitle: `${PREFIX}-subtitle`,
 };
 
-const Root = styled('div')((
-    {
-        theme,
+const StyledCard = styled(Card)(({ theme }) => ({
+    [`&.${classes.root}`]: {
+        width: theme.custom.thumbnail.width,
+        backgroundColor: '#f5f5f5',
+        minHeight: 330,
+        margin: theme.spacing(2),
+        cursor: 'pointer',
+        transition: 'background-color 0.3s ease',
+        '&:hover': {
+            backgroundColor: theme.palette.grey[300],
+        },
     },
-) => ({
-    [`& .${classes.thumbContent}`]: {
-        width: theme.custom.thumbnail.width - theme.spacing(1),
-        backgroundColor: theme.palette.background.paper,
+    [`& .${classes.media}`]: {
+        height: 200,
+    },
+    [`& .${classes.content}`]: {
+        paddingBottom: theme.spacing(1),
+    },
+    [`& .${classes.actions}`]: {
+        display: 'flex',
+        justifyContent: 'space-between',
         padding: theme.spacing(1),
-        minHeight: 130,
     },
-
-    [`& .${classes.thumbLeft}`]: {
-        alignSelf: 'flex-start',
+    [`& .${classes.header}`]: {
+        whiteSpace: 'nowrap',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+    },
+    [`& .${classes.info}`]: {
+        display: 'flex',
+        justifyContent: 'space-between',
+    },
+    [`& .${classes.apiName}`]: {
         flex: 1,
     },
-
-    [`& .${classes.thumbRight}`]: {
-        alignSelf: 'flex-end',
-        display: 'flex',
-        flexDirection: 'column',
+    [`& .${classes.version}`]: {
+        flex: 1,
+        textAlign: 'right',
     },
-
-    [`& .${classes.thumbInfo}`]: {
-        display: 'flex',
-    },
-
-    [`& .${classes.thumbHeader}`]: {
-        width: theme.custom.thumbnail.width - theme.spacing(1),
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        cursor: 'pointer',
-        margin: 0,
-    },
-
-    [`& .${classes.contextBox}`]: {
-        width: parseInt((theme.custom.thumbnail.width - theme.spacing(1)) / 2, 10),
-        whiteSpace: 'nowrap',
-        overflow: 'hidden',
-        textOverflow: 'ellipsis',
-        cursor: 'pointer',
-        margin: 0,
-        display: 'inline-block',
-        lineHeight: '1em',
-    },
-
-    [`&.${classes.thumbWrapper}`]: {
-        position: 'relative',
-        paddingTop: 15,
-        marginLeft: theme.spacing(2),
-    },
-
-    [`& .${classes.deleteIcon}`]: {
-        fill: 'red',
-    },
-
-    [`& .${classes.textWrapper}`]: {
-        color: theme.palette.text.secondary,
-        textDecoration: 'none',
-    },
-
-    [`& .${classes.imageWrapper}`]: {
-        color: theme.palette.text.secondary,
-        backgroundColor: theme.palette.background.paper,
-        width: theme.custom.thumbnail.width + theme.spacing(1),
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-    },
-
-    [`& .${classes.imageOverlap}`]: {
-        position: 'absolute',
-        bottom: 1,
-        backgroundColor: theme.custom.thumbnail.contentBackgroundColor,
+    [`& .${classes.subtitle}`]: {
+        color: theme.palette.grey[600],
+        fontSize: '0.75rem',
     },
 }));
 
-const windowURL = window.URL || window.webkitURL;
-/**
- *
- *
- * @class DocThumbLegacy
- * @extends {React.Component}
- */
-class DocThumbLegacy extends React.Component {
-    /**
-     * Creates an instance of DocThumbLegacy.
-     * @param {JSON} props properties
-     * @memberof DocThumbLegacy
-     */
-    constructor(props) {
-        super(props);
-        this.state = {
-            category: MaterialIcons.categories[0].name,
-            selectedIcon: null,
-            color: null,
-            backgroundIndex: null,
-            imageObj: null,
+const DocThumbLegacy = ({ doc }) => {
+    const [state] = useState({
+        category: null,
+        selectedIcon: null,
+        color: null,
+        backgroundIndex: null,
+        imageObj: null,
+    });
+
+    const theme = useTheme();
+    const history = useHistory();
+    const detailsLink = `/apis/${doc.apiUUID}/documents/${doc.id}/details`;
+    const {
+        category, selectedIcon, color, backgroundIndex,
+    } = state;
+    const {
+        name, sourceType, apiName, apiVersion,
+    } = doc;
+
+    useEffect(() => {
+        return () => {
+            if (state.imageObj) {
+                window.URL.revokeObjectURL(state.imageObj);
+            }
         };
-    }
+    }, [state.imageObj]);
 
-    /**
-     * Clean up resource
-     */
-    componentWillUnmount() {
-        const { thumbnail, imageObj } = this.state;
-        if (thumbnail) {
-            windowURL.revokeObjectURL(imageObj);
-        }
-    }
+    const handleCardClick = () => {
+        history.push(detailsLink);
+    };
 
-    /**
-     * @returns {JSX} doc thumbnail
-     * @memberof DocThumbLegacy
-     */
-    render() {
-        const {
-            selectedIcon, color, backgroundIndex, category,
-        } = this.state;
-        const { doc, theme } = this.props;
-        const {
-            doc: {
-                name, sourceType, apiName, apiVersion, id, apiUUID,
-            },
-        } = this.props;
-        const detailsLink = '/apis/' + apiUUID + '/documents/' + id + '/details';
-        const { thumbnail } = theme.custom;
-        const imageWidth = thumbnail.width;
-        const defaultImage = thumbnail.defaultApiImage;
-
-        const ImageView = (
-            <ImageGenerator
-                width={imageWidth}
-                height={140}
-                api={doc}
-                fixedIcon={{
-                    key: selectedIcon,
-                    color,
-                    backgroundIndex,
-                    category,
-                    doc,
-                }}
-            />
-        );
-
-        return (
-            <Root className={classes.thumbWrapper}>
-                <Link to={detailsLink} className={classes.imageWrapper}>
-                    {!defaultImage && ImageView}
-                    {defaultImage && <img src={defaultImage} alt='document' />}
-                </Link>
-
-                <div
-                    className={classNames(classes.thumbContent, {
-                        [classes.imageOverlap]: thumbnail.contentPictureOverlap,
-                    })}
+    return (
+        <StyledCard className={classes.root} onClick={handleCardClick}>
+            {theme.custom.thumbnail.defaultApiImage ? (
+                <CardMedia
+                    className={classes.media}
+                    image={theme.custom.thumbnail.defaultApiImage}
+                    title='Document Image'
+                />
+            ) : (
+                <ImageGenerator
+                    width={theme.custom.thumbnail.width}
+                    height={140}
+                    api={doc}
+                    fixedIcon={{
+                        key: selectedIcon,
+                        color,
+                        backgroundIndex,
+                        category,
+                        doc,
+                    }}
+                />
+            )}
+            <CardContent className={classes.content}>
+                <Typography
+                    variant='h5'
+                    component='div'
+                    className={classes.header}
+                    title={name}
                 >
-                    <Link to={detailsLink} className={classes.textWrapper}>
-                        <Typography
-                            className={classes.thumbHeader}
-                            variant='h4'
-                            gutterBottom
-                            onClick={this.handleRedirectToAPIOverview}
-                            title={name}
-                        >
-                            {name}
-                        </Typography>
-                    </Link>
-                    <Typography variant='caption' gutterBottom align='left'>
-                        <FormattedMessage defaultMessage='Source Type:' id='Apis.Listing.DocThumb.sourceType' />
-                        {sourceType}
+                    {name}
+                </Typography>
+                <Typography variant='caption'>
+                    <FormattedMessage defaultMessage='Source Type: ' id='Apis.Listing.DocThumb.sourceType' />
+                    {sourceType}
+                </Typography>
+                <div className={classes.info}>
+                    <Typography variant='subtitle1' className={classes.apiName}>
+                        {apiName}
                     </Typography>
-                    <div className={classes.thumbInfo}>
-                        <div className={classes.thumbLeft}>
-                            <Typography variant='subtitle1'>{apiName}</Typography>
-                            <Typography variant='caption' gutterBottom align='left'>
-                                <FormattedMessage defaultMessage='Api Name' id='Apis.Listing.DocThumb.apiName' />
-                            </Typography>
-                        </div>
-                        <div className={classes.thumbRight}>
-                            <Typography variant='subtitle1' align='right' className={classes.contextBox}>
-                                {apiVersion}
-                            </Typography>
-                            <Typography variant='caption' gutterBottom align='right' component='div'>
-                                <FormattedMessage defaultMessage='API Version' id='Apis.Listing.DocThumb.apiVersion' />
-                            </Typography>
-                        </div>
-                    </div>
+                    <Typography variant='subtitle1' className={classes.version}>
+                        {apiVersion}
+                    </Typography>
                 </div>
-            </Root>
-        );
-    }
-}
-
-DocThumbLegacy.propTypes = {
-    classes: PropTypes.shape({}).isRequired,
-    theme: PropTypes.shape({}).isRequired,
+                <div className={classes.info}>
+                    <Typography className={classes.subtitle}>
+                        <FormattedMessage defaultMessage='API Name' id='Apis.Listing.DocThumb.apiName' />
+                    </Typography>
+                    <Typography className={classes.subtitle} style={{ textAlign: 'right' }}>
+                        <FormattedMessage defaultMessage='API Version' id='Apis.Listing.DocThumb.apiVersion' />
+                    </Typography>
+                </div>
+            </CardContent>
+        </StyledCard>
+    );
 };
 
-DocThumbLegacy.contextType = ApiContext;
+DocThumbLegacy.propTypes = {
+    doc: PropTypes.shape({
+        name: PropTypes.string,
+        sourceType: PropTypes.string,
+        apiName: PropTypes.string,
+        apiVersion: PropTypes.string,
+        id: PropTypes.string,
+        apiUUID: PropTypes.string,
+    }).isRequired,
+};
 
-function DocThumb(props) {
-    const { doc } = props;
-    const theme = useTheme();
-    return (
-        <DocThumbLegacy
-            doc={doc}
-            theme={theme}
-        />
-    );
-}
-
-export default (DocThumb);
+export default DocThumbLegacy;

@@ -8,7 +8,8 @@ on:
     branches:
       - main
   workflow_dispatch:
-
+concurrency:
+  group: ${{ github.event.number }}
 jobs:
   build-product:
     runs-on: ubuntu-latest
@@ -29,9 +30,9 @@ jobs:
         with:
           java-version: 11.0.19+7
           distribution: 'temurin'
-      - uses: actions/setup-node@v1
+      - uses: actions/setup-node@v4
         with:
-          node-version: '16'
+          node-version: '22'
       - name: Cache maven packages
         uses: actions/cache@v2
         with:
@@ -52,19 +53,22 @@ jobs:
           ref: refs/heads/master
           path: product-apim
       - name: Build Product-Apim with Maven
-        run: mvn clean install -Dcarbon.apimgt.ui.version=$(cat ../APIM_APPS_VERSION_FILE) -fae --file product-apim/pom.xml -DskipBenchMarkTest=true -DskipIntegrationTests=true
+        run: mvn clean install -Dcarbon.apimgt.ui.version=$(cat ../APIM_APPS_VERSION_FILE) -fae --file product-apim/all-in-one-apim/pom.xml -DskipBenchMarkTest=true -DskipIntegrationTests=true
       - name: Get product.version
-        run: mvn help:evaluate -Dexpression=project.version -q --file product-apim/pom.xml -DforceStdout > ../PRODUCT_APIM_VERSION_FILE
+        run: mvn help:evaluate -Dexpression=project.version -q --file product-apim/all-in-one-apim/pom.xml -DforceStdout > ../PRODUCT_APIM_VERSION_FILE
       - name: Print product.apim.version
         run: |
           echo $(cat ../PRODUCT_APIM_VERSION_FILE)
       - name: start APIM server
         run: |
-          unzip product-apim/modules/distribution/product/target/wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE).zip
+          unzip product-apim/all-in-one-apim/modules/distribution/product/target/wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE).zip
           printf "\n[apim.devportal]\nenable_application_sharing = true\napplication_sharing_type = \"default\"\n" >> wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE)/repository/conf/deployment.toml
           sh wso2am-$(cat ../PRODUCT_APIM_VERSION_FILE)/bin/api-manager.sh start
           sleep 5m # sleep for 5 min to start the server
           nc -zv localhost 9443
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
       - name: Cypress run
         uses: cypress-io/github-action@v4
         with:
@@ -72,19 +76,19 @@ jobs:
           working-directory: 'apim-apps/tests'
           spec: '**/*.spec.js'
       - name: Upload ScreenShots
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: failure()
         with:
           name: cypress-screenshots
           path: apim-apps/tests/cypress/screenshots
       - name: Upload videos
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: cypress-videos
           path: apim-apps/tests/cypress/videos
       - name: Upload Logs
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         if: always()
         with:
           name: server-logs

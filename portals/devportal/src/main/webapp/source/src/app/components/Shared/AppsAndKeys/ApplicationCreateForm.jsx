@@ -16,14 +16,15 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
+import Switch from '@mui/material/Switch'; // Import Switch component
 import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 import ChipInput from 'AppComponents/Shared/ChipInput'; // DEPRECATED: DON'T USE THIS COMPONENT or even COPY
-
+import { Typography, Grid, Box } from '@mui/material';
 
 const PREFIX = 'ApplicationCreateForm';
 
@@ -69,6 +70,9 @@ const Root = styled('form')((
 }));
 
 const ApplicationCreate = (props) => {
+
+    const [isSwitchOn, setSwitchOn] = useState(false);
+
     /**
      * This method is used to handle the updating of create application
      * request object.
@@ -101,6 +105,17 @@ const ApplicationCreate = (props) => {
         updateApplicationRequest(newRequest);
     };
 
+    // Toggle the switch
+    const handleSwitchToggle = (event) => {
+        const isChecked = event.target.checked;
+        const { applicationRequest, updateApplicationRequest } = props;
+        const newRequest = { ...applicationRequest };
+        newRequest.visibility = isChecked ? 'SHARED_WITH_ORG' : 'PRIVATE';
+        updateApplicationRequest(newRequest);
+        // Update the state of the switch
+        setSwitchOn(isChecked);
+    };
+
     /**
      *
      *
@@ -119,6 +134,7 @@ const ApplicationCreate = (props) => {
         validateName,
         validateDescription,
         isApplicationSharingEnabled,
+        isOrgAccessControlEnabled,
         handleAddChip,
         handleDeleteChip,
     } = props;
@@ -233,6 +249,34 @@ const ApplicationCreate = (props) => {
                 onBlur={(e) => validateDescription(e.target.value)}
 
             />
+            {
+                isOrgAccessControlEnabled && sessionStorage.getItem('userOrganization') && (
+                    <Box display='flex' flexDirection='row' sx={{ pt: 1 }}>
+                        <Typography sx={{ fontSize: 14 }}>
+                            <FormattedMessage
+                                defaultMessage="Share with the organization"
+                                id="Shared.AppsAndKeys.ApplicationCreateForm.enable.share.app.with.org"
+                                classes={{
+                                    root: classes.mandatoryStarText,
+                                }}
+                            />
+                        </Typography>
+                        <Switch
+                            checked={applicationRequest?.visibility === 'SHARED_WITH_ORG'}
+                            onChange={handleSwitchToggle}
+                            name="orgSwitch"
+                            sx={{ mt: -0.75 }}
+                            inputProps={{
+                                'aria-label': intl.formatMessage({
+                                    defaultMessage: 'Share application with the organization',
+                                    id: 'Shared.AppsAndKeys.ApplicationCreateForm.enable.share.app.with.org.label',
+                                }),
+                            }}
+                        />
+                    </Box>
+                )
+            }
+
             {allAppAttributes && (
                 Object.entries(allAppAttributes).map((item) => (
                     item[1].hidden !== 'true' ? (
@@ -306,6 +350,7 @@ ApplicationCreate.propTypes = {
     updateApplicationRequest: PropTypes.func.isRequired,
     isRequiredAttribute: PropTypes.func.isRequired,
     isApplicationSharingEnabled: PropTypes.bool.isRequired,
+    isOrgAccessControlEnabled: PropTypes.bool.isRequired,
     handleAddChip: PropTypes.func.isRequired,
     handleDeleteChip: PropTypes.func.isRequired,
     throttlingPolicyList: PropTypes.arrayOf(PropTypes.string).isRequired,

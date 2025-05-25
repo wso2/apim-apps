@@ -18,11 +18,14 @@ import React, { useState, useEffect, useContext } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import {
-    Grid, TextField, MenuItem,
+    Grid, TextField, Typography, MenuItem,
     Icon,
     ListItem,
     ListItemAvatar,
     ListItemText,
+    FormControlLabel,
+    FormControl,
+    RadioGroup, Radio,
 } from '@mui/material';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Table from '@mui/material/Table';
@@ -38,6 +41,7 @@ import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import APIValidation from 'AppData/APIValidation';
 import Alert from 'AppComponents/Shared/Alert';
 import CONSTS from 'AppData/Constants';
+import { useAppContext } from 'AppComponents/Shared/AppContext';
 
 import EditableParameterRow from './EditableParameterRow';
 
@@ -97,10 +101,23 @@ const StyledGrid = styled(Grid)(() => ({
  */
 function EndpointSecurity(props) {
     const { api } = useContext(APIContext);
+    const { settings } = useAppContext();
     const {
         intl, securityInfo, onChangeEndpointAuth, isProduction, saveEndpointSecurityConfig, closeEndpointSecurityConfig,
+        endpointSecurityTypes,
     } = props;
     const [endpointSecurityInfo, setEndpointSecurityInfo] = useState(CONSTS.DEFAULT_ENDPOINT_SECURITY);
+
+    if (securityInfo && securityInfo.proxyConfigs == null) {
+        securityInfo.proxyConfigs = {
+            proxyEnabled: false,
+            proxyHost: '',
+            proxyPort: '',
+            proxyUsername: '',
+            proxyPassword: '',
+            proxyProtocol: '',
+        };
+    }
     const [securityValidity, setSecurityValidity] = useState();
 
     const [showAddParameter, setShowAddParameter] = useState(false);
@@ -111,30 +128,9 @@ function EndpointSecurity(props) {
     const endpointType = isProduction ? 'production' : 'sandbox';
 
     const authTypes = () => {
-        const { gatewayType } = api; // Access gatewayType directly from api
-
-        if (gatewayType === 'wso2/apk') {
-            return [
-                {
-                    key: 'NONE',
-                    value: intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.none',
-                        defaultMessage: 'None',
-                    }),
-                },
-                {
-                    key: 'BASIC',
-                    value: intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.basic',
-                        defaultMessage: 'Basic Auth',
-                    }),
-                },
-            ];
-        }
-
-        // Default authTypes for other gateway types
-        return [
+        const types = [
             {
+                id: 'none',
                 key: 'NONE',
                 value: intl.formatMessage({
                     id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.none',
@@ -142,6 +138,7 @@ function EndpointSecurity(props) {
                 }),
             },
             {
+                id: 'basicAuth',
                 key: 'BASIC',
                 value: intl.formatMessage({
                     id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.basic',
@@ -149,6 +146,7 @@ function EndpointSecurity(props) {
                 }),
             },
             {
+                id: 'digest',
                 key: 'DIGEST',
                 value: intl.formatMessage({
                     id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.digest.auth',
@@ -156,6 +154,7 @@ function EndpointSecurity(props) {
                 }),
             },
             {
+                id: 'oauth2',
                 key: 'OAUTH',
                 value: intl.formatMessage({
                     id: 'Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.oauth',
@@ -163,6 +162,10 @@ function EndpointSecurity(props) {
                 }),
             },
         ];
+
+        const selectedTypes = [types[0]];
+
+        return selectedTypes.concat(types.filter((type) => endpointSecurityTypes?.includes(type.id)));
     };
 
     const grantTypes = [
@@ -187,15 +190,24 @@ function EndpointSecurity(props) {
             tmpSecurity = { ...securityInfo };
             const {
                 type, username, password, grantType, tokenUrl, clientId, clientSecret, customParameters,
+                connectionTimeoutDuration, connectionRequestTimeoutDuration, socketTimeoutDuration, proxyConfigs,
+                connectionTimeoutConfigType, proxyConfigType,
             } = securityInfo;
+            const secretPlaceholder = '******';
             tmpSecurity.type = type === null ? 'NONE' : type;
             tmpSecurity.username = username;
-            tmpSecurity.password = password === '' ? '**********' : password;
+            tmpSecurity.password = password === '' ? secretPlaceholder : password;
             tmpSecurity.grantType = grantType;
             tmpSecurity.tokenUrl = tokenUrl;
-            tmpSecurity.clientId = clientId === '' ? '********' : clientId;
-            tmpSecurity.clientSecret = clientSecret === '' ? '********' : clientSecret;
+            tmpSecurity.clientId = clientId === '' ? secretPlaceholder : clientId;
+            tmpSecurity.clientSecret = clientSecret === '' ? secretPlaceholder : clientSecret;
             tmpSecurity.customParameters = customParameters;
+            tmpSecurity.connectionTimeoutDuration = connectionTimeoutDuration;
+            tmpSecurity.connectionRequestTimeoutDuration = connectionRequestTimeoutDuration;
+            tmpSecurity.socketTimeoutDuration = socketTimeoutDuration;
+            tmpSecurity.proxyConfigs = proxyConfigs;
+            tmpSecurity.connectionTimeoutConfigType = connectionTimeoutConfigType;
+            tmpSecurity.proxyConfigType = proxyConfigType;
         }
         setEndpointSecurityInfo(tmpSecurity);
     }, [securityInfo]);
@@ -631,34 +643,403 @@ function EndpointSecurity(props) {
             {endpointSecurityInfo.type === 'OAUTH' && (endpointSecurityInfo.grantType === 'CLIENT_CREDENTIALS'
             || endpointSecurityInfo.grantType === 'PASSWORD')
             && (
-                <Grid item xs={12}>
-                    <ListItem
-                        className={classes.listItem}
-                    >
-                        <ListItemAvatar>
-                            <Icon color='primary'>info</Icon>
-                        </ListItemAvatar>
-                        <ListItemText>
+                <>
+                    {settings && settings.retryCallWithNewOAuthTokenEnabled && (
+                        <>
+                            <Grid
+                                item
+                                xs={12}
+                                style={{
+                                    paddingTop: '10px',
+                                    borderTop: '1px solid Gainsboro',
+                                }}
+                            >
+                                <Typography>
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.token.endpoint.
+                                            connection.configurations'
+                                        defaultMessage='Token Endpoint Connection Configurations'
+                                    />
+                                </Typography>
+                            </Grid>
+
+                            <Grid item xs={12}>
+                                <Typography className={classes.subTitle}>
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.token.endpoint.
+                                            connection.configurations.timeout.configurations'
+                                        defaultMessage='Timeout Configurations'
+                                    />
+                                </Typography>
+                                <FormControl>
+                                    <RadioGroup
+                                        row
+                                        name='connectionTimeoutConfigType'
+                                        value={endpointSecurityInfo.connectionTimeoutConfigType}
+                                        defaultValue={endpointSecurityInfo.proxyConfigType}
+                                        onChange={(event) => setEndpointSecurityInfo({
+                                            ...endpointSecurityInfo,
+                                            connectionTimeoutConfigType: event.target.value,
+                                        })}
+                                        onBlur={() => validateAndUpdateSecurityInfo('connectionTimeoutConfigType')}
+                                    >
+                                        <FormControlLabel
+                                            value='GLOBAL'
+                                            control={<Radio />}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .token.endpoint.connection.configurations.global'
+                                                    defaultMessage='Global'
+                                                />
+                                            )}
+                                        />
+                                        <FormControlLabel
+                                            value='ENDPOINT_SPECIFIC'
+                                            control={<Radio />}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .token.endpoint.connection.configurations.endpoint.specific'
+                                                    defaultMessage='Endpoint Specific'
+                                                />
+                                            )}
+                                        />
+                                        <FormControlLabel
+                                            value='NONE'
+                                            control={<Radio />}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .token.endpoint.connection.configurations.none'
+                                                    defaultMessage='None'
+                                                />
+                                            )}
+                                        />
+                                    </RadioGroup>
+                                </FormControl>
+                            </Grid>
+
+                            {endpointSecurityInfo.connectionTimeoutConfigType === 'ENDPOINT_SPECIFIC' && (
+                                <>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            className={classes.textField}
+                                            id='auth-connectionTimeoutDuration'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .connection.timeout.duration'
+                                                    defaultMessage='Connection Timeout Duration (ms)'
+                                                />
+                                            )}
+                                            type='number'
+                                            margin='normal'
+                                            onChange={(event) => setEndpointSecurityInfo(
+                                                {
+                                                    ...endpointSecurityInfo,
+                                                    connectionTimeoutDuration: event.target
+                                                        .value,
+                                                },
+                                            )}
+                                            value={endpointSecurityInfo.connectionTimeoutDuration}
+                                            onBlur={() => validateAndUpdateSecurityInfo('connectionTimeoutDuration')}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            className={classes.textField}
+                                            id='duration-connectionRequestTimeoutDuration'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .connection.request.timeout.duration'
+                                                    defaultMessage='Connection Request Timeout Duration (ms)'
+                                                />
+                                            )}
+                                            type='number'
+                                            margin='normal'
+                                            onChange={(event) => setEndpointSecurityInfo(
+                                                {
+                                                    ...endpointSecurityInfo,
+                                                    connectionRequestTimeoutDuration: event
+                                                        .target.value,
+                                                },
+                                            )}
+                                            value={endpointSecurityInfo.connectionRequestTimeoutDuration}
+                                            onBlur={() => validateAndUpdateSecurityInfo(
+                                                'connectionRequestTimeoutDuration',
+                                            )}
+                                        />
+                                    </Grid>
+
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            required
+                                            fullWidth
+                                            className={classes.textField}
+                                            id='duration-socketTimeoutDuration'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .socket.timeout.duration'
+                                                    defaultMessage='Socket Timeout Duration (ms)'
+                                                />
+                                            )}
+                                            type='number'
+                                            margin='normal'
+                                            onChange={(event) => setEndpointSecurityInfo(
+                                                { ...endpointSecurityInfo, socketTimeoutDuration: event.target.value },
+                                            )}
+                                            value={endpointSecurityInfo.socketTimeoutDuration}
+                                            onBlur={() => validateAndUpdateSecurityInfo('socketTimeoutDuration')}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+                            <Grid
+                                item
+                                xs={12}
+                                style={{
+                                    paddingTop: '10px',
+                                }}
+                            >
+                                <Typography className={classes.subTitle}>
+                                    <FormattedMessage
+                                        id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.token.endpoint
+                                        .connection.configurations.proxy.configurations'
+                                        defaultMessage='Proxy Configurations'
+                                    />
+                                </Typography>
+                                <FormControl>
+                                    <RadioGroup
+                                        row
+                                        name='proxyConfigType'
+                                        value={endpointSecurityInfo.proxyConfigType}
+                                        defaultValue={endpointSecurityInfo.proxyConfigType}
+                                        onChange={(event) => {
+                                            if (event.target.value === 'ENDPOINT_SPECIFIC') {
+                                                endpointSecurityInfo.proxyConfigs.proxyEnabled = true;
+                                            } else {
+                                                endpointSecurityInfo.proxyConfigs.proxyEnabled = false;
+                                            }
+                                            endpointSecurityInfo.proxyConfigType = event.target.value;
+                                            setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                            validateAndUpdateSecurityInfo('endpointSecurityInfo');
+                                        }}
+                                        onBlur={() => validateAndUpdateSecurityInfo('proxyConfigType')}
+                                    >
+                                        <FormControlLabel
+                                            value='GLOBAL'
+                                            control={<Radio />}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .token.endpoint.proxy.configurations.global'
+                                                    defaultMessage='Global'
+                                                />
+                                            )}
+                                        />
+                                        <FormControlLabel
+                                            value='ENDPOINT_SPECIFIC'
+                                            control={<Radio />}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .token.endpoint.proxy.configurations.endpoint.specific'
+                                                    defaultMessage='Endpoint Specific'
+                                                />
+                                            )}
+                                        />
+                                        <FormControlLabel
+                                            value='NONE'
+                                            control={<Radio />}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .token.endpoint.proxy.configurations.none'
+                                                    defaultMessage='None'
+                                                />
+                                            )}
+                                        />
+                                    </RadioGroup>
+                                </FormControl>
+                            </Grid>
+                            {endpointSecurityInfo.proxyConfigType === 'ENDPOINT_SPECIFIC' && (
+                                <>
+                                    <Grid
+                                        item
+                                        xs={6}
+                                        style={{}}
+                                    >
+                                        <TextField
+                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            required
+                                            fullWidth
+                                            variant='outlined'
+                                            id='proxy-host'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .proxyHost.input'
+                                                    defaultMessage='Proxy Hostname'
+                                                />
+                                            )}
+                                            onChange={(event) => {
+                                                endpointSecurityInfo.proxyConfigs.proxyHost = event.target.value;
+                                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                                validateAndUpdateSecurityInfo('proxyConfigs');
+                                            }}
+                                            value={endpointSecurityInfo.proxyConfigs.proxyHost}
+                                            onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
+                                        />
+                                    </Grid>
+                                    <Grid
+                                        item
+                                        xs={6}
+                                        style={{}}
+                                    >
+                                        <TextField
+                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            required
+                                            fullWidth
+                                            variant='outlined'
+                                            id='proxy-port'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .proxyPort.input'
+                                                    defaultMessage='Proxy Port'
+                                                />
+                                            )}
+                                            onChange={(event) => {
+                                                endpointSecurityInfo.proxyConfigs.proxyPort = event.target.value;
+                                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                                validateAndUpdateSecurityInfo('proxyConfigs');
+                                            }}
+                                            value={endpointSecurityInfo.proxyConfigs.proxyPort}
+                                            onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
+                                        />
+                                    </Grid>
+                                    <Grid
+                                        item
+                                        xs={6}
+                                        style={{}}
+                                    >
+                                        <TextField
+                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            fullWidth
+                                            variant='outlined'
+                                            id='proxy-username'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .proxyUsername.input'
+                                                    defaultMessage='Proxy Username'
+                                                />
+                                            )}
+                                            onChange={(event) => {
+                                                endpointSecurityInfo.proxyConfigs.proxyUsername = event.target.value;
+                                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                                validateAndUpdateSecurityInfo('proxyConfigs');
+                                            }}
+                                            value={endpointSecurityInfo.proxyConfigs.proxyUsername}
+                                            onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
+                                        />
+                                    </Grid>
+                                    <Grid
+                                        item
+                                        xs={6}
+                                        style={{}}
+                                    >
+                                        <TextField
+                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            fullWidth
+                                            variant='outlined'
+                                            id='proxy-password'
+                                            type='password'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .proxyPassword.input'
+                                                    defaultMessage='Proxy Password'
+                                                />
+                                            )}
+                                            onChange={(event) => {
+                                                endpointSecurityInfo.proxyConfigs.proxyPassword = event.target.value;
+                                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                                validateAndUpdateSecurityInfo('proxyConfigs');
+                                            }}
+                                            value={endpointSecurityInfo.proxyConfigs.proxyPassword}
+                                            onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
+                                        />
+                                    </Grid>
+                                    <Grid
+                                        item
+                                        xs={6}
+                                        style={{}}
+                                    >
+                                        <TextField
+                                            disabled={isRestricted(['apim:api_create'], api)}
+                                            required
+                                            fullWidth
+                                            variant='outlined'
+                                            id='proxy-protocol'
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity
+                                                    .proxyProtocol.input'
+                                                    defaultMessage='Proxy Protocol'
+                                                />
+                                            )}
+                                            onChange={(event) => {
+                                                endpointSecurityInfo.proxyConfigs.proxyProtocol = event.target.value;
+                                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                                validateAndUpdateSecurityInfo('proxyConfigs');
+                                            }}
+                                            value={endpointSecurityInfo.proxyConfigs.proxyProtocol}
+                                            onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+                        </>
+                    )}
+                    <Grid item xs={12}>
+                        <ListItem
+                            className={classes.listItem}
+                        >
+                            <ListItemAvatar>
+                                <Icon color='primary'>info</Icon>
+                            </ListItemAvatar>
+                            <ListItemText>
+                                <FormattedMessage
+                                    id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.add.new.parameter.
+                                    info'
+                                    defaultMessage={'You can add any additional payload parameters'
+                                    + ' required for the endpoint below'}
+                                />
+                            </ListItemText>
+                        </ListItem>
+                        <Button
+                            size='medium'
+                            className={classes.button}
+                            onClick={toggleAddParameter}
+                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                        >
+                            <AddCircle className={classes.buttonIcon} />
                             <FormattedMessage
-                                id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.add.new.parameter.info'
-                                defaultMessage={'You can add any additional payload parameters'
-                                + ' required for the endpoint below'}
+                                id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.add.new.parameter'
+                                defaultMessage='Add New Parameter'
                             />
-                        </ListItemText>
-                    </ListItem>
-                    <Button
-                        size='medium'
-                        className={classes.button}
-                        onClick={toggleAddParameter}
-                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                    >
-                        <AddCircle className={classes.buttonIcon} />
-                        <FormattedMessage
-                            id='Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.add.new.parameter'
-                            defaultMessage='Add New Parameter'
-                        />
-                    </Button>
-                </Grid>
+                        </Button>
+                    </Grid>
+                </>
             )}
 
             <Grid item xs={12} />

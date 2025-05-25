@@ -42,6 +42,7 @@ import API from 'AppData/api';
 import MUIAlert from 'AppComponents/Shared/MuiAlert';
 import DeleteApiButton from './DeleteApiButton';
 import CreateNewVersionButton from './CreateNewVersionButton';
+import ShareButton from './ShareButton';
 
 const PREFIX = 'APIDetailsTopMenu';
 const classes = {
@@ -60,6 +61,7 @@ const classes = {
     topRevisionStyle: `${PREFIX}-topRevisionStyle`,
     readOnlyStyle: `${PREFIX}-readOnlyStyle`,
     active: `${PREFIX}-active`,
+    alertMargin: `${PREFIX}-alertMargin`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -140,6 +142,9 @@ const Root = styled('div')(({ theme }) => ({
         borderRadius: '50%',
         alignItems: 'center',
     },
+    [`.${classes.alertMargin}`]: {
+        marginLeft: theme.spacing(1),
+    },
 }));
 
 const APIDetailsTopMenu = (props) => {
@@ -180,6 +185,19 @@ const APIDetailsTopMenu = (props) => {
             id: 'Apis.Details.LifeCycle.State.Status.PRE-RELEASED', defaultMessage: 'PRE-RELEASED',
         }),
     };
+
+    const [userOrg, setUserOrg] = useState(null);
+
+    useEffect(() => {
+        new API()
+            .getUserOrganizationInfo()
+            .then((result) => {
+                setUserOrg(result.body.organizationId);
+            })
+            .catch((error) => {
+                throw error;
+            });
+    }, []);
 
     /**
          * The component for advanced endpoint configurations.
@@ -294,6 +312,7 @@ const APIDetailsTopMenu = (props) => {
                         variant='outlined'
                         severity='warning'
                         icon={false}
+                        className={classes.alertMargin}
                     >
                         <FormattedMessage
                             id='Apis.Details.components.APIDetailsTopMenu.read.only.label'
@@ -301,13 +320,27 @@ const APIDetailsTopMenu = (props) => {
                         />
                     </MUIAlert>
                 )}
-                <div className={classes.dateWrapper} />
+                {(api.subtypeConfiguration?.subtype === 'AIAPI') && (
+                    <MUIAlert
+                        data-testid='itest-ai-api-label'
+                        variant='outlined'
+                        severity='info'
+                        icon={false}
+                        className={classes.alertMargin}
+                    >
+                        <FormattedMessage
+                            id='Apis.Details.components.APIDetailsTopMenu.ai.api.label'
+                            defaultMessage='AI/LLM API'
+                        />
+                    </MUIAlert>
+                )}
                 {(api.advertiseInfo && api.advertiseInfo.advertised) && (
                     <MUIAlert
                         data-testid='itest-third-party-api-label'
                         variant='outlined'
                         severity='warning'
                         icon={false}
+                        className={classes.alertMargin}
                     >
                         <FormattedMessage
                             id='Apis.Details.components.APIDetailsTopMenu.advertise.only.label'
@@ -360,7 +393,8 @@ const APIDetailsTopMenu = (props) => {
                                 </MenuItem>
                             )}
                             {allRevisions && !isAPIProduct && allRevisions.map((item) => (
-                                <MenuItem value={item.id} component={Link} to={'/apis/' + item.id + '/' + lastIndex}>
+                                <MenuItem key={item.id} 
+                                    value={item.id} component={Link} to={'/apis/' + item.id + '/' + lastIndex}>
                                     <Grid
                                         container
                                         direction='row'
@@ -446,10 +480,18 @@ const APIDetailsTopMenu = (props) => {
                 )}
                 {/* Page error banner */}
                 {/* end of Page error banner */}
+                {api.apiType !== API.CONSTS.APIProduct && isVisibleInStore && userOrg 
+                    ? <>
+                        <ShareButton buttonClass={classes.viewInStoreLauncher}
+                            api={api} isAPIProduct={isAPIProduct} />
+                    </> : null
+                }
                 {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
                     ? null :
-                    <CreateNewVersionButton buttonClass={classes.viewInStoreLauncher}
-                        api={api} isAPIProduct={isAPIProduct} />}
+                    <>
+                        <CreateNewVersionButton buttonClass={classes.viewInStoreLauncher}
+                            api={api} isAPIProduct={isAPIProduct} />
+                    </>}
                 {(isDownloadable) && <VerticalDivider height={70} />}
                 <div className={classes.downloadApi}>
                     {(isDownloadable) && (
@@ -490,7 +532,9 @@ const APIDetailsTopMenu = (props) => {
 APIDetailsTopMenu.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,
-    api: PropTypes.shape({}).isRequired,
+    api: PropTypes.shape({
+        subtypeConfiguration: PropTypes.shape({}),
+    }).isRequired,
     isAPIProduct: PropTypes.bool.isRequired,
     imageUpdate: PropTypes.number.isRequired,
 };

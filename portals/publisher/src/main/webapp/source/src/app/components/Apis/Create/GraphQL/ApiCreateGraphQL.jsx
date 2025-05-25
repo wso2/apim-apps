@@ -25,7 +25,7 @@ import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
-import { Link, useHistory } from 'react-router-dom';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import API from 'AppData/api';
 import Alert from 'AppComponents/Shared/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
@@ -44,11 +44,22 @@ import ProvideGraphQL from './Steps/ProvideGraphQL';
  */
 export default function ApiCreateGraphQL(props) {
     const intl = useIntl();
-    const { multiGateway } = props;
+    let { multiGateway } = props;
     const [wizardStep, setWizardStep] = useState(0);
+    const location = useLocation();
+    const { data: assistantInfo, settings: assistantSettings,
+        multiGateway: assistantMultiGateway } = location.state || {};
     const history = useHistory();
-    const { data: settings } = usePublisherSettings();
     const [policies, setPolicies] = useState([]);
+    let { data: settings } = usePublisherSettings();
+
+    if (!settings) {
+        settings = assistantSettings;
+    }
+
+    if (!multiGateway) {
+        multiGateway = assistantMultiGateway;
+    }
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
@@ -85,7 +96,9 @@ export default function ApiCreateGraphQL(props) {
             case 'isFormValid':
                 return { ...currentState, [action]: value };
             case 'inputType':
-                return { ...currentState, [action]: value, inputValue: value === 'url' ? '' : null };
+                return { ...currentState, [action]: value,
+                    inputValue: value === 'url' || value === 'endpoint' ? '' : null
+                };
             case 'graphQLInfo':
                 return { ...currentState, [action]: value };
             case 'preSetAPI':
@@ -105,7 +118,29 @@ export default function ApiCreateGraphQL(props) {
         inputType: 'file',
         inputValue: '',
         formValidity: false,
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
+
+    if (assistantInfo && wizardStep === 0 && assistantInfo.source === 'DesignAssistant') {
+        setWizardStep(1);
+        inputsDispatcher({ action: 'preSetAPI', value: assistantInfo });
+        inputsDispatcher({ action: 'gatewayType', value: assistantInfo.gatewayType });
+        inputsDispatcher({ action: 'graphQLInfo', value: assistantInfo.graphQLInfo });
+        inputsDispatcher({ action: 'endpoint', value: assistantInfo.endpoint });
+        inputsDispatcher({ action: 'inputType', value: 'file' });
+        inputsDispatcher({ action: 'inputValue', value: assistantInfo.file });
+    }
+
+    /**
+     * Handles back button click for the API creation wizard for Design Asistant
+     * @param 
+     *  
+     */
+    const handleBackButtonOnClick = () => {
+        const landingPage = '/apis';
+        history.push(landingPage);
+    };
 
     /**
      *
@@ -145,28 +180,19 @@ export default function ApiCreateGraphQL(props) {
             endpoint,
             gatewayType,
             implementationType,
+            inputType,
             inputValue,
             graphQLInfo: { operations },
         } = apiInputs;
-
-        let defaultGatewayType;
-        if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
-            defaultGatewayType = 'wso2/synapse';
-        } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')){
-            defaultGatewayType = 'wso2/apk';
-        } else {
-            defaultGatewayType = 'default';
-        }
 
         const additionalProperties = {
             name,
             version,
             context,
-            gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
+            gatewayType,
             policies,
             operations,
         };
-        const uploadMethod = 'file';
         if (endpoint) {
             additionalProperties.endpointConfig = {
                 endpoint_type: 'http',
@@ -182,9 +208,13 @@ export default function ApiCreateGraphQL(props) {
         const apiData = {
             additionalProperties: JSON.stringify(additionalProperties),
             implementationType,
-            [uploadMethod]: uploadMethod,
-            file: inputValue,
         };
+
+        if (inputType === 'file') {
+            apiData.file = inputValue;
+        } else if (inputType === 'url' || inputType === 'endpoint') {
+            apiData.schema = apiInputs.graphQLInfo.graphQLSchema.schemaDefinition;
+        }
 
         newApi
             .importGraphQL(apiData)
@@ -222,61 +252,40 @@ export default function ApiCreateGraphQL(props) {
                     <Typography variant='h5'>
                         <FormattedMessage
                             id='Apis.Create.GraphQL.ApiCreateGraphQL.heading'
-                            defaultMessage='Create an API using a GraphQL SDL definition'
+                            defaultMessage='Create a GraphQL API'
                         />
                     </Typography>
                     <Typography variant='caption'>
                         <FormattedMessage
                             id='Apis.Create.GraphQL.ApiCreateGraphQL.sub.heading'
-                            defaultMessage='Create an API by importing an existing GraphQL SDL definition.'
+                            defaultMessage={'Create a GraphQL API by importing a SDL definition'
+                                + ' using a file, SDL hosted URL, or by using a GraphQL endpoint.'
+                            }
                         />
                     </Typography>
                 </>
             )}
         >
             <Box sx={{ mb: 2 }}>
-                {wizardStep === 0 && (
-                    <Stepper alternativeLabel activeStep={0}>
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.one'
-                                    defaultMessage='Provide GraphQL'
-                                />
-                            </StepLabel>
-                        </Step>
+                <Stepper alternativeLabel activeStep={wizardStep}>
+                    <Step>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.one'
+                                defaultMessage='Provide GraphQL'
+                            />
+                        </StepLabel>
+                    </Step>
 
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.two'
-                                    defaultMessage='Create API'
-                                />
-                            </StepLabel>
-                        </Step>
-                    </Stepper>
-                )}
-                {wizardStep === 1 && (
-                    <Stepper alternativeLabel activeStep={1}>
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.one'
-                                    defaultMessage='Provide GraphQL'
-                                />
-                            </StepLabel>
-                        </Step>
-
-                        <Step>
-                            <StepLabel>
-                                <FormattedMessage
-                                    id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.two'
-                                    defaultMessage='Create API'
-                                />
-                            </StepLabel>
-                        </Step>
-                    </Stepper>
-                )}
+                    <Step>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='Apis.Create.GraphQL.ApiCreateGraphQL.wizard.two'
+                                defaultMessage='Create API'
+                            />
+                        </StepLabel>
+                    </Step>
+                </Stepper>
             </Box>
 
             <Grid container spacing={2}>
@@ -295,6 +304,8 @@ export default function ApiCreateGraphQL(props) {
                             multiGateway={multiGateway}
                             api={apiInputs}
                             isAPIProduct={false}
+                            readOnlyAPIEndpoint={apiInputs.inputType === 'endpoint' ? apiInputs.endpoint : null}
+                            settings={settings}
                         />
                     )}
                 </Grid>
@@ -312,15 +323,21 @@ export default function ApiCreateGraphQL(props) {
                                 </Link>
                             )}
                             {wizardStep === 1 && (
-                                <Button onClick={
-                                    () => setWizardStep((step) => step - 1)
-                                }
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Create.GraphQL.ApiCreateGraphQL.back'
-                                        defaultMessage='Back'
-                                    />
-                                </Button>
+                                (assistantInfo && assistantInfo.source ===  'DesignAssistant') ? (
+                                    <Button onClick={handleBackButtonOnClick}>
+                                        <FormattedMessage
+                                            id='Apis.Create.GraphQL.ApiCreateGraphQL.designAssistant.back'
+                                            defaultMessage='Back'
+                                        />
+                                    </Button>
+                                ) : (
+                                    <Button onClick={() => setWizardStep((step) => step - 1)}>
+                                        <FormattedMessage
+                                            id='Apis.Create.GraphQL.ApiCreateGraphQL.back'
+                                            defaultMessage='Back'
+                                        />
+                                    </Button>
+                                )
                             )}
                         </Grid>
                         <Grid item>

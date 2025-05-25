@@ -26,7 +26,7 @@ import Alert from 'AppComponents/Shared/Alert';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import Box from '@mui/material/Box';
 import Typography from '@mui/material/Typography';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import Grid from '@mui/material/Grid';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
@@ -80,6 +80,9 @@ function reducer(state, newValue) {
         case 'dataAmount':
         case 'unitTime':
         case 'eventCount':
+        case 'totalTokenCount':
+        case 'promptTokenCount':
+        case 'completionTokenCount':
             return {
                 ...state,
                 defaultLimit: { ...state.defaultLimit, [field]: value },
@@ -125,11 +128,21 @@ function AddEdit(props) {
     const [validRoles, setValidRoles] = useState([]);
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [roleValidity, setRoleValidity] = useState(true);
+    const location = useLocation();
+    const isAI = location.state?.isAI || false;
 
     const [initialState, setInitialState] = useState({
         policyName: '',
         description: '',
-        defaultLimit: {
+        defaultLimit: isAI ? {
+            requestCount: '',
+            timeUnit: 'min',
+            unitTime: '',
+            type: 'AIAPIQUOTALIMIT',
+            totalTokenCount: '',
+            promptTokenCount: '',
+            completionTokenCount: '',
+        } : {
             requestCount: '',
             timeUnit: 'min',
             unitTime: '',
@@ -168,6 +181,9 @@ function AddEdit(props) {
         if (isEdit) {
             restApi.subscriptionThrottlingPolicyGet(params.id).then((result) => {
                 let requestCountEdit = '';
+                let totalTokenCountEdit = '';
+                let promptTokenCountEdit = '';
+                let completionTokenCountEdit = '';
                 let dataAmountEdit = '';
                 let timeUnitEdit = 'min';
                 let unitTimeEdit = '';
@@ -178,6 +194,14 @@ function AddEdit(props) {
                     requestCountEdit = result.body.defaultLimit.requestCount.requestCount;
                     timeUnitEdit = result.body.defaultLimit.requestCount.timeUnit;
                     unitTimeEdit = result.body.defaultLimit.requestCount.unitTime;
+                    typeEdit = result.body.defaultLimit.type;
+                } else if (result.body.defaultLimit.aiApiQuota !== null) {
+                    requestCountEdit = result.body.defaultLimit.aiApiQuota.requestCount;
+                    totalTokenCountEdit = result.body.defaultLimit.aiApiQuota.totalTokenCount;
+                    promptTokenCountEdit = result.body.defaultLimit.aiApiQuota.promptTokenCount;
+                    completionTokenCountEdit = result.body.defaultLimit.aiApiQuota.completionTokenCount;
+                    timeUnitEdit = result.body.defaultLimit.aiApiQuota.timeUnit;
+                    unitTimeEdit = result.body.defaultLimit.aiApiQuota.unitTime;
                     typeEdit = result.body.defaultLimit.type;
                 } else if (result.body.defaultLimit.bandwidth != null) {
                     dataAmountEdit = result.body.defaultLimit.bandwidth.dataAmount;
@@ -198,7 +222,15 @@ function AddEdit(props) {
                 const editState = {
                     policyName: result.body.policyName,
                     description: result.body.description,
-                    defaultLimit: {
+                    defaultLimit: isAI ? {
+                        requestCount: requestCountEdit,
+                        timeUnit: timeUnitEdit,
+                        unitTime: unitTimeEdit,
+                        type: typeEdit,
+                        totalTokenCount: totalTokenCountEdit,
+                        promptTokenCount: promptTokenCountEdit,
+                        completionTokenCount: completionTokenCountEdit,
+                    } : {
                         requestCount: requestCountEdit,
                         timeUnit: timeUnitEdit,
                         unitTime: unitTimeEdit,
@@ -243,7 +275,15 @@ function AddEdit(props) {
         setInitialState({
             policyName: '',
             description: '',
-            defaultLimit: {
+            defaultLimit: isAI ? {
+                requestCount: '',
+                timeUnit: 'min',
+                unitTime: '',
+                type: 'AIAPIQUOTALIMIT',
+                totalTokenCount: '',
+                promptTokenCount: '',
+                completionTokenCount: '',
+            } : {
                 requestCount: '',
                 timeUnit: 'min',
                 unitTime: '',
@@ -359,6 +399,9 @@ function AddEdit(props) {
             dataAmount,
             dataUnit,
             eventCount,
+            totalTokenCount,
+            promptTokenCount,
+            completionTokenCount,
         },
         rateLimitCount,
         rateLimitTimeUnit,
@@ -385,6 +428,13 @@ function AddEdit(props) {
 
     const onChange = (e) => {
         dispatch({ field: e.target.name, value: e.target.value });
+    };
+
+    const onDefaultLimitChange = (e) => {
+        const { name, value } = e.target;
+        if (value === '' || Number(value) >= 0) {
+            dispatch({ field: name, value });
+        }
     };
 
     const onToggle = (e) => {
@@ -471,6 +521,44 @@ function AddEdit(props) {
                 customAttributes,
                 graphQLMaxComplexity: (state.graphQL.maxComplexity === '') ? 0 : state.graphQL.maxComplexity,
                 graphQLMaxDepth: (state.graphQL.maxDepth === '') ? 0 : state.graphQL.maxDepth,
+                monetization: {
+                    monetizationPlan: state.monetization.monetizationPlan,
+                    properties: {
+                        fixedPrice: state.monetization.fixedPrice,
+                        pricePerRequest: state.monetization.pricePerRequest,
+                        currencyType: state.monetization.currencyType,
+                        billingCycle: state.monetization.billingCycle,
+                    },
+                },
+                permissions: (state.permissions === null || state.permissions.permissionStatus === null
+                    || state.permissions.permissionStatus === 'NONE') ? null : {
+                        permissionType: state.permissions.permissionStatus,
+                        roles: validRoles,
+                    },
+            };
+        } else if (type === 'AIAPIQUOTALIMIT') {
+            subscriptionThrottlingPolicy = {
+                policyName: state.policyName,
+                description: state.description,
+                defaultLimit: {
+                    type: state.defaultLimit.type,
+                    aiApiQuota: {
+                        requestCount: state.defaultLimit.requestCount,
+                        totalTokenCount: state.defaultLimit.totalTokenCount,
+                        promptTokenCount: state.defaultLimit.promptTokenCount,
+                        completionTokenCount: state.defaultLimit.completionTokenCount,
+                        timeUnit: state.defaultLimit.timeUnit,
+                        unitTime: state.defaultLimit.unitTime,
+                    },
+                },
+                subscriberCount: 0,
+                rateLimitCount: 0,
+                rateLimitTimeUnit: state.rateLimitTimeUnit,
+                billingPlan: state.billingPlan,
+                stopOnQuotaReach: state.stopOnQuotaReach,
+                customAttributes,
+                graphQLMaxComplexity: 0,
+                graphQLMaxDepth: 0,
                 monetization: {
                     monetizationPlan: state.monetization.monetizationPlan,
                     properties: {
@@ -630,18 +718,33 @@ function AddEdit(props) {
         setCustomAttributes(tmpCustomAttributes);
     };
 
+    let pageTitle;
+    if (isAI) {
+        pageTitle = isEdit
+            ? intl.formatMessage({
+                id: 'Throttling.Subscription.AddEdit.title.AIPolicy.edit',
+                defaultMessage: 'AI API Subscription Rate Limiting Policy - Edit',
+            })
+            : intl.formatMessage({
+                id: 'Throttling.Subscription.AddEdit.title.AIPolicy.add',
+                defaultMessage: 'AI API Subscription Rate Limiting Policy - Create new',
+            });
+    } else {
+        pageTitle = isEdit
+            ? intl.formatMessage({
+                id: 'Throttling.Subscription.AddEdit.title.edit',
+                defaultMessage: 'Subscription Rate Limiting Policy - Edit',
+            })
+            : intl.formatMessage({
+                id: 'Throttling.Subscription.AddEdit.title.add',
+                defaultMessage: 'Subscription Rate Limiting Policy - Create new',
+            });
+    }
+
     return (
         <ContentBase
             pageStyle='half'
-            title={isEdit
-                ? intl.formatMessage({
-                    id: 'Throttling.Subscription.AddEdit.title.edit',
-                    defaultMessage: 'Subscription Rate Limiting Policy - Edit',
-                })
-                : intl.formatMessage({
-                    id: 'Throttling.Subscription.AddEdit.title.add',
-                    defaultMessage: 'Subscription Rate Limiting Policy - Create new',
-                })}
+            title={pageTitle}
         >
             <Box component='div' m={2} sx={{ mb: 10 }}>
                 <Grid container spacing={2}>
@@ -731,57 +834,68 @@ function AddEdit(props) {
                                     />
                                 </Typography>
                                 <Typography color='inherit' variant='caption' component='p'>
-                                    <FormattedMessage
-                                        id='Throttling.Subscription.AddEdit.quota.policies.add.description'
-                                        defaultMessage={'Request Count and Request Bandwidth are the '
-                                + 'two options for Quota Limit. You can use the option according '
-                                + 'to your requirement.'}
-                                    />
+                                    {isAI ? (
+                                        <FormattedMessage
+                                            id='Throttling.Subscription.AddEdit.quota.limits.ai.description'
+                                            defaultMessage='Specify the quota limits for AI API Subscription policy.'
+                                        />
+                                    ) : (
+                                        <FormattedMessage
+                                            id='Throttling.Subscription.AddEdit.quota.policies.add.description'
+                                            defaultMessage={'Request Count and Request Bandwidth are the '
+                                                + 'two options for Quota Limit. You can use the option according '
+                                                + 'to your requirement.'}
+                                        />
+                                    )}
                                 </Typography>
                             </Box>
                         </Box>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
-                            <RadioGroup
-                                aria-label='Quota Limits'
-                                name='type'
-                                value={type}
-                                onChange={onChange}
-                                sx={{ display: 'flex', flexDirection: 'row' }}
-                            >
-                                <FormControlLabel
-                                    value='REQUESTCOUNTLIMIT'
-                                    control={<Radio />}
-                                    label={(
-                                        <FormattedMessage
-                                            id='Throttling.Subscription.AddEdit.quota.policies.add.limits.request.count'
-                                            defaultMessage='Request Count'
-                                        />
-                                    )}
-                                />
-                                <FormControlLabel
-                                    value='BANDWIDTHLIMIT'
-                                    control={<Radio />}
-                                    label={(
-                                        <FormattedMessage
-                                            id={'Throttling.Subscription.AddEdit.quota.policies.add.limits'
-                                                + '.request.bandwidth'}
-                                            defaultMessage='Request Bandwidth'
-                                        />
-                                    )}
-                                />
-                                <FormControlLabel
-                                    value='EVENTCOUNTLIMIT'
-                                    control={<Radio />}
-                                    label={(
-                                        <FormattedMessage
-                                            id='Throttling.Subscription.AddEdit.quota.policies.add.limits.event.count'
-                                            defaultMessage='Event Based (Async API)'
-                                        />
-                                    )}
-                                />
-                            </RadioGroup>
+                            {isAI ? null : (
+                                <RadioGroup
+                                    aria-label='Quota Limits'
+                                    name='type'
+                                    value={type}
+                                    onChange={onChange}
+                                    sx={{ display: 'flex', flexDirection: 'row' }}
+                                >
+                                    <FormControlLabel
+                                        value='REQUESTCOUNTLIMIT'
+                                        control={<Radio />}
+                                        label={(
+                                            <FormattedMessage
+                                                id={'Throttling.Subscription.AddEdit.quota.policies'
+                                                + '.add.limits.request.count'}
+                                                defaultMessage='Request Count'
+                                            />
+                                        )}
+                                    />
+                                    <FormControlLabel
+                                        value='BANDWIDTHLIMIT'
+                                        control={<Radio />}
+                                        label={(
+                                            <FormattedMessage
+                                                id={'Throttling.Subscription.AddEdit.quota.policies.add.limits'
+                                                    + '.request.bandwidth'}
+                                                defaultMessage='Request Bandwidth'
+                                            />
+                                        )}
+                                    />
+                                    <FormControlLabel
+                                        value='EVENTCOUNTLIMIT'
+                                        control={<Radio />}
+                                        label={(
+                                            <FormattedMessage
+                                                id={'Throttling.Subscription.AddEdit.quota.policies'
+                                                + '.add.limits.event.count'}
+                                                defaultMessage='Event Based (Async API)'
+                                            />
+                                        )}
+                                    />
+                                </RadioGroup>
+                            )}
                         </Box>
                         <Box component='div' m={1}>
                             {type === 'REQUESTCOUNTLIMIT' && (
@@ -791,7 +905,7 @@ function AddEdit(props) {
                                         name='requestCount'
                                         value={requestCount}
                                         type='number'
-                                        onChange={onChange}
+                                        onChange={onDefaultLimitChange}
                                         required
                                         InputProps={{
                                             id: 'requestCount',
@@ -819,6 +933,139 @@ function AddEdit(props) {
                                     />
                                 </Box>
                             )}
+                            {type === 'AIAPIQUOTALIMIT' && (
+                                <>
+                                    <Box display='flex' flexDirection='row'>
+                                        <TextField
+                                            margin='dense'
+                                            name='requestCount'
+                                            value={requestCount}
+                                            type='number'
+                                            onChange={onDefaultLimitChange}
+                                            required
+                                            InputProps={{
+                                                id: 'requestCount',
+                                                onBlur: ({ target: { value } }) => {
+                                                    validate('requestCount', value);
+                                                },
+                                            }}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Throttling.Subscription.AddEdit.form.requestCount.count'
+                                                    defaultMessage='Request Count'
+                                                />
+                                            )}
+                                            fullWidth
+                                            error={validationError.requestCount}
+                                            helperText={validationError.requestCount
+                                                || (
+                                                    <FormattedMessage
+                                                        id={'Admin.Throttling.Subscription.Throttling.Policy'
+                                                            + '.add.request.count.helper.text'}
+                                                        defaultMessage='Number of requests allowed'
+                                                    />
+                                                )}
+                                            variant='outlined'
+                                        />
+                                    </Box>
+                                    <Box display='flex' flexDirection='row'>
+                                        <TextField
+                                            margin='dense'
+                                            name='totalTokenCount'
+                                            value={totalTokenCount}
+                                            type='number'
+                                            onChange={onDefaultLimitChange}
+                                            InputProps={{
+                                                id: 'totalTokenCount',
+                                                onBlur: ({ target: { value } }) => {
+                                                    validate('totalTokenCount', value);
+                                                },
+                                            }}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Throttling.Subscription.AddEdit.form.totalTokenCount.count'
+                                                    defaultMessage='Total Token Count'
+                                                />
+                                            )}
+                                            fullWidth
+                                            error={validationError.totalTokenCount}
+                                            helperText={validationError.totalTokenCount
+                                                || (
+                                                    <FormattedMessage
+                                                        id={'Admin.Throttling.Subscription.Throttling.Policy'
+                                                            + '.add.total.token.count.helper.text'}
+                                                        defaultMessage='Number of total tokens allowed'
+                                                    />
+                                                )}
+                                            variant='outlined'
+                                        />
+                                    </Box>
+                                    <Box display='flex' flexDirection='row'>
+                                        <TextField
+                                            margin='dense'
+                                            name='promptTokenCount'
+                                            value={promptTokenCount}
+                                            type='number'
+                                            onChange={onDefaultLimitChange}
+                                            InputProps={{
+                                                id: 'promptTokenCount',
+                                                onBlur: ({ target: { value } }) => {
+                                                    validate('promptTokenCount', value);
+                                                },
+                                            }}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Throttling.Subscription.AddEdit.form.promptTokenCount.count'
+                                                    defaultMessage='Prompt Token Count'
+                                                />
+                                            )}
+                                            fullWidth
+                                            error={validationError.promptTokenCount}
+                                            helperText={validationError.promptTokenCount
+                                                || (
+                                                    <FormattedMessage
+                                                        id={'Admin.Throttling.Subscription.Throttling.Policy'
+                                                            + '.add.prompt.token.count.helper.text'}
+                                                        defaultMessage='Number of prompt tokens allowed'
+                                                    />
+                                                )}
+                                            variant='outlined'
+                                        />
+                                    </Box>
+                                    <Box display='flex' flexDirection='row'>
+                                        <TextField
+                                            margin='dense'
+                                            name='completionTokenCount'
+                                            value={completionTokenCount}
+                                            type='number'
+                                            onChange={onDefaultLimitChange}
+                                            InputProps={{
+                                                id: 'completionTokenCount',
+                                                onBlur: ({ target: { value } }) => {
+                                                    validate('completionTokenCount', value);
+                                                },
+                                            }}
+                                            label={(
+                                                <FormattedMessage
+                                                    id='Throttling.Subscription.AddEdit.form.completionTokenCount.count'
+                                                    defaultMessage='Completion Token Count'
+                                                />
+                                            )}
+                                            fullWidth
+                                            error={validationError.completionTokenCount}
+                                            helperText={validationError.completionTokenCount
+                                                || (
+                                                    <FormattedMessage
+                                                        id={'Admin.Throttling.Subscription.Throttling.Policy'
+                                                            + '.add.completion.token.count.helper.text'}
+                                                        defaultMessage='Number of completion tokens allowed'
+                                                    />
+                                                )}
+                                            variant='outlined'
+                                        />
+                                    </Box>
+                                </>
+                            )}
                             {type === 'BANDWIDTHLIMIT' && (
                                 <Box display='flex' flexDirection='row'>
                                     <TextField
@@ -826,7 +1073,7 @@ function AddEdit(props) {
                                         name='dataAmount'
                                         value={dataAmount}
                                         type='number'
-                                        onChange={onChange}
+                                        onChange={onDefaultLimitChange}
                                         required
                                         InputProps={{
                                             id: 'dataAmount',
@@ -871,7 +1118,7 @@ function AddEdit(props) {
                                         name='eventCount'
                                         value={eventCount}
                                         type='number'
-                                        onChange={onChange}
+                                        onChange={onDefaultLimitChange}
                                         required
                                         InputProps={{
                                             id: 'eventCount',
@@ -973,205 +1220,211 @@ function AddEdit(props) {
                             <StyledHr />
                         </Box>
                     </Grid>
-                    {/* Burst Control (Rate Limiting) */}
-                    <Grid item xs={12} md={12} lg={3}>
-                        <Box display='flex' flexDirection='row' alignItems='center'>
-                            <Box flex='1'>
-                                <Typography color='inherit' variant='subtitle2' component='div'>
-                                    <FormattedMessage
-                                        id='Throttling.Subscription.AddEdit.burst.control.limits'
-                                        defaultMessage='Burst Control (Rate Limiting)'
-                                    />
-                                </Typography>
-                                <Typography color='inherit' variant='caption' component='p'>
-                                    <FormattedMessage
-                                        id='Throttling.Subscription.AddEdit.burst.control.add.description'
-                                        defaultMessage={'Define Burst Control Limits for the subscription policy.'
-                                        + ' This is optional.'}
-                                    />
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
-                            <Box display='flex' flexDirection='row'>
-                                <Grid item xs={12} md={12} lg={9}>
-                                    <TextField
-                                        margin='dense'
-                                        name='rateLimitCount'
-                                        value={rateLimitCount}
-                                        type='number'
-                                        onChange={onChange}
-                                        label={(
-                                            <FormattedMessage
-                                                id='Throttling.Subscription.AddEdit.form.request.rate'
-                                                defaultMessage='Request Rate'
-                                            />
-                                        )}
-                                        sx={{ width: 380 }}
-                                        helperText={intl.formatMessage({
-                                            id: 'Throttling.Subscription.AddEdit.burst.control.limit',
-                                            defaultMessage: 'Number of requests for burst control',
-                                        })}
-                                        variant='outlined'
-                                    />
-                                </Grid>
-                                <StyledFormControl variant='outlined'>
-                                    <Select
-                                        variant='outlined'
-                                        sx={{ minWidth: 120, ml: 1, mt: 1 }}
-                                        name='rateLimitTimeUnit'
-                                        fullWidth
-                                        value={rateLimitTimeUnit}
-                                        onChange={onChange}
-                                    >
-                                        <MenuItem value='sec'>
-                                            <FormattedMessage
-                                                id={'Throttling.Subscription.AddEdit.burst.control.limit.time'
-                                                    + '.unit.second'}
-                                                defaultMessage='Requests/s'
-                                            />
-                                        </MenuItem>
-                                        <MenuItem value='min'>
-                                            <FormattedMessage
-                                                id={'Throttling.Subscription.AddEdit.burst.control.limit.time'
-                                                    + '.unit.minute'}
-                                                defaultMessage='Requests/min'
-                                            />
-                                        </MenuItem>
-                                    </Select>
-                                </StyledFormControl>
-                            </Box>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
 
-                    {/* GraphQL */}
-                    <Grid item xs={12} md={12} lg={3}>
-                        <Box display='flex' flexDirection='row' alignItems='center'>
-                            <Box flex='1'>
-                                <Typography color='inherit' variant='subtitle2' component='div'>
-                                    <FormattedMessage
-                                        id='Throttling.Subscription.GraphQL'
-                                        defaultMessage='GraphQL'
-                                    />
-                                </Typography>
-                                <Typography color='inherit' variant='caption' component='p'>
-                                    <FormattedMessage
-                                        id='Throttling.Subscription.AddEdit.graphql.add.description'
-                                        defaultMessage={'Provide the Maximum Complexity and Maximum depth'
-                                        + ' values for GraphQL APIs using this policy.'}
-                                    />
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
-                            <Box display='flex' flexDirection='row' alignItems='center'>
-                                <Box flex='1'>
-                                    <TextField
-                                        margin='dense'
-                                        name='maxComplexity'
-                                        value={maxComplexity}
-                                        type='number'
-                                        onChange={onChange}
-                                        label={(
-                                            <span>
-                                                <FormattedMessage
-                                                    id='Throttling.Subscription.AddEdit.form.max.complexity'
-                                                    defaultMessage='Max Complexity'
-                                                />
-                                            </span>
-                                        )}
-                                        fullWidth
-                                        variant='outlined'
-                                    />
+                    {!isAI && (
+                        <>
+                            {/* Burst Control (Rate Limiting) */}
+                            <Grid item xs={12} md={12} lg={3}>
+                                <Box display='flex' flexDirection='row' alignItems='center'>
+                                    <Box flex='1'>
+                                        <Typography color='inherit' variant='subtitle2' component='div'>
+                                            <FormattedMessage
+                                                id='Throttling.Subscription.AddEdit.burst.control.limits'
+                                                defaultMessage='Burst Control (Rate Limiting)'
+                                            />
+                                        </Typography>
+                                        <Typography color='inherit' variant='caption' component='p'>
+                                            <FormattedMessage
+                                                id='Throttling.Subscription.AddEdit.burst.control.add.description'
+                                                defaultMessage={'Define Burst Control Limits for the '
+                                                    + 'subscription policy. This is optional.'}
+                                            />
+                                        </Typography>
+                                    </Box>
                                 </Box>
-                            </Box>
-                            <Box display='flex' flexDirection='row' alignItems='center'>
-                                <Box flex='1'>
-                                    <TextField
-                                        margin='dense'
-                                        name='maxDepth'
-                                        type='number'
-                                        value={maxDepth}
-                                        onChange={onChange}
-                                        label={(
-                                            <span>
-                                                <FormattedMessage
-                                                    id='Throttling.Subscription.AddEdit.form.max.depth'
-                                                    defaultMessage='Max Depth'
-                                                />
-                                            </span>
-                                        )}
-                                        fullWidth
-                                        variant='outlined'
-                                    />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={9}>
+                                <Box component='div' m={1}>
+                                    <Box display='flex' flexDirection='row'>
+                                        <Grid item xs={12} md={12} lg={9}>
+                                            <TextField
+                                                margin='dense'
+                                                name='rateLimitCount'
+                                                value={rateLimitCount}
+                                                type='number'
+                                                onChange={onDefaultLimitChange}
+                                                label={(
+                                                    <FormattedMessage
+                                                        id='Throttling.Subscription.AddEdit.form.request.rate'
+                                                        defaultMessage='Request Rate'
+                                                    />
+                                                )}
+                                                sx={{ width: 380 }}
+                                                helperText={intl.formatMessage({
+                                                    id: 'Throttling.Subscription.AddEdit.burst.control.limit',
+                                                    defaultMessage: 'Number of requests for burst control',
+                                                })}
+                                                variant='outlined'
+                                            />
+                                        </Grid>
+                                        <StyledFormControl variant='outlined'>
+                                            <Select
+                                                variant='outlined'
+                                                sx={{ minWidth: 120, ml: 1, mt: 1 }}
+                                                name='rateLimitTimeUnit'
+                                                fullWidth
+                                                value={rateLimitTimeUnit}
+                                                onChange={onChange}
+                                            >
+                                                <MenuItem value='sec'>
+                                                    <FormattedMessage
+                                                        id={'Throttling.Subscription.AddEdit.burst.control.limit.time'
+                                                            + '.unit.second'}
+                                                        defaultMessage='Requests/s'
+                                                    />
+                                                </MenuItem>
+                                                <MenuItem value='min'>
+                                                    <FormattedMessage
+                                                        id={'Throttling.Subscription.AddEdit.burst.control.limit.time'
+                                                            + '.unit.minute'}
+                                                        defaultMessage='Requests/min'
+                                                    />
+                                                </MenuItem>
+                                            </Select>
+                                        </StyledFormControl>
+                                    </Box>
                                 </Box>
-                            </Box>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
-                    {/* Web Hooks */}
-                    <Grid item xs={12} md={12} lg={3}>
-                        <Box display='flex' flexDirection='row' alignItems='center'>
-                            <Box flex='1'>
-                                <Typography color='inherit' variant='subtitle2' component='div'>
-                                    <FormattedMessage
-                                        id='Throttling.Subscription.Subscriber.Count'
-                                        defaultMessage='Webhooks'
-                                    />
-                                </Typography>
-                                <Typography color='inherit' variant='caption' component='p'>
-                                    <FormattedMessage
-                                        id='Throttling.Subscription.AddEdit.subscription.count.add.description'
-                                        defaultMessage={'Maximum number of webhooks'
-                                        + ' allowed for a Webhooks API using this policy.'}
-                                    />
-                                </Typography>
-                            </Box>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
-                            <Box display='flex' flexDirection='row' alignItems='center'>
-                                <Box flex='1'>
-                                    <TextField
-                                        margin='dense'
-                                        name='subscriberCount'
-                                        value={subscriberCount}
-                                        type='number'
-                                        onChange={onChange}
-                                        label={(
-                                            <span>
-                                                <FormattedMessage
-                                                    id='Throttling.Subscription.AddEdit.form.max.webhooks.connections'
-                                                    defaultMessage='Max Subscriptions'
-                                                />
-                                            </span>
-                                        )}
-                                        fullWidth
-                                        variant='outlined'
-                                    />
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Box marginTop={2} marginBottom={2}>
+                                    <StyledHr />
                                 </Box>
-                            </Box>
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
+                            </Grid>
+
+                            {/* GraphQL */}
+                            <Grid item xs={12} md={12} lg={3}>
+                                <Box display='flex' flexDirection='row' alignItems='center'>
+                                    <Box flex='1'>
+                                        <Typography color='inherit' variant='subtitle2' component='div'>
+                                            <FormattedMessage
+                                                id='Throttling.Subscription.GraphQL'
+                                                defaultMessage='GraphQL'
+                                            />
+                                        </Typography>
+                                        <Typography color='inherit' variant='caption' component='p'>
+                                            <FormattedMessage
+                                                id='Throttling.Subscription.AddEdit.graphql.add.description'
+                                                defaultMessage={'Provide the Maximum Complexity and Maximum depth'
+                                                    + ' values for GraphQL APIs using this policy.'}
+                                            />
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={9}>
+                                <Box component='div' m={1}>
+                                    <Box display='flex' flexDirection='row' alignItems='center'>
+                                        <Box flex='1'>
+                                            <TextField
+                                                margin='dense'
+                                                name='maxComplexity'
+                                                value={maxComplexity}
+                                                type='number'
+                                                onChange={onChange}
+                                                label={(
+                                                    <span>
+                                                        <FormattedMessage
+                                                            id='Throttling.Subscription.AddEdit.form.max.complexity'
+                                                            defaultMessage='Max Complexity'
+                                                        />
+                                                    </span>
+                                                )}
+                                                fullWidth
+                                                variant='outlined'
+                                            />
+                                        </Box>
+                                    </Box>
+                                    <Box display='flex' flexDirection='row' alignItems='center'>
+                                        <Box flex='1'>
+                                            <TextField
+                                                margin='dense'
+                                                name='maxDepth'
+                                                type='number'
+                                                value={maxDepth}
+                                                onChange={onChange}
+                                                label={(
+                                                    <span>
+                                                        <FormattedMessage
+                                                            id='Throttling.Subscription.AddEdit.form.max.depth'
+                                                            defaultMessage='Max Depth'
+                                                        />
+                                                    </span>
+                                                )}
+                                                fullWidth
+                                                variant='outlined'
+                                            />
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Box marginTop={2} marginBottom={2}>
+                                    <StyledHr />
+                                </Box>
+                            </Grid>
+                            {/* Web Hooks */}
+                            <Grid item xs={12} md={12} lg={3}>
+                                <Box display='flex' flexDirection='row' alignItems='center'>
+                                    <Box flex='1'>
+                                        <Typography color='inherit' variant='subtitle2' component='div'>
+                                            <FormattedMessage
+                                                id='Throttling.Subscription.Subscriber.Count'
+                                                defaultMessage='Webhooks'
+                                            />
+                                        </Typography>
+                                        <Typography color='inherit' variant='caption' component='p'>
+                                            <FormattedMessage
+                                                id='Throttling.Subscription.AddEdit.subscription.count.add.description'
+                                                defaultMessage={'Maximum number of webhooks'
+                                                    + ' allowed for a Webhooks API using this policy.'}
+                                            />
+                                        </Typography>
+                                    </Box>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={9}>
+                                <Box component='div' m={1}>
+                                    <Box display='flex' flexDirection='row' alignItems='center'>
+                                        <Box flex='1'>
+                                            <TextField
+                                                margin='dense'
+                                                name='subscriberCount'
+                                                value={subscriberCount}
+                                                type='number'
+                                                onChange={onChange}
+                                                label={(
+                                                    <span>
+                                                        <FormattedMessage
+                                                            id={'Throttling.Subscription.AddEdit.'
+                                                            + 'form.max.webhooks.connections'}
+                                                            defaultMessage='Max Subscriptions'
+                                                        />
+                                                    </span>
+                                                )}
+                                                fullWidth
+                                                variant='outlined'
+                                            />
+                                        </Box>
+                                    </Box>
+                                </Box>
+                            </Grid>
+                            <Grid item xs={12}>
+                                <Box marginTop={2} marginBottom={2}>
+                                    <StyledHr />
+                                </Box>
+                            </Grid>
+                        </>
+                    )}
                     {/* Policy flags */}
                     <Grid item xs={12} md={12} lg={3}>
                         <Box display='flex' flexDirection='row' alignItems='center'>

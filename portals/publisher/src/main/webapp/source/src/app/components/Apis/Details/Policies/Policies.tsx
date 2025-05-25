@@ -91,12 +91,15 @@ const Policies: React.FC = () => {
 
     const [api, updateAPI] = useAPI();
     const [updating, setUpdating] = useState(false);
-    const [policies, setPolicies] = useState<Policy[] | null>(null);
+    const [apiPolicies, setApiPolicies] = useState<Policy[] | null>(null);
+    const [commonPolicies, setCommonPolicies] = useState<Policy[] | null>(null);
+    const [policies, setPolicies] = useState<Policy[]>([]);
     const [allPolicies, setAllPolicies] = useState<PolicySpec[] | null>(null);
     const [expandedResource, setExpandedResource] = useState<string | null>(null);
-    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType === 'wso2/apk');
+    const [isChoreoConnectEnabled, setIsChoreoConnectEnabled] = useState(api.gatewayType !== 'wso2/synapse');
     const { showMultiVersionPolicies } = Configurations.apis;
     const [selectedTab, setSelectedTab] = useState((api.apiPolicies != null) ? 0 : 1);
+    const [gateway, setGateway] = useState<string>("");
 
     // If Choreo Connect radio button is selected in GatewaySelector, it will pass 
     // value as true to render other UI changes specific to the Choreo Connect.
@@ -175,53 +178,87 @@ const Policies: React.FC = () => {
         const commonPoliciesPromise = API.getCommonOperationPolicies();
         Promise.all([apiPoliciesPromise, commonPoliciesPromise]).then((response) => {
             const [apiPoliciesResponse, commonPoliciesResponse] = response;
-            const apiSpecificPolicies = apiPoliciesResponse.body.list;
-            const commonPolicies = commonPoliciesResponse.body.list;
-            const mergedList = [...commonPolicies, ...apiSpecificPolicies];
+            const apiSpecificPoliciesList = apiPoliciesResponse.body.list;
+            const commonPoliciesList = commonPoliciesResponse.body.list;
+            const mergedList = [...commonPoliciesList, ...apiSpecificPoliciesList];
 
             // Get all common policies and API specific policies
             setAllPolicies(mergedList);
 
-            let unionByPolicyDisplayName;
-            if (showMultiVersionPolicies) {
-                // Get the union of policies depending on the policy display name and version
-                unionByPolicyDisplayName = [...mergedList
-                    .reduce((map, obj) => map.set(obj.name + obj.version, obj), new Map()).values()];
-            } else {
-                // Get the union of policies depending on the policy display name
-                unionByPolicyDisplayName = [...mergedList
-                    .reduce((map, obj) => map.set(obj.name, obj), new Map()).values()];
-            }
-            unionByPolicyDisplayName.sort(
+            let apiPolicyByPolicyDisplayName;
+            let commonPolicyByPolicyDisplayName;
+            // Get the union of policies depending on the policy display name and version
+            apiPolicyByPolicyDisplayName = [...apiSpecificPoliciesList
+                .reduce((map: Map<string, Policy>, obj: Policy) => 
+                    map.set((showMultiVersionPolicies ? obj.name + obj.version : obj.name), obj), 
+                    new Map()).values()];
+
+            commonPolicyByPolicyDisplayName = [...commonPoliciesList
+                .reduce((map: Map<string, Policy>, obj: Policy) => 
+                    map.set((showMultiVersionPolicies ? obj.name + obj.version : obj.name), obj), 
+                    new Map()).values()];
+
+            apiPolicyByPolicyDisplayName.sort(
                 (a: Policy, b: Policy) => a.name.localeCompare(b.name))
             
-            let filteredByGatewayTypeList = null;
-            if (!isChoreoConnectEnabled) {
-                // Get synpase gateway supported policies
-                filteredByGatewayTypeList = unionByPolicyDisplayName.filter(
-                    (policy: Policy) => policy.supportedGateways.includes('Synapse'));
-            } else {
+            commonPolicyByPolicyDisplayName.sort(
+                (a: Policy, b: Policy) => a.name.localeCompare(b.name))
+
+            let gatewayType;
+            if (api.gatewayType === "wso2/apk") {
                 // Get CC gateway supported policies
-                filteredByGatewayTypeList = unionByPolicyDisplayName.filter(
-                    (policy: Policy) => policy.supportedGateways.includes('ChoreoConnect'));
+                gatewayType = 'ChoreoConnect';
+            } else if (api.gatewayType === "AWS") {
+                // Get AWS gateway supported policies
+                gatewayType = 'AWS';
+            } else {
+                // Get synpase gateway supported policies
+                gatewayType = 'Synapse';
+            }
+            setGateway(gatewayType);
+
+            let filteredApiPolicyByGatewayTypeList = null;
+            let filteredCommonPolicyByGatewayTypeList = null;
+            
+            // Get relevant gateway supported policies
+            filteredApiPolicyByGatewayTypeList = apiPolicyByPolicyDisplayName.filter(
+                (policy: Policy) => policy.supportedGateways.includes(gatewayType));
+            filteredCommonPolicyByGatewayTypeList = commonPolicyByPolicyDisplayName.filter(
+                (policy: Policy) => policy.supportedGateways.includes(gatewayType));
+
+            let filteredApiPoliciesByAPITypeList = [];
+            let filteredCommonPoliciesByAPITypeList = [];
+
+            if (api.type === "HTTP" || api.type === "SOAP" || api.type === "SOAPTOREST") {
+                // Get API policies based on the API type
+                filteredApiPoliciesByAPITypeList = filteredApiPolicyByGatewayTypeList.filter((policy: Policy) => {
+                    return policy.supportedApiTypes.some((item: any) => {
+                        if (typeof item === 'string') {
+                            return item === api.type;
+                        } else if (typeof item === 'object') {
+                            return item.apiType === api.type && item.subType === api.subtypeConfiguration?.subtype;
+                        }
+                    });
+                });
+
+                // Get common policies based on the API type
+                filteredCommonPoliciesByAPITypeList = filteredCommonPolicyByGatewayTypeList.filter((policy: Policy) => {
+                    return policy.supportedApiTypes.some((item: any) => {
+                        if (typeof item === 'string') {
+                            return item === api.type;
+                        } else if (typeof item === 'object') {
+                            return item.apiType === api.type && item.subType === api.subtypeConfiguration?.subtype;
+                        }
+                    });
+                });
             }
 
-            let filteredByAPITypeList = null;
-            if (api.type === "HTTP") {
-                // Get HTTP supported policies
-                filteredByAPITypeList = filteredByGatewayTypeList.filter(
-                    (policy: Policy) => policy.supportedApiTypes.includes('HTTP'));
-            } else if (api.type === "SOAP"){
-                // Get SOAP supported policies
-                filteredByAPITypeList = filteredByGatewayTypeList.filter(
-                    (policy: Policy) => policy.supportedApiTypes.includes('SOAP'));
-            } else if (api.type === "SOAPTOREST"){
-                // Get SOAP to REST supported policies
-                filteredByAPITypeList = filteredByGatewayTypeList.filter(
-                    (policy: Policy) => policy.supportedApiTypes.includes('SOAPTOREST'));
-            }
-
-            setPolicies(filteredByAPITypeList);
+            setApiPolicies(filteredApiPoliciesByAPITypeList);
+            setCommonPolicies(filteredCommonPoliciesByAPITypeList);
+            const combinedPolicyList = [...filteredCommonPoliciesByAPITypeList, ...filteredApiPoliciesByAPITypeList];
+            combinedPolicyList.sort(
+                (a: Policy, b: Policy) => a.name.localeCompare(b.name))
+            setPolicies(combinedPolicyList);
 
         }).catch((error) => {
             console.error(error);
@@ -436,8 +473,6 @@ const Policies: React.FC = () => {
         setUpdating(true);
         const newApiOperations: any = cloneDeep(apiOperations);
         const newApiLevelPolicies: any = cloneDeep(apiLevelPolicies);
-        let getewayTypeForPolicies = "wso2/synapse";
-        const getewayVendorForPolicies = "wso2";
 
         deletePolicyUuid(newApiLevelPolicies);
         // Set operation policies to the API object
@@ -448,16 +483,11 @@ const Policies: React.FC = () => {
             }
         });
 
-        // Handles normal policy savings for choreo connect gateway type.
-        if(isChoreoConnectEnabled) {
-            getewayTypeForPolicies = "wso2/apk";
-        }
-
         const updatePromise = updateAPI({
             operations: newApiOperations,
             apiPolicies: newApiLevelPolicies,
-            gatewayVendor: getewayVendorForPolicies,
-            gatewayType: getewayTypeForPolicies
+            gatewayVendor: api.gatewayVendor,
+            gatewayType: api.gatewayType,
         });
         updatePromise
             .catch((error: any) => {
@@ -498,13 +528,13 @@ const Policies: React.FC = () => {
         ],
     );
 
-    if (!policies || !openAPISpec || updating) {
+    if (!apiPolicies || !commonPolicies || !openAPISpec || updating) {
         return <Progress per={90} message='Loading Policies ...' />
     }
 
     return (
         <StyledApiOperationContextProvider value={providerValue}>
-            <DndProvider backend={HTML5Backend}>
+            <DndProvider backend={HTML5Backend} context={window}>
                 <Box mb={4}>
                     <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
                         <FormattedMessage
@@ -597,9 +627,11 @@ const Policies: React.FC = () => {
                     </Box>
                     <Box width='35%' p={1}>
                         <PolicyList
-                            policyList={policies}
+                            apiPolicyList={apiPolicies}
+                            commonPolicyList={commonPolicies}
                             fetchPolicies={fetchPolicies}
                             isChoreoConnectEnabled={isChoreoConnectEnabled}
+                            gatewayType={gateway}
                         />
                     </Box>
                 </Box>

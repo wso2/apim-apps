@@ -36,7 +36,13 @@ import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm'
 import APIProduct from 'AppData/APIProduct';
 import AuthManager from 'AppData/AuthManager';
 import Progress from 'AppComponents/Shared/Progress';
+import Utils from 'AppData/Utils';
 
+const gatewayTypeMap = {
+    'Regular': 'wso2/synapse',
+    'APK': 'wso2/apk',
+    'AWS': 'AWS',
+};
 
 const getPolicies = async () => {
     const promisedPolicies = API.policies('subscription');
@@ -62,31 +68,7 @@ function APICreateDefault(props) {
     const { data: settings, isLoading, error: settingsError } = usePublisherSettings();
     const [isAvailbaleGateway, setIsAvailableGateway] = useState(false);
     const [pageError, setPageError] = useState(null);
-    useEffect(() => {
-        if (settingsError) {
-            setPageError(settingsError.message);
-        }
-    }, [settingsError]);
 
-    useEffect(() => {
-        if (settings != null) {
-            if (settings.gatewayTypes && settings.gatewayTypes.length === 1) {
-                for (const env of settings.environment) {
-                    if (env.gatewayType === settings.gatewayTypes[0]) {
-                        setIsAvailableGateway(true);
-                        break;
-                    }
-                }
-            }
-        }
-    }, [settings]);
-    const [isCreating, setIsCreating] = useState();
-    const [isPublishing, setIsPublishing] = useState(false);
-
-    const [isRevisioning, setIsRevisioning] = useState(false);
-    const [isDeploying, setIsDeploying] = useState(false);
-    const [isMandatoryPropsConfigured, setIsMandatoryPropsConfigured] = useState(false);
-    const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
     /**
      *
      * Reduce the events triggered from API input fields to current state
@@ -107,7 +89,36 @@ function APICreateDefault(props) {
     }
     const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
         formValidity: false,
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
+
+    useEffect(() => {
+        if (settingsError) {
+            setPageError(settingsError.message);
+        }
+    }, [settingsError]);
+
+    useEffect(() => {
+        if (settings != null) {
+            if (settings.gatewayTypes && settings.gatewayTypes.includes('Regular')) {
+                for (const env of settings.environment) {
+                    if (env.gatewayType === 'Regular') {
+                        setIsAvailableGateway(true);
+                        break;
+                    }
+                }
+            }
+        }
+    }, [isLoading]);
+    const [isCreating, setIsCreating] = useState();
+    const [isPublishing, setIsPublishing] = useState(false);
+
+    const [isRevisioning, setIsRevisioning] = useState(false);
+    const [isDeploying, setIsDeploying] = useState(false);
+    const [isMandatoryPropsConfigured, setIsMandatoryPropsConfigured] = useState(false);
+    const [isPublishButtonClicked, setIsPublishButtonClicked] = useState(false);
+
     const isPublishable = apiInputs.endpoint;
     const isAPICreateDisabled = !(apiInputs.name && apiInputs.version && apiInputs.context) || isCreating
                                  || isPublishing;
@@ -120,19 +131,15 @@ function APICreateDefault(props) {
     function handleOnChange(event) {
         const { name: action, value } = event.target;
         inputsDispatcher({ action, value });
-        const settingsEnvList = settings && settings.environment;
-        if (settings && settings.gatewayTypes.length === 2 && (value === 'wso2/synapse' || value === 'wso2/apk')) {
-            for (const env of settingsEnvList) {
-                let tmpEnv = '';
-                if (env.gatewayType === 'APK') {
-                    tmpEnv = 'wso2/apk';
-                } else if (env.gatewayType === 'Regular') {
-                    tmpEnv = 'wso2/synapse';
-                }
-                if (tmpEnv === value) {
-                    setIsAvailableGateway(true);
-                    break;
-                } else {
+        if (action === 'gatewayType') {
+            const settingsEnvList = settings && settings.environment;
+            if (settings && settings.gatewayTypes.length >= 2 && Object.values(gatewayTypeMap).includes(value)) {
+                for (const env of settingsEnvList) {
+                    const tmpEnv = gatewayTypeMap[env.gatewayType];
+                    if (tmpEnv === value) {
+                        setIsAvailableGateway(true);
+                        break;
+                    }
                     setIsAvailableGateway(false);
                 }
             }
@@ -176,7 +183,6 @@ function APICreateDefault(props) {
         } = apiInputs;
         let promisedCreatedAPI;
         let policies;
-        let defaultGatewayType;
         const allPolicies = await getPolicies();
         if (allPolicies.length === 0) {
             Alert.info(intl.formatMessage({
@@ -188,19 +194,12 @@ function APICreateDefault(props) {
         } else {
             policies = [allPolicies[0].name];
         }
-        if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
-            defaultGatewayType = 'wso2/synapse';
-        } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')){
-            defaultGatewayType = 'wso2/apk';
-        } else {
-            defaultGatewayType = 'default';
-        }
 
         const apiData = {
             name,
             version,
             context,
-            gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
+            gatewayType,
             policies,
         };
         if (endpoint) {
@@ -278,6 +277,7 @@ function APICreateDefault(props) {
      *
      */
     function createAndPublish() {
+        const complianceErrorCode = 903300;
         const restApi = new API();
         setIsPublishButtonClicked(true);
         createAPI().then((api) => {
@@ -294,8 +294,49 @@ function APICreateDefault(props) {
                 error: (error) => {
                     console.error(error);
                     if (error.response) {
-                        setPageError(error.response.body);
-                        return error.response.body.description;
+                        if (error.response.body.code === complianceErrorCode) {
+                            const violations = JSON.parse(error.response.body.description).blockingViolations;
+                            return (
+                                <Box sx={{ width: '100%' }}>
+                                    <Typography>
+                                        <FormattedMessage
+                                            id='Apis.Create.Default.APICreateDefault.error.governance.violation'
+                                            defaultMessage={'Failed to create the API Revision due to '
+                                                + 'governance violations'}
+                                        />
+                                    </Typography>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        mt: 1
+                                    }}>
+                                        <Button
+                                            onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
+                                            sx={{
+                                                color: 'inherit',
+                                                fontWeight: 600,
+                                                textDecoration: 'none',
+                                                transition: 'all 0.3s',
+                                                '&:hover': {
+                                                    backgroundColor: 'inherit',
+                                                    transform: 'translateY(-2px)',
+                                                    textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                },
+                                            }}
+                                        >
+                                            <FormattedMessage
+                                                id={'Apis.Create.Default.APICreateDefault.error.'
+                                                    + 'governance.violation.download'}
+                                                defaultMessage='Download Violations'
+                                            />
+                                        </Button>
+                                    </Box>
+                                </Box>
+                            )
+                        } else {
+                            setPageError(error.response.body);
+                            return error.response.body.description;
+                        }
                     } else {
                         setPageError('Something went wrong while creating the API Revision');
                         return intl.formatMessage({
@@ -311,8 +352,7 @@ function APICreateDefault(props) {
                 setIsRevisioning(false);
                 const envList = settings.environment.map((env) => env.name);
                 const body1 = [];
-                const internalGateways = settings.environment.filter((p) => p.provider
-                        && p.provider.toLowerCase().includes('wso2'));
+                const internalGateways = settings.environment;
                 const getFirstVhost = (envName) => {
                     const env = internalGateways.find(
                         (e) => e.name === envName && e.vhosts.length > 0,
@@ -339,12 +379,7 @@ function APICreateDefault(props) {
                     const envList1 = settings.environment;
                     let foundEnv = false;
                     envList1.forEach((env) => {
-                        let tmpEnv = '';
-                        if (env.gatewayType === 'APK') {
-                            tmpEnv = 'wso2/apk';
-                        } else if (env.gatewayType === 'Regular') {
-                            tmpEnv = 'wso2/synapse';
-                        }
+                        const tmpEnv = gatewayTypeMap[env.gatewayType];
                         if (!foundEnv && tmpEnv === apiInputs.gatewayType && getFirstVhost(env.name)) {
                             body1.push({
                                 name: env.name,
@@ -366,8 +401,49 @@ function APICreateDefault(props) {
                     error: (error) => {
                         console.error(error);
                         if (error.response) {
-                            setPageError(error.response.body);
-                            return error.response.body.description;
+                            if (error.response.body.code === complianceErrorCode) {
+                                const violations = JSON.parse(error.response.body.description).blockingViolations;
+                                return (
+                                    <Box sx={{ width: '100%' }}>
+                                        <Typography>
+                                            <FormattedMessage
+                                                id='Apis.Create.Default.APICreateDefault.error.governance.violation'
+                                                defaultMessage='Deployment failed due to governance violations'
+                                            />
+                                        </Typography>
+                                        <Box sx={{
+                                            display: 'flex',
+                                            justifyContent: 'flex-end',
+                                            mt: 1
+                                        }}>
+                                            <Button
+                                                onClick={() =>
+                                                    Utils.downloadAsJSON(violations, 'governance-violations')}
+                                                sx={{
+                                                    color: 'inherit',
+                                                    fontWeight: 600,
+                                                    textDecoration: 'none',
+                                                    transition: 'all 0.3s',
+                                                    '&:hover': {
+                                                        backgroundColor: 'inherit',
+                                                        transform: 'translateY(-2px)',
+                                                        textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                    },
+                                                }}
+                                            >
+                                                <FormattedMessage
+                                                    id={'Apis.Create.Default.APICreateDefault.error.'
+                                                        + 'governance.violation.download'}
+                                                    defaultMessage='Download Violations'
+                                                />
+                                            </Button>
+                                        </Box>
+                                    </Box>
+                                )
+                            } else {
+                                setPageError(error.response.body);
+                                return error.response.body.description;
+                            }
                         } else {
                             setPageError('Something went wrong while publishing the API');
 
@@ -406,10 +482,55 @@ function APICreateDefault(props) {
                                     });
                                 }
                             },
-                            error: () => intl.formatMessage({
-                                id: 'Apis.Create.Default.APICreateDefault.error.otherStatus',
-                                defaultMessage: 'Error while publishing the API',
-                            }),
+                            error: (error) => {
+                                if (error.response.body.code === complianceErrorCode) {
+                                    const violations = JSON.parse(error.response.body.description).blockingViolations;
+                                    return (
+                                        <Box sx={{ width: '100%' }}>
+                                            <Typography>
+                                                <FormattedMessage
+                                                    id={'Apis.Create.Default.APICreateDefault.error.'
+                                                        + 'governance.violation'}
+                                                    defaultMessage={'Failed to publish the API due to '
+                                                        + 'governance violations'}
+                                                />
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                justifyContent: 'flex-end',
+                                                mt: 1
+                                            }}>
+                                                <Button
+                                                    onClick={() =>
+                                                        Utils.downloadAsJSON(violations, 'governance-violations')}
+                                                    sx={{
+                                                        color: 'inherit',
+                                                        fontWeight: 600,
+                                                        textDecoration: 'none',
+                                                        transition: 'all 0.3s',
+                                                        '&:hover': {
+                                                            backgroundColor: 'inherit',
+                                                            transform: 'translateY(-2px)',
+                                                            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                        },
+                                                    }}
+                                                >
+                                                    <FormattedMessage
+                                                        id={'Apis.Create.Default.APICreateDefault.error.'
+                                                            + 'governance.violation.download'}
+                                                        defaultMessage='Download Violations'
+                                                    />
+                                                </Button>
+                                            </Box>
+                                        </Box>
+                                    )
+                                } else {
+                                    return intl.formatMessage({
+                                        id: 'Apis.Create.Default.APICreateDefault.error.otherStatus',
+                                        defaultMessage: 'Error while publishing the API',
+                                    })
+                                }
+                            },
                         });
                         promisedPublish.then(() => history.push(`/apis/${api.id}/overview`))
                             .finally(() => {
@@ -535,6 +656,7 @@ function APICreateDefault(props) {
                         multiGateway={multiGateway}
                         isAPIProduct={isAPIProduct}
                         isWebSocket={isWebSocket}
+                        settings={settings}
                     />
                 </Grid>
                 <Grid item xs={12}>
@@ -633,7 +755,7 @@ APICreateDefault.WORKFLOW_STATUS = {
 };
 APICreateDefault.propTypes = {
     history: PropTypes.shape({ push: PropTypes.func }).isRequired,
-    multiGateway: PropTypes.string.isRequired,
+    multiGateway: PropTypes.isRequired,
     isAPIProduct: PropTypes.shape({}),
     isWebSocket: PropTypes.shape({}),
     intl: PropTypes.shape({

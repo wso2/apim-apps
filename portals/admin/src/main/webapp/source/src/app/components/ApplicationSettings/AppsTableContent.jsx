@@ -85,7 +85,10 @@ class AppsTableContent extends Component {
                 {apps && apps.map((app) => {
                     return (
                         <TableRow
-                            sx={{ height: 5, '& td': { padding: 0.5 } }}
+                            sx={{
+                                height: 5,
+                                '& td': { padding: 0.5, paddingLeft: 2 },
+                            }}
                             key={app.applicationId}
                         >
                             <TableCell align='left'>

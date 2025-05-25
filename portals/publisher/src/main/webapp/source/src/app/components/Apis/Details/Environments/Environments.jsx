@@ -62,6 +62,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import CardHeader from '@mui/material/CardHeader';
 import Checkbox from '@mui/material/Checkbox';
 import InfoIcon from '@mui/icons-material/Info';
+import { CircularProgress, Link } from '@mui/material';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import API from 'AppData/api';
@@ -69,9 +70,10 @@ import { ConfirmDialog } from 'AppComponents/Shared/index';
 import { useRevisionContext } from 'AppComponents/Shared/RevisionContext';
 import Utils from 'AppData/Utils';
 import { Parser } from '@asyncapi/parser';
-import { upperCaseString } from 'AppData/stringFormatter';
+import GovernanceViolations from 'AppComponents/Shared/Governance/GovernanceViolations';
 import DisplayDevportal from './DisplayDevportal';
 import DeploymentOnbording from './DeploymentOnbording';
+import Permission from './Permission';
 
 const PREFIX = 'Environments';
 
@@ -80,7 +82,7 @@ const classes = {
     infoIcon: `${PREFIX}-infoIcon`,
     saveButton: `${PREFIX}-saveButton`,
     shapeRec: `${PREFIX}-shapeRec`,
-    shapeCircaleBack: `${PREFIX}-shapeCircaleBack`,
+    shapeCircleBack: `${PREFIX}-shapeCircleBack`,
     shapeInnerComplete: `${PREFIX}-shapeInnerComplete`,
     shapeInnerInactive: `${PREFIX}-shapeInnerInactive`,
     shapeDottedEnd: `${PREFIX}-shapeDottedEnd`,
@@ -155,18 +157,18 @@ const Root = styled('div')(({ theme }) => ({
         height: 3,
     },
 
-    [`& .${classes.shapeCircaleBack}`]: {
+    [`& .${classes.shapeCircleBack}`]: {
         backgroundColor: '#E2E2E2',
-        width: 63,
-        height: 63,
+        width: 64,
+        height: 64,
     },
 
     [`& .${classes.shapeInnerComplete}`]: {
         backgroundColor: '#095677',
         width: 50,
         height: 50,
-        marginTop: 6,
-        marginLeft: 6.5,
+        marginTop: 7,
+        marginLeft: 7,
         placeSelf: 'middle',
     },
 
@@ -174,16 +176,16 @@ const Root = styled('div')(({ theme }) => ({
         backgroundColor: '#BFBFBF',
         width: 50,
         height: 50,
-        marginTop: 6,
-        marginLeft: 6,
+        marginTop: 7,
+        marginLeft: 7,
         placeSelf: 'middle',
     },
 
     [`& .${classes.shapeDottedEnd}`]: {
         backgroundColor: '#BFBFBF',
         border: '1px dashed #707070',
-        width: 47,
-        height: 47,
+        width: 50,
+        height: 50,
         marginTop: 7,
         marginLeft: 7,
         placeSelf: 'middle',
@@ -192,25 +194,25 @@ const Root = styled('div')(({ theme }) => ({
     [`& .${classes.shapeDottedStart}`]: {
         backgroundColor: '#1CB1BF',
         border: '2px solid #ffffff',
-        width: 47,
-        height: 47,
-        marginTop: 8,
-        marginLeft: 8,
+        width: 50,
+        height: 50,
+        marginTop: 7,
+        marginLeft: 7,
         placeSelf: 'middle',
     },
 
     [`& .${classes.plusIconStyle}`]: {
         marginTop: 8,
         marginLeft: 8,
-        fontSize: 30,  
+        fontSize: 30,
     },
 
     [`& .${classes.shapeDottedStart1}`]: {
         backgroundColor: '#1CB1BF',
         width: 50,
         height: 50,
-        marginTop: 6,
-        marginLeft: 6.5,
+        marginTop: 7,
+        marginLeft: 7,
         placeSelf: 'middle',
     },
 
@@ -223,7 +225,7 @@ const Root = styled('div')(({ theme }) => ({
         display: 'flex',
         alignItems: 'center',
         marginTop: 12,
-        marginLeft: 115,
+        marginLeft: 105,
         height: '18px',
         fontFamily: 'sans-serif',
     },
@@ -242,7 +244,6 @@ const Root = styled('div')(({ theme }) => ({
 
     [`& .${classes.textShape3}`]: {
         color: '#38536c',
-        marginLeft: 70,
     },
 
     [`& .${classes.textShape7}`]: {
@@ -257,7 +258,7 @@ const Root = styled('div')(({ theme }) => ({
         color: '#415A85',
     },
 
-    [`& .${classes.textShape4}`]: {             
+    [`& .${classes.textShape4}`]: {
         marginTop: 55,
     },
 
@@ -487,17 +488,13 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
  */
 export default function Environments() {
     const maxCommentLength = '255';
+    const complianceErrorCode = 903300;
     const intl = useIntl();
     const { api, updateAPI } = useContext(APIContext);
-    const securityScheme = [...api.securityScheme];
-    const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
-    && securityScheme.includes('mutualssl_mandatory');
     const isEndpointAvailable = api.endpointConfig !== null;
-    const isTierAvailable = api.policies.length !== 0;
 
     const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || (!isMutualSslOnly && !isTierAvailable)
-    || api.workflowStatus === 'CREATED');
+        || api.workflowStatus === 'CREATED');
     const history = useHistory();
     const { data: settings, isLoading } = usePublisherSettings();
     const {
@@ -512,33 +509,88 @@ export default function Environments() {
     const restApi = new API();
     const restProductApi = new APIProduct();
     const [selectedRevision, setRevision] = useState([]);
-    const assignGateway = (api.gatewayType === "wso2/synapse" || api.apiType === "APIPRODUCT") ? "Regular" : "APK";
-    const externalGateways = settings && settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
-    const internalGatewaysFiltered = settings && settings.environment.filter((p) =>
-        p.provider.toLowerCase().includes('wso2'));
-    const internalGateways = internalGatewaysFiltered && internalGatewaysFiltered.filter((p) => 
-        p.gatewayType.toLowerCase() === assignGateway.toLowerCase()
-    );
+    const [internalGateways, setInternalGateways] = useState([]);
+    const [externalGateways, setExternalGateways] = useState([]);
     const [selectedVhosts, setVhosts] = useState(null);
     const [selectedVhostDeploy, setVhostsDeploy] = useState([]);
+    const [SelectedEnvironment, setSelectedEnvironment] = useState([]);
+    const [allExternalGateways, setAllExternalGateways] = useState([]);
+    const [noEnv, setNoEnv] = useState(false);
+    const [isUndeploying, setIsUndeploying] = useState(false);
+    const [isDeploying, setIsDeploying] = useState(false);
+
     useEffect(() => {
         if (settings) {
-            const defaultVhosts = internalGateways.map((e) => {
-                if (e.vhosts && e.vhosts.length > 0) {
-                    const env = e.name;
-                    const vhost = api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host;
-                    return { env, vhost };
-                } else {
-                    return undefined;
+            let gatewayType;
+            if (api.apiType === 'APIPRODUCT') {
+                gatewayType = 'Regular';
+            } else {
+                switch (api.gatewayType) {
+                    case 'wso2/synapse':
+                        gatewayType = 'Regular';
+                        break;
+                    case 'wso2/apk':
+                        gatewayType = 'APK';
+                        break;
+                    case 'AWS':
+                        gatewayType = 'AWS';
+                        break;
+                    default:
+                        gatewayType = 'Regular';
                 }
-            });
-            setVhosts(defaultVhosts);
-            setVhostsDeploy(defaultVhosts);
+            }
+            const internalGatewaysFiltered = settings.environment.filter((p) =>
+                p.provider.toLowerCase().includes('wso2'));
+            const selectedInternalGateways = internalGatewaysFiltered.filter((p) =>
+                p.gatewayType.toLowerCase() === gatewayType.toLowerCase())
+            if (selectedInternalGateways.length > 0) {
+                setInternalGateways(selectedInternalGateways);
+                const defaultVhosts = selectedInternalGateways.map((e) => {
+                    if (e.vhosts && e.vhosts.length > 0) {
+                        return {
+                            env: e.name,
+                            vhost: api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host
+                        };
+                    } else {
+                        return undefined;
+                    }
+                });
+                setVhosts(defaultVhosts);
+                setVhostsDeploy(defaultVhosts);
+                setSelectedEnvironment(selectedInternalGateways.length === 1 ?
+                    [selectedInternalGateways[0].name] : []);
+            } else {
+                const external = settings.environment.filter((p) => !p.provider.toLowerCase().includes('wso2'));
+                const selectedExternalGateways = external.filter((p) =>
+                    p.gatewayType.toLowerCase() === gatewayType.toLowerCase());
+                setExternalGateways(selectedExternalGateways);
+                if (selectedExternalGateways.length > 0) {
+                    selectedExternalGateways.forEach((env) => {
+                        setAllExternalGateways((prev) => [...prev, env]);
+                    });
+                    const defaultVhosts = selectedExternalGateways.map((e) => {
+                        if (e.vhosts && e.vhosts.length > 0) {
+                            return {
+                                env: e.name,
+                                vhost: api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host
+                            };
+                        } else {
+                            return undefined;
+                        }
+                    });
+                    setVhosts(defaultVhosts);
+                    setVhostsDeploy(defaultVhosts);
+                    setSelectedEnvironment(selectedExternalGateways.length === 1 ?
+                        [selectedExternalGateways[0].name] : []);
+                } else {
+                    setNoEnv(true);
+                }
+            }
         }
-    }, [settings]);
+    }, [isLoading]);
+
     const [extraRevisionToDelete, setExtraRevisionToDelete] = useState(null);
     const [description, setDescription] = useState('');
-    const [SelectedEnvironment, setSelectedEnvironment] = useState([]);
     const [open, setOpen] = useState(false);
     const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false);
     const [revisionToDelete, setRevisionToDelete] = useState([]);
@@ -546,21 +598,8 @@ export default function Environments() {
     const [revisionToRestore, setRevisionToRestore] = useState([]);
     const [currentLength, setCurrentLength] = useState(0);
     const [openDeployPopup, setOpenDeployPopup] = useState(history.location.state === 'deploy');
-    const [externalEnvEndpoints, setExternalEnvEndpoints] = useState(null);
-
-    const allExternalGatewaysMap = [];
-    const allExternalGateways = [];
-    if (externalGateways) {
-        externalGateways.forEach((env) => {
-            const revision = allEnvRevision && allEnvRevision.find(
-                (r) => r.deploymentInfo.some((e) => e.name === env.name),
-            );
-            const envDetails = revision && revision.deploymentInfo.find((e) => e.name === env.name);
-            const disPlayDevportal = envDetails && envDetails.displayOnDevportal;
-            allExternalGatewaysMap[env.name] = { revision, disPlayDevportal };
-            allExternalGateways.push(env);
-        });
-    }
+    const [isGovernanceViolation, setIsGovernanceViolation] = useState(false);
+    const [governanceError, setGovernanceError] = useState('');
 
 
     const externalEnvWithEndpoints = [];
@@ -610,7 +649,6 @@ export default function Environments() {
                     });
                     externalEnvWithEndpoints[env.name] = endpoints;
                 });
-                setExternalEnvEndpoints(externalEnvWithEndpoints);
             }
         })
     }, [api.id]);
@@ -646,17 +684,6 @@ export default function Environments() {
     };
 
     const handleSelect = (event) => {
-        const revisions = selectedRevision.filter((r) => r.env !== event.target.name);
-        const oldRevision = selectedRevision.find((r) => r.env === event.target.name);
-        let displayOnDevPortal = true;
-        if (oldRevision) {
-            displayOnDevPortal = oldRevision.displayOnDevPortal;
-        }
-        revisions.push({ env: event.target.name, revision: event.target.value, displayOnDevPortal });
-        setRevision(revisions);
-    };
-
-    const handleSelectForBrokers = (event) => {
         const revisions = selectedRevision.filter((r) => r.env !== event.target.name);
         const oldRevision = selectedRevision.find((r) => r.env === event.target.name);
         let displayOnDevPortal = true;
@@ -799,10 +826,58 @@ export default function Environments() {
                         id: 'Apis.Details.Environments.Environments.revision.create.success',
                         defaultMessage: 'Revision Created Successfully',
                     }));
+                    getRevision();
                 })
                 .catch((error) => {
                     if (error.response) {
-                        Alert.error(error.response.body.description);
+                        if (error.response.body.code === complianceErrorCode) {
+                            const violations = JSON.parse(error.response.body.description).blockingViolations;
+                            setGovernanceError(violations);
+                            setIsGovernanceViolation(true);
+                            Alert.error(
+                                <Box sx={{ width: '100%' }}>
+                                    <Typography>
+                                        <FormattedMessage
+                                            id={'Apis.Details.Environments.Environments.'
+                                                + 'revision.create.error.governance'}
+                                            defaultMessage={'Revision Creation failed. '
+                                                + 'Governance policy violations found'}
+                                        />
+                                    </Typography>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        mt: 1
+                                    }}>
+                                        <Link
+                                            component='button'
+                                            onClick={() =>
+                                                Utils.downloadAsJSON(violations, 'governance-violations')
+                                            }
+                                            sx={{
+                                                color: 'inherit',
+                                                fontWeight: 600,
+                                                textDecoration: 'none',
+                                                transition: 'all 0.3s',
+                                                '&:hover': {
+                                                    transform: 'translateY(-2px)',
+                                                    textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                },
+                                            }}
+                                        >
+                                            <FormattedMessage
+                                                id={'Apis.Details.Environments.Environments.revision.'
+                                                    + 'create.error.governance.download'}
+                                                defaultMessage='Download Violations'
+                                            />
+                                        </Link>
+                                    </Box>
+                                </Box>
+                            );
+                            return;
+                        } else {
+                            Alert.error(error.response.body.description);
+                        }
                     } else {
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.Environments.Environments.revision.create.error',
@@ -810,7 +885,6 @@ export default function Environments() {
                         }));
                     }
                     console.error(error);
-                }).finally(() => {
                     getRevision();
                 });
         }
@@ -916,6 +990,7 @@ export default function Environments() {
             displayOnDevportal: false,
         }];
         if (api.apiType !== API.CONSTS.APIProduct) {
+            setIsUndeploying(true);
             restApi.undeployRevision(api.id, revisionId, body)
                 .then(() => {
                     Alert.info(intl.formatMessage({
@@ -937,6 +1012,7 @@ export default function Environments() {
                     getRevision();
                     getDeployedEnv();
                 });
+            setIsUndeploying(false);
         } else {
             restProductApi.undeployProductRevision(api.id, revisionId, body)
                 .then(() => {
@@ -982,7 +1058,7 @@ export default function Environments() {
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.Environments.Environments.revision.deploy.request.cancel.error',
                             defaultMessage: 'Something went wrong while cancelling the revision'
-                            + ' deployment request',
+                                + ' deployment request',
                         }));
                     }
                     console.error(error);
@@ -1003,7 +1079,9 @@ export default function Environments() {
             displayOnDevportal,
             vhost,
         }];
+        let isBlockedByGovernanceViolation = false;
         if (api.apiType !== API.CONSTS.APIProduct) {
+            setIsDeploying(true);
             restApi.deployRevision(api.id, revisionId, body).then((response) => {
                 if (response && response.obj && response.obj.length > 0) {
                     if (response.obj[0]?.status === null || response.obj[0]?.status === 'APPROVED') {
@@ -1020,7 +1098,51 @@ export default function Environments() {
                 }
             }).catch((error) => {
                 if (error.response) {
-                    Alert.error(error.response.body.description);
+                    if (error.response.body.code === complianceErrorCode) {
+                        isBlockedByGovernanceViolation = true;
+                        const violations = JSON.parse(error.response.body.description).blockingViolations;
+                        setGovernanceError(violations);
+                        setIsGovernanceViolation(true);
+                        Alert.error(
+                            <Box sx={{ width: '100%' }}>
+                                <Typography>
+                                    <FormattedMessage
+                                        id='Apis.Details.Environments.Environments.revision.deploy.error.governance'
+                                        defaultMessage='Revision Deployment failed. Governance policy violations found'
+                                    />
+                                </Typography>
+                                <Box sx={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    mt: 1
+                                }}>
+                                    <Link
+                                        component='button'
+                                        onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
+                                        sx={{
+                                            color: 'inherit',
+                                            fontWeight: 600,
+                                            textDecoration: 'none',
+                                            transition: 'all 0.3s',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                            },
+                                        }}
+                                    >
+                                        <FormattedMessage
+                                            id={'Apis.Details.Environments.Environments.revision.'
+                                                + 'deploy.error.governance.download'}
+                                            defaultMessage='Download Violations'
+                                        />
+                                    </Link>
+                                </Box>
+                            </Box>
+                        );
+                        return;
+                    } else {
+                        Alert.error(error.response.body.description);
+                    }
                 } else {
                     Alert.error(intl.formatMessage({
                         id: 'Apis.Details.Environments.Environments.revision.deploy.error',
@@ -1029,8 +1151,12 @@ export default function Environments() {
                 }
                 console.error(error);
             }).finally(() => {
-                getRevision();
-                getDeployedEnv();
+                // Only refresh the page if there's no governance violation
+                if (!isBlockedByGovernanceViolation) {
+                    getRevision();
+                    getDeployedEnv();
+                }
+                setIsDeploying(false);
             });
         } else {
             restProductApi.deployProductRevision(api.id, revisionId, body)
@@ -1076,10 +1202,11 @@ export default function Environments() {
                     for (const env of envList) {
                         body1.push({
                             name: env,
-                            vhost: api.gatewayVendor === 'wso2' ? vhostList.find((v) => v.env === env).vhost : ' ',
+                            vhost: vhostList.find((v) => v.env === env).vhost,
                             displayOnDevportal: true,
                         });
                     }
+                    setIsDeploying(true);
                     restApi.deployRevision(api.id, response.body.id, body1)
                         .then(() => {
                             Alert.info(intl.formatMessage({
@@ -1089,7 +1216,54 @@ export default function Environments() {
                         })
                         .catch((error) => {
                             if (error.response) {
-                                Alert.error(error.response.body.description);
+                                if (error.response.body.code === complianceErrorCode) {
+                                    const violations = JSON.parse(error.response.body.description).blockingViolations;
+                                    setGovernanceError(violations);
+                                    setIsGovernanceViolation(true);
+                                    Alert.error(
+                                        <Box sx={{ width: '100%' }}>
+                                            <Typography>
+                                                <FormattedMessage
+                                                    id={'Apis.Details.Environments.Environments.'
+                                                        + 'revision.create.error.governance'}
+                                                    defaultMessage={'Revision Deployment failed. '
+                                                        + 'Governance policy violations found'}
+                                                />
+                                            </Typography>
+                                            <Box sx={{
+                                                display: 'flex',
+                                                justifyContent: 'flex-end',
+                                                mt: 1
+                                            }}>
+                                                <Link
+                                                    component='button'
+                                                    onClick={() =>
+                                                        Utils.downloadAsJSON(violations, 'governance-violations')
+                                                    }
+                                                    sx={{
+                                                        color: 'inherit',
+                                                        fontWeight: 600,
+                                                        textDecoration: 'none',
+                                                        transition: 'all 0.3s',
+                                                        '&:hover': {
+                                                            transform: 'translateY(-2px)',
+                                                            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                        },
+                                                    }}
+                                                >
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Environments.Environments.revision.'
+                                                            + 'create.error.governance.download'}
+                                                        defaultMessage='Download Violations'
+                                                    />
+                                                </Link>
+                                            </Box>
+                                        </Box>
+                                    );
+                                    return;
+                                } else {
+                                    Alert.error(error.response.body.description);
+                                }
                             } else {
                                 Alert.error(intl.formatMessage({
                                     id: 'Apis.Details.Environments.Environments.revision.deploy.error',
@@ -1101,11 +1275,59 @@ export default function Environments() {
                             history.replace();
                             getRevision();
                             getDeployedEnv();
+                            setIsDeploying(false);
+                            setOpenDeployPopup(false);
                         });
                 })
                 .catch((error) => {
                     if (error.response) {
-                        Alert.error(error.response.body.description);
+                        if (error.response.body.code === complianceErrorCode) {
+                            const violations = JSON.parse(error.response.body.description).blockingViolations;
+                            setGovernanceError(violations);
+                            setIsGovernanceViolation(true);
+                            Alert.error(
+                                <Box sx={{ width: '100%' }}>
+                                    <Typography>
+                                        <FormattedMessage
+                                            id={'Apis.Details.Environments.Environments.revision.'
+                                                + 'create.error.governance'}
+                                            defaultMessage={'Revision Creation failed. '
+                                                + 'Governance policy violations found'}
+                                        />
+                                    </Typography>
+                                    <Box sx={{
+                                        display: 'flex',
+                                        justifyContent: 'flex-end',
+                                        mt: 1
+                                    }}>
+                                        <Link
+                                            component='button'
+                                            onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
+                                            sx={{
+                                                color: 'inherit',
+                                                fontWeight: 600,
+                                                textDecoration: 'none',
+                                                transition: 'all 0.3s',
+                                                '&:hover': {
+                                                    transform: 'translateY(-2px)',
+                                                    textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                                },
+                                            }}
+                                        >
+                                            <FormattedMessage
+                                                id={'Apis.Details.Environments.Environments.revision.'
+                                                    + 'create.error.governance.download'}
+                                                defaultMessage='Download Violations'
+                                            />
+                                        </Link>
+                                    </Box>
+                                </Box>
+                            );
+                            setOpenDeployPopup(false);
+                            return;
+                        } else {
+                            Alert.error(error.response.body.description);
+                        }
                     } else {
                         Alert.error(intl.formatMessage({
                             id: 'Apis.Details.Environments.Environments.revision.create.error',
@@ -1114,7 +1336,6 @@ export default function Environments() {
                     }
                     console.error(error);
                 });
-            setOpenDeployPopup(false);
         } else {
             restProductApi.createProductRevision(api.id, body)
                 .then((response) => {
@@ -1221,21 +1442,6 @@ export default function Environments() {
         />
     );
 
-    /**
-     * Get Organization value of external gateways
-     * @param {Object} additionalProperties the additionalProperties list
-     * @return String organization name
-     */
-    function getOrganizationFromAdditionalProperties(additionalProperties) {
-        let organization;
-        additionalProperties.forEach((property) => {
-            if (property.key === 'Organization') {
-                organization = property.value;
-            }
-        });
-        return organization;
-    }
-
     const confirmRestoreDialog = (
         <ConfirmDialog
             key='key-dialog-restore'
@@ -1292,7 +1498,7 @@ export default function Environments() {
                 className={classes.containerInline}
             >
                 <Grid item className={classes.shapeRec} />
-                <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+                <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                     <Grid
                         className={clsx(classes.shapeInnerComplete, classes.shapeCircle)}
                         onMouseEnter={handlePopoverOpen}
@@ -1318,7 +1524,7 @@ export default function Environments() {
                             <Typography variant='body1' sx={{ mb: 0.5 }}>
                                 <b>{revName}</b>
                             </Typography>
-                            <Typography variant='body2' sx={{ mb: 1}}>
+                            <Typography variant='body2' sx={{ mb: 1 }}>
                                 {revDescription}
                             </Typography>
                             <Typography variant='caption'>
@@ -1336,8 +1542,8 @@ export default function Environments() {
         <Grid
             className={classes.containerInline}
         >
-            <Grid item className={classes.shapeRec}/>
-            <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+            <Grid item className={classes.shapeRec} />
+            <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                 <Grid className={clsx(classes.shapeInnerInactive, classes.shapeCircle)} />
             </Grid>
             <Grid item className={classes.shapeRecBack} />
@@ -1348,7 +1554,7 @@ export default function Environments() {
             className={classes.containerInline}
         >
             <Grid item className={classes.shapeRec} />
-            <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+            <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                 <Grid className={clsx(classes.shapeDottedEnd, classes.shapeCircle)} />
             </Grid>
         </Grid>
@@ -1358,7 +1564,7 @@ export default function Environments() {
             className={classes.containerInline}
         >
             <Grid item className={classes.shapeRec} />
-            <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+            <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                 {api.advertiseInfo && api.advertiseInfo.advertised ? (
                     <Grid
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
@@ -1372,7 +1578,7 @@ export default function Environments() {
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
                         style={{ cursor: 'pointer' }}
                     >
-                        <AddIcon className={classes.plusIconStyle} data-testid='new-revision-icon-btn'/>
+                        <AddIcon className={classes.plusIconStyle} data-testid='new-revision-icon-btn' />
                     </Grid>
                 )}
 
@@ -1385,7 +1591,7 @@ export default function Environments() {
             className={classes.containerInline}
         >
             <Grid item className={classes.shapeRec} />
-            <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+            <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                 {api.advertiseInfo && api.advertiseInfo.advertised ? (
                     <Grid
                         className={clsx(classes.shapeDottedStart, classes.shapeCircle)}
@@ -1428,7 +1634,7 @@ export default function Environments() {
                 className={classes.containerInline}
             >
                 <Grid item className={classes.shapeRec} />
-                <Grid item className={clsx(classes.shapeCircaleBack, classes.shapeCircle)}>
+                <Grid item className={clsx(classes.shapeCircleBack, classes.shapeCircle)}>
                     <Grid
                         className={clsx(classes.shapeDottedStart1, classes.shapeCircle)}
                         onMouseEnter={handlePopoverOpen}
@@ -1454,7 +1660,7 @@ export default function Environments() {
                             <Typography variant='body1' sx={{ mb: 0.5 }}>
                                 <b>{revName}</b>
                             </Typography>
-                            <Typography variant='body2' sx={{ mb: 1}}>
+                            <Typography variant='body2' sx={{ mb: 1 }}>
                                 {revDescription}
                             </Typography>
                             <Typography variant='caption'>
@@ -1474,7 +1680,7 @@ export default function Environments() {
        * @param {*} revDescription The description of the revision
        * @returns {Object} Returns the infoIconItem
      */
-    function ReturnInfoIconItem({ revDescription}) {
+    function ReturnInfoIconItem({ revDescription }) {
         const [anchorEl, setAnchorEl] = useState(null);
 
         const handlePopoverOpen = (event) => {
@@ -1542,7 +1748,7 @@ export default function Environments() {
                                     </>
                                 )}
                             </Grid>
-                            <Grid style={{display:'flex', flexDirection:'row'}}>
+                            <Grid style={{ display: 'flex', flexDirection: 'row', marginLeft: '76px' }}>
                                 <Button
                                     className={classes.textShape3}
                                     onClick={() => toggleOpenConfirmRestore(
@@ -1592,7 +1798,8 @@ export default function Environments() {
                                 </>
                                 }
                             </Grid>
-                            <Grid className={classes.textPadding} style={{display:'flex',flexDirection:'row'}}>
+                            <Grid className={classes.textPadding}
+                                style={{ display: 'flex', flexDirection: 'row', marginLeft: '76px' }}>
                                 <Button
                                     className={classes.textShape3}
                                     onClick={() => toggleOpenConfirmRestore(
@@ -1725,11 +1932,11 @@ export default function Environments() {
 
         const httpContext = vhost.httpContext ? '/' + vhost.httpContext.replace(/^\//g, '') : '';
         if (vhost.httpPort !== -1) {
-            endpoints.primary = 'http://' + vhost.host 
+            endpoints.primary = 'http://' + vhost.host
                 + (vhost.httpPort === 80 ? '' : ':' + vhost.httpPort) + httpContext;
         }
         if (vhost.httpsPort !== -1) {
-            endpoints.secondary = 'https://' + vhost.host 
+            endpoints.secondary = 'https://' + vhost.host
                 + (vhost.httpsPort === 443 ? '' : ':' + vhost.httpsPort) + httpContext;
         }
         endpoints.combined = endpoints.secondary + ' ' + endpoints.primary;
@@ -1752,7 +1959,7 @@ export default function Environments() {
         if (!gatewayRevisions.length) {
             // Content to display when there is no revision
             return (
-                <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={{ display: 'flex', alignItems: 'center' }}>
                     <TextField
                         id='revision-selector'
                         select
@@ -1771,8 +1978,8 @@ export default function Environments() {
                         onChange={handleSelect}
                         margin='dense'
                         variant='outlined'
-                        style={{width: '50%'}}
-                        disabled={api.isRevision ||
+                        style={{ width: '50%' }}
+                        disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
                             !allRevisions || allRevisions.length === 0}
                     >
@@ -1784,10 +1991,11 @@ export default function Environments() {
                         className={classes.button2}
                         disabled={
                             api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                            isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
                             !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                             !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                             (api.advertiseInfo && api.advertiseInfo.advertised) ||
-                            isDeployButtonDisabled
+                            isDeployButtonDisabled || isDeploying
                         }
                         variant='outlined'
                         onClick={() =>
@@ -1803,6 +2011,8 @@ export default function Environments() {
                             id='Apis.Details.Environments.Environments.deploy.button'
                             defaultMessage='Deploy'
                         />
+                        {' '}
+                        {isDeploying && <CircularProgress size={24} />}
                     </Button>
                 </div>
             );
@@ -1832,16 +2042,16 @@ export default function Environments() {
                 <div>
                     <Chip
                         label={
-                            <div style={{whiteSpace: 'normal', fontSize: 'smaller'}}>
+                            <div style={{ whiteSpace: 'normal', fontSize: 'smaller' }}>
                                 <FormattedMessage
                                     id='Apis.Details.Environments.Environments.pending.chip'
                                     defaultMessage='Pending'
                                 />
-                                <br/>
+                                <br />
                                 {pendingDeployment.displayName}
                             </div>
                         }
-                        style={{backgroundColor: '#FFBF00', width: '100px'}}
+                        style={{ backgroundColor: '#FFBF00', width: '100px' }}
                     />
                     <Button
                         className={classes.button1}
@@ -1862,7 +2072,7 @@ export default function Environments() {
             );
         }
         return (
-            <div style={{display: 'flex', alignItems: 'center'}}>
+            <div style={{ display: 'flex', alignItems: 'center' }}>
                 <TextField
                     id='revision-selector'
                     select
@@ -1881,8 +2091,8 @@ export default function Environments() {
                     onChange={handleSelect}
                     margin='dense'
                     variant='outlined'
-                    style={{width: '50%'}}
-                    disabled={api.isRevision ||
+                    style={{ width: '50%' }}
+                    disabled={api.isRevision || isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
                         (settings && settings.portalConfigurationOnlyModeEnabled) ||
                         !filteredRevisions || filteredRevisions.length === 0}
                 >
@@ -1894,10 +2104,11 @@ export default function Environments() {
                     className={classes.button2}
                     disabled={
                         api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled) ||
+                        isRestricted(['apim:api_create', 'apim:api_publish'], api) ||
                         !selectedRevision.some((r) => r.env === row.name && r.revision) ||
                         !selectedVhosts.some((v) => v.env === row.name && v.vhost) ||
                         (api.advertiseInfo && api.advertiseInfo.advertised) ||
-                        isDeployButtonDisabled
+                        isDeployButtonDisabled || isDeploying
                     }
                     variant='outlined'
                     onClick={() =>
@@ -1952,12 +2163,12 @@ export default function Environments() {
                 <div>
                     <Chip
                         label={approvedDeployment.displayName}
-                        style={{backgroundColor: '#15B8CF', width: '100px'}}
+                        style={{ backgroundColor: '#15B8CF', width: '100px' }}
                     />
                     <Button
                         className={classes.button1}
                         variant='outlined'
-                        disabled={api.isRevision ||
+                        disabled={isUndeploying || api.isRevision ||
                             (settings && settings.portalConfigurationOnlyModeEnabled) ||
                             isRestricted(['apim:api_create', 'apim:api_publish'], api)}
                         onClick={() => undeployRevision(approvedDeployment.id, row.name)}
@@ -1993,12 +2204,13 @@ export default function Environments() {
         const selected = selectionList && selectionList.find((v) => v.env === env);
         if (selected) {
             let vhost;
+            const gateways = internalGateways.length > 0 ? internalGateways: externalGateways;
             if (api.isWebSocket() ) {
-                vhost = internalGateways.find((e) => e.name === env).vhosts.find(
+                vhost = gateways.find((e) => e.name === env).vhosts.find(
                     (v) => v.wsHost === selected.vhost,
                 );
             } else {
-                vhost = internalGateways.find((e) => e.name === env).vhosts.find(
+                vhost = gateways.find((e) => e.name === env).vhosts.find(
                     (v) => v.host === selected.vhost,
                 );
             }
@@ -2019,9 +2231,25 @@ export default function Environments() {
         return '';
     }
 
-    if (isLoading || selectedVhosts === null) {
+    if (!noEnv && (isLoading || selectedVhosts === null)) {
         return <Progress per={80} message='Loading app settings ...' />;
     }
+
+    if (noEnv) {
+        return (
+            <Grid container>
+                <Grid item>
+                    <Typography variant='h5' gutterBottom>
+                        <FormattedMessage
+                            id='Apis.Details.Environments.Environments.no.env.heading'
+                            defaultMessage='No Gateway Environments Configured for the selected gateway type'
+                        />
+                    </Typography>
+                </Grid>
+            </Grid>
+        );
+    }
+
     // allEnvDeployments represents all deployments of the API with mapping
     // environment -> {revision deployed to env, vhost deployed to env with revision}
     const allEnvDeployments = allEnvRevision ?
@@ -2038,7 +2266,7 @@ export default function Environments() {
                         <FormattedMessage
                             id='Apis.Details.Environments.Environments.advertise.only.warning'
                             defaultMessage={'This API is marked as a third party API. The requests are not proxied'
-                            + ' through the gateway. Hence, deployments are not required.'}
+                                + ' through the gateway. Hence, deployments are not required.'}
                         />
                     </Typography>
                 </MuiAlert>
@@ -2052,6 +2280,7 @@ export default function Environments() {
                     setDescription={setDescription}
                     gatewayVendor={api.gatewayVendor}
                     advertiseInfo={api.advertiseInfo}
+                    isDeploying={isDeploying}
                 />
             )}
             {allRevisions && allRevisions.length !== 0 && (
@@ -2072,43 +2301,43 @@ export default function Environments() {
             )}
             {!api.isRevision && (settings && !settings.portalConfigurationOnlyModeEnabled) &&
                 allRevisions && allRevisions.length !== 0
-            && (
-                <Grid container>
-                    <Tooltip
-                        title={(
-                            <>
-                                <Typography color='inherit'>
-                                    {api.lifeCycleStatus === 'RETIRED' ? intl.formatMessage({
-                                        id: 'Apis.Details.Environments.Environments.RetiredApi.ToolTip',
-                                        defaultMessage: 'Can not deploy new revisions for retired API',
-                                    }): 'Deploy new revision'}
-                                </Typography>
-                            </>
-                        )}
-                        placement='bottom'
-                    >
-                        <span>
-                            <Button
-                                onClick={toggleDeployRevisionPopup}
-                                disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
-                                            || (api.advertiseInfo && api.advertiseInfo.advertised) 
-                                            || isDeployButtonDisabled
-                                            || api.lifeCycleStatus === 'RETIRED'}
-                                variant='contained'
-                                color='primary'
-                                size='large'
-                                className={classes.deployNewRevButtonStyle}
-                            >
-                                <FormattedMessage
-                                    id='Apis.Details.Environments.Environments.deploy.new.revision'
-                                    defaultMessage='Deploy New Revision'
-                                />
-                            </Button>
-                        </span>
+                && (
+                    <Grid container>
+                        <Tooltip
+                            title={(
+                                <>
+                                    <Typography color='inherit'>
+                                        {api.lifeCycleStatus === 'RETIRED' ? intl.formatMessage({
+                                            id: 'Apis.Details.Environments.Environments.RetiredApi.ToolTip',
+                                            defaultMessage: 'Can not deploy new revisions for retired API',
+                                        }) : 'Deploy new revision'}
+                                    </Typography>
+                                </>
+                            )}
+                            placement='bottom'
+                        >
+                            <span>
+                                <Button
+                                    onClick={toggleDeployRevisionPopup}
+                                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                        || (api.advertiseInfo && api.advertiseInfo.advertised)
+                                        || isDeployButtonDisabled
+                                        || api.lifeCycleStatus === 'RETIRED'}
+                                    variant='contained'
+                                    color='primary'
+                                    size='large'
+                                    className={classes.deployNewRevButtonStyle}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.Environments.Environments.deploy.new.revision'
+                                        defaultMessage='Deploy New Revision'
+                                    />
+                                </Button>
+                            </span>
 
-                    </Tooltip>
-                </Grid>
-            )}
+                        </Tooltip>
+                    </Grid>
+                )}
             <Grid container>
                 <StyledDialog
                     open={openDeployPopup}
@@ -2123,17 +2352,17 @@ export default function Environments() {
                         />
                     </DialogTitle>
                     <DialogContent className={classes.dialogContent}>
-                        { allRevisions && allRevisions.length === revisionCount && (
+                        {allRevisions && allRevisions.length === revisionCount && (
                             <Typography align='left' className={classes.warningText}>
                                 <FormattedMessage
                                     id='Apis.Details.Environments.Environments.select.rev.warning'
                                     defaultMessage={'Please delete a revision as '
-                                    + 'the number of revisions have reached a maximum of {count}'}
+                                        + 'the number of revisions have reached a maximum of {count}'}
                                     values={{ count: revisionCount }}
                                 />
                             </Typography>
                         )}
-                        { allRevisions && allRevisions.length === revisionCount && (
+                        {allRevisions && allRevisions.length === revisionCount && (
                             <Box mb={3}>
                                 <TextField
                                     fullWidth
@@ -2155,14 +2384,14 @@ export default function Environments() {
                                             <FormattedMessage
                                                 id='Apis.Details.Environments.Environments.select.rev.helper1'
                                                 defaultMessage={'Please undeploy and delete a revision as '
-                                                + 'the number of revisions have reached a maximum of {count}'}
+                                                    + 'the number of revisions have reached a maximum of {count}'}
                                                 values={{ count: revisionCount }}
                                             />
                                         ) : (
                                             <FormattedMessage
                                                 id='Apis.Details.Environments.Environments.select.rev.helper'
                                                 defaultMessage={'Please select a revision to delete as '
-                                                + 'the number of revisions have reached a maximum of {count}'}
+                                                    + 'the number of revisions have reached a maximum of {count}'}
                                                 values={{ count: revisionCount }}
                                             />
                                         )}
@@ -2170,9 +2399,9 @@ export default function Environments() {
                                     variant='outlined'
                                     disabled={api.isRevision ||
                                         (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                                            allRevisions.filter(
-                                                (o1) => o1.deploymentInfo.length === 0,
-                                            ).length === 0}
+                                        allRevisions.filter(
+                                            (o1) => o1.deploymentInfo.length === 0,
+                                        ).length === 0}
                                 >
                                     {allRevisions && allRevisions.length !== 0 && allRevisions.filter(
                                         (o1) => o1.deploymentInfo.length === 0,
@@ -2239,7 +2468,7 @@ export default function Environments() {
                                                     }) ? '0.6' : '1'
                                                 }}
                                                 className={clsx(SelectedEnvironment
-                                                && SelectedEnvironment.includes(row.name)
+                                                    && SelectedEnvironment.includes(row.name)
                                                     ? (classes.changeCard)
                                                     : (classes.noChangeCard), classes.cardHeight)}
                                                 variant='outlined'
@@ -2262,9 +2491,9 @@ export default function Environments() {
                                                                     (
                                                                         <Checkbox
                                                                             color='primary'
-                                                                            icon={<RadioButtonUncheckedIcon/>}
+                                                                            icon={<RadioButtonUncheckedIcon />}
                                                                             checkedIcon={<
-                                                                                CheckCircleIcon color='primary'/>}
+                                                                                CheckCircleIcon color='primary' />}
                                                                             disabled
                                                                         />
                                                                     ) :
@@ -2276,9 +2505,9 @@ export default function Environments() {
                                                                                 SelectedEnvironment.includes(row.name)}
                                                                             onChange={handleChange}
                                                                             color='primary'
-                                                                            icon={<RadioButtonUncheckedIcon/>}
+                                                                            icon={<RadioButtonUncheckedIcon />}
                                                                             checkedIcon={<
-                                                                                CheckCircleIcon color='primary'/>}
+                                                                                CheckCircleIcon color='primary' />}
                                                                             inputProps={{
                                                                                 'aria-label': 'secondary checkbox'
                                                                             }}
@@ -2417,7 +2646,7 @@ export default function Environments() {
                                                                                             pending.chip'
                                                                                             defaultMessage='Pending'
                                                                                         />
-                                                                                        <br/>
+                                                                                        <br />
                                                                                         {o3.displayName}
                                                                                     </div>
                                                                                 }
@@ -2429,7 +2658,7 @@ export default function Environments() {
                                                                         </div>
                                                                     ))}
                                                             </Grid>
-                                                            <Grid item/>
+                                                            <Grid item />
                                                         </Grid>
                                                     </CardContent>
                                                 </Box>
@@ -2439,12 +2668,12 @@ export default function Environments() {
                                 </Grid>
                             </Box>
                         )}
-                        {(api.gatewayVendor === 'solace') && (allExternalGateways.length > 0) && (
+                        {(api.gatewayVendor !== 'wso2') && (allExternalGateways.length > 0) && (
                             <Box mt={2}>
                                 <Typography variant='h6' align='left' className={classes.sectionTitle}>
                                     <FormattedMessage
-                                        id='Apis.Details.Environments.Environments.solace.platform.environments.heading'
-                                        defaultMessage='Solace Platform Environments'
+                                        id='Apis.Details.Environments.Environments.external.gateways.heading'
+                                        defaultMessage='API Gateways'
                                     />
                                 </Typography>
                                 <Grid
@@ -2455,7 +2684,7 @@ export default function Environments() {
                                         <Grid item xs={4}>
                                             <Card
                                                 className={clsx(SelectedEnvironment
-                                                && SelectedEnvironment.includes(row.name)
+                                                    && SelectedEnvironment.includes(row.name)
                                                     ? (classes.changeCard)
                                                     : (classes.noChangeCard), classes.cardHeight)}
                                                 variant='outlined'
@@ -2495,28 +2724,55 @@ export default function Environments() {
                                                             direction='column'
                                                             spacing={2}
                                                         >
-                                                            <Grid item xs={12}>
-                                                                <TextField
-                                                                    id='Api.Details.Third.party.environment.name'
-                                                                    label='Environment'
-                                                                    variant='outlined'
-                                                                    disabled
-                                                                    fullWidth
-                                                                    margin='dense'
-                                                                    value={row.name}
-                                                                />
-                                                                <TextField
-                                                                    id='Api.Details.
-                                                                        Third.party.environment.organization'
-                                                                    label='Organization'
-                                                                    variant='outlined'
-                                                                    disabled
-                                                                    fullWidth
-                                                                    margin='dense'
-                                                                    value={getOrganizationFromAdditionalProperties(
-                                                                        row.additionalProperties,
+                                                            <Grid item xs={12} sx={{ width: '100%' }}>
+                                                                <Tooltip
+                                                                    title={(
+                                                                        <>
+                                                                            <Typography color='inherit'>
+                                                                                {getVhostHelperText(row.name,
+                                                                                    selectedVhostDeploy)}
+                                                                            </Typography>
+                                                                        </>
                                                                     )}
-                                                                />
+                                                                    placement='right'
+                                                                >
+                                                                    <TextField
+                                                                        id='vhost-selector'
+                                                                        select
+                                                                        label={(
+                                                                            <FormattedMessage
+                                                                                id='Apis.Details.
+                                                                                Environments.deploy.vhost'
+                                                                                defaultMessage='VHost'
+                                                                            />
+                                                                        )}
+                                                                        SelectProps={{
+                                                                            MenuProps: {
+                                                                                getContentAnchorEl: null,
+                                                                            },
+                                                                        }}
+                                                                        name={row.name}
+                                                                        value={selectedVhostDeploy.find(
+                                                                            (v) => v.env === row.name,
+                                                                        ).vhost}
+                                                                        onChange={handleVhostDeploySelect}
+                                                                        margin='dense'
+                                                                        variant='outlined'
+                                                                        fullWidth
+                                                                        helperText={getVhostHelperText(row.name,
+                                                                            selectedVhostDeploy, true)}
+                                                                    >
+                                                                        {row.vhosts?.map(
+                                                                            (vhost) => (
+                                                                                <MenuItem value={api.isWebSocket()
+                                                                                    ? vhost.wsHost : vhost.host}>
+                                                                                    {api.isWebSocket()
+                                                                                        ? vhost.wsHost : vhost.host}
+                                                                                </MenuItem>
+                                                                            ),
+                                                                        )}
+                                                                    </TextField>
+                                                                </Tooltip>
                                                             </Grid>
                                                         </Grid>
                                                     </CardContent>
@@ -2547,12 +2803,20 @@ export default function Environments() {
                                 || (allRevisions && allRevisions.length === revisionCount && !extraRevisionToDelete)
                                 || isRestricted(['apim:api_create', 'apim:api_publish'], api)
                                 || (api.advertiseInfo && api.advertiseInfo.advertised)
-                                || isDeployButtonDisabled}
+                                || (SelectedEnvironment.length === 1
+                                    && allEnvRevision && allEnvRevision.some(revision => {
+                                    return revision.deploymentInfo.some(deployment =>
+                                        deployment.name === SelectedEnvironment[0] &&
+                                        deployment.status === 'CREATED');
+                                }) )
+                                || isDeployButtonDisabled || isDeploying}
                         >
                             <FormattedMessage
                                 id='Apis.Details.Environments.Environments.deploy.deploy'
                                 defaultMessage='Deploy'
                             />
+                            {' '}
+                            {isDeploying && <CircularProgress size={24} />}
                         </Button>
                     </DialogActions>
                 </StyledDialog>
@@ -2581,8 +2845,9 @@ export default function Environments() {
                                         defaultMessage='Create new revision and deploy'
                                     />
                                 )}
-                                placement='top-end'
+                                placement='right-start'
                                 aria-label='New Deployment'
+                                style={{ padding: '5px' }}
                             >
                                 <IconButton size='small' aria-label='delete'>
                                     <HelpOutlineIcon fontSize='small' />
@@ -2617,17 +2882,17 @@ export default function Environments() {
                         />
                     </DialogTitle>
                     <DialogContent className={classes.dialogContent}>
-                        { allRevisions && allRevisions.length === revisionCount && (
+                        {allRevisions && allRevisions.length === revisionCount && (
                             <Typography align='left' className={classes.warningText}>
                                 <FormattedMessage
                                     id='Apis.Details.Environments.Environments.select.rev.warning'
                                     defaultMessage={'Please delete a revision as '
-                                    + 'the number of revisions have reached a maximum of {count}'}
+                                        + 'the number of revisions have reached a maximum of {count}'}
                                     values={{ count: revisionCount }}
                                 />
                             </Typography>
                         )}
-                        { allRevisions && allRevisions.length === revisionCount && (
+                        {allRevisions && allRevisions.length === revisionCount && (
                             <Box mb={3}>
                                 <TextField
                                     fullWidth
@@ -2649,14 +2914,14 @@ export default function Environments() {
                                             <FormattedMessage
                                                 id='Apis.Details.Environments.Environments.select.rev.helper1'
                                                 defaultMessage={'Please undeploy and delete a revision as '
-                                                + 'the number of revisions have reached a maximum of {count}'}
+                                                    + 'the number of revisions have reached a maximum of {count}'}
                                                 values={{ count: revisionCount }}
                                             />
                                         ) : (
                                             <FormattedMessage
                                                 id='Apis.Details.Environments.Environments.select.rev.helper'
                                                 defaultMessage={'Please select a revision to delete as '
-                                                + 'the number of revisions have reached a maximum of {count}'}
+                                                    + 'the number of revisions have reached a maximum of {count}'}
                                                 values={{ count: revisionCount }}
                                             />
                                         )}
@@ -2664,9 +2929,9 @@ export default function Environments() {
                                     variant='outlined'
                                     disabled={api.isRevision ||
                                         (settings && settings.portalConfigurationOnlyModeEnabled) ||
-                                            allRevisions.filter(
-                                                (o1) => o1.deploymentInfo.length === 0,
-                                            ).length === 0}
+                                        allRevisions.filter(
+                                            (o1) => o1.deploymentInfo.length === 0,
+                                        ).length === 0}
                                 >
                                     {allRevisions && allRevisions.length !== 0 && allRevisions.filter(
                                         (o1) => o1.deploymentInfo.length === 0,
@@ -2734,8 +2999,11 @@ export default function Environments() {
                     </DialogActions>
                 </StyledDialog>
             </Grid>
-            {api.lifeCycleStatus !== 'RETIRED' 
-            &&  allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
+            {isGovernanceViolation && (
+                <GovernanceViolations violations={governanceError} />
+            )}
+            {api.lifeCycleStatus !== 'RETIRED'
+                && allRevisions && allRevisions.length !== 0 && api.gatewayVendor === 'wso2' && (
                 <Box mx='auto' mt={5}>
                     <Typography variant='h6' component='h2' className={classes.sectionTitle}>
                         <FormattedMessage
@@ -2803,10 +3071,249 @@ export default function Environments() {
                                             </IconButton>
                                         </Tooltip>
                                     </TableCell>
+                                    <TableCell>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.visibility.permission'
+                                            defaultMessage='Visibility'
+                                        />
+                                        <Tooltip
+                                            title={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.Environments.visibility.permission'
+                                                    defaultMessage='Gateway Environment Visibility in Developer Portal.'
+                                                />
+                                            )}
+                                            placement='top-end'
+                                            aria-label='New Deployment'
+                                        >
+                                            <IconButton size='small' aria-label='delete'>
+                                                <HelpOutlineIcon fontSize='small' />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
                                 {internalGateways && internalGateways.map((row) => (
+                                    <TableRow key={row.name}>
+                                        <TableCell component='th' scope='row'>
+                                            {row.displayName}
+                                        </TableCell>
+                                        {allEnvDeployments[row.name].revision != null ? (
+                                            <>
+                                                <TableCell align='left' id='gateway-access-url-cell'>
+                                                    <div className={classes.primaryEndpoint}>
+                                                        {api.isWebSocket()
+                                                            ? getGatewayAccessUrl(allEnvDeployments[row.name]
+                                                                .vhost, 'WS')
+                                                                .primary : getGatewayAccessUrl(
+                                                                allEnvDeployments[row.name].vhost, 'HTTP',
+                                                            ).primary}
+                                                    </div>
+                                                    <div className={classes.secondaryEndpoint}>
+                                                        {api.isWebSocket()
+                                                            ? getGatewayAccessUrl(allEnvDeployments[row.name]
+                                                                .vhost, 'WS')
+                                                                .secondary : getGatewayAccessUrl(
+                                                                allEnvDeployments[row.name].vhost, 'HTTP',
+                                                            ).secondary}
+                                                    </div>
+                                                    {api.isGraphql()
+                                                            && (
+                                                                <>
+                                                                    <div className={classes.primaryEndpoint}>
+                                                                        {getGatewayAccessUrl(allEnvDeployments[row.name]
+                                                                            .vhost, 'WS')
+                                                                            .primary}
+                                                                    </div>
+                                                                    <div className={classes.secondaryEndpoint}>
+                                                                        {getGatewayAccessUrl(allEnvDeployments[row.name]
+                                                                            .vhost, 'WS')
+                                                                            .secondary}
+                                                                    </div>
+                                                                </>
+
+                                                            )}
+                                                </TableCell>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <TableCell align='left' className={classes.tableCellVhostSelect}>
+                                                    <Tooltip
+                                                        title={(
+                                                            <>
+                                                                <Typography color='inherit'>
+                                                                    {getVhostHelperText(row.name,
+                                                                        selectedVhosts)}
+                                                                </Typography>
+                                                            </>
+                                                        )}
+                                                        placement='bottom'
+                                                    >
+                                                        <TextField
+                                                            id='vhost-selector'
+                                                            select
+                                                            label={(
+                                                                <FormattedMessage
+                                                                    id='Apis.Details.Environments.Environments
+                                                                    .select.vhost'
+                                                                    defaultMessage='Select Access URL'
+                                                                />
+                                                            )}
+                                                            SelectProps={{
+                                                                MenuProps: {
+                                                                    getContentAnchorEl: null,
+                                                                },
+                                                            }}
+                                                            name={row.name}
+                                                            value={selectedVhosts.find((v) => v.env === row.name).vhost}
+                                                            onChange={handleVhostSelect}
+                                                            margin='dense'
+                                                            variant='outlined'
+                                                            className={classes.vhostSelect}
+                                                            fullWidth
+                                                            disabled={
+                                                                api.isRevision
+                                                                || (settings
+                                                                    && settings.portalConfigurationOnlyModeEnabled)
+                                                                || !allRevisions || allRevisions.length === 0
+                                                            }
+                                                            helperText={getVhostHelperText(row.name, selectedVhosts,
+                                                                true, 100)}
+                                                        >
+                                                            {row.vhosts.map(
+                                                                (vhost) => (
+                                                                    <MenuItem value={api.isWebSocket()
+                                                                        ? vhost.wsHost : vhost.host}>
+                                                                        {api.isWebSocket()
+                                                                            ? vhost.wsHost : vhost.host}
+                                                                    </MenuItem>
+                                                                ),
+                                                            )}
+                                                        </TextField>
+                                                    </Tooltip>
+                                                </TableCell>
+                                            </>
+                                        )}
+                                        <TableCell component='th' scope='row'>
+                                            {getDeployedRevisionComponent(row, allEnvRevisionMapping)}
+                                        </TableCell>
+                                        <TableCell align='left' style={{ width: '300px' }}>
+                                            {getDeployedRevisionStatusComponent(row, allEnvRevisionMapping)}
+                                        </TableCell>
+                                        <TableCell align='left'>
+                                            <DisplayDevportal
+                                                name={row.name}
+                                                api={api}
+                                                EnvDeployments={allEnvDeployments[row.name]}
+                                            />
+                                        </TableCell>
+                                        <TableCell>
+                                            <Permission
+                                                type={row.permissions.permissionType}
+                                                roles={row.permissions.roles}
+                                            />
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
+                            </TableBody>
+                        </Table>
+                    </TableContainer>
+                </Box>
+            )}
+            {allRevisions && allRevisions.length !== 0 && (api.gatewayVendor !== 'wso2')
+            && (allExternalGateways.length > 0) && (
+                <Box mx='auto' mt={5}>
+                    <Typography variant='h6' className={classes.sectionTitle}>
+                        <FormattedMessage
+                            id='Apis.Details.External.Gateways'
+                            defaultMessage='API Gateways'
+                        />
+                    </Typography>
+                    <TableContainer component={Paper}>
+                        <Table>
+                            <TableHead>
+                                <TableRow>
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.api.gateways.name'
+                                            defaultMessage='Name'
+                                        />
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.gateway.accessUrl'
+                                            defaultMessage='Gateway Access URL'
+                                        />
+                                    </TableCell>
+                                    {api && api.isDefaultVersion !== true
+                                        ? (
+                                            <TableCell align='left'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.Environments.gateway
+                                                    .deployment.current.revision'
+                                                    defaultMessage='Current Revision'
+                                                />
+                                            </TableCell>
+                                        )
+                                        : (
+                                            <TableCell align='left'>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.Environments.gateway.action'
+                                                    defaultMessage='Action'
+                                                />
+                                            </TableCell>
+                                        )}
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.gateway.deployment.next.revision'
+                                            defaultMessage='Next Revision'
+                                        />
+                                    </TableCell>
+                                    <TableCell align='left'>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.visibility.in.devportal'
+                                            defaultMessage='Gateway URL Visibility'
+                                        />
+                                        <Tooltip
+                                            title={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.Environments.display.devportal'
+                                                    defaultMessage='Display Gateway Access URLs in developer portal.'
+                                                />
+                                            )}
+                                            placement='top-end'
+                                            aria-label='New Deployment'
+                                        >
+                                            <IconButton size='small' aria-label='delete'>
+                                                <HelpOutlineIcon fontSize='small' />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
+                                    <TableCell>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.visibility.permission'
+                                            defaultMessage='Visibility'
+                                        />
+                                        <Tooltip
+                                            title={(
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.Environments.visibility.permission'
+                                                    defaultMessage='Gateway Environment Visibility in Developer Portal.'
+                                                />
+                                            )}
+                                            placement='top-end'
+                                            aria-label='New Deployment'
+                                        >
+                                            <IconButton size='small' aria-label='delete'>
+                                                <HelpOutlineIcon fontSize='small' />
+                                            </IconButton>
+                                        </Tooltip>
+                                    </TableCell>
+                                </TableRow>
+                            </TableHead>
+                            <TableBody>
+                                {externalGateways.map((row) => (
                                     <TableRow key={row.name}>
                                         <TableCell component='th' scope='row'>
                                             {row.displayName}
@@ -2892,9 +3399,9 @@ export default function Environments() {
                                                         >
                                                             {row.vhosts.map(
                                                                 (vhost) => (
-                                                                    <MenuItem value={api.isWebSocket() 
+                                                                    <MenuItem value={api.isWebSocket()
                                                                         ? vhost.wsHost : vhost.host}>
-                                                                        {api.isWebSocket() 
+                                                                        {api.isWebSocket()
                                                                             ? vhost.wsHost : vhost.host}
                                                                     </MenuItem>
                                                                 ),
@@ -2917,227 +3424,10 @@ export default function Environments() {
                                                 EnvDeployments={allEnvDeployments[row.name]}
                                             />
                                         </TableCell>
-                                    </TableRow>
-                                ))}
-                            </TableBody>
-                        </Table>
-                    </TableContainer>
-                </Box>
-            )}
-            {allRevisions && allRevisions.length !== 0 && (api.gatewayVendor === 'solace')
-            && (allExternalGateways.length > 0) && (
-                <Box mx='auto' mt={5}>
-                    <Typography variant='h6' className={classes.sectionTitle}>
-                        <FormattedMessage
-                            id='Apis.Details.Solace.Platform.Environments'
-                            defaultMessage='Solace Platform Environments'
-                        />
-                    </Typography>
-                    <TableContainer component={Paper}>
-                        <Table>
-                            <TableHead>
-                                <TableRow>
-                                    <TableCell align='left'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Third.Party.Brokers.broker.displayName'
-                                            defaultMessage='Name'
-                                        />
-                                    </TableCell>
-                                    {externalEnvEndpoints && (
-                                        <TableCell align='left'>
-                                            <FormattedMessage
-                                                id='Apis.Details.Third.Party.Brokers.broker.endpoints'
-                                                defaultMessage='Access Endpoints'
-                                            />
-                                        </TableCell>
-                                    )}
-                                    <TableCell align='left'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Third.Party.Brokers.broker.environment'
-                                            defaultMessage='Environment'
-                                        />
-                                    </TableCell>
-                                    <TableCell align='left'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Third.Party.Brokers.broker.type'
-                                            defaultMessage='Organization'
-                                        />
-                                    </TableCell>
-                                    <TableCell align='left'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Third.Party.Brokers.broker.name'
-                                            defaultMessage='Provider'
-                                        />
-                                    </TableCell>
-                                    {api && api.isDefaultVersion !== true
-                                        ? (
-                                            <TableCell align='left'>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Environments.
-                                                        Environments.gateway.deployed.revision'
-                                                    defaultMessage='Deployed Revision'
-                                                />
-                                            </TableCell>
-                                        )
-                                        : (
-                                            <TableCell align='left'>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Environments.Environments.gateway.action'
-                                                    defaultMessage='Action'
-                                                />
-                                            </TableCell>
-                                        )}
-                                    <TableCell align='left'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Environments.Environments.display.in.devportal'
-                                            defaultMessage='Display in Developer Portal'
-                                        />
-                                    </TableCell>
-                                </TableRow>
-                            </TableHead>
-                            <TableBody>
-                                {externalGateways.map((row) => (
-                                    <TableRow key={row.name}>
-                                        <TableCell component='th' scope='row'>
-                                            {row.displayName}
-                                        </TableCell>
-                                        {externalEnvEndpoints && (
-                                            <TableCell align='left'>
-                                                {externalEnvEndpoints[row.name] &&
-                                                    externalEnvEndpoints[row.name].map((e) => {
-                                                        return (
-                                                            <Grid container spacing={2}>
-                                                                <Grid item>
-                                                                    <Chip
-                                                                        label={upperCaseString(e.protocol)}
-                                                                        size='small'
-                                                                        color='primary'
-                                                                        variant='outlined'
-                                                                    />
-                                                                </Grid>
-                                                                <Grid
-                                                                    item
-                                                                    style={{
-                                                                        display: 'flex',
-                                                                        alignItems: 'center',
-                                                                        justifyContent: 'center',
-                                                                    }}
-                                                                >
-                                                                    {e.uri}
-                                                                </Grid>
-                                                            </Grid>
-                                                        );
-                                                    })
-                                                }
-                                            </TableCell>
-                                        )}
-                                        <TableCell align='left'>
-                                            {row.name}
-                                        </TableCell>
-                                        <TableCell align='left'>
-                                            {getOrganizationFromAdditionalProperties(row.additionalProperties)}
-                                        </TableCell>
-                                        <TableCell align='left'>
-                                            {row.provider}
-                                        </TableCell>
-                                        <TableCell align='left' style={{ width: '300px' }}>
-                                            {allExternalGatewaysMap[row.name].revision != null
-                                                ? (
-                                                    <div>
-                                                        <Chip
-                                                            label={allExternalGatewaysMap[row.name]
-                                                                .revision.displayName}
-                                                            style={{ backgroundColor: '#15B8CF' }}
-                                                        />
-                                                        <Button
-                                                            className={classes.button1}
-                                                            variant='outlined'
-                                                            disabled={api.isRevision ||
-                                                                (settings &&
-                                                                    settings.portalConfigurationOnlyModeEnabled
-                                                                )}
-                                                            onClick={() => undeployRevision(
-                                                                allExternalGatewaysMap[row.name]
-                                                                    .revision.id, row.name,
-                                                            )}
-                                                            size='small'
-                                                        >
-                                                            <FormattedMessage
-                                                                id='Apis.Details.Environments.Environments.undeploy.btn'
-                                                                defaultMessage='Undeploy'
-                                                            />
-                                                        </Button>
-                                                    </div>
-                                                ) : (
-                                                    <div style={{ display:'flex', justifyContent: 'center' }}>
-                                                        <TextField
-                                                            id='revision-selector'
-                                                            select
-                                                            label={(
-                                                                <FormattedMessage
-                                                                    id='Apis.Details.Environments.
-                                                                            Environments.select.table'
-                                                                    defaultMessage='Select Revision'
-                                                                />
-                                                            )}
-                                                            SelectProps={{
-                                                                MenuProps: {
-                                                                    getContentAnchorEl: null,
-                                                                },
-                                                            }}
-                                                            name={row.name}
-                                                            onChange={handleSelectForBrokers}
-                                                            margin='dense'
-                                                            variant='outlined'
-                                                            style={{ width: '50%' }}
-                                                            disabled={api.isRevision ||
-                                                                (settings &&
-                                                                    settings.portalConfigurationOnlyModeEnabled
-                                                                )
-                                                            || !allRevisions || allRevisions.length === 0}
-                                                        >
-                                                            {allRevisions && allRevisions.length !== 0
-                                                            && allRevisions.map(
-                                                                (number) => (
-                                                                    <MenuItem value={number.id}>
-                                                                        {number.displayName}
-                                                                    </MenuItem>
-                                                                ),
-                                                            )}
-                                                        </TextField>
-                                                        <Button
-                                                            className={classes.button2}
-                                                            disabled={api.isRevision ||
-                                                                (settings &&
-                                                                    settings.portalConfigurationOnlyModeEnabled
-                                                                )
-                                                                || !selectedRevision.some(
-                                                                    (r) => r.env === row.name && r.revision,
-                                                                ) || (api.advertiseInfo && api.advertiseInfo.advertised)
-                                                            || isDeployButtonDisabled}
-                                                            variant='outlined'
-                                                            onClick={() => deployRevision(selectedRevision.find(
-                                                                (r) => r.env === row.name,
-                                                            ).revision, row.name,
-                                                            ' ', selectedRevision.find(
-                                                                (r) => r.env === row.name,
-                                                            ).displayOnDevPortal)}
-
-                                                        >
-                                                            <FormattedMessage
-                                                                id='Apis.Details.Environments.Environments
-                                                                .deploy.button'
-                                                                defaultMessage='Deploy'
-                                                            />
-                                                        </Button>
-                                                    </div>
-                                                )}
-                                        </TableCell>
-                                        <TableCell align='left'>
-                                            <DisplayDevportal
-                                                name={row.name}
-                                                api={api}
-                                                EnvDeployments={allExternalGatewaysMap[row.name]}
+                                        <TableCell>
+                                            <Permission
+                                                type={row.permissions.permissionType}
+                                                roles={row.permissions.roles}
                                             />
                                         </TableCell>
                                     </TableRow>

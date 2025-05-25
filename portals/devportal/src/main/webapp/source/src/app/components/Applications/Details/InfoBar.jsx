@@ -31,6 +31,7 @@ import Application from 'AppData/Application';
 import Alert from 'AppComponents/Shared/Alert';
 import AuthManager from 'AppData/AuthManager';
 import Box from '@mui/material/Box';
+import Settings from 'AppComponents/Shared/SettingsContext';
 import DeleteConfirmation from '../Listing/DeleteConfirmation';
 
 /**
@@ -49,11 +50,24 @@ class InfoBar extends React.Component {
             notFound: false,
             showOverview: true,
             isDeleteOpen: false,
+            isOrgWideAppUpdateEnabled: false,
         };
         this.toggleOverview = this.toggleOverview.bind(this);
         this.handleAppDelete = this.handleAppDelete.bind(this);
         this.handleDeleteConfimation = this.handleDeleteConfimation.bind(this);
         this.toggleDeleteConfirmation = this.toggleDeleteConfirmation.bind(this);
+    }
+
+    componentDidMount() {
+        this.isOrgWideAppUpdateEnabled();
+    }
+
+    /**
+     * retrieve Settings from the context and check the org-wide application update enabled
+     */
+    isOrgWideAppUpdateEnabled = () => {
+        const { settings: { orgWideAppUpdateEnabled } } = this.context;
+        this.setState({ isOrgWideAppUpdateEnabled: orgWideAppUpdateEnabled });
     }
 
     toggleDeleteConfirmation = () => {
@@ -125,7 +139,7 @@ class InfoBar extends React.Component {
         } = this.props;
         const applicationOwner = this.props.application.owner;
         const {
-            notFound, isDeleteOpen,
+            notFound, isDeleteOpen, isOrgWideAppUpdateEnabled,
         } = this.state;
 
         if (notFound) {
@@ -180,7 +194,7 @@ class InfoBar extends React.Component {
                             </Typography>
                         </Box>
                     </Grid>
-                    {isUserOwner && (
+                    {(isOrgWideAppUpdateEnabled || isUserOwner) && (
                         <Grid container justifyContent='flex-end'>
                             <VerticalDivider height={70} />
                             <Grid
@@ -252,7 +266,7 @@ class InfoBar extends React.Component {
                                     id='delete-application'
                                     onClick={this.handleDeleteConfimation}
                                     style={{ padding: '4px', display: 'flex', flexDirection: 'column' }}
-                                    disabled={AuthManager.getUser().name !== applicationOwner
+                                    disabled={(!isOrgWideAppUpdateEnabled && AuthManager.getUser().name !== applicationOwner)
                                         || this.props.application.status === 'DELETE_PENDING'}
                                     color='grey'
                                     classes={{
@@ -291,6 +305,9 @@ class InfoBar extends React.Component {
         );
     }
 }
+
+InfoBar.contextType = Settings;
+
 InfoBar.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     theme: PropTypes.shape({}).isRequired,

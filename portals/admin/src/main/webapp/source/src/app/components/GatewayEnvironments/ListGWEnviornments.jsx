@@ -19,12 +19,15 @@
 import React from 'react';
 import API from 'AppData/api';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { Link as RouterLink } from 'react-router-dom';
 import Typography from '@mui/material/Typography';
 import ListBase from 'AppComponents/AdminPages/Addons/ListBase';
 import Delete from 'AppComponents/GatewayEnvironments/DeleteGWEnvironment';
 import AddEdit from 'AppComponents/GatewayEnvironments/AddEditGWEnvironment';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
+import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
+import Permission from './Permission';
 
 /**
  * API call to get Gateway labels
@@ -50,10 +53,9 @@ export default function ListGWEnviornments() {
     const intl = useIntl();
     let columProps;
     const { settings } = useAppContext();
-    const isGatewayTypeAvailable = settings.gatewayTypes.length === 2;
+    const isGatewayTypeAvailable = settings.gatewayTypes.length >= 2;
     if (isGatewayTypeAvailable) {
         columProps = [
-            { name: 'id', options: { display: false } },
             { name: 'name', options: { display: false } },
             {
                 name: 'displayName',
@@ -117,10 +119,30 @@ export default function ListGWEnviornments() {
                     },
                 },
             },
+            {
+                name: 'permissions',
+                label: intl.formatMessage({
+                    id: 'AdminPages.Gateways.table.header.permission',
+                    defaultMessage: 'Visibility',
+                }),
+                options: {
+                    sort: false,
+                    customBodyRender: (permissions) => {
+                        return (
+                            <div>
+                                <Permission
+                                    type={permissions.permissionType}
+                                    roles={permissions.roles}
+                                />
+                            </div>
+                        );
+                    },
+                },
+            },
+            { name: 'id', options: { display: false } },
         ];
     } else {
         columProps = [
-            { name: 'id', options: { display: false } },
             { name: 'name', options: { display: false } },
             {
                 name: 'displayName',
@@ -174,6 +196,27 @@ export default function ListGWEnviornments() {
                     },
                 },
             },
+            {
+                name: 'permissions',
+                label: intl.formatMessage({
+                    id: 'AdminPages.Gateways.table.header.permission',
+                    defaultMessage: 'Visibility',
+                }),
+                options: {
+                    sort: false,
+                    customBodyRender: (permissions) => {
+                        return (
+                            <div>
+                                <Permission
+                                    type={permissions.permissionType}
+                                    roles={permissions.roles}
+                                />
+                            </div>
+                        );
+                    },
+                },
+            },
+            { name: 'id', options: { display: false } },
         ];
     }
     const addButtonProps = {
@@ -221,6 +264,25 @@ export default function ListGWEnviornments() {
             </Typography>
         ),
     };
+
+    const addCreateButton = () => {
+        return (
+            <Button
+                component={RouterLink}
+                to='/settings/environments/create'
+                variant='contained'
+                color='primary'
+                size='small'
+                data-testid='form-dialog-base-trigger-btn'
+            >
+                {intl.formatMessage({
+                    id: 'Gateways.ListGatewayEnvironments.addNewGatewayEnvironment',
+                    defaultMessage: 'Add Gateway Environment',
+                })}
+            </Button>
+        );
+    };
+
     return (
         <ListBase
             columProps={columProps}
@@ -230,9 +292,11 @@ export default function ListGWEnviornments() {
             emptyBoxProps={emptyBoxProps}
             apiCall={apiCall}
             EditComponent={AddEdit}
+            addButtonOverride={addCreateButton()}
             editComponentProps={{
                 icon: <EditIcon />,
                 title: 'Edit Gateway Label',
+                routeTo: '/settings/environments/',
             }}
             DeleteComponent={Delete}
         />

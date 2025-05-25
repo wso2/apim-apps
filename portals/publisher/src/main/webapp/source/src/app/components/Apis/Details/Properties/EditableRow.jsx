@@ -34,6 +34,7 @@ import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import Tooltip from '@mui/material/Tooltip';
 
 const PREFIX = 'EditableRow';
 
@@ -41,10 +42,11 @@ const classes = {
     link: `${PREFIX}-link`,
     checkBoxStyles: `${PREFIX}-checkBoxStyles`,
     colorPrimary: `${PREFIX}-colorPrimary`,
-    cancelButton: `${PREFIX}-cancelButton`
+    cancelButton: `${PREFIX}-cancelButton`,
+    tableCellStyles: `${PREFIX}-tableCellStyles`
 };
 
-const StyledTableRow = styled(TableRow)(() => ({
+const StyledTableRow = styled(TableRow)(({theme}) => ({
     [`& .${classes.link}`]: {
         cursor: 'pointer',
     },
@@ -62,6 +64,17 @@ const StyledTableRow = styled(TableRow)(() => ({
 
     [`& .${classes.cancelButton}`]: {
         marginLeft: 4,
+    },
+    [`& .${classes.tableCellStyles}`]: {
+        display: 'inline-block',
+        minWidth: '150px',
+        maxWidth: '600px',
+        whiteSpace: 'normal',
+        overflow: 'hidden',
+        textOverflow: 'ellipsis',
+        [theme.breakpoints.up('xl')]: {
+            maxWidth: '1000px',
+        },
     }
 }));
 
@@ -93,6 +106,10 @@ function EditableRow(props) {
         setEditMode(!editMode);
         setEditing(true);
         resetText();
+    };
+    const handleCancel = () => {
+        setEditMode(false);
+        setEditing(false);
     };
     const handleKeyChange = (event) => {
         const { value } = event.target;
@@ -195,9 +212,15 @@ function EditableRow(props) {
             ) : (
                 <>
                     <TableCell>
-                        <Box display='inline-block' minWidth={150}>
-                            {oldValue}
-                        </Box>
+                        <Tooltip
+                            placement='top'
+                            interactive
+                            title={oldValue}
+                        > 
+                            <Box className={classes.tableCellStyles}>
+                                {oldValue}
+                            </Box>
+                        </Tooltip>
                     </TableCell>
                     <TableCell>
                         {isVisibleInStore && (
@@ -214,7 +237,7 @@ function EditableRow(props) {
                     </TableCell>
                 </>
             )}
-            <TableCell align='right'>
+            <TableCell align='left'>
                 {editMode ? (
                     <>
                         <Button
@@ -231,7 +254,7 @@ function EditableRow(props) {
                                 />
                             </Typography>
                         </Button>
-                        <Button onClick={updateEditMode} className={classes.cancelButton}>
+                        <Button onClick={handleCancel} className={classes.cancelButton}>
                             <Typography variant='caption' component='div'>
                                 <FormattedMessage
                                     id='Apis.Details.Properties.Properties.editable.cancel'

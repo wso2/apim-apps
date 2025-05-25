@@ -396,8 +396,9 @@ class APISecurityAudit extends Component {
      */
     render() {
         const {
-            report, overallScore, numErrors, externalApiId, loading, apiDefinition, intl
+            report, overallScore, numErrors, externalApiId, loading, apiDefinition
         } = this.state;
+        const { intl } = this.props;
 
         const reportObject = JSON.parse(report);
         const linkToDetailedReport = 'https://platform.42crunch.com/apis/' + externalApiId + '/security-audit-report';

@@ -85,6 +85,7 @@ describe("publisher-019-00 : Verify that read only user cannot create updte api"
             cy.get("[id='post/testuri']").click()
 
             const dataTransfer = new DataTransfer();
+            cy.get('#tabPanel-common-policies').click();
             cy.contains('Add Header', { timeout: Cypress.config().largeTimeout }).trigger('dragstart', {
                 dataTransfer
             });

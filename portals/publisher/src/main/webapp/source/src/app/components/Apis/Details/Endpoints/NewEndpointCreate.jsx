@@ -95,6 +95,7 @@ function NewEndpointCreate(props) {
         intl,
         generateEndpointConfig,
         apiType,
+        componentValidator,
     } = props;
     const [endpointImplType, setImplType] = useState('mock');
     const endpointTypes = [
@@ -138,7 +139,7 @@ function NewEndpointCreate(props) {
             disabled: ['GRAPHQL', 'SSE'],
         },
         {
-            type: 'prototyped',
+            type: 'INLINE',
             name: intl.formatMessage({
                 id: 'Apis.Details.Endpoints.NewEndpointCreate.create.prototype.endpoint',
                 defaultMessage: 'Mock Implementation',
@@ -177,6 +178,19 @@ function NewEndpointCreate(props) {
             options: null,
             disabled: ['SOAPTOREST', 'GRAPHQL', 'SSE'],
         },
+        {
+            type: 'sequence_backend',
+            name: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.NewEndpointCreate.create.sequencebackend.endpoint',
+                defaultMessage: 'Sequence Backend',
+            }),
+            description: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.NewEndpointCreate.create.sequencebackend.endpoint.description',
+                defaultMessage: 'If you need to provde Sequence as a Backend for APIs.',
+            }),
+            options: null,
+            disabled: ['GRAPHQL', 'SSE'],
+        },
     ];
 
     const eligibleTypes = endpointTypes.filter((type) => !type.disabled.includes(apiType)).map((type) => {
@@ -192,7 +206,7 @@ function NewEndpointCreate(props) {
                 />
             </Typography>
             <Grid container justifyContent='flex-start' spacing={2}>
-                {eligibleTypes.map(((type) => {
+                {(eligibleTypes.filter(ep => componentValidator.includes(ep.type)).map((type) => {
                     return (
                         <Grid item className={classes.inlineMessageContainer}>
                             <Card className={classes.endpointTypeCard}>

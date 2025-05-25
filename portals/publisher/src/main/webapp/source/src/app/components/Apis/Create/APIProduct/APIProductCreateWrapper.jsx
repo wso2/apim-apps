@@ -360,25 +360,13 @@ export default function ApiProductCreateWrapper(props) {
             title={pageTitle}
         >
             <Box sx={{ mb: 3 }}>
-                {wizardStep === 0 && (
-                    <Stepper alternativeLabel activeStep={0}>
-                        {steps.map((label) => (
-                            <Step key={label}>
-                                <StepLabel className={classes.alternativeLabel}>{label}</StepLabel>
-                            </Step>
-                        ))}
-
-                    </Stepper>
-                )}
-                {wizardStep === 1 && (
-                    <Stepper alternativeLabel activeStep={1}>
-                        {steps.map((label) => (
-                            <Step key={label}>
-                                <StepLabel>{label}</StepLabel>
-                            </Step>
-                        ))}
-                    </Stepper>
-                )}
+                <Stepper alternativeLabel activeStep={wizardStep}>
+                    {steps.map((label) => (
+                        <Step key={label}>
+                            <StepLabel className={classes.alternativeLabel}>{label}</StepLabel>
+                        </Step>
+                    ))}
+                </Stepper>
             </Box>
             <Grid container>
                 <Grid item md={12}>
@@ -388,6 +376,7 @@ export default function ApiProductCreateWrapper(props) {
                             onChange={handleOnChange}
                             api={apiInputs}
                             isAPIProduct
+                            settings={settings}
                         />
                     )}
                     {wizardStep === 1 && (

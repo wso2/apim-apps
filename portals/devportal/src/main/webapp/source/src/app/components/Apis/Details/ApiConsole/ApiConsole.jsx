@@ -30,7 +30,6 @@ import postmanIcon from '@iconify/icons-simple-icons/postman';
 import { Icon as Icons } from '@iconify/react';
 import fileDownload from 'js-file-download';
 import openapiToPostman from 'openapi-to-postmanv2';
-import swaggerToPostman from 'swagger2-postman2-converter';
 import FileCopyIcon from '@mui/icons-material/FileCopy';
 import Tooltip from '@mui/material/Tooltip';
 import CloudDownloadRounded from '@mui/icons-material/CloudDownloadRounded';
@@ -211,6 +210,12 @@ class ApiConsole extends React.Component {
                 if (!apiData.securityScheme.includes('oauth2')) {
                     defaultSecurityScheme = apiData.securityScheme.includes('api_key') ? 'API-KEY' : 'BASIC';
                 }
+                if (apiData.subtypeConfiguration?.subtype.includes('AIAPI')) {
+                    defaultSecurityScheme = 'API-KEY';
+                    if (!apiData.securityScheme.includes('api_key')) {
+                        defaultSecurityScheme = apiData.securityScheme.includes('oauth2') ? 'OAUTH' : 'BASIC';
+                    }
+                }
 
                 this.setState({
                     api: apiData,
@@ -384,15 +389,7 @@ class ApiConsole extends React.Component {
         openapiToPostman.convert({ type: 'string', data: fr },
             {}, (err, conversionResult) => {
                 if (!conversionResult.result) {
-                    const collection = swaggerToPostman.convert(fr);
-                    if (!collection) {
-                        console.log('Could not convert');
-                    } else {
-                        fileDownload(
-                            JSON.stringify(collection),
-                            'postman collection',
-                        );
-                    }
+                    console.log('Could not convert');
                 } else {
                     fileDownload(
                         JSON.stringify(conversionResult.output[0].data),
@@ -449,7 +446,7 @@ class ApiConsole extends React.Component {
             securitySchemeType, username, password, productionAccessToken, sandboxAccessToken, selectedKeyType,
             productionApiKey, sandboxApiKey, api, advAuthHeaderValue,
         } = this.state;
-        if (api.advertiseInfo && api.advertiseInfo.advertised) {
+        if ((api.advertiseInfo && api.advertiseInfo.advertised) || (api.gatewayVendor && api.gatewayVendor !== 'wso2')) {
             return advAuthHeaderValue;
         }
         if (securitySchemeType === 'BASIC') {
@@ -559,7 +556,8 @@ class ApiConsole extends React.Component {
             <Root>
                 <Paper className={classes.paper}>
                     <Grid container className={classes.grid}>
-                        {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised) && (
+                        {!user && (!api.advertiseInfo || !api.advertiseInfo.advertised)
+                            && (api.gatewayVendor && api.gatewayVendor !== 'wso2') && (
                             <Grid item md={6}>
                                 <Paper className={classes.userNotificationPaper}>
                                     <Typography variant='h5' component='h3'>

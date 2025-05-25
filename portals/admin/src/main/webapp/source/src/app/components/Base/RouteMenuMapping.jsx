@@ -30,18 +30,26 @@ import SubscriptionThrottlingPolicies from 'AppComponents/Throttling/Subscriptio
 import APICategories from 'AppComponents/APICategories/ListApiCategories';
 import BlacklistThrottlingPolicies from 'AppComponents/Throttling/Blacklist/List';
 import ListApplications from 'AppComponents/ApplicationSettings/ListApplications';
-import GatewayEnvironments from 'AppComponents/GatewayEnvironments/ListGWEnviornments';
+import GatewayEnvironments from 'AppComponents/GatewayEnvironments';
 import AdvancedThrottlePolicies from 'AppComponents/Throttling/Advanced';
 import CustomThrottlingPolicies from 'AppComponents/Throttling/Custom';
 import TenantTheme from 'AppComponents/TenantTheme/UploadTheme';
 import KeyManagers from 'AppComponents/KeyManagers';
+import AiVendors from 'AppComponents/AiVendors';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
+import Policies from 'AppComponents/Governance/Policies';
+import RulesetCatalog from 'AppComponents/Governance/RulesetCatalog';
+import BusinessIcon from '@mui/icons-material/Business';
+import Organizations from 'AppComponents/Organizations/ListOrganizations';
 
 import GamesIcon from '@mui/icons-material/Games';
 import CategoryIcon from '@mui/icons-material/Category';
+import BookmarksIcon from '@mui/icons-material/Bookmarks';
 import PolicyIcon from '@mui/icons-material/Policy';
+import RuleIcon from '@mui/icons-material/Rule';
 import BlockIcon from '@mui/icons-material/Block';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ApplicationCreation from 'AppComponents/Workflow/ApplicationCreation';
 import ApplicationDeletion from 'AppComponents/Workflow/ApplicationDeletion';
@@ -54,10 +62,14 @@ import APIRevisionDeployment from 'AppComponents/Workflow/APIRevisionDeployment'
 import UserCreation from 'AppComponents/Workflow/UserCreation';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import SecurityIcon from '@mui/icons-material/Security';
+import AssistantIcon from '@mui/icons-material/Assistant';
 import TouchAppIcon from '@mui/icons-material/TouchApp';
 import VpnKeyIcon from '@mui/icons-material/VpnKey';
 import AccountTreeIcon from '@mui/icons-material/AccountTree';
 import ListApis from '../APISettings/ListApis';
+import UsageReport from '../APISettings/UsageReport';
+import ListLabels from '../Labels/ListLabels';
+import ComplianceDashboard from '../Governance/ComplianceDashboard';
 
 const RouteMenuMapping = (intl) => [
     {
@@ -193,6 +205,24 @@ const RouteMenuMapping = (intl) => [
         path: '/settings/environments',
         component: GatewayEnvironments,
         icon: <GamesIcon />,
+        addEditPageDetails: [
+            {
+                id: 'Add Gateway Environment',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.gateways.items.Adding',
+                    defaultMessage: 'Gateway Environment',
+                }),
+                path: '/settings/gateways/create',
+            },
+            {
+                id: 'Edit Gateway Environment',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.gateways.items.Editing',
+                    defaultMessage: 'Edit Gateway Environment',
+                }),
+                path: '/settings/gateways/(.*?)$',
+            },
+        ],
     },
     {
         id: 'API Categories',
@@ -203,6 +233,16 @@ const RouteMenuMapping = (intl) => [
         path: '/settings/api-categories',
         component: APICategories,
         icon: <CategoryIcon />,
+    },
+    {
+        id: 'Organizations',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.organizations',
+            defaultMessage: 'Organizations',
+        }),
+        path: '/settings/organizations',
+        component: Organizations,
+        icon: <BusinessIcon />,
     },
     {
         id: 'Key Managers',
@@ -229,6 +269,83 @@ const RouteMenuMapping = (intl) => [
                     defaultMessage: 'Edit Key Manager',
                 }),
                 path: '/settings/key-managers/(.*?)$',
+            },
+        ],
+    },
+    {
+        id: 'Ai Vendors',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.aivendors',
+            defaultMessage: 'AI/LLM Vendors',
+        }),
+        path: '/settings/ai-vendors',
+        component: AiVendors,
+        icon: <AssistantIcon />,
+        addEditPageDetails: [
+            {
+                id: 'Add AI Vendor',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.aivendors.items.Adding',
+                    defaultMessage: 'Add AI/LLM Vendor',
+                }),
+                path: '/settings/ai-vendors/create',
+            },
+            {
+                id: 'Edit AI Vendor',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.aivendors.items.Editing',
+                    defaultMessage: 'Edit AI/LLM Vendor',
+                }),
+                path: '/settings/ai-vendors/(.*?)$',
+            },
+        ],
+    },
+    {
+        id: 'Labels',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.labels',
+            defaultMessage: 'Labels',
+        }),
+        path: '/settings/labels',
+        component: ListLabels,
+        icon: <BookmarksIcon />,
+    },
+    {
+        id: 'Governance',
+        displayText: intl.formatMessage({
+            id: 'Base.RouteMenuMapping.governance',
+            defaultMessage: 'Governance',
+        }),
+        children: [
+            {
+                id: 'Compliance',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.compliance',
+                    defaultMessage: 'Compliance',
+                }),
+                path: '/governance/compliance',
+                component: ComplianceDashboard,
+                icon: <CheckCircleIcon />,
+            },
+            {
+                id: 'Policies',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.governance.policies',
+                    defaultMessage: 'Policies',
+                }),
+                path: '/governance/policies',
+                component: Policies,
+                icon: <PolicyIcon />,
+            },
+            {
+                id: 'Ruleset Catalog',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.ruleset.catalog',
+                    defaultMessage: 'Ruleset Catalog',
+                }),
+                path: '/governance/ruleset-catalog',
+                component: RulesetCatalog,
+                icon: <RuleIcon />,
             },
         ],
     },
@@ -397,6 +514,16 @@ const RouteMenuMapping = (intl) => [
                 path: '/settings/advanced',
                 component: TenantConfSave,
                 icon: <SettingsApplicationsIcon />,
+            },
+            {
+                id: 'Usage Report',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.usage.report',
+                    defaultMessage: 'Usage Report',
+                }),
+                path: '/settings/usage-report',
+                component: UsageReport,
+                icon: <AssignmentIcon />,
             },
         ],
     },

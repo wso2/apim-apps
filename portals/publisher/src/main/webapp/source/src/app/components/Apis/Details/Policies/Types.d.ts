@@ -23,7 +23,7 @@ export type Policy = {
     displayName: string;
     applicableFlows: string[];
     supportedGateways: string[];
-    supportedApiTypes: string[];
+    supportedApiTypes: string[] | Map<string, string>[];
     isAPISpecific: boolean;
     supportedGateways: string[];
 };
@@ -60,7 +60,7 @@ export type PolicySpec = {
     description: string;
     applicableFlows: string[];
     supportedGateways: string[];
-    supportedApiTypes: string[];
+    supportedApiTypes: string[] | ApiTypeObject[];
     policyAttributes: PolicySpecAttribute[];
     isAPISpecific?: boolean;
     md5?: string;
@@ -92,3 +92,8 @@ export type ApiLevelPolicy = {
     response?: any[];
     fault?: any[];
 };
+
+export type ApiTypeObject = {
+    subType: string;
+    apiType: string;
+}

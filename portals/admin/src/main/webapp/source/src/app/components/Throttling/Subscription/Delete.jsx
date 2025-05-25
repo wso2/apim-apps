@@ -38,7 +38,7 @@ function Delete(props) {
     const intl = useIntl();
 
     const formSaveCallback = () => {
-        const policyId = dataRow[6];
+        const policyId = dataRow[9];
         const promiseAPICall = restApi
             .deleteSubscriptionPolicy(policyId)
             .then(() => {

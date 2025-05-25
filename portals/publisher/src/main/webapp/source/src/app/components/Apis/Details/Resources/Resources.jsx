@@ -34,11 +34,13 @@ import SwaggerClient from 'swagger-client';
 import { isRestricted } from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
 import Configurations from 'Config';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { Progress } from 'AppComponents/Shared';
+import APIRateLimiting from './components/APIRateLimiting';
 import Operation from './components/Operation';
 import GroupOfOperations from './components/GroupOfOperations';
 import AddOperation from './components/AddOperation';
 import GoToDefinitionLink from './components/GoToDefinitionLink';
-import APIRateLimiting from './components/APIRateLimiting';
 import {
     extractPathParameters, isSelectAll, mapAPIOperations, getVersion, VERSIONS,
 } from './operationUtils';
@@ -62,6 +64,7 @@ export default function Resources(props) {
         disableAddOperation,
     } = props;
 
+    const { data: publisherSettings, isLoading } = usePublisherSettings();
     const [api, updateAPI] = useAPI();
     const [pageError, setPageError] = useState(false);
     const [operationRateLimits, setOperationRateLimits] = useState([]);
@@ -75,6 +78,7 @@ export default function Resources(props) {
     const [resolvedSpec, setResolvedSpec] = useState({ spec: {}, errors: [] });
     const [focusOperationLevel, setFocusOperationLevel] = useState(false);
     const [expandedResource, setExpandedResource] = useState(false);
+    const [componentValidator, setComponentValidator] = useState([]);
 
     const intl = useIntl();
     /**
@@ -139,15 +143,17 @@ export default function Resources(props) {
                 setSelectedOperation({});
                 return Object.entries(newData).reduce((resourceAcc, [resourceKey, verbObj]) => {
                     const verbList = Object.entries(verbObj).reduce((verbListAcc, [verbKey, operation]) => {
-                        const newOperation = { ...operation };
-                        newOperation['x-auth-type'] = data.disable ? 'None' : 'Any';
-                        const newVerbListAcc = { ...verbListAcc };
-                        newVerbListAcc[verbKey] = newOperation;
-                        return newVerbListAcc;
+                        // Preserve the "parameters" array without modification
+                        if (verbKey === 'parameters') {
+                            return { ...verbListAcc, parameters: operation };
+                        }
+            
+                        // Update the "x-auth-type" field for each operation
+                        const newOperation = { ...operation, 'x-auth-type': data.disable ? 'None' : 'Any' };
+                        return { ...verbListAcc, [verbKey]: newOperation };
                     }, {});
-                    const newResourceListAcc = { ...resourceAcc };
-                    newResourceListAcc[resourceKey] = verbList;
-                    return newResourceListAcc;
+            
+                    return { ...resourceAcc, [resourceKey]: verbList };
                 }, {});
             case 'description':
             case 'summary':
@@ -516,6 +522,13 @@ export default function Resources(props) {
     }, []);
 
     useEffect(() => {
+        if (!isLoading) {
+            setComponentValidator(publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources);
+        }
+    }, [isLoading]);
+
+    useEffect(() => {
         setApiThrottlingPolicy(api.apiThrottlingPolicy);
     }, [api.apiThrottlingPolicy]);
 
@@ -611,6 +624,9 @@ export default function Resources(props) {
             </Grid>
         );
     }
+    if (isLoading) {
+        return <Progress per={80} message='Loading app settings ...' />;
+    }
     return (
         <Grid container direction='row' justifyContent='flex-start' spacing={2} alignItems='stretch'>
             {pageError && (
@@ -621,6 +637,7 @@ export default function Resources(props) {
             {!disableRateLimiting && (
                 <Grid item md={12}>
                     <APIRateLimiting
+                        api={api}
                         operationRateLimits={operationRateLimits}
                         value={apiThrottlingPolicy}
                         onChange={setApiThrottlingPolicy}
@@ -644,6 +661,7 @@ export default function Resources(props) {
                             setSelectedOperation={setSelectedOperation}
                             enableSecurity={enableSecurity}
                             disableSecurity={disableSecurity}
+                            componentValidator={componentValidator}
                         />
                     )}
                     {Object.entries(operations).map(([target, verbObject]) => (
@@ -688,6 +706,7 @@ export default function Resources(props) {
                                                     setFocusOperationLevel={setFocusOperationLevel}
                                                     expandedResource={expandedResource}
                                                     setExpandedResource={setExpandedResource}
+                                                    componentValidator={componentValidator}
                                                 />
                                             </Grid>
                                         ) : null;

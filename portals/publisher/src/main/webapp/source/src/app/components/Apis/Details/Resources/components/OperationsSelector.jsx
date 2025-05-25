@@ -39,7 +39,7 @@ import { useIntl } from 'react-intl';
  */
 export default function OperationsSelector(props) {
     const {
-        selectedOperations, setSelectedOperation, operations, enableSecurity, disableSecurity,
+        selectedOperations, setSelectedOperation, operations, enableSecurity, disableSecurity, componentValidator,
     } = props;
     const [apiFromContext] = useAPI();
     const intl = useIntl();
@@ -59,7 +59,12 @@ export default function OperationsSelector(props) {
     let operationWithSecurityCount = 0;
 
     Object.entries(operations).forEach(([, verbObj]) => {
-        Object.entries(verbObj).forEach(([, operation]) => {
+        Object.entries(verbObj).forEach(([verbKey, operation]) => {
+            // Skip the "parameters" array
+            if (verbKey === 'parameters') {
+                return;
+            }
+    
             if (operation['x-auth-type'] && operation['x-auth-type'].toLowerCase() !== 'none') {
                 operationWithSecurityCount++;
             }
@@ -92,7 +97,8 @@ export default function OperationsSelector(props) {
                             </div>
                         </Tooltip>
                     )}
-                    { (operationWithSecurityCount === operationCount)
+                    { (componentValidator.includes('operationSecurity') && 
+                    (operationWithSecurityCount === operationCount))
                     && (
                         <Tooltip
                             title={intl.formatMessage({
@@ -112,7 +118,8 @@ export default function OperationsSelector(props) {
                             </div>
                         </Tooltip>
                     )}
-                    { (operationWithSecurityCount !== 0 && operationWithSecurityCount !== operationCount)
+                    { (componentValidator.includes('operationSecurity') && 
+                    operationWithSecurityCount !== 0 && operationWithSecurityCount !== operationCount)
                     && (
                         <Tooltip
                             title={intl.formatMessage({

@@ -34,6 +34,7 @@ import { Alert as MUIAlert, AlertTitle } from '@mui/lab';
 import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 
 import ProvideWSDL from './Steps/ProvideWSDL';
 
@@ -47,8 +48,9 @@ import ProvideWSDL from './Steps/ProvideWSDL';
 export default function ApiCreateWSDL(props) {
     const intl = useIntl();
     const [wizardStep, setWizardStep] = useState(0);
-    const { history } = props;
+    const { history, multiGateway } = props;
     const [policies, setPolicies] = useState([]);
+    const { data: settings } = usePublisherSettings();
 
     useEffect(() => {
         API.policies('subscription').then((response) => {
@@ -93,6 +95,8 @@ export default function ApiCreateWSDL(props) {
         inputValue: '',
         formValidity: false,
         mode: 'create',
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
     });
 
     /**
@@ -193,7 +197,7 @@ export default function ApiCreateWSDL(props) {
                                 </AlertTitle>
                                 <MUILink
                                     // eslint-disable-next-line
-                                    href={`https://apim.docs.wso2.com/en/4.2.0/integrate/develop/creating-artifacts/creating-an-api/`}
+                                    href={`https://mi.docs.wso2.com/en/latest/develop/creating-artifacts/creating-an-api/`}
                                     target='_blank'>
                                     WSO2 Integration Studio Documentation
                                 </MUILink>
@@ -255,6 +259,8 @@ export default function ApiCreateWSDL(props) {
                             onChange={handleOnChange}
                             api={apiInputs}
                             isAPIProduct={false}
+                            multiGateway={multiGateway}
+                            settings={settings}
                         />
                     )}
                 </Grid>

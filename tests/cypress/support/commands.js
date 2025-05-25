@@ -455,6 +455,7 @@ Cypress.Commands.add('modifyGraphqlSchemaDefinition', (filepath) => {
     var uploadedDefinitionPanel = null;
 
     cy.contains('button', 'Import Definition').click();
+    cy.get('#graphql-file-select-radio').contains('GraphQL File/Archive').click();
     // upload the graphql file
     cy.get('[data-testid="browse-to-upload-btn"]')
     cy.get('input[type="file"]').attachFile(filepath);
@@ -466,7 +467,7 @@ Cypress.Commands.add('modifyGraphqlSchemaDefinition', (filepath) => {
     cy.get('#import-open-api-btn').click();
     cy.get('#import-open-api-btn').should('not.exist')
     const searchCmd = Cypress.platform === 'darwin' ? '{cmd}f' : '{ctrl}f'
-    cy.get('.react-monaco-editor-container', { timeout: 30000 }).get('.monaco-editor textarea:first')
+    cy.get('.monaco-scrollable-element', { timeout: 30000 }).get('.monaco-editor textarea:first')
         .type(searchCmd, { force: true });
     cy.get('.find-part .input').type('modified schema file');
     cy.contains('.find-actions', '1 of').should('be.visible');
@@ -655,7 +656,7 @@ Cypress.Commands.add('publishSolaceApi', (apiName = null) => {
 
     cy.visit(`${Utils.getAppOrigin()}/publisher/apis`);
 
-    cy.contains('WSO2 API-M v4.3.0');
+    cy.contains('WSO2 API-M v4.5.0');
     cy.wait(5000);
     cy.get("body").then($body => {
         if ($body.find("#itest-apis-welcome-msg").length > 0) {

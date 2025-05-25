@@ -18,7 +18,6 @@
 
 import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
-import { matchPath } from 'react-router';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, useIntl } from 'react-intl';
 import List from '@mui/material/List';
@@ -100,7 +99,7 @@ const Root = styled('div')((
     },
 
     [`& .${classes.listWrapper}`]: {
-        width: '50%',
+        width: '100%',
     },
 
     [`& .${classes.subscriptionRow}`]: {
@@ -129,16 +128,8 @@ dayjs.extend(relativeTime);
  * @returns {JSX} jsx output
  */
 export default function WebHookDetails(props) {
-    const { location: { pathname } } = props;
+    const { apiId, applicationId } = props;
     const intl = useIntl();
-    const match = matchPath(pathname, {
-        path: '/applications/:applicationId/webhooks/:apiId',
-        exact: true,
-        strict: false,
-    });
-    const { applicationId } = props.match.params;
-    const { apiId } = match.params;
-
     const [subscribedTopics, setSubscribedTopics] = useState('');
 
     const getLogoForDeliveryStatus = (subscription) => {
@@ -173,7 +164,7 @@ export default function WebHookDetails(props) {
                 <Typography variant='h5' className={classes.keyTitle}>
                     <FormattedMessage
                         id='Applications.Details.Subscriptions.api.webhooks'
-                        defaultMessage='Web Hooks'
+                        defaultMessage='Webhooks'
                     />
                 </Typography>
             </div>
@@ -187,7 +178,7 @@ export default function WebHookDetails(props) {
                         />
                     </Typography>
                 )}
-                {Object.keys(subscribedTopics).map((key) => (
+                {Object.keys(subscribedTopics).map((key, keyIndex) => (
                     <>
                         <ListItem className={classes.SubscriptionHeader}>
                             <ListItemText primary={key} />
@@ -233,7 +224,9 @@ export default function WebHookDetails(props) {
                                 <Divider component='li' />
                             </Grid>
                         ))}
-                        <Divider component='li' />
+                        {(keyIndex !== Object.keys(subscribedTopics).length - 1) && (
+                            <Divider component='li' sx={{ padding: '5px' }} />
+                        )}
                     </>
                 ))}
             </List>

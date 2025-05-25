@@ -15,7 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
@@ -33,13 +33,15 @@ import AddIcon from '@mui/icons-material/Add';
 import CardHeader from '@mui/material/CardHeader';
 import PropTypes from 'prop-types';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
-import { useTheme } from '@mui/material';
+import { CircularProgress, useTheme } from '@mui/material';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import API from 'AppData/api';
 import Checkbox from '@mui/material/Checkbox';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { isRestricted } from 'AppData/AuthManager';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
+import CONSTS from 'AppData/Constants';
 
 const PREFIX = 'DeploymentOnbording';
 
@@ -142,76 +144,134 @@ export default function DeploymentOnboarding(props) {
         setDescription,
         gatewayVendor,
         advertiseInfo,
+        isDeploying,
     } = props;
 
     const [api] = useAPI();
     const theme = useTheme();
     const { maxCommentLength } = theme.custom;
-    const assignGateway = (api.gatewayType === "wso2/synapse" || api.apiType === "APIPRODUCT") ? "Regular" : "APK";
     const { settings: { environment: environments } } = useAppContext();
-    const internalGatewaysFiltered = environments.filter((p) => !p.provider.toLowerCase().includes('solace'));
-    const internalGateways = internalGatewaysFiltered &&
-        internalGatewaysFiltered.filter((p) => p.gatewayType.toLowerCase() === assignGateway.toLowerCase());
-    const externalGateways = environments.filter((p) => p.provider.toLowerCase().includes('solace'));
-    const hasOnlyOneEnvironment = internalGateways.length === 1;
-    const securityScheme = [...api.securityScheme];
-    const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
-    && securityScheme.includes('mutualssl_mandatory');
-    const isEndpointAvailable = api.endpointConfig !== null;
-    const isTierAvailable = api.policies.length !== 0;
-
-    const isDeployButtonDisabled = (((api.type !== 'WEBSUB' && !isEndpointAvailable))
-    || (!isMutualSslOnly && !isTierAvailable)
-    || api.workflowStatus === 'CREATED');
-
-    const defaultVhosts = internalGateways.map((e) => {
-        if (e.vhosts && e.vhosts.length > 0) {
-            return {
-                env: e.name,
-                vhost: api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host
-            };
-        } else {
-            return undefined;
-        }
-    });
-
+    const [internalGateways, setInternalGateways] = useState([]);
+    const [externalGateways, setExternalGateways] = useState([]);
+    const [selectedExternalGateway, setSelectedExternalGateway] = useState([]);
+    const isEndpointAvailable = api.subtypeConfiguration?.subtype === 'AIAPI'
+        ? (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null)
+        : api.endpointConfig !== null;
+    const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
     const [descriptionOpen, setDescriptionOpen] = useState(false);
-    const [selectedEnvironment, setSelectedEnvironment] = useState(hasOnlyOneEnvironment
-        ? [internalGateways[0].name] : []);
+    const [selectedEnvironment, setSelectedEnvironment] = useState([]);
+    const [selectedVhostDeploy, setVhostsDeploy] = useState(null);
 
-    /**
-     * Get Solace environments from the environments list
-     * @return String Solace gateway environment name
-     */
-    function getSolaceEnvironment(envs) {
-        const solaceEnv= []
-        envs.forEach((env) => {
-            if (env.provider === 'solace') {
-                solaceEnv.push(env.name);
+
+    const isDeployButtonDisabled = ((api.type !== 'WEBSUB' && !(
+        isEndpointAvailable &&
+        (api.subtypeConfiguration?.subtype === 'AIAPI'
+            ? isEndpointSecurityConfigured
+            : true
+        )
+    )) || api.workflowStatus === 'CREATED');
+
+    useEffect(() => {
+        let gatewayType;
+        if (api.apiType === 'APIPRODUCT') {
+            gatewayType = 'Regular';
+        } else {
+            switch (api.gatewayType) {
+                case 'wso2/synapse':
+                    gatewayType = 'Regular';
+                    break;
+                case 'wso2/apk':
+                    gatewayType = 'APK';
+                    break;
+                case 'AWS':
+                    gatewayType = 'AWS';
+                    break;
+                default:
+                    gatewayType = 'Regular';
             }
-        });
-        return solaceEnv;
-    }
+        }
+        const internalGatewaysFiltered = environments.filter((p) => p.provider.toLowerCase().includes('wso2'));
+        const selectedInternalGateways = internalGatewaysFiltered.filter((p) => 
+            p.gatewayType.toLowerCase() === gatewayType.toLowerCase())
+        if (selectedInternalGateways.length > 0) {
+            setInternalGateways(selectedInternalGateways);
+            const defaultVhosts = selectedInternalGateways.map((e) => {
+                if (e.vhosts && e.vhosts.length > 0) {
+                    return {
+                        env: e.name,
+                        vhost: api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host
+                    };
+                } else {
+                    return undefined;
+                }
+            });
+            setVhostsDeploy(defaultVhosts);
+            setSelectedEnvironment(selectedInternalGateways.length === 1 ? [selectedInternalGateways[0].name] : []);
+        } else {
+            const external = environments.filter((p) => !p.provider.toLowerCase().includes('wso2'));
+            const selectedExternalGateways = external.filter((p) =>
+                p.gatewayType.toLowerCase() === gatewayType.toLowerCase());
+            setExternalGateways(selectedExternalGateways);
+            setSelectedExternalGateway(selectedExternalGateways.map((env) => env.name));
 
-    /**
-     * Get Organization value of external gateways
-     * @param {Object} additionalProperties the additionalProperties list
-     * @return String organization name
-     */
-    function getOrganizationFromAdditionalProperties(additionalProperties) {
-        let organization;
-        additionalProperties.forEach((property) => {
-            if (property.key === 'Organization') {
-                organization = property.value;
+            if (selectedExternalGateways.length > 0) {
+                const defaultVhosts = selectedExternalGateways.map((e) => {
+                    if (e.vhosts && e.vhosts.length > 0) {
+                        return {
+                            env: e.name,
+                            vhost: api.isWebSocket() ? e.vhosts[0].wsHost : e.vhosts[0].host
+                        };
+                    } else {
+                        return undefined;
+                    }
+                });
+                setVhostsDeploy(defaultVhosts);
             }
-        });
-        return organization;
-    }
+        }
+    }, []);
 
-    const [selectedSolaceEnvironment, setSelectedSolaceEnvironment] = useState(
-        getSolaceEnvironment(externalGateways),
-    );
-    const [selectedVhostDeploy, setVhostsDeploy] = useState(defaultVhosts);
+    useEffect(() => {
+        const checkEndpointSecurity = async () => {
+            try {
+                const hasProductionEndpoint = !!api.primaryProductionEndpointId;
+                const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
+                let isProductionSecure = false;
+                let isSandboxSecure = false;
+
+                if (hasProductionEndpoint) {
+                    if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
+                        isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
+                    } else {
+                        const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
+                        isProductionSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.production;
+                    }
+                }
+
+                if (hasSandboxEndpoint) {
+                    if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
+                        isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
+                    } else {
+                        const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
+                        isSandboxSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox;
+                    }
+                }
+
+                if (hasProductionEndpoint && hasSandboxEndpoint) {
+                    setIsEndpointSecurityConfigured(isProductionSecure && isSandboxSecure);
+                } else if (hasProductionEndpoint) {
+                    setIsEndpointSecurityConfigured(isProductionSecure);
+                } else if (hasSandboxEndpoint) {
+                    setIsEndpointSecurityConfigured(isSandboxSecure);
+                } else {
+                    setIsEndpointSecurityConfigured(false);
+                }
+            } catch (error) {
+                console.error('Error checking endpoint security:', error);
+                setIsEndpointSecurityConfigured(false);
+            }
+        };
+        checkEndpointSecurity();
+    }, [api]);
 
     /**
      * Handle Description
@@ -227,12 +287,12 @@ export default function DeploymentOnboarding(props) {
     };
 
     const handleChange = (event) => {
-        if (gatewayVendor === 'solace') {
+        if (gatewayVendor !== 'wso2') {
             if (event.target.checked) {
-                setSelectedSolaceEnvironment([...selectedSolaceEnvironment, event.target.value]);
+                setSelectedExternalGateway([...selectedExternalGateway, event.target.value]);
             } else {
-                setSelectedSolaceEnvironment(
-                    selectedSolaceEnvironment.filter((env) => env !== event.target.value),
+                setSelectedExternalGateway(
+                    selectedExternalGateway.filter((env) => env !== event.target.value),
                 );
             }
         } else {
@@ -396,7 +456,7 @@ export default function DeploymentOnboarding(props) {
                                                                     direction='column'
                                                                     spacing={2}
                                                                 >
-                                                                    <Grid item xs={12}>
+                                                                    <Grid item xs={12} style={{ maxWidth: '100%' }}>
                                                                         <Tooltip
                                                                             title={(
                                                                                 <>
@@ -438,6 +498,13 @@ export default function DeploymentOnboarding(props) {
                                                                                 fullWidth
                                                                                 helperText={getVhostHelperText(row.name,
                                                                                     selectedVhostDeploy, true)}
+                                                                                FormHelperTextProps={{
+                                                                                    style: {
+                                                                                        whiteSpace: 'nowrap',
+                                                                                        overflow: 'hidden',
+                                                                                        textOverflow: 'ellipsis',
+                                                                                    },
+                                                                                }}
                                                                             >
                                                                                 {row.vhosts.map(
                                                                                     (vhost) => (
@@ -525,6 +592,7 @@ export default function DeploymentOnboarding(props) {
                                             }
                                             color='primary'
                                             disabled={selectedEnvironment.length === 0
+                                                || isRestricted(['apim:api_create', 'apim:api_publish'], api)
                                                 || (advertiseInfo && advertiseInfo.advertised)
                                                 || isDeployButtonDisabled}
                                         >
@@ -540,7 +608,10 @@ export default function DeploymentOnboarding(props) {
                             <Paper fullWidth className={classes.root}>
                                 <Box p={5}>
                                     <Typography className={classes.textRevision}>
-                                        Solace Environments
+                                        <FormattedMessage 
+                                            id='Apis.Details.Environments.deploy.api.external.gateways.text'
+                                            defaultMessage='API Gateways'
+                                        />
                                     </Typography>
                                     <Box mt={4}>
                                         <Grid
@@ -550,20 +621,20 @@ export default function DeploymentOnboarding(props) {
                                             { externalGateways.map((row) => (
                                                 <Grid item xs={3}>
                                                     <Card
-                                                        className={clsx(selectedSolaceEnvironment
-                                                        && selectedSolaceEnvironment.includes(row.name)
+                                                        className={clsx(selectedExternalGateway
+                                                        && selectedExternalGateway.includes(row.name)
                                                             ? (classes.changeCard) : (classes.noChangeCard),
                                                         classes.cardHeight)}
                                                         variant='outlined'
                                                     >
                                                         <CardHeader
-                                                            data-testid='solace-api-name'
+                                                            data-testid='external-name'
                                                             action={(
                                                                 <Checkbox
                                                                     id={row.name.split(' ').join('')}
                                                                     value={row.name}
                                                                     checked=
-                                                                        {selectedSolaceEnvironment.includes(row.name)}
+                                                                        {selectedExternalGateway.includes(row.name)}
                                                                     disabled={isRestricted(['apim:api_publish',
                                                                         'apim:api_create'])}
                                                                     onChange={handleChange}
@@ -590,36 +661,55 @@ export default function DeploymentOnboarding(props) {
                                                             )}
                                                         />
                                                         <CardContent className={classes.cardContentHeight}>
-                                                            <Grid
-                                                                container
-                                                                direction='column'
-                                                                spacing={2}
-                                                            >
-                                                                <Grid item xs={12}>
+                                                            <Grid item xs={12} sx={{ width: '100%' }}>
+                                                                <Tooltip
+                                                                    title={(
+                                                                        <>
+                                                                            <Typography color='inherit'>
+                                                                                {getVhostHelperText(row.name,
+                                                                                    selectedVhostDeploy)}
+                                                                            </Typography>
+                                                                        </>
+                                                                    )}
+                                                                    placement='right'
+                                                                >
                                                                     <TextField
-                                                                        data-testid='api-env-name'
-                                                                        id='Api.Details.Third.party.environment.name'
-                                                                        label='Environment'
-                                                                        variant='outlined'
-                                                                        disabled
-                                                                        fullWidth
-                                                                        margin='dense'
-                                                                        value={row.name}
-                                                                    />
-                                                                    <TextField
-                                                                        data-testid='api-org-name'
-                                                                        id='Api.Details.
-                                                                            Third.party.environment.organization'
-                                                                        label='Organization'
-                                                                        variant='outlined'
-                                                                        disabled
-                                                                        fullWidth
-                                                                        margin='dense'
-                                                                        value={getOrganizationFromAdditionalProperties(
-                                                                            row.additionalProperties,
+                                                                        id='vhost-selector'
+                                                                        select
+                                                                        label={(
+                                                                            <FormattedMessage
+                                                                                id='Apis.Details.
+                                                                                Environments.deploy.vhost'
+                                                                                defaultMessage='VHost'
+                                                                            />
                                                                         )}
-                                                                    />
-                                                                </Grid>
+                                                                        SelectProps={{
+                                                                            MenuProps: {
+                                                                                getContentAnchorEl: null,
+                                                                            },
+                                                                        }}
+                                                                        name={row.name}
+                                                                        value={selectedVhostDeploy.find(
+                                                                            (v) => v.env === row.name,
+                                                                        ).vhost}
+                                                                        onChange={handleVhostDeploySelect}
+                                                                        margin='dense'
+                                                                        variant='outlined'
+                                                                        fullWidth
+                                                                        helperText={getVhostHelperText(row.name,
+                                                                            selectedVhostDeploy, true)}
+                                                                    >
+                                                                        {row.vhosts?.map(
+                                                                            (vhost) => (
+                                                                                <MenuItem value={api.isWebSocket()
+                                                                                    ? vhost.wsHost : vhost.host}>
+                                                                                    {api.isWebSocket()
+                                                                                        ? vhost.wsHost : vhost.host}
+                                                                                </MenuItem>
+                                                                            ),
+                                                                        )}
+                                                                    </TextField>
+                                                                </Tooltip>
                                                             </Grid>
                                                         </CardContent>
                                                     </Card>
@@ -668,22 +758,24 @@ export default function DeploymentOnboarding(props) {
                                     </Box>
                                     <Box mt={3}>
                                         <Button
-                                            id='deploy-btn-solace'
+                                            id='deploy-btn-external'
                                             type='submit'
                                             variant='contained'
                                             onClick={
                                                 () => 
-                                                    createDeployRevision(selectedSolaceEnvironment, selectedVhostDeploy)
+                                                    createDeployRevision(selectedExternalGateway, selectedVhostDeploy)
                                             }
                                             color='primary'
-                                            disabled={selectedSolaceEnvironment.length === 0
+                                            disabled={selectedExternalGateway.length === 0
                                                 || isRestricted(['apim:api_publish', 'apim:api_create'])
-                                                || isDeployButtonDisabled}
+                                                || isDeployButtonDisabled || isDeploying}
                                         >
                                             <FormattedMessage
                                                 id='Apis.Details.Environments.Environments.deploy.deploy'
                                                 defaultMessage='Deploy'
                                             />
+                                            {' '}
+                                            {isDeploying && <CircularProgress size={24} />}
                                         </Button>
                                     </Box>
                                 </Box>

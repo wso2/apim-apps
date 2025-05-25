@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useReducer, useContext, useState } from 'react';
+import React, { useReducer, useContext, useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import Grid from '@mui/material/Grid';
 import Typography from '@mui/material/Typography';
@@ -38,6 +38,7 @@ import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import CustomSplitButton from 'AppComponents/Shared/CustomSplitButton';
 import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import Endpoints from './components/Endpoints';
 import KeyManager from './components/KeyManager';
 import APILevelRateLimitingPolicies from './components/APILevelRateLimitingPolicies';
@@ -242,6 +243,15 @@ export default function RuntimeConfiguration() {
     const [isUpdating, setIsUpdating] = useState(false);
     const history = useHistory();
     const [apiConfig, configDispatcher] = useReducer(configReducer, copyAPIConfig(api));
+    const { data: publisherSettings, isLoading } = usePublisherSettings();
+    const [endpointSecurity, setEndpointSecurity] = useState([]);
+
+    useEffect(() => {
+        if (!isLoading) {
+            setEndpointSecurity(publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].endpoints);
+        }
+    }, [isLoading]);
 
 
     const Validate = () => {
@@ -376,7 +386,7 @@ export default function RuntimeConfiguration() {
                         <Paper className={classes.paper} sx={{ height: 'calc(100% - 75px)' }} elevation={0}>
                             {!api.isAPIProduct() && (
                                 <>
-                                    <Endpoints api={api} />
+                                    <Endpoints api={api} endpointSecurity={endpointSecurity} />
                                 </>
                             )}
                         </Paper>

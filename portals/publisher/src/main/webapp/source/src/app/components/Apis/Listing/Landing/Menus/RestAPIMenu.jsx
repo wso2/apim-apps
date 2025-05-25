@@ -32,7 +32,7 @@ import API from 'AppData/api';
 const RestAPIMenu = (props) => {
     const { icon, isCreateMenu } = props;
     const { data: settings } = usePublisherSettings();
-    const apkGatewayType = settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK');
+    const noRegularGw = settings && !settings.gatewayTypes.includes('Regular');
     const Component = isCreateMenu ? APICreateMenuSection : LandingMenu;
     const dense = isCreateMenu;
     const { alwaysShowDeploySampleButton } = Configurations.apis;
@@ -97,8 +97,9 @@ const RestAPIMenu = (props) => {
                     defaultMessage='Import Open API'
                 />
             </LandingMenuItem>
+
             {(!isCreateMenu || (isCreateMenu && alwaysShowDeploySampleButton)) && showSampleDeploy &&
-                !apkGatewayType && (
+                !noRegularGw && (
                 <>
                     <Box width={1} sx={{ pt: 2, pr: 2, pl: 2, ml: 2 }}>
                         <Divider variant='middle' />

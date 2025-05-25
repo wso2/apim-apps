@@ -217,6 +217,25 @@ class Utils {
     }
 
     /**
+     * Get governance swagger definition URL
+     * @static
+     * @returns
+     * @memberof Utils
+     */
+    static getGovernanceSwaggerURL() {
+        if (Configurations.app.proxy_context_path) {
+            return 'https://'
+                + Utils.getCurrentEnvironment().host
+                + Configurations.app.proxy_context_path
+                + Utils.CONST.GOVERNANCE_SWAGGER_JSON;
+        } else {
+            return 'https://'
+                + Utils.getCurrentEnvironment().host
+                + Utils.CONST.GOVERNANCE_SWAGGER_JSON;
+        }
+    }
+
+    /**
      * Generate UUID V4 Source https://stackoverflow.com/questions/105034/how-to-create-a-guid-uuid
      */
     static generateUUID() {
@@ -640,6 +659,56 @@ class Utils {
                 )
         }));
     }
+
+    /**
+     * Maps rule type value to its label
+     * @param {String} value - The value to be mapped
+     * @returns {String} The corresponding label
+     */
+    static mapRuleTypeToLabel(value) {
+        const ruleType = CONSTS.RULESET_TYPES.find((t) => t.value === value);
+        return ruleType?.label || value;
+    }
+
+    /**
+     * Maps a policy adherence state value to its label
+     * @param {string} state The value of the policy adherence state
+     * @returns {string} The label of the policy adherence state
+     * @memberof Utils
+     */
+    static mapPolicyAdherenceStateToLabel(state) {
+        const policyState = CONSTS.POLICY_ADHERENCE_STATES.find((t) => t.value === state);
+        return policyState?.label || state;
+    }
+
+    /**
+     * Maps a ruleset validation state value to its label
+     * @param {string} state The value of the ruleset validation state
+     * @returns {string} The label of the ruleset validation state
+     * @memberof Utils
+     */
+    static mapRulesetValidationStateToLabel(state) {
+        const validationState = CONSTS.RULESET_VALIDATION_STATES.find((t) => t.value === state);
+        return validationState?.label || state;
+    }
+
+    /**
+     * Download data as a JSON file
+     * @param {Object} data - Data object to be downloaded as JSON
+     * @param {string} filename - Name of the file without extension
+     */
+    static downloadAsJSON(data, filename) {
+        const jsonString = JSON.stringify(data, null, 2);
+        const blob = new Blob([jsonString], { type: 'application/json' });
+        const url = window.URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${filename}.json`;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        window.URL.revokeObjectURL(url);
+    }
 }
 
 Utils.CONST = {
@@ -651,6 +720,7 @@ Utils.CONST = {
     INTROSPECT: '/services/auth/introspect',
     SERVICE_CATALOG_SWAGGER_YAML: '/api/am/service-catalog/v1/oas.yaml',
     SWAGGER_YAML: '/api/am/publisher/v4/swagger.yaml',
+    GOVERNANCE_SWAGGER_JSON: '/api/am/governance/v1/swagger.yaml',
     PROTOCOL: 'https://',
     API_CLIENT: 'apiClient',
     SERVICE_CATALOG_CLIENT: 'serviceCatalogClient',

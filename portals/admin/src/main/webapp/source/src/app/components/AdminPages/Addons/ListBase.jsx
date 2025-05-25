@@ -48,16 +48,20 @@ function ListBase(props) {
     const {
         EditComponent, editComponentProps, DeleteComponent, showActionColumn,
         columProps, pageProps, addButtonProps, addButtonOverride,
-        searchProps: { active: searchActive, searchPlaceholder }, apiCall, emptyBoxProps: {
+        searchProps: { active: searchActive, searchPlaceholder }, apiCall, initialData,
+        emptyBoxProps: {
             title: emptyBoxTitle,
             content: emptyBoxContent,
         },
         noDataMessage,
         addedActions,
+        enableCollapsable,
+        renderExpandableRow,
+        useContentBase,
     } = props;
 
     const [searchText, setSearchText] = useState('');
-    const [data, setData] = useState(null);
+    const [data, setData] = useState(initialData || null);
     const [error, setError] = useState(null);
     const intl = useIntl();
 
@@ -89,6 +93,10 @@ function ListBase(props) {
     };
 
     const fetchData = () => {
+        if (initialData) {
+            setData(initialData);
+            return;
+        }
         // Fetch data from backend when an apiCall is provided
         setData(null);
         if (apiCall) {
@@ -112,8 +120,14 @@ function ListBase(props) {
     };
 
     useEffect(() => {
-        fetchData();
+        if (!initialData) {
+            fetchData();
+        }
     }, []);
+
+    useEffect(() => {
+        setData(initialData);
+    }, [initialData]);
 
     useLayoutEffect(() => {
         let i;
@@ -150,12 +164,35 @@ function ListBase(props) {
                         if (editComponentProps && editComponentProps.routeTo) {
                             if (typeof tableMeta.rowData === 'object') {
                                 const artifactId = tableMeta.rowData[tableMeta.rowData.length - 2];
+                                const isAI = tableMeta.rowData[1] === 'AI API Quota';
                                 return (
-                                    <div data-testid={`${itemName}-actions`}>
-                                        <RouterLink to={editComponentProps.routeTo + artifactId}>
-                                            <IconButton color='primary' component='span' size='large'>
-                                                <EditIcon aria-label={`edit-policies+${artifactId}`} />
-                                            </IconButton>
+                                    <div style={{ display: 'flex', gap: '4px' }} data-testid={`${itemName}-actions`}>
+                                        <RouterLink
+                                            to={{
+                                                pathname: editComponentProps.routeTo + artifactId,
+                                                state: { isAI },
+                                            }}
+                                        >
+
+                                            {(dataRow.isReadOnly)
+                                                ? (
+                                                    <IconButton
+                                                        color='primary'
+                                                        component='span'
+                                                        size='large'
+                                                        disabled
+                                                    >
+                                                        <EditIcon aria-label={`edit-policies+${artifactId}`} />
+                                                    </IconButton>
+                                                ) : (
+                                                    <IconButton
+                                                        color='primary'
+                                                        component='span'
+                                                        size='large'
+                                                    >
+                                                        <EditIcon aria-label={`edit-policies+${artifactId}`} />
+                                                    </IconButton>
+                                                )}
                                         </RouterLink>
                                         {DeleteComponent && (
                                             <DeleteComponent
@@ -176,7 +213,7 @@ function ListBase(props) {
                             }
                         }
                         return (
-                            <div data-testid={`${itemName}-actions`}>
+                            <div style={{ display: 'flex', gap: '4px' }} data-testid={`${itemName}-actions`}>
                                 {EditComponent && (
                                     <EditComponent
                                         dataRow={dataRow}
@@ -215,6 +252,7 @@ function ListBase(props) {
         customToolbar: null,
         responsive: 'vertical',
         searchText,
+        rowsPerPageOptions: [5, 10, 25, 50, 100],
         onColumnSortChange,
         textLabels: {
             body: {
@@ -234,137 +272,143 @@ function ListBase(props) {
                 }),
             },
         },
+        expandableRows: enableCollapsable,
+        renderExpandableRow,
+        ...props.options,
     };
 
-    // If no apiCall is provided OR,
-    // retrieved data is empty, display an information card.
-    if (!apiCall || (data && data.length === 0)) {
-        return (
-            <ContentBase
-                {...pageProps}
-                pageStyle='small'
-            >
-                <Card>
-                    <CardContent>
-                        {emptyBoxTitle}
-                        {emptyBoxContent}
-                    </CardContent>
-                    <CardActions>
-                        {addButtonOverride || (
-                            EditComponent && (<EditComponent updateList={fetchData} {...addButtonProps} />)
-                        )}
-                    </CardActions>
-                </Card>
-            </ContentBase>
-        );
-    }
-
-    // If apiCall is provided and data is not retrieved yet, display progress component
-    if (!error && apiCall && !data) {
-        return (
-            <ContentBase pageStyle='paperLess'>
-                <InlineProgress />
-            </ContentBase>
-
-        );
-    }
-    if (error) {
-        return (
-            <ContentBase {...pageProps}>
-                <Alert severity='error'>{error}</Alert>
-            </ContentBase>
-
-        );
-    }
-    return (
-        <>
-            <ContentBase {...pageProps}>
-                {(searchActive || addButtonProps) && (
-                    <AppBar
-                        sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
-                        position='static'
-                        color='default'
-                        elevation={0}
-                    >
-                        <Toolbar>
-                            <Grid container spacing={2} alignItems='center'>
-
-                                <Grid item>
-                                    {searchActive && (<SearchIcon sx={{ display: 'block' }} color='inherit' />)}
-                                </Grid>
-                                <Grid item xs>
-                                    {searchActive && (
-                                        <TextField
-                                            variant='standard'
-                                            fullWidth
-                                            placeholder={searchPlaceholder}
-                                            sx={(theme) => ({
-                                                '& .search-input': {
-                                                    fontSize: theme.typography.fontSize,
-                                                },
-                                            })}
-                                            InputProps={{
-                                                disableUnderline: true,
-                                                className: 'search-input',
-                                            }}
-                                            // eslint-disable-next-line react/jsx-no-duplicate-props
-                                            inputProps={{
-                                                'aria-label': 'search-by-policy',
-                                            }}
-                                            onChange={filterData}
-                                            value={searchText}
-                                        />
-                                    )}
-                                </Grid>
-                                <Grid item>
-                                    {addButtonOverride || (
-                                        EditComponent && (
-                                            <EditComponent
-                                                updateList={fetchData}
-                                                {...addButtonProps}
-                                            />
-                                        )
-                                    )}
-                                    <Tooltip title={(
-                                        <FormattedMessage
-                                            id='AdminPages.Addons.ListBase.reload'
-                                            defaultMessage='Reload'
-                                        />
-                                    )}
-                                    >
-                                        <IconButton onClick={fetchData} size='large'>
-                                            <RefreshIcon
-                                                aria-label='refresh-advanced-policies'
-                                                sx={{ display: 'block' }}
-                                                color='inherit'
-                                            />
-                                        </IconButton>
-                                    </Tooltip>
-                                </Grid>
-                            </Grid>
-                        </Toolbar>
-                    </AppBar>
-                )}
-                <div>
-                    {data && data.length > 0 && (
-                        <MUIDataTable
-                            title={null}
-                            data={data}
-                            columns={columns}
-                            options={options}
-                        />
+    // Show empty state if:
+    // No apiCall and initialData is undefined OR
+    // No apiCall and initialData is empty array OR
+    // Data exists and it's an empty array
+    if ((!apiCall && (initialData === undefined || initialData?.length === 0)) || (data && data.length === 0)) {
+        const content = (
+            <Card>
+                <CardContent>
+                    {emptyBoxTitle}
+                    {emptyBoxContent}
+                </CardContent>
+                <CardActions>
+                    {addButtonOverride || (
+                        EditComponent && (<EditComponent updateList={fetchData} {...addButtonProps} />)
                     )}
-                </div>
-                {data && data.length === 0 && (
-                    <div>
-                        <Typography color='textSecondary' align='center'>
-                            {noDataMessage}
-                        </Typography>
-                    </div>
+                </CardActions>
+            </Card>
+        );
+
+        return useContentBase ? (
+            <ContentBase {...pageProps} pageStyle='small'>{content}</ContentBase>
+        ) : content;
+    }
+
+    // If apiCall is provided and data is not retrieved yet OR
+    // If apiCall is not provided and initialData is null
+    // display progress component
+    if ((!error && apiCall && !data) || (!apiCall && initialData === null)) {
+        const content = <InlineProgress />;
+        return useContentBase ? (
+            <ContentBase pageStyle='paperLess'>{content}</ContentBase>
+        ) : content;
+    }
+
+    if (error) {
+        const content = <Alert severity='error'>{error}</Alert>;
+        return useContentBase ? (
+            <ContentBase {...pageProps}>{content}</ContentBase>
+        ) : content;
+    }
+
+    const mainContent = (
+        <>
+            {(searchActive || addButtonProps) && (
+                <AppBar
+                    sx={{ borderBottom: '1px solid rgba(0, 0, 0, 0.12)' }}
+                    position='static'
+                    color='default'
+                    elevation={0}
+                >
+                    <Toolbar>
+                        <Grid container spacing={2} alignItems='center'>
+
+                            <Grid item>
+                                {searchActive && (<SearchIcon sx={{ display: 'block' }} color='inherit' />)}
+                            </Grid>
+                            <Grid item xs>
+                                {searchActive && (
+                                    <TextField
+                                        variant='standard'
+                                        fullWidth
+                                        placeholder={searchPlaceholder}
+                                        sx={(theme) => ({
+                                            '& .search-input': {
+                                                fontSize: theme.typography.fontSize,
+                                            },
+                                        })}
+                                        InputProps={{
+                                            disableUnderline: true,
+                                            className: 'search-input',
+                                        }}
+                                        // eslint-disable-next-line react/jsx-no-duplicate-props
+                                        inputProps={{
+                                            'aria-label': 'search-by-policy',
+                                        }}
+                                        onChange={filterData}
+                                        value={searchText}
+                                    />
+                                )}
+                            </Grid>
+                            <Grid item>
+                                {addButtonOverride || (
+                                    EditComponent && (
+                                        <EditComponent
+                                            updateList={fetchData}
+                                            {...addButtonProps}
+                                        />
+                                    )
+                                )}
+                                <Tooltip title={(
+                                    <FormattedMessage
+                                        id='AdminPages.Addons.ListBase.reload'
+                                        defaultMessage='Reload'
+                                    />
+                                )}
+                                >
+                                    <IconButton onClick={fetchData} size='large'>
+                                        <RefreshIcon
+                                            aria-label='refresh-advanced-policies'
+                                            sx={{ display: 'block' }}
+                                            color='inherit'
+                                        />
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                        </Grid>
+                    </Toolbar>
+                </AppBar>
+            )}
+            <div>
+                {data && data.length > 0 && (
+                    <MUIDataTable
+                        title={null}
+                        data={data}
+                        columns={columns}
+                        options={options}
+                    />
                 )}
-            </ContentBase>
+            </div>
+            {data && data.length === 0 && (
+                <div>
+                    <Typography color='textSecondary' align='center'>
+                        {noDataMessage}
+                    </Typography>
+                </div>
+            )}
         </>
     );
+
+    return useContentBase ? (
+        <ContentBase {...pageProps}>{mainContent}</ContentBase>
+    ) : mainContent;
 }
 
 ListBase.defaultProps = {
@@ -388,11 +432,17 @@ ListBase.defaultProps = {
     ),
     showActionColumn: true,
     apiCall: null,
+    initialData: null,
     EditComponent: null,
     DeleteComponent: null,
     editComponentProps: {},
     columProps: null,
+    enableCollapsable: false,
+    renderExpandableRow: null,
+    useContentBase: true,
+    options: {},
 };
+
 ListBase.propTypes = {
     EditComponent: PropTypes.element,
     editComponentProps: PropTypes.shape({}),
@@ -406,6 +456,7 @@ ListBase.propTypes = {
         active: PropTypes.bool.isRequired,
     }),
     apiCall: PropTypes.func,
+    initialData: PropTypes.shape([]),
     emptyBoxProps: PropTypes.shape({
         title: PropTypes.element.isRequired,
         content: PropTypes.element.isRequired,
@@ -418,5 +469,9 @@ ListBase.propTypes = {
     noDataMessage: PropTypes.element,
     addButtonOverride: PropTypes.element,
     addedActions: PropTypes.shape([]),
+    enableCollapsable: PropTypes.bool,
+    renderExpandableRow: PropTypes.func,
+    useContentBase: PropTypes.bool,
+    options: PropTypes.shape({}),
 };
 export default ListBase;

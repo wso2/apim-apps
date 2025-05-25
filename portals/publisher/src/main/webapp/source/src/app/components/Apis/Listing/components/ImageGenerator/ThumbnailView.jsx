@@ -474,8 +474,19 @@ class ThumbnailView extends Component {
                                         className={classes.dropzone}
                                         activeClassName={classes.acceptDrop}
                                         rejectClassName={classes.rejectDrop}
-                                        onDrop={(dropFile) => {
-                                            this.onDrop(dropFile);
+                                        onDrop={(dropFile, rejectedFiles) => {
+                                            if (rejectedFiles && rejectedFiles.length > 0) {
+                                                if (rejectedFiles[0].errors[0].code === 'file-too-large') { 
+                                                    Alert.error(intl.formatMessage({
+                                                        id: 'upload.image.size.info',
+                                                        defaultMessage: 'Maximum file size limit to 1MB',
+                                                    }));
+                                                } else {
+                                                    Alert.error(rejectedFiles[0].errors[0].message);
+                                                }
+                                            } else {
+                                                this.onDrop(dropFile);
+                                            }
                                         }}
                                     >
                                         {({ getRootProps, getInputProps, rejectedFiles }) => {
@@ -595,6 +606,6 @@ ThumbnailView.propTypes = {
 };
 
 export default injectIntl(withAPI((props) => {
-    const { theme } = useTheme();
+    const theme = useTheme();
     return <ThumbnailView {...props} theme={theme} />;
 }));

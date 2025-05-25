@@ -38,6 +38,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import { isRestricted } from 'AppData/AuthManager';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { FormattedMessage, useIntl } from 'react-intl';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import { Progress } from 'AppComponents/Shared';
 
 const PREFIX = 'APIRateLimiting';
 
@@ -70,15 +72,16 @@ const RateLimitingLevels = {
  */
 function APIRateLimiting(props) {
     const {
-        updateAPI, operationRateLimits, onChange, value: currentApiThrottlingPolicy, isAPIProduct,
+        api, updateAPI, operationRateLimits, onChange, value: currentApiThrottlingPolicy, isAPIProduct,
         setFocusOperationLevel, focusOperationLevel,
     } = props;
     const intl = useIntl();
+    const { data: publisherSettings, isLoading } = usePublisherSettings();
     const [apiThrottlingPolicy, setApiThrottlingPolicy] = useState(currentApiThrottlingPolicy);
     const [isSaving, setIsSaving] = useState(false);
-
-    const isResourceLevel = apiThrottlingPolicy === null;
-    const rateLimitingLevel = isResourceLevel ? RateLimitingLevels.RESOURCE : RateLimitingLevels.API;
+    const [componentValidator, setComponentValidator] = useState([]);
+    const [isResourceLevel, setIsResourceLevel] = useState(true);
+    const [rateLimitingLevel, setRateLimitingLevel] = useState(RateLimitingLevels.RESOURCE);
     const [apiFromContext] = useAPI();
 
     // Following effect is used to handle the controlled component case, If user provide onChange handler to
@@ -92,6 +95,21 @@ function APIRateLimiting(props) {
             }
         }
     }, [onChange, currentApiThrottlingPolicy]); // Do not expect to change the onChange during the runtime
+
+    useEffect(() => {
+        const isResource = apiThrottlingPolicy === null;
+        setIsResourceLevel(isResource);
+        setRateLimitingLevel(isResource ? RateLimitingLevels.RESOURCE : RateLimitingLevels.API);
+    }, [apiThrottlingPolicy, isLoading]);
+
+
+    useEffect(() => {
+        if (!isLoading) {
+            const validator = publisherSettings.gatewayFeatureCatalog
+                .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse'].resources
+            setComponentValidator(validator);
+        }
+    }, [isLoading]);
 
     /**
      *
@@ -108,7 +126,7 @@ function APIRateLimiting(props) {
         } else {
             setApiThrottlingPolicy(userSelection);
         }
-        if (event.target.value === RateLimitingLevels.RESOURCE) {
+        if (event.target.value === RateLimitingLevels.RESOURCE && setFocusOperationLevel) {
             setFocusOperationLevel(false);
         }
     }
@@ -160,154 +178,162 @@ function APIRateLimiting(props) {
             </Typography>
         );
     }
+    if (isLoading) {
+        return <Progress per={80} message='Loading app settings ...' />;
+    }
     return (
-        <StyledPaper>
-            <Grid container direction='row' justifyContent='flex-start' alignItems='flex-start'>
-                <Grid item md={12} xs={12} sx={{ p: 1 }}>
-                    <Box>
-                        <Typography variant='subtitle1' component='h3' gutterBottom>
-                            <FormattedMessage
-                                id='Apis.Details.Rate.Limiting.operations.configuration'
-                                defaultMessage='Operations Configuration'
-                            />
-                            <Tooltip
-                                fontSize='small'
-                                title={intl.formatMessage({
-                                    id: 'Apis.Details.Rate.Limiting.operations.configuration.tooltip',
-                                    defaultMessage: 'Configurations that affects on all the resources',
-                                })}
-                                placement='right-end'
-                                interactive
-                            >
-                                <IconButton aria-label='Operations Configuration help text' size='large'>
-                                    <HelpOutline />
-                                </IconButton>
-                            </Tooltip>
-                        </Typography>
-                    </Box>
-                    <Divider variant='middle' />
-                </Grid>
-                <Grid item md={6} xs={12} sx={{ p: 1 }}>
-                    <FormControl component='fieldset'>
-                        <FormLabel component='legend'>
-                            <FormattedMessage
-                                id='Apis.Details.Resources.components.APIRateLimiting.rate.limiting.level'
-                                defaultMessage='Rate limiting level'
-                            />
-                        </FormLabel>
-                        <RadioGroup
-                            aria-label='Apply rate limiting in'
-                            value={rateLimitingLevel}
-                            onChange={updateRateLimitingPolicy}
-                            row
-                        >
-                            <FormControlLabel
-                                value={RateLimitingLevels.API}
-                                control={(
-                                    <Radio
-                                        color='primary'
-                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                    />
-                                )}
-                                label={intl.formatMessage({
-                                    id: 'Apis.Details.Rate.Limiting.rate.limiting.level.api.level',
-                                    defaultMessage: 'API Level',
-                                })}
-                                labelPlacement='end'
-                                id='api-rate-limiting-api-level'
-                            />
-                            <FormControlLabel
-                                value={RateLimitingLevels.RESOURCE}
-                                control={(
-                                    <Radio
-                                        color='primary'
-                                        disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                    />
-                                )}
-                                className={focusOperationLevel && classes.focusLabel}
-                                label={intl.formatMessage({
-                                    id: 'Apis.Details.Rate.Limiting.rate.limiting.level.operation.level',
-                                    defaultMessage: 'Operation Level',
-                                })}
-                                labelPlacement='end'
-                                id='api-rate-limiting-operation-level'
-                            />
-                        </RadioGroup>
-                    </FormControl>
-                </Grid>
-                <Grid item md={6} xs={12} sx={{ p: 1 }}>
-                    <Box minHeight={70} pl={10} sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)' }}>
-                        {isResourceLevel ? (
-                            operationRateLimitMessage
-                        ) : (
-                            <TextField
-                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
-                                id='operation_throttling_policy'
-                                select
-                                label={intl.formatMessage({
-                                    id: 'Apis.Details.Rate.Limiting.rate.limiting.policies',
-                                    defaultMessage: 'Rate limiting policies',
-                                })}
-                                value={apiThrottlingPolicy}
-                                onChange={({ target: { value } }) => (
-                                    onChange ? onChange(value) : setApiThrottlingPolicy(value))}
-                                helperText={intl.formatMessage({
-                                    id: 'Apis.Details.Rate.Limiting.rate.limiting.policies.helper.text',
-                                    defaultMessage: 'Selected rate limiting policy will be applied to whole API',
-                                })}
-                                margin='dense'
-                                variant='outlined'
-                            >
-                                {operationRateLimits.map((rateLimit) => (
-                                    <MenuItem
-                                        key={rateLimit.name}
-                                        value={rateLimit.name}
-                                        id={'api-rate-limiting-api-level-' + rateLimit.name}
-                                    >
-                                        {rateLimit.displayName}
-                                    </MenuItem>
-                                ))}
-                            </TextField>
-                        )}
-                    </Box>
-                </Grid>
-                {/* If onChange handler is provided we assume that component is getting controlled by its parent
-                so that, hide the save cancel action */}
-                {!onChange && (
-                    <>
-                        <Grid item md={12}>
-                            <Divider />
-                        </Grid>
-                        <Grid item>
-                            <Box ml={1}>
-                                <Button
-                                    onClick={saveChanges}
-                                    disabled={false}
-                                    variant='outlined'
-                                    size='small'
-                                    color='primary'
+        ["apiLevelRateLimiting", "operationLevelRateLimiting"]
+            .some(type => componentValidator.includes(type)) &&
+            <StyledPaper>
+                <Grid container direction='row' justifyContent='flex-start' alignItems='flex-start'>
+                    <Grid item md={12} xs={12} sx={{ p: 1 }}>
+                        <Box>
+                            <Typography variant='subtitle1' component='h3' gutterBottom>
+                                <FormattedMessage
+                                    id='Apis.Details.Rate.Limiting.operations.configuration'
+                                    defaultMessage='Operations Configuration'
+                                />
+                                <Tooltip
+                                    fontSize='small'
+                                    title={intl.formatMessage({
+                                        id: 'Apis.Details.Rate.Limiting.operations.configuration.tooltip',
+                                        defaultMessage: 'Configurations that affects on all the resources',
+                                    })}
+                                    placement='right-end'
+                                    interactive
                                 >
-                                    <FormattedMessage
-                                        id='Apis.Details.Rate.Limiting.operations.save.btn'
-                                        defaultMessage='Save'
+                                    <IconButton aria-label='Operations Configuration help text' size='large'>
+                                        <HelpOutline />
+                                    </IconButton>
+                                </Tooltip>
+                            </Typography>
+                        </Box>
+                        <Divider variant='middle' />
+                    </Grid>
+                    <Grid item md={6} xs={12} sx={{ p: 1 }}>
+                        <FormControl component='fieldset'>
+                            <FormLabel component='legend'>
+                                <FormattedMessage
+                                    id='Apis.Details.Resources.components.APIRateLimiting.rate.limiting.level'
+                                    defaultMessage='Rate limiting level'
+                                />
+                            </FormLabel>
+                            <RadioGroup
+                                aria-label='Apply rate limiting in'
+                                value={rateLimitingLevel}
+                                onChange={updateRateLimitingPolicy}
+                                row
+                            >
+                                {componentValidator.includes('apiLevelRateLimiting') &&
+                                    <FormControlLabel
+                                        value={RateLimitingLevels.API}
+                                        control={(
+                                            <Radio
+                                                color='primary'
+                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                            />
+                                        )}
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Rate.Limiting.rate.limiting.level.api.level',
+                                            defaultMessage: 'API Level',
+                                        })}
+                                        labelPlacement='end'
+                                        id='api-rate-limiting-api-level'
                                     />
-                                    
-                                    {isSaving && <CircularProgress size={24} />}
-                                </Button>
-                                <Box display='inline' ml={1}>
-                                    <Button size='small' onClick={resetChanges}>
+                                }
+                                {componentValidator.includes('operationLevelRateLimiting') &&
+                                    <FormControlLabel
+                                        value={RateLimitingLevels.RESOURCE}
+                                        control={(
+                                            <Radio
+                                                color='primary'
+                                                disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                            />
+                                        )}
+                                        className={focusOperationLevel && classes.focusLabel}
+                                        label={intl.formatMessage({
+                                            id: 'Apis.Details.Rate.Limiting.rate.limiting.level.operation.level',
+                                            defaultMessage: 'Operation Level',
+                                        })}
+                                        labelPlacement='end'
+                                        id='api-rate-limiting-operation-level'
+                                    />
+                                }
+                            </RadioGroup>
+                        </FormControl>
+                    </Grid>
+                    <Grid item md={6} xs={12} sx={{ p: 1 }}>
+                        <Box minHeight={70} pl={10} sx={{ borderLeft: '1px solid rgba(0, 0, 0, 0.2)' }}>
+                            {isResourceLevel ? (
+                                operationRateLimitMessage
+                            ) : (
+                                <TextField
+                                    disabled={isRestricted(['apim:api_create'], apiFromContext)}
+                                    id='operation_throttling_policy'
+                                    select
+                                    label={intl.formatMessage({
+                                        id: 'Apis.Details.Rate.Limiting.rate.limiting.policies',
+                                        defaultMessage: 'Rate limiting policies',
+                                    })}
+                                    value={apiThrottlingPolicy}
+                                    onChange={({ target: { value } }) => (
+                                        onChange ? onChange(value) : setApiThrottlingPolicy(value))}
+                                    helperText={intl.formatMessage({
+                                        id: 'Apis.Details.Rate.Limiting.rate.limiting.policies.helper.text',
+                                        defaultMessage: 'Selected rate limiting policy will be applied to whole API',
+                                    })}
+                                    margin='dense'
+                                    variant='outlined'
+                                >
+                                    {operationRateLimits.map((rateLimit) => (
+                                        <MenuItem
+                                            key={rateLimit.name}
+                                            value={rateLimit.name}
+                                            id={'api-rate-limiting-api-level-' + rateLimit.name}
+                                        >
+                                            {rateLimit.displayName}
+                                        </MenuItem>
+                                    ))}
+                                </TextField>
+                            )}
+                        </Box>
+                    </Grid>
+                    {/* If onChange handler is provided we assume that component is getting controlled by its parent
+                    so that, hide the save cancel action */}
+                    {!onChange && (
+                        <>
+                            <Grid item md={12}>
+                                <Divider />
+                            </Grid>
+                            <Grid item>
+                                <Box ml={1}>
+                                    <Button
+                                        onClick={saveChanges}
+                                        disabled={false}
+                                        variant='outlined'
+                                        size='small'
+                                        color='primary'
+                                    >
                                         <FormattedMessage
-                                            id='Apis.Details.Rate.Limiting.operations.reset.btn'
-                                            defaultMessage='Reset'
+                                            id='Apis.Details.Rate.Limiting.operations.save.btn'
+                                            defaultMessage='Save'
                                         />
+                                        {isSaving && <CircularProgress size={24} />}
                                     </Button>
+                                    <Box display='inline' ml={1}>
+                                        <Button size='small' onClick={resetChanges}>
+                                            <FormattedMessage
+                                                id='Apis.Details.Rate.Limiting.operations.reset.btn'
+                                                defaultMessage='Reset'
+                                            />
+                                        </Button>
+                                    </Box>
                                 </Box>
-                            </Box>
-                        </Grid>
-                    </>
-                )}
-            </Grid>
-        </StyledPaper>
+                            </Grid>
+                        </>
+                    )}
+                </Grid>
+            </StyledPaper>
     );
 }
 APIRateLimiting.defaultProps = {

@@ -44,6 +44,7 @@ import Settings, { useSettingsContext } from 'AppComponents/Shared/SettingsConte
 import { app } from 'Settings';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import Box from '@mui/material/Box';
+import API from 'AppData/api';
 import AuthManager from '../../data/AuthManager';
 import LanguageSelector from './Header/LanuageSelector';
 import GlobalNavBar from './Header/GlobalNavbar';
@@ -302,6 +303,21 @@ class LayoutLegacy extends React.Component {
                 this.setState({ bannerHeight: bannerElement.clientHeight });
             }
         }
+        const user = AuthManager.getUser();
+        if (user) {
+            if (!sessionStorage.getItem('userOrganization')) {
+                new API()
+                    .getUserOrganizationInfo()
+                    .then((res) => {
+                        if (res.body.name) sessionStorage.setItem('userOrganization', res.body.name);
+                    })
+                    .catch((error) => {
+                        throw error;
+                    });
+            }
+        } else {
+            sessionStorage.removeItem('userOrganization');
+        }
     }
 
     detectCurrentMenu = (location) => {
@@ -414,6 +430,7 @@ class LayoutLegacy extends React.Component {
         const user = AuthManager.getUser();
         // TODO: Refer to fix: https://github.com/mui-org/material-ui/issues/10076#issuecomment-361232810 ~tmkb
         let username = null;
+        const userOrganization = sessionStorage.getItem('userOrganization');
 
         if (user) {
             username = user.name;
@@ -608,7 +625,16 @@ class LayoutLegacy extends React.Component {
                                                 aria-label='user menu'
                                             >
                                                 <Icon className={classes.icons}>person</Icon>
-                                                {username}
+                                                <span
+                                                    style={{
+                                                        overflow: 'hidden',
+                                                        textOverflow: 'ellipsis',
+                                                        whiteSpace: 'nowrap',
+                                                        maxWidth: '200px',
+                                                    }}
+                                                >
+                                                    {username}
+                                                </span>
                                             </Button>
                                             <Popper
                                                 id='userPopup'
@@ -624,7 +650,7 @@ class LayoutLegacy extends React.Component {
                                                     vertical: 'top',
                                                     horizontal: 'center',
                                                 }}
-                                                placement='bottom-end'
+                                                placement='bottom-start'
                                             >
                                                 {({ TransitionProps, placement }) => (
                                                     <Grow
@@ -638,6 +664,36 @@ class LayoutLegacy extends React.Component {
                                                         <Paper>
                                                             <ClickAwayListener onClickAway={this.handleCloseUserMenu}>
                                                                 <MenuList>
+                                                                    {userOrganization && (
+                                                                        <MenuItem style={{ pointerEvents: 'none' }}>
+                                                                            <>
+                                                                                <Icon
+                                                                                    className={classes.icons}
+                                                                                    sx={{
+                                                                                        color: 'black',
+                                                                                    }}
+                                                                                >
+                                                                                    business
+                                                                                </Icon>
+                                                                                <Typography
+                                                                                    variant='body1'
+                                                                                    className={classes.organizationLabel}
+                                                                                    sx={{
+                                                                                        color: 'black',
+                                                                                        textTransform: 'uppercase',
+                                                                                        fontWeight: 'bold',
+                                                                                        fontSize: '12px',
+                                                                                        whiteSpace: 'nowrap',
+                                                                                        overflow: 'hidden',
+                                                                                        textOverflow: 'ellipsis',
+                                                                                        maxWidth: '200px',
+                                                                                    }}
+                                                                                >
+                                                                                    {userOrganization}
+                                                                                </Typography>
+                                                                            </>
+                                                                        </MenuItem>
+                                                                    )}
                                                                     {this.getPasswordChangeEnabled()
                                                                         ? (
                                                                             <MenuItem className={classes.logoutLink}>
@@ -703,7 +759,7 @@ class LayoutLegacy extends React.Component {
                                     {footerText && footerText !== '' ? <span>{footerText}</span> : (
                                         <FormattedMessage
                                             id='Base.index.copyright.text'
-                                            defaultMessage='WSO2 API-M v4.3.0 | © 2024 WSO2 LLC'
+                                            defaultMessage='WSO2 API-M v4.5.0 | © 2025 WSO2 LLC'
                                         />
                                     )}
                                 </Typography>

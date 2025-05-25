@@ -30,6 +30,8 @@ import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { isRestricted } from 'AppData/AuthManager';
+import { app } from 'Settings';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import APICreateMenu from './APICreateMenu';
 
 const PREFIX = 'TopMenu';
@@ -122,6 +124,10 @@ function TopMenu(props) {
     const {
         data, setListType, count, isAPIProduct, listType, showToggle, query,
     } = props;
+
+    const { data: settings } = usePublisherSettings();
+    const designAssistantEnabled = settings?.designAssistantEnabled;
+      
     if (count > 0) {
         return (
             <Root className={classes.root}>
@@ -190,6 +196,26 @@ function TopMenu(props) {
                                 defaultMessage='Create API'
                             />
                         </APICreateMenu>
+                    )} 
+                    {/* Button to Create API with AI */}
+                    {!query && !isAPIProduct && !isRestricted(['apim:api_create']) && designAssistantEnabled && (
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            component={Link}
+                            to='/apis/design-assistant'
+                            sx={{ marginLeft: '10px' }}
+                        >
+                            <FormattedMessage
+                                id='Apis.Listing.components.TopMenu.create.api.with.ai'
+                                defaultMessage='Create API with AI'
+                            />
+                            <img
+                                alt='API Design Assistant'
+                                src={`${app.context}/site/public/images/ai/DesignAssistant.svg`}
+                                style={{ marginLeft: 8, width: 15, height: 15 }}
+                            />
+                        </Button>
                     )}
                 </div>
                 {showToggle && (

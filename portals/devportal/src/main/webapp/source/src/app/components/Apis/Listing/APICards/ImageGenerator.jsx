@@ -78,6 +78,8 @@ class ImageGeneratorLegacy extends PureComponent {
             IconElement = key;
         } else if (api.type === 'DOC') {
             IconElement = theme.custom.thumbnail.document.icon;
+        } else if (api.type === 'DEFINITION') {
+            IconElement = theme.custom.thumbnail.definition.icon;
         } else {
             count = MaterialIcons.categories[10].icons.length;
             const randomIconIndex = (str.charCodeAt(0) + str.charCodeAt(str.length - 1)) % count;
@@ -87,6 +89,8 @@ class ImageGeneratorLegacy extends PureComponent {
         // Obtain or generate background color pair
         if (api.type === 'DOC') {
             colorPair = theme.custom.thumbnail.document.backgrounds;
+        } else if (api.type === 'DEFINITION') {
+            colorPair = theme.custom.thumbnail.definition.backgrounds;
         } else if (backgroundIndex && colorPairs.length > backgroundIndex) {
             colorPair = colorPairs[backgroundIndex];
         } else {

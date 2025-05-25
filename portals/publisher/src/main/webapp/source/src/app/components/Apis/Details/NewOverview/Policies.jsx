@@ -22,6 +22,7 @@ import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Grid';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
+import CONSTS from 'AppData/Constants';
 
 /**
  *
@@ -31,28 +32,48 @@ import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
  */
 function Policies(props) {
     const { parentClasses, api } = props;
+    const isSubValidationDisabled = api.policies 
+    && api.policies.length === 1 && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
     return (
         <>
-            <Grid item xs={12} md={6} lg={4}>
+            <Grid item xs={12} md={6} lg={6}>
                 <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                     <FormattedMessage
                         id='Apis.Details.NewOverview.Policies.business.plans'
-                        defaultMessage='Business Plans:'
+                        defaultMessage='Business Plans'
                     />
                 </Typography>
             </Grid>
-            <Grid item xs={12} md={6} lg={8}>
+            <Grid item xs={12} md={6} lg={6}>
                 {/* Throttling Policies */}
                 <Typography component='p' variant='body1'>
-                    {api.policies
-                    && api.policies.length !== 0
-                    && api.policies.map((item, index) => (
-                        <span>
-                            {item}
-                            {api.policies.length !== index + 1 && ', '}
-                            {' '}
-                        </span>
-                    ))}
+                    {api.policies && api.policies.length > 0 ? (
+                        (() => {
+                            // Filter out "Default_Subscriptionless" if there's more than one policy
+                            const filteredPolicies = api.policies.filter((policy) => 
+                                !policy.includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN));
+                            
+                            // Check if the only policy is "Default_Subscriptionless"
+                            if (isSubValidationDisabled) {
+                                return <span>-</span>;
+                            }
+
+                            // Render filtered policies
+                            return filteredPolicies.length > 0 ? (
+                                filteredPolicies.map((item, index) => (
+                                    <span>
+                                        {item}
+                                        {filteredPolicies.length !== index + 1 && ', '}
+                                        {' '}
+                                    </span>
+                                ))
+                            ) : (
+                                <span>-</span> // Default case if no policies to show
+                            );
+                        })()
+                    ) : (
+                        <span>-</span> // Case when there are no policies at all
+                    )}
                 </Typography>
             </Grid>
         </>

@@ -97,7 +97,7 @@ const showEndpoint = function (api, type) {
  * @returns
  */
 function Endpoints(props) {
-    const { api } = props;
+    const { api, endpointSecurity } = props;
 
     const isPrototypedAvailable = api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped' && api.lifeCycleStatus === 'PROTOTYPED';
@@ -143,51 +143,53 @@ function Endpoints(props) {
                         )
                         : (
                             <>
-                                <Box pb={2}>
-                                    {/* Production Endpoint (TODO) fix the endpoint
-                                                    info when it's available with the api object */}
+                                {endpointSecurity.includes('typePRODUCTION') &&
+                                    <Box pb={2}>
+                                        {/* Production Endpoint (TODO) fix the endpoint
+                                                        info when it's available with the api object */}
 
-                                    { !isPrototypedAvailable ? (
-                                        <Typography component='p' variant='subtitle2' className={classes.subtitle}>
-                                            <FormattedMessage
-                                                id='Apis.Details.Configuration.components.Endpoints.production'
-                                                defaultMessage='Production'
-                                            />
-                                        </Typography>
-                                    ) : (
-                                        <Typography component='p' variant='subtitle2' className={classes.subtitle}>
-                                            <FormattedMessage
-                                                id='Apis.Details.Configuration.components.Endpoints.prototype'
-                                                defaultMessage='Prototype'
-                                            />
-                                        </Typography>
-                                    )}
-                                    {showEndpoint(api, 'prod')
-                                && (
-                                    <Tooltip
-                                        title={showEndpoint(api, 'prod')}
-                                        interactive
-                                    >
-                                        <Typography component='p' variant='body1' className={classes.textTrim}>
-                                            <>
-                                                {showEndpoint(api, 'prod')}
-                                            </>
-                                        </Typography>
-                                    </Tooltip>
-                                )}
-                                    <Typography component='p' variant='body1' className={classes.notConfigured}>
-                                        {!showEndpoint(api, 'prod') && (
-                                            <>
+                                        { !isPrototypedAvailable ? (
+                                            <Typography component='p' variant='subtitle2' className={classes.subtitle}>
                                                 <FormattedMessage
-                                                    id={'Apis.Details.Configuration.'
-                                                    + 'components.Endpoints.not.set'}
-                                                    defaultMessage='-'
+                                                    id='Apis.Details.Configuration.components.Endpoints.production'
+                                                    defaultMessage='Production'
                                                 />
-                                            </>
+                                            </Typography>
+                                        ) : (
+                                            <Typography component='p' variant='subtitle2' className={classes.subtitle}>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Configuration.components.Endpoints.prototype'
+                                                    defaultMessage='Prototype'
+                                                />
+                                            </Typography>
                                         )}
-                                    </Typography>
-                                </Box>
-                                {!isPrototypedAvailable && (
+                                        {showEndpoint(api, 'prod')
+                                    && (
+                                        <Tooltip
+                                            title={showEndpoint(api, 'prod')}
+                                            interactive
+                                        >
+                                            <Typography component='p' variant='body1' className={classes.textTrim}>
+                                                <>
+                                                    {showEndpoint(api, 'prod')}
+                                                </>
+                                            </Typography>
+                                        </Tooltip>
+                                    )}
+                                        <Typography component='p' variant='body1' className={classes.notConfigured}>
+                                            {!showEndpoint(api, 'prod') && (
+                                                <>
+                                                    <FormattedMessage
+                                                        id={'Apis.Details.Configuration.'
+                                                        + 'components.Endpoints.not.set'}
+                                                        defaultMessage='-'
+                                                    />
+                                                </>
+                                            )}
+                                        </Typography>
+                                    </Box>
+                                }   
+                                {!isPrototypedAvailable && endpointSecurity.includes('typeSANDBOX') && (
                                     <Box pb={2}>
                                         {/* Sandbox Endpoint (TODO) fix the endpoint info when
                                                 it's available with the api object */}

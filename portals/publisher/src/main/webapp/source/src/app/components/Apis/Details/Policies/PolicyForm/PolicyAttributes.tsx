@@ -18,7 +18,7 @@
 
 import React, { FC, useState, } from 'react';
 import { styled } from '@mui/material/styles';
-import { Button , Theme } from '@mui/material';
+import { Button , MenuItem, Theme } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import TextField from '@mui/material/TextField';
@@ -541,7 +541,6 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                         >
                                                             <InputLabel id='type-dropdown-label'>Type</InputLabel>
                                                             <Select
-                                                                native
                                                                 name='type'
                                                                 value={attribute.type}
                                                                 label={
@@ -560,10 +559,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                     style: isViewMode ? {cursor: 'auto'} : {},
                                                                 }}
                                                             >
-                                                                <option value='String'>String</option>
-                                                                <option value='Integer'>Integer</option>
-                                                                <option value='Boolean'>Boolean</option>
-                                                                <option value='Enum'>Enum</option>
+                                                                <MenuItem value='String'>String</MenuItem>
+                                                                <MenuItem value='Integer'>Integer</MenuItem>
+                                                                <MenuItem value='Boolean'>Boolean</MenuItem>
+                                                                <MenuItem value='Enum'>Enum</MenuItem>
                                                             </Select>
                                                             <FormHelperText>Attribute Type</FormHelperText>
                                                         </FormControl>

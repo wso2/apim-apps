@@ -59,6 +59,7 @@ describe("Common Policies", () => {
             cy.wait(2000);
 
             // View API specific policy
+            cy.get('#tabPanel-api-policies').click();
             cy.contains('API Specific Policy Sample').trigger('mouseover');
             cy.get('[aria-label="view-APISpecificPolicySample"]').click({force:true});
 

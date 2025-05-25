@@ -90,7 +90,7 @@ const StyledTableRow = styled(TableRow)((
     },
 
     [`& .${classes.dropDown}`]: {
-        width: theme.spacing(11.25),
+        width: 120,
     },
 
     [`& .${classes.divider}`]: {
@@ -197,7 +197,7 @@ class Operation extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            isSecurity: false,
+            isSecurity: props.componentValidator.includes('operationSecurity'),
         };
         this.handleScopeChange = this.handleScopeChange.bind(this);
         this.handlePolicyChange = this.handlePolicyChange.bind(this);
@@ -255,7 +255,7 @@ class Operation extends React.Component {
      */
     render() {
         const {
-            operation, theme, apiPolicies, scopes, isOperationRateLimiting, sharedScopes, intl,
+            operation, theme, apiPolicies, scopes, isOperationRateLimiting, sharedScopes, intl, componentValidator,
         } = this.props;
         const dropdownScopes = [...scopes];
         const { isSecurity } = this.state;
@@ -288,127 +288,138 @@ class Operation extends React.Component {
                         className={classes.chipActive}
                     />
                 </TableCell>
-                <TableCell>
-                    <Select
-                        className={classes.dropDown}
-                        value={isOperationRateLimiting ? operation.throttlingPolicy : ''}
-                        disabled={(!isOperationRateLimiting || isRestricted(['apim:api_publish', 'apim:api_create']))}
-                        onChange={this.handlePolicyChange}
-                        fieldName='Throttling Policy'
-                    >
-                        {apiPolicies.map((policy) => (
-                            <MenuItem
-                                key={policy.name}
-                                value={policy.name}
-                            >
-                                {policy.displayName}
-                            </MenuItem>
-                        ))}
-                    </Select>
-                </TableCell>
-                <TableCell>
-                    <TextField
-                        id='operation_scope'
-                        select
-                        SelectProps={{
-                            multiple: true,
-                            renderValue: (selected) => (Array.isArray(selected) ? selected.join(', ') : selected),
-                        }}
-                        fullWidth
-                        label={dropdownScopes.length !== 0 || sharedScopes ? intl.formatMessage({
-                            id: 'Apis.Details.Operations.Operation.operation.scope.label.default',
-                            defaultMessage: 'Operation scope',
-                        }) : intl.formatMessage({
-                            id: 'Apis.Details.Operations.Operation.operation.scope.label.notAvailable',
-                            defaultMessage: 'No scope available',
-                        })}
-                        value={operation.scopes}
-                        onChange={({ target: { value } }) => this.handleScopeChange({
-                            data: { value: value ? [value] : [] },
-                        })}
-                        helperText={(
-                            <FormattedMessage
-                                id='Apis.Details.Operations.Operation.operation.scope.helperText'
-                                defaultMessage='Select a scope to control permissions to this operation'
-                            />
-                        )}
-                        margin='dense'
-                        variant='outlined'
-                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                    >
-                        <ListSubheader>
-                            <FormattedMessage
-                                id='Apis.Details.Operations.Operation.operation.scope.select.local'
-                                defaultMessage='API Scopes'
-                            />
-                        </ListSubheader>
-                        {filteredApiScopes.length !== 0 ? filteredApiScopes.map((apiScope) => (
-                            <MenuItem
-                                key={apiScope.scope.name}
-                                value={apiScope.scope.name}
-                                dense
-                            >
-                                <Checkbox checked={operation.scopes.includes(apiScope.scope.name)} color='primary' />
-                                {apiScope.scope.name}
-                            </MenuItem>
-                        )) : (
-                            <MenuItem
-                                value=''
-                                disabled
-                            >
-                                <em>
+                {componentValidator.includes('operationLevelRateLimiting') &&
+                    <TableCell>
+                        <Select
+                            className={classes.dropDown}
+                            value={isOperationRateLimiting ? operation.throttlingPolicy : ''}
+                            disabled={(!isOperationRateLimiting || 
+                                isRestricted(['apim:api_publish', 'apim:api_create']))}
+                            onChange={this.handlePolicyChange}
+                            fieldName='Throttling Policy'
+                        >
+                            {apiPolicies.map((policy) => (
+                                <MenuItem
+                                    key={policy.name}
+                                    value={policy.name}
+                                >
+                                    {policy.displayName}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </TableCell>
+                }
+                {componentValidator.includes('operationSecurity') &&
+                    <>
+                        <TableCell>
+                            <TextField
+                                id='operation_scope'
+                                select
+                                SelectProps={{
+                                    multiple: true,
+                                    renderValue: (selected) => 
+                                        (Array.isArray(selected) ? selected.join(', ') : selected),
+                                }}
+                                fullWidth
+                                label={dropdownScopes.length !== 0 || sharedScopes ? intl.formatMessage({
+                                    id: 'Apis.Details.Operations.Operation.operation.scope.label.default',
+                                    defaultMessage: 'Operation scope',
+                                }) : intl.formatMessage({
+                                    id: 'Apis.Details.Operations.Operation.operation.scope.label.notAvailable',
+                                    defaultMessage: 'No scope available',
+                                })}
+                                value={operation.scopes}
+                                onChange={({ target: { value } }) => this.handleScopeChange({
+                                    data: { value: value ? [value] : [] },
+                                })}
+                                helperText={(
                                     <FormattedMessage
-                                        id='Apis.Details.Operations.Operation.operation.no.api.scope.available'
-                                        defaultMessage='No API scopes available'
+                                        id='Apis.Details.Operations.Operation.operation.scope.helperText'
+                                        defaultMessage='Select a scope to control permissions to this operation'
                                     />
-                                </em>
-                            </MenuItem>
-                        )}
-                        <ListSubheader>
-                            <FormattedMessage
-                                id='Apis.Details.Operations.Operation.operation.scope.select.shared'
-                                defaultMessage='Shared Scopes'
-                            />
-                        </ListSubheader>
-                        {sharedScopes && sharedScopes.length !== 0 ? sharedScopes.map((sharedScope) => (
-                            <MenuItem
-                                key={sharedScope.scope.name}
-                                value={sharedScope.scope.name}
-                                dense
+                                )}
+                                margin='dense'
+                                variant='outlined'
+                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                             >
-                                <Checkbox checked={operation.scopes.includes(sharedScope.scope.name)} color='primary' />
-                                {sharedScope.scope.name}
-                            </MenuItem>
-                        )) : (
-                            <MenuItem
-                                value=''
-                                disabled
-                            >
-                                <em>
+                                <ListSubheader>
                                     <FormattedMessage
-                                        id='Apis.Details.Operations.Operation.operation.no.sharedpi.scope.available'
-                                        defaultMessage='No shared scopes available'
+                                        id='Apis.Details.Operations.Operation.operation.scope.select.local'
+                                        defaultMessage='API Scopes'
                                     />
-                                </em>
-                            </MenuItem>
-                        )}
-                    </TextField>
-                </TableCell>
-                <TableCell>
-                    <Switch
-                        checked={(() => {
-                            if (operation.authType === 'None') {
-                                return false;
-                            }
-                            return true;
-                        })()}
-                        onChange={this.handleChange}
-                        value={isSecurity}
-                        color='primary'
-                        disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
-                        data-testid={operation.target + '-security-btn'}
-                    />
-                </TableCell>
+                                </ListSubheader>
+                                {filteredApiScopes.length !== 0 ? filteredApiScopes.map((apiScope) => (
+                                    <MenuItem
+                                        key={apiScope.scope.name}
+                                        value={apiScope.scope.name}
+                                        dense
+                                    >
+                                        <Checkbox checked={operation.scopes.includes(apiScope.scope.name)} 
+                                            color='primary' />
+                                        {apiScope.scope.name}
+                                    </MenuItem>
+                                )) : (
+                                    <MenuItem
+                                        value=''
+                                        disabled
+                                    >
+                                        <em>
+                                            <FormattedMessage
+                                                id='Apis.Details.Operations.Operation.operation.no.api.scope.available'
+                                                defaultMessage='No API scopes available'
+                                            />
+                                        </em>
+                                    </MenuItem>
+                                )}
+                                <ListSubheader>
+                                    <FormattedMessage
+                                        id='Apis.Details.Operations.Operation.operation.scope.select.shared'
+                                        defaultMessage='Shared Scopes'
+                                    />
+                                </ListSubheader>
+                                {sharedScopes && sharedScopes.length !== 0 ? sharedScopes.map((sharedScope) => (
+                                    <MenuItem
+                                        key={sharedScope.scope.name}
+                                        value={sharedScope.scope.name}
+                                        dense
+                                    >
+                                        <Checkbox checked={operation.scopes.includes(sharedScope.scope.name)} 
+                                            color='primary' />
+                                        {sharedScope.scope.name}
+                                    </MenuItem>
+                                )) : (
+                                    <MenuItem
+                                        value=''
+                                        disabled
+                                    >
+                                        <em>
+                                            <FormattedMessage
+                                                id='Apis.Details.Operations
+                                                    .Operation.operation.no.sharedpi.scope.available'
+                                                defaultMessage='No shared scopes available'
+                                            />
+                                        </em>
+                                    </MenuItem>
+                                )}
+                            </TextField>
+                        </TableCell>
+                        <TableCell>
+                            <Switch
+                                checked={(() => {
+                                    if (operation.authType === 'None') {
+                                        return false;
+                                    }
+                                    return true;
+                                })()}
+                                onChange={this.handleChange}
+                                value={isSecurity}
+                                color='primary'
+                                disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                                data-testid={operation.target + '-security-btn'}
+                            />
+                        </TableCell>
+                    </>
+                }
             </StyledTableRow>
         );
     }

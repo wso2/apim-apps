@@ -18,16 +18,19 @@
 
 import React, { Component } from 'react';
 import { styled, useTheme } from '@mui/material/styles';
-import Button from '@mui/material/Button';
 import Grid from '@mui/material/Grid';
 import FormGroup from '@mui/material/FormGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
+import {
+    Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, CircularProgress,
+    Box,
+    Typography,
+} from '@mui/material';
 import PropTypes from 'prop-types';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
-import { injectIntl } from 'react-intl';
+import { injectIntl, FormattedMessage } from 'react-intl';
 import API from 'AppData/api';
-import { CircularProgress } from '@mui/material';
 import { ScopeValidation, resourceMethod, resourcePath } from 'AppData/ScopeValidation';
 import Alert from 'AppComponents/Shared/Alert';
 import Banner from 'AppComponents/Shared/Banner';
@@ -36,6 +39,9 @@ import PublishWithoutDeployProduct from 'AppComponents/Apis/Details/LifeCycle/Co
 import Configurations from 'Config';
 import APIProduct from 'AppData/APIProduct';
 import Progress from 'AppComponents/Shared/Progress';
+import GovernanceViolations from 'AppComponents/Shared/Governance/GovernanceViolations';
+import Utils from 'AppData/Utils';
+import Link from '@mui/material/Link';
 import LifeCycleImage from './LifeCycleImage';
 import CheckboxLabels from './CheckboxLabels';
 import LifecyclePending from './LifecyclePending';
@@ -51,7 +57,6 @@ const classes = {
     subHeading: `${PREFIX}-subHeading`,
     mandatoryStar: `${PREFIX}-mandatoryStar`
 };
-
 const StyledGrid = styled(Grid)((
     {
         theme
@@ -116,9 +121,36 @@ class LifeCycleUpdate extends Component {
             loading: true,
             isMandatoryPropertiesConfigured: false,
             message: null,
+            openMenu: false,
+            selectedTransitionState: null,
+            isGovernanceViolation: false,
+            governanceError: null,
         };
         this.setIsOpen = this.setIsOpen.bind(this);
         this.handleClick = this.handleClick.bind(this);
+        this.handleRequestOpen = this.handleRequestOpen.bind(this);
+        this.handleRequestClose = this.handleRequestClose.bind(this);
+    }
+
+    /**
+     * 
+     * Set the openMenu state of the dialog box which shows when deprecating or retiring
+     * Store the selected transition state
+     * @param {*} event event
+     */
+    handleRequestOpen(event) {
+        this.setState({
+            openMenu: true,
+            selectedTransitionState: event.currentTarget.getAttribute('data-value'),
+        });
+    }
+
+    /**
+     *
+     * Set the openMenu state
+     */
+    handleRequestClose() {
+        this.setState({ openMenu: false });
     }
 
     /**
@@ -187,6 +219,7 @@ class LifeCycleUpdate extends Component {
     updateLCStateOfAPI(apiUUID, action) {
         this.setState({ isUpdating: action });
         let promisedUpdate;
+        const complianceErrorCode = 903300;
         const { intl } = this.props;
         const lifecycleChecklist = this.props.checkList.map((item) => item.value + ':' + item.checked);
         const { isAPIProduct } = this.props;
@@ -245,8 +278,53 @@ class LifeCycleUpdate extends Component {
             })
             .catch((error) => {
                 if (error.response) {
-                    Alert.error(error.response.body.description);
-                    this.setState({ pageError: error.response.body });
+                    if (error.response.body.code === complianceErrorCode) {
+                        // Handle governance violation
+                        const errorDescription = error.response.body.description;
+                        const violations = JSON.parse(errorDescription).blockingViolations;
+                        this.setState({
+                            governanceError: violations,
+                            isGovernanceViolation: true,
+                        });
+                        Alert.error(
+                            <Box sx={{ width: '100%' }}>
+                                <Typography>
+                                    <FormattedMessage
+                                        id='Apis.Details.LifeCycle.LifeCycleUpdate.error.governance'
+                                        defaultMessage='Lifecycle update failed. Governance policy violations found.'
+                                    />
+                                </Typography>
+                                <Box sx={{
+                                    display: 'flex',
+                                    justifyContent: 'flex-end',
+                                    mt: 1
+                                }}>
+                                    <Link
+                                        component='button'
+                                        onClick={() => Utils.downloadAsJSON(violations, 'governance-violations')}
+                                        sx={{
+                                            color: 'inherit',
+                                            fontWeight: 600,
+                                            textDecoration: 'none',
+                                            transition: 'all 0.3s',
+                                            '&:hover': {
+                                                transform: 'translateY(-2px)',
+                                                textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
+                                            },
+                                        }}
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Details.LifeCycle.LifeCycleUpdate.error.governance.download'
+                                            defaultMessage='Download Violations'
+                                        />
+                                    </Link>
+                                </Box>
+                            </Box>
+                        );
+                    } else {
+                        Alert.error(error.response.body.description);
+                        this.setState({ pageError: error.response.body });
+                    }
                 } else {
                     // TODO add i18n ~tmkb
                     const message = intl.formatMessage({
@@ -326,9 +404,11 @@ class LifeCycleUpdate extends Component {
         const {
             api, lcState, theme, handleChangeCheckList, checkList, certList, isAPIProduct, intl,
         } = this.props;
+        const type = isAPIProduct ? 'API Product ' : 'API ';
+        const version = ' - ' + api.version;
         const lifecycleStates = [...lcState.availableTransitions];
         const { newState, pageError, isOpen, deploymentsAvailable, isMandatoryPropertiesAvailable,
-            isMandatoryPropertiesConfigured } = this.state;
+            isMandatoryPropertiesConfigured, governanceError, isGovernanceViolation } = this.state;
         const isWorkflowPending = api.workflowStatus && api.workflowStatus === this.WORKFLOW_STATUS.CREATED;
         const lcMap = new Map();
         lcMap.set('Published', 'Publish');
@@ -476,6 +556,8 @@ class LifeCycleUpdate extends Component {
                             && lifecycleButtons.map((transitionState) => {
                                 /* Skip when transitions available for current state, this occurs in states
                                 where have allowed re-publishing in prototype and published sates */
+                                const needConfirmation = transitionState.displayName === 'Deprecate'
+                                                   || transitionState.displayName === 'Retire';
                                 return (
                                     <Button
                                         disabled={transitionState.disabled
@@ -485,7 +567,7 @@ class LifeCycleUpdate extends Component {
                                         className={classes.stateButton}
                                         key={transitionState.event}
                                         data-value={transitionState.event}
-                                        onClick={this.updateLifeCycleState}
+                                        onClick={needConfirmation? this.handleRequestOpen: this.updateLifeCycleState}
                                         data-testid={transitionState.event + '-btn'}
                                     >
                                         { transitionState.displayName in lifeCycleUpdateEvents
@@ -498,10 +580,69 @@ class LifeCycleUpdate extends Component {
                                 );
                             })}
                         </div>
+                        <Dialog open={this.state.openMenu}>
+                            <DialogTitle>
+                                <FormattedMessage
+                                    id='Apis.Details.components.TransitionStateApiButton.title'
+                                    defaultMessage='{selectedState} {type}'
+                                    values={{ 
+                                        selectedState: this.state.selectedTransitionState,
+                                        type,
+                                    }}
+                                />
+                            </DialogTitle>
+                            <DialogContent>
+                                <DialogContentText>
+                                    <FormattedMessage
+                                        id='Apis.Details.components.TransitionStateApiButton.text.description'
+                                        defaultMessage='{type} <b> {name} {version} </b> will be {selectedState}d 
+                                            permanently.'
+                                        values={{
+                                            b: (msg) => <b>{msg}</b>,
+                                            type,
+                                            name: api.name,
+                                            version,
+                                            selectedState: this.state.selectedTransitionState ? 
+                                                this.state.selectedTransitionState.toLowerCase() : ''
+                                        }}
+                                    />
+                                </DialogContentText>
+                            </DialogContent>
+                            <DialogActions>
+                                <Button dense onClick={this.handleRequestClose}>
+                                    <FormattedMessage
+                                        id='Apis.Details.components.TransitionStateApiButton.button.cancel'
+                                        defaultMessage='CANCEL'
+                                    />
+                                </Button>
+                                <Button
+                                    id='itest-id-conf'
+                                    key={this.state.selectedTransitionState}
+                                    data-value={this.state.selectedTransitionState}
+                                    onClick={(event) => {
+                                        this.updateLifeCycleState(event);
+                                        this.handleRequestClose();
+                                    }}
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Details.components.TransitionStateApiButton.button.confirm'
+                                        defaultMessage='{selectedState}'
+                                        values={{ 
+                                            selectedState:this.state.selectedTransitionState ? 
+                                                this.state.selectedTransitionState.toUpperCase() : ''
+                                        }}
+                                    />
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
                     </ScopeValidation>
                 </Grid>
                 {/* Page error banner */}
-                {pageError && (
+                {isGovernanceViolation ? (
+                    <Grid item xs={12}>
+                        <GovernanceViolations violations={governanceError} />
+                    </Grid>
+                ) : pageError && (
                     <Grid item xs={11}>
                         <Banner
                             onClose={() => this.setState({ pageError: null })}

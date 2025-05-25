@@ -52,7 +52,7 @@ function MetaData(props) {
                 ) : (
                     <FormattedMessage
                         id='Apis.Details.NewOverview.MetaData.context:'
-                        defaultMessage='Context:'
+                        defaultMessage='Context'
                     />
                 )}
             </Typography>
@@ -109,7 +109,7 @@ function MetaData(props) {
                         <Typography component='p' variant='subtitle2' className={parentClasses.subtitle}>
                             <FormattedMessage
                                 id='Apis.Details.NewOverview.MetaData.context:'
-                                defaultMessage='Context:'
+                                defaultMessage='Context'
                             />
                         </Typography>
                     </Grid>
@@ -145,7 +145,10 @@ function MetaData(props) {
                             </Grid>
                             <Grid item xs={12} md={6} lg={8}>
                                 <Typography component='p' variant='body1'>
-                                    {api.gatewayType === 'wso2/synapse' ? 'Regular' : 'APK'}
+                                    {api.gatewayType === 'wso2/synapse' && 'Regular'}
+                                    {api.gatewayType === 'wso2/apk' && 'APK'}
+                                    {api.gatewayType !== 'wso2/synapse' && api.gatewayType !== 'wso2/apk' 
+                                        && api.gatewayType}
                                 </Typography>
                             </Grid>
                         </>
@@ -162,7 +165,7 @@ function MetaData(props) {
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.NewOverview.MetaData.type:'
-                                            defaultMessage='Type:'
+                                            defaultMessage='Type'
                                         />
                                     </Typography>
                                 </>

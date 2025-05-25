@@ -19,11 +19,30 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
             url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
         },
     },
+    servers: [
+        {
+            url: 'https://localhost:9443/am/sample/pizzashack/v1/api'
+        }
+    ],
     security: [{ default: [] }],
+    tags: [
+        {
+            name: 'menu',
+            description: 'Operations related to menu management.'
+        },
+        {
+            name: 'order',
+            description: 'Operations related to order management.'
+        }
+    ],
     paths: {
         '/order': {
             post: {
                 description: 'Create a new Order',
+                operationId: 'getOrders',
+                tags: [
+                    'order'
+                ],
                 requestBody: {
                     $ref: '#/components/requestBodies/Order',
                 },
@@ -87,6 +106,8 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
         '/menu': {
             get: {
                 description: 'Return a list of available menu items',
+                operationId: 'getMenu',
+                tags: ['menu'],
                 responses: {
                     200: {
                         description: 'OK. List of APIs is returned.',
@@ -122,15 +143,8 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
         '/order/{orderId}': {
             get: {
                 description: 'Get details of an Order',
-                parameters: [
-                    {
-                        name: 'orderId',
-                        in: 'path',
-                        description: 'Order Id',
-                        required: true,
-                        schema: { type: 'string', format: 'string' },
-                    },
-                ],
+                operationId: 'getOrderById',
+                tags: ['order'],
                 responses: {
                     200: {
                         description: 'OK Requested Order will be returned',
@@ -169,15 +183,8 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
             },
             put: {
                 description: 'Update an existing Order',
-                parameters: [
-                    {
-                        name: 'orderId',
-                        in: 'path',
-                        description: 'Order Id',
-                        required: true,
-                        schema: { type: 'string', format: 'string' },
-                    },
-                ],
+                operationId: 'updateOrder',
+                tags: ['order'],
                 requestBody: { $ref: '#/components/requestBodies/Order' },
                 responses: {
                     200: {
@@ -226,15 +233,8 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
             },
             delete: {
                 description: 'Delete an existing Order',
-                parameters: [
-                    {
-                        name: 'orderId',
-                        in: 'path',
-                        description: 'Order Id',
-                        required: true,
-                        schema: { type: 'string', format: 'string' },
-                    },
-                ],
+                operationId: 'deleteOrder',
+                tags: ['order'],
                 responses: {
                     200: { description: 'OK. Resource successfully deleted.' },
                     404: {
@@ -254,6 +254,15 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
                     optional: false,
                 },
             },
+            parameters: [
+                {
+                    name: 'orderId',
+                    in: 'path',
+                    description: 'Order Id',
+                    required: true,
+                    schema: { type: 'string', format: 'string' },
+                },
+            ],
         },
     },
     'x-wso2-auth-header': 'Authorization',
@@ -287,7 +296,7 @@ const getSampleOpenAPI = (defaultSubscriptionPolicy) => ({
         type: 'http',
     },
     'x-wso2-basePath': '/pizzashack/1.0.0',
-    'x-wso2-transports': ['http', 'https'],
+    'x-wso2-transports': ['https'],
     'x-wso2-application-security': {
         'security-types': ['oauth2'],
         optional: false,
@@ -442,7 +451,7 @@ const getSampleServiceMeta = () => ({
     description: 'A Catalog Entry that exposes a REST endpoint',
     version: 'v1',
     serviceKey: 'Pizzashack-Endpoint-1.0.0',
-    serviceUrl: 'https://localhost:9443/am/sample/pizzashack/v1/api/',
+    serviceUrl: 'https://localhost:9443/am/sample/pizzashack/v1/api',
     definitionType: 'OAS3',
 });
 

@@ -43,7 +43,6 @@ import Sdks from './Sdks';
 import Test from './Test';
 import InfoBar from './InfoBar';
 import Overview from './Overview';
-import WebHookDetails from './WebHookDetails';
 import Sdk from './Sdk';
 
 const PREFIX = 'index';
@@ -105,6 +104,9 @@ const Root = styled('div')((
         top: 0,
         right: 0,
         overflowY: 'auto',
+        [theme.breakpoints.down('md')]: {
+            width: 50,
+        },
     },
 
     [`& .${classes.leftLInkMain}`]: {
@@ -501,10 +503,6 @@ class Details extends Component {
                             <Route
                                 path='/applications/:applicationId/overview'
                                 component={Overview}
-                            />
-                            <Route
-                                path='/applications/:applicationId/webhooks/:apiId'
-                                component={WebHookDetails}
                             />
                             <Route
                                 path='/applications/:applicationId/productionkeys/oauth'

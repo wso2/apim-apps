@@ -20,7 +20,7 @@ import React, { useState, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import TextField from '@mui/material/TextField';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import Autocomplete from '@mui/material/Autocomplete';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
@@ -66,6 +66,7 @@ function APICategories(props) {
     const { api, configDispatcher } = props;
 
     const [apiFromContext] = useAPI();
+    const intl = useIntl();
 
     useEffect(() => {
         API.apiCategories().then((response) => setCategories(response.body));
@@ -107,6 +108,10 @@ function APICategories(props) {
                             disabled={isRestricted(['apim:api_create', 'apim:api_publish'], apiFromContext)
                                 || categories.list.length === 0
                             }
+                            InputProps={{
+                                ...params.InputProps,
+                                endAdornment: null,
+                            }}
                             fullWidth
                             label={categories.list.length !== 0 ? (
                                 <FormattedMessage
@@ -120,12 +125,10 @@ function APICategories(props) {
                                 />
                             )
                             }
-                            placeholder={(
-                                <FormattedMessage
-                                    id='Apis.Details.Configurations.api.categories.placeholder.text'
-                                    defaultMessage='Search API categories'
-                                />
-                            )}
+                            placeholder={intl.formatMessage({
+                                id:'Apis.Details.Configurations.api.categories.placeholder.text',
+                                defaultMessage:'Search API categories'
+                            })}
                             helperText={(
                                 <FormattedMessage
                                     id='Apis.Details.Configurations.api.categories.helper.text'

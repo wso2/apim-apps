@@ -242,10 +242,25 @@ class EditScope extends React.Component {
         const promise = APIValidation.role.validate(base64url.encode(role));
         promise
             .then(() => {
-                this.setState({
-                    roleValidity: true,
-                    validRoles: [...validRoles, role],
-                });
+                const splitRole = role.split('/', 2);
+                let validatedRole = '';
+                if (splitRole.length > 1) {
+                    const domain = splitRole.length > 0 ? splitRole[0] : '';
+                    if (domain.toUpperCase() !== 'INTERNAL') {
+                        const domainUpperCase = domain.toUpperCase().concat('/');
+                        validatedRole = domainUpperCase.concat(splitRole[1]);
+                    } else {
+                        validatedRole = role;
+                    }
+                } else {
+                    validatedRole = role;
+                }
+                if (!validRoles.includes(validatedRole)) {
+                    this.setState({
+                        roleValidity: true,
+                        validRoles: [...validRoles, validatedRole],
+                    });
+                }
             })
             .catch((error) => {
                 if (error.status === 404) {
@@ -558,7 +573,7 @@ class EditScope extends React.Component {
                                                 }}
                                                 style={{
                                                     backgroundColor: invalidRoles.includes(value) ? red[300] : null,
-                                                    margin: '8px 8px 8px 0',
+                                                    marginRight: '8px',
                                                     float: 'left',
                                                 }}
                                             />

@@ -197,6 +197,9 @@ function createEndpointConfig(endpointType) {
             tmpEndpointConfig.amznRoleSessionName = '';
             tmpEndpointConfig.amznRoleRegion = '';
             break;
+        case 'sequence_backend':
+            tmpEndpointConfig.endpoint_type = 'sequence_backend';
+            break;
         default:
             tmpEndpointConfig.endpoint_type = 'default';
             tmpEndpointConfig.production_endpoints = { url: 'default' };

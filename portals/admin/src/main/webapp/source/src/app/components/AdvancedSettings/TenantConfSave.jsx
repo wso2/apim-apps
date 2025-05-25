@@ -30,7 +30,11 @@ import Alert from 'AppComponents/Shared/Alert';
 import { Progress } from 'AppComponents/Shared';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 
-import { Editor as MonacoEditor } from '@monaco-editor/react';
+import * as monaco from 'monaco-editor';
+import { Editor as MonacoEditor, loader } from '@monaco-editor/react';
+
+// load Monaco from node_modules instead of CDN
+loader.config({ monaco });
 
 /**
  * Reducer
@@ -67,23 +71,24 @@ function TenantConfSave() {
         tenantConf, tenantConfSchema,
     } = state;
     const restApi = new API();
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
-        let tenantConfVal;
-        let tenantConfSchemaVal;
-        restApi.tenantConfSchemaGet().then((result) => {
-            tenantConfSchemaVal = result.body;
-            dispatch({ field: 'tenantConfSchema', value: tenantConfSchemaVal });
-        });
-        restApi.tenantConfGet().then((result) => {
-            tenantConfVal = JSON.stringify(result.body, null, '\t');
-            dispatch({ field: 'tenantConf', value: tenantConfVal });
-        });
+        Promise.all([
+            restApi.tenantConfSchemaGet().then((result) => {
+                const tenantConfSchemaVal = result.body;
+                dispatch({ field: 'tenantConfSchema', value: tenantConfSchemaVal });
+            }),
+            restApi.tenantConfGet().then((result) => {
+                const tenantConfVal = JSON.stringify(result.body, null, '\t');
+                dispatch({ field: 'tenantConf', value: tenantConfVal });
+            }),
+        ]).then(() => setLoading(false));
     }, []);
 
-    const editorWillMount = (monaco) => {
+    const editorWillMount = (monacoInstance) => {
         const schemaVal = state.tenantConfSchema;
-        monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+        monacoInstance.languages.json.jsonDefaults.setDiagnosticsOptions({
             completion: true,
             validate: true,
             format: true,
@@ -145,16 +150,20 @@ function TenantConfSave() {
             <Box component='div' sx={{ mb: 15, m: 2 }} name={tenantConfSchema}>
                 <Grid container>
                     <Grid item xs={12} md={12} lg={12} sx={{ p: 2 }}>
-                        <Suspense fallback={<Progress />}>
-                            <MonacoEditor
-                                language='json'
-                                height='615px'
-                                theme='vs-dark'
-                                value={tenantConf}
-                                onChange={tenantConfOnChange}
-                                beforeMount={editorWillMount}
-                            />
-                        </Suspense>
+                        {loading ? (
+                            <Progress />
+                        ) : (
+                            <Suspense fallback={<Progress />}>
+                                <MonacoEditor
+                                    language='json'
+                                    height='615px'
+                                    theme='vs-dark'
+                                    value={tenantConf}
+                                    onChange={tenantConfOnChange}
+                                    beforeMount={editorWillMount}
+                                />
+                            </Suspense>
+                        )}
                     </Grid>
                     <Box component='span' sx={{ mt: 2, mb: 2, ml: 1 }}>
                         <Button

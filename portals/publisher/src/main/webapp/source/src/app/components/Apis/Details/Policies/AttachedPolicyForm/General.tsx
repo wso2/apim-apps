@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useState, FC, useContext } from 'react';
+import React, { useState, FC, useContext, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import {
     Grid,
@@ -31,11 +31,15 @@ import {
     InputLabel,
     FormControl,
     FormHelperText,
+    MenuItem,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
+import ModelRoundRobin from '../CustomPolicies/ModelRoundRobin';
+import ModelWeightedRoundRobin from '../CustomPolicies/ModelWeightedRoundRobin';
+import ModelFailover from '../CustomPolicies/ModelFailover';
 
 const PREFIX = 'General';
 
@@ -109,6 +113,18 @@ const General: FC<GeneralProps> = ({
     const { updateApiOperations, updateAllApiOperations } = useContext<any>(ApiOperationContext);
     policySpec.policyAttributes.forEach(attr => { initState[attr.name] = null });
     const [state, setState] = useState(initState);
+    const [isManual, setManual] = useState(false);
+    const [manualPolicyConfig, setManualPolicyConfig] = useState<string>('');
+
+    useEffect(() => {
+        if (
+            (policyObj && policyObj.name === 'modelRoundRobin') ||
+            (policyObj && policyObj.name === 'modelWeightedRoundRobin') ||
+            (policyObj && policyObj.name === 'modelFailover')
+        ) {
+            setManual(true);
+        }
+    }, [policyObj]);
 
     if (!policyObj) {
         return <Progress />
@@ -151,6 +167,10 @@ const General: FC<GeneralProps> = ({
                 updateCandidates[key] = value;
             }
         });
+
+        if (policyObj.name === 'modelRoundRobin' || policyObj.name === 'modelWeightedRoundRobin' || policyObj.name === 'modelFailover') {
+            updateCandidates[policySpec.policyAttributes[0].name] = manualPolicyConfig;
+        }
 
         // Saving field changes to backend
         const apiPolicyToSave = {...apiPolicy};
@@ -304,7 +324,7 @@ const General: FC<GeneralProps> = ({
             <form onSubmit={submitForm}>
                 <Grid container spacing={2}>
                     <Grid item xs={12} className={classes.drawerInfo}>
-                        {hasAttributes && (
+                        {(hasAttributes && !isManual) && (
                             <div className={classes.resetBtn}>
                                 <Button variant='outlined' color='primary' disabled={resetDisabled} onClick={resetAll}>
                                     <FormattedMessage
@@ -340,7 +360,25 @@ const General: FC<GeneralProps> = ({
                             </Typography>
                         </div>
                     </Grid>
-                    {policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
+                    {(isManual && policyObj.name === 'modelRoundRobin') && (
+                        <ModelRoundRobin
+                            setManualPolicyConfig={setManualPolicyConfig}
+                            manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                        />
+                    )}
+                    {(isManual && policyObj.name === 'modelWeightedRoundRobin') && (
+                        <ModelWeightedRoundRobin
+                            setManualPolicyConfig={setManualPolicyConfig}
+                            manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                        />
+                    )}
+                    {(isManual && policyObj.name === 'modelFailover') && (
+                        <ModelFailover
+                            setManualPolicyConfig={setManualPolicyConfig}
+                            manualPolicyConfig={getValue(policySpec.policyAttributes[0])}
+                        />
+                    )}
+                    {!isManual && policySpec.policyAttributes && policySpec.policyAttributes.map((spec: PolicySpecAttribute) => (
                         <Grid item xs={12}>
 
                             {/* When the attribute type is string or integer */}
@@ -383,8 +421,7 @@ const General: FC<GeneralProps> = ({
                                                 )}
                                             </>
                                         </InputLabel>
-                                        <Select 
-                                            native
+                                        <Select
                                             value={getValue(spec)}
                                             onChange={(e) => onInputChange(e, spec.type)}
                                             label={(
@@ -400,9 +437,9 @@ const General: FC<GeneralProps> = ({
                                                 id: `enum-label-${spec.name}`
                                             }}
                                         >
-                                            <option aria-label='None' value='' />
+                                            <MenuItem aria-label='None' value=''>&nbsp;</MenuItem>
                                             {spec.allowedValues && spec.allowedValues.map((enumVal) => (
-                                                <option value={enumVal}>{enumVal}</option>
+                                                <MenuItem value={enumVal}>{enumVal}</MenuItem>
                                             ))}                                           
                                         </Select>
                                         <FormHelperText>
@@ -475,7 +512,7 @@ const General: FC<GeneralProps> = ({
                             type='submit'
                             color='primary'
                             data-testid='policy-attached-details-save'
-                            disabled={ isSaveDisabled() || formHasErrors() || saving}
+                            disabled={!isManual && (isSaveDisabled() || formHasErrors() || saving)}
                         >
                             {saving
                                 ? <>
