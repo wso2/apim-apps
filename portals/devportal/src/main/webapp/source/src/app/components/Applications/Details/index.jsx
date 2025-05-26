@@ -39,11 +39,9 @@ import ApiKeyManager from 'AppComponents/Shared/AppsAndKeys/ApiKeyManager';
 import classNames from 'classnames';
 import Paper from '@mui/material/Paper';
 import Subscriptions from './Subscriptions';
-import Sdks from './Sdks';
-import Test from './Test';
 import InfoBar from './InfoBar';
 import Overview from './Overview';
-import Sdk from './Sdk';
+import Sdks from './Sdks';
 
 const PREFIX = 'index';
 
@@ -446,7 +444,6 @@ class Details extends Component {
                         open
                         id='left-menu-subscriptions'
                     />
-                    {/* CHANGE */}
                     <LeftMenuItem
                         text={(
                             <FormattedMessage
@@ -456,23 +453,11 @@ class Details extends Component {
                         )}
                         iconText='sdk'
                         route='sdks'
-                        to={pathPrefix + '/sdks'}
+                        to={pathPrefix + '/sdk'}
                         open
                         id='left-menu-sdks'
                     />
-                    <LeftMenuItem
-                        text={(
-                            <FormattedMessage
-                                id='Applications.Details.menu.test'
-                                defaultMessage='Test'
-                            />
-                        )}
-                        iconText='Test'
-                        route='Test'
-                        to={pathPrefix + '/Test'}
-                        open
-                        id='left-menu-Test'
-                    />
+
                 </nav>
                 <Box sx={(theme) => ({
                     display: 'flex',
@@ -527,21 +512,9 @@ class Details extends Component {
                                 )}
                             />
                             <Route
-                                path='/applications/:applicationId/sdks'
-                                render={() => (
-                                    <Sdks application={application} getApplication={this.getApplication} />
-                                )}
-                            />
-                            <Route
                                 path='/applications/:applicationId/sdk'
                                 render={() => (
-                                    <Sdk application={application} getApplication={this.getApplication} />
-                                )}
-                            />
-                            <Route
-                                path='/applications/:applicationId/Test'
-                                render={() => (
-                                    <Test application={application} getApplication={this.getApplication} />
+                                    <Sdks application={application} getApplication={this.getApplication} />
                                 )}
                             />
                             <Route component={ResourceNotFound} />
