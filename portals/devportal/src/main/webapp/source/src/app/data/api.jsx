@@ -476,6 +476,25 @@ export default class API extends Resource {
     }
 
     /**
+    * Generate SDK for APIs
+    * @param {string} applicationId ID of the application for which SDK needs to be generated
+    * @param {string} language Programming language for the SDK
+    * @param {Object} requestContent Payload containing API IDs and Use Case (Optional)
+    * @returns {Promise} Promise that resolves with the SDK generation response
+    */
+    generateSdkForApis(applicationId, language, requestContent) {
+        const promiseSdkForApis = this.client.then((client) => {
+            const payload = { applicationId, language };
+            return client.apis['SDK Generation'].post_applications__applicationId__generate_sdk__language_(
+                payload,
+                { requestBody: requestContent },
+                this._requestMetaData(),
+            );
+        });
+        return promiseSdkForApis;
+    }
+
+    /**
      * Generate token
      * @param applicationId id of the application that needs to generate the token
      * @param request_content payload of generate token request
