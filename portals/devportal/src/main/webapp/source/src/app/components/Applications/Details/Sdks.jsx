@@ -1,3 +1,4 @@
+/* eslint-disable */
 /*
  * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -17,42 +18,34 @@
  */
 
 import React from 'react';
-import { styled } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
-import Table from '@mui/material/Table';
-import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
-import TableHead from '@mui/material/TableHead';
-import TableRow from '@mui/material/TableRow';
-import PropTypes from 'prop-types';
-import Typography from '@mui/material/Typography';
-import Icon from '@mui/material/Icon';
-import IconButton from '@mui/material/IconButton';
-import Dialog from '@mui/material/Dialog';
-import Button from '@mui/material/Button';
-import MuiDialogTitle from '@mui/material/DialogTitle';
-import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
-import InputBase from '@mui/material/InputBase';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
-import SearchIcon from '@mui/icons-material/Search';
-import { FormattedMessage, injectIntl } from 'react-intl';
-import Progress from 'AppComponents/Shared/Progress';
-import Alert from 'AppComponents/Shared/Alert';
-import APIList from 'AppComponents/Apis/Listing/APICardView';
-import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
-import Subscription from 'AppData/Subscription';
-import Api from 'AppData/api';
-import { app } from 'Settings';
-import InlineMessage from 'AppComponents/Shared/InlineMessage';
-import DialogActions from '@mui/material/DialogActions';
-import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
-import Slide from '@mui/material/Slide';
 import { withRouter } from 'react-router-dom';
+import { FormattedMessage, injectIntl } from 'react-intl';
+import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
+import {
+    Box,
+    Button,
+    Grid,
+    InputBase,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TablePagination,
+    TableRow,
+    Typography,
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import Progress from 'AppComponents/Shared/Progress';
+import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
+import InlineMessage from 'AppComponents/Shared/InlineMessage';
+import Subscription from 'AppData/Subscription';
+import { app } from 'Settings';
 import SdkTableData from './SdkTableData';
+import SdkLanguages from './SdkLanguages';
 
-const PREFIX = 'Subscriptions';
+const PREFIX = 'SDKGeneration';
 
 const classes = {
     searchRoot: `${PREFIX}-searchRoot`,
@@ -190,68 +183,84 @@ const StyledProgress = styled(Progress)((
     },
 }));
 
-/**
- *
- *
- * @class Sdks
- * @extends {React.Component}
- */
+const SearchContainer = styled('div')({
+    position: 'relative',
+    display: 'flex',
+    alignItems: 'center',
+});
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+    color: 'inherit',
+    width: '100%',
+    '& .MuiInputBase-input': {
+        padding: theme.spacing(0.5, 0, 0, 0),
+        transition: theme.transitions.create('width'),
+        width: '100%',
+    },
+}));
+
+const styles = {
+    stepContainer: {
+        width: '100%',
+        maxWidth: '1200px',
+        marginBottom: '20px',
+        marginTop: '20px',
+        display: 'flex',
+        alignItems: 'flex-start',
+    },
+    numberCircle: {
+        width: '36px',
+        height: '36px',
+        borderRadius: '50%',
+        backgroundColor: '#1C6584',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: '#ffffff',
+        fontWeight: 'bold',
+        fontSize: '18px',
+        mr: 2,
+        flexShrink: 0,
+    },
+};
+
+const StyledTableContainer = styled(TableContainer)({
+    flex: 1,
+});
+
 class Sdks extends React.Component {
-    /**
-     *Creates an instance of Sdks.
-     * @param {*} props properties
-     * @memberof Sdks
-     */
     constructor(props) {
         super(props);
         this.state = {
             subscriptions: null,
-            apisNotFound: false,
             subscriptionsNotFound: false,
             isAuthorize: true,
-            openDialog: false,
-            searchText: '',
-            openMenu: false,
+            searchQuery: '',
+            selectedLanguage: null,
+            selectedAPIs: [],
+            page: 0,
+            rowsPerPage: 5,
+            selectedPage: 0,
+            selectedRowsPerPage: 6,
         };
-        this.handleSubscriptionDelete = this.handleSubscriptionDelete.bind(this);
-        this.handleSubscriptionUpdate = this.handleSubscriptionUpdate.bind(this);
+
         this.updateSubscriptions = this.updateSubscriptions.bind(this);
-        this.handleSubscribe = this.handleSubscribe.bind(this);
-        this.handleOpenDialog = this.handleOpenDialog.bind(this);
-        this.handleSearchTextChange = this.handleSearchTextChange.bind(this);
-        this.handleSearchTextTmpChange = this.handleSearchTextTmpChange.bind(this);
-        this.handleClearSearch = this.handleClearSearch.bind(this);
-        this.handleEnterPress = this.handleEnterPress.bind(this);
-        this.handleRequestOpen = this.handleRequestOpen.bind(this);
-        this.handleRequestClose = this.handleRequestClose.bind(this);
-        this.handleProceed = this.handleProceed.bind(this);
-        this.searchTextTmp = '';
+        this.handleLanguageSelect = this.handleLanguageSelect.bind(this);
+        this.handleChangePage = this.handleChangePage.bind(this);
+        this.handleSelectedPageChange = this.handleSelectedPageChange.bind(this);
+        this.handleSearchChange = this.handleSearchChange.bind(this);
+        this.handleApiSelect = this.handleApiSelect.bind(this);
+        this.handleRemoveSelectedApi = this.handleRemoveSelectedApi.bind(this);
+        this.handleSelectAll = this.handleSelectAll.bind(this);
+        this.handleDeselectAll = this.handleDeselectAll.bind(this);
+        this.handleToggleSelectAll = this.handleToggleSelectAll.bind(this);
     }
 
-    /**
-     *
-     *
-     * @memberof Sdks
-     */
     componentDidMount() {
         const { applicationId } = this.props.application;
         this.updateSubscriptions(applicationId);
     }
 
-    handleOpenDialog() {
-        this.setState((prevState) => ({ openDialog: !prevState.openDialog, searchText: '' }));
-    }
-
-    handleProceed() {
-        this.props.history.push('/sdk');
-    }
-
-    /**
-     *
-     * Update subscriptions list of Application
-     * @param {*} applicationId application id
-     * @memberof Sdks
-     */
     updateSubscriptions(applicationId) {
         const client = new Subscription();
         const subscriptionLimit = app.subscriptionLimit || 1000;
@@ -270,241 +279,105 @@ class Sdks extends React.Component {
             });
     }
 
-    /**
-     *
-     * Handle subscription deletion of application
-     * @param {*} subscriptionId subscription id
-     * @memberof Subscriptions
-     */
-    handleSubscriptionDelete(subscriptionId) {
-        const { intl } = this.props;
-        const client = new Subscription();
-        const promisedDelete = client.deleteSubscription(subscriptionId);
-
-        promisedDelete
-            .then((response) => {
-                if (response.status === 201) {
-                    console.log(response);
-                    Alert.info(intl.formatMessage({
-                        defaultMessage: 'Subscription Deletion Request Created!',
-                        id: 'Applications.Details.Subscriptions.request.created',
-                    }));
-                    const { applicationId } = this.props.application;
-                    this.updateSubscriptions(applicationId);
-                    return;
-                }
-                if (response.status !== 200) {
-                    console.log(response);
-                    Alert.info(intl.formatMessage({
-                        defaultMessage: 'Something went wrong while deleting the Subscription!',
-                        id: 'Applications.Details.Subscriptions.something.went.wrong',
-                    }));
-                    return;
-                }
-                Alert.info(intl.formatMessage({
-                    defaultMessage: 'Subscription deleted successfully!',
-                    id: 'Applications.Details.Subscriptions.delete.success',
-                }));
-                const { subscriptions } = this.state;
-                for (const endpointIndex in subscriptions) {
-                    if (
-                        Object.prototype.hasOwnProperty.call(subscriptions, endpointIndex)
-                        && subscriptions[endpointIndex].subscriptionId === subscriptionId
-                    ) {
-                        subscriptions.splice(endpointIndex, 1);
-                        break;
-                    }
-                }
-                this.setState({ subscriptions });
-                this.props.getApplication();
-            })
-            .catch((error) => {
-                const { status } = error;
-                if (status === 401) {
-                    this.setState({ isAuthorize: false });
-                }
-                Alert.error(intl.formatMessage({
-                    defaultMessage: 'Error occurred when deleting subscription',
-                    id: 'Applications.Details.Subscriptions.error.while.deleting',
-                }));
-            });
+    handleChangePage(event, newPage) {
+        this.setState({
+            page: newPage,
+        });
     }
 
-    /**
-     *
-     * Handle subscription update of application
-     *
-     * @param {*} apiId API id
-     * @param {*} subscriptionId subscription id
-     * @param {*} throttlingPolicy throttling tier
-     * @param {*} status subscription status
-     * @memberof Subscriptions
-     */
-    handleSubscriptionUpdate(apiId, subscriptionId, currentThrottlingPolicy, status, requestedThrottlingPolicy) {
-        const { intl } = this.props;
-        const { applicationId } = this.props.application;
-        const client = new Subscription();
-        const promisedUpdate = client.updateSubscription(
-            applicationId,
-            apiId,
-            subscriptionId,
-            currentThrottlingPolicy,
-            status,
-            requestedThrottlingPolicy,
-        );
-
-        promisedUpdate
-            .then((response) => {
-                if (response.status !== 200 && response.status !== 201) {
-                    console.log(response);
-                    Alert.info(intl.formatMessage({
-                        defaultMessage: 'Something went wrong while updating the Subscription!',
-                        id: 'Applications.Details.Subscriptions.wrong.with.subscription',
-                    }));
-                    return;
-                }
-                if (response.body.status === 'TIER_UPDATE_PENDING') {
-                    Alert.info(intl.formatMessage({
-                        defaultMessage: 'Your subscription update request has been submitted and is now awaiting '
-                            + 'approval.',
-                        id: 'subscription.tierPending',
-                    }));
-                } else {
-                    Alert.info(intl.formatMessage({
-                        defaultMessage: 'Business Plan updated successfully!',
-                        id: 'Applications.Details.Subscriptions.business.plan.updated',
-                    }));
-                }
-                this.updateSubscriptions(applicationId);
-                this.props.getApplication();
-            })
-            .catch((error) => {
-                const { status: statusInner } = error;
-                if (statusInner === 401) {
-                    this.setState({ isAuthorize: false });
-                }
-                Alert.error(intl.formatMessage({
-                    defaultMessage: 'Error occurred when updating subscription',
-                    id: 'Applications.Details.Subscriptions.error.when.updating',
-                }));
-            });
+    handleSelectedPageChange(event, newPage) {
+        this.setState({
+            selectedPage: newPage,
+        });
     }
 
-    /**
-     * Handle onClick of subscribing to an API
-     * @param {*} applicationId application id
-     * @param {*} apiId api id
-     * @param {*} policy policy
-     * @memberof Subscriptions
-     */
-    handleSubscribe(applicationId, apiId, policy) {
-        const api = new Api();
-        const { intl } = this.props;
-        if (!policy) {
-            Alert.error(intl.formatMessage({
-                id: 'Applications.Details.Subscriptions.select.a.subscription.policy',
-                defaultMessage: 'Select a subscription policy',
-            }));
-            return;
-        }
-
-        const promisedSubscribe = api.subscribe(apiId, applicationId, policy);
-        promisedSubscribe
-            .then((response) => {
-                if (response.status !== 201) {
-                    Alert.error(intl.formatMessage({
-                        id: 'Applications.Details.Subscriptions.error.occurred.during.subscription.not.201',
-                        defaultMessage: 'Error occurred during subscription',
-                    }));
-                } else {
-                    if (response.body.status === 'ON_HOLD') {
-                        Alert.info(intl.formatMessage({
-                            defaultMessage: 'Your subscription request has been submitted and is now awaiting '
-                                + 'approval.',
-                            id: 'subscription.pending',
-                        }));
-                    } else if (response.body.status === 'TIER_UPDATE_PENDING') {
-                        Alert.info(intl.formatMessage({
-                            defaultMessage: 'Your subscription update request has been submitted and is now awaiting '
-                                + 'approval.',
-                            id: 'subscription.tierPending',
-                        }));
-                    } else {
-                        Alert.info(intl.formatMessage({
-                            id: 'Applications.Details.Subscriptions.subscription.successful',
-                            defaultMessage: 'Subscription successful',
-                        }));
-                    }
-                    this.updateSubscriptions(applicationId);
-                    this.props.getApplication();
-                }
-            })
-            .catch((error) => {
-                const { status } = error;
-                if (status === 401) {
-                    this.setState({ isAuthorize: false });
-                }
-                if (status === 403 && error.response.body) {
-                    Alert.error(error.response.body.description);
-                } else {
-                    Alert.error(intl.formatMessage({
-                        id: 'Applications.Details.Subscriptions.error.occurred.during.subscription',
-                        defaultMessage: 'Error occurred during subscription',
-                    }));
-                }
-            });
+    handleSearchChange(event) {
+        this.setState({
+            searchQuery: event.target.value.toLowerCase(),
+            page: 0,
+        });
     }
 
-    handleSearchTextChange() {
-        this.setState({ searchText: this.searchTextTmp });
+    handleLanguageSelect(language) {
+        this.setState({
+            selectedLanguage: language,
+        });
     }
 
-    handleSearchTextTmpChange(event) {
-        this.searchTextTmp = event.target.value;
+    handleApiSelect(selectedSubscription) {
+        this.setState(prevState => ({
+            selectedAPIs: [...prevState.selectedAPIs, selectedSubscription]
+        }));
     }
 
-    handleClearSearch() {
-        this.setState({ searchText: '' });
-        this.searchInputElem.value = '';
+    handleRemoveSelectedApi(apiToRemove) {
+        this.setState(prevState => ({
+            selectedAPIs: prevState.selectedAPIs.filter(
+                api => api.apiId !== apiToRemove.apiId,
+            ),
+        }));
     }
 
-    handleEnterPress(e) {
-        if (e.keyCode === 13) {
-            e.preventDefault();
-            this.handleSearchTextChange();
+    handleSelectAll() {
+        const { subscriptions, selectedAPIs, searchQuery } = this.state;
+        const availableSubscriptions = subscriptions
+            ? subscriptions
+                .filter((subscription) =>
+                    !selectedAPIs.some(selectedApi => selectedApi.apiId === subscription.apiId)
+                )
+                .filter((subscription) =>
+                    subscription.apiInfo?.name.toLowerCase().includes(searchQuery.toLowerCase())
+                )
+            : [];
+        this.setState({
+            selectedAPIs: [...selectedAPIs, ...availableSubscriptions]
+        });
+    }
+
+    handleDeselectAll() {
+        this.setState({
+            selectedAPIs: []
+        });
+    }
+
+    handleToggleSelectAll() {
+        const { selectedAPIs } = this.state;
+        if (selectedAPIs.length > 0) {
+            this.handleDeselectAll();
+        } else {
+            this.handleSelectAll();
         }
     }
 
-    /**
-    * @memberof SubscriptionTableData
-    */
-    handleRequestOpen() {
-        this.setState({ openMenu: true });
-    }
-
-    /**
-     * @memberof SubscriptionTableData
-     */
-    handleRequestClose() {
-        this.setState({ openMenu: false });
-    }
-
-    /**
-     * @inheritdoc
-     * @memberof Subscriptions
-     */
     render() {
-        const { isAuthorize, openDialog, searchText } = this.state;
+        const { isAuthorize, page, rowsPerPage, searchQuery, selectedAPIs, selectedLanguage, selectedPage, selectedRowsPerPage, subscriptions, subscriptionsNotFound,  } = this.state;
+
+        const { applicationId } = this.props.application;
+        const { intl } = this.props;
 
         if (!isAuthorize) {
             window.location = app.context + '/services/configs';
         }
 
-        const {
-            subscriptions, apisNotFound, subscriptionsNotFound, openMenu,
-        } = this.state;
-        const { applicationId } = this.props.application;
-        const { intl } = this.props;
+        const availableSubscriptions = subscriptions
+            ? subscriptions
+                .filter((subscription) => 
+                    !selectedAPIs.some(selectedApi => selectedApi.apiId === subscription.apiId)
+                )
+                .filter((subscription) =>
+                    subscription.apiInfo?.name.toLowerCase().includes(searchQuery)
+                )
+            : [];
+
+        const paginatedAvailableAPIs = availableSubscriptions.slice(
+            page * rowsPerPage, 
+            page * rowsPerPage + rowsPerPage
+        );
+
+        const paginatedSelectedAPIs = selectedAPIs.slice(
+            selectedPage * selectedRowsPerPage,
+            selectedPage * selectedRowsPerPage + selectedRowsPerPage
+        );
 
         if (subscriptions) {
             return (
@@ -517,7 +390,10 @@ class Sdks extends React.Component {
                 >
                     <Box sx={(theme) => ({
                         display: 'flex',
-                        alignItems: 'center',
+                        flexDirection: 'column', 
+                        alignItems: 'flex-start',
+                        paddingLeft: '50px',
+
                         paddingBottom: theme.spacing(2),
                         '& h5': {
                             marginRight: theme.spacing(1),
@@ -531,66 +407,10 @@ class Sdks extends React.Component {
                             }}
                         >
                             <FormattedMessage
-                                id='Applications.Details.Subscriptions.subscription.management'
+                                id='Applications.Details.Sdk.generation'
                                 defaultMessage='SDK Generation'
                             />
                         </Typography>
-                        {/* <Button
-                            color='secondary'
-                            className={classes.buttonElm}
-                            size='small'
-                            onClick={this.handleOpenDialog}
-                        >
-                            <Icon>add_circle_outline</Icon>
-                            <FormattedMessage
-                                id='Applications.Details.Subscriptions.subscription.management.add'
-                                defaultMessage='Choose APIs'
-                            />
-                        </Button> */}
-                        <Button
-                            variant='contained'
-                            color='primary'
-                            style={{ backgroundColor: 'primary' }} // Blue color
-                            onClick={this.handleRequestOpen}
-                        >
-                            Generate SDK
-                        </Button>
-                        <Dialog open={openMenu} transition={Slide}>
-                            <MuiDialogTitle>
-                                <FormattedMessage
-                                    id='Applications.Details.SubscriptionTableData.delete.subscription.confirmation.dialog.title'
-                                    defaultMessage='Confirm'
-                                />
-                            </MuiDialogTitle>
-                            <DialogContent>
-                                <DialogContentText>
-                                    <FormattedMessage
-                                        id='Applications.Details.SubscriptionTableData.delete.subscription.confirmation'
-                                        defaultMessage='Would you like to proceed generating SDKs for the following APIs:'
-                                    />
-                                </DialogContentText>
-                            </DialogContent>
-                            <DialogActions>
-                                <Button dense color='grey' onClick={this.handleRequestClose}>
-                                    <FormattedMessage
-                                        id='Applications.Details.SubscriptionTableData.cancel'
-                                        defaultMessage='Cancel'
-                                    />
-                                </Button>
-                                <Button
-                                    id='proceed-api-sdk-confirm-btn'
-                                    dense
-                                    variant='contained'
-                                    color='primary'
-                                    onClick={this.handleProceed}
-                                >
-                                    <FormattedMessage
-                                        id='Applications.Details.SubscriptionTableData.delete'
-                                        defaultMessage='Proceed'
-                                    />
-                                </Button>
-                            </DialogActions>
-                        </Dialog>
                     </Box>
                     <Grid container sx='tab-grid' spacing={2}>
                         <Grid item xs={12} xl={11}>
@@ -650,184 +470,207 @@ class Sdks extends React.Component {
                                         {subscriptionsNotFound ? (
                                             <ResourceNotFound />
                                         ) : (
-                                            <Table sx={{
-                                                '& td': {
-                                                    padding: '4px 8px',
-                                                },
-                                            }}
-                                            >
-                                                <TableHead>
-                                                    <TableRow>
-                                                        <TableCell sx={{
-                                                            paddingLeft: 0,
-                                                        }}
-                                                        >
-                                                            <FormattedMessage
-                                                                id='Applications.Details.Subscriptions.api.name'
-                                                                defaultMessage='Select API'
-                                                            />
-                                                        </TableCell>
-                                                        <TableCell>
-                                                            <FormattedMessage
-                                                                id='Applications.Details.Subscriptions.action'
-                                                                defaultMessage='Selected API'
-                                                            />
-                                                        </TableCell>
-                                                    </TableRow>
-                                                </TableHead>
-                                                <TableBody>
-                                                    {subscriptions
-                                                                && subscriptions.map((subscription) => {
-                                                                    return (
-                                                                        <SdkTableData
-                                                                            key={subscription.subscriptionId}
-                                                                            subscription={subscription}
-                                                                            handleSubscriptionDelete={
-                                                                                this.handleSubscriptionDelete
-                                                                            }
-                                                                            handleSubscriptionUpdate={
-                                                                                this.handleSubscriptionUpdate
-                                                                            }
-                                                                        />
-                                                                    );
-                                                                })}
-                                                </TableBody>
-                                            </Table>
+
+                                            <Box sx={{
+                                                display: 'flex',
+                                                flexDirection: 'column',
+                                                justifyContent: 'center',
+                                                alignItems: 'center',
+                                                width: '100%',
+                                                paddingLeft: '50px',
+                                            }}>
+                                                <Box sx={styles.stepContainer}>
+                                                    <Box sx={styles.numberCircle}>
+                                                        55
+                                                    </Box>
+                                                    <Box sx={{ 
+                                                    
+                                                    marginBottom: '20px'}} >
+                                                        <Typography variant="h5" component="h2" sx={styles.stepTitle}>
+                                                            Select APIs
+                                                        </Typography>
+                                                        <Typography variant="body1" sx={styles.stepDescription}>
+                                                            Choose the APIs you want to include in your SDK from the table below.
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                                <Box
+                                                    sx={{
+                                                        width: '100%',
+                                                        maxWidth: '1200px',
+                                                        backgroundColor: '#ffffff',
+                                                        boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.1)',
+                                                        borderRadius: '8px',
+                                                        padding: '16px',
+                                                    }}
+                                                >
+                                                    <Grid container spacing={0}>
+                                                        <Grid item xs={6}>
+                                                            <Box sx={{
+                                                                width: '100%',
+                                                                height: 520,
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                borderRight: '1px solid rgba(224, 224, 224, 1)',
+                                                            }}>
+                                                                <Table stickyHeader>
+                                                                    <TableHead>
+                                                                    <TableRow>
+                                                                            <TableCell align="center" style={{ fontSize: '16px', width: '70%' }}>
+                                                                                Available APIs
+                                                                            </TableCell>
+                                                                            <TableCell align="right" colSpan={2} style={{ width: '30%', paddingRight: '16px' }}>
+                                                                                <Button
+                                                                                    variant="contained"
+                                                                                    color="primary"
+                                                                                    onClick={this.handleToggleSelectAll}
+                                                                                    disabled={
+                                                                                        (!paginatedAvailableAPIs || paginatedAvailableAPIs.length === 0) && 
+                                                                                        selectedAPIs.length === 0
+                                                                                    }
+                                                                                    sx={{ 
+                                                                                        height: 32, 
+                                                                                        textTransform: 'none',
+                                                                                        fontSize: '0.875rem'
+                                                                                    }}
+                                                                                >
+                                                                                    {selectedAPIs.length > 0 ? 'Deselect All' : 'Select All'}
+                                                                                </Button>
+                                                                            </TableCell>
+                                                                            </TableRow>
+                                                                        <TableRow>
+                                                                            <TableCell style={{ paddingLeft: '16px' }}>Name</TableCell>
+                                                                            <TableCell>Version</TableCell>  
+                                                                            <TableCell></TableCell>
+                                                                        </TableRow>
+                                                                        <TableRow>
+                                                                            <TableCell colSpan={3} style={{ paddingLeft: '16px' }}>
+                                                                                <SearchContainer>
+                                                                                    <SearchIcon 
+                                                                                        style={{ 
+                                                                                            marginRight: '5px', 
+                                                                                            marginLeft: '0px', 
+                                                                                            color: '#aaa' 
+                                                                                        }} 
+                                                                                    />
+                                                                                    <StyledInputBase
+                                                                                        placeholder="Search by API Name"
+                                                                                        inputProps={{ 'aria-label': 'search' }}
+                                                                                        value={searchQuery}
+                                                                                        onChange={this.handleSearchChange} />
+                                                                                </SearchContainer>
+                                                                            </TableCell>
+                                                                        </TableRow>
+                                                                    </TableHead>
+                                                                </Table>
+                                                                <StyledTableContainer>
+                                                                    <Table>
+                                                                        <TableBody>
+                                                                            {subscriptions && paginatedAvailableAPIs.map((subscription) => (
+                                                                                <SdkTableData
+                                                                                    key={subscription.subscriptionId}
+                                                                                    subscription={subscription}
+                                                                                    onApiSelect={this.handleApiSelect}
+                                                                                    isSelectable={true} />
+                                                                            ))}
+                                                                        </TableBody>
+                                                                    </Table>
+                                                                </StyledTableContainer>
+                                                                <TablePagination
+                                                                    rowsPerPageOptions={[5]}
+                                                                    component="div"
+                                                                    count={subscriptions ? subscriptions.length : 0}
+                                                                    rowsPerPage={rowsPerPage}
+                                                                    page={page}
+                                                                    onPageChange={this.handleChangePage}
+                                                                 />   
+                                                            </Box>
+                                                        </Grid>
+                                                        <Grid item xs={6}>
+                                                            <Box sx={{
+                                                                width: '100%',
+                                                                height: 520,
+                                                                display: 'flex',
+                                                                flexDirection: 'column',
+                                                                borderLeft: '1px solid rgba(224, 224, 224, 1)',
+                                                            }}>
+                                                                <Table stickyHeader>
+                                                                    <TableHead>
+                                                                        <TableRow>
+                                                                            <TableCell colSpan={3} align="center" style={{ fontSize: '16px', height: '32px' }}  >
+                                                                                Selected APIs
+                                                                            </TableCell>
+                                                                        </TableRow>
+                                                                        <TableRow>
+                                                                            <TableCell style={{ paddingLeft: '32px' }}></TableCell>
+                                                                            <TableCell>Name</TableCell>
+                                                                            <TableCell>Version</TableCell>
+                                                                        </TableRow>
+                                                                    </TableHead>
+                                                                </Table>
+                                                                <StyledTableContainer>
+                                                                    <Table>
+                                                                        <TableBody>
+                                                                            {paginatedSelectedAPIs.map((selectedApi) => (
+                                                                                <SdkTableData
+                                                                                    key={selectedApi.apiId}
+                                                                                    subscription={selectedApi}
+                                                                                    onApiRemove={this.handleRemoveSelectedApi}
+                                                                                    isSelectable={false} 
+                                                                                />
+                                                                            ))}
+                                                                        </TableBody>
+                                                                    </Table>
+                                                                </StyledTableContainer>
+                                                                <TablePagination
+                                                                    rowsPerPageOptions={[5]}
+                                                                    component="div"
+                                                                    count={selectedAPIs.length}
+                                                                    rowsPerPage={selectedRowsPerPage}
+                                                                    page={selectedPage}
+                                                                    onPageChange={this.handleSelectedPageChange}
+                                                                />
+                                                            </Box>
+                                                        </Grid>
+                                                    </Grid>
+                                                </Box>                                           
+                                                <Box sx={{ 
+                                                ...styles.stepContainer, 
+                                                marginTop: '80px' 
+                                                }}>
+                                                    <Box sx={styles.numberCircle}>
+                                                        2
+                                                    </Box>
+                                                    <Box sx={{ marginBottom: '20px'}} >
+                                                        <Typography variant="h5" component="h2" sx={styles.stepTitle}>
+                                                            Select Language and Download SDK
+                                                        </Typography>
+                                                        <Typography variant="body1" sx={styles.stepDescription}>
+                                                            Choose your preferred programming language and download your customized SDK.
+                                                        </Typography>
+                                                    </Box>
+                                                </Box>
+                                                <Box sx={{ 
+                                                    display: 'flex',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    width: '100%',
+                                                    border: 'red'
+                                                }}>
+                                                    <SdkLanguages 
+                                                        selectedSubscriptions={selectedAPIs}
+                                                        selectedLanguage={selectedLanguage}
+                                                        applicationId={applicationId}
+                                                        intl={intl}
+                                                        onLanguageSelect={this.handleLanguageSelect}
+                                                    />
+                                                </Box>                                         
+                                         </Box>
                                         )}
                                     </Box>
                                 )}
                         </Grid>
                     </Grid>
-                    <Dialog
-                        onClose={this.handleOpenDialog}
-                        aria-labelledby='simple-dialog-title'
-                        open={openDialog}
-                        maxWidth='lg'
-                        sx={(theme) => ({
-                            '& span, & h5, & label, & input, & td, & li': {
-                                color: theme.palette.getContrastText(theme.palette.background.paper),
-                            },
-                        })}
-                    >
-                        <MuiDialogTitle
-                            disableTypography
-                            sx={(theme) => ({
-                                display: 'flex',
-                                alignItems: 'flex-start',
-                                padding: theme.spacing(1),
-                            })}
-                        >
-                            <Typography variant='h6'>
-                                <FormattedMessage
-                                    id='Applications.Details.Subscriptions.subscription.management.add'
-                                    defaultMessage='Generate SDK'
-                                />
-                            </Typography>
-                            <Box sx={{
-                                flex: 1,
-                            }}
-                            >
-                                <Paper
-                                    component='form'
-                                    sx={(theme) => ({
-                                        padding: '2px 4px',
-                                        display: 'flex',
-                                        alignItems: 'center',
-                                        width: 400,
-                                        height: 50,
-                                        flex: 1,
-                                        marginLeft: theme.spacing(2),
-                                        marginRight: theme.spacing(2),
-                                    })}
-                                >
-                                    {searchText && (
-                                        <HighlightOffIcon
-                                            sx={{
-                                                cursor: 'pointer',
-                                            }}
-                                            onClick={this.handleClearSearch}
-                                        />
-                                    )}
-                                    <InputBase
-                                        sx={(theme) => ({
-                                            marginLeft: theme.spacing(1),
-                                            flex: 1,
-                                        })}
-                                        placeholder={intl.formatMessage({
-                                            defaultMessage: 'Search APIs',
-                                            id: 'Applications.Details.Subscriptions.search',
-                                        })}
-                                        inputProps={{
-                                            'aria-label': intl.formatMessage({
-                                                defaultMessage: 'Search APIs',
-                                                id: 'Applications.Details.Subscriptions.search',
-                                            }),
-                                        }}
-                                        inputRef={(el) => { this.searchInputElem = el; }}
-                                        onChange={this.handleSearchTextTmpChange}
-                                        onKeyDown={this.handleEnterPress}
-                                    />
-                                    <IconButton
-                                        sx={{
-                                            padding: 10,
-                                        }}
-                                        aria-label='search'
-                                        onClick={this.handleSearchTextChange}
-                                        size='large'
-                                    >
-                                        <SearchIcon />
-                                    </IconButton>
-                                </Paper>
-                                <Box sx={(theme) => ({
-                                    height: 30,
-                                    display: 'flex',
-                                    paddingTop: theme.spacing(1),
-                                    paddingRight: 0,
-                                    paddingBottom: 0,
-                                    paddingLeft: theme.spacing(2),
-                                })}
-                                >
-                                    {(searchText && searchText !== '') ? (
-                                        <>
-                                            <Typography variant='caption'>
-                                                <FormattedMessage
-                                                    id='Applications.Details.Subscriptions.filter.msg'
-                                                    defaultMessage='Filtered APIs for '
-                                                />
-                                                {searchText}
-                                            </Typography>
-                                        </>
-                                    ) : (
-                                        <Typography variant='caption'>
-                                            <FormattedMessage
-                                                id='Applications.Details.Subscriptions.filter.msg.all.apis'
-                                                defaultMessage='Displaying all APIs'
-                                            />
-                                        </Typography>
-                                    )}
-                                </Box>
-
-                            </Box>
-
-                            <IconButton
-                                aria-label='close'
-                                className={classes.closeButton}
-                                onClick={this.handleOpenDialog}
-                                size='large'
-                            >
-                                <Icon>cancel</Icon>
-                            </IconButton>
-                        </MuiDialogTitle>
-                        <Box padding={2}>
-                            <APIList
-                                apisNotFound={apisNotFound}
-                                subscriptions={subscriptions}
-                                applicationId={applicationId}
-                                handleSubscribe={(appInner, api, policy) => this.handleSubscribe(appInner, api, policy)}
-                                searchText={searchText}
-                            />
-                        </Box>
-                    </Dialog>
                 </Box>
             );
         } else {

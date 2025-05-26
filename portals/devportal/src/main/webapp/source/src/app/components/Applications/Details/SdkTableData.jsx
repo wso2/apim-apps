@@ -1,4 +1,4 @@
-/* eslint-disable no-nested-ternary */
+/* eslint-disable */
 /*
  * Copyright (c), WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
  *
@@ -15,221 +15,176 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */
+ */ 
+
 import React from 'react';
-import { Link } from 'react-router-dom';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
-import Icon from '@mui/material/Icon';
-import Button from '@mui/material/Button';
-import { ScopeValidation, resourceMethods, resourcePaths } from 'AppComponents/Shared/ScopeValidation';
+import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import Api from 'AppData/api';
-import Subscription from 'AppData/Subscription';
-import { mdiOpenInNew } from '@mdi/js';
-import { Icon as MDIcon } from '@mdi/react';
-import Invoice from './Invoice';
+import ArrowForwardIosRoundedIcon from '@mui/icons-material/ArrowForwardIosRounded';
+import ArrowBackIosRoundedIcon from '@mui/icons-material/ArrowBackIosRounded';
+import IconButton from '@mui/material/IconButton';
 
-/**
- *
- *
- * @class SubscriptionTableData
- * @extends {React.Component}
- */
 class SdkTableData extends React.Component {
-    /**
-     *Creates an instance of SubscriptionTableData.
-     * @param {*} props properties
-     * @memberof SubscriptionTableData
-     */
     constructor(props) {
         super(props);
         this.state = {
-            isMonetizedAPI: false,
-            isDynamicUsagePolicy: false,
             tiers: [],
-            isLinkVisible: false,
-            isLinkHidden: false,
         };
-        this.checkIfDynamicUsagePolicy = this.checkIfDynamicUsagePolicy.bind(this);
-        this.checkIfMonetizedAPI = this.checkIfMonetizedAPI.bind(this);
         this.populateSubscriptionTiers = this.populateSubscriptionTiers.bind(this);
-        this.toggleLinkVisibility = this.toggleLinkVisibility.bind(this);
-        this.handleDelete = this.handleDelete.bind(this);
+        this.handleMoveToSelected = this.handleMoveToSelected.bind(this);
+        this.handleRemoveFromSelected = this.handleRemoveFromSelected.bind(this);
+        
+        this.searchTextTmp = '';
     }
 
     componentDidMount() {
-        this.checkIfMonetizedAPI(this.props.subscription.apiId);
-        this.checkIfDynamicUsagePolicy(this.props.subscription.subscriptionId);
         this.populateSubscriptionTiers(this.props.subscription.apiId);
     }
 
-    // toggleLinkVisibility() {
-    //     this.setState((prevState) => ({
-    //         isLinkVisible: !prevState.isLinkVisible,
-    //         isLinkHidden: false,
-    //     }));
-    // }
-
-    toggleLinkVisibility() {
-        this.setState({
-            isLinkVisible: true,
-            isLinkHidden: false,
-        });
+    handleMoveToSelected() {
+        const {
+            subscription,
+            onApiSelect
+        } = this.props;
+            if (onApiSelect && typeof onApiSelect === 'function') {
+            onApiSelect(subscription);
+        }
     }
 
-    handleDelete() {
-        this.setState({
-            isLinkHidden: true,
-        });
+    handleRemoveFromSelected() {
+        const {
+            subscription,
+            onApiRemove
+        } = this.props;
+            if (onApiRemove && typeof onApiRemove === 'function') {
+            onApiRemove(subscription);
+        }
     }
 
-    // handleDelete() {
-    //     this.setState((prevState) => ({
-    //         isLinkHidden: !prevState.isLinkHidden,
-    //     }));
-    // }
-
-    /**
-     * Getting the policies from api details
-     *
-     */
     populateSubscriptionTiers(apiUUID) {
         const apiClient = new Api();
         const promisedApi = apiClient.getAPIById(apiUUID);
         promisedApi.then((response) => {
-            if (response && response.data) {
-                const api = JSON.parse(response.data);
-                const apiTiers = api.tiers;
-                const tiers = [];
-                for (let i = 0; i < apiTiers.length; i++) {
-                    const { tierName } = apiTiers[i];
-                    tiers.push({ value: tierName, label: tierName });
-                }
-                this.setState({ tiers });
+        if (response && response.data) {
+            const api = JSON.parse(response.data);
+            const apiTiers = api.tiers;
+            const tiers = [];
+            for (let i = 0; i < apiTiers.length; i++) {
+                const { tierName } = apiTiers[i];
+                tiers.push({ value: tierName, label: tierName });
             }
+            this.setState({ tiers });
+        }
         });
     }
 
-    /**
-     * Check if the API is monetized
-     * @param apiUUID API UUID
-     */
-    checkIfMonetizedAPI(apiUUID) {
-        const apiClient = new Api();
-        const promisedApi = apiClient.getAPIById(apiUUID);
-        promisedApi.then((response) => {
-            if (response && response.data) {
-                const apiData = JSON.parse(response.data);
-                this.setState({ isMonetizedAPI: apiData.monetization.enabled });
-            }
-        });
-    }
-
-    /**
-     * Check if the policy is dynamic usage type
-     * @param subscriptionUUID subscription UUID
-     */
-    checkIfDynamicUsagePolicy(subscriptionUUID) {
-        const client = new Subscription();
-        const promisedSubscription = client.getSubscription(subscriptionUUID);
-        promisedSubscription.then((response) => {
-            if (response && response.body) {
-                const subscriptionData = JSON.parse(response.data);
-                if (subscriptionData.throttlingPolicy) {
-                    const apiClient = new Api();
-                    const promisedPolicy = apiClient.getTierByName(subscriptionData.throttlingPolicy, 'subscription');
-                    promisedPolicy.then((policyResponse) => {
-                        const policyData = JSON.parse(policyResponse.data);
-                        if (policyData.monetizationAttributes.billingType
-                            && (policyData.monetizationAttributes.billingType
-                                === 'DYNAMICRATE')) {
-                            this.setState({ isDynamicUsagePolicy: true });
-                        }
-                    });
-                }
-            }
-        });
-    }
-
-    /**
-    * @inheritdoc
-    * @memberof SubscriptionTableData
-    */
     render() {
         const {
             subscription: {
-                apiInfo, status, subscriptionId, apiId,
+              apiInfo, 
+              apiId,
             },
-        } = this.props;
+            isSelectable,
+          } = this.props;
         const {
-            isMonetizedAPI, isDynamicUsagePolicy, tiers, isLinkVisible, isLinkHidden,
+            tiers,
         } = this.state;
-        const link = (
+
+        const isHttpType = apiInfo.type === "HTTP";
+        if (!isHttpType) {
+            return null;
+        }
+
+        const apiLink = isHttpType ? (
             <Link
                 to={tiers.length === 0 ? '' : '/apis/' + apiId}
                 style={{ cursor: tiers.length === 0 ? 'default' : '' }}
                 external
             >
-                {apiInfo.name + ' - ' + apiInfo.version + ' '}
-                <MDIcon path={mdiOpenInNew} size='12px' />
+                {apiInfo.name}
             </Link>
-        );
-        return (
-            <TableRow hover>
-                <TableCell>
-                    {link}
-                    <Button
-                        id={'delete-api-subscription-' + apiId}
-                        color='grey'
-                        onClick={this.toggleLinkVisibility}
-                        startIcon={<Icon>add</Icon>}
-                        disabled={tiers.length === 0}
-                    />
-                </TableCell>
-                <TableCell>
-                    {isLinkVisible && !isLinkHidden && (
-                        <>
-                            {link}
-                            <ScopeValidation
-                                resourcePath={resourcePaths.SINGLE_SUBSCRIPTION}
-                                resourceMethod={resourceMethods.DELETE}
-                            >
-                                <Button
-                                    id={'delete-api-subscription-' + apiId}
-                                    color='grey'
-                                    onClick={this.handleDelete}
-                                    startIcon={<Icon>delete</Icon>}
-                                    disabled={tiers.length === 0 || status === 'DELETE_PENDING'}
-                                />
-                            </ScopeValidation>
-                        </>
-                    )}
+        ) : null;
 
-                    {isMonetizedAPI && (
-                        <Invoice
-                            tiers={tiers}
-                            subscriptionId={subscriptionId}
-                            isDynamicUsagePolicy={isDynamicUsagePolicy}
-                        />
-                    )}
-                </TableCell>
+        const verLink = isHttpType ? (
+            <Link
+                to={tiers.length === 0 ? '' : '/apis/' + apiId}
+                style={{ cursor: tiers.length === 0 ? 'default' : '' }}
+                external
+            >
+                {apiInfo.version}
+            </Link>
+        ) : null;
+    
+        return (
+            <TableRow>
+                {isSelectable ? (
+                    <>
+                        <TableCell component="th" scope="row">
+                            {apiLink}
+                        </TableCell>
+                        <TableCell component="th" scope="row">
+                            {verLink}
+                        </TableCell>
+                        <TableCell component="th" scope="row">
+                            <IconButton
+                                size="small"
+                                onClick={this.handleMoveToSelected}
+                                sx={{
+                                    color: '#aaa',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                    },
+                                }}
+                            >
+                                <ArrowForwardIosRoundedIcon sx={{ fontSize: 14 }} />
+                            </IconButton>
+                        </TableCell>
+                    </>
+                ):(
+                    <>
+                        <TableCell component="th" scope="row" style={{ paddingLeft: '16px' }}>
+                            <IconButton
+                                size="small"
+                                onClick={this.handleRemoveFromSelected}
+                                sx={{
+                                    color: '#aaa',
+                                    marginLeft: '32px',
+                                    '&:hover': {
+                                        backgroundColor: 'rgba(0, 0, 0, 0.04)',
+                                    },
+                                }}
+                            >
+                                <ArrowBackIosRoundedIcon sx={{ fontSize: 14 }} />
+                            </IconButton>
+                        </TableCell>
+                        <TableCell component="th" scope="row">
+                            {apiLink}
+                        </TableCell>
+                        <TableCell component="th" scope="row">
+                            {verLink}
+                        </TableCell>
+                    </>
+                )}
             </TableRow>
         );
     }
 }
+
 SdkTableData.propTypes = {
     subscription: PropTypes.shape({
         apiInfo: PropTypes.shape({
             name: PropTypes.string.isRequired,
             version: PropTypes.string.isRequired,
             lifeCycleStatus: PropTypes.string.isRequired,
+            type: PropTypes.string,
         }).isRequired,
-        throttlingPolicy: PropTypes.string.isRequired,
         subscriptionId: PropTypes.string.isRequired,
         apiId: PropTypes.string.isRequired,
         status: PropTypes.string.isRequired,
-        requestedThrottlingPolicy: PropTypes.string.isRequired,
     }).isRequired,
 };
+
 export default SdkTableData;
