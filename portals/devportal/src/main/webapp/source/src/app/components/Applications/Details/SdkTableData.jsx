@@ -1,8 +1,7 @@
-/* eslint-disable */
 /*
- * Copyright (c), WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
+ * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -15,7 +14,7 @@
  * KIND, either express or implied. See the License for the
  * specific language governing permissions and limitations
  * under the License.
- */ 
+ */
 
 import React from 'react';
 import TableCell from '@mui/material/TableCell';
@@ -36,7 +35,7 @@ class SdkTableData extends React.Component {
         this.populateSubscriptionTiers = this.populateSubscriptionTiers.bind(this);
         this.handleMoveToSelected = this.handleMoveToSelected.bind(this);
         this.handleRemoveFromSelected = this.handleRemoveFromSelected.bind(this);
-        
+
         this.searchTextTmp = '';
     }
 
@@ -47,9 +46,9 @@ class SdkTableData extends React.Component {
     handleMoveToSelected() {
         const {
             subscription,
-            onApiSelect
+            onApiSelect,
         } = this.props;
-            if (onApiSelect && typeof onApiSelect === 'function') {
+        if (onApiSelect && typeof onApiSelect === 'function') {
             onApiSelect(subscription);
         }
     }
@@ -57,9 +56,9 @@ class SdkTableData extends React.Component {
     handleRemoveFromSelected() {
         const {
             subscription,
-            onApiRemove
+            onApiRemove,
         } = this.props;
-            if (onApiRemove && typeof onApiRemove === 'function') {
+        if (onApiRemove && typeof onApiRemove === 'function') {
             onApiRemove(subscription);
         }
     }
@@ -68,32 +67,32 @@ class SdkTableData extends React.Component {
         const apiClient = new Api();
         const promisedApi = apiClient.getAPIById(apiUUID);
         promisedApi.then((response) => {
-        if (response && response.data) {
-            const api = JSON.parse(response.data);
-            const apiTiers = api.tiers;
-            const tiers = [];
-            for (let i = 0; i < apiTiers.length; i++) {
-                const { tierName } = apiTiers[i];
-                tiers.push({ value: tierName, label: tierName });
+            if (response && response.data) {
+                const api = JSON.parse(response.data);
+                const apiTiers = api.tiers;
+                const tiers = [];
+                for (let i = 0; i < apiTiers.length; i++) {
+                    const { tierName } = apiTiers[i];
+                    tiers.push({ value: tierName, label: tierName });
+                }
+                this.setState({ tiers });
             }
-            this.setState({ tiers });
-        }
         });
     }
 
     render() {
         const {
             subscription: {
-              apiInfo, 
-              apiId,
+                apiInfo,
+                apiId,
             },
             isSelectable,
-          } = this.props;
+        } = this.props;
         const {
             tiers,
         } = this.state;
 
-        const isHttpType = apiInfo.type === "HTTP";
+        const isHttpType = apiInfo.type === 'HTTP';
         if (!isHttpType) {
             return null;
         }
@@ -117,20 +116,20 @@ class SdkTableData extends React.Component {
                 {apiInfo.version}
             </Link>
         ) : null;
-    
+
         return (
             <TableRow>
                 {isSelectable ? (
                     <>
-                        <TableCell component="th" scope="row">
+                        <TableCell component='th' scope='row'>
                             {apiLink}
                         </TableCell>
-                        <TableCell component="th" scope="row">
+                        <TableCell component='th' scope='row'>
                             {verLink}
                         </TableCell>
-                        <TableCell component="th" scope="row">
+                        <TableCell component='th' scope='row'>
                             <IconButton
-                                size="small"
+                                size='small'
                                 onClick={this.handleMoveToSelected}
                                 sx={{
                                     color: '#aaa',
@@ -143,11 +142,11 @@ class SdkTableData extends React.Component {
                             </IconButton>
                         </TableCell>
                     </>
-                ):(
+                ) : (
                     <>
-                        <TableCell component="th" scope="row" style={{ paddingLeft: '16px' }}>
+                        <TableCell component='th' scope='row' style={{ paddingLeft: '16px' }}>
                             <IconButton
-                                size="small"
+                                size='small'
                                 onClick={this.handleRemoveFromSelected}
                                 sx={{
                                     color: '#aaa',
@@ -160,10 +159,10 @@ class SdkTableData extends React.Component {
                                 <ArrowBackIosRoundedIcon sx={{ fontSize: 14 }} />
                             </IconButton>
                         </TableCell>
-                        <TableCell component="th" scope="row">
+                        <TableCell component='th' scope='row'>
                             {apiLink}
                         </TableCell>
-                        <TableCell component="th" scope="row">
+                        <TableCell component='th' scope='row'>
                             {verLink}
                         </TableCell>
                     </>

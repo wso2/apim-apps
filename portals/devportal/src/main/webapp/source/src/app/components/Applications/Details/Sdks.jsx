@@ -1,8 +1,7 @@
-/* eslint-disable */
 /*
- * Copyright (c) 2019, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
+ * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -305,15 +304,15 @@ class Sdks extends React.Component {
     }
 
     handleApiSelect(selectedSubscription) {
-        this.setState(prevState => ({
-            selectedAPIs: [...prevState.selectedAPIs, selectedSubscription]
+        this.setState((prevState) => ({
+            selectedAPIs: [...prevState.selectedAPIs, selectedSubscription],
         }));
     }
 
     handleRemoveSelectedApi(apiToRemove) {
-        this.setState(prevState => ({
+        this.setState((prevState) => ({
             selectedAPIs: prevState.selectedAPIs.filter(
-                api => api.apiId !== apiToRemove.apiId,
+                (api) => api.apiId !== apiToRemove.apiId,
             ),
         }));
     }
@@ -322,21 +321,22 @@ class Sdks extends React.Component {
         const { subscriptions, selectedAPIs, searchQuery } = this.state;
         const availableSubscriptions = subscriptions
             ? subscriptions
-                .filter((subscription) =>
-                    !selectedAPIs.some(selectedApi => selectedApi.apiId === subscription.apiId)
-                )
-                .filter((subscription) =>
-                    subscription.apiInfo?.name.toLowerCase().includes(searchQuery.toLowerCase())
-                )
+                .filter((subscription) => {
+                    return !selectedAPIs.some((selectedApi) => selectedApi.apiId === subscription.apiId);
+                })
+
+                .filter((subscription) => {
+                    return subscription.apiInfo?.name.toLowerCase().includes(searchQuery.toLowerCase());
+                })
             : [];
         this.setState({
-            selectedAPIs: [...selectedAPIs, ...availableSubscriptions]
+            selectedAPIs: [...selectedAPIs, ...availableSubscriptions],
         });
     }
 
     handleDeselectAll() {
         this.setState({
-            selectedAPIs: []
+            selectedAPIs: [],
         });
     }
 
@@ -350,7 +350,18 @@ class Sdks extends React.Component {
     }
 
     render() {
-        const { isAuthorize, page, rowsPerPage, searchQuery, selectedAPIs, selectedLanguage, selectedPage, selectedRowsPerPage, subscriptions, subscriptionsNotFound,  } = this.state;
+        const {
+            isAuthorize,
+            page,
+            rowsPerPage,
+            searchQuery,
+            selectedAPIs,
+            selectedLanguage,
+            selectedPage,
+            selectedRowsPerPage,
+            subscriptions,
+            subscriptionsNotFound,
+        } = this.state;
 
         const { applicationId } = this.props.application;
         const { intl } = this.props;
@@ -361,22 +372,22 @@ class Sdks extends React.Component {
 
         const availableSubscriptions = subscriptions
             ? subscriptions
-                .filter((subscription) => 
-                    !selectedAPIs.some(selectedApi => selectedApi.apiId === subscription.apiId)
-                )
-                .filter((subscription) =>
-                    subscription.apiInfo?.name.toLowerCase().includes(searchQuery)
-                )
+                .filter((subscription) => {
+                    return !selectedAPIs.some((selectedApi) => selectedApi.apiId === subscription.apiId);
+                })
+                .filter((subscription) => {
+                    return subscription.apiInfo?.name.toLowerCase().includes(searchQuery);
+                })
             : [];
 
         const paginatedAvailableAPIs = availableSubscriptions.slice(
-            page * rowsPerPage, 
-            page * rowsPerPage + rowsPerPage
+            page * rowsPerPage,
+            page * rowsPerPage + rowsPerPage,
         );
 
         const paginatedSelectedAPIs = selectedAPIs.slice(
             selectedPage * selectedRowsPerPage,
-            selectedPage * selectedRowsPerPage + selectedRowsPerPage
+            selectedPage * selectedRowsPerPage + selectedRowsPerPage,
         );
 
         if (subscriptions) {
@@ -390,7 +401,7 @@ class Sdks extends React.Component {
                 >
                     <Box sx={(theme) => ({
                         display: 'flex',
-                        flexDirection: 'column', 
+                        flexDirection: 'column',
                         alignItems: 'flex-start',
                         paddingLeft: '50px',
 
@@ -471,25 +482,29 @@ class Sdks extends React.Component {
                                             <ResourceNotFound />
                                         ) : (
 
-                                            <Box sx={{
-                                                display: 'flex',
-                                                flexDirection: 'column',
-                                                justifyContent: 'center',
-                                                alignItems: 'center',
-                                                width: '100%',
-                                                paddingLeft: '50px',
-                                            }}>
+                                            <Box
+                                                sx={{
+                                                    display: 'flex',
+                                                    flexDirection: 'column',
+                                                    justifyContent: 'center',
+                                                    alignItems: 'center',
+                                                    width: '100%',
+                                                    paddingLeft: '50px',
+                                                }}
+                                            >
                                                 <Box sx={styles.stepContainer}>
                                                     <Box sx={styles.numberCircle}>
-                                                        55
+                                                        1
                                                     </Box>
-                                                    <Box sx={{ 
-                                                    
-                                                    marginBottom: '20px'}} >
-                                                        <Typography variant="h5" component="h2" sx={styles.stepTitle}>
+                                                    <Box
+                                                        sx={{
+                                                            marginBottom: '20px',
+                                                        }}
+                                                    >
+                                                        <Typography variant='h5' component='h2' sx={styles.stepTitle}>
                                                             Select APIs
                                                         </Typography>
-                                                        <Typography variant="body1" sx={styles.stepDescription}>
+                                                        <Typography variant='body1' sx={styles.stepDescription}>
                                                             Choose the APIs you want to include in your SDK from the table below.
                                                         </Typography>
                                                     </Box>
@@ -506,58 +521,69 @@ class Sdks extends React.Component {
                                                 >
                                                     <Grid container spacing={0}>
                                                         <Grid item xs={6}>
-                                                            <Box sx={{
-                                                                width: '100%',
-                                                                height: 520,
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                borderRight: '1px solid rgba(224, 224, 224, 1)',
-                                                            }}>
+                                                            <Box
+                                                                sx={{
+                                                                    width: '100%',
+                                                                    height: 520,
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    borderRight: '1px solid rgba(224, 224, 224, 1)',
+                                                                }}
+                                                            >
                                                                 <Table stickyHeader>
                                                                     <TableHead>
-                                                                    <TableRow>
-                                                                            <TableCell align="center" style={{ fontSize: '16px', width: '70%' }}>
+                                                                        <TableRow>
+                                                                            <TableCell
+                                                                                align='center'
+                                                                                style={{ fontSize: '16px', width: '70%' }}
+                                                                            >
                                                                                 Available APIs
                                                                             </TableCell>
-                                                                            <TableCell align="right" colSpan={2} style={{ width: '30%', paddingRight: '16px' }}>
+                                                                            <TableCell
+                                                                                align='right'
+                                                                                colSpan={2}
+                                                                                style={{ width: '30%', paddingRight: '16px' }}
+                                                                            >
                                                                                 <Button
-                                                                                    variant="contained"
-                                                                                    color="primary"
+                                                                                    variant='contained'
+                                                                                    color='primary'
                                                                                     onClick={this.handleToggleSelectAll}
                                                                                     disabled={
-                                                                                        (!paginatedAvailableAPIs || paginatedAvailableAPIs.length === 0) && 
-                                                                                        selectedAPIs.length === 0
+                                                                                        (!paginatedAvailableAPIs
+                                                                                            || paginatedAvailableAPIs.length === 0)
+                                                                                        && selectedAPIs.length === 0
                                                                                     }
-                                                                                    sx={{ 
-                                                                                        height: 32, 
+                                                                                    sx={{
+                                                                                        height: 32,
                                                                                         textTransform: 'none',
-                                                                                        fontSize: '0.875rem'
+                                                                                        fontSize: '0.875rem',
                                                                                     }}
                                                                                 >
-                                                                                    {selectedAPIs.length > 0 ? 'Deselect All' : 'Select All'}
+                                                                                    {selectedAPIs.length > 0 ? 'Remove All' : 'Add All'}
                                                                                 </Button>
                                                                             </TableCell>
-                                                                            </TableRow>
+                                                                        </TableRow>
                                                                         <TableRow>
                                                                             <TableCell style={{ paddingLeft: '16px' }}>Name</TableCell>
-                                                                            <TableCell>Version</TableCell>  
-                                                                            <TableCell></TableCell>
+                                                                            <TableCell>Version</TableCell>
+                                                                            <TableCell />
                                                                         </TableRow>
                                                                         <TableRow>
                                                                             <TableCell colSpan={3} style={{ paddingLeft: '16px' }}>
                                                                                 <SearchContainer>
-                                                                                    <SearchIcon 
-                                                                                        style={{ 
-                                                                                            marginRight: '5px', 
-                                                                                            marginLeft: '0px', 
-                                                                                            color: '#aaa' 
-                                                                                        }} 
+                                                                                    <SearchIcon
+                                                                                        style={{
+                                                                                            marginRight: '5px',
+                                                                                            marginLeft: '0px',
+                                                                                            color: '#aaa',
+                                                                                        }}
                                                                                     />
                                                                                     <StyledInputBase
-                                                                                        placeholder="Search by API Name"
+                                                                                        placeholder='Search by API Name'
                                                                                         inputProps={{ 'aria-label': 'search' }}
                                                                                         value={searchQuery}
-                                                                                        onChange={this.handleSearchChange} />
+                                                                                        onChange={this.handleSearchChange}
+                                                                                    />
                                                                                 </SearchContainer>
                                                                             </TableCell>
                                                                         </TableRow>
@@ -571,38 +597,45 @@ class Sdks extends React.Component {
                                                                                     key={subscription.subscriptionId}
                                                                                     subscription={subscription}
                                                                                     onApiSelect={this.handleApiSelect}
-                                                                                    isSelectable={true} />
+                                                                                    isSelectable
+                                                                                />
                                                                             ))}
                                                                         </TableBody>
                                                                     </Table>
                                                                 </StyledTableContainer>
                                                                 <TablePagination
                                                                     rowsPerPageOptions={[5]}
-                                                                    component="div"
+                                                                    component='div'
                                                                     count={subscriptions ? subscriptions.length : 0}
                                                                     rowsPerPage={rowsPerPage}
                                                                     page={page}
                                                                     onPageChange={this.handleChangePage}
-                                                                 />   
+                                                                />
                                                             </Box>
                                                         </Grid>
                                                         <Grid item xs={6}>
-                                                            <Box sx={{
-                                                                width: '100%',
-                                                                height: 520,
-                                                                display: 'flex',
-                                                                flexDirection: 'column',
-                                                                borderLeft: '1px solid rgba(224, 224, 224, 1)',
-                                                            }}>
+                                                            <Box
+                                                                sx={{
+                                                                    width: '100%',
+                                                                    height: 520,
+                                                                    display: 'flex',
+                                                                    flexDirection: 'column',
+                                                                    borderLeft: '1px solid rgba(224, 224, 224, 1)',
+                                                                }}
+                                                            >
                                                                 <Table stickyHeader>
                                                                     <TableHead>
                                                                         <TableRow>
-                                                                            <TableCell colSpan={3} align="center" style={{ fontSize: '16px', height: '32px' }}  >
+                                                                            <TableCell
+                                                                                colSpan={3}
+                                                                                align='center'
+                                                                                style={{ fontSize: '16px', height: '32px' }}
+                                                                            >
                                                                                 Selected APIs
                                                                             </TableCell>
                                                                         </TableRow>
                                                                         <TableRow>
-                                                                            <TableCell style={{ paddingLeft: '32px' }}></TableCell>
+                                                                            <TableCell style={{ paddingLeft: '32px' }} />
                                                                             <TableCell>Name</TableCell>
                                                                             <TableCell>Version</TableCell>
                                                                         </TableRow>
@@ -616,7 +649,7 @@ class Sdks extends React.Component {
                                                                                     key={selectedApi.apiId}
                                                                                     subscription={selectedApi}
                                                                                     onApiRemove={this.handleRemoveSelectedApi}
-                                                                                    isSelectable={false} 
+                                                                                    isSelectable={false}
                                                                                 />
                                                                             ))}
                                                                         </TableBody>
@@ -624,7 +657,7 @@ class Sdks extends React.Component {
                                                                 </StyledTableContainer>
                                                                 <TablePagination
                                                                     rowsPerPageOptions={[5]}
-                                                                    component="div"
+                                                                    component='div'
                                                                     count={selectedAPIs.length}
                                                                     rowsPerPage={selectedRowsPerPage}
                                                                     page={selectedPage}
@@ -633,39 +666,43 @@ class Sdks extends React.Component {
                                                             </Box>
                                                         </Grid>
                                                     </Grid>
-                                                </Box>                                           
-                                                <Box sx={{ 
-                                                ...styles.stepContainer, 
-                                                marginTop: '80px' 
-                                                }}>
+                                                </Box>
+                                                <Box
+                                                    sx={{
+                                                        ...styles.stepContainer,
+                                                        marginTop: '80px',
+                                                    }}
+                                                >
                                                     <Box sx={styles.numberCircle}>
                                                         2
                                                     </Box>
-                                                    <Box sx={{ marginBottom: '20px'}} >
-                                                        <Typography variant="h5" component="h2" sx={styles.stepTitle}>
+                                                    <Box sx={{ marginBottom: '20px' }}>
+                                                        <Typography variant='h5' component='h2' sx={styles.stepTitle}>
                                                             Select Language and Download SDK
                                                         </Typography>
-                                                        <Typography variant="body1" sx={styles.stepDescription}>
+                                                        <Typography variant='body1' sx={styles.stepDescription}>
                                                             Choose your preferred programming language and download your customized SDK.
                                                         </Typography>
                                                     </Box>
                                                 </Box>
-                                                <Box sx={{ 
-                                                    display: 'flex',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                    width: '100%',
-                                                    border: 'red'
-                                                }}>
-                                                    <SdkLanguages 
+                                                <Box
+                                                    sx={{
+                                                        display: 'flex',
+                                                        justifyContent: 'center',
+                                                        alignItems: 'center',
+                                                        width: '100%',
+                                                        border: 'red',
+                                                    }}
+                                                >
+                                                    <SdkLanguages
                                                         selectedSubscriptions={selectedAPIs}
                                                         selectedLanguage={selectedLanguage}
                                                         applicationId={applicationId}
                                                         intl={intl}
                                                         onLanguageSelect={this.handleLanguageSelect}
                                                     />
-                                                </Box>                                         
-                                         </Box>
+                                                </Box>
+                                            </Box>
                                         )}
                                     </Box>
                                 )}
