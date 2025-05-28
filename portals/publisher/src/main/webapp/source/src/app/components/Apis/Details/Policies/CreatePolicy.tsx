@@ -166,6 +166,7 @@ const CreatePolicy: React.FC<CreatePolicyProps> = ({
                                 setCcPolicyDefinitionFile={setCcPolicyDefinitionFile}
                                 onCancel={handleDialogClose}
                                 saving={saving}
+                                apiType={api.type}
                             />
                         </DialogContentText>
                     </Box>
