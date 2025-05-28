@@ -240,9 +240,9 @@ class SdkLanguages extends React.Component {
 
         const { useCase } = this.state;
 
-        this.setState((prevState) => ({
-            selectedLanguage: prevState.selectedLanguage === language ? null : language,
-        }), () => {
+        this.setState({
+            selectedLanguage: language,
+        }, () => {
             if (this.state.selectedLanguage) {
                 const validationErrors = [];
                 if (!selectedSubscriptions || selectedSubscriptions.length === 0) {
@@ -606,6 +606,7 @@ class SdkLanguages extends React.Component {
                             color='primary'
                             variant='contained'
                             startIcon={<DownloadIcon />}
+                            disabled={!this.state.useCase || this.state.useCase.trim() === ''}
                         >
                             {intl.formatMessage({
                                 id: 'Apis.Details.CodeWizard.download.button',
