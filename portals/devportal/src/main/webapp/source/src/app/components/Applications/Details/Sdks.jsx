@@ -372,6 +372,7 @@ class Sdks extends React.Component {
 
         const availableSubscriptions = subscriptions
             ? subscriptions
+                .filter((subscription) => subscription.apiInfo?.type === 'HTTP')
                 .filter((subscription) => {
                     return !selectedAPIs.some((selectedApi) => selectedApi.apiId === subscription.apiId);
                 })
@@ -385,7 +386,9 @@ class Sdks extends React.Component {
             page * rowsPerPage + rowsPerPage,
         );
 
-        const paginatedSelectedAPIs = selectedAPIs.slice(
+        const httpSelectedAPIs = selectedAPIs.filter((api) => api.apiInfo?.type === 'HTTP');
+
+        const paginatedSelectedAPIs = httpSelectedAPIs.slice(
             selectedPage * selectedRowsPerPage,
             selectedPage * selectedRowsPerPage + selectedRowsPerPage,
         );
@@ -606,7 +609,7 @@ class Sdks extends React.Component {
                                                                 <TablePagination
                                                                     rowsPerPageOptions={[5]}
                                                                     component='div'
-                                                                    count={subscriptions ? subscriptions.length : 0}
+                                                                    count={availableSubscriptions.length}
                                                                     rowsPerPage={rowsPerPage}
                                                                     page={page}
                                                                     onPageChange={this.handleChangePage}
@@ -658,7 +661,7 @@ class Sdks extends React.Component {
                                                                 <TablePagination
                                                                     rowsPerPageOptions={[5]}
                                                                     component='div'
-                                                                    count={selectedAPIs.length}
+                                                                    count={httpSelectedAPIs.length}
                                                                     rowsPerPage={selectedRowsPerPage}
                                                                     page={selectedPage}
                                                                     onPageChange={this.handleSelectedPageChange}
