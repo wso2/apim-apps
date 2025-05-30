@@ -48,6 +48,7 @@ const StyledPaper = styled(Paper)(() => ({
 interface PolicyViewFormProps {
     policySpec: PolicySpec;
     onDone: () => void;
+    isLocalToAPI: boolean;
 }
 
 /**
@@ -55,7 +56,7 @@ interface PolicyViewFormProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Right drawer for policy configuration.
  */
-const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
+const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone, isLocalToAPI }) => {
 
 
     const getPolicyAttributes = () => {
@@ -77,6 +78,7 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone }) => {
                 applicableFlows={policySpec.applicableFlows}
                 supportedApiTypes={policySpec.supportedApiTypes}
                 isViewMode
+                isLocalToAPI={isLocalToAPI}
             />
             <Divider />
             {/* Gateway specific details of policy */}

@@ -132,6 +132,7 @@ const ViewPolicy: React.FC = () => {
                             <PolicyViewForm
                                 policySpec={policySpec}
                                 onDone={redirectToPolicies}
+                                isLocalToAPI={false}
                             />
                         </Paper>
                     </Grid>

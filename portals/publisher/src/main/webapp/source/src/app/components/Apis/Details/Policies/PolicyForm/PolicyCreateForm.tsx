@@ -164,6 +164,7 @@ interface PolicyCreateFormProps {
     setCcPolicyDefinitionFile: React.Dispatch<React.SetStateAction<any[]>>;
     onCancel: () => void;
     saving: boolean;
+    apiType?: string;
 }
 
 /**
@@ -179,6 +180,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
     setCcPolicyDefinitionFile,
     onCancel,
     saving,
+    apiType,
 }) => {
 
     const initialState: NewPolicyState = {
@@ -186,7 +188,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
         version: null,
         description: '',
         applicableFlows: ['request', 'response', 'fault'],
-        supportedApiTypes: ['HTTP'],
+        supportedApiTypes: apiType ? [apiType] : ['HTTP'],
         supportedGateways: ['Synapse'],
         policyAttributes: [],
     };
@@ -297,6 +299,7 @@ const PolicyCreateForm: FC<PolicyCreateFormProps> = ({
                 supportedApiTypes={state.supportedApiTypes}
                 dispatch={dispatch}
                 isViewMode={false}
+                isLocalToAPI={apiType ? true : false}
             />
             <Divider />
             {/* Gateway specific details of policy */}
