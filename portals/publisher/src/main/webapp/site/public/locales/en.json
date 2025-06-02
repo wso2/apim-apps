@@ -896,6 +896,7 @@
   "Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.input.parameter.value": "Parameter Value",
   "Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.label.parameter.name": "Parameter Name",
   "Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.label.parameter.value": "Parameter Value",
+  "Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.mark.as.secret": "Mark as Secret",
   "Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.no.clientId.error": "Client ID should not be empty",
   "Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.no.clientSecret.error": "Client Secret should not be empty",
   "Apis.Details.Endpoints.GeneralConfiguration.EndpointSecurity.no.password.error": "Password should not be empty",

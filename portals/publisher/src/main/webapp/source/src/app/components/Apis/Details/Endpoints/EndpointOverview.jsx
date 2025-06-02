@@ -680,18 +680,6 @@ function EndpointOverview(props) {
         });
     };
 
-    /**
-     * Method to handle the endpoint security changes.
-     * @param {string} value The value
-     * @param {string} type The security property that is being modified.
-     * */
-    const handleEndpointSecurityChange = (value, type) => {
-        endpointsDispatcher({
-            action: 'endpointSecurity',
-            value: { ...endpointSecurityInfo, [type]: value },
-        });
-    };
-
     const saveEndpointSecurityConfig = (endpointSecurityObj, enType) => {
         const { type } = endpointSecurityObj;
         let newEndpointSecurityObj = endpointSecurityObj;
@@ -1391,7 +1379,6 @@ function EndpointOverview(props) {
                                     securityInfo={endpointSecurityInfo
                                         && (endpointSecurityInfo.production
                                             ? endpointSecurityInfo.production : endpointSecurityInfo)}
-                                    onChangeEndpointAuth={handleEndpointSecurityChange}
                                     saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                                     closeEndpointSecurityConfig={closeEndpointSecurityConfig}
                                     isProduction
@@ -1402,7 +1389,6 @@ function EndpointOverview(props) {
                                     securityInfo={endpointSecurityInfo
                                         && (endpointSecurityInfo.sandbox
                                             ? endpointSecurityInfo.sandbox : endpointSecurityInfo)}
-                                    onChangeEndpointAuth={handleEndpointSecurityChange}
                                     saveEndpointSecurityConfig={saveEndpointSecurityConfig}
                                     closeEndpointSecurityConfig={closeEndpointSecurityConfig}
                                     endpointSecurityTypes={endpointSecurityTypes}
