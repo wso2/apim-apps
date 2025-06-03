@@ -26,11 +26,16 @@ import {
     FormControlLabel,
     FormControl,
     RadioGroup, Radio,
+    Box,
+    IconButton,
+    Checkbox,
 } from '@mui/material';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Table from '@mui/material/Table';
 import Button from '@mui/material/Button';
 import AddCircle from '@mui/icons-material/AddCircle';
+import Visibility from '@mui/icons-material/Visibility';
+import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import TableHead from '@mui/material/TableHead';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -50,12 +55,13 @@ const PREFIX = 'EndpointSecurity';
 const classes = {
     FormControl: `${PREFIX}-FormControl`,
     radioWrapper: `${PREFIX}-radioWrapper`,
-    addParameter: `${PREFIX}-addParameter`,
     marginRight: `${PREFIX}-marginRight`,
     buttonIcon: `${PREFIX}-buttonIcon`,
     button: `${PREFIX}-button`,
     listItem: `${PREFIX}-listItem`,
-    eye: `${PREFIX}-eye`
+    eye: `${PREFIX}-eye`,
+    verticalAlignTop: `${PREFIX}-verticalAlignTop`,
+    parameterActionCell: `${PREFIX}-parameterActionCell`,
 };
 
 const StyledGrid = styled(Grid)(() => ({
@@ -67,10 +73,6 @@ const StyledGrid = styled(Grid)(() => ({
     [`& .${classes.radioWrapper}`]: {
         display: 'flex',
         flexDirection: 'row',
-    },
-
-    [`& .${classes.addParameter}`]: {
-        marginRight: '16px',
     },
 
     [`& .${classes.marginRight}`]: {
@@ -91,7 +93,18 @@ const StyledGrid = styled(Grid)(() => ({
 
     [`& .${classes.eye}`]: {
         cursor: 'pointer',
-    }
+    },
+
+    [`& .${classes.verticalAlignTop}`]: {
+        verticalAlign: 'top',
+    },
+
+    [`& .${classes.parameterActionCell}`]: {
+        paddingRight: 0,
+        paddingLeft: 0,
+        verticalAlign: 'top',
+        paddingTop: '28px', // Aligns with first row of text fields
+    },
 }));
 
 /**
@@ -103,7 +116,7 @@ function EndpointSecurity(props) {
     const { api } = useContext(APIContext);
     const { settings } = useAppContext();
     const {
-        intl, securityInfo, onChangeEndpointAuth, isProduction, saveEndpointSecurityConfig, closeEndpointSecurityConfig,
+        intl, securityInfo, isProduction, saveEndpointSecurityConfig, closeEndpointSecurityConfig,
         endpointSecurityTypes,
     } = props;
     const [endpointSecurityInfo, setEndpointSecurityInfo] = useState(CONSTS.DEFAULT_ENDPOINT_SECURITY);
@@ -125,6 +138,8 @@ function EndpointSecurity(props) {
     // Implementation of useState variables for parameter name and value
     const [parameterName, setParameterName] = useState(null);
     const [parameterValue, setParameterValue] = useState(null);
+    const [isParameterSecret, setIsParameterSecret] = useState(false);
+    const [showParameterValue, setShowParameterValue] = useState(false);
     const endpointType = isProduction ? 'production' : 'sandbox';
 
     const authTypes = () => {
@@ -247,6 +262,13 @@ function EndpointSecurity(props) {
      */
     const toggleAddParameter = () => {
         setShowAddParameter(!showAddParameter);
+        // Clear parameter values when cancelling
+        if (showAddParameter) {
+            setParameterName(null);
+            setParameterValue(null);
+            setIsParameterSecret(false);
+            setShowParameterValue(false);
+        }
     };
 
 
@@ -279,22 +301,40 @@ function EndpointSecurity(props) {
         }
     };
 
+    const getParameterValue = (param) => {
+        if (typeof param === 'object' && param !== null) {
+            return param.value;
+        }
+        return param;
+    };
+
+    const checkIfParameterIsSecret = (param) => {
+        return typeof param === 'object' && param !== null && param.secured === true;
+    };
+
     /**
      * Add new custom parameter
      */
     const handleAddToList = () => {
-        const customParametersCopy = endpointSecurityInfo.customParameters;
+        const customParametersCopy = { ...endpointSecurityInfo.customParameters };
 
         if (customParametersCopy !== null
             && Object.prototype.hasOwnProperty.call(customParametersCopy, parameterName)) {
             Alert.warning('Parameter name: ' + parameterName + ' already exists');
         } else {
-            customParametersCopy[parameterName] = parameterValue;
+            if (isParameterSecret) {
+                customParametersCopy[parameterName] = {
+                    value: parameterValue,
+                    secured: true
+                };
+            } else {
+                customParametersCopy[parameterName] = parameterValue;
+            }
             setParameterName(null);
             setParameterValue(null);
+            setIsParameterSecret(false);
         }
         setEndpointSecurityInfo({ ...endpointSecurityInfo, customParameters: customParametersCopy });
-        onChangeEndpointAuth(endpointSecurityInfo, endpointType);
     };
 
     /**
@@ -302,22 +342,35 @@ function EndpointSecurity(props) {
      * @param {*} oldRow previous name-value pair
      * @param {*} newRow new name-value pair
      */
-    const handleUpdateList = (oldRow, newRow) => {
-        const customParametersCopy = endpointSecurityInfo.customParameters;
+    const handleUpdateList = (oldRow, newRow, isSecret) => {
+        const customParametersCopy = { ...endpointSecurityInfo.customParameters };
         const { oldName, oldValue } = oldRow;
         const { newName, newValue } = newRow;
         if (customParametersCopy !== null
             && Object.prototype.hasOwnProperty.call(customParametersCopy, newName) && oldName === newName) {
             // Only the value is updated
             if (newValue && oldValue !== newValue) {
-                customParametersCopy[oldName] = newValue;
+                if (isSecret) {
+                    customParametersCopy[oldName] = {
+                        value: newValue,
+                        secured: true
+                    };
+                } else {
+                    customParametersCopy[oldName] = newValue;
+                }
             }
         } else {
             delete customParametersCopy[oldName];
-            customParametersCopy[newName] = newValue;
+            if (isSecret) {
+                customParametersCopy[newName] = {
+                    value: newValue,
+                    secured: true
+                };
+            } else {
+                customParametersCopy[newName] = newValue;
+            }
         }
         setEndpointSecurityInfo({ ...endpointSecurityInfo, customParameters: customParametersCopy });
-        onChangeEndpointAuth(endpointSecurityInfo, endpointType);
     };
 
     /**
@@ -325,12 +378,11 @@ function EndpointSecurity(props) {
      * @param {*} oldName name property of the name-value pair to be removed
      */
     const handleDelete = (oldName) => {
-        const customParametersCopy = endpointSecurityInfo.customParameters;
+        const customParametersCopy = { ...endpointSecurityInfo.customParameters };
         if (customParametersCopy !== null && Object.prototype.hasOwnProperty.call(customParametersCopy, oldName)) {
             delete customParametersCopy[oldName];
         }
         setEndpointSecurityInfo({ ...endpointSecurityInfo, customParameters: customParametersCopy });
-        onChangeEndpointAuth(endpointSecurityInfo, endpointType);
     };
 
     /**
@@ -351,9 +403,11 @@ function EndpointSecurity(props) {
         const items = [];
         for (const name in endpointSecurityInfo.customParameters) {
             if (Object.prototype.hasOwnProperty.call(endpointSecurityInfo.customParameters, name)) {
+                const param = endpointSecurityInfo.customParameters[name];
                 items.push(<EditableParameterRow
                     oldName={name}
-                    oldValue={endpointSecurityInfo.customParameters[name]}
+                    oldValue={getParameterValue(param)}
+                    isSecret={checkIfParameterIsSecret(param)}
                     handleUpdateList={handleUpdateList}
                     handleDelete={handleDelete}
                     customParameters={endpointSecurityInfo.customParameters}
@@ -1047,17 +1101,17 @@ function EndpointSecurity(props) {
             {(endpointSecurityInfo.type === 'OAUTH')
             && (!isEmpty(endpointSecurityInfo.customParameters) || showAddParameter) && (
                 <Grid item xs={12}>
-                    <Table className={classes.table}>
+                    <Table>
                         <TableHead>
                             <TableRow>
-                                <TableCell>
+                                <TableCell width='35%'>
                                     <FormattedMessage
                                         id={'Apis.Details.Endpoints.GeneralConfiguration'
                                             + '.EndpointSecurity.label.parameter.name'}
                                         defaultMessage='Parameter Name'
                                     />
                                 </TableCell>
-                                <TableCell>
+                                <TableCell width='35%'>
                                     <FormattedMessage
                                         id={'Apis.Details.Endpoints.GeneralConfiguration'
                                             + '.EndpointSecurity.label.parameter.value'}
@@ -1072,7 +1126,7 @@ function EndpointSecurity(props) {
                             && (
                                 <>
                                     <TableRow>
-                                        <TableCell>
+                                        <TableCell className={classes.verticalAlignTop}>
                                             <TextField
                                                 fullWidth
                                                 required
@@ -1082,9 +1136,8 @@ function EndpointSecurity(props) {
                                                     + '.EndpointSecurity.input.parameter.name',
                                                     defaultMessage: 'Parameter Name',
                                                 })}
-                                                margin='normal'
+                                                margin='none'
                                                 variant='outlined'
-                                                className={classes.addParameter}
                                                 value={parameterName === null ? '' : parameterName}
                                                 onChange={handleParameterChange('parameterName')}
                                                 onKeyDown={handleKeyDown('parameterName')}
@@ -1097,55 +1150,94 @@ function EndpointSecurity(props) {
                                                 )}
                                             />
                                         </TableCell>
-                                        <TableCell>
-                                            <TextField
-                                                fullWidth
-                                                required
-                                                id='outlined-required'
-                                                label={intl.formatMessage({
-                                                    id: 'Apis.Details.Endpoints.GeneralConfiguration'
-                                                        + '.EndpointSecurity.input.parameter.value',
-                                                    defaultMessage: 'Parameter Value',
-                                                })}
-                                                margin='normal'
-                                                variant='outlined'
-                                                className={classes.addParameter}
-                                                value={parameterValue === null ? '' : parameterValue}
-                                                onChange={handleParameterChange('parameterValue')}
-                                                onKeyDown={handleKeyDown('parameterValue')}
-                                                error={validateEmpty(parameterValue)}
-                                                disabled={isRestricted(
-                                                    ['apim:api_create', 'apim:api_publish'],
-                                                    api,
-                                                )}
-                                            />
+                                        <TableCell className={classes.verticalAlignTop}>
+                                            <Box display='flex' flexDirection='column'>
+                                                <TextField
+                                                    fullWidth
+                                                    required
+                                                    id='outlined-required'
+                                                    label={intl.formatMessage({
+                                                        id: 'Apis.Details.Endpoints.GeneralConfiguration'
+                                                            + '.EndpointSecurity.input.parameter.value',
+                                                        defaultMessage: 'Parameter Value',
+                                                    })}
+                                                    margin='none'
+                                                    variant='outlined'
+                                                    type={isParameterSecret
+                                                        && !showParameterValue ? 'password' : 'text'}
+                                                    value={parameterValue === null ? '' : parameterValue}
+                                                    onChange={handleParameterChange('parameterValue')}
+                                                    onKeyDown={handleKeyDown('parameterValue')}
+                                                    error={validateEmpty(parameterValue)}
+                                                    disabled={isRestricted(
+                                                        ['apim:api_create', 'apim:api_publish'],
+                                                        api,
+                                                    )}
+                                                    InputProps={isParameterSecret ? {
+                                                        endAdornment: (
+                                                            <IconButton
+                                                                aria-label='toggle password visibility'
+                                                                onClick={() =>
+                                                                    setShowParameterValue(!showParameterValue)}
+                                                                edge='end'
+                                                            >
+                                                                {showParameterValue ?
+                                                                    <Visibility /> : <VisibilityOff />}
+                                                            </IconButton>
+                                                        ),
+                                                    } : undefined}
+                                                />
+                                                <FormControlLabel
+                                                    control={(
+                                                        <Checkbox
+                                                            checked={isParameterSecret}
+                                                            onChange={(e) => {
+                                                                const isSecret = e.target.checked;
+                                                                setIsParameterSecret(isSecret);
+                                                                setShowParameterValue(!isSecret);
+                                                            }}
+                                                            disabled={isRestricted(
+                                                                ['apim:api_create', 'apim:api_publish'],
+                                                                api,
+                                                            )}
+                                                            color='primary'
+                                                        />
+                                                    )}
+                                                    label={intl.formatMessage({
+                                                        id: 'Apis.Details.Endpoints.GeneralConfiguration.'
+                                                            + 'EndpointSecurity.mark.as.secret',
+                                                        defaultMessage: 'Mark as Secret',
+                                                    })}
+                                                />
+                                            </Box>
                                         </TableCell>
-                                        <TableCell align='right'>
-                                            <Button
-                                                variant='contained'
-                                                color='primary'
-                                                disabled={
-                                                    !parameterValue
-                                                            || !parameterName
-                                                            || isRestricted(
-                                                                ['apim:api_create', 'apim:api_publish'], api,
-                                                            )
-                                                }
-                                                onClick={handleAddToList}
-                                                className={classes.marginRight}
-                                            >
-                                                <FormattedMessage
-                                                    id='Apis.Details.Properties.Properties.add'
-                                                    defaultMessage='Add'
-                                                />
-                                            </Button>
+                                        <TableCell align='right' className={classes.parameterActionCell}>
+                                            <Box display='flex' style={{ gap: '8px' }} justifyContent='flex-end'>
+                                                <Button
+                                                    variant='contained'
+                                                    color='primary'
+                                                    disabled={
+                                                        !parameterValue
+                                                        || !parameterName
+                                                        || isRestricted(
+                                                            ['apim:api_create', 'apim:api_publish'], api,
+                                                        )
+                                                    }
+                                                    onClick={handleAddToList}
+                                                >
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Properties.Properties.add'
+                                                        defaultMessage='Add'
+                                                    />
+                                                </Button>
 
-                                            <Button onClick={toggleAddParameter}>
-                                                <FormattedMessage
-                                                    id='Apis.Details.Properties.Properties.cancel'
-                                                    defaultMessage='Cancel'
-                                                />
-                                            </Button>
+                                                <Button onClick={toggleAddParameter}>
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Properties.Properties.cancel'
+                                                        defaultMessage='Cancel'
+                                                    />
+                                                </Button>
+                                            </Box>
                                         </TableCell>
                                     </TableRow>
                                 </>
@@ -1188,7 +1280,6 @@ function EndpointSecurity(props) {
 EndpointSecurity.propTypes = {
     intl: PropTypes.shape({}).isRequired,
     securityInfo: PropTypes.shape({}).isRequired,
-    onChangeEndpointAuth: PropTypes.func.isRequired,
 };
 
 export default (injectIntl(EndpointSecurity));

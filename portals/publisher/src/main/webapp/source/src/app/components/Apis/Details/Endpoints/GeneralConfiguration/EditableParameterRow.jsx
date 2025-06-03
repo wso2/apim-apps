@@ -22,6 +22,9 @@ import TextField from '@mui/material/TextField';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EditIcon from '@mui/icons-material/Edit';
 import SaveIcon from '@mui/icons-material/Save';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import CancelIcon from '@mui/icons-material/Cancel';
 import TableCell from '@mui/material/TableCell';
 import TableRow from '@mui/material/TableRow';
 import IconButton from '@mui/material/IconButton';
@@ -29,13 +32,18 @@ import IconButton from '@mui/material/IconButton';
 const PREFIX = 'EditableParameterRow';
 
 const classes = {
-    link: `${PREFIX}-link`
+    link: `${PREFIX}-link`,
+    actionCell: `${PREFIX}-actionCell`,
 };
 
 const StyledTableRow = styled(TableRow)(() => ({
     [`& .${classes.link}`]: {
         cursor: 'pointer',
-    }
+    },
+    [`& .${classes.actionCell}`]: {
+        paddingRight: 0,
+        paddingLeft: 0,
+    },
 }));
 
 /**
@@ -45,13 +53,14 @@ const StyledTableRow = styled(TableRow)(() => ({
  */
 function EditableParameterRow(props) {
     const {
-        oldName, oldValue,
+        oldName, oldValue, isSecret,
         handleUpdateList, handleDelete,
         intl, isRestricted, api,
     } = props;
     const [newName, setName] = useState(oldName);
     const [newValue, setValue] = useState(oldValue);
     const [editMode, setEditMode] = useState(false);
+    const [showValue, setShowValue] = useState(false);
 
     /**
      * Set edit mode
@@ -70,12 +79,39 @@ function EditableParameterRow(props) {
     };
 
     /**
-     * Update value field
+     * Update value field considering masking for secret parameters
      * @param {*} event value entered for the value field
      */
     const handleValueChange = (event) => {
-        const { value } = event.target;
+        let { value } = event.target;
+
+        // Special handling for secret parameters
+        if (isSecret) {
+            if (value === '******') {
+                // User hasn't changed the masked value, keep empty to preserve original
+                value = '';
+            } else if (value.includes('******')) {
+                // User is editing part of the masked value, remove mask
+                value = value.replace('******', '');
+            }
+
+            if (value === '') {
+                // If the value is empty, hide the stars
+                setShowValue(false);
+            }
+        }
+
         setValue(value);
+    };
+
+    /**
+     * Get display value considering masking for secret parameters
+     */
+    const getDisplayValue = () => {
+        if (isSecret) {
+            return oldValue ? oldValue.replace(/./g, '•') : '••••••';
+        }
+        return oldValue;
     };
 
     /**
@@ -86,7 +122,7 @@ function EditableParameterRow(props) {
     const validateEmpty = (itemValue) => {
         if (itemValue === null) {
             return false;
-        } else if (itemValue === '') {
+        } else if (itemValue === '' && !isSecret) {
             return true;
         } else {
             return false;
@@ -98,8 +134,18 @@ function EditableParameterRow(props) {
      */
     const saveRow = () => {
         const oldRow = { oldName, oldValue };
-        const newRow = { newName: newName || oldName, newValue: newValue || oldValue };
-        handleUpdateList(oldRow, newRow);
+        let updatedValue = newValue;
+        
+        // For secret parameters, preserve empty value if masked value wasn't changed
+        if (isSecret && updatedValue === '') {
+            updatedValue = oldValue; // Keep original value if user didn't change masked value
+        }
+
+        const newRow = {
+            newName: newName || oldName,
+            newValue: updatedValue || oldValue,
+        };
+        handleUpdateList(oldRow, newRow, isSecret);
         setEditMode(false);
     };
 
@@ -108,6 +154,16 @@ function EditableParameterRow(props) {
      */
     const deleteRow = () => {
         handleDelete(oldName);
+    };
+
+    /**
+     * Cancel editing and reset values
+     */
+    const cancelEdit = () => {
+        setName(oldName);
+        setValue(oldValue);
+        setEditMode(false);
+        setShowValue(false);
     };
 
     /**
@@ -160,16 +216,33 @@ function EditableParameterRow(props) {
                         margin='normal'
                         variant='outlined'
                         className={classes.addProperty}
-                        value={newValue}
+                        value={newValue === '' && isSecret ? '******' : newValue}
                         onChange={handleValueChange}
                         onKeyDown={handleKeyDown}
                         error={validateEmpty(newValue)}
+                        type={isSecret && !showValue ? 'password' : 'text'}
+                        InputProps={isSecret ? {
+                            endAdornment: (
+                                <IconButton
+                                    onClick={() => {
+                                        // Only allow toggling if value is not masked
+                                        if (newValue !== '' && newValue !== '******') {
+                                            setShowValue(!showValue);
+                                        }
+                                    }}
+                                    edge='end'
+                                    size='small'
+                                >
+                                    {showValue ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                                </IconButton>
+                            ),
+                        } : undefined}
                     />
                 </TableCell>
             ) : (
-                <TableCell>{oldValue}</TableCell>
+                <TableCell>{getDisplayValue()}</TableCell>
             )}
-            <TableCell align='right'>
+            <TableCell align='right' className={classes.actionCell}>
                 {editMode ? (
                     <>
                         <IconButton
@@ -182,29 +255,40 @@ function EditableParameterRow(props) {
                             size='large'>
                             <SaveIcon className={classes.buttonIcon} />
                         </IconButton>
+                        <IconButton
+                            className={classes.link}
+                            aria-label='cancel'
+                            onClick={cancelEdit}
+                            onKeyDown={() => { }}
+                            color='inherit'
+                        >
+                            <CancelIcon className={classes.buttonIcon} />
+                        </IconButton>
                     </>
                 ) : (
-                    <IconButton
-                        className={classes.link}
-                        aria-label='edit'
-                        onClick={updateEditMode}
-                        onKeyDown={() => {}}
-                        color='inherit'
-                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                        size='large'>
-                        <EditIcon className={classes.buttonIcon} />
-                    </IconButton>
+                    <>
+                        <IconButton
+                            className={classes.link}
+                            aria-label='edit'
+                            onClick={updateEditMode}
+                            onKeyDown={() => {}}
+                            color='inherit'
+                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            size='large'>
+                            <EditIcon className={classes.buttonIcon} />
+                        </IconButton>
+                        <IconButton
+                            className={classes.link}
+                            aria-label='remove'
+                            onClick={deleteRow}
+                            onKeyDown={() => {}}
+                            color='inherit'
+                            disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
+                            size='large'>
+                            <DeleteForeverIcon className={classes.buttonIcon} />
+                        </IconButton>
+                    </>
                 )}
-                <IconButton
-                    className={classes.link}
-                    aria-label='remove'
-                    onClick={deleteRow}
-                    onKeyDown={() => {}}
-                    color='inherit'
-                    disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)}
-                    size='large'>
-                    <DeleteForeverIcon className={classes.buttonIcon} />
-                </IconButton>
             </TableCell>
         </StyledTableRow>
     );
@@ -216,6 +300,11 @@ EditableParameterRow.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     handleUpdateList: PropTypes.func.isRequired,
     handleDelete: PropTypes.func.isRequired,
+    isSecret: PropTypes.bool,
+};
+
+EditableParameterRow.defaultProps = {
+    isSecret: false,
 };
 
 export default injectIntl(EditableParameterRow);
