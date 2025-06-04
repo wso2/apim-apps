@@ -914,7 +914,7 @@ class TokenManager extends React.Component {
                                                 />
                                             </Box>
                                         )}
-                                        {(keymanager.enableTokenGeneration && keys.get(selectedTab))
+                                        {(keymanager.enableTokenGeneration && keys.get(selectedTab)) && isUserOwner
                                             && (
                                                 mode !== 'MAPPED'
                                                     ? (
