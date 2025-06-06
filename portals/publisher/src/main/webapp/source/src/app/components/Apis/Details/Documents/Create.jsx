@@ -130,13 +130,10 @@ function Create(props) {
                             history.push(listingPath);
                         })
                         .catch((error) => {
-                            if (process.env.NODE_ENV !== 'production') {
-                                console.log(error);
-                                Alert.error(intl.formatMessage({
-                                    id: 'Apis.Details.Documents.Create.markdown.editor.upload.error',
-                                    defaultMessage: 'Error uploading the file',
-                                }));
-                            }
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.Documents.Create.markdown.editor.upload.error',
+                                defaultMessage: 'Error uploading the file',
+                            }));
                         });
                 } else {
                     Alert.info(`${doc.body.name} ${intl.formatMessage({
@@ -147,13 +144,10 @@ function Create(props) {
                 }
             })
             .catch((error) => {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.log(error);
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Documents.Create.markdown.editor.add.error',
-                        defaultMessage: 'Error adding the document',
-                    }));
-                }
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Documents.Create.markdown.editor.add.error',
+                    defaultMessage: 'Error adding the document',
+                }));
             });
     };
     return (
