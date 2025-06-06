@@ -368,7 +368,7 @@ class SubscriptionTableData extends React.Component {
                             color='grey'
                             onClick={this.handleRequestOpenEditMenu}
                             startIcon={<Icon>edit</Icon>}
-                            disabled={tiers.length === 0}
+                            disabled={tiers.length === 0 || status === 'BLOCKED' || status === 'PROD_ONLY_BLOCKED'}
                         >
                             <FormattedMessage
                                 id='Applications.Details.SubscriptionTableData.edit.text'
