@@ -105,13 +105,10 @@ function Edit(props) {
                             toggleOpen();
                         })
                         .catch((error) => {
-                            if (process.env.NODE_ENV !== 'production') {
-                                console.log(error);
-                                Alert.error(intl.formatMessage({
-                                    id: 'Apis.Details.Documents.Edit.markdown.editor.upload.error.message',
-                                    defaultMessage: 'Error uploading the file.',
-                                }));
-                            }
+                            Alert.error(intl.formatMessage({
+                                id: 'Apis.Details.Documents.Edit.markdown.editor.upload.error.message',
+                                defaultMessage: 'Error uploading the file.',
+                            }));
                         });
                 } else {
                     Alert.info(`${name} ${intl.formatMessage({
@@ -123,13 +120,10 @@ function Edit(props) {
                 }
             })
             .catch((error) => {
-                if (process.env.NODE_ENV !== 'production') {
-                    console.log(error);
-                    Alert.error(intl.formatMessage({
-                        id: 'Apis.Details.Documents.Edit.markdown.editor.update.error.message',
-                        defaultMessage: 'Error adding the document',
-                    }));
-                }
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Documents.Edit.markdown.editor.update.error.message',
+                    defaultMessage: 'Error adding the document',
+                }));
             });
     };
 
