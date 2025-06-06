@@ -331,7 +331,8 @@ function AddEditKeyManager(props) {
                     } else if (result.body.tokenType === 'BOTH') {
                         setEnableExchangeToken(true);
                     }
-                    if (result.body.name === residentKeyManagerName) {
+                    if (result.body.name === residentKeyManagerName && (result.body.type === 'default' || result.body
+                        .type === 'WSO2-IS')) {
                         setIsResidentKeyManager(true);
                     }
                 }
@@ -369,7 +370,7 @@ function AddEditKeyManager(props) {
                         id: 'KeyManagers.AddEditKeyManager.is.empty.error',
                         defaultMessage: ' is empty',
                     })}`;
-                } else if (fieldValue !== '' && /\s/g.test(fieldValue)) {
+                } else if (fieldValue !== '' && fieldValue !== residentKeyManagerName && /\s/g.test(fieldValue)) {
                     error = intl.formatMessage({
                         id: 'KeyManagers.AddEditKeyManager.space.error',
                         defaultMessage: 'Key Manager name contains white spaces.',
