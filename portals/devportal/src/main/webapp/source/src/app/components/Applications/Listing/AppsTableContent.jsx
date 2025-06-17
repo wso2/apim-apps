@@ -98,6 +98,7 @@ class AppsTableContent extends Component {
             APPROVED: 'APPROVED',
             REJECTED: 'REJECTED',
             DELETE_PENDING: 'DELETE_PENDING',
+            UPDATE_PENDING: 'UPDATE_PENDING',
         };
     }
 
@@ -217,6 +218,27 @@ class AppsTableContent extends Component {
                                                 <FormattedMessage
                                                     id='Applications.Listing.AppsTableContent.wait.approval'
                                                     defaultMessage='waiting for approval'
+                                                />
+                                            </Typography>
+                                        </>
+                                    )}
+                                    {app.status === this.APPLICATION_STATES.UPDATE_PENDING && (
+                                        <>
+                                            <Typography
+                                                variant='subtitle1'
+                                                component='label'
+                                                gutterBottom
+                                            >
+                                                <FormattedMessage
+                                                    id='Applications.Listing.AppsTableContent.pending'
+                                                    defaultMessage='UPDATE PENDING'
+                                                />
+
+                                            </Typography>
+                                            <Typography variant='caption' style={{ textIndent: '10px', display: 'inline-block' }}>
+                                                <FormattedMessage
+                                                    id='Applications.Listing.AppsTableContent.wait.update.approval'
+                                                    defaultMessage='waiting for update approval'
                                                 />
                                             </Typography>
                                         </>

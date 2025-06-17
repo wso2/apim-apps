@@ -340,13 +340,22 @@ class ApplicationFormHandler extends React.Component {
             .then(() => this.validateAttributes(applicationRequest.attributes))
             .then(() => api.updateApplication(applicationRequest, null))
             .then((response) => {
-                const appId = response.body.applicationId;
-                history.push(`/applications/${appId}`);
-                Alert.info(intl.formatMessage({
-                    id: 'Applications.ApplicationFormHandler.app.updated.success',
-                    defaultMessage: 'Application updated successfully',
-                }));
-                console.log('Application updated successfully.');
+                if (response.body.status === 'UPDATE_PENDING') {
+                    history.push('/applications');
+                    Alert.info(intl.formatMessage({
+                        id: 'application.update.pending',
+                        defaultMessage: 'A request to update this application has been sent.',
+                    }));
+                    console.log('Application updated request sent successfully.');
+                } else {
+                    const appId = response.body.applicationId;
+                    history.push(`/applications/${appId}`);
+                    Alert.info(intl.formatMessage({
+                        id: 'Applications.ApplicationFormHandler.app.updated.success',
+                        defaultMessage: 'Application updated successfully',
+                    }));
+                    console.log('Application updated successfully.');
+                }
             })
             .catch((error) => {
                 const { response } = error;
