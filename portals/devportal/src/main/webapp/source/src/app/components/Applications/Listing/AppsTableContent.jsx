@@ -159,7 +159,8 @@ class AppsTableContent extends Component {
                                     }}
                                 >
                                     {app.status === this.APPLICATION_STATES.APPROVED
-                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING ? (
+                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING
+                                        || app.status === this.APPLICATION_STATES.UPDATE_PENDING ? (
                                             <Link to={'/applications/' + app.applicationId}>{app.name}</Link>
                                         ) : (
                                             app.name
