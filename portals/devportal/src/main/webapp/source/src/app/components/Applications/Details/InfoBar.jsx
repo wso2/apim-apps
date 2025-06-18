@@ -56,6 +56,9 @@ class InfoBar extends React.Component {
         this.handleAppDelete = this.handleAppDelete.bind(this);
         this.handleDeleteConfimation = this.handleDeleteConfimation.bind(this);
         this.toggleDeleteConfirmation = this.toggleDeleteConfirmation.bind(this);
+        this.APPLICATION_STATES = {
+            UPDATE_PENDING: 'UPDATE_PENDING',
+        };
     }
 
     componentDidMount() {
@@ -159,6 +162,7 @@ class InfoBar extends React.Component {
             return <Loading />;
         }
         const isUserOwner = AuthManager.getUser().name === applicationOwner;
+        const isUpdatePending = application?.status === this.APPLICATION_STATES.UPDATE_PENDING;
 
         return (
             <Box sx={{ width: '100%' }}>
@@ -212,6 +216,11 @@ class InfoBar extends React.Component {
                             >
                                 <Link
                                     to={`/applications/${applicationId}/edit/fromView`}
+                                    onClick={(e) => {
+                                        if (isUpdatePending) {
+                                            e.preventDefault(); // 🔒 prevents navigation
+                                        }
+                                    }}
                                     sx={(theme) => ({
                                         display: 'inline-grid',
                                         cursor: 'pointer',
@@ -222,7 +231,13 @@ class InfoBar extends React.Component {
                                 >
                                     <Button
                                         id='edit-application'
-                                        style={{ padding: '4px', display: 'flex', flexDirection: 'column' }}
+                                        style={{
+                                            padding: '4px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            opacity: isUpdatePending ? 0.5 : 1,
+                                        }}
+                                        disabled={isUpdatePending}
                                         color='grey'
                                         classes={{
                                             label: {
