@@ -218,7 +218,7 @@ class InfoBar extends React.Component {
                                     to={`/applications/${applicationId}/edit/fromView`}
                                     onClick={(e) => {
                                         if (isUpdatePending) {
-                                            e.preventDefault(); // 🔒 prevents navigation
+                                            e.preventDefault();
                                         }
                                     }}
                                     sx={(theme) => ({
