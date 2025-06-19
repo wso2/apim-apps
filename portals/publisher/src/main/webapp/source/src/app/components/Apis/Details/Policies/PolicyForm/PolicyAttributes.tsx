@@ -563,6 +563,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                 <MenuItem value='Integer'>Integer</MenuItem>
                                                                 <MenuItem value='Boolean'>Boolean</MenuItem>
                                                                 <MenuItem value='Enum'>Enum</MenuItem>
+                                                                <MenuItem value='Secret'>Secret</MenuItem>
                                                             </Select>
                                                             <FormHelperText>Attribute Type</FormHelperText>
                                                         </FormControl>
