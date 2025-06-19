@@ -63,6 +63,7 @@ export default function TasksWorkflowCard() {
         const promiseStateChange = restApi.workflowsGet('AM_API_STATE');
         const promiseApiProductStateChange = restApi.workflowsGet('AM_API_PRODUCT_STATE');
         const promiseAppCreation = restApi.workflowsGet('AM_APPLICATION_CREATION');
+        const promiseAppUpdate = restApi.workflowsGet('AM_APPLICATION_UPDATE');
         const promiseAppDeletion = restApi.workflowsGet('AM_APPLICATION_DELETION');
         const promiseSubCreation = restApi.workflowsGet('AM_SUBSCRIPTION_CREATION');
         const promiseSubDeletion = restApi.workflowsGet('AM_SUBSCRIPTION_DELETION');
@@ -70,16 +71,17 @@ export default function TasksWorkflowCard() {
         const promiseRegProd = restApi.workflowsGet('AM_APPLICATION_REGISTRATION_PRODUCTION');
         const promiseRegSb = restApi.workflowsGet('AM_APPLICATION_REGISTRATION_SANDBOX');
         const promiseRevDeployment = restApi.workflowsGet('AM_REVISION_DEPLOYMENT');
-        Promise.all([promiseUserSign, promiseStateChange, promiseAppCreation, promiseAppDeletion,
+        Promise.all([promiseUserSign, promiseStateChange, promiseAppCreation, promiseAppUpdate, promiseAppDeletion,
             promiseSubCreation, promiseSubDeletion, promiseSubUpdate, promiseRegProd, promiseRegSb,
             promiseApiProductStateChange, promiseRevDeployment])
-            .then(([resultUserSign, resultStateChange, resultAppCreation, resultAppDeletion, resultSubCreation,
-                resultSubDeletion, resultSubUpdate, resultRegProd, resultRegSb,
-                resultApiProductStateChange, resultRevDeployment]) => {
+            .then(([resultUserSign, resultStateChange, resultAppCreation, resultAppUpdate,
+                resultAppDeletion, resultSubCreation, resultSubDeletion, resultSubUpdate,
+                resultRegProd, resultRegSb, resultApiProductStateChange, resultRevDeployment]) => {
                 const userCreation = resultUserSign.body.list;
                 const stateChange = resultStateChange.body.list;
                 const productStateChange = resultApiProductStateChange.body.list;
                 const applicationCreation = resultAppCreation.body.list;
+                const applicationUpdate = resultAppUpdate.body.list;
                 const applicationDeletion = resultAppDeletion.body.list;
                 const subscriptionCreation = resultSubCreation.body.list;
                 const subscriptionDeletion = resultSubDeletion.body.list;
@@ -90,6 +92,7 @@ export default function TasksWorkflowCard() {
                     userCreation,
                     stateChange,
                     applicationCreation,
+                    applicationUpdate,
                     applicationDeletion,
                     subscriptionCreation,
                     subscriptionDeletion,
@@ -189,6 +192,15 @@ export default function TasksWorkflowCard() {
                     defaultMessage: 'Application Creation',
                 }),
                 count: allTasksSet.applicationCreation.length,
+            },
+            {
+                icon: DnsRoundedIcon,
+                path: '/tasks/application-creation',
+                name: intl.formatMessage({
+                    id: 'Dashboard.tasksWorkflow.compactTasks.applicationUpdate.name',
+                    defaultMessage: 'Application Update',
+                }),
+                count: allTasksSet.applicationUpdate.length,
             },
             {
                 icon: DnsRoundedIcon,
