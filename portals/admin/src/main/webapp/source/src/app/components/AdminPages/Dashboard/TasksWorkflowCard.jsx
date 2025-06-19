@@ -195,7 +195,7 @@ export default function TasksWorkflowCard() {
             },
             {
                 icon: DnsRoundedIcon,
-                path: '/tasks/application-creation',
+                path: '/tasks/application-update',
                 name: intl.formatMessage({
                     id: 'Dashboard.tasksWorkflow.compactTasks.applicationUpdate.name',
                     defaultMessage: 'Application Update',
