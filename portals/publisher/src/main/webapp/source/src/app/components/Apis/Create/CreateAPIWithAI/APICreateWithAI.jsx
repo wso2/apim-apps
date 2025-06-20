@@ -65,7 +65,7 @@ const ApiCreateWithAI = () => {
     const [specEnrichmentErrorLevel, setSpecEnrichmentErrorLevel] = useState('');
     const [multiGateway, setMultiGateway] = useState([]);
 
-    const gatewayDetails = {
+    let gatewayDetails = {
         'wso2/synapse': {
             value: 'wso2/synapse',
             name: 'Universal Gateway',
@@ -117,6 +117,21 @@ const ApiCreateWithAI = () => {
                 if (item === "APK") return "wso2/apk";
                 return item;
             });
+
+            const customGateways = {};
+            gatewayTypes.forEach((gw) => {
+                if (!gatewayDetails[gw]) {
+                    const customGateway = {
+                        value: gw,
+                        name: gw + " Gateway",
+                        description: "Custom API Gateway for " + gw,
+                        isNew: false
+                    };
+                    customGateways[gw] = customGateway;
+                }
+            });
+
+            gatewayDetails = {...gatewayDetails, ...customGateways};
             setMultiGateway(apiTypes?.rest.filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]));
 
         }

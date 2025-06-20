@@ -536,7 +536,11 @@ export default function Environments() {
                         gatewayType = 'AWS';
                         break;
                     default:
-                        gatewayType = 'Regular';
+                        if (settings.gatewayTypes.includes(api.gatewayType)) {
+                            gatewayType = api.gatewayType;
+                        } else {
+                            gatewayType = 'Regular';
+                        }
                 }
             }
             const internalGatewaysFiltered = settings.environment.filter((p) =>
