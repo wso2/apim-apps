@@ -98,7 +98,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
         requestTimeout: undefined,
         suspendDuration: undefined,
     });
-    const [modelList, setModelList] = useState<string[]>([]);
+    const [modelList, setModelList] = useState<any[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState<Endpoint[]>([]);
     const [loading, setLoading] = useState<boolean>(false);

@@ -25,13 +25,13 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { Paper, IconButton } from '@mui/material';
+import { Paper, IconButton, Box, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { Endpoint, ModelData } from './Types';
 
 interface ModelCardProps {
     modelData: ModelData;
-    modelList: string[];
+    modelList: any[];
     endpointList: Endpoint[];
     isWeightApplicable: boolean;
     onUpdate: (updatedModel: ModelData) => void;
@@ -81,9 +81,18 @@ const ModelCard: FC<ModelCardProps> = ({
                             name='model'
                             onChange={(e: any) => handleChange(e)}
                         >
-                            {modelList.map((model) => (
-                                <MenuItem key={model} value={model}>{model}</MenuItem>
-                            ))}
+                            {modelList.map(({ vendor, values }) =>
+                                values.map((model: string) => (
+                                    <MenuItem key={`${vendor}-${model}`} value={model}>
+                                        <Box>
+                                            <Typography sx={{ fontWeight: "bold" }}>{model}</Typography>
+                                            <Typography variant="body2">
+                                                Vendor: <strong>{vendor}</strong>
+                                            </Typography>
+                                        </Box>
+                                    </MenuItem>
+                                ))
+                            )}
                         </Select>
                     </FormControl>
                     <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>

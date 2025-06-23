@@ -7,7 +7,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,11 +19,14 @@
  */
 
 import React, { useReducer, useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid'; // Import the v4 UUID generator
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
 import {
     MenuItem,
     Typography,
+    FormControlLabel,
+    Checkbox,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -38,6 +41,8 @@ import TextField from '@mui/material/TextField';
 import { MuiChipsInput } from 'mui-chips-input';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import AIAPIDefinition from './AIAPIDefinition';
+// Import the new ModelEntry component
+import ModelEntry from './ModelEntry'; // Assuming ModelEntry.jsx is in the same directory
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
@@ -56,8 +61,9 @@ const StyledContentBase = styled(ContentBase)({
 
 /**
  * Reducer
- * @param {JSON} state The second number.
- * @returns {Promise}
+ * @param {JSON} state The current state.
+ * @param {Object} newValue The action object containing field and value.
+ * @returns {Promise} The new state.
  */
 function reducer(state, newValue) {
     const { field, value } = newValue;
@@ -66,7 +72,9 @@ function reducer(state, newValue) {
         case 'apiVersion':
         case 'description':
         case 'modelList':
+        case 'multipleVendorSupport':
         case 'apiDefinition':
+        case 'models': // New case for handling model vendor entries
             return { ...state, [field]: value };
         case 'requestModel':
         case 'responseModel':
@@ -109,7 +117,7 @@ function reducer(state, newValue) {
 export default function AddEditAiVendor(props) {
     const intl = useIntl();
     const [saving, setSaving] = useState(false);
-    const { match: { params: { id } }, history } = props;
+    const { match: { params: { id: vendorId } }, history } = props; // <-- Rename id to vendorId
     const inputSources = ['payload', 'header', 'queryParams'];
     const [authSource, setAuthSource] = useState('authHeader');
     const authSources = ['unsecured', 'authHeader', 'authQueryParameter'];
@@ -162,13 +170,15 @@ export default function AddEditAiVendor(props) {
             authQueryParameter: '',
             authHeader: '',
         },
+        multipleVendorSupport: false,
         apiDefinition: '',
         modelList: [],
+        models: [], // Initialize new state for ModelEntry
     });
 
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const pageTitle = id ? `${intl.formatMessage({
+    const pageTitle = vendorId ? `${intl.formatMessage({
         id: 'AiVendors.AddEditAiVendor.title.edit',
         defaultMessage: 'AI/LLM Vendor - Edit ',
     })} ${state.name}` : intl.formatMessage({
@@ -178,18 +188,29 @@ export default function AddEditAiVendor(props) {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (id) {
-                const aiVendorResult = await new API().aiVendorGet(id);
+            if (vendorId) { // <-- Use vendorId instead of id
+                const aiVendorResult = await new API().aiVendorGet(vendorId);
                 const aiVendorBody = aiVendorResult.body;
-
                 if (aiVendorBody) {
+                    let models = [];
+                    let modelList = [];
+                    if (aiVendorBody.models) {
+                        models = JSON.parse(aiVendorBody.models);
+                        modelList = models.find((item) => item.vendor === aiVendorBody.name);
+                        modelList = modelList ? modelList.values : [];
+                        models = models.map((model) => ({
+                            ...model, id: uuidv4(),
+                        }));
+                    }
                     const newState = {
                         name: aiVendorBody.name || '',
                         apiVersion: aiVendorBody.apiVersion || '',
                         description: aiVendorBody.description || '',
                         configurations: JSON.parse(aiVendorBody.configurations),
                         apiDefinition: aiVendorBody.apiDefinition || '',
-                        modelList: aiVendorBody.modelList || [],
+                        modelList,
+                        models,
+                        multipleVendorSupport: aiVendorBody.multipleVendorSupport || false,
                     };
                     if (newState.configurations.authQueryParameter) {
                         setAuthSource('authQueryParameter');
@@ -207,7 +228,7 @@ export default function AddEditAiVendor(props) {
         };
 
         fetchData();
-    }, [id]);
+    }, [vendorId]);
 
     const camelCaseToTitleCase = (camelCaseStr) => {
         return camelCaseStr
@@ -280,10 +301,21 @@ export default function AddEditAiVendor(props) {
                 || hasErrors('inputSource', meta.inputSource, validatingActive);
         });
 
+        // Basic validation for modelVendorEntries: ensure vendor name is not empty
+        const modelVendorEntriesErrors = state.models.some((entry) => entry.vendor.trim() === '');
+        if (modelVendorEntriesErrors && validatingActive) {
+            Alert.error(intl.formatMessage({
+                id: 'AiVendors.AddEditAiVendor.form.modelVendorEntries.vendorName.empty',
+                defaultMessage: 'Model Vendor name cannot be empty for all entries.',
+            }));
+            return true; // Indicate error
+        }
+
         return hasErrors('name', state.name, validatingActive)
             || hasErrors('apiVersion', state.apiVersion, validatingActive)
             || hasErrors('connectorType', state.configurations.connectorType, validatingActive)
-            || metadataErrors.some((error) => error);
+            || metadataErrors.some((error) => error)
+            || modelVendorEntriesErrors; // Include modelVendorEntries validation
     };
 
     const formSaveCallback = async () => {
@@ -309,14 +341,22 @@ export default function AddEditAiVendor(props) {
                     [authSource]: state.configurations[authSource],
                 };
             }
+            let models;
+            if (state.multipleVendorSupport) {
+                models = state.models.map(({ id, ...rest }) => rest);
+            } else {
+                models = [{ vendor: state.name, values: state.modelList }];
+            }
             const newState = {
                 ...state,
                 configurations: updatedConfigurations,
-                modelList: JSON.stringify(state.modelList),
+                // modelList: JSON.stringify(state.modelList),
+                // Stringify modelVendorEntries before sending to API
+                models: JSON.stringify(models),
             };
 
-            if (id) {
-                await new API().updateAiVendor(id, { ...newState, apiDefinition: file });
+            if (vendorId) { // <-- Use vendorId instead of id
+                await new API().updateAiVendor(vendorId, { ...newState, apiDefinition: file });
                 Alert.success(`${state.name} ${intl.formatMessage({
                     id: 'AiVendor.edit.success',
                     defaultMessage: ' - AI/LLM Vendor edited successfully.',
@@ -411,7 +451,7 @@ export default function AddEditAiVendor(props) {
                                         fullWidth
                                         variant='outlined'
                                         value={state.name}
-                                        disabled={!!id}
+                                        disabled={!!vendorId}
                                         onChange={(e) => dispatch({
                                             field: 'name',
                                             value: e.target.value,
@@ -432,7 +472,7 @@ export default function AddEditAiVendor(props) {
                                             fullWidth
                                             variant='outlined'
                                             value={state.apiVersion}
-                                            disabled={!!id}
+                                            disabled={!!vendorId}
                                             onChange={(e) => dispatch({
                                                 field: 'apiVersion',
                                                 value: e.target.value,
@@ -481,6 +521,30 @@ export default function AddEditAiVendor(props) {
                                     id: 'AiVendors.AddEditAiVendor.form.description.help',
                                     defaultMessage: 'Description of the AI/LLM Vendor.',
                                 })}
+                            />
+                            <FormControlLabel
+                                id='model-family-support'
+                                value='enableModelFamilySupport'
+                                control={(
+                                    <Checkbox
+                                        id='checkbox-enable-model-family-support'
+                                        checked={state.multipleVendorSupport}
+                                        onChange={(e) => dispatch({
+                                            field: 'multipleVendorSupport',
+                                            value: e.target.checked,
+                                        })}
+                                        name='enableModelFamilySupport'
+                                        color='primary'
+                                        disabled={!!vendorId}
+                                    />
+                                )}
+                                label={(
+                                    <FormattedMessage
+                                        id='AiVendors.AddEditAiVendor.form.modelFamilySupport.help'
+                                        defaultMessage='Model family support'
+                                    />
+                                )}
+                                labelPlacement='end'
                             />
                         </Box>
                     </Grid>
@@ -785,7 +849,7 @@ export default function AddEditAiVendor(props) {
                                 fullWidth
                                 variant='outlined'
                                 value={state.configurations.connectorType}
-                                disabled={!!id}
+                                disabled={!!vendorId}
                                 onChange={(e) => dispatch({
                                     field: 'connectorType',
                                     value: e.target.value,
@@ -832,36 +896,49 @@ export default function AddEditAiVendor(props) {
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
-                            <MuiChipsInput
-                                variant='outlined'
-                                fullWidth
-                                value={state.modelList}
-                                onAddChip={(model) => {
-                                    state.modelList.push(model);
-                                }}
-                                onDeleteChip={(model) => {
-                                    const filteredModelList = state.modelList.filter(
-                                        (modelItem) => modelItem !== model,
-                                    );
-                                    dispatch({ field: 'modelList', value: filteredModelList });
-                                }}
-                                placeholder={intl.formatMessage({
-                                    id: 'AiVendors.AddEditAiVendor.modelList.placeholder',
-                                    defaultMessage: 'Type Model name and press Enter',
-                                })}
-                                data-testid='ai-vendor-llm-model-list'
-                                helperText={(
-                                    <div style={{ position: 'absolute', marginTop: '10px' }}>
-                                        {intl.formatMessage({
-                                            id: 'AiVendors.AddEditAiVendor.modelList.help',
-                                            defaultMessage: 'Type available models and '
-                                                + 'press enter/return to add them.',
-                                        })}
-                                    </div>
-                                )}
-                            />
-                        </Box>
+                        {state.multipleVendorSupport ? (
+                            <Box component='div' m={1}>
+                                {/* TODO ADD THE MODEL VENDOR MANAGER HERE */}
+                                <ModelEntry
+                                    entries={state.models}
+                                    onEntriesChange={(newEntries) => dispatch({
+                                        field: 'models',
+                                        value: newEntries,
+                                    })}
+                                />
+                            </Box>
+                        ) : (
+                            <Box component='div' m={1}>
+                                <MuiChipsInput
+                                    variant='outlined'
+                                    fullWidth
+                                    value={state.modelList}
+                                    onAddChip={(model) => {
+                                        state.modelList.push(model);
+                                    }}
+                                    onDeleteChip={(model) => {
+                                        const filteredModelList = state.modelList.filter(
+                                            (modelItem) => modelItem !== model,
+                                        );
+                                        dispatch({ field: 'modelList', value: filteredModelList });
+                                    }}
+                                    placeholder={intl.formatMessage({
+                                        id: 'AiVendors.AddEditAiVendor.modelList.placeholder',
+                                        defaultMessage: 'Type Model name and press Enter',
+                                    })}
+                                    data-testid='ai-vendor-llm-model-list'
+                                    helperText={(
+                                        <div style={{ position: 'absolute', marginTop: '10px' }}>
+                                            {intl.formatMessage({
+                                                id: 'AiVendors.AddEditAiVendor.modelList.help',
+                                                defaultMessage: 'Type available models and '
+                                                    + 'press enter/return to add them.',
+                                            })}
+                                        </div>
+                                    )}
+                                />
+                            </Box>
+                        )}
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
@@ -879,7 +956,7 @@ export default function AddEditAiVendor(props) {
                             >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
-                                        {id ? (
+                                        {vendorId ? (
                                             <FormattedMessage
                                                 id='AiVendors.AddEditAiVendor.form.update.btn'
                                                 defaultMessage='Update'
@@ -905,7 +982,6 @@ export default function AddEditAiVendor(props) {
                     </Grid>
                 </Grid>
             </Box>
-
         </StyledContentBase>
     );
 }
