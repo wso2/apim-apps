@@ -304,7 +304,8 @@ class AppsTableContent extends Component {
                                                         className={(!isOrgWideAppUpdateEnabled && !isAppOwner) && classes.appOwner}
                                                     >
                                                         <IconButton
-                                                            disabled={!isOrgWideAppUpdateEnabled && !isAppOwner}
+                                                            disabled={(!isOrgWideAppUpdateEnabled && !isAppOwner)
+                                                                || app.status === this.APPLICATION_STATES.DELETE_PENDING}
                                                             aria-label={'Edit' + app.name}
                                                             size='large'
                                                         >
