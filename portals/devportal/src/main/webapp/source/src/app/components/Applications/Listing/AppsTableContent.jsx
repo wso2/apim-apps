@@ -284,7 +284,8 @@ class AppsTableContent extends Component {
                                         resourceMethod={resourceMethods.PUT}
                                     >
                                         {(app.status === this.APPLICATION_STATES.APPROVED
-                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING) && (
+                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING
+                                        || app.status === this.APPLICATION_STATES.UPDATE_PENDING) && (
                                             <Tooltip title={isOrgWideAppUpdateEnabled || isAppOwner
                                                 ? (
                                                     <FormattedMessage
@@ -305,7 +306,8 @@ class AppsTableContent extends Component {
                                                     >
                                                         <IconButton
                                                             disabled={(!isOrgWideAppUpdateEnabled && !isAppOwner)
-                                                                || app.status === this.APPLICATION_STATES.DELETE_PENDING}
+                                                                || app.status === this.APPLICATION_STATES.DELETE_PENDING
+                                                                || app.status === this.APPLICATION_STATES.UPDATE_PENDING}
                                                             aria-label={'Edit' + app.name}
                                                             size='large'
                                                         >
