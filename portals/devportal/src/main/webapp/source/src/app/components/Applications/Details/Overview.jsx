@@ -311,6 +311,13 @@ function Overview(props) {
     const handleResetConfirmation = () => {
         setIsResetOpen(true);
     };
+    const statusDisplayMap = {
+        CREATED: 'Created',
+        APPROVED: 'Approved',
+        REJECTED: 'Rejected',
+        DELETE_PENDING: 'Delete Pending',
+        UPDATE_PENDING: 'Update Pending',
+    };
     return (
         <Root>
             <div className={classes.root}>
@@ -420,7 +427,7 @@ function Overview(props) {
                                 </div>
                             </TableCell>
                             <TableCell>
-                                {application.status}
+                                {statusDisplayMap[application.status] || application.status}
                             </TableCell>
                         </TableRow>
                         <TableRow>
