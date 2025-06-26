@@ -41,8 +41,7 @@ import TextField from '@mui/material/TextField';
 import { MuiChipsInput } from 'mui-chips-input';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import AIAPIDefinition from './AIAPIDefinition';
-// Import the new ModelEntry component
-import ModelEntry from './ModelEntry'; // Assuming ModelEntry.jsx is in the same directory
+import ModelFamily from './ModelFamily';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
@@ -522,31 +521,110 @@ export default function AddEditAiVendor(props) {
                                     defaultMessage: 'Description of the AI/LLM Vendor.',
                                 })}
                             />
-                            <FormControlLabel
-                                id='model-family-support'
-                                value='enableModelFamilySupport'
-                                control={(
-                                    <Checkbox
-                                        id='checkbox-enable-model-family-support'
-                                        checked={state.multipleVendorSupport}
-                                        onChange={(e) => dispatch({
-                                            field: 'multipleVendorSupport',
-                                            value: e.target.checked,
-                                        })}
-                                        name='enableModelFamilySupport'
-                                        color='primary'
-                                        disabled={!!vendorId}
-                                    />
-                                )}
-                                label={(
-                                    <FormattedMessage
-                                        id='AiVendors.AddEditAiVendor.form.modelFamilySupport.help'
-                                        defaultMessage='Model family support'
-                                    />
-                                )}
-                                labelPlacement='end'
-                            />
                         </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box marginTop={2} marginBottom={2}>
+                            <StyledHr />
+                        </Box>
+                    </Grid>
+                    {/* TODO: Use radio button options for "no grouping", "group by model family" */}
+                    <Grid item xs={12} md={12} lg={3}>
+                        <Typography
+                            color='inherit'
+                            variant='subtitle2'
+                            component='div'
+                            id='AiVendors.AddEditAiVendor.model.families.header'
+                        >
+                            <FormattedMessage
+                                id='AiVendors.AddEditAiVendor.model.families'
+                                defaultMessage='Model Families'
+                            />
+                        </Typography>
+                        <Typography
+                            color='inherit'
+                            variant='caption'
+                            component='p'
+                            id='AiVendors.AddEditAiVendor.model.families.body'
+                        >
+                            <FormattedMessage
+                                id='AiVendors.AddEditAiVendor.AiVendor.model.families.description'
+                                defaultMessage={'Define how models are organized — as a single list or '
+                                    + 'grouped under multiple families.'}
+                            />
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={9}>
+                        <Grid container>
+                            <Grid item m={1}>
+                                <FormControlLabel
+                                    id='model-family-support'
+                                    value='enableModelFamilySupport'
+                                    control={(
+                                        <Checkbox
+                                            id='checkbox-enable-model-family-support'
+                                            checked={state.multipleVendorSupport}
+                                            onChange={(e) => dispatch({
+                                                field: 'multipleVendorSupport',
+                                                value: e.target.checked,
+                                            })}
+                                            name='enableModelFamilySupport'
+                                            color='primary'
+                                            disabled={!!vendorId}
+                                        />
+                                    )}
+                                    label={(
+                                        <FormattedMessage
+                                            id='AiVendors.AddEditAiVendor.form.model.family.support'
+                                            defaultMessage='Enable Model Family Support'
+                                        />
+                                    )}
+                                    labelPlacement='end'
+                                />
+                            </Grid>
+                            <Grid item xs={12} md={12} lg={9}>
+                                {state.multipleVendorSupport ? (
+                                    <ModelFamily
+                                        models={state.models}
+                                        onModelsChange={(newModels) => dispatch({
+                                            field: 'models',
+                                            value: newModels,
+                                        })}
+                                    />
+                                ) : (
+                                    <Box component='div' m={1}>
+                                        <MuiChipsInput
+                                            variant='outlined'
+                                            fullWidth
+                                            value={state.modelList}
+                                            onAddChip={(model) => {
+                                                state.modelList.push(model);
+                                            }}
+                                            onDeleteChip={(model) => {
+                                                const filteredModelList = state.modelList.filter(
+                                                    (modelItem) => modelItem !== model,
+                                                );
+                                                dispatch({ field: 'modelList', value: filteredModelList });
+                                            }}
+                                            placeholder={intl.formatMessage({
+                                                id: 'AiVendors.AddEditAiVendor.modelList.placeholder',
+                                                defaultMessage: 'Type Model name and press Enter',
+                                            })}
+                                            data-testid='ai-vendor-llm-model-list'
+                                            helperText={(
+                                                <div style={{ position: 'absolute', marginTop: '10px' }}>
+                                                    {intl.formatMessage({
+                                                        id: 'AiVendors.AddEditAiVendor.modelList.help',
+                                                        defaultMessage: 'Type available models and '
+                                                            + 'press enter/return to add them.',
+                                                    })}
+                                                </div>
+                                            )}
+                                        />
+                                    </Box>
+                                )}
+                            </Grid>
+                        </Grid>
                     </Grid>
                     <>
                         <Grid item xs={12}>
@@ -865,80 +943,6 @@ export default function AddEditAiVendor(props) {
                                 })}
                             />
                         </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={3}>
-                        <Typography
-                            color='inherit'
-                            variant='subtitle2'
-                            component='div'
-                            id='AiVendors.AddEditAiVendor.modelList.header'
-                        >
-                            <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.modelList'
-                                defaultMessage='Model List'
-                            />
-                        </Typography>
-                        <Typography
-                            color='inherit'
-                            variant='caption'
-                            component='p'
-                            id='AiVendors.AddEditAiVendor.modelList.body'
-                        >
-                            <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.modelList.description'
-                                defaultMessage='AI/LLM Vendor supported model list'
-                            />
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        {state.multipleVendorSupport ? (
-                            <Box component='div' m={1}>
-                                {/* TODO ADD THE MODEL VENDOR MANAGER HERE */}
-                                <ModelEntry
-                                    entries={state.models}
-                                    onEntriesChange={(newEntries) => dispatch({
-                                        field: 'models',
-                                        value: newEntries,
-                                    })}
-                                />
-                            </Box>
-                        ) : (
-                            <Box component='div' m={1}>
-                                <MuiChipsInput
-                                    variant='outlined'
-                                    fullWidth
-                                    value={state.modelList}
-                                    onAddChip={(model) => {
-                                        state.modelList.push(model);
-                                    }}
-                                    onDeleteChip={(model) => {
-                                        const filteredModelList = state.modelList.filter(
-                                            (modelItem) => modelItem !== model,
-                                        );
-                                        dispatch({ field: 'modelList', value: filteredModelList });
-                                    }}
-                                    placeholder={intl.formatMessage({
-                                        id: 'AiVendors.AddEditAiVendor.modelList.placeholder',
-                                        defaultMessage: 'Type Model name and press Enter',
-                                    })}
-                                    data-testid='ai-vendor-llm-model-list'
-                                    helperText={(
-                                        <div style={{ position: 'absolute', marginTop: '10px' }}>
-                                            {intl.formatMessage({
-                                                id: 'AiVendors.AddEditAiVendor.modelList.help',
-                                                defaultMessage: 'Type available models and '
-                                                    + 'press enter/return to add them.',
-                                            })}
-                                        </div>
-                                    )}
-                                />
-                            </Box>
-                        )}
                     </Grid>
                     <Grid item xs={12}>
                         <Box marginTop={2} marginBottom={2}>
