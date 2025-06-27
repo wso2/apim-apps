@@ -183,13 +183,16 @@ const General: FC<GeneralProps> = ({
             } else {
                 updateCandidates[key] = value;
             }
-            // Wrap json type with `""`
-            if (attributeSpec && attributeSpec.type.toLowerCase() === 'json') 
+            // Escape double quotes in JSON string to HTML-safe equivalent
+            if (attributeSpec && attributeSpec.type.toLowerCase() === 'json') {
                 try {
                     updateCandidates[key] = updateCandidates[key].replace(/"/g, "&quot;");
                 } catch (e) {
-                    console.error(e);
+                    console.error(
+                        `Failed to escape double quotes for key "${key}" of type "json".`, e instanceof Error ? e.message : e
+                    );
                 }
+            }
         });
 
         if (policyObj.name === 'modelRoundRobin' || policyObj.name === 'modelWeightedRoundRobin' || policyObj.name === 'modelFailover') {
@@ -250,7 +253,7 @@ const General: FC<GeneralProps> = ({
     const getValue = (spec: PolicySpecAttribute) => {
         const specName = spec.name;
         const previousVal = getValueOfPolicyParam(specName);
-            if (state[specName] !== null) {
+        if (state[specName] !== null) {
             return state[specName];
         } else if (previousVal !== null && previousVal !== undefined) {
             if (spec.type.toLowerCase() === 'integer') return parseInt(previousVal, 10);
@@ -261,7 +264,9 @@ const General: FC<GeneralProps> = ({
                     const jsonObject = JSON.parse(jsonString);
                     return JSON.stringify(jsonObject, null, 2);
                 } catch (e) {
-                    console.error(e);
+                    console.error(
+                        `Failed to parse json for attribute "${specName}"`, e instanceof Error ? e.message : e
+                    );
                 }
             }
             else return previousVal;
@@ -485,9 +490,9 @@ const General: FC<GeneralProps> = ({
                             {/* When attribute type is boolean */}
                             {spec.type.toLowerCase() === 'boolean' && (
                                 <FormControl
-                                        variant='outlined'
-                                        className={classes.formControl}
-                                        error={getError(spec) !== ''}
+                                    variant='outlined'
+                                    className={classes.formControl}
+                                    error={getError(spec) !== ''}
                                 >
                                     <FormControlLabel
                                         control={
@@ -516,48 +521,48 @@ const General: FC<GeneralProps> = ({
                             {/* When attribute type is json */}
                             {spec.type.toLowerCase() === 'json' && (
                                 <FormControl
-                                variant='outlined'
-                                className={classes.formControl}
-                                error={getError(spec) !== ''}
-                                style={{ width: '100%' }}
-                            >
-                                {/* Custom Label */}
-                                <InputLabel shrink htmlFor={spec.name} style={{ marginBottom: '0.5rem' }}>
-                                    <>
-                                        {spec.displayName}
-                                        {spec.required && (
-                                            <sup className={classes.mandatoryStar}>*</sup>
-                                        )}
-                                    </>
-                                </InputLabel>
-                            
-                                {/* Monaco Editor */}
-                                <Box component='div' m={1}>
-                                    <Paper variant='outlined'>
-                                        <EditorContainer>
-                                            <Editor
-                                                height='100%'
-                                                defaultLanguage='json'
-                                                value={getValue(spec)}
-                                                onChange={(value) => onInputChange(value, spec.type, spec.name)}
-                                                theme='light'
-                                                options={{
-                                                    minimap: { enabled: false },
-                                                    lineNumbers: 'on',
-                                                    scrollBeyondLastLine: false,
-                                                    tabSize: 2,
-                                                    lineNumbersMinChars: 2,
-                                                }}
-                                            />
-                                        </EditorContainer>
-                                    </Paper>
-                                </Box>
-                            
-                                {/* Helper or Error text */}
-                                <FormHelperText>
-                                    {getError(spec) === '' ? spec.description : getError(spec)}
-                                </FormHelperText>
-                            </FormControl>
+                                    variant='outlined'
+                                    className={classes.formControl}
+                                    error={getError(spec) !== ''}
+                                    style={{ width: '100%' }}
+                                >
+                                    {/* Custom Label */}
+                                    <InputLabel shrink htmlFor={spec.name} style={{ marginBottom: '0.5rem' }}>
+                                        <>
+                                            {spec.displayName}
+                                            {spec.required && (
+                                                <sup className={classes.mandatoryStar}>*</sup>
+                                            )}
+                                        </>
+                                    </InputLabel>
+
+                                    {/* Monaco Editor */}
+                                    <Box component='div' m={1}>
+                                        <Paper variant='outlined'>
+                                            <EditorContainer>
+                                                <Editor
+                                                    height='100%'
+                                                    defaultLanguage='json'
+                                                    value={getValue(spec)}
+                                                    onChange={(value) => onInputChange(value, spec.type, spec.name)}
+                                                    theme='light'
+                                                    options={{
+                                                        minimap: { enabled: false },
+                                                        lineNumbers: 'on',
+                                                        scrollBeyondLastLine: false,
+                                                        tabSize: 2,
+                                                        lineNumbersMinChars: 2,
+                                                    }}
+                                                />
+                                            </EditorContainer>
+                                        </Paper>
+                                    </Box>
+
+                                    {/* Helper or Error text */}
+                                    <FormHelperText>
+                                        {getError(spec) === '' ? spec.description : getError(spec)}
+                                    </FormHelperText>
+                                </FormControl>
                             )}
                         </Grid>
                     ))}

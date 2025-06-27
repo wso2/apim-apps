@@ -188,7 +188,7 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
      */
     const handleAttributeChange = (event: any, id: string, type?: string) => {
         if (dispatch) {
-            if (type?.toLocaleLowerCase() === 'json') {
+            if (type?.toLowerCase() === 'json') {
                 dispatch({
                     type: ACTIONS.UPDATE_POLICY_ATTRIBUTE,
                     id,
@@ -684,32 +684,52 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                         {/* Default Value */}
                                                         <Box mt={1}>
                                                             {attribute.type.toLowerCase() === 'json' ? (
-                                                                <Paper variant='outlined'>
-                                                                    <EditorContainer>
-                                                                        <Editor
-                                                                            height='100%'
-                                                                            defaultLanguage='json'
-                                                                            value={attribute.defaultValue}
-                                                                            onChange={(e) => handleAttributeChange(e, attribute.id, attribute.type)}
-                                                                            theme='light'
-                                                                            options={{
-                                                                                readOnly: isViewMode,
-                                                                                minimap: { enabled: false },
-                                                                                lineNumbers: 'on',
-                                                                                scrollBeyondLastLine: false,
-                                                                                tabSize: 2,
-                                                                                lineNumbersMinChars: 2,
-                                                                            }}
-                                                                        />
-                                                                    </EditorContainer>
-                                                                </Paper>
+                                                                <>
+                                                                    <Paper variant='outlined'>
+                                                                        <EditorContainer>
+                                                                            <Editor
+                                                                                height='100%'
+                                                                                defaultLanguage='json'
+                                                                                value={attribute.defaultValue}
+                                                                                onChange={
+                                                                                    (e) => handleAttributeChange(
+                                                                                        e,
+                                                                                        attribute.id,
+                                                                                        attribute.type
+                                                                                    )
+                                                                                }
+                                                                                theme='light'
+                                                                                options={{
+                                                                                    readOnly: isViewMode,
+                                                                                    minimap: { enabled: false },
+                                                                                    lineNumbers: 'on',
+                                                                                    scrollBeyondLastLine: false,
+                                                                                    tabSize: 2,
+                                                                                    lineNumbersMinChars: 2,
+                                                                                }}
+                                                                            />
+                                                                        </EditorContainer>
+                                                                    </Paper>
+
+                                                                    {/* Helper or Error text */}
+                                                                    <FormHelperText sx={{ mx: '14px' }}>
+                                                                        {getAttributeFormError(attribute, 'validationRegex') || (
+                                                                            <FormattedMessage
+                                                                                id={"Apis.Details.Policies.PolicyForm."
+                                                                                    + "PolicyAttributes.form.default.value.helperText"}
+                                                                                defaultMessage={"Default value for the attribute"
+                                                                                    + " (if any)"}
+                                                                            />)}
+                                                                    </FormHelperText>
+                                                                </>
                                                             ) : (
                                                                 <TextField
                                                                     fullWidth
                                                                     name="defaultValue"
                                                                     label={
                                                                         <FormattedMessage
-                                                                            id="Apis.Details.Policies.PolicyForm.PolicyAttributes.form.default.value.label"
+                                                                            id={"Apis.Details.Policies.PolicyForm."
+                                                                                + "PolicyAttributes.form.default.value.label"}
                                                                             defaultMessage="Default Value"
                                                                         />
                                                                     }
@@ -719,8 +739,10 @@ const PolicyAttributes: FC<PolicyAttributesProps> = ({
                                                                     helperText={
                                                                         getAttributeFormError(attribute, 'defaultValue') || (
                                                                             <FormattedMessage
-                                                                                id="Apis.Details.Policies.PolicyForm.PolicyAttributes.form.default.value.helperText"
-                                                                                defaultMessage="Default value for the attribute (if any)"
+                                                                                id={"Apis.Details.Policies.PolicyForm."
+                                                                                    + "PolicyAttributes.form.default.value.helperText"}
+                                                                                defaultMessage={"Default value for the attribute"
+                                                                                    + " (if any)"}
                                                                             />
                                                                         )
                                                                     }
