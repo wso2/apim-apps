@@ -236,12 +236,6 @@ class AppsTableContent extends Component {
                                                 />
 
                                             </Typography>
-                                            <Typography variant='caption' style={{ textIndent: '10px', display: 'inline-block' }}>
-                                                <FormattedMessage
-                                                    id='Applications.Listing.AppsTableContent.wait.update.approval'
-                                                    defaultMessage='waiting for update approval'
-                                                />
-                                            </Typography>
                                         </>
                                     )}
                                     {app.status === this.APPLICATION_STATES.REJECTED && (

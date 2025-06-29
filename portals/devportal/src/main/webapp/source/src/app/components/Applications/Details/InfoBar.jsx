@@ -176,7 +176,7 @@ class InfoBar extends React.Component {
                     paddingLeft: theme.spacing(2),
                 })}
                 >
-                    <Grid item xs={10}>
+                    <Grid item xs={10} sx={{ width: '100%' }}>
                         <Box sx={(theme) => ({ marginLeft: theme.spacing(1) })}>
                             <Link
                                 to={'/applications/' + applicationId + '/overview'}
