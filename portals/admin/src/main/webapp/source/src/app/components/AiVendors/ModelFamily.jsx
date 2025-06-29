@@ -23,7 +23,7 @@ import { useIntl, FormattedMessage } from 'react-intl';
 import PropTypes from 'prop-types';
 import { v4 as uuidv4 } from 'uuid';
 import {
-    Box, Grid, Button, Table, TableBody, TableRow, TableCell, TextField,
+    Box, Grid, Button, TextField,
     IconButton, Tooltip,
 } from '@mui/material';
 import AddCircle from '@mui/icons-material/AddCircle';
@@ -37,7 +37,7 @@ const ModelFamily = ({ models, onModelsChange }) => {
      * Handles adding a new model family.
      * Creates a new model object with a unique ID and empty vendor and values.
      */
-    const handleAddModelFamily = () => {
+    const handleAddProvider = () => {
         const newModel = {
             id: uuidv4(),
             vendor: '',
@@ -50,23 +50,23 @@ const ModelFamily = ({ models, onModelsChange }) => {
      * Handles deleting a model family.
      * @param {*} event - The event object from the click event.
      */
-    const handleDeleteModelFamily = (event) => {
+    const handleProviderDelete = (event) => {
         const index = event.currentTarget.id;
         const updatedModels = models.filter((_, i) => i !== parseInt(index, 10));
         onModelsChange(updatedModels);
     };
 
     /**
-     * Handles changes to the vendor name of a model family.
+     * Handles changes to the provider name of a model family.
      * @param {*} id - The ID of the model family.
      * @param {*} event - The event object from the change event.
      */
-    const handleVendorChange = (id, event) => {
+    const handleProviderChange = (id, event) => {
         const updatedModels = models.map((model) => {
             if (model.id === id) {
                 return {
                     ...model,
-                    name: event.target.value,
+                    vendor: event.target.value,
                 };
             }
             return model;
@@ -76,110 +76,98 @@ const ModelFamily = ({ models, onModelsChange }) => {
 
     return (
         <Box component='div' m={1}>
-            <Grid item xs={12}>
-                <Box flex='1'>
-                    <Button
-                        variant='outlined'
-                        onClick={handleAddModelFamily}
-                    >
-                        <AddCircle sx={{ mr: 1 }} />
-                        <FormattedMessage
-                            id='AiVendors.AddEditAiVendor.model.family.add'
-                            defaultMessage='Add Model Family'
-                        />
-                    </Button>
-                </Box>
-                <Table>
-                    <TableBody>
-                        {models.map((model, index) => (
-                            <TableRow>
-                                <TableCell>
-                                    <TextField
-                                        fullWidth
-                                        required
+            <Grid container>
+                <Grid item xs={12}>
+                    <Box flex='1'>
+                        <Button
+                            variant='outlined'
+                            onClick={handleAddProvider}
+                        >
+                            <AddCircle sx={{ mr: 1 }} />
+                            <FormattedMessage
+                                id='AiVendors.AddEditAiVendor.add.provider'
+                                defaultMessage='Add Provider'
+                            />
+                        </Button>
+                    </Box>
+                    {models.map((model, index) => (
+                        <Grid container spacing={2} key={model.id} pt={1}>
+                            <Grid item xs={12} sm={3}>
+                                <TextField
+                                    fullWidth
+                                    id={index}
+                                    name='modelVendor'
+                                    label={intl.formatMessage({
+                                        id: 'AiVendors.AddEditAiVendor.provider.name',
+                                        defaultMessage: 'Provider Name',
+                                    })}
+                                    margin='dense'
+                                    variant='outlined'
+                                    value={model.name}
+                                    onChange={(e) => handleProviderChange(model.id, e)}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={8}>
+                                <MuiChipsInput
+                                    variant='outlined'
+                                    fullWidth
+                                    value={model.values}
+                                    onAddChip={(modelName) => {
+                                        const updatedModels = models.map((m) => {
+                                            if (m.id === model.id) {
+                                                return {
+                                                    ...m,
+                                                    values: [...m.values, modelName],
+                                                };
+                                            }
+                                            return m;
+                                        });
+                                        onModelsChange(updatedModels);
+                                    }}
+                                    onDeleteChip={(modelName) => {
+                                        const updatedModels = models.map((m) => {
+                                            if (m.id === model.id) {
+                                                return {
+                                                    ...m,
+                                                    values: m.values.filter(
+                                                        (v) => v !== modelName,
+                                                    ),
+                                                };
+                                            }
+                                            return m;
+                                        });
+                                        onModelsChange(updatedModels);
+                                    }}
+                                    placeholder={intl.formatMessage({
+                                        id: 'AiVendors.AddEditAiVendor.provider.models.placeholder',
+                                        defaultMessage: 'Type Model name and press Enter',
+                                    })}
+                                    data-testid={`ai-vendor-llm-models-${index}`}
+                                />
+                            </Grid>
+                            <Grid item xs={12} sm={1}>
+                                <Tooltip
+                                    title={(
+                                        <FormattedMessage
+                                            id='AiVendors.AddEditAiVendor.vendor.delete'
+                                            defaultMessage='Delete'
+                                        />
+                                    )}
+                                    placement='right-end'
+                                    interactive
+                                >
+                                    <IconButton
                                         id={index}
-                                        name='modelVendor'
-                                        label={intl.formatMessage({
-                                            id: 'AiVendors.AddEditAiVendor.vendor.name',
-                                            defaultMessage: 'Model Vendor',
-                                        })}
-                                        margin='dense'
-                                        variant='outlined'
-                                        value={model.name}
-                                        onChange={(e) => handleVendorChange(model.id, e)}
-                                    />
-                                </TableCell>
-                                <TableCell>
-                                    <MuiChipsInput
-                                        variant='outlined'
-                                        fullWidth
-                                        value={model.values}
-                                        onAddChip={(modelName) => {
-                                            const updatedModels = models.map((m) => {
-                                                if (m.id === model.id) {
-                                                    return {
-                                                        ...m,
-                                                        values: [...m.values, modelName],
-                                                    };
-                                                }
-                                                return m;
-                                            });
-                                            onModelsChange(updatedModels);
-                                        }}
-                                        onDeleteChip={(modelName) => {
-                                            const updatedModels = models.map((m) => {
-                                                if (m.id === model.id) {
-                                                    return {
-                                                        ...m,
-                                                        values: m.values.filter(
-                                                            (v) => v !== modelName,
-                                                        ),
-                                                    };
-                                                }
-                                                return m;
-                                            });
-                                            onModelsChange(updatedModels);
-                                        }}
-                                        placeholder={intl.formatMessage({
-                                            id: 'AiVendors.AddEditAiVendor.vendor.models.placeholder',
-                                            defaultMessage: 'Type Model name and press Enter',
-                                        })}
-                                        data-testid={`ai-vendor-llm-models-${index}`}
-                                        helperText={(
-                                            <div style={{ position: 'absolute', marginTop: '10px' }}>
-                                                {intl.formatMessage({
-                                                    id: 'AiVendors.AddEditAiVendor.vendor.models.help',
-                                                    defaultMessage: 'Type available models and press enter/'
-                                                        + 'return to add them.',
-                                                })}
-                                            </div>
-                                        )}
-                                    />
-                                </TableCell>
-                                <TableCell align='right'>
-                                    <Tooltip
-                                        title={(
-                                            <FormattedMessage
-                                                id='AiVendors.AddEditAiVendor.vendor.delete'
-                                                defaultMessage='Delete'
-                                            />
-                                        )}
-                                        placement='right-end'
-                                        interactive
+                                        onClick={handleProviderDelete}
+                                        size='large'
                                     >
-                                        <IconButton
-                                            id={index}
-                                            onClick={handleDeleteModelFamily}
-                                            size='large'
-                                        >
-                                            <DeleteForeverIcon />
-                                        </IconButton>
-                                    </Tooltip>
-                                </TableCell>
-                            </TableRow>
-                        ))}
-                    </TableBody>
-                </Table>
+                                        <DeleteForeverIcon />
+                                    </IconButton>
+                                </Tooltip>
+                            </Grid>
+                        </Grid>
+                    ))}
+                </Grid>
             </Grid>
         </Box>
     );

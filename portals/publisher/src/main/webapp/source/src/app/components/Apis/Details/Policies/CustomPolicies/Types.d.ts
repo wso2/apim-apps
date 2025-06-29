@@ -30,3 +30,8 @@ export type ModelData = {
     endpointName: string;
     weight?: number;
 }
+
+export type ModelVendor = {
+    vendor: string;
+    values: string[];
+}

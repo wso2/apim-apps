@@ -21,12 +21,10 @@
 import React, { useReducer, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid'; // Import the v4 UUID generator
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import {
     MenuItem,
     Typography,
-    FormControlLabel,
-    Checkbox,
 } from '@mui/material';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
@@ -116,12 +114,15 @@ function reducer(state, newValue) {
 export default function AddEditAiVendor(props) {
     const intl = useIntl();
     const [saving, setSaving] = useState(false);
-    const { match: { params: { id: vendorId } }, history } = props; // <-- Rename id to vendorId
+    const { match: { params: { id: vendorId } }, history } = props;
     const inputSources = ['payload', 'header', 'queryParams'];
     const [authSource, setAuthSource] = useState('authHeader');
     const authSources = ['unsecured', 'authHeader', 'authQueryParameter'];
     const [validating, setValidating] = useState(false);
     const [file, setFile] = useState(null);
+    const location = useLocation();
+    const isSingleProvider = location.state?.isSingleProvider ?? true;
+
     const [initialState] = useState({
         name: '',
         apiVersion: '',
@@ -228,6 +229,16 @@ export default function AddEditAiVendor(props) {
 
         fetchData();
     }, [vendorId]);
+
+    /**
+     * Effect to update the state when isSingleProvider changes.
+     */
+    useEffect(() => {
+        dispatch({
+            field: 'multipleVendorSupport',
+            value: !isSingleProvider,
+        });
+    }, [isSingleProvider]);
 
     const camelCaseToTitleCase = (camelCaseStr) => {
         return camelCaseStr
@@ -528,103 +539,65 @@ export default function AddEditAiVendor(props) {
                             <StyledHr />
                         </Box>
                     </Grid>
-                    {/* TODO: Use radio button options for "no grouping", "group by model family" */}
                     <Grid item xs={12} md={12} lg={3}>
                         <Typography
                             color='inherit'
                             variant='subtitle2'
                             component='div'
-                            id='AiVendors.AddEditAiVendor.model.families.header'
+                            id='AiVendors.AddEditAiVendor.provider.configurations.header'
                         >
                             <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.model.families'
-                                defaultMessage='Model Families'
+                                id='AiVendors.AddEditAiVendor.provider.configurations'
+                                defaultMessage='Provider Configurations'
                             />
                         </Typography>
                         <Typography
                             color='inherit'
                             variant='caption'
                             component='p'
-                            id='AiVendors.AddEditAiVendor.model.families.body'
+                            id='AiVendors.AddEditAiVendor.provider.configurations.body'
                         >
                             <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.AiVendor.model.families.description'
-                                defaultMessage={'Define how models are organized — as a single list or '
-                                    + 'grouped under multiple families.'}
+                                id='AiVendors.AddEditAiVendor.AiVendor.provider.configurations.description'
+                                defaultMessage='Define provider configurations of the AI/LLM Vendor'
                             />
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
-                        <Grid container>
-                            <Grid item m={1}>
-                                <FormControlLabel
-                                    id='model-family-support'
-                                    value='enableModelFamilySupport'
-                                    control={(
-                                        <Checkbox
-                                            id='checkbox-enable-model-family-support'
-                                            checked={state.multipleVendorSupport}
-                                            onChange={(e) => dispatch({
-                                                field: 'multipleVendorSupport',
-                                                value: e.target.checked,
-                                            })}
-                                            name='enableModelFamilySupport'
-                                            color='primary'
-                                            disabled={!!vendorId}
-                                        />
-                                    )}
-                                    label={(
-                                        <FormattedMessage
-                                            id='AiVendors.AddEditAiVendor.form.model.family.support'
-                                            defaultMessage='Enable Model Family Support'
-                                        />
-                                    )}
-                                    labelPlacement='end'
-                                />
-                            </Grid>
-                            <Grid item xs={12} md={12} lg={9}>
-                                {state.multipleVendorSupport ? (
-                                    <ModelFamily
-                                        models={state.models}
-                                        onModelsChange={(newModels) => dispatch({
-                                            field: 'models',
-                                            value: newModels,
+                        {isSingleProvider ? (
+                            <Box component='div' m={1}>
+                                <Grid container>
+                                    <MuiChipsInput
+                                        variant='outlined'
+                                        fullWidth
+                                        value={state.modelList}
+                                        onAddChip={(model) => {
+                                            const updatedList = [...state.modelList, model];
+                                            dispatch({ field: 'modelList', value: updatedList });
+                                        }}
+                                        onDeleteChip={(model) => {
+                                            const filteredModelList = state.modelList.filter(
+                                                (modelItem) => modelItem !== model,
+                                            );
+                                            dispatch({ field: 'modelList', value: filteredModelList });
+                                        }}
+                                        placeholder={intl.formatMessage({
+                                            id: 'AiVendors.AddEditAiVendor.modelList.placeholder',
+                                            defaultMessage: 'Type Model name and press Enter',
                                         })}
+                                        data-testid='ai-vendor-llm-model-list'
                                     />
-                                ) : (
-                                    <Box component='div' m={1}>
-                                        <MuiChipsInput
-                                            variant='outlined'
-                                            fullWidth
-                                            value={state.modelList}
-                                            onAddChip={(model) => {
-                                                state.modelList.push(model);
-                                            }}
-                                            onDeleteChip={(model) => {
-                                                const filteredModelList = state.modelList.filter(
-                                                    (modelItem) => modelItem !== model,
-                                                );
-                                                dispatch({ field: 'modelList', value: filteredModelList });
-                                            }}
-                                            placeholder={intl.formatMessage({
-                                                id: 'AiVendors.AddEditAiVendor.modelList.placeholder',
-                                                defaultMessage: 'Type Model name and press Enter',
-                                            })}
-                                            data-testid='ai-vendor-llm-model-list'
-                                            helperText={(
-                                                <div style={{ position: 'absolute', marginTop: '10px' }}>
-                                                    {intl.formatMessage({
-                                                        id: 'AiVendors.AddEditAiVendor.modelList.help',
-                                                        defaultMessage: 'Type available models and '
-                                                            + 'press enter/return to add them.',
-                                                    })}
-                                                </div>
-                                            )}
-                                        />
-                                    </Box>
-                                )}
-                            </Grid>
-                        </Grid>
+                                </Grid>
+                            </Box>
+                        ) : (
+                            <ModelFamily
+                                models={state.models}
+                                onModelsChange={(newModels) => dispatch({
+                                    field: 'models',
+                                    value: newModels,
+                                })}
+                            />
+                        )}
                     </Grid>
                     <>
                         <Grid item xs={12}>
