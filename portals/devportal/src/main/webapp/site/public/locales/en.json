@@ -492,7 +492,6 @@
   "Applications.Listing.AppsTableContent.pending": "UPDATE PENDING",
   "Applications.Listing.AppsTableContent.rejected": "REJECTED",
   "Applications.Listing.AppsTableContent.wait.approval": "waiting for approval",
-  "Applications.Listing.AppsTableContent.wait.update.approval": "waiting for update approval",
   "Applications.Listing.DeleteConfirmation.clean.keys.dialog.content": "This will remove only the key entries stored in devportal, gateway and will not remove the service proveder keys.",
   "Applications.Listing.DeleteConfirmation.dialog,delete": "Delete",
   "Applications.Listing.DeleteConfirmation.dialog.cancel": "Cancel",

@@ -53,8 +53,16 @@ import ClearIcon from '@mui/icons-material/Clear';
 import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import WarningBase from 'AppComponents/AdminPages/Addons/WarningBase';
-import { Alert as MUIAlert } from '@mui/material';
+import {
+    Alert as MUIAlert, Table, TableHead, TableBody, TableRow, TableCell,
+} from '@mui/material';
 
+function transformPropertiesToJSONString(input) {
+    return input
+        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*=/g, '$1"$2":')
+        .replace(/=\s*([^,}\]]+)/g, ':"$1"')
+        .replace(/'/g, '"');
+}
 /**
  * Render a list
  * @param {JSON} props props passed from parent
@@ -80,7 +88,17 @@ function ListLabels() {
             .workflowsGet('AM_APPLICATION_UPDATE')
             .then((result) => {
                 const workflowlist = result.body.list.map((obj) => {
+                    let changes = [];
+                    try {
+                        const unformattedDiff = obj?.properties?.applicationUpdateDiff ?? [];
+                        const jsonCompatibleDiff = transformPropertiesToJSONString(unformattedDiff);
+                        changes = JSON.parse(jsonCompatibleDiff);
+                    } catch (e) {
+                        console.error('Could not parse changes:', e.message);
+                    }
+
                     return {
+                        changes,
                         description: obj.description,
                         applicationName: obj.properties.applicationName,
                         applicationTier: obj.properties.applicationTier,
@@ -218,6 +236,13 @@ function ListLabels() {
             options: {
                 sort: false,
                 filter: true,
+                setCellProps: () => ({
+                    style: {
+                        maxWidth: '250px',
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
+                    },
+                }),
             },
         },
         {
@@ -235,7 +260,7 @@ function ListLabels() {
             name: 'userName',
             label: intl.formatMessage({
                 id: 'Workflow.ApplicationUpdate.table.header.userName',
-                defaultMessage: 'Created by',
+                defaultMessage: 'Updated by',
             }),
             options: {
                 sort: false,
@@ -346,6 +371,83 @@ function ListLabels() {
         customToolbar: null,
         responsive: 'vertical',
         searchText,
+        expandableRows: true,
+        renderExpandableRow: (rowData, rowMeta) => {
+            const rowIndex = rowMeta.dataIndex;
+            const fullRow = data[rowIndex];
+            const changes = fullRow.changes || [];
+            if (changes.length > 0) {
+                return (
+                    <TableRow>
+                        <TableCell colSpan={1} />
+                        <TableCell colSpan={rowData.length}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Attribute</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>From</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>To</strong>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {changes.map((change) => (
+                                        <TableRow key={change.referenceId}>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                {change.attributeName?.trim() || 'N/A'}
+                                            </TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                {change.current?.trim() || 'N/A'}
+                                            </TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>
+                                                {change.expected?.trim() || 'N/A'}
+                                            </TableCell>
+                                        </TableRow>
+                                    ))}
+                                </TableBody>
+                            </Table>
+                        </TableCell>
+                    </TableRow>
+                );
+            } else {
+                return (
+                    <TableRow>
+                        <TableCell colSpan={1} />
+                        <TableCell colSpan={rowData.length}>
+                            <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>Attribute</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>From</strong>
+                                        </TableCell>
+                                        <TableCell sx={{ borderBottom: 'none' }}>
+                                            <strong>To</strong>
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    <TableRow>
+                                        <>
+                                            <TableCell sx={{ borderBottom: 'none' }}>N/A</TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>N/A</TableCell>
+                                            <TableCell sx={{ borderBottom: 'none' }}>N/A</TableCell>
+                                        </>
+                                    </TableRow>
+                                </TableBody>
+                            </Table>
+                        </TableCell>
+                    </TableRow>
+                );
+            }
+        },
         textLabels: {
             body: {
                 noMatch: intl.formatMessage({
