@@ -29,7 +29,7 @@ import AddCircle from '@mui/icons-material/AddCircle';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { Endpoint, ModelData } from './Types';
+import { Endpoint, ModelData, ModelVendor } from './Types';
 import ModelCard from './ModelCard';
 import { styled } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
@@ -81,6 +81,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
     const [config, setConfig] = useState<FailoverConfig>({
         production: {
             targetModel: {
+                vendor: '',
                 model: '',
                 endpointId: '',
                 endpointName: '',
@@ -89,6 +90,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
         },
         sandbox: {
             targetModel: {
+                vendor: '',
                 model: '',
                 endpointId: '',
                 endpointName: '',
@@ -98,7 +100,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
         requestTimeout: undefined,
         suspendDuration: undefined,
     });
-    const [modelList, setModelList] = useState<any[]>([]);
+    const [modelList, setModelList] = useState<ModelVendor[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState<Endpoint[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -156,12 +158,16 @@ const ModelFailover: FC<ModelFailoverProps> = ({
         const modelListPromise = API.getLLMProviderModelList(JSON.parse(apiFromContext.subtypeConfiguration.configuration).llmProviderId);
         modelListPromise
             .then((response) => {
-                setModelList(response.body);
+                const vendors: ModelVendor[] = response.body.map((vendor: any) => ({
+                    vendor: vendor.vendor,
+                    values: vendor.values
+                }));
+                setModelList(vendors);
             }).catch((error) => {
                 console.error(error);
             });
     }
-    
+
     useEffect(() => {
         fetchModelList();
         fetchEndpoints();
@@ -189,6 +195,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
 
     const handleAddFallbackModel = (env: 'production' | 'sandbox') => {
         const newModel: ModelData = {
+            vendor: '',
             model: '',
             endpointId: '',
             endpointName: '',
@@ -251,6 +258,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                 ...prev,
                 production: {
                     targetModel: {
+                        vendor: '',
                         model: '',
                         endpointId: '',
                         endpointName: '',
@@ -268,6 +276,7 @@ const ModelFailover: FC<ModelFailoverProps> = ({
                 ...prev,
                 sandbox: {
                     targetModel: {
+                        vendor: '',
                         model: '',
                         endpointId: '',
                         endpointName: '',

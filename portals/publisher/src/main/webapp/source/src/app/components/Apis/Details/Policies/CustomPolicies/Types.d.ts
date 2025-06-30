@@ -25,6 +25,7 @@ export type Endpoint = {
 }
 
 export type ModelData = {
+    vendor: string;
     model: string;
     endpointId: string;
     endpointName: string;

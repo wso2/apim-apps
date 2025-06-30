@@ -29,7 +29,7 @@ import AddCircle from '@mui/icons-material/AddCircle';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { Endpoint, ModelData } from './Types';
+import { Endpoint, ModelData, ModelVendor } from './Types';
 import ModelCard from './ModelCard';
 import { styled } from '@mui/material/styles';
 import Alert from '@mui/material/Alert';
@@ -80,7 +80,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
         sandbox: [],
         suspendDuration: undefined,
     });
-    const [modelList, setModelList] = useState<string[]>([]);
+    const [modelList, setModelList] = useState<ModelVendor[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState<Endpoint[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -137,8 +137,12 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
     const fetchModelList = () => {
         const modelListPromise = API.getLLMProviderModelList(JSON.parse(apiFromContext.subtypeConfiguration.configuration).llmProviderId);
         modelListPromise
-            .then((response) => { 
-                setModelList(response.body);
+            .then((response) => {
+                const vendors: ModelVendor[] = response.body.map((vendor: any) => ({
+                    vendor: vendor.vendor,
+                    values: vendor.values
+                }));
+                setModelList(vendors);
             }).catch((error) => {
                 console.error(error);
             });
@@ -165,6 +169,7 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
 
     const handleAddModel = (env: 'production' | 'sandbox') => {
         const newModel: ModelData = {
+            vendor: '',
             model: '',
             endpointId: '',
             endpointName: '',

@@ -108,8 +108,9 @@ function reducer(state, newValue) {
 }
 
 /**
- * Render a list
- * @returns {JSX} Header AppBar components.
+ * AddEditAiVendor component
+ * @param {*} props props passed from parents.
+ * @returns {JSX} AddEditAiVendor component.
  */
 export default function AddEditAiVendor(props) {
     const intl = useIntl();
@@ -121,7 +122,6 @@ export default function AddEditAiVendor(props) {
     const [validating, setValidating] = useState(false);
     const [file, setFile] = useState(null);
     const location = useLocation();
-    const isSingleProvider = location.state?.isSingleProvider ?? true;
 
     const [initialState] = useState({
         name: '',
@@ -173,7 +173,7 @@ export default function AddEditAiVendor(props) {
         multipleVendorSupport: false,
         apiDefinition: '',
         modelList: [],
-        models: [], // Initialize new state for ModelEntry
+        models: [],
     });
 
     const [state, dispatch] = useReducer(reducer, initialState);
@@ -188,7 +188,7 @@ export default function AddEditAiVendor(props) {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (vendorId) { // <-- Use vendorId instead of id
+            if (vendorId) {
                 const aiVendorResult = await new API().aiVendorGet(vendorId);
                 const aiVendorBody = aiVendorResult.body;
                 if (aiVendorBody) {
@@ -234,11 +234,13 @@ export default function AddEditAiVendor(props) {
      * Effect to update the state when isSingleProvider changes.
      */
     useEffect(() => {
-        dispatch({
-            field: 'multipleVendorSupport',
-            value: !isSingleProvider,
-        });
-    }, [isSingleProvider]);
+        if (location.state?.isSingleProvider !== undefined) {
+            dispatch({
+                field: 'multipleVendorSupport',
+                value: !location.state.isSingleProvider,
+            });
+        }
+    }, []);
 
     const camelCaseToTitleCase = (camelCaseStr) => {
         return camelCaseStr
@@ -299,6 +301,14 @@ export default function AddEditAiVendor(props) {
                     });
                 }
                 break;
+            case 'providerName':
+                if (fieldValue.trim() === '') {
+                    error = intl.formatMessage({
+                        id: 'AiVendors.AddEditAiVendor.is.empty.error.providerName',
+                        defaultMessage: 'Provider name is required.',
+                    });
+                }
+                break;
             default:
                 break;
         }
@@ -311,21 +321,14 @@ export default function AddEditAiVendor(props) {
                 || hasErrors('inputSource', meta.inputSource, validatingActive);
         });
 
-        // Basic validation for modelVendorEntries: ensure vendor name is not empty
-        const modelVendorEntriesErrors = state.models.some((entry) => entry.vendor.trim() === '');
-        if (modelVendorEntriesErrors && validatingActive) {
-            Alert.error(intl.formatMessage({
-                id: 'AiVendors.AddEditAiVendor.form.modelVendorEntries.vendorName.empty',
-                defaultMessage: 'Model Vendor name cannot be empty for all entries.',
-            }));
-            return true; // Indicate error
-        }
+        // Check for errors in model provider entries
+        const modelProviderEntriesErrors = state.models.some((entry) => entry.vendor.trim() === '');
 
         return hasErrors('name', state.name, validatingActive)
             || hasErrors('apiVersion', state.apiVersion, validatingActive)
             || hasErrors('connectorType', state.configurations.connectorType, validatingActive)
             || metadataErrors.some((error) => error)
-            || modelVendorEntriesErrors; // Include modelVendorEntries validation
+            || modelProviderEntriesErrors;
     };
 
     const formSaveCallback = async () => {
@@ -564,7 +567,17 @@ export default function AddEditAiVendor(props) {
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
-                        {isSingleProvider ? (
+                        {state.multipleVendorSupport ? (
+                            <ModelFamily
+                                models={state.models}
+                                onModelsChange={(newModels) => dispatch({
+                                    field: 'models',
+                                    value: newModels,
+                                })}
+                                hasErrors={hasErrors}
+                                validating={validating}
+                            />
+                        ) : (
                             <Box component='div' m={1}>
                                 <Grid container>
                                     <MuiChipsInput
@@ -589,14 +602,6 @@ export default function AddEditAiVendor(props) {
                                     />
                                 </Grid>
                             </Box>
-                        ) : (
-                            <ModelFamily
-                                models={state.models}
-                                onModelsChange={(newModels) => dispatch({
-                                    field: 'models',
-                                    value: newModels,
-                                })}
-                            />
                         )}
                     </Grid>
                     <>

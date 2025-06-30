@@ -30,7 +30,12 @@ import AddCircle from '@mui/icons-material/AddCircle';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import { MuiChipsInput } from 'mui-chips-input';
 
-const ModelFamily = ({ models, onModelsChange }) => {
+const ModelFamily = ({
+    models,
+    onModelsChange,
+    hasErrors,
+    validating,
+}) => {
     const intl = useIntl();
 
     /**
@@ -96,6 +101,7 @@ const ModelFamily = ({ models, onModelsChange }) => {
                                 <TextField
                                     fullWidth
                                     id={index}
+                                    required
                                     name='modelVendor'
                                     label={intl.formatMessage({
                                         id: 'AiVendors.AddEditAiVendor.provider.name',
@@ -103,8 +109,9 @@ const ModelFamily = ({ models, onModelsChange }) => {
                                     })}
                                     margin='dense'
                                     variant='outlined'
-                                    value={model.name}
+                                    value={model.vendor}
                                     onChange={(e) => handleProviderChange(model.id, e)}
+                                    error={hasErrors('providerName', model.vendor, validating)}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={8}>
@@ -149,7 +156,7 @@ const ModelFamily = ({ models, onModelsChange }) => {
                                 <Tooltip
                                     title={(
                                         <FormattedMessage
-                                            id='AiVendors.AddEditAiVendor.vendor.delete'
+                                            id='AiVendors.AddEditAiVendor.provider.delete'
                                             defaultMessage='Delete'
                                         />
                                     )}
@@ -180,6 +187,8 @@ ModelFamily.propTypes = {
         values: PropTypes.arrayOf(PropTypes.string),
     })).isRequired,
     onModelsChange: PropTypes.func.isRequired,
+    hasErrors: PropTypes.func.isRequired,
+    validating: PropTypes.bool.isRequired,
 };
 
 export default ModelFamily;
