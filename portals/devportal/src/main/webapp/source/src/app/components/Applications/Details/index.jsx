@@ -41,6 +41,7 @@ import Paper from '@mui/material/Paper';
 import Subscriptions from './Subscriptions';
 import InfoBar from './InfoBar';
 import Overview from './Overview';
+import Sdks from './Sdks';
 
 const PREFIX = 'index';
 
@@ -443,6 +444,20 @@ class Details extends Component {
                         open
                         id='left-menu-subscriptions'
                     />
+                    <LeftMenuItem
+                        text={(
+                            <FormattedMessage
+                                id='Applications.Details.menu.sdks'
+                                defaultMessage='SDKs'
+                            />
+                        )}
+                        iconText='sdk'
+                        route='sdks'
+                        to={pathPrefix + '/sdk'}
+                        open
+                        id='left-menu-sdks'
+                    />
+
                 </nav>
                 <Box sx={(theme) => ({
                     display: 'flex',
@@ -494,6 +509,12 @@ class Details extends Component {
                                 path='/applications/:applicationId/subscriptions'
                                 render={() => (
                                     <Subscriptions application={application} getApplication={this.getApplication} />
+                                )}
+                            />
+                            <Route
+                                path='/applications/:applicationId/sdk'
+                                render={() => (
+                                    <Sdks application={application} getApplication={this.getApplication} />
                                 )}
                             />
                             <Route component={ResourceNotFound} />
