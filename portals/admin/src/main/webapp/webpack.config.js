@@ -48,7 +48,7 @@ module.exports = function (env, args) {
             hot: true,
             devMiddleware: {
                 index: false,
-                writeToDisk: true,
+                writeToDisk: false,
                 publicPath: '/site/public/dist/',
             },
             client: {

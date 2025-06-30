@@ -104,7 +104,7 @@ const ModelFamily = ({
                                     required
                                     name='modelVendor'
                                     label={intl.formatMessage({
-                                        id: 'AiVendors.AddEditAiVendor.provider.name',
+                                        id: 'AiVendors.ModelFamily.provider.name',
                                         defaultMessage: 'Provider Name',
                                     })}
                                     margin='dense'
@@ -146,7 +146,7 @@ const ModelFamily = ({
                                         onModelsChange(updatedModels);
                                     }}
                                     placeholder={intl.formatMessage({
-                                        id: 'AiVendors.AddEditAiVendor.provider.models.placeholder',
+                                        id: 'AiVendors.ModelFamily.provider.models.placeholder',
                                         defaultMessage: 'Type Model name and press Enter',
                                     })}
                                     data-testid={`ai-vendor-llm-models-${index}`}
@@ -156,7 +156,7 @@ const ModelFamily = ({
                                 <Tooltip
                                     title={(
                                         <FormattedMessage
-                                            id='AiVendors.AddEditAiVendor.provider.delete'
+                                            id='AiVendors.ModelFamily.provider.delete'
                                             defaultMessage='Delete'
                                         />
                                     )}

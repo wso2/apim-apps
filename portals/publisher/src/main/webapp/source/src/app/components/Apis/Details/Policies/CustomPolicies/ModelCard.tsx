@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { FC, useEffect } from 'react';
+import React, { FC } from 'react';
 
 import { FormattedMessage } from 'react-intl';
 import Grid from '@mui/material/Grid';
@@ -68,10 +68,9 @@ const ModelCard: FC<ModelCardProps> = ({
                 <Grid item xs={12}>
                     {modelList.length === 1 ? (
                         <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
-                            {/* If there's only one vendor, we can directly show the model selection */}
                             <InputLabel id='model-label'>
                                 <FormattedMessage
-                                    id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.select.model'
+                                    id='Apis.Details.Policies.CustomPolicies.ModelCard.select.model'
                                     defaultMessage='Model'
                                 />
                             </InputLabel>
@@ -93,7 +92,7 @@ const ModelCard: FC<ModelCardProps> = ({
                             <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
                                 <InputLabel id='vendor-label'>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.select.provider'
+                                        id='Apis.Details.Policies.CustomPolicies.ModelCard.select.provider'
                                         defaultMessage='Provider'
                                     />
                                 </InputLabel>
@@ -115,7 +114,7 @@ const ModelCard: FC<ModelCardProps> = ({
                             <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
                                 <InputLabel id='model-label'>
                                     <FormattedMessage
-                                        id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.select.model'
+                                        id='Apis.Details.Policies.CustomPolicies.ModelCard.select.model'
                                         defaultMessage='Model'
                                     />
                                 </InputLabel>
@@ -137,7 +136,7 @@ const ModelCard: FC<ModelCardProps> = ({
                     <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
                         <InputLabel id='endpoint-label'>
                             <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.select.endpoint'
+                                id='Apis.Details.Policies.CustomPolicies.ModelCard.select.endpoint'
                                 defaultMessage='Endpoint'
                             />
                         </InputLabel>

@@ -7,7 +7,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- * http://www.apache.org/licenses/LICENSE-2.0
+ *   http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,7 +19,7 @@
  */
 
 import React, { useReducer, useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid'; // Import the v4 UUID generator
+import { v4 as uuidv4 } from 'uuid';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
 import {
@@ -71,7 +71,7 @@ function reducer(state, newValue) {
         case 'modelList':
         case 'multipleVendorSupport':
         case 'apiDefinition':
-        case 'models': // New case for handling model vendor entries
+        case 'models':
             return { ...state, [field]: value };
         case 'requestModel':
         case 'responseModel':
@@ -363,12 +363,10 @@ export default function AddEditAiVendor(props) {
             const newState = {
                 ...state,
                 configurations: updatedConfigurations,
-                // modelList: JSON.stringify(state.modelList),
-                // Stringify modelVendorEntries before sending to API
                 models: JSON.stringify(models),
             };
 
-            if (vendorId) { // <-- Use vendorId instead of id
+            if (vendorId) {
                 await new API().updateAiVendor(vendorId, { ...newState, apiDefinition: file });
                 Alert.success(`${state.name} ${intl.formatMessage({
                     id: 'AiVendor.edit.success',
@@ -561,7 +559,7 @@ export default function AddEditAiVendor(props) {
                             id='AiVendors.AddEditAiVendor.provider.configurations.body'
                         >
                             <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.AiVendor.provider.configurations.description'
+                                id='AiVendors.AddEditAiVendor.provider.configurations.description'
                                 defaultMessage='Define provider configurations of the AI/LLM Vendor'
                             />
                         </Typography>
