@@ -126,16 +126,23 @@ const Policies: FC<PolicyProps> =  ({
         Promise.all([commonPoliciesPromise]).then((response) => {
             const [commonPoliciesResponse] = response;
             const commonPolicies = commonPoliciesResponse.body.list;
+
+            const filteredCommonPolicies = commonPolicies.filter((policy: Policy) => {
+                return !policy.supportedApiTypes.some((item: any) => {
+                    return item && typeof item === 'object' && item.subType === 'AIAPI';
+                });
+            });
+            
             /**
              * Similar to policies in Global Policies scenario.
              * But as we are reusing PoliciesExpansion, both PolicySpec[] and Policy[] types are required.
              */
-            setAllPolicies(commonPolicies);
+            setAllPolicies(filteredCommonPolicies);
 
-            commonPolicies.sort(
+            filteredCommonPolicies.sort(
                 (a: Policy, b: Policy) => a.name.localeCompare(b.name))
             
-            setPolicies(commonPolicies);
+            setPolicies(filteredCommonPolicies);
         }).catch(() => {
             Alert.error(intl.formatMessage({
                 id: 'Error.Retrieve.Policy.List',

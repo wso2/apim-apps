@@ -31,15 +31,21 @@ import {
     InputLabel,
     FormControl,
     FormHelperText,
+    InputAdornment,
+    IconButton,
     MenuItem,
+    Paper,
 } from '@mui/material';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Progress } from 'AppComponents/Shared';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { PolicySpec, ApiPolicy, AttachedPolicy, Policy, PolicySpecAttribute } from '../Types';
 import ApiOperationContext from "../ApiOperationContext";
 import ModelRoundRobin from '../CustomPolicies/ModelRoundRobin';
 import ModelWeightedRoundRobin from '../CustomPolicies/ModelWeightedRoundRobin';
 import ModelFailover from '../CustomPolicies/ModelFailover';
+import { Editor } from '@monaco-editor/react';
 
 const PREFIX = 'General';
 
@@ -78,6 +84,15 @@ const StyledBox = styled(Box)((
     [`& .${classes.formControl}`]: {
         width: '80%',
     }
+}));
+
+const EditorContainer = styled(Box)(({ theme }) => ({
+    height: 400,
+    '& .monaco-editor': {
+        borderBottomLeftRadius: theme.shape.borderRadius,
+        borderBottomRightRadius: theme.shape.borderRadius,
+        overflow: 'hidden',
+    },
 }));
 
 interface GeneralProps {
@@ -130,7 +145,7 @@ const General: FC<GeneralProps> = ({
         return <Progress />
     }
 
-    const onInputChange = (event: any, specType: string) => {
+    const onInputChange = (event: any, specType: string, specName?: string) => {
         if (specType.toLowerCase() === 'boolean') {
             setState({ ...state, [event.target.name]: event.target.checked });
         } else if (
@@ -139,6 +154,8 @@ const General: FC<GeneralProps> = ({
             || specType.toLowerCase() === 'enum'
         ) {
             setState({ ...state, [event.target.name]: event.target.value });
+        } else if (specType.toLowerCase() === 'json') {
+            specName && setState({ ...state, [specName]: event });
         }
     }
 
@@ -165,6 +182,16 @@ const General: FC<GeneralProps> = ({
                 updateCandidates[key] = attributeSpec.defaultValue;
             } else {
                 updateCandidates[key] = value;
+            }
+            // Escape double quotes in JSON string to HTML-safe equivalent
+            if (attributeSpec && attributeSpec.type.toLowerCase() === 'json') {
+                try {
+                    updateCandidates[key] = updateCandidates[key].replace(/"/g, "&quot;");
+                } catch (e) {
+                    console.error(
+                        `Failed to escape double quotes for key "${key}" of type "json".`, e instanceof Error ? e.message : e
+                    );
+                }
             }
         });
 
@@ -231,6 +258,17 @@ const General: FC<GeneralProps> = ({
         } else if (previousVal !== null && previousVal !== undefined) {
             if (spec.type.toLowerCase() === 'integer') return parseInt(previousVal, 10);
             else if (spec.type.toLowerCase() === 'boolean') return (previousVal.toString() === 'true');
+            else if (spec.type.toLowerCase() === 'json') {
+                try {
+                    const jsonString = previousVal.replace(/&quot;/g, '"');
+                    const jsonObject = JSON.parse(jsonString);
+                    return JSON.stringify(jsonObject, null, 2);
+                } catch (e) {
+                    console.error(
+                        `Failed to parse json for attribute "${specName}"`, e instanceof Error ? e.message : e
+                    );
+                }
+            }
             else return previousVal;
         } else if (spec.defaultValue !== null && spec.defaultValue !== undefined) {
             if (spec.type.toLowerCase() === 'integer') return parseInt(spec.defaultValue, 10);
@@ -451,24 +489,80 @@ const General: FC<GeneralProps> = ({
 
                             {/* When attribute type is boolean */}
                             {spec.type.toLowerCase() === 'boolean' && (
-                                <FormControlLabel
-                                    control={
-                                        <Checkbox
-                                            checked={getValue(spec)}
-                                            onChange={(e) => onInputChange(e, spec.type)}
-                                            name={spec.name}
-                                            color='primary'
-                                        />
-                                    }
-                                    label={(
+                                <FormControl
+                                    variant='outlined'
+                                    className={classes.formControl}
+                                    error={getError(spec) !== ''}
+                                >
+                                    <FormControlLabel
+                                        control={
+                                            <Checkbox
+                                                checked={getValue(spec)}
+                                                onChange={(e) => onInputChange(e, spec.type)}
+                                                name={spec.name}
+                                                color='primary'
+                                            />
+                                        }
+                                        label={(
+                                            <>
+                                                {spec.displayName}
+                                                {spec.required && (
+                                                    <sup className={classes.mandatoryStar}>*</sup>
+                                                )}
+                                            </>
+                                        )}
+                                    />
+                                    <FormHelperText>
+                                        {getError(spec) === '' ? spec.description : getError(spec)}
+                                    </FormHelperText>
+                                </FormControl>
+                            )}
+
+                            {/* When attribute type is json */}
+                            {spec.type.toLowerCase() === 'json' && (
+                                <FormControl
+                                    variant='outlined'
+                                    className={classes.formControl}
+                                    error={getError(spec) !== ''}
+                                    style={{ width: '100%' }}
+                                >
+                                    {/* Custom Label */}
+                                    <InputLabel shrink htmlFor={spec.name} style={{ marginBottom: '0.5rem' }}>
                                         <>
                                             {spec.displayName}
                                             {spec.required && (
                                                 <sup className={classes.mandatoryStar}>*</sup>
                                             )}
                                         </>
-                                    )}
-                                />
+                                    </InputLabel>
+
+                                    {/* Monaco Editor */}
+                                    <Box component='div' m={1}>
+                                        <Paper variant='outlined'>
+                                            <EditorContainer>
+                                                <Editor
+                                                    height='100%'
+                                                    defaultLanguage='json'
+                                                    value={getValue(spec)}
+                                                    onChange={(value) => onInputChange(value, spec.type, spec.name)}
+                                                    theme='light'
+                                                    options={{
+                                                        minimap: { enabled: false },
+                                                        lineNumbers: 'on',
+                                                        scrollBeyondLastLine: false,
+                                                        tabSize: 2,
+                                                        lineNumbersMinChars: 2,
+                                                    }}
+                                                />
+                                            </EditorContainer>
+                                        </Paper>
+                                    </Box>
+
+                                    {/* Helper or Error text */}
+                                    <FormHelperText>
+                                        {getError(spec) === '' ? spec.description : getError(spec)}
+                                    </FormHelperText>
+                                </FormControl>
                             )}
                         </Grid>
                     ))}
