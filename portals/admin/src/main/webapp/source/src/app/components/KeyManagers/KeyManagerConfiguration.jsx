@@ -4,6 +4,7 @@ import TextField from '@mui/material/TextField';
 import Checkbox from '@mui/material/Checkbox';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from '@mui/material/Box';
+import Certificates from 'AppComponents/KeyManagers/Certificates';
 import FormLabel from '@mui/material/FormLabel';
 import FormControl from '@mui/material/FormControl';
 import FormGroup from '@mui/material/FormGroup';
@@ -29,23 +30,26 @@ const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.d
 export default function KeyManagerConfiguration(props) {
     const {
         keymanagerConnectorConfigurations, additionalProperties,
-        setAdditionalProperties, hasErrors, validating,
+        setAdditionalProperties, hasErrors, validating, dispatch, certificates,
     } = props;
 
     const onChange = (e) => {
         let finalValue;
-        const { name, value, type } = e.target;
+        const {
+            name, value, type, checked,
+        } = e.target;
         if (type === 'checkbox') {
-            if (additionalProperties[name]) {
-                finalValue = additionalProperties[name];
+            const current = Array.isArray(additionalProperties[name]) ? [...additionalProperties[name]] : [];
+            if (checked) {
+                // Add only if not already included
+                if (!current.includes(value)) {
+                    finalValue = [...current, value];
+                } else {
+                    finalValue = current;
+                }
             } else {
-                finalValue = [];
-            }
-            if (e.target.checked) {
-                finalValue.push(value);
-            } else {
-                const newValue = finalValue.filter((v) => v !== e.target.value);
-                finalValue = newValue;
+                // Remove unchecked value
+                finalValue = current.filter((v) => v !== value);
             }
         } else {
             finalValue = value;
@@ -60,6 +64,56 @@ export default function KeyManagerConfiguration(props) {
         if (additionalProperties[keymanagerConnectorConfiguration.name]) {
             value = additionalProperties[keymanagerConnectorConfiguration.name];
         }
+        const renderNestedConfigs = (configs, parentType, parentName) => {
+            return configs.map((config, index) => {
+                const {
+                    name, label, type, values = [],
+                } = config;
+                const isObjectArray = Array.isArray(values) && typeof values[0] === 'object';
+
+                return (
+                    <Box ml={3} key={name || index} mb={2}>
+                        {/* Render checkbox only if type is 'select', else just the label */}
+                        {parentType === 'select' ? (
+                            <FormControlLabel
+                                control={(
+                                    <Checkbox
+                                        checked={Array.isArray(additionalProperties[parentName])
+                                            ? additionalProperties[parentName].includes(name)
+                                            : false}
+                                        onChange={(e) => {
+                                            const current = Array.isArray(additionalProperties[parentName])
+                                                ? [...additionalProperties[parentName]]
+                                                : [];
+                                            const { checked } = e.target;
+                                            let finalValue;
+                                            if (checked && !current.includes(name)) {
+                                                finalValue = [...current, name];
+                                            } else if (!checked) {
+                                                finalValue = current.filter((v) => v !== name);
+                                            } else {
+                                                finalValue = current;
+                                            }
+                                            setAdditionalProperties(parentName, finalValue);
+                                        }}
+                                        value={name}
+                                        color='primary'
+                                        name={name}
+                                    />
+                                )}
+                                label={label}
+                            />
+                        ) : (
+                            <Box>{label}</Box>
+                        )}
+                        {/* DFS: Render children recursively if object array */}
+                        {isObjectArray && renderNestedConfigs(values, type)}
+                        {!isObjectArray && values.length === 0 && getComponent(config)}
+                    </Box>
+                );
+            });
+        };
+
         if (keymanagerConnectorConfiguration.type === 'input') {
             if (keymanagerConnectorConfiguration.mask) {
                 return (
@@ -103,31 +157,44 @@ export default function KeyManagerConfiguration(props) {
                 />
             );
         } else if (keymanagerConnectorConfiguration.type === 'select') {
+            const { values = [] } = keymanagerConnectorConfiguration;
+            const isObjectArray = values.length > 0 && typeof values[0] === 'object';
+
             return (
-                <FormControl variant='standard' component='fieldset'>
-                    <FormLabel component='legend'>
+                <FormControl variant='standard' component='div' sx={{ width: '100%' }}>
+                    <FormLabel sx={{ mb: 1, display: 'block' }}>
                         <span>
                             {keymanagerConnectorConfiguration.label}
                             {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
                         </span>
                     </FormLabel>
                     <FormGroup>
-                        {keymanagerConnectorConfiguration.values.map((selection) => (
-                            <FormControlLabel
-                                control={(
-                                    <Checkbox
-                                        checked={value.includes(selection)}
-                                        onChange={onChange}
-                                        value={selection}
-                                        color='primary'
-                                        name={keymanagerConnectorConfiguration.name}
-                                    />
-                                )}
-                                label={selection}
-                            />
-                        ))}
+                        {isObjectArray ? renderNestedConfigs(values, 'select', keymanagerConnectorConfiguration.name)
+                            : values.map((selection) => (
+                                <FormControlLabel
+                                    control={(
+                                        <Checkbox
+                                            checked={value.includes(selection)}
+                                            onChange={onChange}
+                                            value={selection}
+                                            color='primary'
+                                            name={keymanagerConnectorConfiguration.name}
+                                        />
+                                    )}
+                                    label={selection}
+                                />
+                            ))}
                     </FormGroup>
                 </FormControl>
+            );
+        } else if (keymanagerConnectorConfiguration.type === 'certificate') {
+            return (
+                <Box>
+                    <Certificates
+                        certificates={certificates}
+                        dispatch={dispatch}
+                    />
+                </Box>
             );
         } else if (keymanagerConnectorConfiguration.type === 'checkbox') {
             return (

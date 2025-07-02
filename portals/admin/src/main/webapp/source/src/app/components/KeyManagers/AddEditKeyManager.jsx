@@ -162,13 +162,1290 @@ function AddEditKeyManager(props) {
     const [validRoles, setValidRoles] = useState([]);
     const [invalidRoles, setInvalidRoles] = useState([]);
     const [roleValidity, setRoleValidity] = useState(true);
-    const { settings, isSuperTenant, user: { _scopes } } = useAppContext();
+    const { isSuperTenant, user: { _scopes } } = useAppContext();
     const location = useLocation();
     const { isGlobal } = (location && location.state) || false;
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
     const [validOrgs, setValidOrgs] = useState([]);
     const [orgSelectionType, setOrgSelectionType] = useState(null);
 
+    const settingsString = `{
+        "scopes": [
+            "apim:admin",
+            "apim:admin_alert_manage",
+            "apim:admin_application_view",
+            "apim:admin_operations",
+            "apim:admin_settings",
+            "apim:admin_tier_manage",
+            "apim:admin_tier_view",
+            "apim:api_category",
+            "apim:api_import_export",
+            "apim:api_product_import_export",
+            "apim:api_provider_change",
+            "apim:api_workflow_approve",
+            "apim:api_workflow_view",
+            "apim:app_import_export",
+            "apim:app_owner_change",
+            "apim:bl_manage",
+            "apim:bl_view",
+            "apim:bot_data",
+            "apim:environment_manage",
+            "apim:environment_read",
+            "apim:gov_policy_manage",
+            "apim:gov_policy_read",
+            "apim:gov_result_read",
+            "apim:gov_rule_manage",
+            "apim:gov_rule_read",
+            "apim:keymanagers_manage",
+            "apim:llm_provider_manage",
+            "apim:mediation_policy_create",
+            "apim:mediation_policy_view",
+            "apim:monetization_usage_publish",
+            "apim:organization_manage",
+            "apim:organization_read",
+            "apim:policies_import_export",
+            "apim:role_manage",
+            "apim:scope_manage",
+            "apim:tenantInfo",
+            "apim:tenant_theme_manage",
+            "apim:tier_manage",
+            "apim:tier_view",
+            "openid"
+        ],
+        "gatewayTypes": [
+            "Regular",
+            "APK",
+            "AWS"
+        ],
+        "IsJWTEnabledForLoginTokens": false,
+        "orgAccessControlEnabled": true,
+        "keyManagerConfiguration": [
+            {
+            "type": "Auth0",
+            "displayName": "Auth0",
+            "defaultConsumerKeyClaim": "azp",
+            "defaultScopesClaim": "scope",
+            "configurations": [
+                {
+                "name": "client_id",
+                "label": "Client ID",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Client ID of Service Application",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "client_secret",
+                "label": "Client Secret",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "Client Secret of Service Application",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "audience",
+                "label": "Audience",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Audience of the Admin API",
+                "values": [],
+                "default": "https://[tenant].[region].auth0.com/api/v2/"
+                }
+            ],
+            "endpointConfigurations": [
+                {
+                "name": "client_registration_endpoint",
+                "label": "Client Registration Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g.,https://localhost:9443/client-registration/v0.17/register",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "introspection_endpoint",
+                "label": "Introspection Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/introspect",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "token_endpoint",
+                "label": "Token Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "revoke_endpoint",
+                "label": "Revoke Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/revoke",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "userinfo_endpoint",
+                "label": "UserInfo Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/userinfo",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "authorize_endpoint",
+                "label": "Authorize Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_token_endpoint",
+                "label": "Display Token Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_revoke_endpoint",
+                "label": "Display Revoke Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                }
+            ]
+            },
+            {
+            "type": "AzureAD",
+            "displayName": "Azure AD",
+            "defaultConsumerKeyClaim": "azp",
+            "defaultScopesClaim": "",
+            "configurations": [
+                {
+                "name": "microsoft_graph_api_endpoint",
+                "label": "Microsoft Graph API Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Microsoft's Graph API Endpoint",
+                "values": [],
+                "default": "https://graph.microsoft.com"
+                },
+                {
+                "name": "v1.0",
+                "label": "Microsoft Graph API Endpoint Version",
+                "type": "select",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Microsoft's Graph API Endpoint Version",
+                "values": [
+                    "v1.0"
+                ],
+                "default": "v1.0"
+                },
+                {
+                "name": "azure_ad_client_id",
+                "label": "Client ID",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Azure AD App Client ID",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "azure_ad_client_secret",
+                "label": "Client Secret",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "Azure AD App Client Secret",
+                "values": [],
+                "default": ""
+                }
+            ],
+            "endpointConfigurations": [
+                {
+                "name": "client_registration_endpoint",
+                "label": "Client Registration Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g.,https://localhost:9443/client-registration/v0.17/register",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "introspection_endpoint",
+                "label": "Introspection Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/introspect",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "token_endpoint",
+                "label": "Token Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "revoke_endpoint",
+                "label": "Revoke Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/revoke",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "userinfo_endpoint",
+                "label": "UserInfo Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/userinfo",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "authorize_endpoint",
+                "label": "Authorize Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_token_endpoint",
+                "label": "Display Token Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_revoke_endpoint",
+                "label": "Display Revoke Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                }
+            ]
+            },
+            {
+            "type": "WSO2-IS",
+            "displayName": "WSO2 Identity Server",
+            "defaultConsumerKeyClaim": "azp",
+            "defaultScopesClaim": "scope",
+            "configurations": [
+                {
+                "name": "Username",
+                "label": "Username",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Username of admin user",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "Password",
+                "label": "Password",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "Password of Admin user",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "km_admin_as_app_owner",
+                "label": "Enable admin user as the owner of created OAuth applications",
+                "type": "checkbox",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Enable admin user as the owner of created OAuth applications",
+                "values": [
+                    "Use as OAuth Application Owner"
+                ],
+                "default": ""
+                }
+            ],
+            "endpointConfigurations": [
+                {
+                "name": "client_registration_endpoint",
+                "label": "Client Registration Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g.,https://localhost:9443/client-registration/v0.17/register",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "introspection_endpoint",
+                "label": "Introspection Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/introspect",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "token_endpoint",
+                "label": "Token Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "revoke_endpoint",
+                "label": "Revoke Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/revoke",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "userinfo_endpoint",
+                "label": "UserInfo Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/userinfo",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "authorize_endpoint",
+                "label": "Authorize Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_token_endpoint",
+                "label": "Display Token Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_revoke_endpoint",
+                "label": "Display Revoke Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                }
+            ]
+            },
+            {
+            "type": "Forgerock",
+            "displayName": "Forgerock",
+            "defaultConsumerKeyClaim": "aud",
+            "defaultScopesClaim": "scp",
+            "configurations": [
+                {
+                "name": "client_id",
+                "label": "Client ID",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Client ID of service Application",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "client_secret",
+                "label": "Client Secret",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "Client Secret of service Application",
+                "values": [],
+                "default": ""
+                }
+            ],
+            "endpointConfigurations": [
+                {
+                "name": "client_registration_endpoint",
+                "label": "Client Registration Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g.,https://localhost:9443/client-registration/v0.17/register",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "introspection_endpoint",
+                "label": "Introspection Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/introspect",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "token_endpoint",
+                "label": "Token Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "revoke_endpoint",
+                "label": "Revoke Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/revoke",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "userinfo_endpoint",
+                "label": "UserInfo Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/userinfo",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "authorize_endpoint",
+                "label": "Authorize Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_token_endpoint",
+                "label": "Display Token Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_revoke_endpoint",
+                "label": "Display Revoke Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                }
+            ]
+            },
+            {
+            "type": "KeyCloak",
+            "displayName": "KeyCloak",
+            "defaultConsumerKeyClaim": "",
+            "defaultScopesClaim": "",
+            "configurations": [
+                {
+                "name": "client_id",
+                "label": "Client ID",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Client ID of service Application",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "client_secret",
+                "label": "Client Secret",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "Client Secret of service Application",
+                "values": [],
+                "default": ""
+                }
+            ],
+            "endpointConfigurations": [
+                {
+                "name": "client_registration_endpoint",
+                "label": "Client Registration Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g.,https://localhost:9443/client-registration/v0.17/register",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "introspection_endpoint",
+                "label": "Introspection Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/introspect",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "token_endpoint",
+                "label": "Token Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "revoke_endpoint",
+                "label": "Revoke Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/revoke",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "userinfo_endpoint",
+                "label": "UserInfo Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/userinfo",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "authorize_endpoint",
+                "label": "Authorize Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_token_endpoint",
+                "label": "Display Token Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_revoke_endpoint",
+                "label": "Display Revoke Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                }
+            ]
+            },
+            {
+            "type": "PingFederate",
+            "displayName": "PingFederate",
+            "defaultConsumerKeyClaim": "client_id_name",
+            "defaultScopesClaim": "",
+            "configurations": [
+                {
+                "name": "username",
+                "label": "Username",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Username of admin user",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "password",
+                "label": "Password",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "Password of Admin user",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "client_id",
+                "label": "Client ID",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Client Id for Token Validation",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "client_secret",
+                "label": "Client Secret",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "Client Secret for Token Validation",
+                "values": [],
+                "default": ""
+                }
+            ],
+            "endpointConfigurations": [
+                {
+                "name": "client_registration_endpoint",
+                "label": "Client Registration Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g.,https://localhost:9443/client-registration/v0.17/register",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "introspection_endpoint",
+                "label": "Introspection Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/introspect",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "token_endpoint",
+                "label": "Token Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "revoke_endpoint",
+                "label": "Revoke Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/revoke",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "userinfo_endpoint",
+                "label": "UserInfo Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/userinfo",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "authorize_endpoint",
+                "label": "Authorize Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_token_endpoint",
+                "label": "Display Token Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_revoke_endpoint",
+                "label": "Display Revoke Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                }
+            ]
+            },
+            {
+            "type": "Okta",
+            "displayName": "Okta",
+            "defaultConsumerKeyClaim": "cid",
+            "defaultScopesClaim": "scp",
+            "configurations": [
+                {
+                "name": "apiKey",
+                "label": "API KEY",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "API Key Generated From Okta UI",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "client_id",
+                "label": "Client ID",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Client ID of service Application",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "client_secret",
+                "label": "Client Secret",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "Client Secret of service Application",
+                "values": [],
+                "default": ""
+                }
+            ],
+            "endpointConfigurations": [
+                {
+                "name": "client_registration_endpoint",
+                "label": "Client Registration Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g.,https://localhost:9443/client-registration/v0.17/register",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "introspection_endpoint",
+                "label": "Introspection Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/introspect",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "token_endpoint",
+                "label": "Token Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "revoke_endpoint",
+                "label": "Revoke Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/revoke",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "userinfo_endpoint",
+                "label": "UserInfo Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/userinfo",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "authorize_endpoint",
+                "label": "Authorize Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_token_endpoint",
+                "label": "Display Token Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_revoke_endpoint",
+                "label": "Display Revoke Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                }
+            ]
+            },
+            {
+            "type": "WSO2-IS-7",
+            "displayName": "WSO2 Identity Server 7",
+            "defaultConsumerKeyClaim": "azp",
+            "defaultScopesClaim": "scope",
+            "authConfigs": [
+                {
+                    "name": "AuthenticationType",
+                    "label": "Authentication Type",
+                    "type": "select",
+                    "required": true,
+                    "mask": false,
+                    "multiple": false,
+                    "tooltip": "Select the authentication type for connector configuration",
+                    "values": [
+                        {
+                        "name": "BasicAuth",
+                        "label": "Basic Authentication",
+                        "required": true,
+                        "mask": false,
+                        "multiple": false,
+                        "tooltip": "Username of admin user",
+                        "values": [
+                            {
+                            "name": "Username",
+                            "label": "Username",
+                            "type": "input",
+                            "required": false,
+                            "mask": false,
+                            "multiple": false,
+                            "tooltip": "Username of admin user",
+                            "values": [],
+                            "default": ""
+                            },
+                            {
+                            "name": "Password",
+                            "label": "Password",
+                            "type": "input",
+                            "required": false,
+                            "mask": true,
+                            "multiple": false,
+                            "tooltip": "Password of admin user",
+                            "values": [],
+                            "default": ""
+                            }
+                        ],
+                        "default": ""
+                        },
+                        {
+                        "name": "Mutual-TLS",
+                        "label": "MTLS Authentication",
+                        "type": "select",
+                        "required": true,
+                        "mask": false,
+                        "multiple": false,
+                        "tooltip": "Tenant wide or server wide certificate for mutual TLS authentication",
+                        "values": [
+                            {
+                            "name": "Server-wide",
+                            "label": "Server-wide Certificate",
+                            "type": "select",
+                            "required": false,
+                            "mask": false,
+                            "multiple": false,
+                            "tooltip": "Server wide certificate for mutual TLS authentication",
+                            "values": [],
+                            "default": ""
+                            },
+                            {
+                            "name": "Tenant-wide",
+                            "label": "Tenant-wide Certificate",
+                            "type": "certificate",
+                            "required": false,
+                            "mask": true,
+                            "multiple": false,
+                            "tooltip": "Tenant wide certificate for mutual TLS authentication",
+                            "values": [],
+                            "default": ""
+                            }
+                        ]
+                        }
+                    ]
+                }
+            ],
+            "configurations": [
+                {
+                "name": "Username",
+                "label": "Username",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Username of admin user",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "Password",
+                "label": "Password",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "Password of Admin user",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "api_resource_management_endpoint",
+                "label": "WSO2 Identity Server 7 API Resource Management Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/api/server/v1/api-resources",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "is7_roles_endpoint",
+                "label": "WSO2 Identity Server 7 Roles Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/scim2/v2/Roles",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "enable_roles_creation",
+                "label": "Create roles in WSO2 Identity Server 7",
+                "type": "checkbox",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": 
+                "Create roles in WSO2 Identity Server 7, corresponding to the roles used in WSO2 API Manager.",
+                "values": [
+                    "Enable"
+                ],
+                "default": "Enable"
+                }
+            ],
+            "endpointConfigurations": [
+                {
+                "name": "client_registration_endpoint",
+                "label": "Client Registration Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g.,https://localhost:9443/client-registration/v0.17/register",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "introspection_endpoint",
+                "label": "Introspection Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/introspect",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "token_endpoint",
+                "label": "Token Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "revoke_endpoint",
+                "label": "Revoke Endpoint",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/revoke",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "userinfo_endpoint",
+                "label": "UserInfo Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/userinfo",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "authorize_endpoint",
+                "label": "Authorize Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_token_endpoint",
+                "label": "Display Token Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/token",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "display_revoke_endpoint",
+                "label": "Display Revoke Endpoint",
+                "type": "input",
+                "required": false,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "E.g., https://localhost:9443/oauth2/authorize",
+                "values": [],
+                "default": ""
+                }
+            ]
+            }
+        ],
+        "gatewayConfiguration": [
+            {
+            "type": "AWS",
+            "displayName": "AWS",
+            "configurations": [
+                {
+                "name": "region",
+                "label": "AWS Region",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "AWS Region",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "access_key",
+                "label": "Access Key",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "AWS Access Key for Signature Authentication",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "secret_key",
+                "label": "Secret Key",
+                "type": "input",
+                "required": true,
+                "mask": true,
+                "multiple": false,
+                "tooltip": "AWS Secret Key for Signature Authentication",
+                "values": [],
+                "default": ""
+                },
+                {
+                "name": "stage",
+                "label": "Stage Name",
+                "type": "input",
+                "required": true,
+                "mask": false,
+                "multiple": false,
+                "tooltip": "Default stage name",
+                "values": [],
+                "default": ""
+                }
+            ],
+            "defaultHostnameTemplate": "{apiId}.execute-api.{region}.amazonaws.com"
+            },
+            {
+            "type": "Regular",
+            "displayName": "Regular",
+            "configurations": [],
+            "defaultHostnameTemplate": null
+            },
+            {
+            "type": "APK",
+            "displayName": "APK",
+            "configurations": [],
+            "defaultHostnameTemplate": null
+            }
+        ],
+        "analyticsEnabled": false,
+        "transactionCounterEnable": false
+        }`;
+    const settings = JSON.parse(settingsString);
     const defaultKMType = (settings.keyManagerConfiguration
         && settings.keyManagerConfiguration.length > 0)
         ? settings.keyManagerConfiguration[0].type : '';
@@ -282,7 +1559,7 @@ function AddEditKeyManager(props) {
     const updateKeyManagerConnectorConfiguration = (keyManagerType) => {
         if (settings.keyManagerConfiguration) {
             settings.keyManagerConfiguration.map(({
-                type: key, defaultConsumerKeyClaim, defaultScopesClaim, configurations,
+                type: key, defaultConsumerKeyClaim, defaultScopesClaim, authConfigs, configurations,
             }) => {
                 if (key === keyManagerType) {
                     if (!id) {
@@ -293,7 +1570,11 @@ function AddEditKeyManager(props) {
                             dispatch({ field: 'scopesClaim', value: defaultScopesClaim });
                         }
                     }
-                    setKeyManagerConfiguration(configurations);
+                    if (authConfigs === undefined) {
+                        setKeyManagerConfiguration(configurations);
+                    } else {
+                        setKeyManagerConfiguration(authConfigs);
+                    }
                     return true;
                 } else {
                     return false;
@@ -1779,6 +3060,8 @@ function AddEditKeyManager(props) {
                                                  setAdditionalProperties={setAdditionalProperties}
                                                  hasErrors={hasErrors}
                                                  validating={validating}
+                                                 dispatch={dispatch}
+                                                 certificates={certificates}
                                              />
                                          </Box>
                                      </Grid>
