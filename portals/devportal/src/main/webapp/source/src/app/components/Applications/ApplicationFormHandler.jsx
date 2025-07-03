@@ -344,7 +344,7 @@ class ApplicationFormHandler extends React.Component {
                     history.push('/applications');
                     Alert.info(intl.formatMessage({
                         id: 'application.update.pending',
-                        defaultMessage: 'A request to update this application has been sent.',
+                        defaultMessage: 'A request to update the application has been sent.',
                     }));
                     console.log('Application updated request sent successfully.');
                 } else {

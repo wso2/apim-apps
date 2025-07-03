@@ -317,6 +317,7 @@ function Overview(props) {
         REJECTED: 'Rejected',
         DELETE_PENDING: 'Delete Pending',
         UPDATE_PENDING: 'Update Pending',
+        UPDATE_REJECTED: 'Update Rejected',
     };
     return (
         <Root>
