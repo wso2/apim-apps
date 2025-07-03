@@ -380,7 +380,7 @@ const RouteMenuMapping = (intl) => [
             {
                 id: 'Application Update',
                 displayText: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.application.creation',
+                    id: 'Base.RouteMenuMapping.application.update',
                     defaultMessage: 'Application Update',
                 }),
                 path: '/tasks/application-update',
