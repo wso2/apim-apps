@@ -54,15 +54,9 @@ import Box from '@mui/material/Box';
 import CircularProgress from '@mui/material/CircularProgress';
 import WarningBase from 'AppComponents/AdminPages/Addons/WarningBase';
 import {
-    Alert as MUIAlert, Table, TableHead, TableBody, TableRow, TableCell,
+    Alert as MUIAlert, Table, TableBody, TableRow, TableCell, TableContainer, TableHead,
 } from '@mui/material';
 
-function transformPropertiesToJSONString(input) {
-    return input
-        .replace(/([{,]\s*)([a-zA-Z0-9_]+)\s*=/g, '$1"$2":')
-        .replace(/=\s*([^,}\]]+)/g, ':"$1"')
-        .replace(/'/g, '"');
-}
 /**
  * Render a list
  * @param {JSON} props props passed from parent
@@ -90,9 +84,8 @@ function ListLabels() {
                 const workflowlist = result.body.list.map((obj) => {
                     let changes = [];
                     try {
-                        const unformattedDiff = obj?.properties?.applicationUpdateDiff ?? [];
-                        const jsonCompatibleDiff = transformPropertiesToJSONString(unformattedDiff);
-                        changes = JSON.parse(jsonCompatibleDiff);
+                        const applicationUpdateDiff = obj?.properties?.applicationUpdateDiff ?? [];
+                        changes = JSON.parse(applicationUpdateDiff);
                     } catch (e) {
                         console.error('Could not parse changes:', e.message);
                     }
@@ -376,77 +369,81 @@ function ListLabels() {
             const rowIndex = rowMeta.dataIndex;
             const fullRow = data[rowIndex];
             const changes = fullRow.changes || [];
-            if (changes.length > 0) {
-                return (
-                    <TableRow>
-                        <TableCell colSpan={1} />
-                        <TableCell colSpan={rowData.length}>
-                            <Table>
+
+            return (
+                <TableRow>
+                    <TableCell
+                        style={{
+                            padding: '16px',
+                            borderBottom: 'none',
+                        }}
+                        colSpan={rowData.length + 1}
+                    >
+                        <TableContainer>
+                            <Table
+                                size='small'
+                                aria-label='changes'
+                                sx={{
+                                    tableLayout: 'fixed',
+                                    width: '100%',
+                                    '& .MuiTableCell-root:not(:last-child)': {
+                                        borderRight: '1px solid rgba(224, 224, 224, 1)',
+                                    },
+                                    '& .MuiTableCell-head': {
+                                        borderBottom: '1px solid rgba(224, 224, 224, 1)',
+                                    },
+                                    '& .MuiTableCell-body': {
+                                        borderBottom: 'none',
+                                        wordBreak: 'break-word',
+                                    },
+                                }}
+                            >
                                 <TableHead>
                                     <TableRow>
-                                        <TableCell sx={{ borderBottom: 'none' }}>
-                                            <strong>Attribute</strong>
+                                        {/* Key change: Define column widths */}
+                                        <TableCell sx={{ width: '30%' }}>
+                                            <strong>Changed Field</strong>
                                         </TableCell>
-                                        <TableCell sx={{ borderBottom: 'none' }}>
-                                            <strong>From</strong>
+                                        <TableCell sx={{ width: '35%' }}>
+                                            <strong>Old Value</strong>
                                         </TableCell>
-                                        <TableCell sx={{ borderBottom: 'none' }}>
-                                            <strong>To</strong>
+                                        <TableCell sx={{ width: '35%' }}>
+                                            <strong>New Value</strong>
                                         </TableCell>
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {changes.map((change) => (
-                                        <TableRow key={change.referenceId}>
-                                            <TableCell sx={{ borderBottom: 'none' }}>
-                                                {change.attributeName?.trim() || 'N/A'}
-                                            </TableCell>
-                                            <TableCell sx={{ borderBottom: 'none' }}>
-                                                {change.current?.trim() || 'N/A'}
-                                            </TableCell>
-                                            <TableCell sx={{ borderBottom: 'none' }}>
-                                                {change.expected?.trim() || 'N/A'}
+                                    {changes.length > 0 ? (
+                                        changes.map((change) => (
+                                            <TableRow key={change.referenceId}>
+                                                <TableCell component='th' scope='row'>
+                                                    {change.attributeName?.trim() || 'N/A'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {change.current?.trim() || 'N/A'}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {change.expected?.trim() || 'N/A'}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell
+                                                colSpan={3}
+                                                align='center'
+                                                style={{ borderBottom: 'none' }}
+                                            >
+                                                No changes to display.
                                             </TableCell>
                                         </TableRow>
-                                    ))}
+                                    )}
                                 </TableBody>
                             </Table>
-                        </TableCell>
-                    </TableRow>
-                );
-            } else {
-                return (
-                    <TableRow>
-                        <TableCell colSpan={1} />
-                        <TableCell colSpan={rowData.length}>
-                            <Table>
-                                <TableHead>
-                                    <TableRow>
-                                        <TableCell sx={{ borderBottom: 'none' }}>
-                                            <strong>Attribute</strong>
-                                        </TableCell>
-                                        <TableCell sx={{ borderBottom: 'none' }}>
-                                            <strong>From</strong>
-                                        </TableCell>
-                                        <TableCell sx={{ borderBottom: 'none' }}>
-                                            <strong>To</strong>
-                                        </TableCell>
-                                    </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    <TableRow>
-                                        <>
-                                            <TableCell sx={{ borderBottom: 'none' }}>N/A</TableCell>
-                                            <TableCell sx={{ borderBottom: 'none' }}>N/A</TableCell>
-                                            <TableCell sx={{ borderBottom: 'none' }}>N/A</TableCell>
-                                        </>
-                                    </TableRow>
-                                </TableBody>
-                            </Table>
-                        </TableCell>
-                    </TableRow>
-                );
-            }
+                        </TableContainer>
+                    </TableCell>
+                </TableRow>
+            );
         },
         textLabels: {
             body: {
