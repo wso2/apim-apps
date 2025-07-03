@@ -25,8 +25,14 @@ export type Endpoint = {
 }
 
 export type ModelData = {
+    vendor: string;
     model: string;
     endpointId: string;
     endpointName: string;
     weight?: number;
+}
+
+export type ModelVendor = {
+    vendor: string;
+    values: string[];
 }
