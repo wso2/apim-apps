@@ -176,7 +176,7 @@ class InfoBar extends React.Component {
                     paddingLeft: theme.spacing(2),
                 })}
                 >
-                    <Grid item xs={10} sx={{ width: '100%' }}>
+                    <Grid item xs={10}>
                         <Box sx={(theme) => ({ marginLeft: theme.spacing(1) })}>
                             <Link
                                 to={'/applications/' + applicationId + '/overview'}
@@ -184,7 +184,7 @@ class InfoBar extends React.Component {
                                     color: theme.palette.getContrastText(theme.custom.infoBar.background),
                                 })}
                             >
-                                <Typography id='itest-info-bar-application-name' variant='h4'>{application.name}</Typography>
+                                <Typography id='itest-info-bar-application-name' variant='h4' noWrap>{application.name}</Typography>
                             </Link>
                         </Box>
                         <Box sx={(theme) => ({ marginLeft: theme.spacing(1) })}>
@@ -271,6 +271,7 @@ class InfoBar extends React.Component {
                                 m={1}
                                 sx={(theme) => ({
                                     display: 'inline-grid',
+                                    marginRight: '20px',
                                     cursor: 'pointer',
                                     '& .material-icons, & span': {
                                         color: theme.palette.getContrastText(theme.custom.infoBar.background),
@@ -280,7 +281,7 @@ class InfoBar extends React.Component {
                                 <Button
                                     id='delete-application'
                                     onClick={this.handleDeleteConfimation}
-                                    style={{ padding: '4px', display: 'flex', flexDirection: 'column' }}
+                                    style={{ padding: '3px', display: 'flex', flexDirection: 'column' }}
                                     disabled={(!isOrgWideAppUpdateEnabled && AuthManager.getUser().name !== applicationOwner)
                                         || this.props.application.status === 'DELETE_PENDING'}
                                     color='grey'
