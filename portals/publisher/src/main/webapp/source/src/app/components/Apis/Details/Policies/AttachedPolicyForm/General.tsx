@@ -595,6 +595,7 @@ const General: FC<GeneralProps> = ({
                             color='primary'
                             onClick={handleDrawerClose}
                             className={classes.btn}
+                            data-testid='policy-attached-details-cancel'
                         >
                             <FormattedMessage
                                 id='Apis.Details.Policies.AttachedPolicyForm.General.cancel'

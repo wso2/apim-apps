@@ -136,6 +136,7 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
                     {...listeners}
                     onClick={handleDrawerOpen}
                     onKeyDown={handleDrawerOpen}
+                    data-testid={`attached-policy-card-${policyObj.name}`}
                 >
                     <Tooltip
                         key={policyObj.id}
@@ -206,6 +207,7 @@ const AttachedPolicyCardShared: FC<AttachedPolicyCardSharedProps> = ({
                     {...listeners}
                     onClick={handleDrawerOpen}
                     onKeyDown={handleDrawerOpen}
+                    data-testid={`attached-policy-card-${policyObj.name}`}
                 >
                     <Tooltip
                         key={policyObj.id}
