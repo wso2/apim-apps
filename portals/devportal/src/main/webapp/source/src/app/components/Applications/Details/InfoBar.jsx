@@ -56,6 +56,9 @@ class InfoBar extends React.Component {
         this.handleAppDelete = this.handleAppDelete.bind(this);
         this.handleDeleteConfimation = this.handleDeleteConfimation.bind(this);
         this.toggleDeleteConfirmation = this.toggleDeleteConfirmation.bind(this);
+        this.APPLICATION_STATES = {
+            UPDATE_PENDING: 'UPDATE_PENDING',
+        };
     }
 
     componentDidMount() {
@@ -159,6 +162,7 @@ class InfoBar extends React.Component {
             return <Loading />;
         }
         const isUserOwner = AuthManager.getUser().name === applicationOwner;
+        const isUpdatePending = application?.status === this.APPLICATION_STATES.UPDATE_PENDING;
 
         return (
             <Box sx={{ width: '100%' }}>
@@ -180,7 +184,7 @@ class InfoBar extends React.Component {
                                     color: theme.palette.getContrastText(theme.custom.infoBar.background),
                                 })}
                             >
-                                <Typography id='itest-info-bar-application-name' variant='h4'>{application.name}</Typography>
+                                <Typography id='itest-info-bar-application-name' variant='h4' noWrap>{application.name}</Typography>
                             </Link>
                         </Box>
                         <Box sx={(theme) => ({ marginLeft: theme.spacing(1) })}>
@@ -212,6 +216,11 @@ class InfoBar extends React.Component {
                             >
                                 <Link
                                     to={`/applications/${applicationId}/edit/fromView`}
+                                    onClick={(e) => {
+                                        if (isUpdatePending) {
+                                            e.preventDefault();
+                                        }
+                                    }}
                                     sx={(theme) => ({
                                         display: 'inline-grid',
                                         cursor: 'pointer',
@@ -222,7 +231,13 @@ class InfoBar extends React.Component {
                                 >
                                     <Button
                                         id='edit-application'
-                                        style={{ padding: '4px', display: 'flex', flexDirection: 'column' }}
+                                        style={{
+                                            padding: '4px',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            opacity: isUpdatePending ? 0.5 : 1,
+                                        }}
+                                        disabled={isUpdatePending}
                                         color='grey'
                                         classes={{
                                             label: {
@@ -256,6 +271,7 @@ class InfoBar extends React.Component {
                                 m={1}
                                 sx={(theme) => ({
                                     display: 'inline-grid',
+                                    marginRight: '20px',
                                     cursor: 'pointer',
                                     '& .material-icons, & span': {
                                         color: theme.palette.getContrastText(theme.custom.infoBar.background),
@@ -265,7 +281,7 @@ class InfoBar extends React.Component {
                                 <Button
                                     id='delete-application'
                                     onClick={this.handleDeleteConfimation}
-                                    style={{ padding: '4px', display: 'flex', flexDirection: 'column' }}
+                                    style={{ padding: '3px', display: 'flex', flexDirection: 'column' }}
                                     disabled={(!isOrgWideAppUpdateEnabled && AuthManager.getUser().name !== applicationOwner)
                                         || this.props.application.status === 'DELETE_PENDING'}
                                     color='grey'

@@ -98,6 +98,8 @@ class AppsTableContent extends Component {
             APPROVED: 'APPROVED',
             REJECTED: 'REJECTED',
             DELETE_PENDING: 'DELETE_PENDING',
+            UPDATE_PENDING: 'UPDATE_PENDING',
+            UPDATE_REJECTED: 'UPDATE_REJECTED',
         };
     }
 
@@ -158,7 +160,9 @@ class AppsTableContent extends Component {
                                     }}
                                 >
                                     {app.status === this.APPLICATION_STATES.APPROVED
-                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING ? (
+                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING
+                                        || app.status === this.APPLICATION_STATES.UPDATE_PENDING
+                                        || app.status === this.APPLICATION_STATES.UPDATE_REJECTED ? (
                                             <Link to={'/applications/' + app.applicationId}>{app.name}</Link>
                                         ) : (
                                             app.name
@@ -221,11 +225,34 @@ class AppsTableContent extends Component {
                                             </Typography>
                                         </>
                                     )}
+                                    {app.status === this.APPLICATION_STATES.UPDATE_PENDING && (
+                                        <>
+                                            <Typography
+                                                variant='subtitle1'
+                                                component='label'
+                                                gutterBottom
+                                            >
+                                                <FormattedMessage
+                                                    id='Applications.Listing.AppsTableContent.pending'
+                                                    defaultMessage='UPDATE PENDING'
+                                                />
+
+                                            </Typography>
+                                        </>
+                                    )}
                                     {app.status === this.APPLICATION_STATES.REJECTED && (
                                         <Typography variant='subtitle1' component='label' gutterBottom>
                                             <FormattedMessage
                                                 id='Applications.Listing.AppsTableContent.rejected'
                                                 defaultMessage='REJECTED'
+                                            />
+                                        </Typography>
+                                    )}
+                                    {app.status === this.APPLICATION_STATES.UPDATE_REJECTED && (
+                                        <Typography variant='subtitle1' component='label' gutterBottom>
+                                            <FormattedMessage
+                                                id='Applications.Listing.AppsTableContent.update.rejected'
+                                                defaultMessage='UPDATE REJECTED'
                                             />
                                         </Typography>
                                     )}
@@ -261,7 +288,9 @@ class AppsTableContent extends Component {
                                         resourceMethod={resourceMethods.PUT}
                                     >
                                         {(app.status === this.APPLICATION_STATES.APPROVED
-                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING) && (
+                                        || app.status === this.APPLICATION_STATES.DELETE_PENDING
+                                        || app.status === this.APPLICATION_STATES.UPDATE_PENDING
+                                        || app.status === this.APPLICATION_STATES.UPDATE_REJECTED) && (
                                             <Tooltip title={isOrgWideAppUpdateEnabled || isAppOwner
                                                 ? (
                                                     <FormattedMessage
@@ -281,7 +310,9 @@ class AppsTableContent extends Component {
                                                         className={(!isOrgWideAppUpdateEnabled && !isAppOwner) && classes.appOwner}
                                                     >
                                                         <IconButton
-                                                            disabled={!isOrgWideAppUpdateEnabled && !isAppOwner}
+                                                            disabled={(!isOrgWideAppUpdateEnabled && !isAppOwner)
+                                                                || app.status === this.APPLICATION_STATES.DELETE_PENDING
+                                                                || app.status === this.APPLICATION_STATES.UPDATE_PENDING}
                                                             aria-label={'Edit' + app.name}
                                                             size='large'
                                                         >
