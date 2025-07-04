@@ -151,6 +151,7 @@ describe("Common Policies", () => {
             cy.get('[data-testid="drop-policy-zone-request"]')
               .get('[data-testid="attached-policy-card-APISpecificPolicySample"]')
               .click({ force: true });
+            cy.contains('Enhanced API specific policy description version 2').should('be.visible');
             cy.get('#enhancedAttribute').should('have.value', 'enhanced test value version 2');
             cy.get('#optionalAttribute').should('have.value', 'optional test value');
             
