@@ -33,6 +33,7 @@ import { Link } from 'react-router-dom';
 import AuthManager from 'AppData/AuthManager';
 import Progress from 'AppComponents/Shared/Progress';
 import { app } from 'Settings';
+import isEqual from 'lodash.isequal';
 import ApplicationCreateBase from './Create/ApplicationCreateBase';
 
 const PREFIX = 'ApplicationFormHandler';
@@ -75,6 +76,7 @@ class ApplicationFormHandler extends React.Component {
                 attributes: {},
                 visibility: '',
             },
+            originalApplicationRequest: null,
             isNameValid: true,
             throttlingPolicyList: [],
             allAppAttributes: null,
@@ -154,6 +156,7 @@ class ApplicationFormHandler extends React.Component {
                 this.setState({
                     isEdit: true,
                     applicationRequest: newRequest,
+                    originalApplicationRequest: { ...newRequest },
                     throttlingPolicyList,
                     allAppAttributes,
                     applicationOwner: response[0].owner,
@@ -225,9 +228,16 @@ class ApplicationFormHandler extends React.Component {
      * @memberof ApplicationFormHandler
      */
     handleAttributesChange = (name) => (event) => {
-        const { applicationRequest } = this.state;
-        applicationRequest.attributes[name] = event.target.value;
-        this.setState({ applicationRequest });
+        const { value } = event.target;
+        this.setState((prevState) => ({
+            applicationRequest: {
+                ...prevState.applicationRequest,
+                attributes: {
+                    ...prevState.applicationRequest.attributes,
+                    [name]: value,
+                },
+            },
+        }));
     };
 
     /**
@@ -444,6 +454,15 @@ class ApplicationFormHandler extends React.Component {
     }
 
     /**
+     * Check whether there are any changes in the form
+     */
+    hasFormChanged = () => {
+        const { applicationRequest, originalApplicationRequest } = this.state;
+        if (!originalApplicationRequest) return false; // still loading
+        return !isEqual(applicationRequest, originalApplicationRequest);
+    }
+
+    /**
      * @inheritdoc
      * @memberof ApplicationFormHandler
      */
@@ -537,9 +556,11 @@ class ApplicationFormHandler extends React.Component {
                                             color='primary'
                                             onClick={isEdit ? this.saveEdit : this.saveApplication}
                                             disabled={
-                                                isEdit
-                                                && (!isOrgWideAppUpdateEnabled
-                                                && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase())
+                                                isEdit && (
+                                                    (!isOrgWideAppUpdateEnabled
+                                                    && AuthManager.getUser().name.toLowerCase() !== applicationOwner.toLowerCase())
+                                                    || !this.hasFormChanged()
+                                                )
                                             }
                                             className={classes.button}
                                         >
