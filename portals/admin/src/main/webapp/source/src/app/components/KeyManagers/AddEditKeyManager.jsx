@@ -1155,6 +1155,7 @@ function AddEditKeyManager(props) {
                     "mask": false,
                     "multiple": false,
                     "tooltip": "Select the authentication type for connector configuration",
+                    "default": "",
                     "values": [
                         {
                         "name": "BasicAuth",
@@ -1168,7 +1169,7 @@ function AddEditKeyManager(props) {
                             "name": "Username",
                             "label": "Username",
                             "type": "input",
-                            "required": false,
+                            "required": true,
                             "mask": false,
                             "multiple": false,
                             "tooltip": "Username of admin user",
@@ -1179,7 +1180,7 @@ function AddEditKeyManager(props) {
                             "name": "Password",
                             "label": "Password",
                             "type": "input",
-                            "required": false,
+                            "required": true,
                             "mask": true,
                             "multiple": false,
                             "tooltip": "Password of admin user",
@@ -1201,7 +1202,7 @@ function AddEditKeyManager(props) {
                             {
                             "name": "Server-wide",
                             "label": "Server-wide Certificate",
-                            "type": "select",
+                            "type": "checkbox",
                             "required": false,
                             "mask": false,
                             "multiple": false,
