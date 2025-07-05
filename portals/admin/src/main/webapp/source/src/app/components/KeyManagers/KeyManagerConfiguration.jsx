@@ -1,18 +1,12 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
-import TextField from '@mui/material/TextField';
-import Checkbox from '@mui/material/Checkbox';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Box from '@mui/material/Box';
-import FormLabel from '@mui/material/FormLabel';
-import FormControl from '@mui/material/FormControl';
-import FormGroup from '@mui/material/FormGroup';
-import Radio from '@mui/material/Radio';
-import RadioGroup from '@mui/material/RadioGroup';
-import { FormattedMessage } from 'react-intl';
-import InputLabel from '@mui/material/InputLabel';
-import FormHelperText from '@mui/material/FormHelperText';
+import {
+    TextField, Checkbox, FormControlLabel, Box, FormLabel, FormControl,
+    FormGroup, Radio, RadioGroup, InputLabel, MenuItem, FormHelperText,
+} from '@mui/material';
+import Certificates from 'AppComponents/KeyManagers/Certificates';
 import CustomInputField from 'AppComponents/KeyManagers/CustomInputField';
+import { FormattedMessage } from 'react-intl';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
@@ -28,176 +22,244 @@ const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.d
  */
 export default function KeyManagerConfiguration(props) {
     const {
-        keymanagerConnectorConfigurations, additionalProperties,
-        setAdditionalProperties, hasErrors, validating,
+        keymanagerConnectorConfigurations,
+        additionalProperties,
+        setAdditionalProperties,
+        hasErrors,
+        validating,
+        dispatch,
+        certificates,
     } = props;
 
     const onChange = (e) => {
-        let finalValue;
-        const { name, value, type } = e.target;
+        const {
+            name, value, type, checked,
+        } = e.target;
         if (type === 'checkbox') {
-            if (additionalProperties[name]) {
-                finalValue = additionalProperties[name];
+            const current = Array.isArray(additionalProperties[name]) ? [...additionalProperties[name]] : [];
+            let finalValue;
+            if (checked) {
+                if (current.includes(value)) {
+                    finalValue = current;
+                } else {
+                    finalValue = [...current, value];
+                }
             } else {
-                finalValue = [];
+                finalValue = current.filter((v) => v !== value);
             }
-            if (e.target.checked) {
-                finalValue.push(value);
-            } else {
-                const newValue = finalValue.filter((v) => v !== e.target.value);
-                finalValue = newValue;
-            }
+            setAdditionalProperties(name, finalValue);
         } else {
-            finalValue = value;
+            setAdditionalProperties(name, value);
         }
-        setAdditionalProperties(name, finalValue);
     };
+
     const onChangeCheckBox = (e) => {
         setAdditionalProperties(e.target.name, e.target.checked);
     };
-    const getComponent = (keymanagerConnectorConfiguration) => {
-        let value = '';
-        if (additionalProperties[keymanagerConnectorConfiguration.name]) {
-            value = additionalProperties[keymanagerConnectorConfiguration.name];
-        }
-        if (keymanagerConnectorConfiguration.type === 'input') {
-            if (keymanagerConnectorConfiguration.mask) {
+
+    const getComponent = (config) => {
+        const {
+            name, label, type, values = [], tooltip, required, mask, default: defaultVal,
+        } = config;
+
+        const value = additionalProperties[name] ?? '';
+        const error = required && hasErrors('keyconfig', value, validating);
+
+        const selectedObject = values.find((v) => v.name === value);
+        const selectedRadioObject = values.find((v) => v.name === value);
+
+        // Recursive rendering for children of selected option
+        const renderSelectedChildren = (parent) => parent?.values?.map((child) => (
+            <Box key={child.name} ml={2} mt={2}>
+                {getComponent(child)}
+            </Box>
+        ));
+
+        // Input fields
+        if (type === 'input') {
+            if (mask) {
                 return (
-                    <FormControl variant='outlined' fullWidth>
-                        <InputLabel sx={{ bgcolor: 'white' }}>
-                            {keymanagerConnectorConfiguration.label}
-                            {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
+                    <FormControl fullWidth>
+                        <InputLabel shrink>
+                            {label}
+                            {required && <StyledSpan>*</StyledSpan>}
                         </InputLabel>
                         <CustomInputField
                             value={value}
                             onChange={onChange}
-                            name={keymanagerConnectorConfiguration.name}
-                            required={keymanagerConnectorConfiguration.required}
+                            name={name}
+                            required={required}
                             hasErrors={hasErrors}
                             validating={validating}
                         />
                         <FormHelperText>
-                            {hasErrors('keyconfig', value, validating) || keymanagerConnectorConfiguration.tooltip}
+                            {error || tooltip}
                         </FormHelperText>
                     </FormControl>
                 );
             }
             return (
                 <TextField
-                    id={keymanagerConnectorConfiguration.name}
+                    id={name}
                     margin='dense'
-                    name={keymanagerConnectorConfiguration.name}
+                    name={name}
                     label={(
                         <span>
-                            {keymanagerConnectorConfiguration.label}
-                            {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
+                            {label}
+                            {required && <StyledSpan>*</StyledSpan>}
                         </span>
                     )}
                     fullWidth
-                    error={keymanagerConnectorConfiguration.required && hasErrors('keyconfig', value, validating)}
-                    helperText={hasErrors('keyconfig', value, validating) || keymanagerConnectorConfiguration.tooltip}
                     variant='outlined'
                     value={value}
-                    defaultValue={keymanagerConnectorConfiguration.default}
-                    onChange={onChange}
-                />
-            );
-        } else if (keymanagerConnectorConfiguration.type === 'select') {
-            return (
-                <FormControl variant='standard' component='fieldset'>
-                    <FormLabel component='legend'>
-                        <span>
-                            {keymanagerConnectorConfiguration.label}
-                            {keymanagerConnectorConfiguration.required && (<StyledSpan>*</StyledSpan>)}
-                        </span>
-                    </FormLabel>
-                    <FormGroup>
-                        {keymanagerConnectorConfiguration.values.map((selection) => (
-                            <FormControlLabel
-                                control={(
-                                    <Checkbox
-                                        checked={value.includes(selection)}
-                                        onChange={onChange}
-                                        value={selection}
-                                        color='primary'
-                                        name={keymanagerConnectorConfiguration.name}
-                                    />
-                                )}
-                                label={selection}
-                            />
-                        ))}
-                    </FormGroup>
-                </FormControl>
-            );
-        } else if (keymanagerConnectorConfiguration.type === 'checkbox') {
-            return (
-                <FormControl variant='standard' component='fieldset'>
-                    <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
-                    <FormGroup>
-                        {keymanagerConnectorConfiguration.values.map((selection) => (
-                            <FormControlLabel
-                                control={(
-                                    <Checkbox
-                                        checked={value === '' ? false : value}
-                                        onChange={onChangeCheckBox}
-                                        value={selection}
-                                        color='primary'
-                                        name={keymanagerConnectorConfiguration.name}
-                                    />
-                                )}
-                                label={selection}
-                            />
-                        ))}
-                    </FormGroup>
-                </FormControl>
-            );
-        } else if (keymanagerConnectorConfiguration.type === 'options') {
-            return (
-                <FormControl variant='standard' component='fieldset'>
-                    <FormLabel component='legend'>{keymanagerConnectorConfiguration.label}</FormLabel>
-                    <RadioGroup
-                        aria-label={keymanagerConnectorConfiguration.label}
-                        name={keymanagerConnectorConfiguration.name}
-                        value={value}
-                        onChange={onChange}
-                    >
-                        {keymanagerConnectorConfiguration.values.map((selection) => (
-                            <FormControlLabel value={selection} control={<Radio />} label={selection} />
-                        ))}
-                    </RadioGroup>
-                </FormControl>
-            );
-        } else {
-            return (
-                <TextField
-                    id={keymanagerConnectorConfiguration.name}
-                    margin='dense'
-                    name={keymanagerConnectorConfiguration.name}
-                    label={keymanagerConnectorConfiguration.label}
-                    fullWidth
-                    required
-                    variant='outlined'
-                    value={value}
-                    defaultValue={keymanagerConnectorConfiguration.default}
+                    defaultValue={defaultVal}
+                    error={Boolean(error)}
+                    helperText={error || tooltip}
                     onChange={onChange}
                 />
             );
         }
+
+        // Select fields
+        if (type === 'select') {
+            return (
+                <Box>
+                    <FormLabel>
+                        {label}
+                        {required && <StyledSpan>*</StyledSpan>}
+                    </FormLabel>
+                    <TextField
+                        select
+                        fullWidth
+                        name={name}
+                        value={value}
+                        onChange={onChange}
+                        variant='outlined'
+                        error={Boolean(error)}
+                        helperText={error || tooltip}
+                        margin='dense'
+                    >
+                        {values.map((option) => (
+                            <MenuItem key={option.name} value={option.name}>
+                                {option.label}
+                            </MenuItem>
+                        ))}
+                    </TextField>
+                    {selectedObject?.values?.length > 0 && renderSelectedChildren(selectedObject)}
+                </Box>
+            );
+        }
+
+        // Radio/Options fields
+        if (type === 'options' || type === 'radio') {
+            return (
+                <FormControl component='fieldset' error={Boolean(error)}>
+                    <FormLabel component='legend'>
+                        {label}
+                        {required && <StyledSpan>*</StyledSpan>}
+                    </FormLabel>
+                    <RadioGroup
+                        name={name}
+                        value={value}
+                        onChange={onChange}
+                    >
+                        {values.map((option) => (
+                            <FormControlLabel
+                                key={option.name}
+                                value={option.name}
+                                control={<Radio />}
+                                label={option.label}
+                            />
+                        ))}
+                    </RadioGroup>
+                    <FormHelperText>{error || tooltip}</FormHelperText>
+                    {selectedRadioObject?.values?.length > 0 && renderSelectedChildren(selectedRadioObject)}
+                </FormControl>
+            );
+        }
+
+        // Certificate field
+        if (type === 'certificate') {
+            return (
+                <FormControl component='fieldset' error={Boolean(error)}>
+                    <FormLabel component='legend'>
+                        {label}
+                        {required && <StyledSpan>*</StyledSpan>}
+                    </FormLabel>
+                    <Certificates certificates={certificates} dispatch={dispatch} />
+                </FormControl>
+            );
+        }
+
+        // Checkbox fields (single boolean)
+        if (type === 'checkbox') {
+            return (
+                <FormControl component='fieldset'>
+                    <FormLabel component='legend'>{label}</FormLabel>
+                    <FormGroup>
+                        {values.length > 0 ? (
+                            values.map((selection) => (
+                                <FormControlLabel
+                                    key={selection}
+                                    control={(
+                                        <Checkbox
+                                            checked={value === true}
+                                            onChange={onChangeCheckBox}
+                                            name={name}
+                                        />
+                                    )}
+                                    label={selection}
+                                />
+                            ))
+                        ) : (
+                            <FormControlLabel
+                                control={(
+                                    <Checkbox
+                                        checked={value === true}
+                                        onChange={onChangeCheckBox}
+                                        name={name}
+                                    />
+                                )}
+                                label={label}
+                            />
+                        )}
+                    </FormGroup>
+                </FormControl>
+            );
+        }
+
+        // Default fallback
+        return (
+            <TextField
+                id={name}
+                margin='dense'
+                name={name}
+                label={label}
+                fullWidth
+                variant='outlined'
+                value={value}
+                defaultValue={defaultVal}
+                onChange={onChange}
+            />
+        );
     };
-    return (
-        keymanagerConnectorConfigurations.map((keymanagerConnectorConfiguration) => (
-            <Box mb={3}>
-                {getComponent(keymanagerConnectorConfiguration, hasErrors, validating)}
-            </Box>
-        )));
+
+    return keymanagerConnectorConfigurations.map((config) => (
+        <Box mb={3} key={config.name}>
+            {getComponent(config)}
+        </Box>
+    ));
 }
+
 KeyManagerConfiguration.defaultProps = {
     keymanagerConnectorConfigurations: [],
     required: false,
-    helperText: <FormattedMessage
-        id='KeyManager.Connector.Configuration.Helper.text'
-        defaultMessage='Add Key Manager Connector Configurations'
-    />,
+    helperText: (
+        <FormattedMessage
+            id='KeyManager.Connector.Configuration.Helper.text'
+            defaultMessage='Add Key Manager Connector Configurations'
+        />
+    ),
     hasErrors: () => {},
     validating: false,
 };
