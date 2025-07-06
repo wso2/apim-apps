@@ -120,17 +120,6 @@ function EndpointSecurity(props) {
         endpointSecurityTypes,
     } = props;
     const [endpointSecurityInfo, setEndpointSecurityInfo] = useState(CONSTS.DEFAULT_ENDPOINT_SECURITY);
-
-    if (securityInfo && securityInfo.proxyConfigs == null) {
-        securityInfo.proxyConfigs = {
-            proxyEnabled: false,
-            proxyHost: '',
-            proxyPort: '',
-            proxyUsername: '',
-            proxyPassword: '',
-            proxyProtocol: '',
-        };
-    }
     const [securityValidity, setSecurityValidity] = useState();
 
     const [showAddParameter, setShowAddParameter] = useState(false);
@@ -209,7 +198,7 @@ function EndpointSecurity(props) {
                 connectionTimeoutConfigType, proxyConfigType,
             } = securityInfo;
             const secretPlaceholder = '******';
-            tmpSecurity.type = type === null ? 'NONE' : type;
+            tmpSecurity.type = type == null ? 'NONE' : type;
             tmpSecurity.username = username;
             tmpSecurity.password = password === '' ? secretPlaceholder : password;
             tmpSecurity.grantType = grantType;
@@ -220,7 +209,14 @@ function EndpointSecurity(props) {
             tmpSecurity.connectionTimeoutDuration = connectionTimeoutDuration;
             tmpSecurity.connectionRequestTimeoutDuration = connectionRequestTimeoutDuration;
             tmpSecurity.socketTimeoutDuration = socketTimeoutDuration;
-            tmpSecurity.proxyConfigs = proxyConfigs;
+            tmpSecurity.proxyConfigs = proxyConfigs || {
+                proxyEnabled: false,
+                proxyHost: '',
+                proxyPort: '',
+                proxyUsername: '',
+                proxyPassword: '',
+                proxyProtocol: '',
+            };
             tmpSecurity.connectionTimeoutConfigType = connectionTimeoutConfigType;
             tmpSecurity.proxyConfigType = proxyConfigType;
         }
@@ -316,9 +312,9 @@ function EndpointSecurity(props) {
      * Add new custom parameter
      */
     const handleAddToList = () => {
-        const customParametersCopy = { ...endpointSecurityInfo.customParameters };
+        const customParametersCopy = { ...endpointSecurityInfo.customParameters } || {};
 
-        if (customParametersCopy !== null
+        if (customParametersCopy != null
             && Object.prototype.hasOwnProperty.call(customParametersCopy, parameterName)) {
             Alert.warning('Parameter name: ' + parameterName + ' already exists');
         } else {
@@ -343,10 +339,10 @@ function EndpointSecurity(props) {
      * @param {*} newRow new name-value pair
      */
     const handleUpdateList = (oldRow, newRow, isSecret) => {
-        const customParametersCopy = { ...endpointSecurityInfo.customParameters };
+        const customParametersCopy = { ...endpointSecurityInfo.customParameters } || {};
         const { oldName, oldValue } = oldRow;
         const { newName, newValue } = newRow;
-        if (customParametersCopy !== null
+        if (customParametersCopy != null
             && Object.prototype.hasOwnProperty.call(customParametersCopy, newName) && oldName === newName) {
             // Only the value is updated
             if (newValue && oldValue !== newValue) {
@@ -379,7 +375,7 @@ function EndpointSecurity(props) {
      */
     const handleDelete = (oldName) => {
         const customParametersCopy = { ...endpointSecurityInfo.customParameters };
-        if (customParametersCopy !== null && Object.prototype.hasOwnProperty.call(customParametersCopy, oldName)) {
+        if (customParametersCopy != null && Object.prototype.hasOwnProperty.call(customParametersCopy, oldName)) {
             delete customParametersCopy[oldName];
         }
         setEndpointSecurityInfo({ ...endpointSecurityInfo, customParameters: customParametersCopy });
@@ -877,14 +873,14 @@ function EndpointSecurity(props) {
                                         value={endpointSecurityInfo.proxyConfigType}
                                         defaultValue={endpointSecurityInfo.proxyConfigType}
                                         onChange={(event) => {
-                                            if (event.target.value === 'ENDPOINT_SPECIFIC') {
-                                                endpointSecurityInfo.proxyConfigs.proxyEnabled = true;
-                                            } else {
-                                                endpointSecurityInfo.proxyConfigs.proxyEnabled = false;
-                                            }
-                                            endpointSecurityInfo.proxyConfigType = event.target.value;
-                                            setEndpointSecurityInfo({ ...endpointSecurityInfo });
-                                            validateAndUpdateSecurityInfo('endpointSecurityInfo');
+                                            setEndpointSecurityInfo({
+                                                ...endpointSecurityInfo,
+                                                proxyConfigType: event.target.value,
+                                                proxyConfigs: {
+                                                    ...endpointSecurityInfo.proxyConfigs,
+                                                    proxyEnabled: event.target.value === 'ENDPOINT_SPECIFIC'
+                                                }
+                                            });
                                         }}
                                         onBlur={() => validateAndUpdateSecurityInfo('proxyConfigType')}
                                     >
@@ -945,11 +941,16 @@ function EndpointSecurity(props) {
                                                 />
                                             )}
                                             onChange={(event) => {
-                                                endpointSecurityInfo.proxyConfigs.proxyHost = event.target.value;
-                                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                                setEndpointSecurityInfo({
+                                                    ...endpointSecurityInfo,
+                                                    proxyConfigs: {
+                                                        ...endpointSecurityInfo.proxyConfigs,
+                                                        proxyHost: event.target.value,
+                                                    }
+                                                });
                                                 validateAndUpdateSecurityInfo('proxyConfigs');
                                             }}
-                                            value={endpointSecurityInfo.proxyConfigs.proxyHost}
+                                            value={endpointSecurityInfo.proxyConfigs?.proxyHost || ''}
                                             onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
                                         />
                                     </Grid>
@@ -972,11 +973,16 @@ function EndpointSecurity(props) {
                                                 />
                                             )}
                                             onChange={(event) => {
-                                                endpointSecurityInfo.proxyConfigs.proxyPort = event.target.value;
-                                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                                setEndpointSecurityInfo({
+                                                    ...endpointSecurityInfo,
+                                                    proxyConfigs: {
+                                                        ...endpointSecurityInfo.proxyConfigs,
+                                                        proxyPort: event.target.value,
+                                                    }
+                                                });
                                                 validateAndUpdateSecurityInfo('proxyConfigs');
                                             }}
-                                            value={endpointSecurityInfo.proxyConfigs.proxyPort}
+                                            value={endpointSecurityInfo.proxyConfigs?.proxyPort || ''}
                                             onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
                                         />
                                     </Grid>
@@ -998,11 +1004,16 @@ function EndpointSecurity(props) {
                                                 />
                                             )}
                                             onChange={(event) => {
-                                                endpointSecurityInfo.proxyConfigs.proxyUsername = event.target.value;
-                                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                                setEndpointSecurityInfo({
+                                                    ...endpointSecurityInfo,
+                                                    proxyConfigs: {
+                                                        ...endpointSecurityInfo.proxyConfigs,
+                                                        proxyUsername: event.target.value,
+                                                    }
+                                                });
                                                 validateAndUpdateSecurityInfo('proxyConfigs');
                                             }}
-                                            value={endpointSecurityInfo.proxyConfigs.proxyUsername}
+                                            value={endpointSecurityInfo.proxyConfigs?.proxyUsername || ''}
                                             onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
                                         />
                                     </Grid>
@@ -1025,11 +1036,16 @@ function EndpointSecurity(props) {
                                                 />
                                             )}
                                             onChange={(event) => {
-                                                endpointSecurityInfo.proxyConfigs.proxyPassword = event.target.value;
-                                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                                setEndpointSecurityInfo({
+                                                    ...endpointSecurityInfo,
+                                                    proxyConfigs: {
+                                                        ...endpointSecurityInfo.proxyConfigs,
+                                                        proxyPassword: event.target.value,
+                                                    }
+                                                });
                                                 validateAndUpdateSecurityInfo('proxyConfigs');
                                             }}
-                                            value={endpointSecurityInfo.proxyConfigs.proxyPassword}
+                                            value={endpointSecurityInfo.proxyConfigs?.proxyPassword || ''}
                                             onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
                                         />
                                     </Grid>
@@ -1052,11 +1068,16 @@ function EndpointSecurity(props) {
                                                 />
                                             )}
                                             onChange={(event) => {
-                                                endpointSecurityInfo.proxyConfigs.proxyProtocol = event.target.value;
-                                                setEndpointSecurityInfo({ ...endpointSecurityInfo });
+                                                setEndpointSecurityInfo({
+                                                    ...endpointSecurityInfo,
+                                                    proxyConfigs: {
+                                                        ...endpointSecurityInfo.proxyConfigs,
+                                                        proxyProtocol: event.target.value,
+                                                    }
+                                                });
                                                 validateAndUpdateSecurityInfo('proxyConfigs');
                                             }}
-                                            value={endpointSecurityInfo.proxyConfigs.proxyProtocol}
+                                            value={endpointSecurityInfo.proxyConfigs?.proxyProtocol || ''}
                                             onBlur={() => validateAndUpdateSecurityInfo('proxyConfigs')}
                                         />
                                     </Grid>
