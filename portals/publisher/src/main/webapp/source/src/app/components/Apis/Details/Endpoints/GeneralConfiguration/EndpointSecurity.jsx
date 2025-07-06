@@ -312,7 +312,8 @@ function EndpointSecurity(props) {
      * Add new custom parameter
      */
     const handleAddToList = () => {
-        const customParametersCopy = { ...endpointSecurityInfo.customParameters } || {};
+        const customParametersCopy = endpointSecurityInfo.customParameters ?
+            { ...endpointSecurityInfo.customParameters } : {};
 
         if (customParametersCopy != null
             && Object.prototype.hasOwnProperty.call(customParametersCopy, parameterName)) {
@@ -339,7 +340,8 @@ function EndpointSecurity(props) {
      * @param {*} newRow new name-value pair
      */
     const handleUpdateList = (oldRow, newRow, isSecret) => {
-        const customParametersCopy = { ...endpointSecurityInfo.customParameters } || {};
+        const customParametersCopy = endpointSecurityInfo.customParameters ?
+            { ...endpointSecurityInfo.customParameters } : {};
         const { oldName, oldValue } = oldRow;
         const { newName, newValue } = newRow;
         if (customParametersCopy != null
@@ -374,7 +376,8 @@ function EndpointSecurity(props) {
      * @param {*} oldName name property of the name-value pair to be removed
      */
     const handleDelete = (oldName) => {
-        const customParametersCopy = { ...endpointSecurityInfo.customParameters };
+        const customParametersCopy = endpointSecurityInfo.customParameters ?
+            { ...endpointSecurityInfo.customParameters } : {};
         if (customParametersCopy != null && Object.prototype.hasOwnProperty.call(customParametersCopy, oldName)) {
             delete customParametersCopy[oldName];
         }
