@@ -1,0 +1,177 @@
+/*
+* Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+* 
+* WSO2 LLC. licenses this file to you under the Apache License,
+* Version 2.0 (the "License"); you may not use this file except
+* in compliance with the License.
+* You may obtain a copy of the License at
+* 
+* http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing,
+* software distributed under the License is distributed on an
+* "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+* KIND, either express or implied.  See the License for the
+* specific language governing permissions and limitations
+* under the License.
+*/
+
+import React, { useEffect } from 'react';
+import { withRouter } from 'react-router';
+import { styled } from '@mui/material/styles';
+import { useTheme, Box, Button, Grid, Typography } from '@mui/material';
+import { PropTypes } from 'prop-types';
+import { FormattedMessage, injectIntl } from 'react-intl';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { Link, useLocation } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import APIsAsMCPMenu from './APIsAsMCPMenu';
+import ExistingAPIsAsMCPMenu from './ExistingAPIsAsMCPMenu';
+import ProxyMCPMenu from './ProxyMCPMenu';
+
+const PREFIX = 'MCPLanding';
+
+const classes = {
+    root: `${PREFIX}-root`
+};
+
+const Root = styled('div')({
+    [`& .${classes.root}`]: {
+        flexGrow: 1,
+    },
+});
+
+/**
+ * MCPServerLanding component
+ * This component renders the landing page for MCP Servers, providing an onboarding experience
+ * @returns {JSX.Element} MCPServerLanding component
+ */
+function MCPServerLanding() {
+    const theme = useTheme();
+    const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
+    const [isFromMCPListingPage, setIsFromMCListingPage] = React.useState(false);
+    const location = useLocation();
+
+    const {
+        aiApiIcon,
+    } = theme.custom.landingPage.icons;
+
+    useEffect(() => {
+        const path = location.pathname;
+        if (path.includes('/mcp-servers/create')) {
+            setIsFromMCListingPage(true);
+        }
+    }, [location.pathname]);
+
+    return (
+        <Root className={classes.root}>
+            <Grid
+                container
+                direction='column'
+                justifyContent='center'
+            >
+                <Grid item xs={12}>
+                    <Box pt={isXsOrBelow ? 2 : 7} />
+                </Grid>
+                <Grid item md={12}>
+                    {isFromMCPListingPage ? (
+                        <Box
+                            display='flex'
+                            alignItems='center'
+                            justifyContent='space-between'
+                            width='100%'
+                            px={4}
+                        >
+                            <Button
+                                variant='text'
+                                component={Link}
+                                to='/apis'
+                                startIcon={<ArrowBackIcon />}
+                                id='itest-apis-back-to-listing'
+                            >
+                                <FormattedMessage
+                                    id='MCPServers.Landing.back.to.listing'
+                                    defaultMessage='Back to MCP Listing'
+                                />
+                            </Button>
+                            <Box flexGrow={1} textAlign='center'>
+                                <Typography
+                                    id='itest-apis-welcome-msg'
+                                    display='block'
+                                    gutterBottom
+                                    align='center'
+                                    variant='h4'
+                                >
+                                    <FormattedMessage
+                                        id='MCPServers.Landing.create.new'
+                                        defaultMessage='Create a new MCP Server'
+                                    />
+                                    <Box color='text.secondary' pt={1}>
+                                        <Typography display='block' gutterBottom align='center' variant='body1'>
+                                            <FormattedMessage
+                                                id='MCPServers.Landing.create.new.description'
+                                                defaultMessage='Select how you would like to define your MCP Server'
+                                            />
+                                        </Typography>
+                                    </Box>
+                                </Typography>
+                            </Box>
+                            <Box sx={{ minWidth: '220px' }} />
+                        </Box>
+                    ) : (
+                        <Typography
+                            id='itest-apis-welcome-msg'
+                            display='block'
+                            gutterBottom
+                            align='center'
+                            variant='h4'
+                        >
+                            <FormattedMessage
+                                id='Apis.Listing.SampleAPI.SampleAPI.create.new'
+                                defaultMessage='Let’s get started!'
+                            />
+                            <Box color='text.secondary' pt={1}>
+                                <Typography display='block' gutterBottom align='center' variant='body1'>
+                                    <FormattedMessage
+                                        id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
+                                        defaultMessage='Create and manage your MCP Servers'
+                                    />
+                                </Typography>
+                            </Box>
+                        </Typography>
+                    )}
+                </Grid>
+                <Grid item xs={12} md={2} lg={2} xl={2}>
+                    <Box pt={isXsOrBelow ? 1 : 6} pb={4} >
+                        <Grid
+                            container
+                            direction='column'
+                            justifyContent='center'
+                            alignItems='flex-start'
+                            spacing={3}
+                        >
+                            <Grid
+                                container
+                                direction='row'
+                                justifyContent='center'
+                                alignItems='flex-start'
+                                spacing={3}
+                            >
+                                <APIsAsMCPMenu icon={aiApiIcon} />
+                                <ExistingAPIsAsMCPMenu icon={aiApiIcon} />
+                                <ProxyMCPMenu icon={aiApiIcon} />
+                            </Grid>
+                        </Grid>
+                    </Box>
+                </Grid>
+            </Grid>
+        </Root>
+    );
+}
+
+MCPServerLanding.propTypes = {
+    classes: PropTypes.shape({}).isRequired,
+    intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
+};
+
+export default withRouter(injectIntl(MCPServerLanding));

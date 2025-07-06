@@ -133,6 +133,7 @@
         <url-pattern>/login/*</url-pattern>
         <url-pattern>/logout/*</url-pattern>
         <url-pattern>/error-pages/*</url-pattern>
+        <url-pattern>/mcp-servers/*</url-pattern>
     </servlet-mapping>
     <servlet-mapping>
         <servlet-name>logout</servlet-name>

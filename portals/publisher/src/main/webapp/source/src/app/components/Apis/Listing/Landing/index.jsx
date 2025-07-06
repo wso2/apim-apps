@@ -19,10 +19,12 @@
 import React, { useState, useEffect } from 'react';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { styled } from '@mui/material/styles';
-import { useTheme, Divider, Box, Grid  } from '@mui/material';
+import { useTheme, Divider, Box, Grid, Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import useMediaQuery from '@mui/material/useMediaQuery';
+import { Link, useLocation } from 'react-router-dom';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import RestAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/RestAPIMenu';
 import SoapAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/SoapAPIMenu';
 import GraphqlAPIMenu from 'AppComponents/Apis/Listing/Landing/Menus/GraphqlAPIMenu';
@@ -47,6 +49,8 @@ const APILanding = () => {
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const { data: settings } = usePublisherSettings();
     const [gateway, setGatewayType] = useState(true);
+    const [isFromAPIListingPage, setIsFromAPIListingPage] = useState(false);
+    const location = useLocation();
 
     const getGatewayType = () => {
         if (settings != null) {
@@ -70,6 +74,13 @@ const APILanding = () => {
         streamingApiIcon,
     } = theme.custom.landingPage.icons;
 
+    useEffect(() => {
+        const path = location.pathname;
+        if (path.includes('/apis/create')) {
+            setIsFromAPIListingPage(true);
+        }
+    }, [location.pathname]);
+
     return (
         <Root className={classes.root}>
             <Grid
@@ -81,31 +92,83 @@ const APILanding = () => {
                     <Box pt={isXsOrBelow ? 2 : 7} />
                 </Grid>
                 <Grid item md={12}>
-                    <Typography id='itest-apis-welcome-msg' display='block' gutterBottom align='center' variant='h4'>
-                        <FormattedMessage
-                            id='Apis.Listing.SampleAPI.SampleAPI.create.new'
-                            defaultMessage='Let’s get started !'
-                        />
-                        {settings && settings.portalConfigurationOnlyModeEnabled ? (
-                            <Box color='text.secondary' pt={1}>
-                                <Typography display='block' gutterBottom align='center' variant='body1'>
+                    {isFromAPIListingPage ? (
+                        <Box
+                            display='flex'
+                            alignItems='center'
+                            justifyContent='space-between'
+                            width='100%'
+                            px={4}
+                        >
+                            <Button
+                                variant='text'
+                                component={Link}
+                                to='/apis'
+                                startIcon={<ArrowBackIcon />}
+                                id='itest-apis-back-to-listing'
+                            >
+                                <FormattedMessage
+                                    id='Apis.Listing.SampleAPI.SampleAPI.back.to.listing'
+                                    defaultMessage='Back to API Listing'
+                                />
+                            </Button>
+                            <Box flexGrow={1} textAlign='center'>
+                                <Typography
+                                    id='itest-apis-welcome-msg'
+                                    display='block'
+                                    gutterBottom
+                                    align='center'
+                                    variant='h4'
+                                >
                                     <FormattedMessage
-                                        id='Apis.Listing.SampleAPI.SampleAPI.no.apis.deployed'
-                                        defaultMessage='No APIs have been deployed yet '
+                                        id='Apis.Listing.SampleAPI.SampleAPI.create.new'
+                                        defaultMessage='Create a new API'
                                     />
+                                    <Box color='text.secondary' pt={1}>
+                                        <Typography display='block' gutterBottom align='center' variant='body1'>
+                                            <FormattedMessage
+                                                id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
+                                                defaultMessage='Select how you would like to define your API'
+                                            />
+                                        </Typography>
+                                    </Box>
                                 </Typography>
                             </Box>
-                        ) : (
-                            <Box color='text.secondary' pt={1}>
-                                <Typography display='block' gutterBottom align='center' variant='body1'>
-                                    <FormattedMessage
-                                        id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
-                                        defaultMessage='Choose your option to create an API'
-                                    />
-                                </Typography>
-                            </Box>
-                        )}
-                    </Typography>
+                            <Box sx={{ minWidth: '220px' }} />
+                        </Box>
+                    ) : (
+                        <Typography
+                            id='itest-apis-welcome-msg'
+                            display='block'
+                            gutterBottom
+                            align='center'
+                            variant='h4'
+                        >
+                            <FormattedMessage
+                                id='Apis.Listing.SampleAPI.SampleAPI.create.new'
+                                defaultMessage='Let’s get started!'
+                            />
+                            {settings && settings.portalConfigurationOnlyModeEnabled ? (
+                                <Box color='text.secondary' pt={1}>
+                                    <Typography display='block' gutterBottom align='center' variant='body1'>
+                                        <FormattedMessage
+                                            id='Apis.Listing.SampleAPI.SampleAPI.no.apis.deployed'
+                                            defaultMessage='No APIs have been deployed yet '
+                                        />
+                                    </Typography>
+                                </Box>
+                            ) : (
+                                <Box color='text.secondary' pt={1}>
+                                    <Typography display='block' gutterBottom align='center' variant='body1'>
+                                        <FormattedMessage
+                                            id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
+                                            defaultMessage='Choose your option to create an API'
+                                        />
+                                    </Typography>
+                                </Box>
+                            )}
+                        </Typography>
+                    )}
                 </Grid>
 
                 {settings && !settings.portalConfigurationOnlyModeEnabled && (
@@ -136,14 +199,14 @@ const APILanding = () => {
                                     <AIAPIMenu icon={aiApiIcon} />
                                 </Grid>
                                 {settings.designAssistantEnabled && (
-                                    <Divider 
-                                        variant='middle' 
+                                    <Divider
+                                        variant='middle'
                                         sx={{
-                                            backgroundColor: '#A0A5A3', 
+                                            backgroundColor: '#A0A5A3',
                                             height: 1,
                                             width: '85%',
-                                            mt: '30px', 
-                                            mb: '10px', 
+                                            mt: '30px',
+                                            mb: '10px',
                                             marginX: 'auto',
                                         }}
                                     />
@@ -151,9 +214,9 @@ const APILanding = () => {
                                 {settings.designAssistantEnabled && (
                                     <Grid
                                         item
-                                        sx={{ 
-                                            display: 'flex', 
-                                            justifyContent: 'center', 
+                                        sx={{
+                                            display: 'flex',
+                                            justifyContent: 'center',
                                             width: '100%',
                                         }}
                                     >

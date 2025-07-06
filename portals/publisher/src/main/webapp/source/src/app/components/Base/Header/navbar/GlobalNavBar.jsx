@@ -95,7 +95,7 @@ const GlobalNavBar = (props) => {
     let isRootPage = false;
     const { pathname } = location;
 
-    if (/^\/(apis|subscription(\/.*)?|api-products|scopes|policies|global-policies|service-catalog)($|\/$)/g
+    if (/^\/(apis|subscription(\/.*)?|api-products|scopes|policies|global-policies|service-catalog|mcp-servers)($|\/$)/g
         .test(pathname)) {
         isRootPage = true;
     }    

@@ -251,12 +251,18 @@ class APIThumb extends Component {
      * @memberof APIThumb
      */
     render() {
-        const { api, isAPIProduct, theme, updateData } = this.props;
+        const { api, isAPIProduct, isMCPServer, theme, updateData } = this.props;
         const { isHover, loading } = this.state;
         let overviewPath = '';
         const { tileDisplayInfo } = Configurations.apis;
         if (api.apiType) {
-            overviewPath = isAPIProduct ? `/api-products/${api.id}/overview` : `/apis/${api.id}/overview`;
+            if (isAPIProduct) {
+                overviewPath = `/api-products/${api.id}/overview`;
+            } else if (isMCPServer) {
+                overviewPath = `/mcp-servers/${api.id}/overview`;
+            } else {
+                overviewPath = `/apis/${api.id}/overview`;
+            }
         } else {
             overviewPath = `/apis/${api.apiUUID}/documents/${api.id}/details`;
         }
@@ -530,6 +536,7 @@ class APIThumb extends Component {
                                 api={api}
                                 updateData={updateData}
                                 isAPIProduct={isAPIProduct}
+                                // isMCPServer={isMCPServer}
                             />
                             {loading && <CircularProgress className={classes.deleteProgress} />}
                         </>
@@ -540,6 +547,10 @@ class APIThumb extends Component {
     }
 }
 
+APIThumb.defaultProps = {
+    isMCPServer: false,
+};
+
 APIThumb.propTypes = {
     api: PropTypes.shape({
         id: PropTypes.string,
@@ -547,6 +558,7 @@ APIThumb.propTypes = {
         apiType: PropTypes.string.isRequired,
     }).isRequired,
     isAPIProduct: PropTypes.bool.isRequired,
+    isMCPServer: PropTypes.bool,
     updateData: PropTypes.func.isRequired,
 };
 

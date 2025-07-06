@@ -221,6 +221,7 @@ export default class Protected extends Component {
                                         <Redirect exact from='/' to='/apis' />
                                         <Route path='/apis' component={DeferredAPIs} />
                                         <Route path='/api-products' component={DeferredAPIs} />
+                                        <Route path='/mcp-servers' component={DeferredAPIs} />
                                         <Route path='/scopes' component={Scopes} />
                                         <Route path='/subscription' component={Subscription} />
                                         <Route path='/policies' component={CommonPolicies} />

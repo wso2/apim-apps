@@ -67,7 +67,7 @@ Onboarding.defaultProps = {
     title: (
         <FormattedMessage
             id='Apis.Listing.SampleAPI.SampleAPI.create.new'
-            defaultMessage='Let’s get started !'
+            defaultMessage='Let’s get started!'
         />
     ),
     subTitle: null,

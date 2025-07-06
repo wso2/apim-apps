@@ -331,7 +331,7 @@ const Listing = () => {
                 title={
                     <FormattedMessage
                         id='CommonPolicies.Listing.onboarding.create.new'
-                        defaultMessage='Let’s get started !'
+                        defaultMessage='Let’s get started!'
                     />
                 }
                 subTitle={

@@ -26,13 +26,11 @@ import Typography from '@mui/material/Typography';
 import IconButton from '@mui/material/IconButton';
 import List from '@mui/icons-material/List';
 import GridOn from '@mui/icons-material/GridOn';
+import AddIcon from '@mui/icons-material/Add';
 import { FormattedMessage } from 'react-intl';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import VerticalDivider from 'AppComponents/Shared/VerticalDivider';
 import { isRestricted } from 'AppData/AuthManager';
-import { app } from 'Settings';
-import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
-import APICreateMenu from './APICreateMenu';
 
 const PREFIX = 'TopMenu';
 
@@ -81,7 +79,7 @@ const Root = styled('div')((
  */
 function getTitleForArtifactType(props, count) {
     const {
-        isAPIProduct, query,
+        isAPIProduct, isMCPServer, query,
     } = props;
     const isSingular = count === 1;
     if (query) {
@@ -105,6 +103,18 @@ function getTitleForArtifactType(props, count) {
                 defaultMessage='API products'
             />
         );
+    } else if (isMCPServer) {
+        return isSingular ? (
+            <FormattedMessage
+                id='Apis.Listing.components.TopMenu.mcp.server.singular'
+                defaultMessage='MCP Server'
+            />
+        ) : (
+            <FormattedMessage
+                id='Apis.Listing.components.TopMenu.mcp.servers.results'
+                defaultMessage='MCP Servers'
+            />
+        );
     } else {
         return isSingular ? (
             <FormattedMessage id='Apis.Listing.components.TopMenu.api.singular' defaultMessage='API' />
@@ -122,11 +132,8 @@ function getTitleForArtifactType(props, count) {
  */
 function TopMenu(props) {
     const {
-        data, setListType, count, isAPIProduct, listType, showToggle, query,
+        data, setListType, count, isAPIProduct, isMCPServer, listType, showToggle, query,
     } = props;
-
-    const { data: settings } = usePublisherSettings();
-    const designAssistantEnabled = settings?.designAssistantEnabled;
       
     if (count > 0) {
         return (
@@ -141,13 +148,19 @@ function TopMenu(props) {
                                         defaultMessage='API Products'
                                     />
                                 )}
+                                {isMCPServer && (
+                                    <FormattedMessage
+                                        id='Apis.Listing.components.TopMenu.mcp.servers'
+                                        defaultMessage='MCP Servers'
+                                    />
+                                )}
                                 { query && (
                                     <FormattedMessage
                                         id='Apis.Listing.components.TopMenu.unified.search'
                                         defaultMessage='Unified search'
                                     />
                                 )}
-                                { !query && !isAPIProduct && (
+                                { !query && !isAPIProduct && !isMCPServer && (
                                     <FormattedMessage id='Apis.Listing.components.TopMenu.apis' defaultMessage='APIs' />
                                 )}
                             </Typography>
@@ -182,38 +195,41 @@ function TopMenu(props) {
                             component={Link}
                             disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
                             to='/api-products/create'
+                            startIcon={<AddIcon />}
                         >
                             <FormattedMessage
                                 id='Apis.Listing.components.TopMenu.create.an.api.product'
-                                defaultMessage='Create an API Product'
+                                defaultMessage='Create API Product'
                             />
                         </Button>
                     )}
-                    {!query && !isAPIProduct && (
-                        <APICreateMenu>
-                            <FormattedMessage
-                                id='Apis.Listing.components.TopMenu.create.api'
-                                defaultMessage='Create API'
-                            />
-                        </APICreateMenu>
-                    )} 
-                    {/* Button to Create API with AI */}
-                    {!query && !isAPIProduct && !isRestricted(['apim:api_create']) && designAssistantEnabled && (
+                    {isMCPServer && (
                         <Button
                             variant='contained'
                             color='primary'
                             component={Link}
-                            to='/apis/design-assistant'
-                            sx={{ marginLeft: '10px' }}
+                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                            to='/mcp-servers/create'
+                            startIcon={<AddIcon />}
                         >
                             <FormattedMessage
-                                id='Apis.Listing.components.TopMenu.create.api.with.ai'
-                                defaultMessage='Create API with AI'
+                                id='MCPServers.Listing.components.TopMenu.create.an.mcp.server'
+                                defaultMessage='Create MCP Server'
                             />
-                            <img
-                                alt='API Design Assistant'
-                                src={`${app.context}/site/public/images/ai/DesignAssistant.svg`}
-                                style={{ marginLeft: 8, width: 15, height: 15 }}
+                        </Button>
+                    )}
+                    {!query && !isAPIProduct && !isMCPServer && (
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            component={Link}
+                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                            to='/apis/create'
+                            startIcon={<AddIcon />}
+                        >
+                            <FormattedMessage
+                                id='Apis.Listing.components.TopMenu.create.api'
+                                defaultMessage='Create API'
                             />
                         </Button>
                     )}
@@ -253,6 +269,7 @@ TopMenu.propTypes = {
         custom: PropTypes.shape({}),
     }).isRequired,
     isAPIProduct: PropTypes.bool.isRequired,
+    isMCPServer: PropTypes.bool.isRequired,
     showToggle: PropTypes.bool.isRequired,
 };
 

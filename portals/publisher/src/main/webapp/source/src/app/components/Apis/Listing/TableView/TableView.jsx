@@ -34,6 +34,7 @@ import APILanding from 'AppComponents/Apis/Listing/Landing';
 import TopMenu from 'AppComponents/Apis/Listing/components/TopMenu';
 import CustomIcon from 'AppComponents/Shared/CustomIcon';
 import SampleAPIProduct from 'AppComponents/Apis/Listing/SampleAPI/SampleAPIProduct';
+import MCPServerLanding from 'AppComponents/MCPServers/Landing';
 import Alert from 'AppComponents/Shared/Alert';
 import DefThumb from '../components/ImageGenerator/DefThumb';
 
@@ -112,6 +113,9 @@ class TableView extends React.Component {
         this.updateData = this.updateData.bind(this);
     }
 
+    /**
+     * Lifecycle method to get the data when the component mounts.
+     */
     componentDidMount() {
         const { rowsPerPage, page } = this.state;
         this.getData(rowsPerPage, page);
@@ -121,10 +125,15 @@ class TableView extends React.Component {
         }
     }
 
+    /**
+     * Update the data when the component updates.
+     * @param {*} prevProps previous properties
+     */
     componentDidUpdate(prevProps) {
-        const { isAPIProduct, query } = this.props;
+        const { isAPIProduct, isMCPServer, query } = this.props;
         const { rowsPerPage, page } = this.state;
-        if (isAPIProduct !== prevProps.isAPIProduct || query !== prevProps.query) {
+        if (isAPIProduct !== prevProps.isAPIProduct
+            || isMCPServer !== prevProps.isMCPServer || query !== prevProps.query) {
             this.getData(rowsPerPage, page);
         }
     }
@@ -266,7 +275,7 @@ class TableView extends React.Component {
     };
 
     xhrRequest = (rowsPerPage, page) => {
-        const { isAPIProduct, query } = this.props;
+        const { isAPIProduct, isMCPServer, query } = this.props;
         if (query) {
             const composeQuery = queryString.parse(query);
             composeQuery.limit = rowsPerPage;
@@ -275,6 +284,8 @@ class TableView extends React.Component {
         }
         if (isAPIProduct) {
             return APIProduct.all({ limit: rowsPerPage, offset: page * rowsPerPage });
+        } else if (isMCPServer) {
+            return API.all({ limit: rowsPerPage, offset: page * rowsPerPage }); //TODO: Implement MCP Server listing
         } else {
             return API.all({ limit: rowsPerPage, offset: page * rowsPerPage });
         }
@@ -302,7 +313,7 @@ class TableView extends React.Component {
      * @memberof TableView
      */
     render() {
-        const { intl, isAPIProduct, query } = this.props;
+        const { intl, isAPIProduct, isMCPServer, query } = this.props;
         const {
             loading, totalCount, rowsPerPage, apisAndApiProducts, notFound, listType, page,
         } = this.state;
@@ -323,13 +334,20 @@ class TableView extends React.Component {
                 options: {
                     customBodyRender: (value, tableMeta, updateValue, tableViewObj = this) => {
                         if (tableMeta.rowData) {
-                            const { isAPIProduct } = tableViewObj.props; // eslint-disable-line no-shadow
+                            const { isAPIProduct, isMCPServer } = tableViewObj.props; // eslint-disable-line no-shadow
                             const artifact = tableViewObj.state.apisAndApiProducts[tableMeta.rowIndex];
                             const apiName = tableMeta.rowData[1];
                             const apiId = tableMeta.rowData[0];
                             if (isAPIProduct) {
                                 return (
                                     <Link to={'/api-products/' + apiId + '/overview'} className={classes.apiNameLink}>
+                                        <CustomIcon width={16} height={16} icon='api-product' strokeColor='#444444' />
+                                        <span>{apiName}</span>
+                                    </Link>
+                                );
+                            } else if (isMCPServer) {
+                                return (
+                                    <Link to={'/mcp-servers/' + apiId + '/overview'} className={classes.apiNameLink}>
                                         <CustomIcon width={16} height={16} icon='api-product' strokeColor='#444444' />
                                         <span>{apiName}</span>
                                     </Link>
@@ -462,7 +480,7 @@ class TableView extends React.Component {
         };
         if (listType === 'grid') {
             options.customRowRender = (data, dataIndex, rowIndex, tableViewObj = this) => {
-                const { isAPIProduct } = tableViewObj.props; // eslint-disable-line no-shadow
+                const { isAPIProduct, isMCPServer } = tableViewObj.props; // eslint-disable-line no-shadow
                 const artifact = tableViewObj.state.apisAndApiProducts[dataIndex];
                 if (artifact) {
                     if (artifact.type === 'DOC') {
@@ -472,9 +490,16 @@ class TableView extends React.Component {
                     } else if (artifact.type === 'APIPRODUCT') {
                         artifact.state = 'PUBLISHED';
                         return <ApiThumb api={artifact} isAPIProduct updateData={this.updateData} />;
+                    // } else if (isMCPServer) {
+                    //     return <ApiThumb api={artifact} isMCPServer updateData={this.updateData} />;
                     } else {
                         return (
-                            <ApiThumb api={artifact} isAPIProduct={isAPIProduct} updateData={this.updateData} />
+                            <ApiThumb
+                                api={artifact}
+                                isAPIProduct={isAPIProduct}
+                                isMCPServer={isMCPServer}
+                                updateData={this.updateData}
+                            />
                         );
                     }
                 }
@@ -499,29 +524,30 @@ class TableView extends React.Component {
         } else {
             options.pagination = true;
         }
-        if (!apisAndApiProducts) {
+        if (!apisAndApiProducts && !isMCPServer) {
             return <Progress per={90} message='Loading APIs ...' />;
+        } else if (!apisAndApiProducts && isMCPServer) {
+            return <Progress per={90} message='Loading MCP Servers ...' />;
         }
         if (notFound) {
             return <ResourceNotFound />;
         }
         if (apisAndApiProducts.length === 0 && !query) {
             return (
-                (<Root>
+                <Root>
                     <TopMenu
                         data={apisAndApiProducts}
                         count={totalCount}
                         setListType={this.setListType}
                         isAPIProduct={isAPIProduct}
+                        isMCPServer={isMCPServer}
                         listType={listType}
                         showToggle={this.showToggle}
                     />
-                    {isAPIProduct ? (
-                        <SampleAPIProduct />
-                    ) : (
-                        <APILanding />
-                    )}
-                </Root>)
+                    {isAPIProduct && <SampleAPIProduct />}
+                    {isMCPServer && <MCPServerLanding />}
+                    {!isAPIProduct && !isMCPServer && <APILanding />}
+                </Root>
             );
         }
 
@@ -532,6 +558,7 @@ class TableView extends React.Component {
                     count={totalCount}
                     setListType={this.setListType}
                     isAPIProduct={isAPIProduct}
+                    isMCPServer={isMCPServer}
                     listType={listType}
                     showToggle={this.showToggle}
                     query={query}
@@ -546,7 +573,7 @@ class TableView extends React.Component {
                         : (
                             <StyledEngineProvider injectFirst>
                                 <ThemeProvider theme={this.getMuiTheme()}>
-                                    <MUIDataTable title='' data={apisAndApiProducts} columns={columns} 
+                                    <MUIDataTable title='' data={apisAndApiProducts} columns={columns}
                                         options={options} />
                                 </ThemeProvider>
                             </StyledEngineProvider>
@@ -560,6 +587,7 @@ class TableView extends React.Component {
 TableView.propTypes = {
     intl: PropTypes.shape({ formatMessage: PropTypes.func.isRequired }).isRequired,
     isAPIProduct: PropTypes.bool.isRequired,
+    isMCPServer: PropTypes.bool.isRequired,
     theme: PropTypes.shape({
         custom: PropTypes.shape({}),
     }).isRequired,
