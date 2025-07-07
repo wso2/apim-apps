@@ -36,6 +36,9 @@ import Grid from '@mui/material/Grid';
 import Select from '@mui/material/Select';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { MuiChipsInput } from 'mui-chips-input';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import AIAPIDefinition from './AIAPIDefinition';
@@ -116,9 +119,13 @@ export default function AddEditAiVendor(props) {
     const intl = useIntl();
     const [saving, setSaving] = useState(false);
     const { match: { params: { id: vendorId } }, history } = props;
-    const inputSources = ['payload', 'header', 'queryParams'];
-    const [authSource, setAuthSource] = useState('authHeader');
-    const authSources = ['unsecured', 'authHeader', 'authQueryParameter'];
+    const inputSources = ['payload', 'header', 'queryParams', 'pathParams'];
+    const [authConfig, setAuthenticationConfiguration] = useState({
+        enabled: 'false',
+        type: 'none',
+        parameters: {},
+    });
+    const authSources = ['none', 'apikey', 'aws'];
     const [validating, setValidating] = useState(false);
     const [file, setFile] = useState(null);
     const location = useLocation();
@@ -202,6 +209,37 @@ export default function AddEditAiVendor(props) {
                             ...model, id: uuidv4(),
                         }));
                     }
+                    if (aiVendorBody.configurations) {
+                        const config = JSON.parse(aiVendorBody.configurations);
+                        if (config.authenticationConfiguration) {
+                            setAuthenticationConfiguration({
+                                enabled: config.authenticationConfiguration.enabled,
+                                type: config.authenticationConfiguration.type,
+                                parameters: config.authenticationConfiguration.parameters ?? {},
+                            });
+                        } else {
+                            const hasAuthHeader = config.authHeader && config.authHeader.trim() !== '';
+                            const hasAuthQueryParameter = config.authQueryParameter
+                                && config.authQueryParameter.trim() !== '';
+                            if (hasAuthHeader || hasAuthQueryParameter) {
+                                setAuthenticationConfiguration({
+                                    enabled: 'true',
+                                    type: 'apikey',
+                                    parameters: {
+                                        headersEnabled: !!hasAuthHeader,
+                                        headerName: config.authHeader || '',
+                                        queryParameterEnabled: !!hasAuthQueryParameter,
+                                        queryParameterName: config.authQueryParameter || '',
+                                    },
+                                });
+                            } else {
+                                setAuthenticationConfiguration({
+                                    enabled: 'false',
+                                    type: 'none',
+                                });
+                            }
+                        }
+                    }
                     const newState = {
                         name: aiVendorBody.name || '',
                         apiVersion: aiVendorBody.apiVersion || '',
@@ -212,14 +250,6 @@ export default function AddEditAiVendor(props) {
                         models,
                         multipleVendorSupport: aiVendorBody.multipleVendorSupport || false,
                     };
-                    if (newState.configurations.authQueryParameter) {
-                        setAuthSource('authQueryParameter');
-                    } else if (newState.configurations.authHeader) {
-                        setAuthSource('authHeader');
-                    } else {
-                        setAuthSource('unsecured');
-                    }
-
                     dispatch({ field: 'all', value: newState });
 
                     setFile(new Blob([aiVendorBody.apiDefinition || ''], { type: 'text/plain;charset=utf-8' }));
@@ -348,12 +378,10 @@ export default function AddEditAiVendor(props) {
                 metadata: state.configurations.metadata,
                 connectorType: state.configurations.connectorType,
             };
-            if (state.configurations[authSource]) {
-                updatedConfigurations = {
-                    ...updatedConfigurations,
-                    [authSource]: state.configurations[authSource],
-                };
-            }
+            updatedConfigurations = {
+                ...updatedConfigurations,
+                authenticationConfiguration: authConfig,
+            };
             let models;
             if (state.multipleVendorSupport) {
                 models = state.models.map(({ id, ...rest }) => rest);
@@ -397,19 +425,64 @@ export default function AddEditAiVendor(props) {
     };
 
     const clearAuthHeader = () => {
-        dispatch({
-            field: 'authHeader',
-            value: '',
-        });
+        setAuthenticationConfiguration((prev) => ({
+            ...prev,
+            parameters: {},
+        }));
     };
 
-    const clearAuthQueryParameter = () => {
-        dispatch({
-            field: 'authQueryParameter',
-            value: '',
-        });
-    };
+    function setAuthType(type) {
+        if (type === 'none') {
+            authConfig.enabled = false;
+            authConfig.type = 'none';
+        } else {
+            authConfig.enabled = true;
+            authConfig.type = type;
+        }
+    }
 
+    // Add this helper function above your component
+    function getApiKeyLocation(authConfiguration) {
+        if (authConfiguration?.parameters?.headerEnabled) {
+            return 'header';
+        }
+        if (authConfiguration?.parameters?.queryParameterEnabled) {
+            return 'queryParameter';
+        }
+        return '';
+    }
+
+    // Add this function inside your component, above the return statement
+    const handleApiKeyLocationChange = (e) => {
+        const { value } = e.target;
+        setAuthenticationConfiguration((prev) => ({
+            ...prev,
+            parameters: {
+                ...prev.parameters,
+                headerEnabled: value === 'header',
+                queryParameterEnabled: value === 'queryParameter',
+            },
+        }));
+    };
+    /**
+     * Handles changes to the API key identifier input.
+     * Updates headerName or queryParameterName in authConfig.parameters.
+     */
+    const handleApiKeyIdentifierChange = (e) => {
+        const { value } = e.target;
+        setAuthenticationConfiguration((prev) => ({
+            ...prev,
+            parameters: {
+                ...prev.parameters,
+                ...(prev.parameters.headerEnabled
+                    ? { headerName: value }
+                    : {}),
+                ...(prev.parameters.queryParameterEnabled
+                    ? { queryParameterName: value }
+                    : {}),
+            },
+        }));
+    };
     return (
         <StyledContentBase
             pageStyle='half'
@@ -700,8 +773,7 @@ export default function AddEditAiVendor(props) {
                                                                 + ' identifier'
                                                             }
                                                         />
-
-                                                        <StyledSpan>*</StyledSpan>
+                                                        {metadata.required && <StyledSpan>*</StyledSpan>}
                                                     </span>
                                                 )}
                                                 fullWidth
@@ -808,11 +880,10 @@ export default function AddEditAiVendor(props) {
                                             variant='outlined'
                                             id='Admin.AiVendor.form.llm.auth.select'
                                             name='authSource'
-                                            value={authSource}
+                                            value={authConfig.type}
                                             onChange={(e) => {
+                                                setAuthType(e.target.value);
                                                 clearAuthHeader();
-                                                clearAuthQueryParameter();
-                                                setAuthSource(e.target.value);
                                             }}
                                             data-testid='ai-vendor-llm-auth-select'
                                         >
@@ -823,33 +894,89 @@ export default function AddEditAiVendor(props) {
                                                     </MenuItem>
                                                 ))}
                                         </Select>
-                                        {authSource !== 'unsecured' && (
+                                        {(authConfig.type === 'apikey') && (
+                                            <>
+                                                <Box mb={2} mt={2}>
+                                                    <FormControl component='fieldset' fullWidth>
+                                                        <RadioGroup
+                                                            row
+                                                            aria-label='API Key Location'
+                                                            name='apikeyLocation'
+                                                            value={getApiKeyLocation(authConfig)}
+                                                            onChange={handleApiKeyLocationChange}
+                                                            data-testid='ai-vendor-llm-auth-apikey-location'
+                                                        >
+                                                            <FormControlLabel
+                                                                value='header'
+                                                                control={<Radio />}
+                                                                label='Header'
+                                                            />
+                                                            <FormControlLabel
+                                                                value='queryParameter'
+                                                                control={<Radio />}
+                                                                label='Query Parameter'
+                                                            />
+                                                        </RadioGroup>
+                                                    </FormControl>
+                                                </Box>
+                                                <TextField
+                                                    id='Admin.AiVendor.form.llm.auth.select.input'
+                                                    margin='dense'
+                                                    name='model.auth.attributeIdentifier'
+                                                    label={(
+                                                        <span>
+                                                            <FormattedMessage
+                                                                id={
+                                                                    'Admin.AiVendor.form.llm.'
+                                                                    + 'auth.select.input.message'
+                                                                }
+                                                                defaultMessage={
+                                                                    `${camelCaseToSentence(authConfig.type)} identifier`
+                                                                }
+                                                            />
+                                                        </span>
+                                                    )}
+                                                    fullWidth
+                                                    variant='outlined'
+                                                    value={
+                                                        (() => {
+                                                            if (authConfig?.parameters?.headerEnabled) {
+                                                                return authConfig.parameters.headerName ?? '';
+                                                            }
+                                                            if (authConfig?.parameters?.queryParameterEnabled) {
+                                                                return authConfig.parameters.queryParameterName ?? '';
+                                                            }
+                                                            return '';
+                                                        })()
+                                                    }
+                                                    onChange={handleApiKeyIdentifierChange}
+                                                />
+                                            </>
+                                        )}
+                                        {(authConfig.type === 'aws') && (
                                             <TextField
-                                                id='Admin.AiVendor.form.llm.auth.select.input'
+                                                id='Admin.AiVendor.form.llm.auth.aws.service'
                                                 margin='dense'
-                                                name='model.auth.attributeIdentifier'
+                                                name='awsServiceName'
                                                 label={(
                                                     <span>
                                                         <FormattedMessage
-                                                            id={
-                                                                'Admin.AiVendor.form.llm.'
-                                                                + 'auth.select.input.message'
-                                                            }
-                                                            defaultMessage={
-                                                                `${camelCaseToSentence(authSource)} identifier`
-                                                            }
+                                                            id='Admin.AiVendor.form.llm.auth.aws.service.label'
+                                                            defaultMessage='AWS Service Name'
                                                         />
                                                     </span>
                                                 )}
                                                 fullWidth
                                                 variant='outlined'
-                                                value={authSource === 'authHeader'
-                                                    ? state.configurations.authHeader ?? ''
-                                                    : state.configurations.authQueryParameter ?? ''}
-                                                onChange={(e) => dispatch({
-                                                    field: authSource,
-                                                    value: e.target.value,
-                                                })}
+                                                value={authConfig.parameters?.awsServiceName || ''}
+                                                onChange={(e) => setAuthenticationConfiguration((prev) => ({
+                                                    ...prev,
+                                                    parameters: {
+                                                        ...prev.parameters,
+                                                        awsServiceName: e.target.value,
+                                                    },
+                                                }))}
+                                                required
                                             />
                                         )}
                                     </FormControl>

@@ -99,6 +99,7 @@ const EndpointCard = ({
     onDelete,
     onSetPrimary,
     onRemovePrimary,
+    endpointConfiguration,
 }) => {
     const history = useHistory();
 
@@ -108,35 +109,68 @@ const EndpointCard = ({
         endpoint.deploymentStage === 'PRODUCTION'
             ? endpoint.endpointConfig?.production_endpoints?.url
             : endpoint.endpointConfig?.sandbox_endpoints?.url;
-
     const renderEndpointSecurityWarning = () => {
-        const endpointSecurity =
-            endpoint.deploymentStage === 'PRODUCTION'
-                ? endpoint.endpointConfig?.endpoint_security?.production
-                : endpoint.endpointConfig?.endpoint_security?.sandbox;
+        if (endpointConfiguration.authenticationConfiguration.enabled) {
+            const endpointSecurity =
+                endpoint.deploymentStage === 'PRODUCTION'
+                    ? endpoint.endpointConfig?.endpoint_security?.production
+                    : endpoint.endpointConfig?.endpoint_security?.sandbox;
 
-        if (!endpointSecurity) {
-            return (
-                <Tooltip title='Configure API Key security for this endpoint'>
-                    <Chip
-                        icon={<WarningIcon />}
-                        label='API Key Required'
-                        size='small'
-                        variant='outlined'
-                        className={classes.warningChip}
-                        onClick={() => {
-                            const urlPrefix =
-                                apiObject.apiType === API.CONSTS.APIProduct
-                                    ? 'api-products'
-                                    : 'apis';
-                            history.push(
-                                `/${urlPrefix}/${apiObject.id}/endpoints/${endpoint.id}`,
-                            );
-                        }}
-                        sx={{ my: '4px' }}
-                    />
-                </Tooltip>
-            );
+            // API Key warning
+            if (
+                !endpointSecurity &&
+                endpointConfiguration.authenticationConfiguration.type === "apikey"
+            ) {
+                return (
+                    <Tooltip title='Configure API Key security for this endpoint'>
+                        <Chip
+                            icon={<WarningIcon />}
+                            label='API Key Required'
+                            size='small'
+                            variant='outlined'
+                            className={classes.warningChip}
+                            onClick={() => {
+                                const urlPrefix =
+                                    apiObject.apiType === API.CONSTS.APIProduct
+                                        ? 'api-products'
+                                        : 'apis';
+                                history.push(
+                                    `/${urlPrefix}/${apiObject.id}/endpoints/${endpoint.id}`,
+                                );
+                            }}
+                            sx={{ my: '4px' }}
+                        />
+                    </Tooltip>
+                );
+            }
+
+            // AWS SigV4 warning
+            if (
+                !endpointSecurity &&
+                endpointConfiguration.authenticationConfiguration.type === "aws"
+            ) {
+                return (
+                    <Tooltip title='Configure AWS security for this endpoint'>
+                        <Chip
+                            icon={<WarningIcon />}
+                            label='AWS Credentials Required'
+                            size='small'
+                            variant='outlined'
+                            className={classes.warningChip}
+                            onClick={() => {
+                                const urlPrefix =
+                                    apiObject.apiType === API.CONSTS.APIProduct
+                                        ? 'api-products'
+                                        : 'apis';
+                                history.push(
+                                    `/${urlPrefix}/${apiObject.id}/endpoints/${endpoint.id}`,
+                                );
+                            }}
+                            sx={{ my: '4px' }}
+                        />
+                    </Tooltip>
+                );
+            }
         }
         return null;
     };

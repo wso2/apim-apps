@@ -190,7 +190,7 @@ function EndpointOverview(props) {
         setIsValidSequenceBackend,
         isCustomBackendSelected,
         setIsCustomBackendSelected,
-        apiKeyParamConfig,
+        endpointConfiguration,
         componentValidator,
         endpointSecurityTypes,
     } = props;
