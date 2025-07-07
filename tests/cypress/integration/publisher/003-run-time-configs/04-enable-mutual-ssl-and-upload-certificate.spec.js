@@ -35,7 +35,7 @@ describe("Runtime configuration", () => {
             cy.visit(`/publisher/apis/${apiId}/overview`);
             cy.get('#itest-api-details-api-config-acc').click();
             cy.get('#left-menu-itemRuntimeConfigurations').click();
-            cy.get('h4').contains('Transport Level Security').click();
+            cy.contains('h4', 'Transport Level Security').click();
             cy.get('#mutual-ssl-checkbox').click();
 
             // uploading the production cert
@@ -80,7 +80,7 @@ describe("Runtime configuration", () => {
             cy.get('#save-runtime-configurations').click();
 
             cy.get('#save-runtime-configurations').get(() => {
-                cy.get('h4').contains('Transport Level Security').click();
+                cy.contains('h4', 'Transport Level Security').click();
                 cy.get('#mutual-ssl-checkbox').should('be.checked');
                 cy.get('[data-testid="list-production-certs"]').contains(alias1).should('be.visible');
                 cy.get('[data-testid="list-sandbox-certs"]').contains(alias2).should('be.visible');
