@@ -2,7 +2,7 @@ import React from 'react';
 import { styled } from '@mui/material/styles';
 import {
     TextField, Checkbox, FormControlLabel, Box, FormLabel, FormControl,
-    FormGroup, Radio, RadioGroup, InputLabel, MenuItem, FormHelperText,
+    FormGroup, Radio, RadioGroup, MenuItem, FormHelperText,
 } from '@mui/material';
 import Certificates from 'AppComponents/KeyManagers/Certificates';
 import CustomInputField from 'AppComponents/KeyManagers/CustomInputField';
@@ -80,14 +80,11 @@ export default function KeyManagerConfiguration(props) {
             if (mask) {
                 return (
                     <FormControl fullWidth>
-                        <InputLabel shrink>
-                            {label}
-                            {required && <StyledSpan>*</StyledSpan>}
-                        </InputLabel>
                         <CustomInputField
                             value={value}
                             onChange={onChange}
                             name={name}
+                            label={label}
                             required={required}
                             hasErrors={hasErrors}
                             validating={validating}
