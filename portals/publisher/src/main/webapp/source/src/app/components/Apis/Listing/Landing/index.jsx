@@ -89,53 +89,52 @@ const APILanding = () => {
                 justifyContent='center'
             >
                 <Grid item xs={12}>
-                    <Box pt={isXsOrBelow ? 2 : 7} />
-                </Grid>
-                <Grid item md={12}>
                     {isFromAPIListingPage ? (
-                        <Box
-                            display='flex'
-                            alignItems='center'
-                            justifyContent='space-between'
-                            width='100%'
-                            px={4}
-                        >
+                        <Box>
+                            <Box pt={isXsOrBelow ? 2 : 4} />
                             <Button
                                 variant='text'
                                 component={Link}
                                 to='/apis'
                                 startIcon={<ArrowBackIcon />}
                                 id='itest-apis-back-to-listing'
+                                sx={{
+                                    // position: 'absolute',
+                                    ml: 15,
+                                }}
                             >
                                 <FormattedMessage
                                     id='Apis.Listing.SampleAPI.SampleAPI.back.to.listing'
                                     defaultMessage='Back to API Listing'
                                 />
                             </Button>
-                            <Box flexGrow={1} textAlign='center'>
-                                <Typography
-                                    id='itest-apis-welcome-msg'
-                                    display='block'
-                                    gutterBottom
-                                    align='center'
-                                    variant='h4'
-                                >
+                        </Box>
+                    ) : (
+                        <Box pt={isXsOrBelow ? 2 : 7} />
+                    )}
+                </Grid>
+                <Grid item md={12}>
+                    {isFromAPIListingPage ? (
+                        <Typography
+                            id='itest-apis-welcome-msg'
+                            display='block'
+                            gutterBottom
+                            align='center'
+                            variant='h4'
+                        >
+                            <FormattedMessage
+                                id='Apis.Listing.SampleAPI.SampleAPI.create.new'
+                                defaultMessage='Create a new API'
+                            />
+                            <Box color='text.secondary' pt={1}>
+                                <Typography display='block' gutterBottom align='center' variant='body1'>
                                     <FormattedMessage
-                                        id='Apis.Listing.SampleAPI.SampleAPI.create.new'
-                                        defaultMessage='Create a new API'
+                                        id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
+                                        defaultMessage='Select how you would like to define your API'
                                     />
-                                    <Box color='text.secondary' pt={1}>
-                                        <Typography display='block' gutterBottom align='center' variant='body1'>
-                                            <FormattedMessage
-                                                id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
-                                                defaultMessage='Select how you would like to define your API'
-                                            />
-                                        </Typography>
-                                    </Box>
                                 </Typography>
                             </Box>
-                            <Box sx={{ minWidth: '220px' }} />
-                        </Box>
+                        </Typography>
                     ) : (
                         <Typography
                             id='itest-apis-welcome-msg'

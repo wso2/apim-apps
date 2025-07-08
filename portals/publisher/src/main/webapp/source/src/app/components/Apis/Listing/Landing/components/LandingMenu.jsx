@@ -115,7 +115,13 @@ const LandingMenu = (props) => {
                             />
                         </Box>
                     </Grid>
-                    {title}
+                    <Grid item xs={12} sm={10} md={12} lg={12}
+                        textAlign='center'
+                        fontWeight='bold'
+                        fontSize='h6.fontSize'
+                    >
+                        {title}
+                    </Grid>
                 </Grid>
                 <Box
                     position='absolute'

@@ -285,7 +285,8 @@ class TableView extends React.Component {
         if (isAPIProduct) {
             return APIProduct.all({ limit: rowsPerPage, offset: page * rowsPerPage });
         } else if (isMCPServer) {
-            return API.all({ limit: rowsPerPage, offset: page * rowsPerPage }); //TODO: Implement MCP Server listing
+            // TODO: Implement MCP Server listing
+            return API.all({ limit: rowsPerPage, offset: page * rowsPerPage });
         } else {
             return API.all({ limit: rowsPerPage, offset: page * rowsPerPage });
         }

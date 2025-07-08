@@ -255,7 +255,10 @@ export default {
                 scopesAddIcon: '/site/public/images/landing-icons/scopes.svg',
                 commonPolicyAddIcon: '/site/public/images/landing-icons/scopes.svg',
                 apiproductAddIcon: '/site/public/images/landing-icons/apiproduct.svg',
-                globalPolicyAddIcon: '/site/public/images/landing-icons/globalpolicies.svg'
+                globalPolicyAddIcon: '/site/public/images/landing-icons/globalpolicies.svg',
+                mcpServerFromScratchIcon: '/site/public/images/landing-icons/mcp-server-from-scratch.svg',
+                mcpServerFromExistingApiIcon: '/site/public/images/landing-icons/mcp-server-from-existing-api.svg',
+                mcpServerProxyIcon: '/site/public/images/landing-icons/mcp-server-proxy.svg',
             },
             menu: {
                 primary: '#34679D',

@@ -18,7 +18,7 @@
 
 import React, { Component, Suspense, lazy } from 'react';
 import PropTypes from 'prop-types';
-import { Redirect, Route, Switch } from 'react-router-dom';
+import { Route, Switch } from 'react-router-dom';
 import {
     ThemeProvider as CoreThemeProvider,
     StyledEngineProvider,
@@ -26,6 +26,7 @@ import {
     adaptV4Theme,
     ThemeProvider as NormalThemeProvider
 } from '@mui/material/styles';
+import PublisherLanding from 'AppComponents/PublisherLanding'
 import ResourceNotFound from 'AppComponents/Base/Errors/ResourceNotFound';
 import Base from 'AppComponents/Base';
 import AuthManager from 'AppData/AuthManager';
@@ -218,7 +219,7 @@ export default class Protected extends Component {
                                 }}
                                 >
                                     <Switch>
-                                        <Redirect exact from='/' to='/apis' />
+                                        <Route path='/' exact component={PublisherLanding} />
                                         <Route path='/apis' component={DeferredAPIs} />
                                         <Route path='/api-products' component={DeferredAPIs} />
                                         <Route path='/mcp-servers' component={DeferredAPIs} />

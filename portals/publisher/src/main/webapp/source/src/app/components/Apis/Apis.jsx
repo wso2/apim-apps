@@ -68,12 +68,6 @@ const Apis = () => {
                     return <Listing {...props} isAPIProduct />;
                 }}
             />
-            <Route
-                exact
-                path='/mcp-servers'
-                key={Date.now()}
-                render={(props) => <Listing {...props} isMCPServer />}
-            />
             <Route path='/apis/search' render={(props) => <Listing {...props} isAPIProduct={false} />} />
             <Route path='/apis/create' component={DeferredAPICreateRoutes} />
             <Route path='/apis/design-assistant' component={DefferedAIApiCreateRoutes} />
@@ -94,6 +88,13 @@ const Apis = () => {
                     return <DeferredDetails {...props} isAPIProduct />;
                 }}
             />
+            <Route
+                exact
+                path='/mcp-servers'
+                key={Date.now()}
+                render={(props) => <Listing {...props} isMCPServer />}
+            />
+            <Route path='/mcp-servers/create' component={DeferredAPICreateRoutes} />
         </Switch>
     );
 };

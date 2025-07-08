@@ -53,7 +53,9 @@ function MCPServerLanding() {
     const location = useLocation();
 
     const {
-        aiApiIcon,
+        mcpServerFromScratchIcon,
+        mcpServerFromExistingApiIcon,
+        mcpServerProxyIcon,
     } = theme.custom.landingPage.icons;
 
     useEffect(() => {
@@ -71,69 +73,67 @@ function MCPServerLanding() {
                 justifyContent='center'
             >
                 <Grid item xs={12}>
-                    <Box pt={isXsOrBelow ? 2 : 7} />
-                </Grid>
-                <Grid item md={12}>
                     {isFromMCPListingPage ? (
-                        <Box
-                            display='flex'
-                            alignItems='center'
-                            justifyContent='space-between'
-                            width='100%'
-                            px={4}
-                        >
+                        <Box>
+                            <Box pt={isXsOrBelow ? 2 : 4} />
                             <Button
                                 variant='text'
                                 component={Link}
-                                to='/apis'
+                                to='/mcp-servers'
                                 startIcon={<ArrowBackIcon />}
-                                id='itest-apis-back-to-listing'
+                                id='itest-mcp-servers-back-to-listing'
+                                sx={{
+                                    ml: 15,
+                                }}
                             >
                                 <FormattedMessage
-                                    id='MCPServers.Landing.back.to.listing'
-                                    defaultMessage='Back to MCP Listing'
+                                    id='Apis.Listing.SampleAPI.SampleAPI.back.to.listing'
+                                    defaultMessage='Back to MCP Server Listing'
                                 />
                             </Button>
-                            <Box flexGrow={1} textAlign='center'>
-                                <Typography
-                                    id='itest-apis-welcome-msg'
-                                    display='block'
-                                    gutterBottom
-                                    align='center'
-                                    variant='h4'
-                                >
-                                    <FormattedMessage
-                                        id='MCPServers.Landing.create.new'
-                                        defaultMessage='Create a new MCP Server'
-                                    />
-                                    <Box color='text.secondary' pt={1}>
-                                        <Typography display='block' gutterBottom align='center' variant='body1'>
-                                            <FormattedMessage
-                                                id='MCPServers.Landing.create.new.description'
-                                                defaultMessage='Select how you would like to define your MCP Server'
-                                            />
-                                        </Typography>
-                                    </Box>
-                                </Typography>
-                            </Box>
-                            <Box sx={{ minWidth: '220px' }} />
                         </Box>
                     ) : (
+                        <Box pt={isXsOrBelow ? 2 : 7} />
+                    )}
+                </Grid>
+                <Grid item md={12}>
+                    {isFromMCPListingPage ? (
                         <Typography
-                            id='itest-apis-welcome-msg'
+                            id='itest-mcp-servers-welcome-msg'
                             display='block'
                             gutterBottom
                             align='center'
                             variant='h4'
                         >
                             <FormattedMessage
-                                id='Apis.Listing.SampleAPI.SampleAPI.create.new'
+                                id='MCPServers.Landing.create.new'
+                                defaultMessage='Create a new MCP Server'
+                            />
+                            <Box color='text.secondary' pt={1}>
+                                <Typography display='block' gutterBottom align='center' variant='body1'>
+                                    <FormattedMessage
+                                        id='MCPServers.Landing.create.new.description'
+                                        defaultMessage='Select how you would like to define your MCP Server'
+                                    />
+                                </Typography>
+                            </Box>
+                        </Typography>
+                    ) : (
+                        <Typography
+                            id='itest-mcp-servers-welcome-msg'
+                            display='block'
+                            gutterBottom
+                            align='center'
+                            variant='h4'
+                        >
+                            <FormattedMessage
+                                id='MCPServers.Landing.create.new'
                                 defaultMessage='Let’s get started!'
                             />
                             <Box color='text.secondary' pt={1}>
                                 <Typography display='block' gutterBottom align='center' variant='body1'>
                                     <FormattedMessage
-                                        id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
+                                        id='MCPServers.Landing.create.new.description'
                                         defaultMessage='Create and manage your MCP Servers'
                                     />
                                 </Typography>
@@ -148,7 +148,6 @@ function MCPServerLanding() {
                             direction='column'
                             justifyContent='center'
                             alignItems='flex-start'
-                            spacing={3}
                         >
                             <Grid
                                 container
@@ -157,9 +156,9 @@ function MCPServerLanding() {
                                 alignItems='flex-start'
                                 spacing={3}
                             >
-                                <APIsAsMCPMenu icon={aiApiIcon} />
-                                <ExistingAPIsAsMCPMenu icon={aiApiIcon} />
-                                <ProxyMCPMenu icon={aiApiIcon} />
+                                <APIsAsMCPMenu icon={mcpServerFromScratchIcon} />
+                                <ExistingAPIsAsMCPMenu icon={mcpServerFromExistingApiIcon} />
+                                <ProxyMCPMenu icon={mcpServerProxyIcon} />
                             </Grid>
                         </Grid>
                     </Box>

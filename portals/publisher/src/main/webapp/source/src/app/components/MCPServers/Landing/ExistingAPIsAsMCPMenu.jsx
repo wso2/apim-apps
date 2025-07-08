@@ -29,29 +29,29 @@ const ExistingAPIsAsMCPMenu = (props) => {
 
     return (
         <Component
-            id='itest-rest-api-create-menu'
+            id='itest-mcp-servers-create-menu'
             title={(
                 <FormattedMessage
-                    id='Apis.Listing.AIAPI.ai.api'
-                    defaultMessage='AI/LLM API'
+                    id='MCPServers.Landing.ExistingAPIsAsMCPMenu.title'
+                    defaultMessage='MCP From Existing APIs'
                 />
             )}
             icon={icon}
         >
             <LandingMenuItem
                 dense={dense}
-                id='itest-id-landing-create-ai-api'
-                linkTo='/apis/create/ai-api'
+                id='itest-id-mcp-servers-create-from-existing-api'
+                linkTo='/mcp-servers/create/existing-api'
                 helperText={(
                     <FormattedMessage
-                        id='Apis.Listing.SampleAPI.SampleAPI.ai.api.import.content'
-                        defaultMessage='Create AI/LLM APIs by importing service provider APIs'
+                        id='MCPServers.Landing.ExistingAPIsAsMCPMenu.helperText'
+                        defaultMessage='Use an existing API'
                     />
                 )}
             >
                 <FormattedMessage
-                    id='Apis.Listing.SampleAPI.SampleAPI.ai.api.create.title'
-                    defaultMessage='Create AI/LLM API'
+                    id='MCPServers.Landing.ExistingAPIsAsMCPMenu.create.title'
+                    defaultMessage='Create MCP Server From Existing API'
                 />
             </LandingMenuItem>
         </Component>
