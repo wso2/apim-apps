@@ -10,16 +10,6 @@ import { FormattedMessage } from 'react-intl';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
-/**
- * @export
- * @param {*} props sksk
- * @returns {React.Component}
- */
-/**
- * Keymanager Connector configuration
- * @param {JSON} props props passed from parents.
- * @returns {JSX} key manager connector form.
- */
 export default function KeyManagerConfiguration(props) {
     const {
         keymanagerConnectorConfigurations,
@@ -39,10 +29,10 @@ export default function KeyManagerConfiguration(props) {
             const current = Array.isArray(additionalProperties[name]) ? [...additionalProperties[name]] : [];
             let finalValue;
             if (checked) {
-                if (current.includes(value)) {
-                    finalValue = current;
-                } else {
+                if (!current.includes(value)) {
                     finalValue = [...current, value];
+                } else {
+                    finalValue = current;
                 }
             } else {
                 finalValue = current.filter((v) => v !== value);
@@ -66,16 +56,13 @@ export default function KeyManagerConfiguration(props) {
         const error = required && hasErrors('keyconfig', value, validating);
 
         const selectedObject = values.find((v) => v.name === value);
-        const selectedRadioObject = values.find((v) => v.name === value);
 
-        // Recursive rendering for children of selected option
         const renderSelectedChildren = (parent) => parent?.values?.map((child) => (
             <Box key={child.name} ml={2} mt={2}>
                 {getComponent(child)}
             </Box>
         ));
 
-        // Input fields
         if (type === 'input') {
             if (mask) {
                 return (
@@ -117,8 +104,67 @@ export default function KeyManagerConfiguration(props) {
             );
         }
 
-        // Select fields
         if (type === 'select') {
+            return (
+                <FormControl component='fieldset' error={Boolean(error)} sx={{ width: '100%' }}>
+                    <FormLabel component='legend'>
+                        <span>
+                            {label}
+                            {required && <StyledSpan>*</StyledSpan>}
+                        </span>
+                    </FormLabel>
+                    <FormGroup>
+                        {values.map((selection) => {
+                            const selectionName = typeof selection === 'string' ? selection : selection.name;
+                            const selectionLabel = typeof selection === 'string' ? selection : selection.label;
+                            const isChecked = Array.isArray(value) ? value.includes(selectionName) : false;
+                            const hasChildren = typeof selection === 'object' && Array.isArray(selection.values)
+                                && selection.values.length > 0;
+
+                            return (
+                                <Box key={selectionName} ml={1} mt={1}>
+                                    <FormControlLabel
+                                        control={(
+                                            <Checkbox
+                                                checked={isChecked}
+                                                onChange={(e) => {
+                                                    const current = Array.isArray(value) ? [...value] : [];
+                                                    let updated;
+                                                    if (e.target.checked) {
+                                                        updated = current.includes(selectionName)
+                                                            ? current
+                                                            : [...current, selectionName];
+                                                    } else {
+                                                        updated = current.filter((v) => v !== selectionName);
+                                                    }
+                                                    setAdditionalProperties(name, updated);
+                                                }}
+                                                value={selectionName}
+                                                color='primary'
+                                                name={name}
+                                            />
+                                        )}
+                                        label={selectionLabel}
+                                    />
+                                    {hasChildren && isChecked && (
+                                        <Box ml={3}>
+                                            {selection.values.map((child) => (
+                                                <Box key={child.name} mt={1}>
+                                                    {getComponent(child)}
+                                                </Box>
+                                            ))}
+                                        </Box>
+                                    )}
+                                </Box>
+                            );
+                        })}
+                    </FormGroup>
+                    <FormHelperText>{error || tooltip}</FormHelperText>
+                </FormControl>
+            );
+        }
+
+        if (type === 'dropdown') {
             return (
                 <Box>
                     <FormLabel>
@@ -147,8 +193,7 @@ export default function KeyManagerConfiguration(props) {
             );
         }
 
-        // Radio/Options fields
-        if (type === 'options' || type === 'radio') {
+        if (type === 'options') {
             return (
                 <FormControl component='fieldset' error={Boolean(error)}>
                     <FormLabel component='legend'>
@@ -160,22 +205,33 @@ export default function KeyManagerConfiguration(props) {
                         value={value}
                         onChange={onChange}
                     >
-                        {values.map((option) => (
-                            <FormControlLabel
-                                key={option.name}
-                                value={option.name}
-                                control={<Radio />}
-                                label={option.label}
-                            />
-                        ))}
+                        {values.map((option) => {
+                            const hasChildren = Array.isArray(option.values) && option.values.length > 0;
+                            return (
+                                <Box key={option.name} ml={1} mt={1}>
+                                    <FormControlLabel
+                                        value={option.name}
+                                        control={<Radio />}
+                                        label={option.label}
+                                    />
+                                    {hasChildren && value === option.name && (
+                                        <Box ml={3}>
+                                            {option.values.map((child) => (
+                                                <Box key={child.name} mt={1}>
+                                                    {getComponent(child)}
+                                                </Box>
+                                            ))}
+                                        </Box>
+                                    )}
+                                </Box>
+                            );
+                        })}
                     </RadioGroup>
                     <FormHelperText>{error || tooltip}</FormHelperText>
-                    {selectedRadioObject?.values?.length > 0 && renderSelectedChildren(selectedRadioObject)}
                 </FormControl>
             );
         }
 
-        // Certificate field
         if (type === 'certificate') {
             return (
                 <FormControl component='fieldset' error={Boolean(error)}>
@@ -188,7 +244,6 @@ export default function KeyManagerConfiguration(props) {
             );
         }
 
-        // Checkbox fields (single boolean)
         if (type === 'checkbox') {
             return (
                 <FormControl component='fieldset'>
@@ -224,8 +279,10 @@ export default function KeyManagerConfiguration(props) {
                 </FormControl>
             );
         }
+        if (type === 'labelOnly') {
+            return null; // Don't render a text field
+        }
 
-        // Default fallback
         return (
             <TextField
                 id={name}
