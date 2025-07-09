@@ -52,6 +52,7 @@ import BlockIcon from '@mui/icons-material/Block';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import AssignmentIcon from '@mui/icons-material/Assignment';
 import ApplicationCreation from 'AppComponents/Workflow/ApplicationCreation';
+import ApplicationUpdate from 'AppComponents/Workflow/ApplicationUpdate';
 import ApplicationDeletion from 'AppComponents/Workflow/ApplicationDeletion';
 import SubscriptionCreation from 'AppComponents/Workflow/SubscriptionCreation';
 import SubscriptionDeletion from 'AppComponents/Workflow/SubscriptionDeletion';
@@ -374,6 +375,16 @@ const RouteMenuMapping = (intl) => [
                 }),
                 path: '/tasks/application-creation',
                 component: ApplicationCreation,
+                icon: <DnsRoundedIcon />,
+            },
+            {
+                id: 'Application Update',
+                displayText: intl.formatMessage({
+                    id: 'Base.RouteMenuMapping.application.update',
+                    defaultMessage: 'Application Update',
+                }),
+                path: '/tasks/application-update',
+                component: ApplicationUpdate,
                 icon: <DnsRoundedIcon />,
             },
             {
