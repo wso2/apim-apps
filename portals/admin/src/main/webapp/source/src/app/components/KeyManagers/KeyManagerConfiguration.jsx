@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import {
     TextField, Checkbox, FormControlLabel, Box, FormLabel, FormControl,
@@ -42,6 +42,18 @@ export default function KeyManagerConfiguration(props) {
             setAdditionalProperties(name, value);
         }
     };
+
+    useEffect(() => {
+        keymanagerConnectorConfigurations.forEach((config) => {
+            const { name, default: defaultVal } = config;
+            if (
+                defaultVal !== undefined
+                && (additionalProperties[name] === undefined || additionalProperties[name] === '')
+            ) {
+                setAdditionalProperties(name, defaultVal);
+            }
+        });
+    }, [keymanagerConnectorConfigurations, additionalProperties, setAdditionalProperties]);
 
     const onChangeCheckBox = (e) => {
         setAdditionalProperties(e.target.name, e.target.checked);
