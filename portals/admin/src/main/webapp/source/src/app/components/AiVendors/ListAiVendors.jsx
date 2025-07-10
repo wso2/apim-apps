@@ -26,7 +26,7 @@ import DeleteAiVendor from 'AppComponents/AiVendors/DeleteAiVendor';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import { styled } from '@mui/material';
+import { Menu, MenuItem, styled } from '@mui/material';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import Toolbar from '@mui/material/Toolbar';
 import Grid from '@mui/material/Grid';
@@ -41,6 +41,7 @@ import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
+import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const styles = {
     searchBar: {
@@ -75,6 +76,19 @@ export default function ListAiVendors() {
     const [aiVendorsList, setAiVendorsList] = useState(null);
     const [searchText, setSearchText] = useState('');
     const [error, setError] = useState(null);
+    const [anchorEl, setAnchorEl] = useState(null);
+
+    const handleClick = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const handleMenuItemClick = () => {
+        setAnchorEl(null);
+    };
 
     const fetchData = async () => {
         // Fetch data from backend when an apiCall is provided
@@ -93,7 +107,6 @@ export default function ListAiVendors() {
                 }));
             }
         } catch (e) {
-            // throw error;
             setError(e.message);
         }
         setSearchText('');
@@ -101,18 +114,44 @@ export default function ListAiVendors() {
 
     const addCreateButton = () => {
         return (
-            <Button
-                component={RouterLink}
-                to='/settings/ai-vendors/create'
-                variant='contained'
-                color='primary'
-                size='small'
-            >
-                {intl.formatMessage({
-                    id: 'AiVendors.ListAiVendors.addNewAiVendor',
-                    defaultMessage: 'Add AI/LLM Vendor',
-                })}
-            </Button>
+            <>
+                <Button
+                    variant='contained'
+                    color='primary'
+                    size='small'
+                    data-testid='add-new-ai-vendor-button'
+                    onClick={handleClick}
+                    endIcon={<ArrowDropDownIcon />}
+                >
+                    {intl.formatMessage({
+                        id: 'AiVendors.ListAiVendors.addNewAiVendor',
+                        defaultMessage: 'Add AI/LLM Vendor',
+                    })}
+                </Button>
+                <Menu
+                    anchorEl={anchorEl}
+                    keepMounted
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                >
+                    <MenuItem
+                        onClick={() => handleMenuItemClick(false)}
+                        component={RouterLink}
+                        to={{ pathname: '/settings/ai-vendors/create', state: { isSingleProvider: true } }}
+                        data-testid='add-single-provider-vendor-menu-item'
+                    >
+                        Add Single Provider Vendor
+                    </MenuItem>
+                    <MenuItem
+                        onClick={() => handleMenuItemClick(true)}
+                        component={RouterLink}
+                        to={{ pathname: '/settings/ai-vendors/create', state: { isSingleProvider: false } }}
+                        data-testid='add-multi-provider-vendor-menu-item'
+                    >
+                        Add Multi-Provider Vendor
+                    </MenuItem>
+                </Menu>
+            </>
         );
     };
 
