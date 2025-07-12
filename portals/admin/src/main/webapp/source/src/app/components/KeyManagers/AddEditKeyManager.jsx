@@ -282,7 +282,7 @@ function AddEditKeyManager(props) {
     const updateKeyManagerConnectorConfiguration = (keyManagerType) => {
         if (settings.keyManagerConfiguration) {
             settings.keyManagerConfiguration.map(({
-                type: key, defaultConsumerKeyClaim, defaultScopesClaim, configurations,
+                type: key, defaultConsumerKeyClaim, defaultScopesClaim, authConfigs, configurations,
             }) => {
                 if (key === keyManagerType) {
                     if (!id) {
@@ -293,7 +293,11 @@ function AddEditKeyManager(props) {
                             dispatch({ field: 'scopesClaim', value: defaultScopesClaim });
                         }
                     }
-                    setKeyManagerConfiguration(configurations);
+                    if (authConfigs === undefined || (Array.isArray(authConfigs) && authConfigs.length === 0)) {
+                        setKeyManagerConfiguration(configurations);
+                    } else {
+                        setKeyManagerConfiguration(authConfigs);
+                    }
                     return true;
                 } else {
                     return false;
@@ -1731,7 +1735,7 @@ function AddEditKeyManager(props) {
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
-                            <Certificates certificates={certificates} dispatch={dispatch} />
+                            <Certificates certificates={certificates} dispatch={dispatch} isConfigCert={false} />
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
@@ -1779,6 +1783,8 @@ function AddEditKeyManager(props) {
                                                  setAdditionalProperties={setAdditionalProperties}
                                                  hasErrors={hasErrors}
                                                  validating={validating}
+                                                 dispatch={dispatch}
+                                                 certificates={certificates}
                                              />
                                          </Box>
                                      </Grid>

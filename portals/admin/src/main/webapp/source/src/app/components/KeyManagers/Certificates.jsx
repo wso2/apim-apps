@@ -24,7 +24,7 @@ const cache = {};
  */
 export default function Certificates(props) {
     const intl = useIntl();
-    const { certificates: { type, value }, dispatch } = props;
+    const { certificates: { type, value }, dispatch, isConfigCert } = props;
     const [selectedTab, setSelectedTab] = useState(0);
     const [file, setFile] = useState(null);
     cache[type] = value;
@@ -75,18 +75,21 @@ export default function Certificates(props) {
     };
     return (
         <>
-            <FormControl variant='standard' component='fieldset'>
-                <RadioGroup
-                    style={{ flexDirection: 'row' }}
-                    aria-label='certificate'
-                    name='certificateType'
-                    value={type}
-                    onChange={handleChange}
-                >
-                    <FormControlLabel id='pem-certificate' value='PEM' control={<Radio />} label='PEM' />
-                    <FormControlLabel id='jwks-certificate' value='JWKS' control={<Radio />} label='JWKS' />
-                </RadioGroup>
-            </FormControl>
+            {!isConfigCert && (
+                <FormControl variant='standard' component='fieldset'>
+                    <RadioGroup
+                        style={{ flexDirection: 'row' }}
+                        aria-label='certificate'
+                        name='certificateType'
+                        value={type}
+                        onChange={handleChange}
+                    >
+                        <FormControlLabel id='pem-certificate' value='PEM' control={<Radio />} label='PEM' />
+                        <FormControlLabel id='jwks-certificate' value='JWKS' control={<Radio />} label='JWKS' />
+                    </RadioGroup>
+                </FormControl>
+            )}
+            {console.log('type : ', type)}
             {type === 'JWKS' && (
                 <TextField
                     id='jwks-url'
@@ -103,7 +106,7 @@ export default function Certificates(props) {
                     onChange={handleChange}
                 />
             )}
-            {type === 'PEM' && (
+            {(isConfigCert || type === 'PEM') && (
                 <>
                     <AppBar position='static' color='default'>
                         <Tabs value={selectedTab} onChange={handleTabChange}>
