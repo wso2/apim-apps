@@ -17,9 +17,20 @@ export default function KeyManagerConfiguration(props) {
         setAdditionalProperties,
         hasErrors,
         validating,
-        dispatch,
-        certificates,
     } = props;
+
+    const dispatch = (action) => {
+        // Handle certificate updates based on the field name
+        if (action.field === 'certificates') {
+            setAdditionalProperties('certificates', action.value.value);
+        }
+    };
+
+    // Update certificates structure to match what Certificates.jsx expects
+    const certificates = {
+        type: 'PEM',
+        value: additionalProperties?.certificates || '',
+    };
 
     const onChange = (e) => {
         const {
@@ -64,7 +75,8 @@ export default function KeyManagerConfiguration(props) {
             name, label, type, values = [], tooltip, required, mask, default: defaultVal,
         } = config;
 
-        const value = additionalProperties[name] ?? '';
+        const value = type === 'certificate' ? additionalProperties?.certificates
+            : (additionalProperties[name] ?? '');
         const error = required && hasErrors('keyconfig', value, validating);
 
         const selectedObject = values.find((v) => v.name === value);
@@ -251,7 +263,7 @@ export default function KeyManagerConfiguration(props) {
                         {label}
                         {required && <StyledSpan>*</StyledSpan>}
                     </FormLabel>
-                    <Certificates certificates={certificates} dispatch={dispatch} />
+                    <Certificates certificates={certificates} dispatch={dispatch} isConfigCert />
                 </FormControl>
             );
         }
