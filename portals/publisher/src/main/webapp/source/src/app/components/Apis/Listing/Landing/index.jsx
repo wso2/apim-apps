@@ -49,6 +49,7 @@ const APILanding = () => {
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const { data: settings } = usePublisherSettings();
     const [gateway, setGatewayType] = useState(true);
+    const [isLandingPage, setIsLandingPage] = useState(false);
     const [isFromAPIListingPage, setIsFromAPIListingPage] = useState(false);
     const location = useLocation();
 
@@ -78,6 +79,8 @@ const APILanding = () => {
         const path = location.pathname;
         if (path.includes('/apis/create')) {
             setIsFromAPIListingPage(true);
+        } else if (path === '/') {
+            setIsLandingPage(true);
         }
     }, [location.pathname]);
 
@@ -88,87 +91,88 @@ const APILanding = () => {
                 direction='column'
                 justifyContent='center'
             >
-                <Grid item xs={12}>
-                    {isFromAPIListingPage ? (
-                        <Box>
-                            <Box pt={isXsOrBelow ? 2 : 4} />
-                            <Button
-                                variant='text'
-                                component={Link}
-                                to='/apis'
-                                startIcon={<ArrowBackIcon />}
-                                id='itest-apis-back-to-listing'
-                                sx={{
-                                    // position: 'absolute',
-                                    ml: 15,
-                                }}
-                            >
-                                <FormattedMessage
-                                    id='Apis.Listing.SampleAPI.SampleAPI.back.to.listing'
-                                    defaultMessage='Back to API Listing'
-                                />
-                            </Button>
-                        </Box>
-                    ) : (
-                        <Box pt={isXsOrBelow ? 2 : 7} />
-                    )}
-                </Grid>
-                <Grid item md={12}>
-                    {isFromAPIListingPage ? (
-                        <Typography
-                            id='itest-apis-welcome-msg'
-                            display='block'
-                            gutterBottom
-                            align='center'
-                            variant='h4'
-                        >
-                            <FormattedMessage
-                                id='Apis.Listing.SampleAPI.SampleAPI.create.new'
-                                defaultMessage='Create a new API'
-                            />
-                            <Box color='text.secondary' pt={1}>
-                                <Typography display='block' gutterBottom align='center' variant='body1'>
-                                    <FormattedMessage
-                                        id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
-                                        defaultMessage='Select how you would like to define your API'
-                                    />
-                                </Typography>
-                            </Box>
-                        </Typography>
-                    ) : (
-                        <Typography
-                            id='itest-apis-welcome-msg'
-                            display='block'
-                            gutterBottom
-                            align='center'
-                            variant='h4'
-                        >
-                            <FormattedMessage
-                                id='Apis.Listing.SampleAPI.SampleAPI.create.new'
-                                defaultMessage='Let’s get started!'
-                            />
-                            {settings && settings.portalConfigurationOnlyModeEnabled ? (
-                                <Box color='text.secondary' pt={1}>
-                                    <Typography display='block' gutterBottom align='center' variant='body1'>
+                {!isLandingPage && (
+                    <Grid>
+                        <Grid item xs={12}>
+                            {isFromAPIListingPage ? (
+                                <Box>
+                                    <Box pt={isXsOrBelow ? 2 : 4} />
+                                    <Button
+                                        variant='text'
+                                        component={Link}
+                                        to='/apis'
+                                        startIcon={<ArrowBackIcon />}
+                                        id='itest-apis-back-to-listing'
+                                        sx={{ ml: 15}}
+                                    >
                                         <FormattedMessage
-                                            id='Apis.Listing.SampleAPI.SampleAPI.no.apis.deployed'
-                                            defaultMessage='No APIs have been deployed yet '
+                                            id='Apis.Listing.SampleAPI.SampleAPI.back.to.listing'
+                                            defaultMessage='Back to API Listing'
                                         />
-                                    </Typography>
+                                    </Button>
                                 </Box>
                             ) : (
-                                <Box color='text.secondary' pt={1}>
-                                    <Typography display='block' gutterBottom align='center' variant='body1'>
-                                        <FormattedMessage
-                                            id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
-                                            defaultMessage='Choose your option to create an API'
-                                        />
-                                    </Typography>
-                                </Box>
+                                <Box pt={isXsOrBelow ? 2 : 7} />
                             )}
-                        </Typography>
-                    )}
-                </Grid>
+                        </Grid>
+                        <Grid item md={12}>
+                            {isFromAPIListingPage ? (
+                                <Typography
+                                    id='itest-apis-welcome-msg'
+                                    display='block'
+                                    gutterBottom
+                                    align='center'
+                                    variant='h4'
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Listing.SampleAPI.SampleAPI.create.new'
+                                        defaultMessage='Create a new API'
+                                    />
+                                    <Box color='text.secondary' pt={1}>
+                                        <Typography display='block' gutterBottom align='center' variant='body1'>
+                                            <FormattedMessage
+                                                id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
+                                                defaultMessage='Select how you would like to define your API'
+                                            />
+                                        </Typography>
+                                    </Box>
+                                </Typography>
+                            ) : (
+                                <Typography
+                                    id='itest-apis-welcome-msg'
+                                    display='block'
+                                    gutterBottom
+                                    align='center'
+                                    variant='h4'
+                                >
+                                    <FormattedMessage
+                                        id='Apis.Listing.SampleAPI.SampleAPI.create.new'
+                                        defaultMessage='Let’s get started!'
+                                    />
+                                    {settings && settings.portalConfigurationOnlyModeEnabled ? (
+                                        <Box color='text.secondary' pt={1}>
+                                            <Typography display='block' gutterBottom align='center' variant='body1'>
+                                                <FormattedMessage
+                                                    id='Apis.Listing.SampleAPI.SampleAPI.no.apis.deployed'
+                                                    defaultMessage='No APIs have been deployed yet '
+                                                />
+                                            </Typography>
+                                        </Box>
+                                    ) : (
+                                        <Box color='text.secondary' pt={1}>
+                                            <Typography display='block' gutterBottom align='center' variant='body1'>
+                                                <FormattedMessage
+                                                    id='Apis.Listing.SampleAPI.SampleAPI.create.new.description'
+                                                    defaultMessage='Choose your option to create an API'
+                                                />
+                                            </Typography>
+                                        </Box>
+                                    )}
+                                </Typography>
+                            )}
+                        </Grid>
+                    </Grid>
+                )}
 
                 {settings && !settings.portalConfigurationOnlyModeEnabled && (
                     <Grid item xs={12} md={2} lg={2} xl={2}>
