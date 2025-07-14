@@ -1,7 +1,7 @@
 /*
  * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
  *
- * WSO2 Inc. licenses this file to you under the Apache License,
+ * WSO2 LLC. licenses this file to you under the Apache License,
  * Version 2.0 (the "License"); you may not use this file except
  * in compliance with the License.
  * You may obtain a copy of the License at
@@ -16,16 +16,246 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useReducer, useState } from 'react';
+import PropTypes from 'prop-types';
+import Typography from '@mui/material/Typography';
+import Box from '@mui/material/Box';
+import Grid from '@mui/material/Grid';
+import { FormattedMessage } from 'react-intl';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
+import Stepper from '@mui/material/Stepper';
+import Step from '@mui/material/Step';
+import StepLabel from '@mui/material/StepLabel';
+import Button from '@mui/material/Button';
+import { Link, useLocation } from 'react-router-dom';
+// import CircularProgress from '@mui/material/CircularProgress';
+import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
+import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
+import ProvideOpenAPI from 'AppComponents/Apis/Create/OpenAPI/Steps/ProvideOpenAPI';
+import ToolSelection from 'AppComponents/MCPServers/Create/Steps/ToolSelection';
 
-const MCPServerCreateDefault = () => {
+/**
+ * Reduce the events triggered from API input fields to current state
+ * @param {*} currentState - The current state of the API inputs
+ * @param {*} inputAction - The action to be performed on the current state
+ * @returns {Object} - The new state of the API inputs
+ */
+function apiInputsReducer(currentState, inputAction) {
+    const { action, value } = inputAction;
+    switch (action) {
+        case 'type':
+        case 'inputValue':
+        case 'name':
+        case 'version':
+        case 'endpoint':
+        case 'gatewayType':
+        case 'context':
+        case 'policies':
+        case 'isFormValid':
+            return { ...currentState, [action]: value };
+        case 'inputType':
+            return { ...currentState, [action]: value, inputValue: value === 'url' ? '' : null };
+        case 'preSetAPI':
+            return {
+                ...currentState,
+                name: value.name.replace(/[&/\\#,+()$~%.'":*?<>{}\s]/g, ''),
+                version: value.version,
+                context: value.context,
+                endpoint: value.endpoints && value.endpoints[0],
+            };
+        default:
+            return currentState;
+    }
+}
+
+/**
+ * Handle MCP server creation from OpenAPI Definition.
+ * @param {*} props - The props passed to the component
+ * @returns {JSX.Element} - The rendered component
+ */
+const MCPServerCreateDefault = (props) => {
+    const [wizardStep, setWizardStep] = useState(0);
+    // const [isCreating, setCreating] = useState();
+    // const [apiResources, setApiResources] = useState([]);
+    const location = useLocation();
+    // const { history } = props;
+    let { multiGateway } = props;
+    const { multiGateway: assistantMultiGateway } = location.state || {};
+    const { data: settings } = usePublisherSettings();
+
+    if (!multiGateway) {
+        multiGateway = assistantMultiGateway;
+    }
+
+    const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
+        type: 'MCPCreateOpenAPI',
+        inputType: 'url',
+        inputValue: '',
+        formValidity: false,
+        gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
+            'wso2/synapse' : multiGateway[0]?.value),
+    });
+
+    /**
+     * Handle input change events
+     * @param {*} event - The event triggered by the input change
+     */
+    const handleOnChange = (event) => {
+        const { name: action, value } = event.target;
+        inputsDispatcher({ action, value });
+    }
+
+
+    /**
+     * Set the validity of the API Inputs form
+     * @param {*} isFormValid - The validity state of the form
+     */
+    const handleOnValidate = (isFormValid) => {
+        inputsDispatcher({
+            action: 'isFormValid',
+            value: isFormValid,
+        });
+    }
+
     return (
-        <div>
-            <h1>Create MCP Server</h1>
-            <p>This is the default page for creating an MCP server.</p>
-            {/* Add your form or components for creating an MCP server here */}
-        </div>
+        <APICreateBase
+            title={(
+                <>
+                    <Typography variant='h5'>
+                        <FormattedMessage
+                            id='Apis.Create.MCP.MCPCreateOpenAPI.heading'
+                            defaultMessage='Create MCP Server from API Definition'
+                        />
+                    </Typography>
+                    <Typography variant='caption'>
+                        <FormattedMessage
+                            id='Apis.Create.MCP.MCPCreateOpenAPI.sub.heading'
+                            defaultMessage='Create an MCP Server using an OpenAPI definition file or URL'
+                        />
+                    </Typography>
+                </>
+            )}
+        >
+            <Box sx={{ mb: 2 }}>
+                <Stepper alternativeLabel activeStep={wizardStep}>
+                    <Step>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='MCPServers.Create.MCPServerCreateDefault.wizard.one'
+                                defaultMessage='Provide OpenAPI'
+                            />
+                        </StepLabel>
+                    </Step>
+                    <Step>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='MCPServers.Create.MCPServerCreateDefault.wizard.two'
+                                defaultMessage='Select Resources for Tool Generation'
+                            />
+                        </StepLabel>
+                    </Step>
+                    <Step>
+                        <StepLabel>
+                            <FormattedMessage
+                                id='MCPServers.Create.MCPServerCreateDefault.wizard.three'
+                                defaultMessage='Create MCP Server'
+                            />
+                        </StepLabel>
+                    </Step>
+                </Stepper>
+            </Box>
+
+            <Grid container spacing={2}>
+                <Grid item xs={12}>
+                    {wizardStep === 0 && (
+                        <ProvideOpenAPI
+                            onValidate={handleOnValidate}
+                            apiInputs={apiInputs}
+                            inputsDispatcher={inputsDispatcher}
+                        />
+                    )}
+                    {wizardStep === 1 && (
+                        <ToolSelection
+                            onValidate={handleOnValidate}
+                            apiInputs={apiInputs}
+                            inputsDispatcher={inputsDispatcher}
+                        />
+                    )}
+                    {wizardStep === 2 && (
+                        <DefaultAPIForm
+                            onValidate={handleOnValidate}
+                            onChange={handleOnChange}
+                            multiGateway={multiGateway}
+                            api={apiInputs}
+                            isAPIProduct={false}
+                            settings={settings}
+                        />
+                    )}
+                </Grid>
+                <Grid item xs={12}>
+                    <Grid container direction='row' justifyContent='flex-start' alignItems='center' spacing={2}>
+                        <Grid item>
+                            {wizardStep === 0 && (
+                                <Link to='/mcp-servers/'>
+                                    <Button>
+                                        <FormattedMessage
+                                            id='MCPServers.Create.MCPServerCreateDefault.cancel'
+                                            defaultMessage='Cancel'
+                                        />
+                                    </Button>
+                                </Link>
+                            )}
+                            {(wizardStep === 1 || wizardStep === 2) && (
+                                <Button onClick={() => setWizardStep((step) => step - 1)}>
+                                    <FormattedMessage
+                                        id='MCPServers.Create.MCPServerCreateDefault.back'
+                                        defaultMessage='Back'
+                                    />
+                                </Button>
+                            )}
+                        </Grid>
+                        <Grid item>
+                            {(wizardStep === 0 || wizardStep === 1) && (
+                                <Button
+                                    onClick={() => setWizardStep((step) => step + 1)}
+                                    variant='contained'
+                                    color='primary'
+                                    disabled={!apiInputs.isFormValid}
+                                    id='open-api-create-next-btn'
+                                >
+                                    <FormattedMessage
+                                        id='MCPServers.Create.MCPServerCreateDefault.next'
+                                        defaultMessage='Next'
+                                    />
+                                </Button>
+                            )}
+                            {wizardStep === 2 && (
+                                <Button
+                                    variant='contained'
+                                    color='primary'
+                                    // disabled={!apiInputs.isFormValid || isCreating}
+                                    // onClick={createMCPServer}
+                                    id='open-api-create-btn'
+                                >
+                                    <FormattedMessage
+                                        id='MCPServers.Create.MCPServerCreateDefault.create'
+                                        defaultMessage='Create'
+                                    />
+                                    {' '}
+                                    {/* {isCreating && <CircularProgress size={24} />} */}
+                                </Button>
+                            )}
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </APICreateBase>
     );
 }
+
+MCPServerCreateDefault.propTypes = {
+    history: PropTypes.shape({ push: PropTypes.func }).isRequired,
+    multiGateway: PropTypes.string.isRequired,
+};
 
 export default MCPServerCreateDefault;
