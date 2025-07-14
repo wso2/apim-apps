@@ -91,7 +91,9 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
         (async () => {
             if (policyObj) {
                 let policySpecVal = allPolicies?.find(
-                    (policy: PolicySpec) => policy.name === policyObj.name,
+                    (policy: PolicySpec) =>
+                        policy.name === policyObj.name &&
+                        policy.version === policyObj.version,
                 );
 
                 // If this policy is a deleted common policy we need to do an API call to get the policy specification
