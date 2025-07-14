@@ -19,20 +19,27 @@ import React from 'react';
 import { useTheme } from '@mui/material/styles';
 import Chip from '@mui/material/Chip';
 import PropTypes from 'prop-types';
-import Configurations from 'Config';
 
+/**
+ * MethodView component displays the HTTP method of an API resource.
+ * It uses a Chip component to visually represent the method,
+ * with colors based on the method type (GET, POST, PUT, DELETE, etc.).
+ * 
+ * @param {Object} props - The component properties.
+ * @returns {JSX.Element} The rendered MethodView component.
+ */
 function MethodView(props) {
-    console.info(Configurations.app);
     const theme = useTheme();
     const { method, className } = props;
     let chipColor = theme.custom.resourceChipColors ? theme.custom.resourceChipColors[method.toLowerCase()] : null;
     let chipTextColor = '#000000';
+
     if (!chipColor) {
-        console.log('Check the theme settings. The resourceChipColors is not populated properly');
         chipColor = '#cccccc';
     } else {
         chipTextColor = theme.palette.getContrastText(theme.custom.resourceChipColors[method.toLowerCase()]);
     }
+
     return (
         <Chip
             label={method}
@@ -43,6 +50,7 @@ function MethodView(props) {
         />
     );
 }
+
 MethodView.propTypes = {
     className: PropTypes.string.isRequired,
     method: PropTypes.string.isRequired,

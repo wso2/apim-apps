@@ -17,7 +17,7 @@
  */
 
 import React, { useState } from 'react';
-import { styled } from '@mui/material/styles';
+import { styled, alpha } from '@mui/material/styles';
 import APILanding from 'AppComponents/Apis/Listing/Landing';
 import MCPServerLanding from 'AppComponents/MCPServers/Landing';
 import { useTheme, Box, Grid, Typography, Button } from '@mui/material';
@@ -28,7 +28,6 @@ const PREFIX = 'PublisherLanding';
 
 const classes = {
     root: `${PREFIX}-root`,
-    buttonActive: `${PREFIX}-buttonActive`,
 };
 
 const Root = styled('div')(({ theme }) => ({
@@ -42,9 +41,21 @@ const Root = styled('div')(({ theme }) => ({
         flexGrow: 1,
         marginTop: 10,
     },
-    [`& .${classes.buttonActive}`]: {
-        backgroundColor: theme.custom.globalNavBar.active,
-        color: theme.palette.getContrastText(theme.custom.globalNavBar.active),
+}));
+
+// Custom styled Button for tab navigation
+const TabButton = styled(Button)(({ theme, isActive }) => ({
+    justifyContent: 'flex-start',
+    textAlign: 'left',
+    padding: theme.spacing(2),
+    height: '100%',
+    border: isActive === true ? `1px solid ${theme.palette.primary.main}` : '1px solid rgba(0, 0, 0, 0.30)',
+    backgroundColor: isActive === true ? alpha(theme.palette.primary.main, 0.08) : 'transparent',
+    color: isActive === true ? 
+        theme.palette.getContrastText(theme.custom.globalNavBar.active) : 
+        theme.palette.text.primary,
+    '&:hover': {
+        backgroundColor: alpha(theme.palette.primary.main, 0.08),
     },
 }));
 
@@ -53,77 +64,93 @@ const Root = styled('div')(({ theme }) => ({
  * @returns {JSX.Element} Landing page to render
  */
 const PublisherLanding = () => {
-    const [selectedType, setSelectedType] = useState('api');
-    // const intl = useIntl();
+    const [selectedType, setSelectedType] = useState('apis');
     const theme = useTheme();
 
     const creationTypes = [
         {
-            value: 'API',
-            name: 'API',
-            description: 'Create a new API',
+            value: 'APIs',
+            name: 'APIs',
+            description: 'Expose APIs',
             icon: 'apis',
         },
         {
-            value: 'MCP Server',
-            name: 'MCP Server',
-            description: 'Create a new MCP Server',
+            value: 'MCP Servers',
+            name: 'MCP Servers',
+            description: 'Expose MCP Servers',
             icon: 'mcp-servers',
         },
     ]
 
     return (
         <Root>
-            <Box display='flex' flexDirection='column' flexGrow={1} pt={6}>
-                <Grid container spacing={2} mb={4}>
-                    <Grid item xs={12} alignItems='center'>
+            <Box display='flex' flexDirection='column' flexGrow={1} pt={3}>
+                <Grid container spacing={2} mb={3}>
+                    <Grid item xs={12} alignItems='center' display='flex' flexDirection='column'>
                         <Typography variant='h4' component='h1'>    
                             <FormattedMessage
                                 id='Publisher.Landing.title'
-                                defaultMessage='Welcome to the Publisher Portal'
+                                defaultMessage='Welcome to the Publisher Portal!'
                             />
                         </Typography>
                         <Typography variant='body1' color='textSecondary' mt={1}>
                             <FormattedMessage
                                 id='Publisher.Landing.description'
-                                defaultMessage='Create, Secure, and Publish with WSO2!'
+                                defaultMessage='Manage APIs and MCP Servers — From Design to Deployment'
                             />
                         </Typography>
                     </Grid>
                 </Grid>
-                <Grid container spacing={2} mb={6}>
-                    {creationTypes.map((type) => (
-                        <Grid item xs={12} sm={6} key={type.value}>
-                            <Button
-                                startIcon={
-                                    <CustomIcon
-                                        width={28}
-                                        height={28}
-                                        icon={type.icon}
-                                        strokeColor={theme.palette.getContrastText(theme.custom.globalNavBar.active)}
-                                    />
-                                }
-                                fullWidth
-                                disableRipple
-                                variant='outlined'
-                                onClick={() => setSelectedType(type.value === 'API' ? 'api' : 'mcp-server')}
-                                data-testid={`create-${type.value.toLowerCase()}-button`}
-                                active={selectedType === type.value.toLowerCase()}
-                            >
-                                <Box display='flex' flexDirection='column' alignItems='flex-start' pl={2}>
-                                    <Typography variant='h6'>{type.name}</Typography>
-                                    <Typography variant='body2' color='textSecondary'>
-                                        {type.description}
-                                    </Typography>
-                                </Box>
-                            </Button>
-                        </Grid>
-                    ))}
+                <Grid container mb={3} px={34}>
+                    <Grid container spacing={2}>
+                        {creationTypes.map((type) => {
+                            const isActive = selectedType === type.value.toLowerCase() || 
+                                            (type.value === 'APIs' && selectedType === 'apis') ||
+                                            (type.value === 'MCP Servers' && selectedType === 'mcp-servers');
+                            return (
+                                <Grid item xs={12} sm={6} key={type.value}>
+                                    <TabButton
+                                        startIcon={
+                                            <CustomIcon
+                                                width={32}
+                                                height={32}
+                                                icon={type.icon}
+                                                strokeColor={isActive ? 
+                                                    theme.palette.getContrastText(theme.custom.globalNavBar.active) : 
+                                                    theme.palette.text.primary}
+                                            />
+                                        }
+                                        fullWidth
+                                        disableRipple
+                                        variant='outlined'
+                                        onClick={() => setSelectedType(type.value === 'APIs' ? 'apis' : 'mcp-servers')}
+                                        data-testid={`create-${type.value.toLowerCase()}-button`}
+                                        isActive={!!isActive}
+                                    >
+                                        <Box display='flex' flexDirection='column' alignItems='flex-start' pl={2}>
+                                            <Typography 
+                                                variant='h6'
+                                                color='text.primary'
+                                            >
+                                                {type.name}
+                                            </Typography>
+                                            <Typography 
+                                                variant='body1'
+                                                color='text.secondary'
+                                            >
+                                                {type.description}
+                                            </Typography>
+                                        </Box>
+                                    </TabButton>
+                                </Grid>
+                            );
+                        })}
+                    </Grid>
                 </Grid>
                 <Grid container spacing={2}>
                     <Grid item xs={12}>
-                        {selectedType === 'api' && <APILanding />}
-                        {selectedType === 'mcp-server' && <MCPServerLanding />}
+                        {selectedType === 'apis' && <APILanding />}
+                        {selectedType === 'mcp-servers' && <MCPServerLanding />}
                     </Grid>
                 </Grid>
             </Box>

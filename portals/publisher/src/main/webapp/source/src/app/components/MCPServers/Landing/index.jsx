@@ -16,7 +16,7 @@
 * under the License.
 */
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { withRouter } from 'react-router';
 import { styled } from '@mui/material/styles';
 import { useTheme, Box, Button, Grid, Typography } from '@mui/material';
@@ -49,7 +49,7 @@ const Root = styled('div')({
 function MCPServerLanding() {
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
-    const [isFromMCPListingPage, setIsFromMCListingPage] = React.useState(false);
+    const [pageMode, setPageMode] = useState('default');
     const location = useLocation();
 
     const {
@@ -61,7 +61,11 @@ function MCPServerLanding() {
     useEffect(() => {
         const path = location.pathname;
         if (path.includes('/mcp-servers/create')) {
-            setIsFromMCListingPage(true);
+            setPageMode('create');
+        } else if (path === '/') {
+            setPageMode('landing');
+        } else {
+            setPageMode('default');
         }
     }, [location.pathname]);
 
@@ -72,77 +76,81 @@ function MCPServerLanding() {
                 direction='column'
                 justifyContent='center'
             >
-                <Grid item xs={12}>
-                    {isFromMCPListingPage ? (
-                        <Box>
-                            <Box pt={isXsOrBelow ? 2 : 4} />
-                            <Button
-                                variant='text'
-                                component={Link}
-                                to='/mcp-servers'
-                                startIcon={<ArrowBackIcon />}
-                                id='itest-mcp-servers-back-to-listing'
-                                sx={{
-                                    ml: 15,
-                                }}
-                            >
-                                <FormattedMessage
-                                    id='Apis.Listing.SampleAPI.SampleAPI.back.to.listing'
-                                    defaultMessage='Back to MCP Server Listing'
-                                />
-                            </Button>
-                        </Box>
-                    ) : (
-                        <Box pt={isXsOrBelow ? 2 : 7} />
-                    )}
-                </Grid>
-                <Grid item md={12}>
-                    {isFromMCPListingPage ? (
-                        <Typography
-                            id='itest-mcp-servers-welcome-msg'
-                            display='block'
-                            gutterBottom
-                            align='center'
-                            variant='h4'
-                        >
-                            <FormattedMessage
-                                id='MCPServers.Landing.create.new'
-                                defaultMessage='Create a new MCP Server'
-                            />
-                            <Box color='text.secondary' pt={1}>
-                                <Typography display='block' gutterBottom align='center' variant='body1'>
+                {pageMode !== 'landing' && (
+                    <>
+                        <Grid item xs={12}>
+                            {pageMode === 'create' ? (
+                                <Box>
+                                    <Box pt={isXsOrBelow ? 2 : 4} />
+                                    <Button
+                                        variant='text'
+                                        component={Link}
+                                        to='/mcp-servers'
+                                        startIcon={<ArrowBackIcon />}
+                                        id='itest-mcp-servers-back-to-listing'
+                                        sx={{
+                                            ml: 15,
+                                        }}
+                                    >
+                                        <FormattedMessage
+                                            id='Apis.Listing.SampleAPI.SampleAPI.back.to.listing'
+                                            defaultMessage='Back to MCP Server Listing'
+                                        />
+                                    </Button>
+                                </Box>
+                            ) : (
+                                <Box pt={isXsOrBelow ? 2 : 7} />
+                            )}
+                        </Grid>
+                        <Grid item md={12}>
+                            {pageMode === 'create' ? (
+                                <Typography
+                                    id='itest-mcp-servers-welcome-msg'
+                                    display='block'
+                                    gutterBottom
+                                    align='center'
+                                    variant='h4'
+                                >
                                     <FormattedMessage
-                                        id='MCPServers.Landing.create.new.description'
-                                        defaultMessage='Select how you would like to define your MCP Server'
+                                        id='MCPServers.Landing.create.new'
+                                        defaultMessage='Create a new MCP Server'
                                     />
+                                    <Box color='text.secondary' pt={1}>
+                                        <Typography display='block' gutterBottom align='center' variant='body1'>
+                                            <FormattedMessage
+                                                id='MCPServers.Landing.create.new.description'
+                                                defaultMessage='Select how you would like to define your MCP Server'
+                                            />
+                                        </Typography>
+                                    </Box>
                                 </Typography>
-                            </Box>
-                        </Typography>
-                    ) : (
-                        <Typography
-                            id='itest-mcp-servers-welcome-msg'
-                            display='block'
-                            gutterBottom
-                            align='center'
-                            variant='h4'
-                        >
-                            <FormattedMessage
-                                id='MCPServers.Landing.create.new'
-                                defaultMessage='Let’s get started!'
-                            />
-                            <Box color='text.secondary' pt={1}>
-                                <Typography display='block' gutterBottom align='center' variant='body1'>
+                            ) : (
+                                <Typography
+                                    id='itest-mcp-servers-welcome-msg'
+                                    display='block'
+                                    gutterBottom
+                                    align='center'
+                                    variant='h4'
+                                >
                                     <FormattedMessage
-                                        id='MCPServers.Landing.create.new.description'
-                                        defaultMessage='Create and manage your MCP Servers'
+                                        id='MCPServers.Landing.create.new'
+                                        defaultMessage='Let’s get started!'
                                     />
+                                    <Box color='text.secondary' pt={1}>
+                                        <Typography display='block' gutterBottom align='center' variant='body1'>
+                                            <FormattedMessage
+                                                id='MCPServers.Landing.create.new.description'
+                                                defaultMessage='Create and manage your MCP Servers'
+                                            />
+                                        </Typography>
+                                    </Box>
                                 </Typography>
-                            </Box>
-                        </Typography>
-                    )}
-                </Grid>
+                            )}
+                        </Grid>  
+                    </>
+                )}
                 <Grid item xs={12} md={2} lg={2} xl={2}>
-                    <Box pt={isXsOrBelow ? 1 : 6} pb={4} >
+                    <Box pt={isXsOrBelow ? 1 : 3} pb={4} >
                         <Grid
                             container
                             direction='column'

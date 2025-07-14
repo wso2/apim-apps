@@ -19,7 +19,7 @@
 import React, { useState, useEffect } from 'react';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { styled } from '@mui/material/styles';
-import { useTheme, Divider, Box, Grid, Button } from '@mui/material';
+import { useTheme, Box, Grid, Button } from '@mui/material';
 import Typography from '@mui/material/Typography';
 import { FormattedMessage } from 'react-intl';
 import useMediaQuery from '@mui/material/useMediaQuery';
@@ -49,8 +49,7 @@ const APILanding = () => {
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const { data: settings } = usePublisherSettings();
     const [gateway, setGatewayType] = useState(true);
-    const [isLandingPage, setIsLandingPage] = useState(false);
-    const [isFromAPIListingPage, setIsFromAPIListingPage] = useState(false);
+    const [pageMode, setPageMode] = useState('default');
     const location = useLocation();
 
     const getGatewayType = () => {
@@ -78,9 +77,11 @@ const APILanding = () => {
     useEffect(() => {
         const path = location.pathname;
         if (path.includes('/apis/create')) {
-            setIsFromAPIListingPage(true);
+            setPageMode('create');
         } else if (path === '/') {
-            setIsLandingPage(true);
+            setPageMode('landing');
+        } else {
+            setPageMode('default');
         }
     }, [location.pathname]);
 
@@ -91,10 +92,10 @@ const APILanding = () => {
                 direction='column'
                 justifyContent='center'
             >
-                {!isLandingPage && (
+                {pageMode !== 'landing' && (
                     <Grid>
                         <Grid item xs={12}>
-                            {isFromAPIListingPage ? (
+                            {pageMode === 'create' ? (
                                 <Box>
                                     <Box pt={isXsOrBelow ? 2 : 4} />
                                     <Button
@@ -116,7 +117,7 @@ const APILanding = () => {
                             )}
                         </Grid>
                         <Grid item md={12}>
-                            {isFromAPIListingPage ? (
+                            {pageMode === 'create' ? (
                                 <Typography
                                     id='itest-apis-welcome-msg'
                                     display='block'
@@ -202,25 +203,13 @@ const APILanding = () => {
                                     <AIAPIMenu icon={aiApiIcon} />
                                 </Grid>
                                 {settings.designAssistantEnabled && (
-                                    <Divider
-                                        variant='middle'
-                                        sx={{
-                                            backgroundColor: '#A0A5A3',
-                                            height: 1,
-                                            width: '85%',
-                                            mt: '30px',
-                                            mb: '10px',
-                                            marginX: 'auto',
-                                        }}
-                                    />
-                                )}
-                                {settings.designAssistantEnabled && (
                                     <Grid
                                         item
                                         sx={{
                                             display: 'flex',
                                             justifyContent: 'center',
                                             width: '100%',
+                                            mt: '15px',
                                         }}
                                     >
                                         <DesignAssistantMenu />
