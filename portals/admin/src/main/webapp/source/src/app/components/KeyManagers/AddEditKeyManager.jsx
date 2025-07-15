@@ -1735,7 +1735,12 @@ function AddEditKeyManager(props) {
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
-                            <Certificates certificates={certificates} dispatch={dispatch} isConfigCert={false} />
+                            <Certificates
+                                fieldName='certificates'
+                                certificates={certificates}
+                                dispatch={dispatch}
+                                isJwksNeeded
+                            />
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
@@ -1783,8 +1788,6 @@ function AddEditKeyManager(props) {
                                                  setAdditionalProperties={setAdditionalProperties}
                                                  hasErrors={hasErrors}
                                                  validating={validating}
-                                                 dispatch={dispatch}
-                                                 certificates={certificates}
                                              />
                                          </Box>
                                      </Grid>

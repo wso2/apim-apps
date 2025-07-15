@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { styled } from '@mui/material/styles';
 import {
     TextField, Checkbox, FormControlLabel, Box, FormLabel, FormControl,
@@ -10,6 +10,20 @@ import { FormattedMessage } from 'react-intl';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
+/**
+ * Reducer
+ * @param {JSON} state The second number.
+ * @returns {Promise}
+ */
+function certificateReducer(state, newValue) {
+    const { field, value } = newValue;
+    if (field === 'tenantWideCertificates') {
+        return { ...state, [field]: value };
+    } else {
+        return newValue;
+    }
+}
+
 export default function KeyManagerConfiguration(props) {
     const {
         keymanagerConnectorConfigurations,
@@ -19,22 +33,18 @@ export default function KeyManagerConfiguration(props) {
         validating,
     } = props;
 
-    const dispatch = (action) => {
-        // Handle certificate updates based on the field name
-        if (action.field === 'certificates') {
-            // Store the complete certificate object
-            setAdditionalProperties('certificates', {
-                type: action.value.type,
-                value: action.value.value,
-            });
+    // Change from constant to state
+    const [tenantWideCertificates, dispatch] = useReducer(certificateReducer,
+        additionalProperties?.certificates || {
+            type: 'PEM',
+            value: '',
+        });
+    // Add effect to watch for changes
+    useEffect(() => {
+        if (tenantWideCertificates) {
+            setAdditionalProperties('certificates', tenantWideCertificates);
         }
-    };
-
-    // Update certificates structure to match what Certificates.jsx expects
-    const certificates = additionalProperties?.certificates || {
-        type: 'PEM',
-        value: '',
-    };
+    }, [tenantWideCertificates, setAdditionalProperties]);
 
     const onChange = (e) => {
         const {
@@ -267,7 +277,12 @@ export default function KeyManagerConfiguration(props) {
                         {label}
                         {required && <StyledSpan>*</StyledSpan>}
                     </FormLabel>
-                    <Certificates certificates={certificates} dispatch={dispatch} isConfigCert />
+                    <Certificates
+                        fieldName='tenantWideCertificates'
+                        tenantWideCertificates={tenantWideCertificates}
+                        dispatch={dispatch}
+                        isJwksNeeded={false}
+                    />
                 </FormControl>
             );
         }
