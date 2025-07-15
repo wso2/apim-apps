@@ -188,7 +188,7 @@ export default function DefaultAPIForm(props) {
 
         if (multiGateway) {
             // If the gateway type is not in the gatewayTypeMap, add it with both key and value equal to the type
-            if (settings.gatewayTypes) {
+            if (settings && settings.gatewayTypes) {
                 settings.gatewayTypes.forEach(type => {
                     if (!(type in gatewayTypeMap)) {
                         gatewayTypeMap[type] = type;
