@@ -186,16 +186,16 @@ export default function DefaultAPIForm(props) {
             && (Boolean(api.version))
             && Boolean(api.context));
 
-        // If the gateway type is not in the gatewayTypeMap, add it with both key and value equal to the type
-        if (settings.gatewayTypes) {
-            settings.gatewayTypes.forEach(type => {
-                if (!(type in gatewayTypeMap)) {
-                    gatewayTypeMap[type] = type;
-                }
-            });
-        }
-
         if (multiGateway) {
+            // If the gateway type is not in the gatewayTypeMap, add it with both key and value equal to the type
+            if (settings.gatewayTypes) {
+                settings.gatewayTypes.forEach(type => {
+                    if (!(type in gatewayTypeMap)) {
+                        gatewayTypeMap[type] = type;
+                    }
+                });
+            }
+
             const settingsEnvList = settings && settings.environment;
             multiGateway.forEach((gateway) => {
                 if (settings && settings.gatewayTypes.length >= 2 && Object
