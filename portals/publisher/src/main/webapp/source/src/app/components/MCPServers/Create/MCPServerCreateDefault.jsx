@@ -21,18 +21,20 @@ import PropTypes from 'prop-types';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
-import { FormattedMessage } from 'react-intl';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
 import StepLabel from '@mui/material/StepLabel';
 import Button from '@mui/material/Button';
 import { Link, useLocation } from 'react-router-dom';
-// import CircularProgress from '@mui/material/CircularProgress';
+import Alert from 'AppComponents/Shared/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 import DefaultAPIForm from 'AppComponents/Apis/Create/Components/DefaultAPIForm';
 import APICreateBase from 'AppComponents/Apis/Create/Components/APICreateBase';
 import ProvideOpenAPI from 'AppComponents/Apis/Create/OpenAPI/Steps/ProvideOpenAPI';
 import ToolSelection from 'AppComponents/MCPServers/Create/Steps/ToolSelection';
+import MCPServer from 'AppData/MCPServer';
 
 /**
  * Reduce the events triggered from API input fields to current state
@@ -40,7 +42,7 @@ import ToolSelection from 'AppComponents/MCPServers/Create/Steps/ToolSelection';
  * @param {*} inputAction - The action to be performed on the current state
  * @returns {Object} - The new state of the API inputs
  */
-function apiInputsReducer(currentState, inputAction) {
+function mcpServerInputsReducer(currentState, inputAction) {
     const { action, value } = inputAction;
     switch (action) {
         case 'type':
@@ -75,10 +77,11 @@ function apiInputsReducer(currentState, inputAction) {
  */
 const MCPServerCreateDefault = (props) => {
     const [wizardStep, setWizardStep] = useState(0);
-    // const [isCreating, setCreating] = useState();
+    const [isCreating, setCreating] = useState();
     // const [apiResources, setApiResources] = useState([]);
     const location = useLocation();
-    // const { history } = props;
+    const { history } = props;
+    const intl = useIntl();
     let { multiGateway } = props;
     const { multiGateway: assistantMultiGateway } = location.state || {};
     const { data: settings } = usePublisherSettings();
@@ -87,7 +90,7 @@ const MCPServerCreateDefault = (props) => {
         multiGateway = assistantMultiGateway;
     }
 
-    const [apiInputs, inputsDispatcher] = useReducer(apiInputsReducer, {
+    const [mcpServerInputs, inputsDispatcher] = useReducer(mcpServerInputsReducer, {
         type: 'MCPCreateOpenAPI',
         inputType: 'url',
         inputValue: '',
@@ -107,7 +110,7 @@ const MCPServerCreateDefault = (props) => {
 
 
     /**
-     * Set the validity of the API Inputs form
+     * Set the validity of the MCP Server Inputs form
      * @param {*} isFormValid - The validity state of the form
      */
     const handleOnValidate = (isFormValid) => {
@@ -117,19 +120,80 @@ const MCPServerCreateDefault = (props) => {
         });
     }
 
+    /**
+     * Create the MCP Server using the provided OpenAPI definition
+     * @throws {Error} - If the API creation fails
+     */
+    const createMCPServer = () => {
+        setCreating(true);
+        const {
+            name, version, context, endpoint, gatewayType, policies = ["Unlimited"], inputValue, inputType,
+        } = mcpServerInputs;
+        let defaultGatewayType;
+        if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
+            defaultGatewayType = 'wso2/synapse';
+        } else if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('APK')){
+            defaultGatewayType = 'wso2/apk';
+        } else {
+            defaultGatewayType = 'default';
+        }
+
+        const additionalProperties = {
+            name,
+            version,
+            context,
+            gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
+            policies,
+        };
+        if (endpoint) {
+            additionalProperties.endpointConfig = {
+                endpoint_type: 'http',
+                sandbox_endpoints: {
+                    url: endpoint,
+                },
+                production_endpoints: {
+                    url: endpoint,
+                },
+            };
+        }
+        const newMCPServer = new MCPServer(additionalProperties);
+        const promisedResponse = inputType === 'file'
+            ? newMCPServer.createMCPServerUsingOpenAPIFile(inputValue)
+            : newMCPServer.createMCPServerUsingOpenAPIUrl(inputValue);
+        promisedResponse
+            .then((mcpServer) => {
+                Alert.info(intl.formatMessage({
+                    id: 'MCPServers.Create.MCPServerCreateDefault.created.success',
+                    defaultMessage: 'MCP Server created successfully',
+                }));
+                history.push(`/mcp-servers/${mcpServer.id}/overview`);
+            })
+            .catch((error) => {
+                if (error.response) {
+                    Alert.error(error.response.body.description);
+                } else {
+                    Alert.error(intl.formatMessage({
+                        id: 'MCPServers.Create.MCPServerCreateDefault.created.error',
+                        defaultMessage: 'Something went wrong while adding the MCP Server',
+                    }));
+                }
+            })
+            .finally(() => setCreating(false));
+    }
+
     return (
         <APICreateBase
             title={(
                 <>
                     <Typography variant='h5'>
                         <FormattedMessage
-                            id='Apis.Create.MCP.MCPCreateOpenAPI.heading'
+                            id='MCPServers.Create.MCPServerCreateDefault.heading'
                             defaultMessage='Create MCP Server from API Definition'
                         />
                     </Typography>
                     <Typography variant='caption'>
                         <FormattedMessage
-                            id='Apis.Create.MCP.MCPCreateOpenAPI.sub.heading'
+                            id='MCPServers.Create.MCPServerCreateDefault.sub.heading'
                             defaultMessage='Create an MCP Server using an OpenAPI definition file or URL'
                         />
                     </Typography>
@@ -170,14 +234,14 @@ const MCPServerCreateDefault = (props) => {
                     {wizardStep === 0 && (
                         <ProvideOpenAPI
                             onValidate={handleOnValidate}
-                            apiInputs={apiInputs}
+                            apiInputs={mcpServerInputs}
                             inputsDispatcher={inputsDispatcher}
                         />
                     )}
                     {wizardStep === 1 && (
                         <ToolSelection
                             onValidate={handleOnValidate}
-                            apiInputs={apiInputs}
+                            apiInputs={mcpServerInputs}
                             inputsDispatcher={inputsDispatcher}
                         />
                     )}
@@ -186,7 +250,7 @@ const MCPServerCreateDefault = (props) => {
                             onValidate={handleOnValidate}
                             onChange={handleOnChange}
                             multiGateway={multiGateway}
-                            api={apiInputs}
+                            api={mcpServerInputs}
                             isAPIProduct={false}
                             settings={settings}
                         />
@@ -220,7 +284,7 @@ const MCPServerCreateDefault = (props) => {
                                     onClick={() => setWizardStep((step) => step + 1)}
                                     variant='contained'
                                     color='primary'
-                                    disabled={!apiInputs.isFormValid}
+                                    disabled={!mcpServerInputs.isFormValid}
                                     id='open-api-create-next-btn'
                                 >
                                     <FormattedMessage
@@ -233,8 +297,8 @@ const MCPServerCreateDefault = (props) => {
                                 <Button
                                     variant='contained'
                                     color='primary'
-                                    // disabled={!apiInputs.isFormValid || isCreating}
-                                    // onClick={createMCPServer}
+                                    disabled={!mcpServerInputs.isFormValid || isCreating}
+                                    onClick={createMCPServer}
                                     id='open-api-create-btn'
                                 >
                                     <FormattedMessage
@@ -242,7 +306,7 @@ const MCPServerCreateDefault = (props) => {
                                         defaultMessage='Create'
                                     />
                                     {' '}
-                                    {/* {isCreating && <CircularProgress size={24} />} */}
+                                    {isCreating && <CircularProgress size={24} />}
                                 </Button>
                             )}
                         </Grid>

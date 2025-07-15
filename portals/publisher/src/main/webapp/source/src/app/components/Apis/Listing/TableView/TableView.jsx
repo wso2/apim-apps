@@ -25,6 +25,7 @@ import { FormattedMessage, injectIntl } from 'react-intl';
 import queryString from 'query-string';
 import API from 'AppData/api';
 import APIProduct from 'AppData/APIProduct';
+import MCPServer from 'AppData/MCPServer';
 import Icon from '@mui/material/Icon';
 import ApiThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/ApiThumb';
 import DocThumb from 'AppComponents/Apis/Listing/components/ImageGenerator/DocThumb';
@@ -285,8 +286,7 @@ class TableView extends React.Component {
         if (isAPIProduct) {
             return APIProduct.all({ limit: rowsPerPage, offset: page * rowsPerPage });
         } else if (isMCPServer) {
-            // TODO: Implement MCP Server listing
-            return API.all({ limit: rowsPerPage, offset: page * rowsPerPage });
+            return MCPServer.all({ limit: rowsPerPage, offset: page * rowsPerPage });
         } else {
             return API.all({ limit: rowsPerPage, offset: page * rowsPerPage });
         }
@@ -525,10 +525,13 @@ class TableView extends React.Component {
         } else {
             options.pagination = true;
         }
-        if (!apisAndApiProducts && !isMCPServer) {
+        if (!apisAndApiProducts) {
+            if (isAPIProduct) {
+                return <Progress per={90} message='Loading API Products ...' />;
+            } else if (isMCPServer) {
+                return <Progress per={90} message='Loading MCP Servers ...' />;
+            }
             return <Progress per={90} message='Loading APIs ...' />;
-        } else if (!apisAndApiProducts && isMCPServer) {
-            return <Progress per={90} message='Loading MCP Servers ...' />;
         }
         if (notFound) {
             return <ResourceNotFound />;

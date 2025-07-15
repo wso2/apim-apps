@@ -46,7 +46,7 @@ const Root = styled('div')({
  * This component renders the landing page for MCP Servers, providing an onboarding experience
  * @returns {JSX.Element} MCPServerLanding component
  */
-function MCPServerLanding() {
+const MCPServerLanding = () => {
     const theme = useTheme();
     const isXsOrBelow = useMediaQuery(theme.breakpoints.down('xs'));
     const [pageMode, setPageMode] = useState('default');
