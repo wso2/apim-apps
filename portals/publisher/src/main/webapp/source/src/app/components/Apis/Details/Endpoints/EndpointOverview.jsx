@@ -168,6 +168,7 @@ const endpointTypes = [
     { key: 'service', value: 'Service Endpoint' },
     { key: 'MOCKED_OAS', value: 'Mock Implementation' },
     { key: 'sequence_backend', value: 'Sequence Backend' },
+    { key: 'ws', value: 'Websocket Endpoint' },
 ];
 
 /**
@@ -259,6 +260,8 @@ function EndpointOverview(props) {
             return endpointTypes[8];
         } else if (type === 'service') {
             return endpointTypes[6];
+        } else if (type === 'ws') {
+            return endpointTypes[9];
         } else {
             const availableEndpoints = (endpointConfig.production_endpoints && endpointConfig.production_endpoints)
                 || (endpointConfig.sandbox_endpoints && endpointConfig.sandbox_endpoints);
@@ -307,6 +310,11 @@ function EndpointOverview(props) {
         } else if (type === 'HTTP' && subtypeConfiguration?.subtype === 'AIAPI') {
             supportedEndpointTypes = [
                 { key: 'http', value: 'HTTP/REST Endpoint' },
+            ];
+        } else if (type === 'WS') {
+            supportedEndpointTypes = [
+                { key: 'ws', value: 'Websocket Endpoint' },
+                { key: 'default', value: 'Dynamic Endpoints' },
             ];
         } else {
             supportedEndpointTypes = [
@@ -767,33 +775,31 @@ function EndpointOverview(props) {
         <Root className={classes.overviewWrapper}>
             <Grid container spacing={2}>
                 <Grid item xs={12}>
-                    {api.type === 'WS' ? <div /> : (
-                        <FormControl component='fieldset' className={classes.formControl}>
-                            <RadioGroup
-                                aria-label='EndpointType'
-                                name='endpointType'
-                                className={classes.radioGroup}
-                                value={endpointType.key === 'MOCKED_OAS' ? 'INLINE' : endpointType.key}
-                                onChange={handleEndpointTypeSelect}
-                            >
-                                {supportedEnpointTypes.map((endpoint) => {
-                                    return (
-                                        <FormControlLabel
-                                            value={endpoint.key}
-                                            control={(
-                                                <Radio
-                                                    disabled={(isRestricted(['apim:api_create'], api))}
-                                                    color='primary'
-                                                    id={endpoint.key}
-                                                />
-                                            )}
-                                            label={endpoint.value}
-                                        />
-                                    );
-                                })}
-                            </RadioGroup>
-                        </FormControl>
-                    )}
+                    <FormControl component='fieldset' className={classes.formControl}>
+                        <RadioGroup
+                            aria-label='EndpointType'
+                            name='endpointType'
+                            className={classes.radioGroup}
+                            value={endpointType.key === 'MOCKED_OAS' ? 'INLINE' : endpointType.key}
+                            onChange={handleEndpointTypeSelect}
+                        >
+                            {supportedEnpointTypes.map((endpoint) => {
+                                return (
+                                    <FormControlLabel
+                                        value={endpoint.key}
+                                        control={(
+                                            <Radio
+                                                disabled={(isRestricted(['apim:api_create'], api))}
+                                                color='primary'
+                                                id={endpoint.key}
+                                            />
+                                        )}
+                                        label={endpoint.value}
+                                    />
+                                );
+                            })}
+                        </RadioGroup>
+                    </FormControl>
                 </Grid>
                 <Grid item xs={12}>
                     {(endpointType.key === 'INLINE' || endpointType.key === 'MOCKED_OAS') ? 
@@ -1019,66 +1025,70 @@ function EndpointOverview(props) {
                                                                                     </IconButton>
                                                                                 </Typography>
                                                                             </div>
-                                                                            <Button
-                                                                                className={classes.button}
-                                                                                aria-label='Settings'
-                                                                                onClick={() => toggleAdvanceConfig(
-                                                                                    0, '', 'production_endpoints',
-                                                                                )}
-                                                                                disabled={
-                                                                                    (isRestricted(
-                                                                                        ['apim:api_create'], api,
-                                                                                    )
-                                                                                    )
-                                                                                }
-                                                                                variant='outlined'
-                                                                            >
-                                                                                <Icon
-                                                                                    className={classes.buttonIcon}
-                                                                                >
-                                                                                    settings
-                                                                                </Icon>
-                                                                                <Typography>
-                                                                                    <FormattedMessage
-                                                                                        id={'Apis.Details.Endpoints'
-                                                                                            + '.EndpointOverview.advance'
-                                                                                            + '.endpoint.configuration'}
-                                                                                        defaultMessage='Advanced 
-                                                                                        Configurations'
-                                                                                    />
-                                                                                </Typography>
-                                                                            </Button>
-                                                                            {endpointSecurityTypes.length > 0 &&
-                                                                                <Button
-                                                                                    className={classes.button}
-                                                                                    aria-label='Settings'
-                                                                                    onClick={() => toggleEndpointSecurityConfig(
-                                                                                        '', 'production',
-                                                                                    )}
-                                                                                    disabled={
-                                                                                        (isRestricted(
-                                                                                            ['apim:api_create'], api,
-                                                                                        )
-                                                                                        )
-                                                                                    }
-                                                                                    variant='outlined'
-                                                                                >
-                                                                                    <Icon
-                                                                                        className={classes.buttonIcon}
+                                                                            {api.type !== 'WS' && (
+                                                                                <>
+                                                                                    <Button
+                                                                                        className={classes.button}
+                                                                                        aria-label='Settings'
+                                                                                        onClick={() => toggleAdvanceConfig(
+                                                                                            0, '', 'production_endpoints',
+                                                                                        )}
+                                                                                        disabled={
+                                                                                            (isRestricted(
+                                                                                                ['apim:api_create'], api,
+                                                                                            )
+                                                                                            )
+                                                                                        }
+                                                                                        variant='outlined'
                                                                                     >
-                                                                                        security
-                                                                                    </Icon>
-                                                                                    <Typography>
-                                                                                        <FormattedMessage
-                                                                                            id={'Apis.Details.Endpoints'
-                                                                                                + '.EndpointOverview.endpoint'
-                                                                                                + '.security.configuration'}
-                                                                                            defaultMessage={'Endpoint '
-                                                                                                + 'Security Configurations'}
-                                                                                        />
-                                                                                    </Typography>
-                                                                                </Button>
-                                                                            }
+                                                                                        <Icon
+                                                                                            className={classes.buttonIcon}
+                                                                                        >
+                                                                                            settings
+                                                                                        </Icon>
+                                                                                        <Typography>
+                                                                                            <FormattedMessage
+                                                                                                id={'Apis.Details.Endpoints'
+                                                                                                    + '.EndpointOverview.advance'
+                                                                                                    + '.endpoint.configuration'}
+                                                                                                defaultMessage='Advanced 
+                                                                                                Configurations'
+                                                                                            />
+                                                                                        </Typography>
+                                                                                    </Button>
+                                                                                    {endpointSecurityTypes.length > 0 &&
+                                                                                        <Button
+                                                                                            className={classes.button}
+                                                                                            aria-label='Settings'
+                                                                                            onClick={() => toggleEndpointSecurityConfig(
+                                                                                                '', 'production',
+                                                                                            )}
+                                                                                            disabled={
+                                                                                                (isRestricted(
+                                                                                                    ['apim:api_create'], api,
+                                                                                                )
+                                                                                                )
+                                                                                            }
+                                                                                            variant='outlined'
+                                                                                        >
+                                                                                            <Icon
+                                                                                                className={classes.buttonIcon}
+                                                                                            >
+                                                                                                security
+                                                                                            </Icon>
+                                                                                            <Typography>
+                                                                                                <FormattedMessage
+                                                                                                    id={'Apis.Details.Endpoints'
+                                                                                                        + '.EndpointOverview.endpoint'
+                                                                                                        + '.security.configuration'}
+                                                                                                    defaultMessage={'Endpoint '
+                                                                                                        + 'Security Configurations'}
+                                                                                                />
+                                                                                            </Typography>
+                                                                                        </Button>
+                                                                                    }
+                                                                                </>
+                                                                            )}
                                                                         </InlineMessage>
                                                                     )
                                                                     : (
@@ -1193,43 +1203,45 @@ function EndpointOverview(props) {
                                                                                                     </IconButton>
                                                                                                 </Typography>
                                                                                             </div>
-                                                                                            <Button
-                                                                                                className={classes.button}
-                                                                                                aria-label='Settings'
-                                                                                                onClick={() =>
-                                                                                                    toggleAdvanceConfig(
-                                                                                                        0, '',
-                                                                                                        'sandbox_endpoints',
-                                                                                                    )}
-                                                                                                disabled={
-                                                                                                    (isRestricted(
-                                                                                                        ['apim:api_create'],
-                                                                                                        api,
-                                                                                                    )
-                                                                                                    )
-                                                                                                }
-                                                                                                variant='outlined'
-                                                                                            >
-                                                                                                <Icon
-                                                                                                    className={
-                                                                                                        classes.buttonIcon}
+                                                                                            {api.type !== 'WS' && (
+                                                                                                <Button
+                                                                                                    className={classes.button}
+                                                                                                    aria-label='Settings'
+                                                                                                    onClick={() =>
+                                                                                                        toggleAdvanceConfig(
+                                                                                                            0, '',
+                                                                                                            'sandbox_endpoints',
+                                                                                                        )}
+                                                                                                    disabled={
+                                                                                                        (isRestricted(
+                                                                                                            ['apim:api_create'],
+                                                                                                            api,
+                                                                                                        )
+                                                                                                        )
+                                                                                                    }
+                                                                                                    variant='outlined'
                                                                                                 >
-                                                                                                    settings
-                                                                                                </Icon>
-                                                                                                <Typography>
-                                                                                                    <FormattedMessage
-                                                                                                        id={'Apis.Details.'
-                                                                                                        + 'Endpoints'
-                                                                                                        + '.EndpointOverview.'
-                                                                                                        + 'advance'
-                                                                                                        + '.endpoint.'
-                                                                                                        + 'configuration'}
-                                                                                                        defaultMessage={
-                                                                                                            'Advanced '
-                                                                                                            + 'Configurations'}
-                                                                                                    />
-                                                                                                </Typography>
-                                                                                            </Button>
+                                                                                                    <Icon
+                                                                                                        className={
+                                                                                                            classes.buttonIcon}
+                                                                                                    >
+                                                                                                        settings
+                                                                                                    </Icon>
+                                                                                                    <Typography>
+                                                                                                        <FormattedMessage
+                                                                                                            id={'Apis.Details.'
+                                                                                                            + 'Endpoints'
+                                                                                                            + '.EndpointOverview.'
+                                                                                                            + 'advance'
+                                                                                                            + '.endpoint.'
+                                                                                                            + 'configuration'}
+                                                                                                            defaultMessage={
+                                                                                                                'Advanced '
+                                                                                                                + 'Configurations'}
+                                                                                                        />
+                                                                                                    </Typography>
+                                                                                                </Button>
+                                                                                                )}
                                                                                         </InlineMessage>
                                                                                     )
                                                                                     : (

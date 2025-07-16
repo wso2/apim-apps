@@ -180,6 +180,10 @@ function createEndpointConfig(endpointType) {
             tmpEndpointConfig.endpoint_type = 'address';
             tmpEndpointConfig.failOver = false;
             break;
+        case 'ws':
+            tmpEndpointConfig.endpoint_type = 'ws';
+            tmpEndpointConfig.failOver = false;
+            break;
         case 'prototyped':
             tmpEndpointConfig.implementation_status = 'prototyped';
             tmpEndpointConfig.endpoint_type = 'http';

@@ -49,6 +49,7 @@ interface PolicyViewFormProps {
     policySpec: PolicySpec;
     onDone: () => void;
     isLocalToAPI: boolean;
+    apiType?: string;
 }
 
 /**
@@ -56,7 +57,7 @@ interface PolicyViewFormProps {
  * @param {JSON} props Input props from parent components.
  * @returns {TSX} Right drawer for policy configuration.
  */
-const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone, isLocalToAPI }) => {
+const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone, isLocalToAPI, apiType }) => {
 
 
     const getPolicyAttributes = () => {
@@ -94,14 +95,16 @@ const PolicyViewForm: FC<PolicyViewFormProps> = ({ policySpec, onDone, isLocalTo
                 policyAttributes={getPolicyAttributes()}
                 isViewMode
             />
-            <Box>
-                <Button variant='contained' color='primary' data-testid='done-view-policy-file' onClick={onDone}>
-                    <FormattedMessage
-                        id='Apis.Details.Policies.PolicyForm.PolicyViewForm.done'
-                        defaultMessage='Done'
-                    />
-                </Button>
-            </Box>
+            {!apiType && (
+                <Box>
+                    <Button variant='contained' color='primary' data-testid='done-view-policy-file' onClick={onDone}>
+                        <FormattedMessage
+                            id='Apis.Details.Policies.PolicyForm.PolicyViewForm.done'
+                            defaultMessage='Done'
+                        />
+                    </Button>
+                </Box>
+            )}
         </StyledPaper>
     );
 };

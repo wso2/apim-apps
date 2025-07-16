@@ -74,6 +74,7 @@ interface PolicyListPorps {
     fetchPolicies: () => void;
     isChoreoConnectEnabled: boolean;
     gatewayType: string;
+    apiType: string;
 }
 
 /**
@@ -82,7 +83,7 @@ interface PolicyListPorps {
  * @returns {TSX} List of policies local to the API segment.
  */
 const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetchPolicies, isChoreoConnectEnabled, 
-    gatewayType}) => {
+    gatewayType, apiType}) => {
 
     const [selectedTab, setSelectedTab] = useState(0); // Request flow related tab is active by default
     const [dialogOpen, setDialogOpen] = React.useState(false);
@@ -125,107 +126,86 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                         )}
                     </Box>
                     <Box>
-                        <Tabs
-                            value={selectedTab}
-                            onChange={(event, tab) => setSelectedTab(tab)}
-                            indicatorColor='primary'
-                            textColor='primary'
-                            variant='standard'
-                            aria-label='Policies local to API'
-                            className={classes.flowTabs}
-                        >
-                            <Tab
-                                label={
-                                    <span className={classes.flowTab}>
-                                        <FormattedMessage
-                                            id='Apis.Details.Policies.PolicyList.add.request.tab'
-                                            defaultMessage='Request'
-                                        />
-                                    </span>
-                                }
-                                id='request-tab'
-                                aria-controls='request-tabpanel'
-                            />
-                            <Tab
-                                label={
-                                    <span className={classes.flowTab}>
-                                        <FormattedMessage
-                                            id='Apis.Details.Policies.PolicyList.add.response.tab'
-                                            defaultMessage='Response'
-                                        />
-                                    </span>
-                                }
-                                id='response-tab'
-                                aria-controls='response-tabpanel'
-                            />
-                            {!isChoreoConnectEnabled && (
+                        {apiType === 'WS' ? (
+                            <Tabs
+                                value={selectedTab}
+                                onChange={(event, tab) => setSelectedTab(tab)}
+                                indicatorColor='primary'
+                                textColor='primary'
+                                variant='standard'
+                                aria-label='Policies local to API'
+                                className={classes.flowTabs}
+                            >
                                 <Tab
                                     label={
                                         <span className={classes.flowTab}>
                                             <FormattedMessage
-                                                id='Apis.Details.Policies.PolicyList.add.fault.tab'
-                                                defaultMessage='Fault'
+                                                id='Apis.Details.Policies.PolicyList.add.inbound.tab'
+                                                defaultMessage='Inbound Handshake'
                                             />
                                         </span>
                                     }
-                                    id='fault-tab'
-                                    aria-controls='fault-tabpanel'
-                                />)
-                            }
-                        </Tabs>
-                        <Box height='55vh' pt={1} overflow='scroll'>
-                            <TabPanel
-                                commonPolicyList={commonPolicyList.filter(
-                                    (policy) =>
-                                        policy.applicableFlows.includes(
-                                            'request',
-                                        ) &&
-                                        policy.supportedGateways.includes(
-                                            gatewayType,
-                                        ),
-                                )}
-                                apiPolicyList={apiPolicyList.filter(
-                                    (policy) =>
-                                        policy.applicableFlows.includes(
-                                            'request',
-                                        ) &&
-                                        policy.supportedGateways.includes(
-                                            gatewayType,
-                                        ),
-                                )}
-                                index={0}
-                                selectedTab={selectedTab}
-                                fetchPolicies={fetchPolicies}
-                            />
-                            <TabPanel
-                                commonPolicyList={commonPolicyList.filter(
-                                    (policy) =>
-                                        policy.applicableFlows.includes(
-                                            'response',
-                                        ) &&
-                                        policy.supportedGateways.includes(
-                                            gatewayType,
-                                        ),
-                                )}
-                                apiPolicyList={apiPolicyList.filter(
-                                    (policy) =>
-                                        policy.applicableFlows.includes(
-                                            'response',
-                                        ) &&
-                                        policy.supportedGateways.includes(
-                                            gatewayType,
-                                        ),
-                                )}
-                                index={1}
-                                selectedTab={selectedTab}
-                                fetchPolicies={fetchPolicies}
-                            />
-                            {!isChoreoConnectEnabled && (
+                                    id='request-tab'
+                                    aria-controls='request-tabpanel'
+                                />
+                            </Tabs>
+                        ) : (
+                            <Tabs
+                                value={selectedTab}
+                                onChange={(event, tab) => setSelectedTab(tab)}
+                                indicatorColor='primary'
+                                textColor='primary'
+                                variant='standard'
+                                aria-label='Policies local to API'
+                                className={classes.flowTabs}
+                            >
+                                <Tab
+                                    label={
+                                        <span className={classes.flowTab}>
+                                            <FormattedMessage
+                                                id='Apis.Details.Policies.PolicyList.add.request.tab'
+                                                defaultMessage='Request'
+                                            />
+                                        </span>
+                                    }
+                                    id='request-tab'
+                                    aria-controls='request-tabpanel'
+                                />
+                                <Tab
+                                    label={
+                                        <span className={classes.flowTab}>
+                                            <FormattedMessage
+                                                id='Apis.Details.Policies.PolicyList.add.response.tab'
+                                                defaultMessage='Response'
+                                            />
+                                        </span>
+                                    }
+                                    id='response-tab'
+                                    aria-controls='response-tabpanel'
+                                />
+                                {!isChoreoConnectEnabled && (
+                                    <Tab
+                                        label={
+                                            <span className={classes.flowTab}>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Policies.PolicyList.add.fault.tab'
+                                                    defaultMessage='Fault'
+                                                />
+                                            </span>
+                                        }
+                                        id='fault-tab'
+                                        aria-controls='fault-tabpanel'
+                                    />)
+                                }
+                            </Tabs>
+                        )}
+                        {apiType === 'WS' ? (
+                            <Box height='55vh' pt={1} overflow='scroll'>
                                 <TabPanel
                                     commonPolicyList={commonPolicyList.filter(
                                         (policy) =>
                                             policy.applicableFlows.includes(
-                                                'fault',
+                                                'request',
                                             ) &&
                                             policy.supportedGateways.includes(
                                                 gatewayType,
@@ -234,18 +214,92 @@ const PolicyList: FC<PolicyListPorps> = ({apiPolicyList, commonPolicyList, fetch
                                     apiPolicyList={apiPolicyList.filter(
                                         (policy) =>
                                             policy.applicableFlows.includes(
-                                                'fault',
+                                                'request',
                                             ) &&
                                             policy.supportedGateways.includes(
                                                 gatewayType,
                                             ),
-                                        )}
-                                    index={2}
+                                    )}
+                                    index={0}
                                     selectedTab={selectedTab}
                                     fetchPolicies={fetchPolicies}
                                 />
-                            )}
-                        </Box>
+                            </Box>
+                        ) : (
+                            <Box height='55vh' pt={1} overflow='scroll'>
+                                <TabPanel
+                                    commonPolicyList={commonPolicyList.filter(
+                                        (policy) =>
+                                            policy.applicableFlows.includes(
+                                                'request',
+                                            ) &&
+                                            policy.supportedGateways.includes(
+                                                gatewayType,
+                                            ),
+                                    )}
+                                    apiPolicyList={apiPolicyList.filter(
+                                        (policy) =>
+                                            policy.applicableFlows.includes(
+                                                'request',
+                                            ) &&
+                                            policy.supportedGateways.includes(
+                                                gatewayType,
+                                            ),
+                                    )}
+                                    index={0}
+                                    selectedTab={selectedTab}
+                                    fetchPolicies={fetchPolicies}
+                                />
+                                <TabPanel
+                                    commonPolicyList={commonPolicyList.filter(
+                                        (policy) =>
+                                            policy.applicableFlows.includes(
+                                                'response',
+                                            ) &&
+                                            policy.supportedGateways.includes(
+                                                gatewayType,
+                                            ),
+                                    )}
+                                    apiPolicyList={apiPolicyList.filter(
+                                        (policy) =>
+                                            policy.applicableFlows.includes(
+                                                'response',
+                                            ) &&
+                                            policy.supportedGateways.includes(
+                                                gatewayType,
+                                            ),
+                                    )}
+                                    index={1}
+                                    selectedTab={selectedTab}
+                                    fetchPolicies={fetchPolicies}
+                                />
+                                {!isChoreoConnectEnabled && (
+                                    <TabPanel
+                                        commonPolicyList={commonPolicyList.filter(
+                                            (policy) =>
+                                                policy.applicableFlows.includes(
+                                                    'fault',
+                                                ) &&
+                                                policy.supportedGateways.includes(
+                                                    gatewayType,
+                                                ),
+                                        )}
+                                        apiPolicyList={apiPolicyList.filter(
+                                            (policy) =>
+                                                policy.applicableFlows.includes(
+                                                    'fault',
+                                                ) &&
+                                                policy.supportedGateways.includes(
+                                                    gatewayType,
+                                                ),
+                                            )}
+                                        index={2}
+                                        selectedTab={selectedTab}
+                                        fetchPolicies={fetchPolicies}
+                                    />
+                                )}
+                            </Box>
+                        )}
                     </Box>
                 </CardContent>
             </Card>

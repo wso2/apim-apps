@@ -106,22 +106,29 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                         />
                         
                     </Alert>
-                    {Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
-                        <Grid key={target} item xs={12}>
-                            <OperationsGroup openAPI={openAPISpec} tag={target} >
-                                <Grid
-                                    container
-                                    direction='column'
-                                    justifyContent='flex-start'
-                                    spacing={1}
-                                    alignItems='stretch'
-                                >
-                                    {Object.entries(verbObject).map(([verb, operation]) => {
-                                        return CONSTS.HTTP_METHODS.includes(verb) ? (
-                                            <Grid key={`${target}/${verb}`} item className={classes.gridItem}>
+                    {api.type === 'WS' ? (
+                        Object.entries(openAPISpec.channels).map(([channelName, channelItem]) => {
+                            const operation = (channelItem as { subscribe?: any, publish?: any }).subscribe
+                                ?? (channelItem as { publish?: any }).publish;
+
+                            return (
+                                <Grid key={channelName} item xs={12}>
+                                    <Box m={1} p={0.1} mt={1.5} sx={{ boxShadow: 0.5, bgcolor: borderColor, borderRadius: 1 }}>
+                                        <Grid
+                                            container
+                                            direction="column"
+                                            justifyContent="flex-start"
+                                            spacing={1}
+                                            alignItems="stretch"
+                                        >
+                                            <Grid
+                                                key={`${channelName}`}
+                                                item
+                                                className={classes.gridItem}
+                                            >
                                                 <OperationPolicy
-                                                    target={target}
-                                                    verb={verb}
+                                                    target={channelName}
+                                                    verb=""
                                                     highlight
                                                     operation={operation}
                                                     api={api}
@@ -133,12 +140,46 @@ const PoliciesSection: FC<PolicySectionProps> = ({
                                                     isChoreoConnectEnabled={isChoreoConnectEnabled}
                                                 />
                                             </Grid>
-                                        ) : null;
-                                    })}
+                                        </Grid>
+                                    </Box>
                                 </Grid>
-                            </OperationsGroup>
-                        </Grid>
-                    ))}
+                            );
+                        })
+                    ) : (
+                        Object.entries(openAPISpec.paths).map(([target, verbObject]: [string, any]) => (
+                            <Grid key={target} item xs={12}>
+                                <OperationsGroup openAPI={openAPISpec} tag={target} >
+                                    <Grid
+                                        container
+                                        direction='column'
+                                        justifyContent='flex-start'
+                                        spacing={1}
+                                        alignItems='stretch'
+                                    >
+                                        {Object.entries(verbObject).map(([verb, operation]) => {
+                                            return CONSTS.HTTP_METHODS.includes(verb) ? (
+                                                <Grid key={`${target}/${verb}`} item className={classes.gridItem}>
+                                                    <OperationPolicy
+                                                        target={target}
+                                                        verb={verb}
+                                                        highlight
+                                                        operation={operation}
+                                                        api={api}
+                                                        disableUpdate={isRestricted(['apim:api_create'], api)}
+                                                        expandedResource={expandedResource}
+                                                        setExpandedResource={setExpandedResource}
+                                                        policyList={policyList}
+                                                        allPolicies={allPolicies}
+                                                        isChoreoConnectEnabled={isChoreoConnectEnabled}
+                                                    />
+                                                </Grid>
+                                            ) : null;
+                                        })}
+                                    </Grid>
+                                </OperationsGroup>
+                            </Grid>
+                        ))
+                    )}
                 </Box>
             )}
         </StyledBox>

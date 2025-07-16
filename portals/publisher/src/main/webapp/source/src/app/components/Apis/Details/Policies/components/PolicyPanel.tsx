@@ -63,7 +63,7 @@ const PolicyPanel: FC<PolicyPanelProps> = ({
             id={`${currentTab}-tabpanel`}
             aria-labelledby={`${currentTab}-tab`}
         >
-            <Box py={1} px={3} sx={{ height: '100vh' }}>
+            <Box py={1} px={3} style={{overflowY: 'auto', maxHeight: '100vh'}}>
                 <PoliciesSection
                     openAPISpec={openAPISpec}
                     isChoreoConnectEnabled={isChoreoConnectEnabled}
