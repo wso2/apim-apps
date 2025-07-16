@@ -15,13 +15,23 @@ const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.d
  * @param {JSON} state The second number.
  * @returns {Promise}
  */
-function certificateReducer(state, newValue) {
-    const { field, value } = newValue;
-    if (field === 'tenantWideCertificates') {
-        return { ...state, [field]: value };
-    } else {
-        return newValue;
+function certificateReducer(state, action) {
+    // If we receive a direct certificate update
+    if (action.type === undefined && action.value !== undefined) {
+        return {
+            type: action.value.type || 'PEM',
+            value: action.value.value || '',
+        };
     }
+    // If we receive a field update
+    const { field, value } = action;
+    if (field === 'tenantWideCertificates') {
+        return {
+            type: value.type || state.type,
+            value: value.value || '',
+        };
+    }
+    return state;
 }
 
 export default function KeyManagerConfiguration(props) {
@@ -39,10 +49,15 @@ export default function KeyManagerConfiguration(props) {
             type: 'PEM',
             value: '',
         });
-    // Add effect to watch for changes
+    // Add effect to watch for changes and sync with additionalProperties
     useEffect(() => {
         if (tenantWideCertificates) {
-            setAdditionalProperties('certificates', tenantWideCertificates);
+            // Ensure we only pass the correct structure
+            const certificateData = {
+                type: tenantWideCertificates.type || 'PEM',
+                value: tenantWideCertificates.value || '',
+            };
+            setAdditionalProperties('certificates', certificateData);
         }
     }, [tenantWideCertificates, setAdditionalProperties]);
 
