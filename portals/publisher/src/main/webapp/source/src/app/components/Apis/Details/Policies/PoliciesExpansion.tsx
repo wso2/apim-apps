@@ -116,8 +116,9 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             
             const operationInAction = (!isAPILevelPolicy) ? apiOperations.find(
                 (op: any) =>
-                    op.target === target &&
-                    op.verb.toLowerCase() === verb.toLowerCase(),
+                    api.type === 'WS'
+                        ? op.target === target
+                        : op.target === target && op.verb.toLowerCase() === verb.toLowerCase(),
             ) : null;
             const apiPolicies = (isAPILevelPolicy) ? apiLevelPolicies : null;
             const originatedFromCommonPolicies : string[] = [];
@@ -267,6 +268,7 @@ const PoliciesExpansion: FC<PoliciesExpansionProps> = ({
             PolicyDropzone={PolicyDropzone}
             listOriginatedFromCommonPolicies={listOriginatedFromCommonPolicies}
             isApiRevision={api.isRevision}
+            apiType={api.type}
         />
     );
 };
