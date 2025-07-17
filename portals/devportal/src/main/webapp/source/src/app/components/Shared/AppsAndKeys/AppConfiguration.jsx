@@ -34,6 +34,7 @@ import Select from '@mui/material/Select';
 import Input from '@mui/material/Input';
 import Box from '@mui/material/Box';
 import ChipInput from 'AppComponents/Shared/ChipInput';
+import Autocomplete from '@mui/material/Autocomplete';
 import Settings from 'AppComponents/Shared/SettingsContext';
 
 
@@ -104,7 +105,7 @@ const Root = styled('div')(
 const AppConfiguration = (props) => {
 
     const {
-        config, isUserOwner, previousValue, handleChange,
+        config, isUserOwner, previousValue, handleChange, subscriptionScopes,
     } = props;
 
     const [selectedValue, setSelectedValue] = useState(previousValue);
@@ -248,7 +249,48 @@ const AppConfiguration = (props) => {
                                     </MenuItem>
                                 ))}
                             </TextField>
-                        ) : (config.type === 'select' && config.multiple === true && Array.isArray(selectedValue)) ? (
+                    ) : (config.type === 'select' && config.multiple === true && Array.isArray(selectedValue)) ? 
+                        (config.name === 'application_scopes') ? (
+                            <>
+                                <Autocomplete
+                                    multiple
+                                    disabled={subscriptionScopes.length === 0}
+                                    options={subscriptionScopes} // Available subscription scopes
+                                    value={selectedValue} // Selected values
+                                    onChange={(event, newValue) => {
+                                        const e = { target: { name: config.name, value: newValue } };
+                                        handleAppRequestChange(e); // Update the selected values
+                                    }}
+                                    renderInput={(params) => (
+                                        <TextField
+                                            {...params}
+                                            classes={{
+                                                root: classes.removeHelperPadding,
+                                            }}
+                                            fullWidth
+                                            disabled={subscriptionScopes.length === 0}
+                                            margin='dense'
+                                            size='small'
+                                            variant='outlined'
+                                            label={config.label}
+                                            placeholder="Select scopes"
+                                            error={config.required && hasMandatoryError(selectedValue)}
+                                            helperText={(config.required && hasMandatoryError(selectedValue)) || getAppConfigToolTip()}
+                                        />
+                                    )}
+                                    renderTags={(tagValue, getTagProps) =>
+                                        tagValue.map((option, index) => (
+                                            <Chip
+                                                key={option}
+                                                label={option}
+                                                {...getTagProps({ index })}
+                                                size="small"
+                                            />
+                                        ))
+                                    }
+                                />
+                            </>
+                        ) : (
                             <>
                                 <FormControl variant="outlined" className={classes.formControl} fullWidth>
                                     <InputLabel id="multi-select-label">{config.label}</InputLabel>
@@ -284,12 +326,11 @@ const AppConfiguration = (props) => {
                                             </MenuItem>
                                         ))}
                                     </Select>
+
+                                    <Typography variant='caption'>
+                                        {getAppConfigToolTip()}
+                                    </Typography>
                                 </FormControl>
-
-
-                                <Typography variant='caption'>
-                                    {getAppConfigToolTip()}
-                                </Typography>
                             </>
                         ) : (config.type === 'input' && config.multiple === true) ? (
                             <>
@@ -399,6 +440,7 @@ AppConfiguration.contextType = Settings;
 
 AppConfiguration.defaultProps = {
     notFound: false,
+    subscriptionScopes: [],
 };
 
 AppConfiguration.propTypes = {
@@ -407,6 +449,7 @@ AppConfiguration.propTypes = {
     isUserOwner: PropTypes.bool.isRequired,
     handleChange: PropTypes.func.isRequired,
     config: PropTypes.any.isRequired,
+    subscriptionScopes: PropTypes.arrayOf(PropTypes.string),
     notFound: PropTypes.bool,
     intl: PropTypes.shape({ formatMessage: PropTypes.func }).isRequired,
 };
