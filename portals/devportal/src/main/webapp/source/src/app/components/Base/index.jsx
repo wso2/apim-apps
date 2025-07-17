@@ -44,6 +44,7 @@ import Settings, { useSettingsContext } from 'AppComponents/Shared/SettingsConte
 import { app } from 'Settings';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 import Box from '@mui/material/Box';
+import NotificationIconNotificationIcon from 'AppComponents/Base/Header/NotificationIcon';
 import AuthManager from '../../data/AuthManager';
 import LanguageSelector from './Header/LanuageSelector';
 import GlobalNavBar from './Header/GlobalNavbar';
@@ -594,6 +595,9 @@ class LayoutLegacy extends React.Component {
                                         </Button>
                                     </Link>
                                 )}
+                                {user ? (
+                                    <NotificationIconNotificationIcon />
+                                ) : null}
                                 <VerticalDivider height={64} />
                                 {languageSwitchActive && <LanguageSelector />}
                                 {user ? (

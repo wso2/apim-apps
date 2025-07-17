@@ -4329,6 +4329,78 @@
   "LoginDenied.title": {
     "defaultMessage": "Error 403 : Forbidden"
   },
+  "Notification.fetchNotifications.error": {
+    "defaultMessage": "Error occurred while fetching notifications"
+  },
+  "Notification.markAllNotificationsAsRead.error": {
+    "defaultMessage": "Error while marking all notifications as read!"
+  },
+  "Notification.markAllNotificationsAsRead.success": {
+    "defaultMessage": "Marked all notifications as read successfully!"
+  },
+  "Notification.markNotificationAsReadById.error": {
+    "defaultMessage": "Error while marking the notification as read!"
+  },
+  "Notification.markNotificationAsReadById.success": {
+    "defaultMessage": "Marked the notification as read successfully!"
+  },
+  "Notification.onboarding.display.message": {
+    "defaultMessage": "You do not have any notifications!"
+  },
+  "Notification.page.title": {
+    "defaultMessage": "Notifications"
+  },
+  "Notification.table.header.actions.title": {
+    "defaultMessage": "Action"
+  },
+  "Notification.table.header.markAsRead": {
+    "defaultMessage": "Mark as Read"
+  },
+  "Notification.table.header.markAsRead.tooltip": {
+    "defaultMessage": "Mark as Read"
+  },
+  "Notification.table.header.notification": {
+    "defaultMessage": "Notification"
+  },
+  "Notification.table.header.notificationId": {
+    "defaultMessage": "Notification ID"
+  },
+  "Notification.table.header.notificationType": {
+    "defaultMessage": "Notification Type"
+  },
+  "Notification.table.header.receivedDate": {
+    "defaultMessage": "Received Date"
+  },
+  "Notifications.DeleteNotifications.confirm.dialog.cancel.delete": {
+    "defaultMessage": "Cancel"
+  },
+  "Notifications.DeleteNotifications.confirm.dialog.confirm.delete": {
+    "defaultMessage": "Yes"
+  },
+  "Notifications.DeleteNotifications.confirm.dialog.confirm.title": {
+    "defaultMessage": "Confirm Delete"
+  },
+  "Notifications.DeleteNotifications.delete.tooltip": {
+    "defaultMessage": "Delete"
+  },
+  "Notifications.DeleteNotifications.deleteAll.confirm.dialog.confirm.content": {
+    "defaultMessage": "Are you sure you want to delete all notifications?"
+  },
+  "Notifications.DeleteNotifications.deleteAllNotifications.error": {
+    "defaultMessage": "Error occurred while deleting notifications"
+  },
+  "Notifications.DeleteNotifications.deleteAllNotifications.success": {
+    "defaultMessage": "All notifications are deleted successfully!"
+  },
+  "Notifications.DeleteNotifications.deleteNotificationById.confirm.dialog.confirm.content": {
+    "defaultMessage": "Are you sure you want to delete this notification?"
+  },
+  "Notifications.DeleteNotifications.deleteNotificationById.error": {
+    "defaultMessage": "Error occurred while deleting the notification"
+  },
+  "Notifications.DeleteNotifications.deleteNotificationById.success": {
+    "defaultMessage": "Notification deleted successfully!"
+  },
   "Polcies.TextField.Description": {
     "defaultMessage": "Description"
   },

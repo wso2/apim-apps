@@ -14,7 +14,7 @@ import Configurations from 'Config';
 import HeaderSearch from 'AppComponents/Base/Header/headersearch/HeaderSearch';
 import GlobalNavBar from 'AppComponents/Base/Header/navbar/GlobalNavBar';
 import { GlobalDrawerProvider } from 'AppComponents/Base/Header/navbar/useNavBar';
-
+import NotificationIcon from 'AppComponents/Base/Header/notificationIcon/NotificationIcon';
 
 const PREFIX = 'HeaderOriginal';
 
@@ -62,6 +62,7 @@ export default function HeaderOriginal(props) {
         setOpen(!open);
     };
     const Icon = open ? CloseIcon : MenuIcon;
+
     return (
         <Root>
             <GlobalDrawerProvider value={{ open, setOpen }}>
@@ -110,9 +111,12 @@ export default function HeaderOriginal(props) {
                                 </Hidden>
                                 <div style={{ paddingTop: 6}}>
                                     {menuItems}
-                                    {avatar || <Avatar user={user} />}
+                                    <Box display='flex' alignItems='center'>
+                                        <NotificationIcon />
+                                        {avatar || <Avatar user={user} />}
+                                    </Box>
                                 </div>
-                            </Box>
+                            </Box>                            
                         </Box>
                     </Toolbar>
                 </AppBar>
