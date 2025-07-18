@@ -118,7 +118,6 @@ export default function Certificates(props) {
                     </RadioGroup>
                 </FormControl>
             )}
-            {console.log('type : ', type)}
             {type === 'JWKS' && (
                 <TextField
                     id='jwks-url'

@@ -262,6 +262,11 @@ export default function KeyManagerConfiguration(props) {
                             const hasChildren = Array.isArray(option.values) && option.values.length > 0;
                             return (
                                 <Box key={option.name} ml={1} mt={1}>
+                                    {option.tooltip && (
+                                        <FormHelperText>
+                                            {option.tooltip}
+                                        </FormHelperText>
+                                    )}
                                     <FormControlLabel
                                         value={option.name}
                                         control={<Radio />}
@@ -287,17 +292,19 @@ export default function KeyManagerConfiguration(props) {
 
         if (type === 'certificate') {
             return (
-                <FormControl component='fieldset' error={Boolean(error)}>
+                <FormControl component='fieldset' error={Boolean(error)} fullWidth sx={{ width: '100%' }}>
                     <FormLabel component='legend'>
                         {label}
                         {required && <StyledSpan>*</StyledSpan>}
                     </FormLabel>
-                    <Certificates
-                        fieldName='tenantWideCertificates'
-                        tenantWideCertificates={tenantWideCertificates}
-                        dispatch={dispatch}
-                        isJwksNeeded={false}
-                    />
+                    <Box sx={{ width: '100%' }}>
+                        <Certificates
+                            fieldName='tenantWideCertificates'
+                            tenantWideCertificates={tenantWideCertificates}
+                            dispatch={dispatch}
+                            isJwksNeeded={false}
+                        />
+                    </Box>
                 </FormControl>
             );
         }
