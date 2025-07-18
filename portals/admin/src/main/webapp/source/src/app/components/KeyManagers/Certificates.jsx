@@ -206,7 +206,7 @@ export default function Certificates(props) {
 }
 Certificates.defaultProps = {
     fieldName: 'certificates',
-    isJwksNeeded: false,
+    isJwksNeeded: true,
 };
 
 Certificates.propTypes = {
