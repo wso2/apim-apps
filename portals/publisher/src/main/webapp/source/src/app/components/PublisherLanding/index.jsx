@@ -50,12 +50,21 @@ const TabButton = styled(Button)(({ theme, isActive }) => ({
     padding: theme.spacing(2),
     height: '100%',
     border: isActive === true ? `1px solid ${theme.palette.primary.main}` : '1px solid rgba(0, 0, 0, 0.30)',
+    borderRadius: '8px',
     backgroundColor: isActive === true ? alpha(theme.palette.primary.main, 0.08) : 'transparent',
     color: isActive === true ? 
         theme.palette.getContrastText(theme.custom.globalNavBar.active) : 
         theme.palette.text.primary,
+    boxShadow: isActive === true ? 
+        `0px 2px 4px ${alpha(theme.palette.primary.main, 0.2)}` : 
+        'none',
     '&:hover': {
-        backgroundColor: alpha(theme.palette.primary.main, 0.08),
+        backgroundColor: isActive === true ? 
+            alpha(theme.palette.primary.main, 0.12) :
+            theme.palette.grey[200],
+        borderColor: isActive === true ? 
+            theme.palette.primary.main : 
+            'rgba(0, 0, 0, 0.30)',
     },
 }));
 
@@ -101,7 +110,7 @@ const PublisherLanding = () => {
                         </Typography>
                     </Grid>
                 </Grid>
-                <Grid container mb={3} px={34}>
+                <Grid container mb={3} pl={13} pr={16}>
                     <Grid container spacing={2}>
                         {creationTypes.map((type) => {
                             const isActive = selectedType === type.value.toLowerCase() || 

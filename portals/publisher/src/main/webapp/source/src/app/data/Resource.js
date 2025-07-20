@@ -79,4 +79,13 @@ export default class Resource {
     isAsyncAPI() {
         return (this.type === 'WS' || this.type === 'WEBSUB' || this.type === 'SSE');
     }
+
+    /**
+     * Check whether current resource is of type MCPServer
+     * @returns {boolean} whether the resource is an MCP Server
+     */
+    isMCPServer() {
+        return this.type === 'MCP';
+    }
+
 }

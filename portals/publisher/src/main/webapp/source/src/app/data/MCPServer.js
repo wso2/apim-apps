@@ -15,15 +15,9 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-
 import APIClientFactory from './APIClientFactory';
 import Utils from './Utils';
 import Resource from './Resource';
-
-const MCPServerConsts = {
-    MCP: 'MCP'
-};
-
 
 /**
  * An abstract representation of an MCP Server.
@@ -64,10 +58,13 @@ class MCPServer extends Resource {
                 this[key] = properties[key];
             }
         }
-        this.apiType = MCPServerConsts.MCP;
+        this.apiType = MCPServer.CONSTS.MCP;
         this.getType = this.getType.bind(this);
     }
 
+    static CONSTS = {
+        MCP: 'MCP',
+    };
 
     /**
      * Request metadata for MCP Server.
@@ -76,7 +73,7 @@ class MCPServer extends Resource {
      * Instead, use the static method `Resource._requestMetaData()`.
      * @private
      */
-    requestMetaData() {
+    _requestMetaData() {
         // eslint-disable-next-line no-underscore-dangle
         Resource._requestMetaData();
     }
@@ -106,7 +103,7 @@ class MCPServer extends Resource {
                 }
             };
 
-            const promisedResponse = client.apis.APIs.importMCPServerDefinition(
+            const promisedResponse = client.apis['MCP Servers'].importMCPServerDefinition(
                 null,
                 payload,
                 this._requestMetaData({
@@ -135,7 +132,7 @@ class MCPServer extends Resource {
                 }
             };
 
-            const promisedResponse = client.apis.APIs.importMCPServerDefinition(
+            const promisedResponse = client.apis['MCP Servers'].importMCPServerDefinition(
                 null,
                 payload,
                 this._requestMetaData({
@@ -176,12 +173,195 @@ class MCPServer extends Resource {
             ).client;
         const promisedAPIs = apiClient.then(client => {
             // eslint-disable-next-line no-underscore-dangle
-            return client.apis.APIs.getAllMCPServers(updatedParams, Resource._requestMetaData());
+            return client.apis['MCP Servers'].getAllMCPServers(updatedParams, Resource._requestMetaData());
         });
 
         return promisedAPIs.then(response => {
-            response.obj.apiType = MCPServerConsts.MCP;
+            response.obj.apiType = MCPServer.CONSTS.MCP;
             return response;
+        });
+    }
+
+    /**
+     * Get an MCP Server by its ID.
+     * @param {*} id ID of the MCP Server.
+     * @returns {Promise<MCPServer>} A promise that resolves to the MCPServer instance.
+     */
+    static getMCPServerById(id) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const promisedAPI = apiClient.then(client => {
+            return client.apis['MCP Servers'].getMCPServer(
+                {
+                    apiId: id,
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promisedAPI.then(response => {
+            if (response.body === null || response.body === undefined) {
+                throw new Error(`MCP Server with ID ${id} not found.`);
+            }
+            return new MCPServer(response.body);
+        });
+    }
+
+    /**
+     * Update an MCP Server.
+     * @param {*} updatedProperties - The updated properties for the MCP Server.
+     * @returns {Promise<MCPServer>} A promise that resolves to the updated MCPServer instance.
+     */
+    static updateMCPServer(updatedProperties) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const promisedUpdate = apiClient.then(client => {
+            const payload = {
+                apiId: updatedProperties.id,
+                body: updatedProperties,
+            };
+            return client.apis['MCP Servers'].updateMCPServer(payload);
+        });
+        return promisedUpdate;
+    }
+
+    static updateMCPServer
+
+    /**
+     * To get MCPServer object with the fields filled as per the definition
+     * @param {Object} client Client object after resolving this.client.then()
+     * @returns {Object} MCP Server Object corresponding to spec fields
+     * @memberof MCPServer
+     */
+    getDataFromSpecFields(client) {
+        const {properties} = client.spec.components.schemas.API;
+        const data = {};
+        Object.keys(this).forEach(apiAttribute => {
+            if (apiAttribute in properties) {
+                data[apiAttribute] = this[apiAttribute];
+            }
+        });
+        return data;
+    }
+
+    /**
+     * Get list of revisions.
+     *
+     * @param {string} id ID of the MCP Server.
+     * @return {Promise} A promise that resolves to the list of revisions.
+     * */
+    getRevisions(id) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].getMCPServerRevisions({
+                apiId: id,
+            });
+        });
+    }
+
+    /**
+     * Get list of revisions with environments.
+     *
+     * @param {string} id ID of the MCP Server.
+     * @return {Promise} A promise that resolves to the list of revisions with environments.
+     * */
+    getRevisionsWithEnv(id) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].getMCPServerRevisions(
+                {
+                    apiId: id,
+                    query: 'deployed:true',
+                },
+            );
+        });
+    }
+
+    /**
+     * Restore revision.
+     *
+     * @param {string} id ID of the MCP Server.
+     * @param {string} revisionId ID of the revision to restore.
+     * @returns {Promise} A promise that resolves to the restored revision.
+     * */
+    restoreRevision(id, revisionId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(
+            client => {
+                return client.apis['MCP Server Revisions'].restoreMCPServerRevision(
+                    {
+                        apiId: id,
+                        revisionId,
+                    },
+                    this._requestMetaData(),
+                );
+            });
+    }
+
+    /**
+     * Get an endpoint of the MCP Server
+     * @param {String} id ID of the MCP Server
+     * @param {String} endpointId UUID of the endpoint
+     * @returns {Promise} Promise containing the requested endpoint
+     * */
+    static getMCPServerEndpoint(id, endpointId) {
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return restApiClient.then(client => {
+            return client.apis['MCP Server Endpoints'].getMCPServerEndpoint(
+                {
+                    apiId: id,
+                    endpointId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Update an endpoint of the MCP Server
+     * @param {String} id UUID of the MCP Server
+     * @param {String} endpointId UUID of the endpoint
+     * @param {Object} endpointBody Updated endpoint object
+     * @returns {Promise} Promise containing the updated endpoint
+     */
+    static updateMCPServerEndpoint(id, endpointId, endpointBody) {
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return restApiClient.then(client => {
+            return client.apis['API Endpoints'].updateMCPServerEndpoint(
+                {
+                    apiId: id,
+                    endpointId,
+                },
+                {
+                    requestBody: endpointBody,
+                },
+                this._requestMetaData(),
+            );
         });
     }
 

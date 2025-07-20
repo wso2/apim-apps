@@ -24,6 +24,7 @@ import { FormattedMessage } from 'react-intl';
 import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { green } from '@mui/material/colors';
 import Resources from './Resources';
@@ -192,7 +193,7 @@ const Root = styled('div')(({ theme }) => ({
  * @returns
  */
 function Overview(props) {
-    const {  api: newApi, setOpenPageSearch } = props; // TODO <tmkasun>: Remove newApi prop & merge to api
+    const {  api: newApi, setOpenPageSearch, isMCPServer } = props; // TODO <tmkasun>: Remove newApi prop & merge to api
     const { api } = useContext(ApiContext);
     let loadEndpoints;
     useEffect(() => {
@@ -244,6 +245,14 @@ function Overview(props) {
                     defaultMessage='Overview'
                 />
             </Typography>
+            {(isMCPServer || api.type === MCPServer.CONSTS.MCP) && (
+                <Typography variant='subtitle1' className={classes.subtitle}>
+                    <FormattedMessage
+                        id='Apis.Details.Overview.Overview.mcpServer.subtitle'
+                        defaultMessage='MCP Server Overview'
+                    />
+                </Typography>
+            )}
             {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && (
                 <Grid container>
                     <Grid item xs={12}>
@@ -299,11 +308,16 @@ function Overview(props) {
     );
 }
 
+Overview.defaultProps = {
+    isMCPServer: false,
+};
+
 Overview.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
     }).isRequired,
+    isMCPServer: PropTypes.bool,
 };
 
 export default (Overview);
