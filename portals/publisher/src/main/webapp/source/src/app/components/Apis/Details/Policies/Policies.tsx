@@ -318,7 +318,7 @@ const Policies: React.FC = () => {
                     setOpenAPISpec(retrievedSpec);            
 
                     // The verb (subscribe/publish) is ignored for websocket apis
-                    const [target, verbObject]: [string, any] = Object.entries(retrievedSpec.channels)[0];
+                    const target = Object.keys(retrievedSpec.channels)[0];
                     setExpandedResource(target)
                 })
                 .catch((error: any) => {
