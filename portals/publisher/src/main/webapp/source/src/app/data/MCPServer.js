@@ -316,6 +316,27 @@ class MCPServer extends Resource {
     }
 
     /**
+     * Get the endpoints of an MCP Server.
+     * @param {string} id - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the list of endpoints.
+     */
+    static getMCPServerEndpoints(id) {
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return restApiClient.then(client => {
+            return client.apis['MCP Server Endpoints'].getMCPServerEndpoints(
+                {
+                    apiId: id,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Get an endpoint of the MCP Server
      * @param {String} id ID of the MCP Server
      * @param {String} endpointId UUID of the endpoint

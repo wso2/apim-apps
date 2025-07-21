@@ -628,5 +628,175 @@ const suggestions = {
             route: 'properties',
         },
     ],
+    mcpOnly: [
+        {
+            label: 'Deployments',
+            route: 'deployments',
+        },
+        {
+            label: 'Lifecycle',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Publish API',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Block API',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Depricate API',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Change Lifecycle',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Deploy as a Prototype API',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Requirements',
+            route: 'lifecycle',
+        },
+        {
+            label: 'Create New Version',
+            route: 'new_version',
+        },
+        {
+            label: 'Prototyped API',
+            route: 'endpoints',
+        },
+        {
+            label: 'HTTP/HTTPS Endpoints',
+            route: 'endpoints',
+        },
+        {
+            label: 'HTTP/SOAP Endpoints',
+            route: 'endpoints',
+        },
+        {
+            label: 'Dynamic Endpoints',
+            route: 'endpoints',
+        },
+        {
+            label: 'Endpoint Security',
+            route: 'endpoints',
+        },
+        {
+            label: 'Certificates',
+            route: 'endpoints',
+        },
+        {
+            label: 'Production Endpoint',
+            route: 'endpoints',
+        },
+        {
+            label: 'Sandbox Endpoint',
+            route: 'endpoints',
+        },
+        {
+            label: 'Failover Endpoint',
+            route: 'endpoints',
+        },
+        {
+            label: 'Load Balance Endpoint',
+            route: 'endpoints',
+        },
+        {
+            label: 'Endpoints',
+            route: 'endpoints',
+        },
+        {
+            label: 'API Definition',
+            route: 'api-definition',
+        },
+        {
+            label: 'Import API Definition',
+            route: 'api-definition',
+        },
+        {
+            label: 'Download API Definition',
+            route: 'api-definition',
+        },
+        {
+            label: 'Swagger',
+            route: 'api-definition',
+        },
+        {
+            label: 'Import Swagger',
+            route: 'api-definition',
+        },
+        {
+            label: 'Download Swagger',
+            route: 'api-definition',
+        },
+        {
+            label: 'OAS',
+            route: 'api-definition',
+        },
+        {
+            label: 'Import OAS',
+            route: 'api-definition',
+        },
+        {
+            label: 'Download OAS',
+            route: 'api-definition',
+        },
+        {
+            label: 'OpenAPI',
+            route: 'api-definition',
+        },
+        {
+            label: 'Import OpenAPI',
+            route: 'api-definition',
+        },
+        {
+            label: 'Download OpenAPI',
+            route: 'api-definition',
+        },
+        {
+            label: 'Resources',
+            route: 'resources',
+        },
+        {
+            label: 'Resources Configuration',
+            route: 'resources',
+        },
+        {
+            label: 'Rate Limiting',
+            route: 'resources',
+        },
+        {
+            label: 'Operation Governance',
+            route: 'resources',
+        },
+        {
+            label: 'Scopes',
+            route: 'scopes',
+        },
+        {
+            label: 'Add New Scope',
+            route: 'scopes',
+        },
+        {
+            label: 'Schema validation',
+            route: 'runtime-configuration',
+        },
+        {
+            label: 'Fault',
+            route: 'runtime-configuration',
+        },
+        {
+            label: 'Endpoints',
+            route: 'runtime-configuration',
+        },
+        {
+            label: 'Properties',
+            route: 'properties',
+        },
+    ],
 };
 export default suggestions;

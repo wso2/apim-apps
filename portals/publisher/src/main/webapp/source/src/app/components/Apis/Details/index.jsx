@@ -451,7 +451,7 @@ class Details extends Component {
         const { isAPIProduct } = this.state;
         const { intl, match } = this.props;
         const uuid = match.params.apiUUID || match.params.api_uuid || match.params.apiProdUUID;
-        const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/';
+        const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/'; // TODO:
         const apiDefinitionMenuItem = (
             <LeftMenuItem
                 text={intl.formatMessage({
@@ -819,6 +819,17 @@ class Details extends Component {
             return <Progress per={80} message='Loading portal settings ...' />;
         }
         const { leftMenuIconMainSize } = theme.custom;
+
+        const getResourceType = () => {
+            if (isAPIProduct) {
+                return 'api-products';
+            } else if (isMCPServer) {
+                return 'mcp-servers';
+            } else {
+                return 'apis';
+            }
+        }
+
         return (
             <StyledBox display='flex' alignItems='stretch' flexDirection='row'>
                 <APIProvider
@@ -835,15 +846,14 @@ class Details extends Component {
                 >
                     <Box className={classes.LeftMenu}>
                         <nav name='secondaryNavigation' aria-label='secondary navigation'>
-                            {/* Change to mcpserver icon and fix link url */}
-                            <Link to={'/' + (isAPIProduct ? 'api-products' : 'apis') + '/'}
+                            <Link to={'/' + getResourceType() + '/'}
                                 aria-label='ALL APIs'>
                                 <div className={classes.leftLInkMain}>
                                     <CustomIcon
                                         className={classes.customIcon}
                                         width={leftMenuIconMainSize}
                                         height={leftMenuIconMainSize}
-                                        icon={isAPIProduct ? 'api-product' : 'apis'}
+                                        icon={getResourceType()}
                                     />
                                 </div>
                             </Link>
@@ -1025,18 +1035,12 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.OVERVIEW_MCP}
-                                        render={() => (
-                                            <div>
-                                                MCP Servers Test Route Works!
-                                            </div>
+                                        component={() => (
+                                            <Overview
+                                                setOpenPageSearch={this.setOpenPageSearch}
+                                                api={api}
+                                            />
                                         )}
-                                        // component={() => (
-                                        //     <Overview
-                                        //         setOpenPageSearch={this.setOpenPageSearch}
-                                        //         api={api}
-                                        //         // isMCPServer={isMCPServer}
-                                        //     />
-                                        // )}
                                     />
                                     <Route
                                         path={Details.subPaths.API_DEFINITION}

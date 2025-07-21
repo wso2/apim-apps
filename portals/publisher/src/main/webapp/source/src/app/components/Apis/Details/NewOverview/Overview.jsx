@@ -27,11 +27,12 @@ import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { green } from '@mui/material/colors';
+import Tools from 'AppComponents/MCPServers/Tools';
 import Resources from './Resources';
 import Operations from './Operations';
 import ProductResources from './ProductResources';
 import Configuration from './Configuration';
-import CustomizedStepper from './CustomizedStepper';
+// import CustomizedStepper from './CustomizedStepper';
 import MetaData from './MetaData';
 import Endpoints from './Endpoints';
 import Topics from './Topics';
@@ -193,7 +194,7 @@ const Root = styled('div')(({ theme }) => ({
  * @returns
  */
 function Overview(props) {
-    const {  api: newApi, setOpenPageSearch, isMCPServer } = props; // TODO <tmkasun>: Remove newApi prop & merge to api
+    const {  api: newApi, setOpenPageSearch } = props; // TODO <tmkasun>: Remove newApi prop & merge to api
     const { api } = useContext(ApiContext);
     let loadEndpoints;
     useEffect(() => {
@@ -215,15 +216,23 @@ function Overview(props) {
             document.removeEventListener('keydown', handleKeyDown);
         };
     }, [setOpenPageSearch]);
-    if (api.apiType === API.CONSTS.API) {
+    if (api.apiType === API.CONSTS.API || api.type === MCPServer.CONSTS.MCP) {
         loadEndpoints = <Endpoints parentClasses={classes} api={api} />;
     }
+
+    /**
+     * Get the resources class based on the API type
+     * @param {string} apiType - The type of the API
+     * @returns {JSX.Element} - The resources class component
+     */
     function getResourcesClassForAPIs(apiType) {
         switch (apiType) {
             case 'GRAPHQL':
                 return <Operations parentClasses={classes} api={api} />;
             case 'APIPRODUCT':
                 return <ProductResources parentClasses={classes} api={api} />;
+            case 'MCP':
+                return <Tools parentClasses={classes} mcpServer={api} />;
             case 'WS':
             case 'WEBSUB':
             case 'ASYNC':
@@ -245,15 +254,7 @@ function Overview(props) {
                     defaultMessage='Overview'
                 />
             </Typography>
-            {(isMCPServer || api.type === MCPServer.CONSTS.MCP) && (
-                <Typography variant='subtitle1' className={classes.subtitle}>
-                    <FormattedMessage
-                        id='Apis.Details.Overview.Overview.mcpServer.subtitle'
-                        defaultMessage='MCP Server Overview'
-                    />
-                </Typography>
-            )}
-            {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && (
+            {/* {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && (
                 <Grid container>
                     <Grid item xs={12}>
                         <Paper className={classes.stepperWrapper}>
@@ -261,7 +262,7 @@ function Overview(props) {
                         </Paper>
                     </Grid>
                 </Grid>
-            )}
+            )} */}
             <div className={classes.contentWrapper}>
                 <Paper className={classes.root}>
                     <Grid container spacing={4}>
@@ -308,16 +309,11 @@ function Overview(props) {
     );
 }
 
-Overview.defaultProps = {
-    isMCPServer: false,
-};
-
 Overview.propTypes = {
     classes: PropTypes.shape({}).isRequired,
     api: PropTypes.shape({
         id: PropTypes.string,
     }).isRequired,
-    isMCPServer: PropTypes.bool,
 };
 
 export default (Overview);
