@@ -17,6 +17,7 @@
  */
 
 import React, { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { styled } from '@mui/material/styles';
 import {
     Typography,
@@ -31,7 +32,6 @@ import {
     CardContent,
     CardActions,
 } from '@mui/material';
-import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
 const PREFIX = 'NewEndpointCreate';
@@ -92,11 +92,11 @@ const Root = styled('div')((
  * */
 function NewEndpointCreate(props) {
     const {
-        intl,
         generateEndpointConfig,
         apiType,
         componentValidator,
     } = props;
+    const intl = useIntl();
     const [endpointImplType, setImplType] = useState('mock');
     const endpointTypes = [
         {
@@ -207,8 +207,6 @@ function NewEndpointCreate(props) {
     ];
 
     const eligibleTypes = endpointTypes.filter((type) => !type.disabled.includes(apiType)).map((type) => {
-        console.log(componentValidator);
-        console.log('types: ', type)
         return type;
     });
 
@@ -284,9 +282,8 @@ function NewEndpointCreate(props) {
 
 NewEndpointCreate.propTypes = {
     classes: PropTypes.shape({}).isRequired,
-    intl: PropTypes.shape({}).isRequired,
     generateEndpointConfig: PropTypes.func.isRequired,
     apiType: PropTypes.string.isRequired,
 };
 
-export default (injectIntl(NewEndpointCreate));
+export default (NewEndpointCreate);
