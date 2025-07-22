@@ -30,7 +30,7 @@ import { styled } from '@mui/material/styles';
 import API from 'AppData/api';
 import { Progress } from 'AppComponents/Shared';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
-import { Endpoint, ModelData } from './Types';
+import { Endpoint, ModelData, ModelVendor } from './Types';
 import ModelCard from './ModelCard';
 import Alert from '@mui/material/Alert';
 import { Link } from 'react-router-dom';
@@ -77,7 +77,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
         sandbox: [],
         suspendDuration: undefined,
     });
-    const [modelList, setModelList] = useState<string[]>([]);
+    const [modelList, setModelList] = useState<ModelVendor[]>([]);
     const [productionEndpoints, setProductionEndpoints] = useState<Endpoint[]>([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState<Endpoint[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
@@ -135,12 +135,16 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
         const modelListPromise = API.getLLMProviderModelList(JSON.parse(apiFromContext.subtypeConfiguration.configuration).llmProviderId);
         modelListPromise
             .then((response) => {
-                setModelList(response.body);
+                const vendors: ModelVendor[] = response.body.map((vendor: any) => ({
+                    vendor: vendor.vendor,
+                    values: vendor.values
+                }));
+                setModelList(vendors);
             }).catch((error) => {
                 console.error(error);
             });
     }
-    
+
     useEffect(() => {
         fetchModelList();
         fetchEndpoints();
@@ -162,6 +166,7 @@ const ModelRoundRobin: FC<ModelRoundRobinProps> = ({
 
     const handleAddModel = (env: 'production' | 'sandbox') => {
         const newModel: ModelData = {
+            vendor: '',
             model: '',
             endpointId: '',
             endpointName: '',

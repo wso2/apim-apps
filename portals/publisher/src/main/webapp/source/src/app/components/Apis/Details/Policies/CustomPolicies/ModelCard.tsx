@@ -25,13 +25,13 @@ import InputLabel from '@mui/material/InputLabel';
 import MenuItem from '@mui/material/MenuItem';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
-import { Paper, IconButton } from '@mui/material';
+import { Paper, IconButton, Box, Typography } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
-import { Endpoint, ModelData } from './Types';
+import { Endpoint, ModelData, ModelVendor } from './Types';
 
 interface ModelCardProps {
     modelData: ModelData;
-    modelList: string[];
+    modelList: ModelVendor[];
     endpointList: Endpoint[];
     isWeightApplicable: boolean;
     onUpdate: (updatedModel: ModelData) => void;
@@ -46,7 +46,7 @@ const ModelCard: FC<ModelCardProps> = ({
     onUpdate,
     onDelete,
 }) => {
-    const { model, endpointId, weight } = modelData;
+    const { vendor, model, endpointId, weight } = modelData;
 
     const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = event.target;
@@ -66,30 +66,77 @@ const ModelCard: FC<ModelCardProps> = ({
         <>
             <Paper elevation={2} sx={{ padding: 2, margin: 1, position: 'relative' }}>
                 <Grid item xs={12}>
-                    <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
-                        <InputLabel id='model-label'>
-                            <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.select.model'
-                                defaultMessage='Model'
-                            />
-                        </InputLabel>
-                        <Select
-                            labelId='model-label'
-                            id='model'
-                            value={model}
-                            label='Model'
-                            name='model'
-                            onChange={(e: any) => handleChange(e)}
-                        >
-                            {modelList.map((model) => (
-                                <MenuItem key={model} value={model}>{model}</MenuItem>
-                            ))}
-                        </Select>
-                    </FormControl>
+                    {modelList.length === 1 ? (
+                        <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
+                            <InputLabel id='model-label'>
+                                <FormattedMessage
+                                    id='Apis.Details.Policies.CustomPolicies.ModelCard.select.model'
+                                    defaultMessage='Model'
+                                />
+                            </InputLabel>
+                            <Select
+                                labelId='model-label'
+                                id='model'
+                                value={model}
+                                label='Model'
+                                name='model'
+                                onChange={(e: any) => handleChange(e)}
+                            >
+                                {modelList[0].values.map((modelValue) => (
+                                    <MenuItem key={modelValue} value={modelValue}>{modelValue}</MenuItem>
+                                ))}
+                            </Select>
+                        </FormControl>
+                    ) : (
+                        <>
+                            <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
+                                <InputLabel id='vendor-label'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.CustomPolicies.ModelCard.select.provider'
+                                        defaultMessage='Provider'
+                                    />
+                                </InputLabel>
+                                <Select
+                                    labelId='vendor-label'
+                                    id='vendor'
+                                    value={vendor}
+                                    label='Provider'
+                                    name='vendor'
+                                    onChange={(e: any) => handleChange(e)}
+                                >
+                                    {modelList.map((vendor) => (
+                                        <MenuItem key={vendor.vendor} value={vendor.vendor}>
+                                            {vendor.vendor}
+                                        </MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                            <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
+                                <InputLabel id='model-label'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Policies.CustomPolicies.ModelCard.select.model'
+                                        defaultMessage='Model'
+                                    />
+                                </InputLabel>
+                                <Select
+                                    labelId='model-label'
+                                    id='model'
+                                    value={model}
+                                    label='Model'
+                                    name='model'
+                                    onChange={(e: any) => handleChange(e)}
+                                >
+                                    {modelList.find((modelEntry) => modelEntry.vendor === vendor)?.values.map((modelValue) => (
+                                        <MenuItem key={modelValue} value={modelValue}>{modelValue}</MenuItem>
+                                    ))}
+                                </Select>
+                            </FormControl>
+                        </>
+                    )}
                     <FormControl size='small' fullWidth sx={{ mb: 1.5 }}>
                         <InputLabel id='endpoint-label'>
                             <FormattedMessage
-                                id='Apis.Details.Policies.CustomPolicies.ModelRoundRobin.select.endpoint'
+                                id='Apis.Details.Policies.CustomPolicies.ModelCard.select.endpoint'
                                 defaultMessage='Endpoint'
                             />
                         </InputLabel>
