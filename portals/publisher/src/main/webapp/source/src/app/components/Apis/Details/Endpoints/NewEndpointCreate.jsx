@@ -17,6 +17,7 @@
  */
 
 import React, { useState } from 'react';
+import { FormattedMessage, useIntl } from 'react-intl';
 import { styled } from '@mui/material/styles';
 import {
     Typography,
@@ -31,7 +32,6 @@ import {
     CardContent,
     CardActions,
 } from '@mui/material';
-import { FormattedMessage, injectIntl } from 'react-intl';
 import PropTypes from 'prop-types';
 
 const PREFIX = 'NewEndpointCreate';
@@ -92,11 +92,11 @@ const Root = styled('div')((
  * */
 function NewEndpointCreate(props) {
     const {
-        intl,
         generateEndpointConfig,
         apiType,
         componentValidator,
     } = props;
+    const intl = useIntl();
     const [endpointImplType, setImplType] = useState('mock');
     const endpointTypes = [
         {
@@ -110,7 +110,7 @@ function NewEndpointCreate(props) {
                 defaultMessage: 'A REST API endpoint based on a URI template.',
             }),
             options: null,
-            disabled: ['SOAPTOREST'],
+            disabled: ['SOAPTOREST', 'WS'],
         },
         {
             type: 'service',
@@ -123,7 +123,7 @@ function NewEndpointCreate(props) {
                 defaultMessage: 'A REST API endpoint based on a Service in the service catalog.',
             }),
             options: null,
-            disabled: ['SOAPTOREST'],
+            disabled: ['SOAPTOREST', 'WS'],
         },
         {
             type: 'address',
@@ -136,7 +136,20 @@ function NewEndpointCreate(props) {
                 defaultMessage: 'The direct URI of the web service.',
             }),
             options: null,
-            disabled: ['GRAPHQL', 'SSE'],
+            disabled: ['GRAPHQL', 'SSE', 'WS'],
+        },
+        {
+            type: 'ws',
+            name: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.NewEndpointCreate.create.ws.endpoint',
+                defaultMessage: 'WS Endpoint',
+            }),
+            description: intl.formatMessage({
+                id: 'Apis.Details.Endpoints.NewEndpointCreate.create.ws.endpoint.description',
+                defaultMessage: 'An endpoint for WebSocket APIs.',
+            }),
+            options: null,
+            disabled: ['SOAPTOREST', 'GRAPHQL', 'SSE', 'SOAP', 'HTTP'],
         },
         {
             type: 'INLINE',
@@ -150,7 +163,7 @@ function NewEndpointCreate(props) {
                 + 'The inbuilt JavaScript engine does support prototype SOAP APIs',
             }),
             options: null,
-            disabled: ['GRAPHQL', 'SSE'],
+            disabled: ['GRAPHQL', 'SSE', 'WS'],
         },
         {
             type: 'dynamic',
@@ -176,7 +189,7 @@ function NewEndpointCreate(props) {
                 defaultMessage: 'If you need to invoke AWS Lambda functions through API gateway.',
             }),
             options: null,
-            disabled: ['SOAPTOREST', 'GRAPHQL', 'SSE'],
+            disabled: ['SOAPTOREST', 'GRAPHQL', 'SSE', 'WS'],
         },
         {
             type: 'sequence_backend',
@@ -189,7 +202,7 @@ function NewEndpointCreate(props) {
                 defaultMessage: 'If you need to provde Sequence as a Backend for APIs.',
             }),
             options: null,
-            disabled: ['GRAPHQL', 'SSE'],
+            disabled: ['GRAPHQL', 'SSE', 'WS'],
         },
     ];
 
@@ -269,9 +282,8 @@ function NewEndpointCreate(props) {
 
 NewEndpointCreate.propTypes = {
     classes: PropTypes.shape({}).isRequired,
-    intl: PropTypes.shape({}).isRequired,
     generateEndpointConfig: PropTypes.func.isRequired,
     apiType: PropTypes.string.isRequired,
 };
 
-export default (injectIntl(NewEndpointCreate));
+export default (NewEndpointCreate);

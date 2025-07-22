@@ -100,7 +100,8 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
         apiOperation.usedProductIds,
     ) && apiOperation.usedProductIds.length;
     const theme: any = useTheme();
-    const backgroundColor = theme.custom.resourceChipColors[verb];
+    const isWSAPI = api.type === 'WS';
+    const backgroundColor = isWSAPI ? theme.custom.resourceChipColors['sub'] : theme.custom.resourceChipColors[verb];
 
     const handleExpansion = (panel: string) => (event: any, isExpanded: boolean) => {
         setExpandedResource(isExpanded ? panel : null);
@@ -144,23 +145,25 @@ const OperationPolicy: FC<OperationPolicyProps> = ({
                 >
                     <Grid container direction='row' justifyContent='space-between' alignItems='center' spacing={0}>
                         <Grid item className={classes.operationSummaryGrid} sx={{ border: '1px solid green c'}}>
-                            <Badge
-                                invisible={!operation['x-wso2-new']}
-                                color='error'
-                                variant='dot'
-                                style={{ display: 'inline-block' }}
-                            >
-                                <Button
-                                    disableFocusRipple
-                                    variant='contained'
-                                    aria-label={'HTTP verb ' + verb}
-                                    size='small'
-                                    className={classes.customButton}
-                                    sx={{ backgroundColor, color: theme.palette.getContrastText(backgroundColor)}}
+                            {!isWSAPI &&
+                                <Badge
+                                    invisible={!operation['x-wso2-new']}
+                                    color='error'
+                                    variant='dot'
+                                    style={{ display: 'inline-block' }}
                                 >
-                                    {verb}
-                                </Button>
-                            </Badge>
+                                    <Button
+                                        disableFocusRipple
+                                        variant='contained'
+                                        aria-label={'HTTP verb ' + verb}
+                                        size='small'
+                                        className={classes.customButton}
+                                        sx={{ backgroundColor, color: theme.palette.getContrastText(backgroundColor)}}
+                                    >
+                                        {verb}
+                                    </Button>
+                                </Badge>
+                            }
                             <Typography
                                 display='inline'
                                 variant='h6'

@@ -42,6 +42,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { PROPERTIES as UserProperties } from 'AppData/User';
 import { useUser } from 'AppComponents/Shared/AppContext';
 import { useIntl, FormattedMessage } from 'react-intl';
+import PropTypes from 'prop-types';
 
 const PREFIX = 'DevelopSectionMenu';
 
@@ -324,7 +325,7 @@ export default function DevelopSectionMenu(props) {
                         }
                         {api.advertiseInfo && !api.advertiseInfo.advertised && !isAPIProduct
                             && (api.type === 'HTTP' || api.type === 'SOAP' || api.type === 'SOAPTOREST' 
-                            || api.type === 'GRAPHQL') && (
+                            || api.type === 'GRAPHQL' || api.type === 'WS') && (
                             <LeftMenuItem
                                 text={intl.formatMessage({
                                     id: 'Apis.Details.index.policies',
@@ -382,3 +383,22 @@ export default function DevelopSectionMenu(props) {
         </Root>
     );
 }
+
+DevelopSectionMenu.propTypes = {
+    pathPrefix: PropTypes.string.isRequired,
+    isAPIProduct: PropTypes.bool.isRequired,
+    api: PropTypes.shape({
+        type: PropTypes.string.isRequired,
+        advertiseInfo: PropTypes.shape({
+            advertised: PropTypes.bool,
+        }),
+        isWebSocket: PropTypes.func.isRequired,
+    }).isRequired,
+    getLeftMenuItemForResourcesByType: PropTypes.func.isRequired,
+    getLeftMenuItemForDefinitionByType: PropTypes.func.isRequired,
+    componentValidator: PropTypes.shape({
+        subscriptions: PropTypes.arrayOf(PropTypes.string).isRequired,
+        localScopes: PropTypes.arrayOf(PropTypes.string).isRequired,
+        monetization: PropTypes.arrayOf(PropTypes.string).isRequired,
+    }).isRequired,
+};

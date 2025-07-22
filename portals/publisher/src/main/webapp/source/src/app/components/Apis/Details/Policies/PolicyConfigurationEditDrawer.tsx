@@ -113,8 +113,9 @@ const PolicyConfigurationEditDrawer: FC<PolicyConfigurationEditDrawerProps> = ({
 
     const operationInAction = (!isAPILevelPolicy) ? apiOperations.find(
         (op: any) =>
-            op.target === target &&
-            op.verb.toLowerCase() === verb.toLowerCase(),
+            api.type === 'WS'
+                ? op.target === target
+                : op.target === target && op.verb.toLowerCase() === verb.toLowerCase(),
     ) : null;
     const operationFlowPolicy = ((isAPILevelPolicy) ? apiLevelPolicies : operationInAction.operationPolicies)[
         currentFlow
