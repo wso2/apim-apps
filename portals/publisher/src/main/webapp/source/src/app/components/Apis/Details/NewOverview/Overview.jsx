@@ -27,12 +27,13 @@ import API from 'AppData/api';
 import MCPServer from 'AppData/MCPServer';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { green } from '@mui/material/colors';
-import Tools from 'AppComponents/MCPServers/Tools';
+import Tools from 'AppComponents/MCPServers/Overview/Tools';
+import Stepper from 'AppComponents/MCPServers/Overview/Stepper';
 import Resources from './Resources';
 import Operations from './Operations';
 import ProductResources from './ProductResources';
 import Configuration from './Configuration';
-// import CustomizedStepper from './CustomizedStepper';
+import CustomizedStepper from './CustomizedStepper';
 import MetaData from './MetaData';
 import Endpoints from './Endpoints';
 import Topics from './Topics';
@@ -254,15 +255,25 @@ function Overview(props) {
                     defaultMessage='Overview'
                 />
             </Typography>
-            {/* {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && (
-                <Grid container>
-                    <Grid item xs={12}>
-                        <Paper className={classes.stepperWrapper}>
-                            <CustomizedStepper />
-                        </Paper>
+            {(api.apiType !== API.CONSTS.API || !api.advertiseInfo.advertised) && 
+                (api.apiType === MCPServer.CONSTS.MCP) ? (
+                    <Grid container>
+                        <Grid item xs={12}>
+                            <Paper className={classes.stepperWrapper}>
+                                <Stepper />
+                            </Paper>
+                        </Grid>
                     </Grid>
-                </Grid>
-            )} */}
+                ) : (
+                    <Grid container>
+                        <Grid item xs={12}>
+                            <Paper className={classes.stepperWrapper}>
+                                <CustomizedStepper />
+                            </Paper>
+                        </Grid>
+                    </Grid>
+                )
+            }
             <div className={classes.contentWrapper}>
                 <Paper className={classes.root}>
                     <Grid container spacing={4}>

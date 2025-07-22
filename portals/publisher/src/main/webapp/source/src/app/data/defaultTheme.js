@@ -155,6 +155,10 @@ export default {
             mutation: '#c1dea0',
             subscription: '#ffcc80',
         },
+        mcpToolBar: {
+            backgroundColor: '#fef6ea',
+            border: '1px solid #f2d4a7',
+        },
         policyFlowChipColor: {
             request: '#b3e6fe',
             response: '#c1dea0',

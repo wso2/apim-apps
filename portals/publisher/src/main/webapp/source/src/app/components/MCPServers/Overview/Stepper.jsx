@@ -1,3 +1,22 @@
+/*
+ * Copyright (c) 2025, WSO2 LLC. (http://www.wso2.org) All Rights Reserved.
+ *
+ * WSO2 LLC. licenses this file to you under the Apache License,
+ * Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+ * KIND, either express or implied. See the License for the
+ * specific language governing permissions and limitations
+ * under the License.
+ */
+import React from 'react';
+
 import React, { useEffect, useState, useContext } from 'react';
 import clsx from 'clsx';
 import Stepper from '@mui/material/Stepper';
@@ -29,7 +48,7 @@ import IconButton from '@mui/material/IconButton';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import MCPServer from 'AppData/MCPServer';
 
-const PREFIX = 'CustomizedStepper';
+const PREFIX = 'Stepper';
 
 const classes = {
     root: `${PREFIX}-root`,
@@ -135,11 +154,11 @@ const Root = styled('div')(({ theme }) => ({
 }));
 
 /**
- *
+ * Custom Step Icon component for the stepper
  * @param {*} props
- * @returns
+ * @returns {JSX.Element} - Custom step icon
  */
-function ColorlibStepIcon(props) {
+const ColorlibStepIcon = (props) => {
     const { active, completed, forceComplete, icon: step } = props;
     return (
         <Root>
@@ -158,7 +177,7 @@ function ColorlibStepIcon(props) {
  * @param {Object} api - The API object
  * @returns {string} - The base path for links
  */
-function getBasePath(api) {
+const getBasePath = (api) => {
     if (api.isAPIProduct()) {
         return '/api-products/';
     } else if (api.type === MCPServer.CONSTS.MCP) {
@@ -169,55 +188,22 @@ function getBasePath(api) {
 }
 
 /**
- *
- * @returns
+ * Stepper component for MCP Server overview
+ * This component displays the steps for managing an MCP Server,
+ * including developing, deploying, testing, and publishing.
+ * @returns {JSX.Element} - Stepper component
  */
-export default function CustomizedStepper() {
+const Stepper = () => {
     const [api, updateAPI] = useAPI();
     const [isUpdating, setUpdating] = useState(false);
     const [isMandatoryPropertiesAvailable, setIsMandatoryPropertiesAvailable] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
     const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
-    const isMCPServer = api.apiType === MCPServer.CONSTS.MCP;
-    const [isMCPEndpointAvailable, setMCPEndpointAvailable] = useState(false);
-    const [MCPEndpointLoading, setMCPEndpointLoading] = useState(true);
-    const isPrototypedAvailable = api.apiType !== API.CONSTS.APIProduct
-        && api.endpointConfig !== null
-        && api.endpointConfig.implementation_status === 'prototyped';
-
-    let isEndpointAvailable = false;
-    if (isMCPServer) {
-        isEndpointAvailable = isMCPEndpointAvailable;
-    } else if (api.subtypeConfiguration?.subtype === 'AIAPI') {
-        isEndpointAvailable = (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null);
-    } else {
-        isEndpointAvailable = api.endpointConfig !== null;
-    }
-
-    useEffect(() => {
-        if (isMCPServer) {
-            setMCPEndpointLoading(true);
-            MCPServer.getMCPServerEndpoints(api.id)
-                .then((response) => {
-                    const fetchedEndpoints = response.body;
-                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
-                        setMCPEndpointAvailable(true);
-                    } else {
-                        setMCPEndpointAvailable(false);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching MCP server endpoints:', error);
-                    setMCPEndpointAvailable(false);
-                })
-                .finally(() => {
-                    setMCPEndpointLoading(false);
-                });
-        }
-    }, [isMCPServer, api.id]);
-
+    const [isEndpointAvailable, setEndpointAvailable] = useState(false);
+    const [activeStep, setActiveStep] = useState(0);
+    const [endpointLoading, setEndpointLoading] = useState(true);
     const isTierAvailable = api.policies.length !== 0;
-    const lifecycleState = api.isAPIProduct() ? api.state : api.lifeCycleStatus;
+    const lifecycleState = api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
     const { tenantList } = useContext(ApiContext);
     const { user } = useAppContext();
@@ -226,37 +212,40 @@ export default function CustomizedStepper() {
     const tenantDomain = userNameSplit[userNameSplit.length - 1];
     const securityScheme = [...api.securityScheme];
     const isMutualSslOnly = securityScheme.length === 2 && securityScheme.includes('mutualssl')
-    && securityScheme.includes('mutualssl_mandatory');
+        && securityScheme.includes('mutualssl_mandatory');
     const isSubValidationDisabled = api.policies 
-    && api.policies.length === 1 && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
-    let devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview` : '';
+        && api.policies.length === 1 && api.policies[0].includes(CONSTS.DEFAULT_SUBSCRIPTIONLESS_PLAN);
+    let devportalUrl = settings ? `${settings.devportalUrl}/mcp-servers/${api.id}/overview` : '';
     const intl = useIntl();
     // TODO: tmkasun need to handle is loading
     if (tenantList && tenantList.length > 0) {
         // TODO: tmkasun need to handle is loading
-        devportalUrl = settings ? `${settings.devportalUrl}/apis/${api.id}/overview?tenant=${tenantDomain}` : '';
+        devportalUrl = settings ? `${settings.devportalUrl}/mcp-servers/${api.id}/overview?tenant=${tenantDomain}` : '';
     }
-    const steps = (api.isWebSocket() || api.isGraphql() || api.isAsyncAPI() || api.gatewayVendor !== 'wso2')
-        ? ['Develop', 'Deploy', 'Publish'] : ['Develop', 'Deploy', 'Test', 'Publish'];
+    const steps = ['Develop', 'Deploy', 'Test', 'Publish'];
     const forceComplete = [];
     if (isPublished) {
         forceComplete.push(steps.indexOf('Publish') + 1);
     }
-    let activeStep = 0;
-    if (api && (api.type === 'WEBSUB' || isEndpointAvailable)
-        && !deploymentsAvailable) {
-        activeStep = 1;
-    } else if ((api && !isEndpointAvailable && api.type !== 'WEBSUB')
-        || (api && !isMutualSslOnly && !isTierAvailable)) {
-        activeStep = 0;
-    } else if (api && (isEndpointAvailable || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
-        && deploymentsAvailable && (!isPublished && lifecycleState !== 'PROTOTYPED')) {
-        activeStep = steps.length - 1;
-    } else if ((isPublished || lifecycleState === 'PROTOTYPED') && api
-        && (isEndpointAvailable || api.type === 'WEBSUB' || isPrototypedAvailable)
-        && (isTierAvailable || isMutualSslOnly) && deploymentsAvailable) {
-        activeStep = steps.length;
-    }
+
+    useEffect(() => {
+        if (!endpointLoading) {
+            let newActiveStep = 0;
+            if (api && isEndpointAvailable && !deploymentsAvailable) {
+                newActiveStep = 1;
+            } else if ((api && !isEndpointAvailable) || (api && !isMutualSslOnly && !isTierAvailable)) {
+                newActiveStep = 0;
+            } else if (api && (isEndpointAvailable || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
+                && deploymentsAvailable && (!isPublished && lifecycleState !== 'PROTOTYPED')) {
+                newActiveStep = steps.length - 1;
+            } else if ((isPublished || lifecycleState === 'PROTOTYPED') && api
+                && (isEndpointAvailable || api.type === 'WEBSUB' || isPrototypedAvailable)
+                && (isTierAvailable || isMutualSslOnly) && deploymentsAvailable) {
+                newActiveStep = steps.length;
+            }
+            setActiveStep(newActiveStep);
+        }
+    }, [api, isEndpointAvailable, deploymentsAvailable, isPublished, lifecycleState, isMutualSslOnly, isTierAvailable, steps]);
 
     function validateMandatoryCustomProperties() {
         api.getSettings()
@@ -353,9 +342,9 @@ export default function CustomizedStepper() {
     }, [api]);
 
     /**
- * Update the LifeCycle state of the API
- *
- */
+     * Update the LifeCycle state of the API
+     *
+     */
     function updateLCStateOfAPI(apiId, state) {
         setUpdating(true);
         const promisedUpdate = api.updateLcState(apiId, state);
@@ -629,13 +618,36 @@ export default function CustomizedStepper() {
         });
     }
 
-    if (isMCPServer && MCPEndpointLoading) {
+    useEffect(() => {
+        if (api.isMCPServer()) {
+            setEndpointLoading(true);
+            MCPServer.getMCPServerEndpoints(api.id)
+                .then((response) => {
+                    const fetchedEndpoints = response.body;
+                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                        setEndpointAvailable(true);
+                    } else {
+                        setEndpointAvailable(false);
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error fetching MCP server endpoints:', error);
+                    setEndpointAvailable(false);
+                })
+                .finally(() => {
+                    setEndpointLoading(false);
+                });
+        }
+    }, [api.id]);
+
+    if (isMCPServer && endpointLoading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                 <CircularProgress />
             </Box>
         );
     }
+
 
     return (
         <Root>
@@ -878,3 +890,5 @@ export default function CustomizedStepper() {
         </Root>
     );
 }
+
+export default Stepper;
