@@ -333,7 +333,7 @@ class TableView extends React.Component {
                     defaultMessage: 'Name',
                 }),
                 options: {
-                    customBodyRender: (value, tableMeta, updateValue, tableViewObj = this) => {
+                    customBodyRender: (tableMeta, tableViewObj = this) => {
                         if (tableMeta.rowData) {
                             const { isAPIProduct, isMCPServer } = tableViewObj.props; // eslint-disable-line no-shadow
                             const artifact = tableViewObj.state.apisAndApiProducts[tableMeta.rowIndex];

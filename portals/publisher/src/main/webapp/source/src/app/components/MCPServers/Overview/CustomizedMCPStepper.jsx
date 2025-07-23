@@ -15,9 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React from 'react';
-
-import React, { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext, useMemo } from 'react';
 import clsx from 'clsx';
 import Stepper from '@mui/material/Stepper';
 import Step from '@mui/material/Step';
@@ -41,7 +39,6 @@ import AuthManager from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
 import Typography from '@mui/material/Typography';
 import LinkIcon from '@mui/icons-material/Link';
-import API from 'AppData/api';
 import { grey } from '@mui/material/colors';
 import styled from '@emotion/styled';
 import IconButton from '@mui/material/IconButton';
@@ -188,12 +185,12 @@ const getBasePath = (api) => {
 }
 
 /**
- * Stepper component for MCP Server overview
+ * Customized stepper component for MCP Server overview
  * This component displays the steps for managing an MCP Server,
  * including developing, deploying, testing, and publishing.
  * @returns {JSX.Element} - Stepper component
  */
-const Stepper = () => {
+const CustomizedMCPStepper = () => {
     const [api, updateAPI] = useAPI();
     const [isUpdating, setUpdating] = useState(false);
     const [isMandatoryPropertiesAvailable, setIsMandatoryPropertiesAvailable] = useState(false);
@@ -201,7 +198,9 @@ const Stepper = () => {
     const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
     const [isEndpointAvailable, setEndpointAvailable] = useState(false);
     const [activeStep, setActiveStep] = useState(0);
-    const [endpointLoading, setEndpointLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(true);
+    const [isTestLinkDisabled, setIsTestLinkDisabled] = useState(true);
+    const [isDeployLinkDisabled, setIsDeployLinkDisabled] = useState(true);
     const isTierAvailable = api.policies.length !== 0;
     const lifecycleState = api.lifeCycleStatus;
     const isPublished = lifecycleState === 'PUBLISHED';
@@ -229,29 +228,31 @@ const Stepper = () => {
     }
 
     useEffect(() => {
-        if (!endpointLoading) {
-            let newActiveStep = 0;
-            if (api && isEndpointAvailable && !deploymentsAvailable) {
-                newActiveStep = 1;
-            } else if ((api && !isEndpointAvailable) || (api && !isMutualSslOnly && !isTierAvailable)) {
-                newActiveStep = 0;
-            } else if (api && (isEndpointAvailable || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
-                && deploymentsAvailable && (!isPublished && lifecycleState !== 'PROTOTYPED')) {
-                newActiveStep = steps.length - 1;
-            } else if ((isPublished || lifecycleState === 'PROTOTYPED') && api
-                && (isEndpointAvailable || api.type === 'WEBSUB' || isPrototypedAvailable)
-                && (isTierAvailable || isMutualSslOnly) && deploymentsAvailable) {
-                newActiveStep = steps.length;
-            }
-            setActiveStep(newActiveStep);
-        }
-    }, [api, isEndpointAvailable, deploymentsAvailable, isPublished, lifecycleState, isMutualSslOnly, isTierAvailable, steps]);
+        const fetchAllData = async () => {
+            setIsLoading(true);
+            try {
+                // Fetch all data in parallel
+                const [endpointsResponse, revisionsResponse, settingsResponse] = await Promise.all([
+                    MCPServer.getMCPServerEndpoints(api.id),
+                    MCPServer.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id),
+                    api.getSettings()
+                ]);
 
-    function validateMandatoryCustomProperties() {
-        api.getSettings()
-            .then((response) => {
-                const { customProperties } = response;
-                let mandatoryPropsAvailable;
+                // Process all responses and calculate derived states
+                const fetchedEndpoints = endpointsResponse.body;
+                const hasEndpoints = fetchedEndpoints && fetchedEndpoints.length > 0;
+                const endpointConfig = hasEndpoints ? JSON.parse(fetchedEndpoints[0].endpointConfig) : null;
+                const hasDeployments = revisionsResponse.body.count > 0;
+                
+                // Calculate endpoint security status
+                const isEndpointSecurityConfiguredTemp = !!(
+                    endpointConfig?.endpoint_security?.production &&
+                    endpointConfig?.endpoint_security?.sandbox
+                );
+
+                // Validate mandatory custom properties
+                const { customProperties } = settingsResponse;
+                let mandatoryPropsAvailable = true;
                 if (customProperties && customProperties.length > 0) {
                     const requiredPropertyNames = customProperties
                         .filter(property => property.Required)
@@ -261,93 +262,62 @@ const Stepper = () => {
                             const property = api.additionalProperties.find(prop => prop.name === propertyName);
                             return property && property.value !== '';
                         });
-                    } else {
-                        mandatoryPropsAvailable = true;
                     }
-                } else {
-                    mandatoryPropsAvailable = true;
                 }
+                
+                // Calculate active step
+                let newActiveStep = 0;
+                if (api && hasEndpoints && !hasDeployments) {
+                    newActiveStep = 1;
+                } else if ((api && !hasEndpoints) || (api && !isMutualSslOnly && !isTierAvailable)) {
+                    newActiveStep = 0;
+                } else if (api && (hasEndpoints || api.type === 'WEBSUB') && (isTierAvailable || isMutualSslOnly)
+                    && hasDeployments && (!isPublished && lifecycleState !== 'PROTOTYPED')) {
+                    newActiveStep = steps.length - 1;
+                } else if ((isPublished || lifecycleState === 'PROTOTYPED') && api
+                    && (hasEndpoints || api.type === 'WEBSUB')
+                    && (isTierAvailable || isMutualSslOnly) && hasDeployments) {
+                    newActiveStep = steps.length;
+                }
+
+                // Calculate link disabled states
+                const testLinkDisabled = lifecycleState === 'RETIRED' || !hasDeployments
+                    || (!api.isAPIProduct() && !hasEndpoints)
+                    || (!isMutualSslOnly && !isTierAvailable)
+                    || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT' && api.type !== 'MCP');
+                    
+                const deployLinkDisabled = (api.type !== 'WEBSUB' &&
+                    !(hasEndpoints && (api.subtypeConfiguration?.subtype === 'AIAPI' 
+                        ? isEndpointSecurityConfigured : true))) ||
+                    api.workflowStatus === 'CREATED' ||
+                    lifecycleState === 'RETIRED';
+
+                // Update all states at once
+
+                setEndpointAvailable(hasEndpoints);
+                setDeploymentsAvailable(hasDeployments);
                 setIsMandatoryPropertiesAvailable(mandatoryPropsAvailable);
-            })
-            .catch((error) => {
-                console.error('Error validating mandatory custom properties:', error);
-            });
-    }
-
-    useEffect(() => {
-        api.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id).then((result) => {
-            if (api.apiType === API.CONSTS.APIProduct){
-                setDeploymentsAvailable(result.body.count > 0);
-            } else {
-                let hasApprovedDeployment = false;
-                result.body.list.forEach((revision) => {
-                    if (revision.deploymentInfo) {
-                        for (const deployment of revision.deploymentInfo) {
-                            if (deployment.status === 'APPROVED') {
-                                hasApprovedDeployment = true;
-                                break;
-                            }
-                        }
-                    }
-                });
-                setDeploymentsAvailable(hasApprovedDeployment);
-
-            }
-
-        });
-        validateMandatoryCustomProperties();
-    }, []);
-
-    useEffect(() => {
-        const checkEndpointSecurity = async () => {
-            try {
-                const hasProductionEndpoint = !!api.primaryProductionEndpointId;
-                const hasSandboxEndpoint = !!api.primarySandboxEndpointId;
-                let isProductionSecure = false;
-                let isSandboxSecure = false;
-
-                if (hasProductionEndpoint) {
-                    if (api.primaryProductionEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.PRODUCTION) {
-                        isProductionSecure = !!api.endpointConfig?.endpoint_security?.production;
-                    } else {
-                        const endpoint = await API.getApiEndpoint(api.id, api.primaryProductionEndpointId);
-                        isProductionSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.production;
-                    }
-                }
-
-                if (hasSandboxEndpoint) {
-                    if (api.primarySandboxEndpointId === CONSTS.DEFAULT_ENDPOINT_ID.SANDBOX) {
-                        isSandboxSecure = !!api.endpointConfig?.endpoint_security?.sandbox;
-                    } else {
-                        const endpoint = await API.getApiEndpoint(api.id, api.primarySandboxEndpointId);
-                        isSandboxSecure = !!endpoint?.body?.endpointConfig?.endpoint_security?.sandbox;
-                    }
-                }
-
-                if (hasProductionEndpoint && hasSandboxEndpoint) {
-                    setIsEndpointSecurityConfigured(isProductionSecure && isSandboxSecure);
-                } else if (hasProductionEndpoint) {
-                    setIsEndpointSecurityConfigured(isProductionSecure);
-                } else if (hasSandboxEndpoint) {
-                    setIsEndpointSecurityConfigured(isSandboxSecure);
-                } else {
-                    setIsEndpointSecurityConfigured(false);
-                }
+                setIsEndpointSecurityConfigured(isEndpointSecurityConfiguredTemp);
+                setActiveStep(newActiveStep);
+                setIsTestLinkDisabled(testLinkDisabled);
+                setIsDeployLinkDisabled(deployLinkDisabled);
             } catch (error) {
-                console.error('Error checking endpoint security:', error);
-                setIsEndpointSecurityConfigured(false);
+                console.error('Error fetching data:', error);
+            } finally {
+                setIsLoading(false);
             }
         };
-        checkEndpointSecurity();
+        fetchAllData();
     }, [api]);
 
     /**
-     * Update the LifeCycle state of the API
-     *
+     * Update the LifeCycle state of the MCP Server
+     * @param {string} apiId - The ID of the MCP Server to update
+     * @param {string} state - The new lifecycle state to set for the MCP Server
      */
     function updateLCStateOfAPI(apiId, state) {
         setUpdating(true);
-        const promisedUpdate = api.updateLcState(apiId, state);
+        const promisedUpdate = MCPServer.updateLcState(apiId, state);
         promisedUpdate
             .then(() => {
                 updateAPI()
@@ -357,60 +327,21 @@ const Stepper = () => {
                             Alert.error(error.response.body.description);
                         } else {
                             Alert.error(intl.formatMessage({
-                                id: 'Apis.Details.LifeCycle.Policies.update.error',
-                                defaultMessage: 'Something went wrong while updating the API',
+                                id: 'MCPServers.Overview.Stepper.LifeCycle.update.error',
+                                defaultMessage: 'Something went wrong while updating the MCP Server lifecycle state.',
                             }));
                         }
                         console.error(error);
                     });
                 Alert.info(intl.formatMessage({
-                    id: 'Apis.Details.LifeCycle.Policies.update.success',
+                    id: 'MCPServers.Overview.Stepper.LifeCycle.update.success',
                     defaultMessage: 'Lifecycle state updated successfully',
                 }));
             })
             .finally(() => setUpdating(false))
             .catch((errorResponse) => {
-                if (errorResponse.response?.body?.code === 903300) {
-                    Alert.error(
-                        <Box sx={{ width: '100%' }}>
-                            <Typography>
-                                <FormattedMessage
-                                    id='Apis.Details.LifeCycle.Policies.update.error.governance'
-                                    defaultMessage={'One or more governance policies have been violated. '
-                                    + 'Please try using the publish option in the Lifecycle page for more details.'}
-                                />
-                            </Typography>
-                            <Box sx={{ 
-                                display: 'flex', 
-                                justifyContent: 'flex-end',
-                                mt: 1
-                            }}>
-                                <Link
-                                    component={RouterLink}
-                                    to={`/apis/${api.id}/lifecycle`}
-                                    sx={{
-                                        color: 'inherit',
-                                        fontWeight: 600,
-                                        textDecoration: 'none',
-                                        transition: 'all 0.3s',
-                                        '&:hover': {
-                                            transform: 'translateY(-2px)',
-                                            textShadow: '0px 1px 2px rgba(0,0,0,0.2)',
-                                        },
-                                    }}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.LifeCycle.Policies.update.error.governance.link'
-                                        defaultMessage='Go to Lifecycle page'
-                                    />
-                                </Link>
-                            </Box>
-                        </Box>
-                    );
-                } else {
-                    console.log(errorResponse);
-                    Alert.error(JSON.stringify(errorResponse.message));
-                }
+                console.log(errorResponse);
+                Alert.error(JSON.stringify(errorResponse.message));
             });
     }
 
@@ -436,13 +367,13 @@ const Stepper = () => {
                                 <Grid item>
                                     <Typography variant='h6' component='div'>
                                         <FormattedMessage
-                                            id='Apis.Details.Overview.CustomizedStepper.publish'
+                                            id='MCPServers.Overview.CustomizedMCPStepper.publish'
                                             defaultMessage=' Published'
                                         />
                                         <Box display='inline' pl={0.4} color='text.secondary'>
                                             <FormattedMessage
-                                                id='Apis.Details.Overview.CustomizedStepper.publish.current.api'
-                                                defaultMessage=' (Current API)'
+                                                id='MCPServers.Overview.CustomizedMCPStepper.publish.current.mcp.server'
+                                                defaultMessage=' (Current MCP Server)'
                                             />
                                         </Box>
                                     </Typography>
@@ -465,7 +396,7 @@ const Stepper = () => {
                                     <Grid item>
                                         <Typography variant='h6' display='inline'>
                                             <FormattedMessage
-                                                id='Apis.Details.Overview.CustomizedStepper.view.devportal'
+                                                id='MCPServers.Overview.CustomizedMCPStepper.view.devportal'
                                                 defaultMessage='View in devportal'
                                             />
                                         </Typography>
@@ -488,7 +419,7 @@ const Stepper = () => {
                     <Typography variant='h6' component='div'>
                         <b>
                             <FormattedMessage
-                                id='Apis.Details.Overview.CustomizedStepper.prototyped'
+                                id='MCPServers.Overview.CustomizedMCPStepper.prototyped'
                                 defaultMessage='Pre-Released'
                             />
                         </b>
@@ -499,7 +430,7 @@ const Stepper = () => {
                     <Typography variant='h6' component='div'>
                         <b>
                             <FormattedMessage
-                                id='Apis.Details.Overview.CustomizedStepper.blocked'
+                                id='MCPServers.Overview.CustomizedMCPStepper.blocked'
                                 defaultMessage='Blocked'
                             />
                         </b>
@@ -510,7 +441,7 @@ const Stepper = () => {
                     <Typography variant='h6' component='div'>
                         <b>
                             <FormattedMessage
-                                id='Apis.Details.Overview.CustomizedStepper.deprecated'
+                                id='MCPServers.Overview.CustomizedMCPStepper.deprecated'
                                 defaultMessage='Deprecated'
                             />
                         </b>
@@ -521,7 +452,7 @@ const Stepper = () => {
                     <Typography variant='h6' component='div'>
                         <b>
                             <FormattedMessage
-                                id='Apis.Details.Overview.CustomizedStepper.retired'
+                                id='MCPServers.Overview.CustomizedMCPStepper.retired'
                                 defaultMessage='Retired'
                             />
                         </b>
@@ -530,59 +461,39 @@ const Stepper = () => {
             default:
                 return (
                     <>
-                        {isPrototypedAvailable ? (
-                            <Button
-                                size='small'
-                                variant='contained'
-                                color='primary'
-                                onClick={() => updateLCStateOfAPI(api.id, 'Deploy as a Prototype')}
-                                disabled={api.workflowStatus === 'CREATED'
-                                    || AuthManager.isNotPublisher()
-                                    || !deploymentsAvailable}
+                        <Button
+                            size='small'
+                            variant='contained'
+                            color='primary'
+                            data-testid='publish-state-button'
+                            onClick={() => updateLCStateOfAPI(api.id, 'Publish')}
+                            disabled={((api.type !== 'WEBSUB' && !isEndpointAvailable)
+                                || (!isMutualSslOnly && !isTierAvailable))
+                                || !deploymentsAvailable
+                                || api.isRevision || AuthManager.isNotPublisher()
+                                || api.workflowStatus === 'CREATED'
+                                || !isMandatoryPropertiesAvailable}
+                        >
+                            <FormattedMessage
+                                id='MCPServers.Overview.CustomizedMCPStepper.btn.publish'
+                                defaultMessage='Publish'
+                            />
+                            {isUpdating && <CircularProgress size={20} />}
+                        </Button>
+                        {deploymentsAvailable && !isMandatoryPropertiesAvailable && (
+                            <Tooltip
+                                title='Mandatory API Properties should be provided to publish an API.'
+                                placement='bottom'
                             >
-                                <FormattedMessage
-                                    id='Apis.Details.Overview.CustomizedStepper.btn.prototyped'
-                                    defaultMessage='Pre-Released'
-                                />
-                                {isUpdating && <CircularProgress size={20} />}
-                            </Button>
-                        ) : (
-                            <>
-                                <Button
-                                    size='small'
-                                    variant='contained'
-                                    color='primary'
-                                    data-testid='publish-state-button'
-                                    onClick={() => updateLCStateOfAPI(api.id, 'Publish')}
-                                    disabled={((api.type !== 'WEBSUB' && !isEndpointAvailable)
-                                        || (!isMutualSslOnly && !isTierAvailable))
-                                        || !deploymentsAvailable
-                                        || api.isRevision || AuthManager.isNotPublisher()
-                                        || api.workflowStatus === 'CREATED'
-                                        || !isMandatoryPropertiesAvailable}
-                                >
-                                    <FormattedMessage
-                                        id='Apis.Details.Overview.CustomizedStepper.btn.publish'
-                                        defaultMessage='Publish'
-                                    />
-                                    {isUpdating && <CircularProgress size={20} />}
-                                </Button>
-                                {deploymentsAvailable && !isMandatoryPropertiesAvailable && (
-                                    <Tooltip
-                                        title='Mandatory API Properties should be provided to publish an API.'
-                                        placement='bottom'
-                                    >
-                                        <IconButton color='inherit' size='small' aria-label='delete'>
-                                            <InfoOutlinedIcon fontSize='small' />
-                                        </IconButton>
-                                    </Tooltip>
-                                )}
-                            </>
+                                <IconButton color='inherit' size='small' aria-label='delete'>
+                                    <InfoOutlinedIcon fontSize='small' />
+                                </IconButton>
+                            </Tooltip>
                         )}
                         {api.workflowStatus === 'CREATED' && (
                             <Typography variant='caption' color='error'>
                                 <FormattedMessage
-                                    id='Apis.Details.Overview.CustomizedStepper.pending'
+                                    id='MCPServers.Overview.CustomizedMCPStepper.pending'
                                     defaultMessage='The request is pending'
                                 />
                             </Typography>
@@ -591,56 +502,24 @@ const Stepper = () => {
                 );
         }
     }
-    const isTestLinkDisabled = lifecycleState === 'RETIRED' || !deploymentsAvailable
-    || (!api.isAPIProduct() && !isEndpointAvailable)
-    || (!isMutualSslOnly && !isTierAvailable)
-    || (api.type !== 'HTTP' && api.type !== 'SOAP' && api.type !== 'APIPRODUCT' && api.type !== 'MCP');
-    const isDeployLinkDisabled =
-        (api.type !== 'WEBSUB' &&
-            !(
-                isEndpointAvailable &&
-                (api.subtypeConfiguration?.subtype === 'AIAPI'
-                    ? isEndpointSecurityConfigured
-                    : true)
-            )) ||
-        api.workflowStatus === 'CREATED' ||
-        lifecycleState === 'RETIRED';
-    let deployLinkToolTipTitle = '';
-    if (lifecycleState === 'RETIRED') {
-        deployLinkToolTipTitle = intl.formatMessage({
-            id: 'Apis.Details.Overview.CustomizedStepper.ToolTip.DeploymentAvailable',
-            defaultMessage: 'Cannot deploy retired APIs',
-        });
-    } else if (!deploymentsAvailable) { 
-        deployLinkToolTipTitle = intl.formatMessage({
-            id: 'Apis.Details.Overview.CustomizedStepper.ToolTip.DeploymentUnavailable',
-            defaultMessage: 'Deploy a revision of this API to the Gateway',
-        });
-    }
 
-    useEffect(() => {
-        if (api.isMCPServer()) {
-            setEndpointLoading(true);
-            MCPServer.getMCPServerEndpoints(api.id)
-                .then((response) => {
-                    const fetchedEndpoints = response.body;
-                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
-                        setEndpointAvailable(true);
-                    } else {
-                        setEndpointAvailable(false);
-                    }
-                })
-                .catch((error) => {
-                    console.error('Error fetching MCP server endpoints:', error);
-                    setEndpointAvailable(false);
-                })
-                .finally(() => {
-                    setEndpointLoading(false);
-                });
+    const deployLinkToolTipTitle = useMemo(() => {
+        if (lifecycleState === 'RETIRED') {
+            return intl.formatMessage({
+                id: 'MCPServers.Overview.CustomizedMCPStepper.ToolTip.DeploymentAvailable',
+                defaultMessage: 'Cannot deploy retired MCP Servers',
+            });
+        } else if (!deploymentsAvailable) {
+            return intl.formatMessage({
+                id: 'MCPServers.Overview.CustomizedMCPStepper.ToolTip.DeploymentUnavailable',
+                defaultMessage: 'Deploy a revision of this MCP Server to the Gateway',
+            });
         }
-    }, [api.id]);
+        return '';
+    }, [lifecycleState, deploymentsAvailable, intl]);
 
-    if (isMCPServer && endpointLoading) {
+
+    if (isLoading) {
         return (
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
                 <CircularProgress />
@@ -680,7 +559,7 @@ const Stepper = () => {
                                                 <Grid>
                                                     <Typography variant='h6'>
                                                         <FormattedMessage
-                                                            id='Apis.Details.Overview.CustomizedStepper.Develop'
+                                                            id='MCPServers.Overview.CustomizedMCPStepper.Develop'
                                                             defaultMessage=' Develop'
                                                         />
                                                     </Typography>
@@ -719,8 +598,8 @@ const Stepper = () => {
                                                             >
                                                                 <Typography variant='h6'>
                                                                     <FormattedMessage
-                                                                        id={'Apis.Details.Overview.'
-                                                                            + 'CustomizedStepper.Endpoint'}
+                                                                        id={'MCPServers.Overview.'
+                                                                            + 'CustomizedMCPStepper.Endpoint'}
                                                                         defaultMessage=' Endpoint'
                                                                     />
                                                                 </Typography>
@@ -770,7 +649,7 @@ const Stepper = () => {
                                                     >
                                                         <Typography variant='h6'>
                                                             <FormattedMessage
-                                                                id='Apis.Details.Overview.CustomizedStepper.Deploy'
+                                                                id='MCPServers.Overview.CustomizedMCPStepper.Deploy'
                                                                 defaultMessage=' Deploy'
                                                             />
                                                         </Typography>
@@ -789,8 +668,9 @@ const Stepper = () => {
                                 {label === 'Test' && (
                                     <Tooltip
                                         title={lifecycleState === 'RETIRED' ? intl.formatMessage({
-                                            id: 'Apis.Details.Overview.CustomizedStepper.ToolTip.cannot.test',
-                                            defaultMessage: 'Cannot use test option while API is in retired state',
+                                            id: 'MCPServers.Overview.CustomizedMCPStepper.ToolTip.cannot.test',
+                                            defaultMessage:
+                                                'Cannot use test option while MCP Server is in retired state',
                                         }) : ''}
                                         placement='bottom'
                                     >
@@ -809,14 +689,14 @@ const Stepper = () => {
                                                         underline='none'
                                                         component={RouterLink}
                                                         to={
-                                                            isMCPServer
+                                                            api.isMCPServer()
                                                                 ? getBasePath(api) + api.id + '/mcp-inspector'
                                                                 : getBasePath(api) + api.id + '/test-console'
                                                         }
                                                     >
                                                         <Typography variant='h6'>
                                                             <FormattedMessage
-                                                                id='Apis.Details.Overview.CustomizedStepper.Test'
+                                                                id='MCPServers.Overview.CustomizedMCPStepper.Test'
                                                                 defaultMessage=' Test'
                                                             />
                                                         </Typography>
@@ -860,7 +740,7 @@ const Stepper = () => {
                                                             >
                                                                 <Typography variant='h6'>
                                                                     <FormattedMessage
-                                                                        id={'Apis.Details.Overview.CustomizedStepper' +
+                                                                        id={'MCPServers.Overview.CustomizedMCPStepper' +
                                                                             '.Tier'}
                                                                         defaultMessage=' Business Plan'
                                                                     />
@@ -891,4 +771,4 @@ const Stepper = () => {
     );
 }
 
-export default Stepper;
+export default CustomizedMCPStepper;

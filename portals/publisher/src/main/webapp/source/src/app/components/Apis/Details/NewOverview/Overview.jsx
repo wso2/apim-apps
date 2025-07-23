@@ -28,7 +28,7 @@ import MCPServer from 'AppData/MCPServer';
 import ApiContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { green } from '@mui/material/colors';
 import Tools from 'AppComponents/MCPServers/Overview/Tools';
-import Stepper from 'AppComponents/MCPServers/Overview/Stepper';
+import CustomizedMCPStepper from 'AppComponents/MCPServers/Overview/CustomizedMCPStepper';
 import Resources from './Resources';
 import Operations from './Operations';
 import ProductResources from './ProductResources';
@@ -260,7 +260,7 @@ function Overview(props) {
                     <Grid container>
                         <Grid item xs={12}>
                             <Paper className={classes.stepperWrapper}>
-                                <Stepper />
+                                <CustomizedMCPStepper />
                             </Paper>
                         </Grid>
                     </Grid>

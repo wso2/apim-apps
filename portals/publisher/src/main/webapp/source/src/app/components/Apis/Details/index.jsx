@@ -450,7 +450,10 @@ class Details extends Component {
     getLeftMenuItemForDefinitionByType(apiType) {
         const { isAPIProduct } = this.state;
         const { intl, match } = this.props;
-        const uuid = match.params.apiUUID || match.params.api_uuid || match.params.apiProdUUID;
+        const uuid = match.params.apiUUID
+            || match.params.api_uuid
+            || match.params.apiProdUUID
+            || match.params.mcpServerUUID;
         const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/'; // TODO:
         const apiDefinitionMenuItem = (
             <LeftMenuItem
@@ -524,7 +527,10 @@ class Details extends Component {
     getLeftMenuItemForResourcesByType(apiType) {
         const { isAPIProduct } = this.state;
         const { intl, match } = this.props;
-        const uuid = match.params.apiUUID || match.params.api_uuid || match.params.apiProdUUID;
+        const uuid = match.params.apiUUID
+            || match.params.api_uuid
+            || match.params.apiProdUUID
+            || match.params.mcpServerUUID;
         const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/';
 
         switch (apiType) {
@@ -765,7 +771,10 @@ class Details extends Component {
         if (!Details.isValidURL(pathname)) {
             return <ResourceNotFound location={pageLocation} />;
         }
-        const uuid = match.params.apiUUID || match.params.api_uuid || match.params.apiProdUUID;
+        const uuid = match.params.apiUUID
+            || match.params.api_uuid
+            || match.params.apiProdUUID
+            || match.params.mcpServerUUID;
         let basePath;
         if (isAPIProduct) {
             basePath = 'api-products';
@@ -1035,6 +1044,7 @@ class Details extends Component {
                                     />
                                     <Route
                                         path={Details.subPaths.OVERVIEW_MCP}
+                                        key={Details.subPaths.OVERVIEW_MCP}
                                         component={() => (
                                             <Overview
                                                 setOpenPageSearch={this.setOpenPageSearch}
@@ -1056,6 +1066,10 @@ class Details extends Component {
                                         component={() => <APIDefinition api={api} />}
                                     />
                                     <Route
+                                        path={Details.subPaths.API_DEFINITION_MCP}
+                                        component={() => <APIDefinition api={api} />}
+                                    />
+                                    <Route
                                         path={Details.subPaths.SCHEMA_DEFINITION}
                                         component={() => <APIDefinition api={api} />}
                                     />
@@ -1071,6 +1085,10 @@ class Details extends Component {
                                     <Route
                                         path={Details.subPaths.LIFE_CYCLE_PRODUCT}
                                         component={() => <LifeCycle api={api} isAPIProduct={isAPIProduct} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.LIFE_CYCLE_MCP}
+                                        component={() => <LifeCycle api={api} isMCPServer={isMCPServer} />}
                                     />
                                     <Route
                                         path={Details.subPaths.CONFIGURATION}

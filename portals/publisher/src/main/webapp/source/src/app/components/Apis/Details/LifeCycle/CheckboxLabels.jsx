@@ -103,11 +103,8 @@ export default function CheckboxLabels(props) {
 
     const {
         api, isMutualSSLEnabled, isCertAvailable, isAppLayerSecurityMandatory, isBusinessPlanAvailable, isAPIProduct,
-        isMandatoryPropertiesAvailable, isMandatoryPropertiesConfigured
+        isMandatoryPropertiesAvailable, isMandatoryPropertiesConfigured, isEndpointAvailable
     } = props;
-    const isEndpointAvailable = !isAPIProduct
-        ? api.endpointConfig !== null
-        : false;
     const lcState = isAPIProduct ? api.state : api.lifeCycleStatus;
 
     return (
@@ -228,4 +225,5 @@ CheckboxLabels.propTypes = {
     intl: PropTypes.shape({
         formatMessage: PropTypes.func,
     }).isRequired,
+    isEndpointAvailable: PropTypes.bool.isRequired,
 };

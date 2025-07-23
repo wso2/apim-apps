@@ -167,7 +167,7 @@ function APICreateRoutes() {
                     component={MCPServerLanding}
                 />
                 <Route
-                    path='/mcp-servers/create/openapi'
+                    path='/mcp-servers/create/direct-endpoint'
                     component={WithSomeValue(MCPServerCreateDefault, { multiGateway: apiTypes?.ws
                         .filter(t=>gatewayTypes.includes(t)).map(type => gatewayDetails[type]) })}
                 />

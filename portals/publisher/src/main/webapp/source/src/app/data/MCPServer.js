@@ -274,7 +274,7 @@ class MCPServer extends Resource {
      * @param {string} id ID of the MCP Server.
      * @return {Promise} A promise that resolves to the list of revisions with environments.
      * */
-    getRevisionsWithEnv(id) {
+    static getRevisionsWithEnv(id) {
         const apiClient = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
@@ -384,6 +384,97 @@ class MCPServer extends Resource {
                 this._requestMetaData(),
             );
         });
+    }
+
+    /**
+     * Update the life cycle state of an MCP Server given its id (UUID)
+     * @param {string} id UUID of the MCP Server
+     * @param {string} state Target state which need to be transferred
+     * @param {Array} checkedItems List of checked items in the lifecycle checklist
+     * @param {function} callback Callback function which needs to be executed in the success call
+     * @returns {Promise} A promise that resolves to the updated MCP Server lifecycle state.
+     */
+    static updateLcState(id, state, checkedItems, callback = null) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const payload = {
+            action: state,
+            apiId: id,
+            lifecycleChecklist: checkedItems,
+            'Content-Type': 'application/json',
+        };
+        const promiseLcUpdate = apiClient.then(client => {
+            return client.apis['MCP Server Lifecycle'].changeMCPServerLifecycle(payload, this._requestMetaData());
+        });
+        if (callback) {
+            return promiseLcUpdate.then(callback);
+        } else {
+            return promiseLcUpdate;
+        }
+    }
+
+    /**
+     * Get the swagger of an MCP Server
+     * @param {String} id UUID of the MCP Server in which the swagger is needed
+     * @returns {promise} With given id and environmentName, it returns the swagger of the MCP Server
+     */
+    static getSwagger(id) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const payload = { apiId: id };
+        return apiClient.then((client) => {
+            return client.apis['MCP Servers'].getMCPServerSwagger(payload, this._requestMetaData());
+        });
+    }
+
+    /**
+     * Get the life cycle state of an MCP Server given its id (UUID)
+     * @param id {string} UUID of the MCP Server
+     * @returns {Promise} A promise that resolves to the MCP Server lifecycle state.
+     */
+    static getMCPServerLcState(id) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const promiseLcGet = apiClient.then(client => {
+            return client.apis['MCP Server Lifecycle'].getMCPServerLifecycleState(
+                {
+                    apiId: id,
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseLcGet;
+    }
+
+    /**
+     * Get the life cycle history data of an MCP Server given its id (UUID)
+     * @param id {string} UUID of the MCP Server
+     * @return {Promise} A promise that resolves to the MCP Server lifecycle history.
+     */
+    static getMCPServerLcHistory(id) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const promiseLcHistoryGet = apiClient.then(client => {
+            return client.apis['MCP Server Lifecycle'].getMCPServerLifecycleHistory(
+                {
+                    apiId: id,
+                },
+                this._requestMetaData(),
+            );
+        });
+        return promiseLcHistoryGet;
     }
 
 }

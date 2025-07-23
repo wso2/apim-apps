@@ -41,7 +41,7 @@ const APIsAsMCPMenu = (props) => {
             <LandingMenuItem
                 dense={dense}
                 id='itest-id-landing-create-mcp-from-scratch'
-                linkTo='/mcp-servers/create/openapi'
+                linkTo='/mcp-servers/create/direct-endpoint'
                 helperText={(
                     <FormattedMessage
                         id='MCPServers.Landing.APIsAsMCPMenu.helperText'
