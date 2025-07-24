@@ -244,6 +244,8 @@
   "AiVendors.AddEditAiVendor.form.description.help": "Description of the AI/LLM Vendor.",
   "AiVendors.AddEditAiVendor.form.displayName.help": "API Version of the AI/LLM Vendor.",
   "AiVendors.AddEditAiVendor.form.has.errors": "One or more fields contain errors.",
+  "AiVendors.AddEditAiVendor.form.modelFamilySupport.help": "Model family support",
+  "AiVendors.AddEditAiVendor.form.modelVendorEntries.vendorName.empty": "Model Vendor name cannot be empty for all entries.",
   "AiVendors.AddEditAiVendor.form.name": "Name",
   "AiVendors.AddEditAiVendor.form.name.help": "Name of the AI/LLM Vendor.",
   "AiVendors.AddEditAiVendor.form.update.btn": "Update",
