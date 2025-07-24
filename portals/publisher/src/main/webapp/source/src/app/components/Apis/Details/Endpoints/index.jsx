@@ -27,7 +27,15 @@ import AddEditAIEndpoint from './AIEndpoints/AddEditAIEndpoint';
 
 const Endpoint = () => {
     const [api] = useAPI();
-    const urlPrefix = api.isAPIProduct() ? 'api-products' : 'apis';
+    let urlPrefix;
+    if (api.isAPIProduct()) {
+        urlPrefix = 'api-products';
+    } else if (api.isMCPServer()) {
+        urlPrefix = 'mcp-servers';
+    } else {
+        urlPrefix = 'apis';
+    }
+    
     return (
         <Switch>
             <Route

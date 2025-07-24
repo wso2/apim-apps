@@ -37,13 +37,14 @@ import Button from '@mui/material/Button';
 import Box from '@mui/material/Box';
 import AuthManager from 'AppData/AuthManager';
 import CONSTS from 'AppData/Constants';
+import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Typography from '@mui/material/Typography';
 import LinkIcon from '@mui/icons-material/Link';
 import { grey } from '@mui/material/colors';
 import styled from '@emotion/styled';
 import IconButton from '@mui/material/IconButton';
 import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
-import MCPServer from 'AppData/MCPServer';
 
 const PREFIX = 'Stepper';
 
@@ -152,7 +153,7 @@ const Root = styled('div')(({ theme }) => ({
 
 /**
  * Custom Step Icon component for the stepper
- * @param {*} props
+ * @param {*} props - The properties passed to the component
  * @returns {JSX.Element} - Custom step icon
  */
 const ColorlibStepIcon = (props) => {
@@ -196,7 +197,7 @@ const CustomizedMCPStepper = () => {
     const [isMandatoryPropertiesAvailable, setIsMandatoryPropertiesAvailable] = useState(false);
     const [deploymentsAvailable, setDeploymentsAvailable] = useState(false);
     const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
-    const [isEndpointAvailable, setEndpointAvailable] = useState(false);
+    const [isEndpointAvailable, setEndpointAvailable] = useState(null);
     const [activeStep, setActiveStep] = useState(0);
     const [isLoading, setIsLoading] = useState(true);
     const [isTestLinkDisabled, setIsTestLinkDisabled] = useState(true);
@@ -235,7 +236,7 @@ const CustomizedMCPStepper = () => {
                 const [endpointsResponse, revisionsResponse, settingsResponse] = await Promise.all([
                     MCPServer.getMCPServerEndpoints(api.id),
                     MCPServer.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id),
-                    api.getSettings()
+                    API.getSettings()
                 ]);
 
                 // Process all responses and calculate derived states
@@ -292,8 +293,6 @@ const CustomizedMCPStepper = () => {
                     api.workflowStatus === 'CREATED' ||
                     lifecycleState === 'RETIRED';
 
-                // Update all states at once
-
                 setEndpointAvailable(hasEndpoints);
                 setDeploymentsAvailable(hasDeployments);
                 setIsMandatoryPropertiesAvailable(mandatoryPropsAvailable);
@@ -347,7 +346,8 @@ const CustomizedMCPStepper = () => {
 
     /**
      * This function renders the final lifecycle state
-     * @param {*} state
+     * @param {*} state - The lifecycle state of the MCP Server
+     * @returns {JSX.Element} - The final lifecycle state component
      */
     function finalLifecycleState(state) {
         switch (state) {
@@ -526,7 +526,6 @@ const CustomizedMCPStepper = () => {
             </Box>
         );
     }
-
 
     return (
         <Root>

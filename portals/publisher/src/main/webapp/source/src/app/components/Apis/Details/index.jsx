@@ -678,9 +678,12 @@ class Details extends Component {
     updateAPI(_updatedProperties = {}) {
         const { api } = this.state;
         const { intl } = this.props;
+        let isMCPServer = false;
         let isAPIProduct = false;
         if (api.apiType === API.CONSTS.APIProduct) {
             isAPIProduct = true;
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            isMCPServer = true;
         }
 
         const updatedProperties = _updatedProperties instanceof API ? _updatedProperties.toJson() : _updatedProperties;
@@ -689,7 +692,11 @@ class Details extends Component {
         // which we could call it's `update` method safely ~tmkb
         if (!isEmpty(updatedProperties)) {
             // newApi object has to be provided as the updatedProperties. Then api will be updated.
-            promisedUpdate = api.update(updatedProperties);
+            if (isMCPServer) {
+                promisedUpdate = api.updateMCPServer(updatedProperties);
+            } else {
+                promisedUpdate = api.update(updatedProperties);
+            }
         } else if (!isAPIProduct) {
             // Just like calling noArg `setState()` will just trigger a re-render without modifying the state,
             // Calling `updateAPI()` without args wil return the API without any update.
@@ -697,13 +704,26 @@ class Details extends Component {
             promisedUpdate = API.get(api.id);
         } else if (isAPIProduct) {
             promisedUpdate = APIProduct.get(api.id);
+        } else if (isMCPServer) {
+            promisedUpdate = MCPServer.getMCPServerById(api.id);
         }
+
         return promisedUpdate
             .then((updatedAPI) => {
                 if (isAPIProduct) {
                     Alert.info(intl.formatMessage({
                         id: 'Apis.Details.index.api.product.update.success',
                         defaultMessage: '{updatedAPIName} API Product updated successfully',
+                    },
+                    {
+                        updatedAPIName: updatedAPI.name,
+                    }));
+                    this.setState({ api: updatedAPI });
+                    return updatedAPI;
+                } else if (isMCPServer) {
+                    Alert.info(intl.formatMessage({
+                        id: 'Apis.Details.index.api.mcp.update.success',
+                        defaultMessage: '{updatedAPIName} MCP Server updated successfully',
                     },
                     {
                         updatedAPIName: updatedAPI.name,
@@ -1118,7 +1138,20 @@ class Details extends Component {
                                         component={() => <RuntimeConfiguration api={api} />}
                                     />
                                     <Route
+                                        path={Details.subPaths.CONFIGURATION_MCP}
+                                        component={() => <DesignConfigurations api={api}
+                                            updateAPI={this.updateAPI} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.RUNTIME_CONFIGURATION_MCP}
+                                        component={() => <RuntimeConfiguration api={api} />}
+                                    />
+                                    <Route
                                         path={Details.subPaths.ENDPOINTS}
+                                        component={() => <Endpoint />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.ENDPOINTS_MCP}
                                         component={() => <Endpoint />}
                                     />
                                     <Route

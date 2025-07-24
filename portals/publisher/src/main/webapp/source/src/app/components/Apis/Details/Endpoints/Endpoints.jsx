@@ -33,6 +33,7 @@ import { isRestricted } from 'AppData/AuthManager';
 import { Alert, Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import AddCircle from '@mui/icons-material/AddCircle';
+import { Endpoints as MCPServerEndpoints } from 'AppComponents/MCPServers/Details/Endpoints/Endpoints';
 import EndpointOverview from './EndpointOverview';
 import AIEndpoints from './AIEndpoints/AIEndpoints';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
@@ -134,6 +135,7 @@ function Endpoints(props) {
     });
     const [componentValidator, setComponentValidator] = useState([]);
     const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
+    const isMCPServer = api.isMCPServer();
 
     useEffect(() => {
         if (api.subtypeConfiguration?.subtype === 'AIAPI') {
@@ -805,7 +807,7 @@ function Endpoints(props) {
                                 endpointConfiguration={endpointConfiguration}
                             />
                         ))}
-                        {(api.subtypeConfiguration?.subtype !== 'AIAPI') && (
+                        {(api.subtypeConfiguration?.subtype !== 'AIAPI' && !isMCPServer) && (
                             <div>
                                 <Grid container>
                                     <Grid item xs={12} className={classes.endpointsContainer}>
@@ -889,6 +891,9 @@ function Endpoints(props) {
                                     </Grid>
                                 </Grid>
                             </div>
+                        )}
+                        {isMCPServer && (
+                            <MCPServerEndpoints />
                         )}
                     </div>
                 )}

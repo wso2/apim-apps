@@ -15,6 +15,7 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+import cloneDeep from 'lodash.clonedeep';
 import APIClientFactory from './APIClientFactory';
 import Utils from './Utils';
 import Resource from './Resource';
@@ -59,7 +60,6 @@ class MCPServer extends Resource {
             }
         }
         this.apiType = MCPServer.CONSTS.MCP;
-        this.getType = this.getType.bind(this);
     }
 
     static CONSTS = {
@@ -76,6 +76,34 @@ class MCPServer extends Resource {
     _requestMetaData() {
         // eslint-disable-next-line no-underscore-dangle
         Resource._requestMetaData();
+    }
+
+    /**
+     *
+     * Instance method of the API class to provide raw JSON object
+     * which is API body friendly to use with REST api requests
+     * Use this method instead of accessing the private _data object for
+     * converting to a JSON representation of an API object.
+     * Note: This is deep coping, Use sparingly, Else will have a bad impact on performance
+     * Basically this is the revers operation in constructor.
+     * This method simply iterate through all the object properties (excluding the properties in `excludes` list)
+     * and copy their values to new object.
+     * So use this method with care!!
+     * @memberof API
+     * @param {Array} [userExcludes=[]] List of properties that are need to be excluded from the generated JSON object
+     * @returns {JSON} JSON representation of the API
+     */
+    toJSON(userExcludes = []) {
+        const copy = {};
+        const excludes = ['_data', 'client', 'apiType', ...userExcludes];
+
+        for (const prop in this) {
+            if (!excludes.includes(prop)) {
+                copy[prop] = cloneDeep(this[prop]);
+            }
+        }
+
+        return copy;
     }
 
     /**
@@ -209,28 +237,62 @@ class MCPServer extends Resource {
         });
     }
 
+    // /**
+    //  * Update an MCP Server.
+    //  * @param {*} updatedProperties - The updated properties for the MCP Server.
+    //  * @returns {Promise<MCPServer>} A promise that resolves to the updated MCPServer instance.
+    //  */
+    // static updateMCPServer(updatedProperties) {
+    //     const updatedMCPServer = updatedProperties;
+    //     const apiClient = new APIClientFactory()
+    //         .getAPIClient(
+    //             Utils.getCurrentEnvironment(),
+    //             Utils.CONST.API_CLIENT
+    //         ).client;
+    //     const promisedUpdate = apiClient.then(client => {
+    //         const payload = {
+    //             apiId: updatedMCPServer.id,
+    //         };
+    //         const requestBody = {
+    //             requestBody: updatedMCPServer,
+    //         };
+    //         return client.apis['MCP Servers'].updateMCPServer(
+    //             payload,
+    //             requestBody
+    //         );
+    //     });
+    //     return promisedUpdate.then(response => {
+    //         if (response.body === null || response.body === undefined) {
+    //             throw new Error(`MCP Server with ID ${updatedMCPServer.id} not found.`);
+    //         }
+    //         return new MCPServer(response.body);
+    //     });
+    // }
+
     /**
      * Update an MCP Server.
-     * @param {*} updatedProperties - The updated properties for the MCP Server.
-     * @returns {Promise<MCPServer>} A promise that resolves to the updated MCPServer instance.
+     * @param {Object} updatedProperties - The updated properties for the MCP Server.
+     * @returns {Promise<MCPServer>} A promise that resolves to the updated MCPServer
      */
-    static updateMCPServer(updatedProperties) {
-        const apiClient = new APIClientFactory()
-            .getAPIClient(
-                Utils.getCurrentEnvironment(),
-                Utils.CONST.API_CLIENT
-            ).client;
-        const promisedUpdate = apiClient.then(client => {
+    updateMCPServer(updatedProperties) {
+        const updatedMCPServer = { ...this.toJSON(), ...updatedProperties };
+        const promisedUpdate = this.client.then(client => {
             const payload = {
-                apiId: updatedProperties.id,
-                body: updatedProperties,
+                apiId: updatedMCPServer.id,
             };
-            return client.apis['MCP Servers'].updateMCPServer(payload);
-        });
-        return promisedUpdate;
+            const requestBody = {
+                requestBody: updatedMCPServer,
+            }
+            return client.apis['MCP Servers'].updateMCPServer(
+                payload,
+                requestBody,
+                this._requestMetaData(),
+            );
+        })
+        return promisedUpdate.then(response => {
+            return new MCPServer(response.body);
+        })
     }
-
-    static updateMCPServer
 
     /**
      * To get MCPServer object with the fields filled as per the definition
@@ -429,6 +491,18 @@ class MCPServer extends Resource {
             ).client;
         const payload = { apiId: id };
         return apiClient.then((client) => {
+            return client.apis['MCP Servers'].getMCPServerSwagger(payload, this._requestMetaData());
+        });
+    }
+
+    /**
+     * Get the swagger of an MCP Server
+     * @param {string} id UUID of the MCP Server in which the swagger is needed 
+     * @returns {Promise} A promise that resolves to the swagger of the MCP Server.
+     */
+    getSwagger(id) {
+        const payload = { apiId: id };
+        return this.client.then((client) => {
             return client.apis['MCP Servers'].getMCPServerSwagger(payload, this._requestMetaData());
         });
     }
