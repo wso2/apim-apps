@@ -1172,7 +1172,7 @@ class API extends Resource {
      */
     getAiVendorsList() {
         return this.client.then((client) => {
-            return client.apis['LLMProviders'].getLLMProviders(
+            return client.apis['AIServiceProviders'].getAIServiceProviders(
                 this._requestMetaData(),
             );
         });
@@ -1185,8 +1185,8 @@ class API extends Resource {
      */
    aiVendorGet(aiVendorId) {
         return this.client.then((client) => {
-            return client.apis['LLMProvider'].getLLMProvider(
-                { llmProviderId: aiVendorId },
+            return client.apis['AIServiceProvider'].getAIServiceProvider(
+                { aiServiceProviderId: aiVendorId },
                 this._requestMetaData(),
             );
         });
@@ -1199,8 +1199,8 @@ class API extends Resource {
      */
     deleteAiVendor(aiVendorId) {
         return this.client.then((client) => {
-            return client.apis['LLMProvider'].deleteLLMProvider(
-                { llmProviderId: aiVendorId },
+            return client.apis['AIServiceProvider'].deleteAIServiceProvider(
+                { aiServiceProviderId: aiVendorId },
                 this._requestMetaData(),
             );
         });
@@ -1214,11 +1214,11 @@ class API extends Resource {
             const payload = {
                 'Content-Type': 'multipart/form-data',
             };
-            return client.apis['LLMProviders'].addLLMProvider(
+            return client.apis['AIServiceProviders'].addAIServiceProvider(
                 payload,
                 { requestBody: {
                     ...aiVendorBody,
-                    modelList: JSON.stringify(aiVendorBody.modelList)
+                    modelProviders: JSON.stringify(aiVendorBody.modelList)
                 }},
                 this._requestMetaData(),
             );
@@ -1231,15 +1231,15 @@ class API extends Resource {
     updateAiVendor(aiVendorId, aiVendorBody) {
         return this.client.then((client) => {
             const payload = {
-                llmProviderId: aiVendorId,
+                aiServiceProviderId: aiVendorId,
                 'Content-Type': 'multipart/form-data',
             };
-            return client.apis['LLMProvider'].updateLLMProvider(
+            return client.apis['AIServiceProvider'].updateAIServiceProvider(
                 payload,
                 { requestBody: {
                     ...aiVendorBody,
-                    llmProviderId: aiVendorId,
-                    modelList: JSON.stringify(aiVendorBody.modelList)
+                    aiServiceProviderId: aiVendorId,
+                    modelProviders: JSON.stringify(aiVendorBody.modelList)
                 }},
                 this._requestMetaData(),
             );

@@ -139,8 +139,8 @@ const ModelWeightedRoundRobin: FC<ModelWeightedRoundRobinProps> = ({
         modelListPromise
             .then((response) => {
                 const vendors: ModelVendor[] = response.body.map((vendor: any) => ({
-                    vendor: vendor.vendor,
-                    values: vendor.values
+                    vendor: vendor.name,
+                    values: vendor.models
                 }));
                 setModelList(vendors);
             }).catch((error) => {

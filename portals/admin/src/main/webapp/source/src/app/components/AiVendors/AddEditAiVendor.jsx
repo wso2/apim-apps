@@ -72,7 +72,7 @@ function reducer(state, newValue) {
         case 'apiVersion':
         case 'description':
         case 'modelList':
-        case 'multipleVendorSupport':
+        case 'multipleModelProviderSupport':
         case 'apiDefinition':
         case 'models': // New case for handling model vendor entries
             return { ...state, [field]: value };
@@ -177,7 +177,7 @@ export default function AddEditAiVendor(props) {
             authQueryParameter: '',
             authHeader: '',
         },
-        multipleVendorSupport: false,
+        multipleModelProviderSupport: false,
         apiDefinition: '',
         modelList: [],
         models: [],
@@ -201,10 +201,10 @@ export default function AddEditAiVendor(props) {
                 if (aiVendorBody) {
                     let models = [];
                     let modelList = [];
-                    if (aiVendorBody.models) {
-                        models = JSON.parse(aiVendorBody.models);
-                        modelList = models.find((item) => item.vendor === aiVendorBody.name);
-                        modelList = modelList ? modelList.values : [];
+                    if (aiVendorBody.modelProviders) {
+                        models = JSON.parse(aiVendorBody.modelProviders);
+                        modelList = models.find((item) => item.name === aiVendorBody.name);
+                        modelList = modelList ? modelList.models : [];
                         models = models.map((model) => ({
                             ...model, id: uuidv4(),
                         }));
@@ -248,7 +248,7 @@ export default function AddEditAiVendor(props) {
                         apiDefinition: aiVendorBody.apiDefinition || '',
                         modelList,
                         models,
-                        multipleVendorSupport: aiVendorBody.multipleVendorSupport || false,
+                        multipleModelProviderSupport: aiVendorBody.multipleModelProviderSupport || false,
                     };
                     dispatch({ field: 'all', value: newState });
 
@@ -266,7 +266,7 @@ export default function AddEditAiVendor(props) {
     useEffect(() => {
         if (location.state?.isSingleProvider !== undefined) {
             dispatch({
-                field: 'multipleVendorSupport',
+                field: 'multipleModelProviderSupport',
                 value: !location.state.isSingleProvider,
             });
         }
@@ -352,7 +352,7 @@ export default function AddEditAiVendor(props) {
         });
 
         // Check for errors in model provider entries
-        const modelProviderEntriesErrors = state.models.some((entry) => entry.vendor.trim() === '');
+        const modelProviderEntriesErrors = state.models.some((entry) => entry.name.trim() === '');
 
         return hasErrors('name', state.name, validatingActive)
             || hasErrors('apiVersion', state.apiVersion, validatingActive)
@@ -383,17 +383,17 @@ export default function AddEditAiVendor(props) {
                 authenticationConfiguration: authConfig,
             };
             let models;
-            if (state.multipleVendorSupport) {
+            if (state.multipleModelProviderSupport) {
                 models = state.models.map(({ id, ...rest }) => rest);
             } else {
-                models = [{ vendor: state.name, values: state.modelList }];
+                models = [{ name: state.name, models: state.modelList }];
             }
             const newState = {
                 ...state,
                 configurations: updatedConfigurations,
                 // modelList: JSON.stringify(state.modelList),
                 // Stringify modelVendorEntries before sending to API
-                models: JSON.stringify(models),
+                modelList: JSON.stringify(models),
             };
 
             if (vendorId) { // <-- Use vendorId instead of id
@@ -640,7 +640,7 @@ export default function AddEditAiVendor(props) {
                         </Typography>
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
-                        {state.multipleVendorSupport ? (
+                        {state.multipleModelProviderSupport ? (
                             <ModelFamily
                                 models={state.models}
                                 onModelsChange={(newModels) => dispatch({

@@ -40,13 +40,13 @@ const ModelFamily = ({
 
     /**
      * Handles adding a new model family.
-     * Creates a new model object with a unique ID and empty vendor and values.
+     * Creates a new model object with a unique ID and empty multipleModelProviderSupport and values.
      */
     const handleAddProvider = () => {
         const newModel = {
             id: uuidv4(),
-            vendor: '',
-            values: [],
+            name: '',
+            models: [],
         };
         onModelsChange([...models, newModel]);
     };
@@ -71,7 +71,7 @@ const ModelFamily = ({
             if (model.id === id) {
                 return {
                     ...model,
-                    vendor: event.target.value,
+                    name: event.target.value,
                 };
             }
             return model;
@@ -109,22 +109,22 @@ const ModelFamily = ({
                                     })}
                                     margin='dense'
                                     variant='outlined'
-                                    value={model.vendor}
+                                    value={model.name}
                                     onChange={(e) => handleProviderChange(model.id, e)}
-                                    error={hasErrors('providerName', model.vendor, validating)}
+                                    error={hasErrors('providerName', model.name, validating)}
                                 />
                             </Grid>
                             <Grid item xs={12} sm={8}>
                                 <MuiChipsInput
                                     variant='outlined'
                                     fullWidth
-                                    value={model.values}
+                                    value={model.models}
                                     onAddChip={(modelName) => {
                                         const updatedModels = models.map((m) => {
                                             if (m.id === model.id) {
                                                 return {
                                                     ...m,
-                                                    values: [...m.values, modelName],
+                                                    models: [...m.models, modelName],
                                                 };
                                             }
                                             return m;
@@ -136,7 +136,7 @@ const ModelFamily = ({
                                             if (m.id === model.id) {
                                                 return {
                                                     ...m,
-                                                    values: m.values.filter(
+                                                    models: m.models.filter(
                                                         (v) => v !== modelName,
                                                     ),
                                                 };
