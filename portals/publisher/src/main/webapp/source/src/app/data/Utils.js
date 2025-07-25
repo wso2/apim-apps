@@ -18,6 +18,7 @@
 
 import CONSTS from 'AppData/Constants';
 import Configurations from 'Config';
+import { now } from 'moment';
 /**
  * Utility class for Publisher application
  */
@@ -639,7 +640,43 @@ class Utils {
                     host: envDetails && envDetails.vhost,
                 };
             }
-            allEnvDeployments[env.name] = { revision, vhost, disPlayDevportal };
+            // Derive status and color based on gateway counts
+            if (envDetails) {
+                const deployed = envDetails.deployedGatewayCount ?? 0;
+                const total = envDetails.liveGatewayCount ?? 0;
+                const failed = envDetails.failedGatewayCount ?? 0;
+
+                let status = 'Deployment Pending';
+                let color = 'default';
+                let lastUpdatedTime = now();
+
+                if (deployed > total || failed > total) {
+                    status = 'Inconsistent';
+                    color = 'error';
+                } else if (total === 0) {
+                    status = 'No Gateways Configured';
+                } else if (failed > 0) {
+                    status = 'Deployment Failed';
+                    color = 'error';
+                    lastUpdatedTime = envDetails.successDeployedTime;
+                } else if (deployed === total) {
+                    status = 'Successfully Deployed';
+                    color = 'success';
+                    lastUpdatedTime = envDetails.successDeployedTime;
+                }
+                else if (deployed > 0 && deployed < total) {
+                    status = 'Partially Deployed';
+                    color = 'warning';
+                }
+
+                const parsedTime = new Date(lastUpdatedTime);
+                envDetails.deploymentStatus = status;
+                envDetails.deploymentStatusColor = color;
+                envDetails.lastUpdatedTime = Number.isNaN(parsedTime.getTime())
+                    ? '-'
+                    : parsedTime.toLocaleString();
+            }
+            allEnvDeployments[env.name] = { revision, vhost, disPlayDevportal, envDetails };
         });
         return allEnvDeployments;
     }
