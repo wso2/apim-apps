@@ -1331,6 +1331,15 @@ class API extends Resource {
             return client.apis['Users'].organizationInformation(this._requestMetaData());
         });
     }
+
+    /**
+     * Get gateway instances for a specific environment
+     */
+    getEnvironmentGateways(environmentId) {
+        return this.client.then((client) => {
+            return client.apis['Environments'].get_environments__environmentId__gateways({ environmentId }, this._requestMetaData(),);
+        });
+    }
 }
 
 API.CONSTS = {
