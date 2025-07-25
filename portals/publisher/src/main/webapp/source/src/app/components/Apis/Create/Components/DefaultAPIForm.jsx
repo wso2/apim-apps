@@ -30,6 +30,7 @@ import FormControl from '@mui/material/FormControl';
 import FormHelperText from '@mui/material/FormHelperText';
 import FormLabel from '@mui/material/FormLabel';
 import API from 'AppData/api';
+import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { green } from '@mui/material/colors';
 
 const PREFIX = 'DefaultAPIForm';
@@ -159,7 +160,7 @@ export default function DefaultAPIForm(props) {
     const {
         onChange, onValidate, api, isAPIProduct, multiGateway,
         isWebSocket, children, appendChildrenBeforeEndpoint, hideEndpoint,
-        readOnlyAPIEndpoint, settings,
+        readOnlyAPIEndpoint,
     } = props;
 
     const [validity, setValidity] = useState({});
@@ -172,6 +173,7 @@ export default function DefaultAPIForm(props) {
         'wso2/apk': true,
         'AWS': true,
     });
+    const { data: settings, isLoading } = usePublisherSettings();
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
 
     const getBorderColor = (gatewayType) => {
@@ -186,39 +188,43 @@ export default function DefaultAPIForm(props) {
             && (Boolean(api.version))
             && Boolean(api.context));
 
-        if (multiGateway) {
-            // If the gateway type is not in the gatewayTypeMap, add it with both key and value equal to the type
-            if (settings && settings.gatewayTypes) {
-                settings.gatewayTypes.forEach(type => {
-                    if (!(type in gatewayTypeMap)) {
-                        gatewayTypeMap[type] = type;
+    }, []);
+
+    useEffect(() => {
+        if (!isLoading) {
+            if (multiGateway) {
+                // If the gateway type is not in the gatewayTypeMap, add it with both key and value equal to the type
+                if (settings && settings.gatewayTypes) {
+                    settings.gatewayTypes.forEach(type => {
+                        if (!(type in gatewayTypeMap)) {
+                            gatewayTypeMap[type] = type;
+                        }
+                    });
+                }
+
+                const settingsEnvList = settings && settings.environment;
+                multiGateway.forEach((gateway) => {
+                    if (settings && settings.gatewayTypes.length >= 2 && Object
+                        .values(gatewayTypeMap).includes(gateway.value)) {
+                        for (const env of settingsEnvList) {
+                            const tmpEnv = gatewayTypeMap[env.gatewayType];
+                            if (tmpEnv === gateway.value) {
+                                setGatewayToEnvMap((prevMap) => ({
+                                    ...prevMap,
+                                    [gateway.value]: true,
+                                }));
+                                break;
+                            }
+                            setGatewayToEnvMap((prevMap) => ({
+                                ...prevMap,
+                                [gateway.value]: false,
+                            }));
+                        }
                     }
                 });
             }
-
-            const settingsEnvList = settings && settings.environment;
-            multiGateway.forEach((gateway) => {
-                if (settings && settings.gatewayTypes.length >= 2 && Object
-                    .values(gatewayTypeMap).includes(gateway.value)) {
-                    for (const env of settingsEnvList) {
-                        const tmpEnv = gatewayTypeMap[env.gatewayType];
-                        if (tmpEnv === gateway.value) {
-                            setGatewayToEnvMap((prevMap) => ({
-                                ...prevMap,
-                                [gateway.value]: true,
-                            }));
-                            break;
-                        }
-                        setGatewayToEnvMap((prevMap) => ({
-                            ...prevMap,
-                            [gateway.value]: false,
-                        }));
-                    }
-                }
-            });
         }
-
-    }, []);
+    }, [isLoading]);
 
     const updateValidity = (newState) => {
         let isFormValid = Object.entries(newState).length > 0
