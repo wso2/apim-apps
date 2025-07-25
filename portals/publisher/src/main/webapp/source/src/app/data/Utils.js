@@ -639,9 +639,57 @@ class Utils {
                     host: envDetails && envDetails.vhost,
                 };
             }
-            allEnvDeployments[env.name] = { revision, vhost, disPlayDevportal };
+            // Derive status and color based on gateway counts
+            const updatedEnvDetails = envDetails
+                ? this.setDeploymentStatus(envDetails)
+                : null;
+            allEnvDeployments[env.name] = { revision, vhost, disPlayDevportal, envDetails: updatedEnvDetails };
         });
         return allEnvDeployments;
+    }
+
+    /**
+     * Sets deployment status, color, and last updated time for envDetails.
+     * @param {Object} envDetails
+     */
+    static setDeploymentStatus(envDetails) {
+        const deployed = envDetails.deployedGatewayCount ?? 0;
+        const total = envDetails.liveGatewayCount ?? 0;
+        const failed = envDetails.failedGatewayCount ?? 0;
+        const successTime = envDetails.successDeployedTime;
+
+        let status = 'Deployment Pending';
+        let color = 'default';
+        let lastUpdatedTime = Date.now();
+
+        if (deployed > total || failed > total) {
+            status = 'Inconsistent';
+            color = 'error';
+        } else if (total === 0) {
+            status = 'No Gateways Configured';
+        } else if (failed > 0) {
+            status = 'Deployment Failed';
+            color = 'error';
+            lastUpdatedTime = successTime;
+        } else if (deployed === total) {
+            status = 'Successfully Deployed';
+            color = 'success';
+            lastUpdatedTime = successTime;
+        } else if (deployed > 0) {
+            status = 'Partially Deployed';
+            color = 'warning';
+        }
+
+        const parsedTime = new Date(lastUpdatedTime);
+
+        return {
+            ...envDetails,
+            deploymentStatus: status,
+            deploymentStatusColor: color,
+            lastUpdatedTime: Number.isNaN(parsedTime.getTime())
+                ? '-'
+                : parsedTime.toLocaleString(),
+        };
     }
 
     /**

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React from 'react';
+import React, { useState } from 'react';
 import API from 'AppData/api';
 import { FormattedMessage, useIntl } from 'react-intl';
 import { Link as RouterLink } from 'react-router-dom';
@@ -27,7 +27,25 @@ import AddEdit from 'AppComponents/GatewayEnvironments/AddEditGWEnvironment';
 import { useAppContext } from 'AppComponents/Shared/AppContext';
 import Button from '@mui/material/Button';
 import EditIcon from '@mui/icons-material/Edit';
+import FormatListBulletedIcon from '@mui/icons-material/FormatListBulleted';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
+import { styled } from '@mui/material/styles';
 import Permission from './Permission';
+import ListGatewayInstances from './ListGatewayInstances';
+
+const StyledTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+    '& .MuiTooltip-tooltip': {
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.text.primary,
+        fontSize: theme.typography.pxToRem(14),
+        boxShadow: theme.shadows[4],
+        borderRadius: theme.shape.borderRadius,
+        border: `1px solid ${theme.palette.divider}`,
+    },
+}));
 
 /**
  * API call to get Gateway labels
@@ -53,6 +71,23 @@ export default function ListGWEnviornments() {
     const intl = useIntl();
     let columProps;
     const { settings } = useAppContext();
+    // Dialog state for Live Gateways
+    const [liveGatewaysOpen, setLiveGatewaysOpen] = useState(false);
+    const [selectedEnvId, setSelectedEnvId] = useState(null);
+    const [selectedEnvName, setSelectedEnvName] = useState('');
+
+    const handleOpenLiveGateways = (envId, envName) => {
+        setSelectedEnvId(envId);
+        setSelectedEnvName(envName);
+        setLiveGatewaysOpen(true);
+    };
+
+    const handleCloseLiveGateways = () => {
+        setLiveGatewaysOpen(false);
+        setSelectedEnvId(null);
+        setSelectedEnvName('');
+    };
+
     const isGatewayTypeAvailable = settings.gatewayTypes.length >= 2;
     if (isGatewayTypeAvailable) {
         columProps = [
@@ -139,6 +174,48 @@ export default function ListGWEnviornments() {
                     },
                 },
             },
+            ...(settings.isGatewayNotificationEnabled ? [
+                {
+                    name: 'gatewayInstances',
+                    label: intl.formatMessage({
+                        id: 'AdminPages.Gateways.table.header.gatewayInstances',
+                        defaultMessage: 'Gateway Instances',
+                    }),
+                    options: {
+                        sort: false,
+                        customBodyRender: (value, tableMeta) => {
+                            if (typeof tableMeta.rowData === 'object') {
+                                const envId = tableMeta.rowData[8]; // 'id' is the last column
+                                const envName = tableMeta.rowData[1]; // 'displayName'
+                                const gatewayType = tableMeta.rowData[2]; // 'gatewayType'
+                                const isDisabled = gatewayType !== 'Regular';
+
+                                const button = (
+                                    <IconButton
+                                        onClick={() => handleOpenLiveGateways(envId, envName)}
+                                        disabled={isDisabled}
+                                    >
+                                        <FormatListBulletedIcon aria-label='gateway-instances-list-icon' />
+                                    </IconButton>
+                                );
+
+                                return isDisabled ? (
+                                    <StyledTooltip
+                                        title={intl.formatMessage({
+                                            id: 'AdminPages.Gateways.table.gatewayInstances.tooltip.notSupported',
+                                            defaultMessage: 'Not supported for this gateway type',
+                                        })}
+                                    >
+                                        <span>{button}</span>
+                                    </StyledTooltip>
+                                ) : button;
+                            } else {
+                                return <div />;
+                            }
+                        },
+                    },
+                },
+            ] : []),
             { name: 'id', options: { display: false } },
         ];
     } else {
@@ -216,6 +293,48 @@ export default function ListGWEnviornments() {
                     },
                 },
             },
+            ...(settings.isGatewayNotificationEnabled ? [
+                {
+                    name: 'gatewayInstances',
+                    label: intl.formatMessage({
+                        id: 'AdminPages.Gateways.table.header.gatewayInstances',
+                        defaultMessage: 'Gateway Instances',
+                    }),
+                    options: {
+                        sort: false,
+                        customBodyRender: (value, tableMeta) => {
+                            if (typeof tableMeta.rowData === 'object') {
+                                const envId = tableMeta.rowData[8]; // 'id' is the last column
+                                const envName = tableMeta.rowData[1]; // 'displayName'
+                                const gatewayType = tableMeta.rowData[2]; // 'gatewayType'
+                                const isDisabled = gatewayType !== 'Regular';
+
+                                const button = (
+                                    <IconButton
+                                        onClick={() => handleOpenLiveGateways(envId, envName)}
+                                        disabled={isDisabled}
+                                    >
+                                        <FormatListBulletedIcon aria-label='gateway-instances-list-icon' />
+                                    </IconButton>
+                                );
+
+                                return isDisabled ? (
+                                    <StyledTooltip
+                                        title={intl.formatMessage({
+                                            id: 'AdminPages.Gateways.table.gatewayInstances.tooltip.notSupported',
+                                            defaultMessage: 'Not supported for this gateway type',
+                                        })}
+                                    >
+                                        <span>{button}</span>
+                                    </StyledTooltip>
+                                ) : button;
+                            } else {
+                                return <div />;
+                            }
+                        },
+                    },
+                },
+            ] : []),
             { name: 'id', options: { display: false } },
         ];
     }
@@ -284,21 +403,29 @@ export default function ListGWEnviornments() {
     };
 
     return (
-        <ListBase
-            columProps={columProps}
-            pageProps={pageProps}
-            addButtonProps={addButtonProps}
-            searchProps={searchProps}
-            emptyBoxProps={emptyBoxProps}
-            apiCall={apiCall}
-            EditComponent={AddEdit}
-            addButtonOverride={addCreateButton()}
-            editComponentProps={{
-                icon: <EditIcon />,
-                title: 'Edit Gateway Label',
-                routeTo: '/settings/environments/',
-            }}
-            DeleteComponent={Delete}
-        />
+        <>
+            <ListBase
+                columProps={columProps}
+                pageProps={pageProps}
+                addButtonProps={addButtonProps}
+                searchProps={searchProps}
+                emptyBoxProps={emptyBoxProps}
+                apiCall={apiCall}
+                EditComponent={AddEdit}
+                addButtonOverride={addCreateButton()}
+                editComponentProps={{
+                    icon: <EditIcon />,
+                    title: 'Edit Gateway Label',
+                    routeTo: '/settings/environments/',
+                }}
+                DeleteComponent={Delete}
+            />
+            <ListGatewayInstances
+                open={liveGatewaysOpen}
+                onClose={handleCloseLiveGateways}
+                environmentId={selectedEnvId}
+                environmentName={selectedEnvName}
+            />
+        </>
     );
 }

@@ -16,7 +16,7 @@
  * under the License.
  */
 
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { styled } from '@mui/material/styles';
 import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
@@ -61,8 +61,10 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogTitle from '@mui/material/DialogTitle';
 import CardHeader from '@mui/material/CardHeader';
 import Checkbox from '@mui/material/Checkbox';
+import Divider from '@mui/material/Divider';
 import InfoIcon from '@mui/icons-material/Info';
 import { CircularProgress, Link } from '@mui/material';
+import LinearProgress from '@mui/material/LinearProgress';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import API from 'AppData/api';
@@ -480,7 +482,20 @@ const StyledDialog = styled(Dialog)(({ theme }) => ({
     [`& .${classes.textCount}`]: {
         marginTop: theme.spacing(-2.5),
     },
-}))
+}));
+
+const StyledTooltip = styled(({ className, ...props }) => (
+    <Tooltip {...props} classes={{ popper: className }} />
+))(({ theme }) => ({
+    '& .MuiTooltip-tooltip': {
+        backgroundColor: theme.palette.common.white,
+        color: theme.palette.text.primary,
+        fontSize: theme.typography.pxToRem(12),
+        boxShadow: theme.shadows[4],
+        borderRadius: theme.shape.borderRadius,
+        border: `1px solid ${theme.palette.divider}`,
+    },
+}));
 
 /**
  * Renders an Environments list
@@ -504,6 +519,9 @@ export default function Environments() {
     } else {
         revisionCount = 5;
     }
+    const pollingConfig = Configurations.app.environmentsPolling || {};
+    const MAX_POLLING_DURATION_MS = pollingConfig.maxDurationMs ?? 2 * 60 * 1000; // 2 minutes
+    const POLLING_INTERVAL_MS = pollingConfig.intervalMs ?? 3000; // 3 seconds
     const restApi = new API();
     const restProductApi = new APIProduct();
     const [selectedRevision, setRevision] = useState([]);
@@ -518,6 +536,8 @@ export default function Environments() {
     const [isDeploying, setIsDeploying] = useState(false);
     const [isEndpointAvailable, setEndpointAvailable] = useState(false);
     const isMCPServer = api.isMCPServer();
+    const pollingRef = useRef(null);
+    const pollingStartTimeRef = useRef(null);
 
     useEffect(() => {
         if (settings) {
@@ -604,7 +624,7 @@ export default function Environments() {
         } else {
             setEndpointAvailable(api.endpointConfig !== null);
         }
-    }, [isLoading]);
+    }, [settings, isLoading]);
 
     const [extraRevisionToDelete, setExtraRevisionToDelete] = useState(null);
     const [description, setDescription] = useState('');
@@ -2270,6 +2290,125 @@ export default function Environments() {
     }
 
     /**
+     * Renders a status chip with tooltip showing detailed deployment information
+     * for a given environment row using data from allEnvDeployments.
+     * 
+     * - If deployment data is available, shows status with success/fail counts and progress bar.
+     * - If no deployment data exists, shows "No Active Gateways" message.
+     */
+    function envDeploymentStatusComponent(row, allEnvDeployments) {
+        const envDetails = allEnvDeployments[row.name]?.envDetails;
+        if (envDetails) {
+            const status = envDetails.deploymentStatus;
+            const color = envDetails.deploymentStatusColor;
+            const deployed = envDetails.deployedGatewayCount;
+            const total = envDetails.liveGatewayCount;
+            const failed = envDetails.failedGatewayCount;
+            if (total) {
+                return (
+                    <StyledTooltip
+                        title={
+                            <Box px={1} py={0.5} fontSize='0.7rem' minWidth={220}>
+                                <Typography variant='subtitle2' fontWeight='bold' gutterBottom>
+                                    <FormattedMessage
+                                        id='Apis.Details.Environments.Environments.gateway.deployment.info.title'
+                                        defaultMessage='Gateway Deployment Info'
+                                    />
+                                </Typography>
+                                <Box display='flex' justifyContent='space-between' mb={0.5}>
+                                    <span>
+                                        <b style={{ color: '#4caf50' }}>
+                                            <FormattedMessage
+                                                id='Apis.Details.Environments.Environments.gateway.deployment.success'
+                                                defaultMessage='Successful'
+                                            />
+                                        </b>
+                                    </span>
+                                    <span style={{ color: '#4caf50' }}>{deployed ?? '-'}</span>
+                                </Box>
+                                <Box display='flex' justifyContent='space-between' mb={0.5}>
+                                    <span>
+                                        <b style={{ color: '#f44336' }}>
+                                            <FormattedMessage
+                                                id='Apis.Details.Environments.Environments.gateway.deployment.failed'
+                                                defaultMessage='Failed'
+                                            />
+                                        </b>
+                                    </span>
+                                    <span style={{ color: '#f44336' }}>{failed ?? '-'}</span>
+                                </Box>
+                                <Box display='flex' justifyContent='space-between' mb={1}>
+                                    <span>
+                                        <b>
+                                            <FormattedMessage
+                                                id='Apis.Details.Environments.Environments.gateway.deployment.total'
+                                                defaultMessage='Total Gateways'
+                                            />
+                                        </b>
+                                    </span>
+                                    <span>{total ?? '-'}</span>
+                                </Box>
+                                <LinearProgress
+                                    variant='determinate'
+                                    value={total ? (deployed / total) * 100 : 0}
+                                    color={failed > 0 ? 'error' : 'primary'}
+                                    sx={{ height: 6, borderRadius: 2, mb: 0.5 }}
+                                />
+                                <Typography fontWeight='light' variant='caption' display='block' textAlign='right'>
+                                    {total ? ((deployed / total) * 100).toFixed(0) : '0'}%
+                                    &nbsp;
+                                    <FormattedMessage
+                                        id='Apis.Details.Environments.Environments.gateway.deployment.percent.deployed'
+                                        defaultMessage='Deployed'
+                                    />
+                                </Typography>
+                                <Divider sx={{ my: 1 }} />
+                                <Box display='flex' justifyContent='space-between'>
+                                    <span>
+                                        <FormattedMessage
+                                            id='Apis.Details.Environments.Environments.gateway.deployment.last.updated'
+                                            defaultMessage='Last Updated'
+                                        />
+                                    </span>
+                                    <span>{envDetails?.lastUpdatedTime ?? '-'}</span>
+                                </Box>
+                            </Box>
+                        }
+                        placement='top'
+                    >
+                        <Chip
+                            label={status}
+                            color={color}
+                            variant='outlined'
+                            onDelete={() => {}}
+                            deleteIcon={<InfoIcon />}
+                            sx={{
+                                '& .MuiChip-deleteIcon': {
+                                    fontSize: '14px',
+                                    pointerEvents: 'none',
+                                },
+                            }}
+                        />
+                    </StyledTooltip>
+                );
+            } else {
+                return (
+                    <FormattedMessage
+                        id='Apis.Details.Environments.Environments.status.no.live.gateways'
+                        defaultMessage='No Active Gateways'
+                    />
+                );
+            }
+        }
+        return (
+            <FormattedMessage
+                id='Apis.Details.Environments.Environments.status.not.deployed'
+                defaultMessage='No Revision Deployed'
+            />
+        );
+    }
+
+    /**
      * Get the deployment component based on the environment and revision status.
      * @param {*} row Row
      * @param {*} allEnvRevisionMapping All environment revision mapping
@@ -2370,6 +2509,55 @@ export default function Environments() {
         }
         return '';
     }
+
+    /**
+     * Returns true if any environment has a deployment in progress (not failed and not fully deployed).
+     */
+    const hasPendingDeployment = () => {
+        if (!allEnvRevision) return false;
+    
+        const now = Date.now();
+    
+        return allEnvRevision.some(revision =>
+            revision.deploymentInfo?.some(env =>
+                env.status === 'APPROVED' &&
+                env.failedGatewayCount === 0 &&
+                env.deployedGatewayCount < env.liveGatewayCount &&
+                (
+                    env.deployedTime == null || // allow null or undefined
+                    now - env.deployedTime <= MAX_POLLING_DURATION_MS
+                )
+            )
+        );
+    };
+    
+    useEffect(() => {
+        if (settings && settings.isGatewayNotificationEnabled === true) {
+            if (hasPendingDeployment()) {
+                if (!pollingRef.current) {
+                    pollingStartTimeRef.current = Date.now();
+                    pollingRef.current = setInterval(() => {
+                        if (Date.now() - pollingStartTimeRef.current > MAX_POLLING_DURATION_MS) {
+                            clearInterval(pollingRef.current);
+                            pollingRef.current = null;
+                            return;
+                        }
+                        getDeployedEnv(); // Updates allEnvRevision
+                    }, POLLING_INTERVAL_MS);
+                }
+            } else if (pollingRef.current) {
+                clearInterval(pollingRef.current);
+                pollingRef.current = null;
+            }
+            return () => {
+                if (pollingRef.current) {
+                    clearInterval(pollingRef.current);
+                    pollingRef.current = null;
+                }
+            };
+        }
+        return undefined;
+    }, [allEnvRevision, settings]);
 
     if (!noEnv && (isLoading || selectedVhosts === null)) {
         return <Progress per={80} message='Loading app settings ...' />;
@@ -3211,6 +3399,14 @@ export default function Environments() {
                                             </IconButton>
                                         </Tooltip>
                                     </TableCell>
+                                    {settings.isGatewayNotificationEnabled === true && (
+                                        <TableCell align='justify'>
+                                            <FormattedMessage
+                                                id='Apis.Details.Environments.Environments.gateway.deployment.status'
+                                                defaultMessage='Deployment Status'
+                                            />
+                                        </TableCell>
+                                    )}
                                     <TableCell>
                                         <FormattedMessage
                                             id='Apis.Details.Environments.Environments.visibility.permission'
@@ -3348,6 +3544,11 @@ export default function Environments() {
                                                 EnvDeployments={allEnvDeployments[row.name]}
                                             />
                                         </TableCell>
+                                        {settings.isGatewayNotificationEnabled === true && (
+                                            <TableCell align='justify'>
+                                                {envDeploymentStatusComponent(row, allEnvDeployments)}
+                                            </TableCell>
+                                        )}
                                         <TableCell>
                                             <Permission
                                                 type={row.permissions.permissionType}
