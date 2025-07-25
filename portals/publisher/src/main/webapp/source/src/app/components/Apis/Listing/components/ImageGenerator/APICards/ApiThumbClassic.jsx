@@ -536,7 +536,6 @@ class APIThumb extends Component {
                                 api={api}
                                 updateData={updateData}
                                 isAPIProduct={isAPIProduct}
-                                // isMCPServer={isMCPServer}
                             />
                             {loading && <CircularProgress className={classes.deleteProgress} />}
                         </>

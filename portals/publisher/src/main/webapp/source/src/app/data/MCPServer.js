@@ -295,6 +295,27 @@ class MCPServer extends Resource {
     }
 
     /**
+     * Delete an MCP Server given its ID.
+     * @param {String} id - The ID of the MCP Server to delete.
+     * @returns {Promise} A promise that resolves when the MCP Server is deleted.
+     */
+    static deleteMCPServer(id) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Servers'].deleteMCPServer(
+                {
+                    apiId: id,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * To get MCPServer object with the fields filled as per the definition
      * @param {Object} client Client object after resolving this.client.then()
      * @returns {Object} MCP Server Object corresponding to spec fields
