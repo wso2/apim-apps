@@ -33,7 +33,6 @@ import { isRestricted } from 'AppData/AuthManager';
 import { Alert, Progress } from 'AppComponents/Shared';
 import API from 'AppData/api';
 import AddCircle from '@mui/icons-material/AddCircle';
-import { Endpoints as MCPServerEndpoints } from 'AppComponents/MCPServers/Details/Endpoints/Endpoints';
 import EndpointOverview from './EndpointOverview';
 import AIEndpoints from './AIEndpoints/AIEndpoints';
 import { createEndpointConfig, getEndpointTemplateByType } from './endpointUtils';
@@ -756,7 +755,7 @@ function Endpoints(props) {
     return (
         (<Root>
             {/* Since the api is set to the state in component did mount, check both the api and the apiObject. */}
-            {(api.endpointConfig === null && apiObject.endpointConfig === null) ?
+            {(api.endpointConfig === null && apiObject.endpointConfig === null && !isMCPServer) ?
                 <NewEndpointCreate generateEndpointConfig={generateEndpointConfig} apiType={apiObject.type}
                     componentValidator={componentValidator}
                 />
@@ -796,7 +795,7 @@ function Endpoints(props) {
                                 </Button>
                             )}
                         </div>
-                        {(api.subtypeConfiguration?.subtype === 'AIAPI' && (
+                        {((api.subtypeConfiguration?.subtype === 'AIAPI' || isMCPServer) && (
                             <AIEndpoints
                                 swaggerDef={swagger}
                                 updateSwagger={changeSwagger}
@@ -891,9 +890,6 @@ function Endpoints(props) {
                                     </Grid>
                                 </Grid>
                             </div>
-                        )}
-                        {isMCPServer && (
-                            <MCPServerEndpoints />
                         )}
                     </div>
                 )}

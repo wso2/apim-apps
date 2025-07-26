@@ -374,7 +374,7 @@ class Details extends Component {
         const promisedMCPServer = MCPServer.getMCPServerById(mcpServerUUID);
         promisedMCPServer
             .then((mcpServer) => {
-                this.setState({ 
+                this.setState({
                     isMCPServer: true,
                     api: mcpServer,
                     // isMCPServerLoading: false, 
@@ -1280,7 +1280,7 @@ class Details extends Component {
                                                 !isAPIProduct &&
                                                 !api.isGraphql() &&
                                                 !api.isSOAPToREST() &&
-                                                !api.isSOAP() ? 
+                                                !api.isSOAP() ?
                                                     (
                                                         <Compliance api={api} />
                                                     ) : (

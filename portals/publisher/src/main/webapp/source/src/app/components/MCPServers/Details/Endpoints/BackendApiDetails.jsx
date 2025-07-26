@@ -15,16 +15,18 @@
  * specific language governing permissions and limitations
  * under the License.
  */
+
 import React from 'react';
 
-const Endpoint = () => {
+const BackendApiDetails = () => {
+
     return (
         <div>
-            <h1>Endpoint Component</h1>
-            <p>This is a placeholder for the Endpoint component.</p>
+            <h1>Endpoints Component</h1>
+            <p>This is a placeholder for the Endpoints component.</p>
             {/* Add your endpoint related content here */}
         </div>
     );
 }
 
-export default Endpoint;
+export default BackendApiDetails;

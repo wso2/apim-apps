@@ -470,6 +470,29 @@ class MCPServer extends Resource {
     }
 
     /**
+     * Delete an endpoint of the MCP Server
+     * @param {string} id UUID of the MCP Server
+     * @param {string} endpointId UUID of the endpoint
+     * @returns {Promise} A promise that resolves to the response of the delete operation.
+     */
+    static deleteMCPServerEndpoint(id, endpointId) {
+        const restApiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return restApiClient.then(client => {
+            return client.apis['MCP Server Endpoints'].deleteMCPServerEndpoint( // TODO: not implemented yet
+                {
+                    apiId: id,
+                    endpointId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Update the life cycle state of an MCP Server given its id (UUID)
      * @param {string} id UUID of the MCP Server
      * @param {string} state Target state which need to be transferred
@@ -571,7 +594,6 @@ class MCPServer extends Resource {
         });
         return promiseLcHistoryGet;
     }
-
 }
 
 export default MCPServer;
