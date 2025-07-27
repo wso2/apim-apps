@@ -597,7 +597,10 @@ class Details extends Component {
 
         let promisedUpdate;
         let apiId = null;
-        if (!isAPIProduct) {
+        if (api.isMCPServer()) {
+            apiId = api.isRevision ? api.revisionedMCPServerId : api.id;
+            promisedUpdate = MCPServer.getRevisions(apiId);
+        } else if (!isAPIProduct) {
             apiId = api.isRevision ? api.revisionedApiId : api.id;
             promisedUpdate = restApi.getRevisions(apiId);
         } else if (isAPIProduct) {
@@ -628,9 +631,13 @@ class Details extends Component {
         if (api.apiType === API.CONSTS.APIProduct) {
             isAPIProduct = true;
         }
+        const isMCPServer = api.isMCPServer();
 
         let promisedUpdate;
-        if (!isAPIProduct) {
+        if (isMCPServer) {
+            promisedUpdate = MCPServer.getRevisionsWithEnv(api.isRevision
+                ? api.revisionedMCPServerId : api.id);
+        } else if(!isAPIProduct) {
             promisedUpdate = restApi.getRevisionsWithEnv(api.isRevision ? api.revisionedApiId : api.id);
         } else if (isAPIProduct) {
             promisedUpdate = restApiProduct.getProductRevisionsWithEnv(api.isRevision
@@ -1163,6 +1170,10 @@ class Details extends Component {
                                         component={() => <Environments api={api} />}
                                     />
                                     <Route
+                                        path={Details.subPaths.ENVIRONMENTS_MCP}
+                                        component={() => <Environments api={api} />}
+                                    />
+                                    <Route
                                         path={Details.subPaths.OPERATIONS}
                                         component={() => <Operations api={api}
                                             componentValidator={settings &&
@@ -1193,11 +1204,19 @@ class Details extends Component {
                                             <Scope api={api} />} />
                                     }
                                     <Route
+                                        path={Details.subPaths.SCOPES_MCP}
+                                        component={() => <Scope api={api} />}
+                                    />
+                                    <Route
                                         path={Details.subPaths.DOCUMENTS}
                                         component={() => <Documents api={api} />}
                                     />
                                     <Route
                                         path={Details.subPaths.DOCUMENTS_PRODUCT}
+                                        component={() => <Documents api={api} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.DOCUMENTS_MCP}
                                         component={() => <Documents api={api} />}
                                     />
                                     {settings && settings.gatewayFeatureCatalog
@@ -1211,6 +1230,11 @@ class Details extends Component {
                                     }
                                     <Route
                                         path={Details.subPaths.SUBSCRIPTIONS_PRODUCT}
+                                        component={() => <Subscriptions api={api}
+                                            updateAPI={this.updateAPI} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.SUBSCRIPTIONS_MCP}
                                         component={() => <Subscriptions api={api}
                                             updateAPI={this.updateAPI} />}
                                     />

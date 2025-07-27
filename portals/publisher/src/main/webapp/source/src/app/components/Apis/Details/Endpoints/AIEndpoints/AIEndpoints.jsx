@@ -61,9 +61,20 @@ const AIEndpoints = ({
                     setProductionEndpoints(endpoints);                    
                     setSandboxEndpoints(endpoints);
 
+                    // TODO: Change when endpointConfig is converted to a json instead of a string
                     const endpointUrlList = [
-                        ...endpoints.map(ep => ep.endpointConfig?.production_endpoints),
-                        ...endpoints.map(ep => ep.endpointConfig?.sandbox_endpoints)
+                        ...endpoints.map(ep => {
+                            const config = typeof ep.endpointConfig === 'string'
+                                ? JSON.parse(ep.endpointConfig)
+                                : ep.endpointConfig;
+                            return config?.production_endpoints;
+                        }),
+                        ...endpoints.map(ep => {
+                            const config = typeof ep.endpointConfig === 'string'
+                                ? JSON.parse(ep.endpointConfig)
+                                : ep.endpointConfig;
+                            return config?.sandbox_endpoints;
+                        })
                     ].filter(Boolean);
                     setEndpointList(endpointUrlList);
                 })

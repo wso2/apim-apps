@@ -338,7 +338,7 @@ class MCPServer extends Resource {
      * @param {string} id ID of the MCP Server.
      * @return {Promise} A promise that resolves to the list of revisions.
      * */
-    getRevisions(id) {
+    static getRevisions(id) {
         const apiClient = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
@@ -374,28 +374,75 @@ class MCPServer extends Resource {
     }
 
     /**
+     * Create a new revision for an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {Object} revisionBody - The body of the revision to create.
+     * @returns {Promise} A promise that resolves to the created revision.
+     */
+    static createRevision(mcpServerId, revisionBody) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].createMCPServerRevision(
+                {
+                    apiId: mcpServerId,
+                },
+                {
+                    requestBody: revisionBody,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Delete a revision of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {string} revisionId - The ID of the revision to delete.
+     * @returns {Promise} A promise that resolves to the response of the delete operation.
+     */
+    static deleteRevision(mcpServerId, revisionId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].deleteMCPServerRevision(
+                {
+                    apiId: mcpServerId,
+                    revisionId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
      * Restore revision.
      *
      * @param {string} id ID of the MCP Server.
      * @param {string} revisionId ID of the revision to restore.
      * @returns {Promise} A promise that resolves to the restored revision.
      * */
-    restoreRevision(id, revisionId) {
+    static restoreRevision(id, revisionId) {
         const apiClient = new APIClientFactory()
             .getAPIClient(
                 Utils.getCurrentEnvironment(),
                 Utils.CONST.API_CLIENT
             ).client;
-        return apiClient.then(
-            client => {
-                return client.apis['MCP Server Revisions'].restoreMCPServerRevision(
-                    {
-                        apiId: id,
-                        revisionId,
-                    },
-                    this._requestMetaData(),
-                );
-            });
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].restoreMCPServerRevision(
+                {
+                    apiId: id,
+                    revisionId,
+                },
+                this._requestMetaData(),
+            );
+        });
     }
 
     /**
@@ -594,6 +641,133 @@ class MCPServer extends Resource {
         });
         return promiseLcHistoryGet;
     }
+
+    /**
+     * Test the endpoint of an MCP Server.
+     * @param {string} endpointUrl - The URL of the endpoint to test.
+     * @param {string} id - The ID of the MCP Server.   
+     * @return {Promise} A promise that resolves to the response of the endpoint validation.
+     */
+    static testEndpoint(endpointUrl, id) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis.Validation.validateMCPServerEndpoint(
+                {
+                    apiId: id,
+                    endpointUrl,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Deploy a revision of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {string} revisionId - The ID of the revision to deploy.
+     * @param {Object} body - The request body containing deployment information.
+     * @returns {Promise} A promise that resolves to the response of the deployment request.
+     */
+    static deployRevision(mcpServerId, revisionId, body) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].deployMCPServerRevision(
+                {
+                    apiId: mcpServerId,
+                    revisionId,
+                },
+                {
+                    requestBody: body,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Undeploy a revision of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {string} revisionId - The ID of the revision to undeploy.
+     * @param {Object} body - The request body containing undeployment information.
+     * @returns {Promise} A promise that resolves to the response of the undeployment request.
+     */
+    static undeployRevision(mcpServerId, revisionId, body) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Revisions'].undeployMCPServerRevision(
+                {
+                    apiId: mcpServerId,
+                    revisionId,
+                },
+                {
+                    requestBody: body,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    /**
+     * Get the settings of the MCP Server.
+     * @returns {Promise<Object>} A promise that resolves to the settings of the MCP Server.
+     */
+    getSettings() {
+        const promisedSettings = this.client.then(client => {
+            return client.apis.Settings.getSettings();
+        });
+        return promisedSettings.then(response => response.body);
+    }
+
+    /**
+     * Get settings of an MCP Server.
+     * @returns {Promise<Object>} A promise that resolves to the settings of the MCP Server
+     */
+    static getSettings() {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        const promisedSettings = apiClient.then(client => {
+            return client.apis.Settings.getSettings();
+        });
+        return promisedSettings.then(response => response.body);
+    }
+
+    /**
+     * Get the documents of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @returns {Promise} A promise that resolves to the documents of the MCP Server.
+     */
+    static getDocuments(mcpServerId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].getMCPServerDocuments(
+                {
+                    apiId: mcpServerId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+
 }
 
 export default MCPServer;

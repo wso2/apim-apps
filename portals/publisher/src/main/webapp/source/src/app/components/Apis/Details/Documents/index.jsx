@@ -28,9 +28,17 @@ import EditContent from './EditContent';
 import DocCreate from './Create';
 import GenerateDocument from './GenerateDocument';
 
-const Documents = (props) => {
-    const { isAPIProduct } = useContext(APIContext);
-    const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
+const Documents = () => {
+    const { api } = useContext(APIContext);
+    let urlPrefix;
+    if (api.isMCPServer()) {
+        urlPrefix = 'mcp-servers';
+    } else if (api.isAPIProduct()) {
+        urlPrefix = 'api-products';
+    } else {
+        urlPrefix = 'apis';
+    }
+
     return (
         <div>
             <Switch>

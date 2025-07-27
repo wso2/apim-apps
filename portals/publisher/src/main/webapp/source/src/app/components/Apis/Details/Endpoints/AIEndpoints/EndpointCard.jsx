@@ -146,7 +146,7 @@ const EndpointCard = ({
 
     const getApiDefinition = () => {
         const apiDef = endpoint.apiDefinition || '{}';
-        if (typeof  apiDef === 'string') {
+        if (typeof apiDef === 'string') {
             const parsedDef = JSON.parse(apiDef);
             return JSON.stringify(parsedDef, null, 2);
         }
@@ -279,15 +279,21 @@ const EndpointCard = ({
                                     style: {zIndex: 1300}
                                 }}
                             >
-                                <Box role='presentation'>
-                                    <Typography variant='h6' sx={{ p: 2 }}>
+                                <Box
+                                    role='presentation'
+                                    sx={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
+                                    <Typography variant='h6' sx={{ p: 2, flexShrink: 0 }}>
                                         <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.EndpointCard.api.definition.title'
-                                            defaultMessage='API Definition'
+                                            id='Apis.Details.Endpoints.AIEndpoints.EndpointCard.backend.api.definition'
+                                            defaultMessage='Backend API Definition'
                                         />
                                     </Typography>
                                     <Box
-                                        sx={{ overflowY: 'auto', height: 'calc(100% - 64px)' }}
+                                        sx={{
+                                            flex: 1,
+                                            minHeight: 0,
+                                            overflowY: 'auto',
+                                        }}
                                         px={2}
                                         pb={2}
                                     >

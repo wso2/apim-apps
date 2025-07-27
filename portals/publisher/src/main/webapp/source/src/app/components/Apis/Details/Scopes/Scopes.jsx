@@ -123,6 +123,9 @@ class Scopes extends React.Component {
         };
     }
 
+    /**
+     * Lifecycle method to fetch API settings
+     */
     componentDidMount() {
         const { api } = this.props;
         api.getSettings().then((settings) => {
@@ -138,7 +141,15 @@ class Scopes extends React.Component {
     render() {
         const { intl, api } = this.props;
         const { enableReadOnly } = this.state;
-        const urlPrefix = (api.apiType === Api.CONSTS.APIProduct) ? 'api-products' : 'apis';
+        let urlPrefix;
+        if (api.isMCPServer()) {
+            urlPrefix = 'mcp-servers';
+        } else if (api.apiType === Api.CONSTS.APIProduct) {
+            urlPrefix = 'api-products';
+        } else {
+            urlPrefix = 'apis';
+        }
+
         const { scopes } = api;
         const url = `/${urlPrefix}/${api.id}/scopes/create`;
         const editUrl = `/${urlPrefix}/${api.id}/scopes/edit`;

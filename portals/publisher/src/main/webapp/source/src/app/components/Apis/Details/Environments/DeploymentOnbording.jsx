@@ -36,6 +36,7 @@ import { useAppContext } from 'AppComponents/Shared/AppContext';
 import { CircularProgress, useTheme } from '@mui/material';
 import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Checkbox from '@mui/material/Checkbox';
 import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
@@ -149,26 +150,17 @@ export default function DeploymentOnboarding(props) {
 
     const [api] = useAPI();
     const theme = useTheme();
+    const isMCPServer = api.isMCPServer();
     const { maxCommentLength } = theme.custom;
     const { settings: { environment: environments, gatewayTypes } } = useAppContext();
     const [internalGateways, setInternalGateways] = useState([]);
     const [externalGateways, setExternalGateways] = useState([]);
     const [selectedExternalGateway, setSelectedExternalGateway] = useState([]);
-    const isEndpointAvailable = api.subtypeConfiguration?.subtype === 'AIAPI'
-        ? (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null)
-        : api.endpointConfig !== null;
     const [isEndpointSecurityConfigured, setIsEndpointSecurityConfigured] = useState(false);
     const [descriptionOpen, setDescriptionOpen] = useState(false);
     const [selectedEnvironment, setSelectedEnvironment] = useState([]);
     const [selectedVhostDeploy, setVhostsDeploy] = useState(null);
-
-    const isDeployButtonDisabled = ((api.type !== 'WEBSUB' && !(
-        isEndpointAvailable &&
-        (api.subtypeConfiguration?.subtype === 'AIAPI'
-            ? isEndpointSecurityConfigured
-            : true
-        )
-    )) || api.workflowStatus === 'CREATED');
+    const [isEndpointAvailable, setEndpointAvailable] = useState(false);
 
     useEffect(() => {
         let gatewayType;
@@ -274,7 +266,31 @@ export default function DeploymentOnboarding(props) {
             }
         };
         checkEndpointSecurity();
+
+        if (isMCPServer) {
+            MCPServer.getMCPServerEndpoints(api.id)
+                .then((response) => {
+                    const fetchedEndpoints = response.body;
+                    if (fetchedEndpoints && fetchedEndpoints.length > 0) {
+                        setEndpointAvailable(true);
+                    } else {
+                        setEndpointAvailable(false);
+                    }
+                });
+        } else {
+            setEndpointAvailable(api.subtypeConfiguration?.subtype === 'AIAPI'
+                ? (api.primaryProductionEndpointId !== null || api.primarySandboxEndpointId !== null)
+                : api.endpointConfig !== null);
+        }
     }, [api]);
+
+    const isDeployButtonDisabled = ((api.type !== 'WEBSUB' && !(
+        isEndpointAvailable &&
+        (api.subtypeConfiguration?.subtype === 'AIAPI'
+            ? isEndpointSecurityConfigured
+            : true
+        )
+    )) || api.workflowStatus === 'CREATED');
 
     /**
      * Handle Description

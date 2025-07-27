@@ -23,6 +23,7 @@ import PropTypes from 'prop-types';
 import { Link } from 'react-router-dom';
 import MUIDataTable from 'mui-datatables';
 import API from 'AppData/api.js';
+import MCPServer from 'AppData/MCPServer';
 import APIProduct from 'AppData/APIProduct';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
@@ -158,14 +159,37 @@ const Root = styled('div')((
 
 const TextEditor = lazy(() => import('./TextEditor' /* webpackChunkName: "ListingTextEditor" */));
 
+/**
+ * LinkGenerator component for generating document links
+ * @param {*} props - Props passed to the component
+ * @returns {JSX.Element} - Rendered link element
+ */
 function LinkGenerator(props) {
-    return props.apiType === 'APIPRODUCT' ? (
-        <Link to={'/api-products/' + props.apiId + '/documents/' + props.docId + '/details'}>{props.docName}</Link>
-    ) : (
-        <Link to={'/apis/' + props.apiId + '/documents/' + props.docId + '/details'}>{props.docName}</Link>
-    );
+    if (props.apiType === 'APIPRODUCT') {
+        return (
+            <Link to={'/api-products/' + props.apiId + '/documents/' + props.docId + '/details'}>
+                {props.docName}
+            </Link>
+        );
+    } else if (props.apiType === MCPServer.CONSTS.MCP) {
+        return (
+            <Link to={'/mcp-servers/' + props.apiId + '/documents/' + props.docId + '/details'}>
+                {props.docName}
+            </Link>
+        );
+    } else {
+        return (
+            <Link to={'/apis/' + props.apiId + '/documents/' + props.docId + '/details'}>
+                {props.docName}
+            </Link>
+        );
+    }
 }
 
+/**
+ * Listing component for displaying documents of an API
+ * @returns {JSX.Element} - Rendered component
+ */
 class Listing extends React.Component {
     constructor(props) {
         super(props);
@@ -186,9 +210,11 @@ class Listing extends React.Component {
     componentDidMount() {
         this.getDocumentsList();
     }
-    
-    /*
-     Get the document list attached to current API and set it to the state
+
+    /**
+     * Fetches the list of documents associated with the API
+     * and updates the component state with the document list.
+     * @returns {void}
      */
     getDocumentsList() {
         const { api, intl } = this.props;
@@ -219,6 +245,22 @@ class Listing extends React.Component {
                     defaultMessage: 'Error in fetching documents list of the API Product',
                 }));
             });
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            const docs = MCPServer.getDocuments(api.id);
+            docs.then((response) => {
+                const documentList = response.body.list.filter((item) => item.otherTypeName !== '_overview');
+                documentList.sort(getSortOrder('name'));
+                this.setState({ docs: documentList });
+            }).catch((errorResponse) => {
+                const errorData = JSON.parse(errorResponse.message);
+                const messageTxt =
+                    'Error[' + errorData.code + ']: ' + errorData.description + ' | ' + errorData.message + '.';
+                console.error(messageTxt);
+                Alert.error(intl.formatMessage({
+                    id: 'Apis.Details.Documents.Listing.documents.listing.fetching.error.message.mcp',
+                    defaultMessage: 'Error in fetching documents list of the MCP Server',
+                }));
+            });
         } else {
             const newApi = new API();
             const docs = newApi.getDocuments(api.id);
@@ -238,17 +280,33 @@ class Listing extends React.Component {
             });
         }
     }
+
+    /**
+     * Toggles the visibility of the add document section
+     */
     toggleAddDocs() {
         this.setState((oldState) => {
             return { showAddDocs: !oldState.showAddDocs };
         });
     }
 
-
+    /**
+     * Renders the component
+     * @returns {JSX.Element} - Rendered component
+     */
     render() {
         const {  api, isAPIProduct, intl } = this.props;
         const { docs, showAddDocs, docsToDelete } = this.state;
-        const urlPrefix = isAPIProduct ? 'api-products' : 'apis';
+
+        let urlPrefix;
+        if (isAPIProduct) {
+            urlPrefix = 'api-products';
+        } else if (api.isMCPServer()) {
+            urlPrefix = 'mcp-servers';
+        } else {
+            urlPrefix = 'apis';
+        }
+
         const url = `/${urlPrefix}/${api.id}/documents/create`;
         const showActionsColumn = isRestricted(['apim:api_publish', 'apim:api_create'], api) ? 'excluded' : true;
         const options = {
@@ -443,14 +501,14 @@ class Listing extends React.Component {
                                         <tr>
                                             <td>
                                                 <a href={sourceUrl}>
-                                                <Button>
-                                                    <Icon>open_in_new</Icon>
-                                                    <FormattedMessage
-                                                        id='Apis.Details.Documents.Listing.documents.open'
-                                                        defaultMessage='Open'
-                                                    />
-                                                </Button>
-                                               </a>  
+                                                    <Button>
+                                                        <Icon>open_in_new</Icon>
+                                                        <FormattedMessage
+                                                            id='Apis.Details.Documents.Listing.documents.open'
+                                                            defaultMessage='Open'
+                                                        />
+                                                    </Button>
+                                                </a>  
                                             </td>
                                             <td>
                                                 <Edit
@@ -525,13 +583,18 @@ class Listing extends React.Component {
                     <DeleteMultiple getDocumentsList={this.getDocumentsList} docsToDelete={docsToDelete} docs={docs} />
                 )}
                 <div className={classes.titleWrapper}>
-                    <Typography id='itest-api-details-documents-head' variant='h4' component='h2' className={classes.mainTitle}>
+                    <Typography
+                        id='itest-api-details-documents-head'
+                        variant='h4'
+                        component='h2'
+                        className={classes.mainTitle}
+                    >
                         <FormattedMessage
                             id='Apis.Details.Documents.Listing.documents.listing.title'
                             defaultMessage='Documents'
                         />
                     </Typography>
-                    {((docs && docs.length > 0) || (api.type=='HTTP')) && (
+                    {((docs && docs.length > 0) || (api.type === 'HTTP')) && (
                         <Button
                             size='small'
                             data-testid='add-document-btn'
@@ -557,8 +620,8 @@ class Listing extends React.Component {
                         />
                     )}
 
-                    {api.type=='HTTP' && (
-                        <React.Fragment>
+                    {api.type === 'HTTP' && (
+                        <>
                             <Paper className={classes.documentsPaper}>
                                 <Typography className={classes.subHeading} variant='h6' component='h4'>
                                     <FormattedMessage
@@ -577,28 +640,28 @@ class Listing extends React.Component {
                                     />
                                 </div>
                             </Paper>
-                        </React.Fragment>
+                        </>
                     )}
 
-                    {api.type=='HTTP' && docs && docs.length > 0 && (
-                        <React.Fragment>
+                    {api.type === 'HTTP' && docs && docs.length > 0 && (
+                        <>
                             <Paper className={classes.documentsPaper}>
-                                    <Typography className={classes.subHeading} variant='h6' component='h4'>
-                                        <FormattedMessage
-                                            id='Apis.Details.Documents.Listing.documents.uploaded.title'
-                                            defaultMessage='Uploaded Documents'
-                                        />
-                                    </Typography>
-                                    <MUIDataTable title='' data={docs} columns={columns} options={options} />
+                                <Typography className={classes.subHeading} variant='h6' component='h4'>
+                                    <FormattedMessage
+                                        id='Apis.Details.Documents.Listing.documents.uploaded.title'
+                                        defaultMessage='Uploaded Documents'
+                                    />
+                                </Typography>
+                                <MUIDataTable title='' data={docs} columns={columns} options={options} />
                             </Paper>
-                        </React.Fragment>
+                        </>
                     )}
                     
-                    {docs && docs.length > 0 && api.type!='HTTP' && (
+                    {docs && docs.length > 0 && api.type !== 'HTTP' && (
                         <MUIDataTable title='' data={docs} columns={columns} options={options} />
                     )}
                     
-                    {docs && docs.length < 1 && api.type!='HTTP' && (
+                    {docs && docs.length < 1 && api.type !== 'HTTP' && (
                         <InlineMessage type='info' height={140}>
                             <div className={classes.contentWrapper}>
                                 <Typography variant='h5' component='h3' className={classes.head}>
@@ -607,30 +670,49 @@ class Listing extends React.Component {
                                         defaultMessage='Create Documents'
                                     />
                                 </Typography>
-                                {api.apiType === API.CONSTS.APIProduct
-                                    ? 
-                                <Typography component='p' className={classes.content}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Documents.Listing.APIProduct.add.new.msg.content'
-                                        defaultMessage={
-                                            'You can add different types of documents to an API.' +
-                                            ' Proper documentation helps API publishers to market their ' +
-                                            ' APIs better and sustain competition. '
-                                        }
-                                    />
-                                </Typography>
-                                    : 
-                                <Typography component='p' className={classes.content}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Documents.Listing.add.new.msg.content'
-                                        defaultMessage={
-                                            'You can add different types of documents to an API.' +
-                                            ' Proper documentation helps API publishers to market their ' +
-                                            ' APIs better and sustain competition. '
-                                        }
-                                    />
-                                </Typography>
-                                }
+                                {(() => {
+                                    if (api.apiType === API.CONSTS.APIProduct) {
+                                        return (
+                                            <Typography component='p' className={classes.content}>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Documents.Listing.APIProduct.add.new.msg.content'
+                                                    defaultMessage={
+                                                        'You can add different types of documents to an API Product.' +
+                                                        ' Proper documentation helps API publishers to market their ' +
+                                                        ' APIs better and sustain competition. '
+                                                    }
+                                                />
+                                            </Typography>
+                                        );
+                                    } else if (api.apiType === MCPServer.CONSTS.MCP) {
+                                        return (
+                                            <Typography component='p' className={classes.content}>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Documents.Listing.MCP.add.new.msg.content'
+                                                    defaultMessage={
+                                                        'You can add different types of documents to a MCP Server.' +
+                                                        ' Proper documentation helps API publishers to market their ' +
+                                                        ' APIs better and sustain competition. '
+                                                    }
+                                                />
+                                            </Typography>
+                                        );
+                                    } else {
+                                        return (
+                                            <Typography component='p' className={classes.content}>
+                                                <FormattedMessage
+                                                    id='Apis.Details.Documents.Listing.add.new.msg.content'
+                                                    defaultMessage={
+                                                        'You can add different types of documents to an API.' +
+                                                        ' Proper documentation helps API publishers to market their ' +
+                                                        ' APIs better and sustain competition. '
+                                                    }
+                                                />
+                                            </Typography>
+                                        );
+                                    }
+                                })()}
+
                                 <div className={classes.actions}>
                                     <Button
                                         id='add-new-document-btn'
@@ -638,9 +720,11 @@ class Listing extends React.Component {
                                         variant='contained'
                                         color='primary'
                                         component={Link}
-                                        to={!isRestricted(['apim:api_create', 'apim:api_publish'], api) && !api.isRevision && url}
+                                        to={!isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                            && !api.isRevision && url}
                                         className={classes.button}
-                                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api) || api.isRevision}
+                                        disabled={isRestricted(['apim:api_create', 'apim:api_publish'], api)
+                                            || api.isRevision}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Documents.Listing.add.new.msg.button'
