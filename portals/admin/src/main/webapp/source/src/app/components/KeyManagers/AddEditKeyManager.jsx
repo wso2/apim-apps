@@ -412,7 +412,50 @@ function AddEditKeyManager(props) {
     };
 
     const resetAdditionalProperties = () => {
-        dispatch({ field: 'additionalProperties', value: {} });
+        // For nested configurations, we need to preserve structure but reset values
+        if (keymanagerConnectorConfigurations.length > 0) {
+            const hasNestedConfigs = keymanagerConnectorConfigurations.some((config) => (
+                config.values && Array.isArray(config.values)
+                && config.values.some((value) => value.values && Array.isArray(value.values))
+            ));
+            if (hasNestedConfigs) {
+                // Initialize nested structure with default values
+                const initialNestedProps = {};
+                const initializeNestedDefaults = (configs, parentPath = '', targetObj = initialNestedProps) => {
+                    configs.forEach((config) => {
+                        const configPath = parentPath ? `${parentPath}.${config.name}` : config.name;
+                        const pathArray = configPath.split('.');
+                        let current = targetObj;
+                        // Create nested structure
+                        for (let i = 0; i < pathArray.length - 1; i++) {
+                            const segment = pathArray[i];
+                            if (!current[segment]) {
+                                current[segment] = {};
+                            }
+                            current = current[segment];
+                        }
+                        // Set default value
+                        const finalKey = pathArray[pathArray.length - 1];
+                        current[finalKey] = config.default || '';
+
+                        // Recursively initialize nested configs
+                        if (config.values && Array.isArray(config.values)) {
+                            config.values.forEach((value) => {
+                                if (value.values && Array.isArray(value.values)) {
+                                    initializeNestedDefaults(value.values, configPath, targetObj);
+                                }
+                            });
+                        }
+                    });
+                };
+                initializeNestedDefaults(keymanagerConnectorConfigurations);
+                dispatch({ field: 'additionalProperties', value: initialNestedProps });
+            } else {
+                dispatch({ field: 'additionalProperties', value: {} });
+            }
+        } else {
+            dispatch({ field: 'additionalProperties', value: {} });
+        }
     };
 
     const onChange = (e) => {
@@ -446,7 +489,6 @@ function AddEditKeyManager(props) {
             }
         }
     };
-
     const formHasErrors = (validatingActive = false) => {
         let connectorConfigHasErrors = false;
         keymanagerConnectorConfigurations.forEach((connector) => {
@@ -559,9 +601,29 @@ function AddEditKeyManager(props) {
     const setClaimMapping = (updatedClaimMappings) => {
         dispatch({ field: 'claimMapping', value: updatedClaimMappings });
     };
-    const setAdditionalProperties = (key, value) => {
+    const setAdditionalProperties = (key, value, parentPath = null, shouldRemove = false) => {
         const clonedAdditionalProperties = cloneDeep(additionalProperties);
-        clonedAdditionalProperties[key] = value;
+        let targetKey;
+
+        if (parentPath) {
+            // Handle nested properties using flattened dot notation keys
+            // This preserves parent dropdown values while allowing child field storage
+            const pathArray = Array.isArray(parentPath) ? parentPath : parentPath.split('.');
+            targetKey = `${pathArray.join('.')}.${key}`;
+        } else {
+            // Handle both flat properties and flattened nested keys
+            targetKey = key;
+        }
+
+        // If shouldRemove is true or value is empty, remove the key from additionalProperties
+        const isValueEmpty = value === null || value === undefined || value === ''
+                       || (Array.isArray(value) && value.length === 0);
+        if (shouldRemove || isValueEmpty) {
+            delete clonedAdditionalProperties[targetKey];
+        } else {
+            clonedAdditionalProperties[targetKey] = value;
+        }
+
         dispatch({ field: 'additionalProperties', value: clonedAdditionalProperties });
     };
     const setTokenValidations = (value) => {

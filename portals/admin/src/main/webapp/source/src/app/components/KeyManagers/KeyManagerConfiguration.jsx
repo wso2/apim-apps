@@ -61,12 +61,71 @@ export default function KeyManagerConfiguration(props) {
         }
     }, [tenantWideCertificates, setAdditionalProperties]);
 
-    const onChange = (e) => {
+    // Helper function to get nested value from additionalProperties
+    const getNestedValue = (path, defaultValue = '') => {
+        if (!path) return defaultValue;
+
+        // First try to get the value using the flattened key
+        if (additionalProperties && path in additionalProperties) {
+            return additionalProperties[path];
+        }
+
+        // Fallback to nested object traversal for backward compatibility
+        const pathArray = Array.isArray(path) ? path : path.split('.');
+        let current = additionalProperties;
+
+        for (const segment of pathArray) {
+            if (current && typeof current === 'object' && segment in current) {
+                current = current[segment];
+            } else {
+                return defaultValue;
+            }
+        }
+
+        return current !== undefined ? current : defaultValue;
+    };
+
+    // Helper function to set nested value in additionalProperties
+    const setNestedValue = (path, value) => {
+        if (!path) {
+            return;
+        }
+
+        // If value is empty (null, undefined, empty string, or empty array), remove the key
+        const isEmptyString = value === null || value === undefined || value === ''
+            || (Array.isArray(value) && value.length === 0);
+
+        if (isEmptyString) {
+            if (typeof path === 'string' && path.includes('.')) {
+                // For nested paths, parse the path to get the key and parentPath
+                const pathParts = path.split('.');
+                const key = pathParts.pop();
+                const parentPath = pathParts.join('.');
+                setAdditionalProperties(key, '', parentPath, true); // Pass empty string and true to indicate removal
+            } else {
+                setAdditionalProperties(path, '', null, true); // Pass empty string and true to indicate removal
+            }
+        } else if (typeof path === 'string' && path.includes('.')) {
+            // For nested paths, parse the path to get the key and parentPath
+            const pathParts = path.split('.');
+            const key = pathParts.pop();
+            const parentPath = pathParts.join('.');
+            setAdditionalProperties(key, value, parentPath);
+        } else {
+            // For simple paths, store directly
+            setAdditionalProperties(path, value);
+        }
+    };
+
+    const onChange = (e, configPath = null) => {
         const {
             name, value, type, checked,
         } = e.target;
+
+        const fullPath = configPath ? `${configPath}.${name}` : name;
+
         if (type === 'checkbox') {
-            const current = Array.isArray(additionalProperties[name]) ? [...additionalProperties[name]] : [];
+            const current = Array.isArray(getNestedValue(fullPath)) ? [...getNestedValue(fullPath)] : [];
             let finalValue;
             if (checked) {
                 if (!current.includes(value)) {
@@ -77,42 +136,56 @@ export default function KeyManagerConfiguration(props) {
             } else {
                 finalValue = current.filter((v) => v !== value);
             }
-            setAdditionalProperties(name, finalValue);
+            setNestedValue(fullPath, finalValue);
         } else {
-            setAdditionalProperties(name, value);
+            setNestedValue(fullPath, value);
         }
     };
 
     useEffect(() => {
-        keymanagerConnectorConfigurations.forEach((config) => {
-            const { name, default: defaultVal } = config;
-            if (
-                defaultVal !== undefined
-                && (additionalProperties[name] === undefined || additionalProperties[name] === '')
-            ) {
-                setAdditionalProperties(name, defaultVal);
-            }
-        });
+        const initializeDefaults = (configs, parentPath = '') => {
+            configs.forEach((config) => {
+                const { name, default: defaultVal, values = [] } = config;
+                const configPath = parentPath ? `${parentPath}.${name}` : name;
+
+                if (defaultVal !== undefined && getNestedValue(configPath) === '') {
+                    setNestedValue(configPath, defaultVal);
+                }
+
+                // Recursively initialize nested configs
+                if (Array.isArray(values) && values.length > 0) {
+                    values.forEach((value) => {
+                        if (value.values && Array.isArray(value.values)) {
+                            initializeDefaults(value.values, configPath);
+                        }
+                    });
+                }
+            });
+        };
+
+        initializeDefaults(keymanagerConnectorConfigurations);
     }, [keymanagerConnectorConfigurations, additionalProperties, setAdditionalProperties]);
 
-    const onChangeCheckBox = (e) => {
-        setAdditionalProperties(e.target.name, e.target.checked);
+    const onChangeCheckBox = (e, configPath = null) => {
+        const fullPath = configPath ? `${configPath}.${e.target.name}` : e.target.name;
+        setNestedValue(fullPath, e.target.checked);
     };
 
-    const getComponent = (config) => {
+    const getComponent = (config, parentPath = '') => {
         const {
             name, label, type, values = [], tooltip, required, mask, default: defaultVal,
         } = config;
 
+        const configPath = parentPath ? `${parentPath}.${name}` : name;
         const value = type === 'certificate' ? (additionalProperties?.certificates
-            || { type: 'PEM', value: '' }) : (additionalProperties[name] ?? '');
+            || { type: 'PEM', value: '' }) : getNestedValue(configPath, defaultVal || '');
         const error = required && hasErrors('keyconfig', value, validating);
 
         const selectedObject = values.find((v) => v.name === value);
 
-        const renderSelectedChildren = (parent) => parent?.values?.map((child) => (
+        const renderSelectedChildren = (parent, currentPath) => parent?.values?.map((child) => (
             <Box key={child.name} ml={2} mt={2}>
-                {getComponent(child)}
+                {getComponent(child, currentPath)}
             </Box>
         ));
 
@@ -122,7 +195,7 @@ export default function KeyManagerConfiguration(props) {
                     <FormControl fullWidth>
                         <CustomInputField
                             value={value}
-                            onChange={onChange}
+                            onChange={(e) => onChange(e, parentPath)}
                             name={name}
                             label={label}
                             required={required}
@@ -152,7 +225,7 @@ export default function KeyManagerConfiguration(props) {
                     defaultValue={defaultVal}
                     error={Boolean(error)}
                     helperText={error || tooltip}
-                    onChange={onChange}
+                    onChange={(e) => onChange(e, parentPath)}
                 />
             );
         }
@@ -190,7 +263,7 @@ export default function KeyManagerConfiguration(props) {
                                                     } else {
                                                         updated = current.filter((v) => v !== selectionName);
                                                     }
-                                                    setAdditionalProperties(name, updated);
+                                                    setNestedValue(configPath, updated);
                                                 }}
                                                 value={selectionName}
                                                 color='primary'
@@ -203,7 +276,7 @@ export default function KeyManagerConfiguration(props) {
                                         <Box ml={3}>
                                             {selection.values.map((child) => (
                                                 <Box key={child.name} mt={1}>
-                                                    {getComponent(child)}
+                                                    {getComponent(child, `${configPath}.${selectionName}`)}
                                                 </Box>
                                             ))}
                                         </Box>
@@ -229,7 +302,7 @@ export default function KeyManagerConfiguration(props) {
                         fullWidth
                         name={name}
                         value={value}
-                        onChange={onChange}
+                        onChange={(e) => onChange(e, parentPath)}
                         variant='outlined'
                         error={Boolean(error)}
                         helperText={error || tooltip}
@@ -241,7 +314,8 @@ export default function KeyManagerConfiguration(props) {
                             </MenuItem>
                         ))}
                     </TextField>
-                    {selectedObject?.values?.length > 0 && renderSelectedChildren(selectedObject)}
+                    {selectedObject?.values?.length > 0
+                        && renderSelectedChildren(selectedObject, `${configPath}.${value}`)}
                 </Box>
             );
         }
@@ -256,7 +330,7 @@ export default function KeyManagerConfiguration(props) {
                     <RadioGroup
                         name={name}
                         value={value}
-                        onChange={onChange}
+                        onChange={(e) => onChange(e, parentPath)}
                     >
                         {values.map((option) => {
                             const hasChildren = Array.isArray(option.values) && option.values.length > 0;
@@ -276,7 +350,7 @@ export default function KeyManagerConfiguration(props) {
                                         <Box ml={3}>
                                             {option.values.map((child) => (
                                                 <Box key={child.name} mt={1}>
-                                                    {getComponent(child)}
+                                                    {getComponent(child, `${configPath}.${value}`)}
                                                 </Box>
                                             ))}
                                         </Box>
@@ -321,7 +395,7 @@ export default function KeyManagerConfiguration(props) {
                                     control={(
                                         <Checkbox
                                             checked={value === true}
-                                            onChange={onChangeCheckBox}
+                                            onChange={(e) => onChangeCheckBox(e, parentPath)}
                                             name={name}
                                         />
                                     )}
@@ -333,7 +407,7 @@ export default function KeyManagerConfiguration(props) {
                                 control={(
                                     <Checkbox
                                         checked={value === true}
-                                        onChange={onChangeCheckBox}
+                                        onChange={(e) => onChangeCheckBox(e, parentPath)}
                                         name={name}
                                     />
                                 )}
@@ -358,7 +432,7 @@ export default function KeyManagerConfiguration(props) {
                 variant='outlined'
                 value={value}
                 defaultValue={defaultVal}
-                onChange={onChange}
+                onChange={(e) => onChange(e, parentPath)}
             />
         );
     };
