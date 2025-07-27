@@ -489,14 +489,97 @@ function AddEditKeyManager(props) {
             }
         }
     };
-    const formHasErrors = (validatingActive = false) => {
-        let connectorConfigHasErrors = false;
-        keymanagerConnectorConfigurations.forEach((connector) => {
-            if (connector.required && (!additionalProperties[connector.name]
-                || additionalProperties[connector.name] === '')) {
-                connectorConfigHasErrors = true;
+    // Helper function to validate connector configurations with nested structure support
+    const validateConnectorConfigurations = (configs, additionalProps, parentPath = '') => {
+        const errors = [];
+
+        // Helper function to get nested values
+        const getNestedValueInProps = (path) => {
+            // First try flattened dot notation key
+            if (additionalProps[path] !== undefined) {
+                return additionalProps[path];
+            }
+
+            // Then try nested object access
+            const pathArray = path.split('.');
+            let current = additionalProps;
+            for (const segment of pathArray) {
+                if (current && typeof current === 'object' && current[segment] !== undefined) {
+                    current = current[segment];
+                } else {
+                    return undefined;
+                }
+            }
+            return current;
+        };
+
+        configs.forEach((config) => {
+            const configPath = parentPath ? `${parentPath}.${config.name}` : config.name;
+
+            if (config.required) {
+                const value = getNestedValueInProps(configPath);
+                const isValueEmpty = value === null || value === undefined || value === ''
+                    || (Array.isArray(value) && value.length === 0);
+
+                if (isValueEmpty) {
+                    errors.push({
+                        path: configPath,
+                        name: config.name,
+                        label: config.label || config.name,
+                        message: `${config.label || config.name} is required`,
+                    });
+                }
+            }
+
+            // Check if this config has nested values based on current selection
+            if (config.values && Array.isArray(config.values)) {
+                const currentValue = getNestedValueInProps(configPath);
+
+                if (currentValue) {
+                    const selectedOption = config.values.find((option) => option.name === currentValue);
+                    if (selectedOption && selectedOption.values && Array.isArray(selectedOption.values)) {
+                        // Recursively validate nested configurations under the selected option
+                        const nestedPath = `${configPath}.${currentValue}`;
+                        const nestedErrors = validateConnectorConfigurations(
+                            selectedOption.values,
+                            additionalProps,
+                            nestedPath,
+                        );
+                        errors.push(...nestedErrors);
+                    }
+                }
             }
         });
+
+        return errors;
+    };
+
+    const formHasErrors = (validatingActive = false) => {
+        let connectorConfigHasErrors = false;
+        let connectorConfigErrors = [];
+
+        // Use comprehensive validation for connector configurations
+        if (keymanagerConnectorConfigurations.length > 0) {
+            connectorConfigErrors = validateConnectorConfigurations(
+                keymanagerConnectorConfigurations,
+                additionalProperties,
+            );
+            connectorConfigHasErrors = connectorConfigErrors.length > 0;
+
+            // Log validation errors for debugging
+            if (connectorConfigHasErrors) {
+                console.log('Connector configuration validation errors:', connectorConfigErrors);
+            }
+        } else {
+            // Fallback to old validation for simple configurations
+            keymanagerConnectorConfigurations.forEach((connector) => {
+                if (connector.required && (!additionalProperties[connector.name]
+                    || additionalProperties[connector.name] === '')) {
+                    connectorConfigHasErrors = true;
+                }
+            });
+        }
+
         if (enableDirectToken) {
             return hasErrors('name', name, validatingActive)
                 || hasErrors('displayName', displayName, validatingActive)
@@ -510,13 +593,12 @@ function AddEditKeyManager(props) {
                 || hasErrors('userInfoEndpoint', userInfoEndpoint, validatingActive)
                 || hasErrors('scopeManagementEndpoint', scopeManagementEndpoint, validatingActive)
                 || hasErrors('selectOrgs', validOrgs, validatingActive);
-        } else {
-            return hasErrors('name', name, validatingActive)
-                || hasErrors('displayName', displayName, validatingActive)
-                || hasErrors('issuer', issuer, validatingActive)
-                || hasErrors('tokenEndpoint', tokenEndpoint, validatingActive)
-                || hasErrors('alias', alias, validatingActive);
         }
+        return hasErrors('name', name, validatingActive)
+            || hasErrors('displayName', displayName, validatingActive)
+            || hasErrors('issuer', issuer, validatingActive)
+            || hasErrors('tokenEndpoint', tokenEndpoint, validatingActive)
+            || hasErrors('alias', alias, validatingActive);
     };
     const formSaveCallback = () => {
         setValidating(true);
@@ -601,8 +683,15 @@ function AddEditKeyManager(props) {
     const setClaimMapping = (updatedClaimMappings) => {
         dispatch({ field: 'claimMapping', value: updatedClaimMappings });
     };
-    const setAdditionalProperties = (key, value, parentPath = null, shouldRemove = false) => {
+    const setAdditionalProperties = (key, value, parentPath = null, shouldRemove = false, isFullObject = false) => {
         const clonedAdditionalProperties = cloneDeep(additionalProperties);
+
+        // Special case: if isFullObject is true, replace the entire additionalProperties object
+        if (isFullObject && typeof value === 'object') {
+            dispatch({ field: 'additionalProperties', value });
+            return;
+        }
+
         let targetKey;
 
         if (parentPath) {
