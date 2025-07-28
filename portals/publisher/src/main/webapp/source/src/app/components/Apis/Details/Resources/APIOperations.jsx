@@ -15,7 +15,8 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-import React from 'react';
+import React, { useContext } from 'react';
+import { APIContext } from 'AppComponents/Apis/Details/components/ApiContext';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
@@ -29,15 +30,33 @@ import Resources from './Resources';
  * @param {*} props
  * @returns
  */
+
+/**
+ * APIOperations component
+ * @returns {JSX.Element} The rendered APIOperations component.
+ */
 export default function APIOperations() {
+    const { api } = useContext(APIContext);
     return (
         <>
             <Box mb={4}>
                 <Typography id='itest-api-details-resources-head' variant='h4' component='h2' gutterBottom>
-                    <FormattedMessage
-                        id='Apis.Details.Resources.APIOperations.title'
-                        defaultMessage='Resources'
-                    />
+                    {(() => {
+                        if (api.isMCPServer()) {
+                            return (
+                                <FormattedMessage
+                                    id='Apis.Details.Resources.APIOperations.mcp.title'
+                                    defaultMessage='Tools'
+                                />
+                            );
+                        }
+                        return (
+                            <FormattedMessage
+                                id='Apis.Details.Resources.APIOperations.title'
+                                defaultMessage='Resources'
+                            />
+                        );
+                    })()}
                 </Typography>
             </Box>
             <Resources />

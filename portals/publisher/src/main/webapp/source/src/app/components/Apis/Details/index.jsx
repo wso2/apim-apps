@@ -52,6 +52,7 @@ import Divider from '@mui/material/Divider';
 import { RevisionContextProvider } from 'AppComponents/Shared/RevisionContext';
 import DevelopSectionMenu from 'AppComponents/Apis/Details/components/leftMenu/DevelopSectionMenu';
 import { PROPERTIES as UserProperties } from 'AppData/User';
+import MCPInspector from 'AppComponents/MCPServers/Details/TryOut/MCPInspector';
 import Overview from './NewOverview/Overview';
 import DesignConfigurations from './Configuration/DesignConfigurations';
 import RuntimeConfiguration from './Configuration/RuntimeConfiguration';
@@ -525,13 +526,20 @@ class Details extends Component {
     }
 
     getLeftMenuItemForResourcesByType(apiType) {
-        const { isAPIProduct } = this.state;
+        const { isAPIProduct, isMCPServer } = this.state;
         const { intl, match } = this.props;
         const uuid = match.params.apiUUID
             || match.params.api_uuid
             || match.params.apiProdUUID
             || match.params.mcpServerUUID;
-        const pathPrefix = '/' + (isAPIProduct ? 'api-products' : 'apis') + '/' + uuid + '/';
+
+        let basePath = 'apis';
+        if (isAPIProduct) {
+            basePath = 'api-products';
+        } else if (isMCPServer) {
+            basePath = 'mcp-servers';
+        }
+        const pathPrefix = '/' + basePath + '/' + uuid + '/';
 
         switch (apiType) {
             case 'GRAPHQL':
@@ -565,6 +573,18 @@ class Details extends Component {
                         />
                     </>
                 );
+            case 'MCP':
+                return (
+                    <LeftMenuItem
+                        text={intl.formatMessage({
+                            id: 'Apis.Details.index.tools',
+                            defaultMessage: 'tools',
+                        })}
+                        to={pathPrefix + 'tools'}
+                        Icon={<ResourcesIcon />}
+                        id='left-menu-tools'
+                    />
+                )
             default:
                 return (
                     <>
@@ -1197,6 +1217,12 @@ class Details extends Component {
                                         key={Details.subPaths.RESOURCES}
                                         component={APIOperations}
                                     />
+                                    <Route
+                                        path={Details.subPaths.TOOLS}
+                                        key={Details.subPaths.TOOLS}
+                                        component={APIOperations}
+                                    />
+    
                                     {settings && settings.gatewayFeatureCatalog
                                         .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                         .localScopes.includes("operationScopes") &&
@@ -1242,12 +1268,19 @@ class Details extends Component {
                                         <Security api={api} />} />
                                     <Route path={Details.subPaths.COMMENTS} component={() =>
                                         <Comments api={api} />} />
+                                    <Route path={Details.subPaths.COMMENTS_MCP} component={() =>
+                                        <Comments api={api} />}
+                                    />
                                     <Route
                                         path={Details.subPaths.BUSINESS_INFO}
                                         component={() => <BusinessInformation api={api} />}
                                     />
                                     <Route
                                         path={Details.subPaths.BUSINESS_INFO_PRODUCT}
+                                        component={() => <BusinessInformation api={api} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.BUSINESS_INFO_MCP}
                                         component={() => <BusinessInformation api={api} />}
                                     />
                                     <Route
@@ -1258,12 +1291,21 @@ class Details extends Component {
                                         path={Details.subPaths.PROPERTIES_PRODUCT}
                                         component={() => <Properties api={api} />}
                                     />
+                                    <Route
+                                        path={Details.subPaths.PROPERTIES_MCP}
+                                        component={() => <Properties api={api} />}
+                                    />
                                     <Route path={Details.subPaths.SHARE} component={() => <ShareAPI
                                         api={api} updateAPI={this.updateAPI} />} />
                                     <Route path={Details.subPaths.NEW_VERSION} component={() => <CreateNewVersion />} />
                                     <Route
                                         path={Details.subPaths.NEW_VERSION_PRODUCT}
-                                        component={() => <CreateNewVersion />} />
+                                        component={() => <CreateNewVersion />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.NEW_VERSION_MCP}
+                                        component={() => <CreateNewVersion />}
+                                    />
 
                                     <Route path={Details.subPaths.SUBSCRIPTIONS} component={() =>
                                         <Subscriptions />} />
@@ -1286,6 +1328,10 @@ class Details extends Component {
                                     <Route
                                         path={Details.subPaths.TRYOUT_PRODUCT}
                                         component={() => <TryOutConsole apiObj={api} />}
+                                    />
+                                    <Route
+                                        path={Details.subPaths.MCP_INSPECTOR}
+                                        component={() => <MCPInspector api={api} />}
                                     />
                                     <Route path={Details.subPaths.EXTERNAL_STORES}
                                         component={ExternalStores} />

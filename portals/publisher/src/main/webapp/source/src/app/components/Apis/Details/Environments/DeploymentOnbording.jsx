@@ -376,10 +376,22 @@ export default function DeploymentOnboarding(props) {
                             <Grid item xs={2} />
                             <Grid item xs={8} className={classes.textAlign}>
                                 <Typography variant='h6' className={classes.textDeploy}>
-                                    <FormattedMessage
-                                        id='Apis.Details.Environments.deploy.text'
-                                        defaultMessage='Deploy the API'
-                                    />
+                                    {(() => {
+                                        if (isMCPServer) {
+                                            return (
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.deploy.mcp.text'
+                                                    defaultMessage='Deploy MCP Server'
+                                                />
+                                            );
+                                        }
+                                        return (
+                                            <FormattedMessage
+                                                id='Apis.Details.Environments.deploy.text'
+                                                defaultMessage='Deploy API'
+                                            />
+                                        );
+                                    })()}
                                 </Typography>
                             </Grid>
                             <Grid item xs={2} />
@@ -389,10 +401,22 @@ export default function DeploymentOnboarding(props) {
                                 <Grid item xs={2} />
                                 <Grid item xs={8} className={classes.textAlign}>
                                     <Typography variant='h6' className={classes.textDescription}>
-                                        <FormattedMessage
-                                            id='Apis.Details.Environments.deploy.env.text'
-                                            defaultMessage='Deploy API to the Gateway Environment'
-                                        />
+                                        {(() => {
+                                            if (isMCPServer) {
+                                                return (
+                                                    <FormattedMessage
+                                                        id='Apis.Details.Environments.deploy.mcp.env.text'
+                                                        defaultMessage='Deploy MCP Server to the Gateway Environment'
+                                                    />
+                                                );
+                                            }
+                                            return (
+                                                <FormattedMessage
+                                                    id='Apis.Details.Environments.deploy.env.text'
+                                                    defaultMessage='Deploy API to the Gateway Environment'
+                                                />
+                                            );
+                                        })()}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={2} />

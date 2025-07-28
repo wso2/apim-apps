@@ -38,6 +38,7 @@ import Radio from '@mui/material/Radio';
 import FormLabel from '@mui/material/FormLabel';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
 const PREFIX = 'NewVersion';
@@ -232,6 +233,33 @@ class CreateNewVersion extends React.Component {
                         }) + error.status);
                     }
                 });
+        } else if (api.apiType === MCPServer.CONSTS.MCP) {
+            // MCPServer.createNewMCPServerVersion(api.id, newVersion, isDefaultVersionBool, serviceVersion)
+            //     .then((response) => {
+            //         this.setState({
+            //             redirectToReferrer: true,
+            //             apiId: response.obj.id,
+            //             isLoading: false,
+            //         });
+            //         Alert.info(intl.formatMessage({
+            //             id: 'MCPServers.Details.NewVersion.NewVersion.success',
+            //             defaultMessage: 'Successfully created new version ',
+            //         }) + newVersion);
+            //     })
+            //     .catch((error) => {
+            //         if (error.status === 409) {
+            //             this.setState({
+            //                 valid: { version: { alreadyExists: true } },
+            //                 isLoading: false,
+            //             });
+            //         } else {
+            //             this.setState({ isLoading: false });
+            //             Alert.error(intl.formatMessage({
+            //                 id: 'MCPServers.Details.NewVersion.NewVersion.error',
+            //                 defaultMessage: 'Something went wrong while creating a new version!. Error: ',
+            //             }) + error.status);
+            //         }
+            //     });
         } else {
             apiClient.createNewAPIVersion(api.id, newVersion, isDefaultVersionBool, serviceVersion)
                 .then((response) => {

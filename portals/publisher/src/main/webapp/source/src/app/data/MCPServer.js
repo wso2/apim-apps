@@ -767,6 +767,104 @@ class MCPServer extends Resource {
         });
     }
 
+    static getFileForDocument(mcpServerId, documentId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].getMCPServerDocumentContent(
+                {
+                    apiId: mcpServerId,
+                    documentId,
+                    Accept: 'application/octet-stream',
+                },
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
+
+    /**
+     * Get the inline content of a document.
+     * @param {*} mcpServerId - The ID of the MCP Server.
+     * @param {*} documentId - The ID of the document.
+     * @returns {Promise} A promise that resolves to the inline content of the document.
+     */
+    static getInlineContentOfDocument(mcpServerId, documentId) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].getMCPServerDocumentContent(
+                {
+                    apiId: mcpServerId,
+                    documentId,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
+
+    static addInlineContentToDocument(mcpServerId, documentId, sourceType, inlineContent) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Server Documents'].addMCPServerDocumentContent(
+                {
+                    apiId: mcpServerId,
+                    documentId,
+                    sourceType,
+                    'Content-Type': 'application/json',
+                },
+                {
+                    requestBody: {
+                        inlineContent,
+                    },
+                },
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
+
+    /**
+     * Get all active Tenants
+     * @param state state of the tenant
+     */
+    getTenantsByState(state) {
+        return this.client.then(client => {
+            return client.apis.Tenants.getTenantsByState({ state });
+        });
+    }
+
+    /**
+     * Get the available subscriptions for a given API
+     * @param {String} apiId API UUID
+     * @returns {Promise} With given callback attached to the success chain else API invoke promise.
+     */
+    subscriptions(apiId, offset = null, limit = null, query = null, callback = null) {
+        const promiseSubscription = this.client.then(client => {
+            return client.apis.Subscriptions.getSubscriptions(
+                { apiId, limit, offset, query },
+                this._requestMetaData(),
+            );
+        });
+        if (callback) {
+            return promiseSubscription.then(callback);
+        } else {
+            return promiseSubscription;
+        }
+    }
+
 
 }
 

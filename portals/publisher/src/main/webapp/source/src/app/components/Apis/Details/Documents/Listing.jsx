@@ -226,8 +226,8 @@ class Listing extends React.Component {
                     return -1;    
                 }    
                 return 0;    
-            }    
-        }  
+            }
+        }
         if (api.apiType === API.CONSTS.APIProduct) {
             const apiProduct = new APIProduct();
             const docs = apiProduct.getDocuments(api.id);

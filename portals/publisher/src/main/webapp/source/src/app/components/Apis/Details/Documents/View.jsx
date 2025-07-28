@@ -32,13 +32,13 @@ import CircularProgress from '@mui/material/CircularProgress';
 import TableRow from '@mui/material/TableRow';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import APIProduct from 'AppData/APIProduct';
 import APIContext from 'AppComponents/Apis/Details/components/ApiContext';
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter';
 import remarkGfm from 'remark-gfm';
 import { vscDarkPlus, vs } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import Utils from 'AppData/Utils';
-import Configuration from 'Config';
 import HTMLRender from 'AppComponents/Shared/HTMLRender';
 
 const PREFIX = 'View';
@@ -128,20 +128,19 @@ const Root = styled('div')((
 const ReactMarkdown = lazy(() => import('react-markdown' /* webpackChunkName: "ViewReactMD" */));
 
 /**
- *
- *
- * @param {*} props
- * @returns
+ * View component to view the details of a document
+ * @param {object} props - Props passed to the component
+ * @returns {JSX.Element} Rendered component
  */
 function View(props) {
     const {
-        fullScreen,
         intl,
         match: {
             params: { documentId },
         },
     } = props;
     const { api, isAPIProduct } = useContext(APIContext);
+    const isMCPServer = api.isMCPServer();
 
     const [code, setCode] = useState('');
     const [doc, setDoc] = useState(null);
@@ -151,7 +150,12 @@ function View(props) {
     const syntaxHighlighterDarkTheme = false;
 
     useEffect(() => {
-        const docPromise = restAPI.getDocument(api.id, documentId);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.getDocuments(api.id, documentId);
+        } else {
+            docPromise = restAPI.getDocument(api.id, documentId);
+        }
         docPromise
             .then(doc => {
                 const { body } = doc;
@@ -159,8 +163,13 @@ function View(props) {
                 if (body.sourceType === 'MARKDOWN' || body.sourceType === 'INLINE') loadContentForDoc();
 
                 if (body.sourceType === 'FILE') {
-                    const promised_get_content = restAPI.getFileForDocument(api.id, documentId);
-                    promised_get_content
+                    let promisedGetContent;
+                    if (isMCPServer) {
+                        promisedGetContent = MCPServer.getFileForDocument(api.id, documentId);
+                    } else {
+                        promisedGetContent = restAPI.getFileForDocument(api.id, documentId);
+                    }
+                    promisedGetContent
                         .then((done) => {
                             setIsFileAvailable(true);
                         })
@@ -168,7 +177,7 @@ function View(props) {
                             console.error(error);
                             setIsFileAvailable(false);
                         });
-                 }
+                }
             })
             .catch(error => {
                 if (process.env.NODE_ENV !== 'production') {
@@ -178,7 +187,12 @@ function View(props) {
     }, [documentId]);
 
     const loadContentForDoc = () => {
-        const docPromise = restAPI.getInlineContentOfDocument(api.id, documentId);
+        let docPromise;
+        if (isMCPServer) {
+            docPromise = MCPServer.getInlineContentOfDocument(api.id, documentId);
+        } else {
+            docPromise = restAPI.getInlineContentOfDocument(api.id, documentId);
+        }
         docPromise
             .then(doc => {
                 setCode(doc.text);
@@ -191,8 +205,13 @@ function View(props) {
     };
 
     const handleDownload = () => {
-        const promised_get_content = restAPI.getFileForDocument(api.id, documentId);
-        promised_get_content
+        let promisedGetContent;
+        if (isMCPServer) {
+            promisedGetContent = MCPServer.getFileForDocument(api.id, documentId);
+        } else {
+            promisedGetContent = restAPI.getFileForDocument(api.id, documentId);
+        }
+        promisedGetContent
             .then(response => {
                 Utils.forceDownload(response);
             })
@@ -215,68 +234,68 @@ function View(props) {
             <div className={classes.root}>
                 <div className={classes.titleWrapper}>
                     <Link to={listingPath} className={classes.titleLink}>
-                        <Typography variant="h5" component='h2' align="left" className={classes.mainTitle}>
-                            <FormattedMessage id="Apis.Details.Documents.View.heading" defaultMessage="Documents" />
+                        <Typography variant='h5' component='h2' align='left' className={classes.mainTitle}>
+                            <FormattedMessage id='Apis.Details.Documents.View.heading' defaultMessage='Documents' />
                         </Typography>
                     </Link>
                     <Icon>keyboard_arrow_right</Icon>
-                    <Typography variant="h5" component='h3'>{doc.name}</Typography>
+                    <Typography variant='h5' component='h3'>{doc.name}</Typography>
                 </div>
                 <Paper className={classes.paper}>
                     <Table className={classes.table}>
                         <TableBody>
                             <TableRow>
                                 <TableCell className={classes.leftCell}>
-                                    <Typography variant="body1">
+                                    <Typography variant='body1'>
                                         <FormattedMessage
-                                            id="Apis.Details.Documents.View.meta.name"
-                                            defaultMessage="Name"
+                                            id='Apis.Details.Documents.View.meta.name'
+                                            defaultMessage='Name'
                                         />
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography variant="body1">{doc.name}</Typography>
+                                    <Typography variant='body1'>{doc.name}</Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell>
-                                    <Typography variant="body1">
+                                    <Typography variant='body1'>
                                         <FormattedMessage
-                                            id="Apis.Details.Documents.View.meta.summary"
-                                            defaultMessage="Summary"
+                                            id='Apis.Details.Documents.View.meta.summary'
+                                            defaultMessage='Summary'
                                         />
                                     </Typography>
                                 </TableCell>
                                 <TableCell className={classes.summaryView}>
-                                    <Typography variant="body1">{doc.summary}</Typography>
+                                    <Typography variant='body1'>{doc.summary}</Typography>
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell>
-                                    <Typography variant="body1">
+                                    <Typography variant='body1'>
                                         <FormattedMessage
-                                            id="Apis.Details.Documents.View.meta.catogery"
-                                            defaultMessage="Categorized as"
+                                            id='Apis.Details.Documents.View.meta.catogery'
+                                            defaultMessage='Categorized as'
                                         />
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography variant="body1">
+                                    <Typography variant='body1'>
                                         {doc.type === 'OTHER' ? doc.otherTypeName : doc.type}
                                     </Typography>{' '}
                                 </TableCell>
                             </TableRow>
                             <TableRow>
                                 <TableCell>
-                                    <Typography variant="body1">
+                                    <Typography variant='body1'>
                                         <FormattedMessage
-                                            id="Apis.Details.Documents.View.meta.source"
-                                            defaultMessage="Source Type"
+                                            id='Apis.Details.Documents.View.meta.source'
+                                            defaultMessage='Source Type'
                                         />
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography variant="body1">{doc.sourceType}</Typography>{' '}
+                                    <Typography variant='body1'>{doc.sourceType}</Typography>{' '}
                                 </TableCell>
                             </TableRow>
                         </TableBody>
@@ -288,7 +307,7 @@ function View(props) {
                         <div className='markdown-content-wrapper'>
                             <Suspense fallback={<CircularProgress />}>
                                 <ReactMarkdown
-                                    skipHtml={true}
+                                    skipHtml
                                     children={code}
                                     remarkPlugins={[remarkGfm]}
                                     components={{
@@ -317,20 +336,20 @@ function View(props) {
                     )}
                     {doc.sourceType === 'INLINE' && <HTMLRender html={code} />}
                     {doc.sourceType === 'URL' && (
-                        <a className={classes.displayURL} href={doc.sourceUrl} target="_blank">
+                        <a className={classes.displayURL} href={doc.sourceUrl} target='_blank' rel='noreferrer'>
                             {doc.sourceUrl}
                             <Icon className={classes.displayURLLink}>open_in_new</Icon>
                         </a>
                     )}
                     {doc.sourceType === 'FILE' && (
                         <Button
-                            variant="contained"
+                            variant='contained'
                             className={classes.button}
                             onClick={handleDownload}
                             disabled={!isFileAvailable}>
                             <FormattedMessage
-                                id="Apis.Details.Documents.View.btn.download"
-                                defaultMessage="Download"
+                                id='Apis.Details.Documents.View.btn.download'
+                                defaultMessage='Download'
                             />
 
                             <Icon>arrow_downward</Icon>

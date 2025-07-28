@@ -43,6 +43,7 @@ import FormControlLabel from '@mui/material/FormControlLabel';
 import Box from '@mui/material/Box';
 import APIContext, { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import API from 'AppData/api.js';
+import MCPServer from 'AppData/MCPServer';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import { isRestricted } from 'AppData/AuthManager';
 import Alert from 'AppComponents/Shared/Alert';
@@ -221,6 +222,16 @@ function Properties(props) {
     const keywords = ['provider', 'version', 'context', 'status', 'description',
         'subcontext', 'doc', 'lcstate', 'name', 'tags'];
 
+    const getBasePath = () => {
+        if (api.isAPIProduct()) {
+            return '/api-products/';
+        } else if (api.type === MCPServer.CONSTS.MCP) {
+            return '/mcp-servers/';
+        } else {
+            return '/apis/';
+        }
+    }
+
     const toggleAddProperty = () => {
         setShowAddProperty(!showAddProperty);
     };
@@ -397,8 +408,7 @@ function Properties(props) {
                 }
             })
             .finally(() => history.push({
-                pathname: api.isAPIProduct() ? `/api-products/${api.id}/deployments`
-                    : `/apis/${api.id}/deployments`,
+                pathname: getBasePath() + api.id + '/deployments',
                 state: 'deploy',
             }));
     };
@@ -668,22 +678,42 @@ function Properties(props) {
     return (
         <Root>
             <div className={classes.titleWrapper}>
-                {api.apiType === API.CONSTS.APIProduct
-                    ? (
-                        <Typography
-                            id='itest-api-details-api-products-properties-head'
-                            variant='h4'
-                            component='h2'
-                            align='left'
-                            className={classes.mainTitle}
-                        >
-                            <FormattedMessage
-                                id='Apis.Details.Properties.Properties.api.product.properties'
-                                defaultMessage='API Product Properties'
-                            />
-                        </Typography>
-                    )
-                    : (
+                {(() => {
+                    if (api.apiType === API.CONSTS.APIProduct) {
+                        return (
+                            <Typography
+                                id='itest-api-details-api-products-properties-head'
+                                variant='h4'
+                                component='h2'
+                                align='left'
+                                className={classes.mainTitle}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.Properties.Properties.api.product.properties'
+                                    defaultMessage='API Product Properties'
+                                />
+                            </Typography>
+                        );
+                    }
+                    
+                    if (api.type === MCPServer.CONSTS.MCP) {
+                        return (
+                            <Typography
+                                id='itest-mcp-server-details-properties-head'
+                                variant='h4'
+                                component='h2'
+                                align='left'
+                                className={classes.mainTitle}
+                            >
+                                <FormattedMessage
+                                    id='Apis.Details.Properties.Properties.mcp.server.properties'
+                                    defaultMessage='MCP Server Properties'
+                                />
+                            </Typography>
+                        );
+                    }
+                    
+                    return (
                         <Typography
                             id='itest-api-details-api-properties-head'
                             variant='h4'
@@ -696,7 +726,8 @@ function Properties(props) {
                                 defaultMessage='API Properties'
                             />
                         </Typography>
-                    )}
+                    );
+                })()}
 
                 {(!isEmpty(additionalProperties) || showAddProperty ||
                     (customProperties && customProperties.length > 0)) && (
@@ -721,12 +752,29 @@ function Properties(props) {
                 )}
             </div>
             <Typography variant='caption' component='div' className={classes.helpText}>
-                <FormattedMessage
-                    id='Apis.Details.Properties.Properties.help.main'
-                    defaultMessage={`Usually, APIs have a pre-defined set of properties such as 
-                        the name, version, context, etc. API Properties allows you to 
-                         add specific custom properties to the API.`}
-                />
+                {(() => {
+                    if (api.type === MCPServer.CONSTS.MCP) {
+                        return (
+                            <FormattedMessage
+                                id='Apis.Details.Properties.Properties.help.main.mcp'
+                                defaultMessage={
+                                    'Usually, MCP Servers have a pre-defined set of properties such as the name, ' + 
+                                    'version, context, etc. MCP Server Properties allows you to add specific ' +
+                                    'custom properties to the MCP Server.'
+                                }
+                            />
+                        );
+                    }
+                    return (
+                        <FormattedMessage
+                            id='Apis.Details.Properties.Properties.help.main.api'
+                            defaultMessage={
+                                'Usually, APIs have a pre-defined set of properties such as the name, version, ' +
+                                'context, etc. API Properties allows you to add specific custom properties to the API.'
+                            }
+                        />
+                    );
+                })()}
             </Typography>
             {isEmpty(additionalProperties) && !isAdditionalPropertiesStale && !showAddProperty &&
                 customProperties.length === 0 && (
@@ -739,30 +787,45 @@ function Properties(props) {
                                     defaultMessage='Create Additional Properties'
                                 />
                             </Typography>
-                            {api.apiType === API.CONSTS.APIProduct
-                                ? (
-                                    <Typography component='p' className={classes.content}>
-                                        <FormattedMessage
-                                            id={'Apis.Details.Properties.Properties.APIProduct.'
-                                                + 'add.new.property.message.content'}
-                                            defaultMessage={
-                                                'Add specific custom properties to your '
-                                        + 'API here.'
-                                            }
-                                        />
-                                    </Typography>
-                                )
-                                : (
+                            {(() => {
+                                if (api.apiType === API.CONSTS.APIProduct) {
+                                    return (
+                                        <Typography component='p' className={classes.content}>
+                                            <FormattedMessage
+                                                id={
+                                                    'Apis.Details.Properties.Properties.'
+                                                    + 'APIProduct.add.new.property.message.content'
+                                                }
+                                                defaultMessage=
+                                                    'Add specific custom properties to your API Product here.'
+                                            />
+                                        </Typography>
+                                    );
+                                }
+                                
+                                if (api.type === MCPServer.CONSTS.MCP) {
+                                    return (
+                                        <Typography component='p' className={classes.content}>
+                                            <FormattedMessage
+                                                id={
+                                                    'Apis.Details.Properties.Properties.'
+                                                    + 'MCPServer.add.new.property.message.content'
+                                                }
+                                                defaultMessage='Add specific custom properties to your MCP Server here.'
+                                            />
+                                        </Typography>
+                                    );
+                                }
+                                
+                                return (
                                     <Typography component='p' className={classes.content}>
                                         <FormattedMessage
                                             id='Apis.Details.Properties.Properties.add.new.property.message.content'
-                                            defaultMessage={
-                                                'Add specific custom properties to your '
-                                        + 'API here.'
-                                            }
+                                            defaultMessage='Add specific custom properties to your API here.'
                                         />
                                     </Typography>
-                                )}
+                                );
+                            })()}
                             <div className={classes.actions}>
                                 <Button
                                     id='add-new-property'
@@ -1034,7 +1097,7 @@ function Properties(props) {
                                 <Grid item>
                                     <Button
                                         component={Link}
-                                        to={'/apis/' + api.id + '/overview'}
+                                        to={getBasePath() + api.id + '/overview'}
                                     >
                                         <FormattedMessage
                                             id='Apis.Details.Properties.Properties.cancel'
