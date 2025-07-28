@@ -196,6 +196,7 @@ class CreateNewVersion extends React.Component {
      * @param {API} api current API
      * @param {string} newVersion new version to create
      * @param {string} isDefaultVersion specifies whether the new API should be marked as default version ('yes' | 'no')
+     * @param {string} serviceVersion service version to be used for the new API version (if applicable)
      */
     handleSubmit(api, newVersion, isDefaultVersion, serviceVersion) {
         if (!newVersion) {
@@ -206,88 +207,51 @@ class CreateNewVersion extends React.Component {
         const isDefaultVersionBool = isDefaultVersion === 'yes';
         const apiClient = new API();
         const { intl } = this.props;
+        
+        let versionCreationPromise;
         if (api.apiType === 'APIPRODUCT') {
-            apiClient.createNewAPIProductVersion(api.id ,newVersion, isDefaultVersionBool)
-                .then((response) => {
-                    this.setState({
-                        redirectToReferrer: true,
-                        apiId: response.obj.id,
-                        isLoading: false,
-                    });
-                    Alert.info(intl.formatMessage({
-                        id: 'Apis.Details.APIProduct.NewVersion.NewVersion.success',
-                        defaultMessage: 'Successfully created new version ',
-                    }) + newVersion);
-                })
-                .catch((error) => {
-                    if (error.status === 409) {
-                        this.setState({
-                            valid: { version: { alreadyExists: true } },
-                            isLoading: false,
-                        });
-                    } else {
-                        this.setState({ isLoading: false });
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.APIProduct.NewVersion.NewVersion.error',
-                            defaultMessage: 'Something went wrong while creating a new version!. Error: ',
-                        }) + error.status);
-                    }
-                });
+            versionCreationPromise = apiClient.createNewAPIProductVersion(api.id ,newVersion, isDefaultVersionBool)
         } else if (api.apiType === MCPServer.CONSTS.MCP) {
-            // MCPServer.createNewMCPServerVersion(api.id, newVersion, isDefaultVersionBool, serviceVersion)
-            //     .then((response) => {
-            //         this.setState({
-            //             redirectToReferrer: true,
-            //             apiId: response.obj.id,
-            //             isLoading: false,
-            //         });
-            //         Alert.info(intl.formatMessage({
-            //             id: 'MCPServers.Details.NewVersion.NewVersion.success',
-            //             defaultMessage: 'Successfully created new version ',
-            //         }) + newVersion);
-            //     })
-            //     .catch((error) => {
-            //         if (error.status === 409) {
-            //             this.setState({
-            //                 valid: { version: { alreadyExists: true } },
-            //                 isLoading: false,
-            //             });
-            //         } else {
-            //             this.setState({ isLoading: false });
-            //             Alert.error(intl.formatMessage({
-            //                 id: 'MCPServers.Details.NewVersion.NewVersion.error',
-            //                 defaultMessage: 'Something went wrong while creating a new version!. Error: ',
-            //             }) + error.status);
-            //         }
-            //     });
+            versionCreationPromise = MCPServer.createNewMCPServerVersion(
+                api.id,
+                newVersion,
+                isDefaultVersionBool,
+                serviceVersion,
+            )
         } else {
-            apiClient.createNewAPIVersion(api.id, newVersion, isDefaultVersionBool, serviceVersion)
-                .then((response) => {
+            versionCreationPromise =  apiClient.createNewAPIVersion(
+                api.id,
+                newVersion,
+                isDefaultVersionBool,
+                serviceVersion
+            )
+        }
+        versionCreationPromise
+            .then((response) => {
+                this.setState({
+                    redirectToReferrer: true,
+                    apiId: response.obj.id,
+                    isLoading: false,
+                });
+                Alert.info(intl.formatMessage({
+                    id: 'Apis.Details.NewVersion.NewVersion.success',
+                    defaultMessage: 'Successfully created new version ',
+                }) + newVersion);
+            })
+            .catch((error) => {
+                if (error.status === 409) {
                     this.setState({
-                        redirectToReferrer: true,
-                        apiId: response.obj.id,
+                        valid: { version: { alreadyExists: true } },
                         isLoading: false,
                     });
-                    Alert.info(intl.formatMessage({
-                        id: 'Apis.Details.NewVersion.NewVersion.success',
-                        defaultMessage: 'Successfully created new version ',
-                    }) + newVersion);
-                })
-                .catch((error) => {
-                    if (error.status === 409) {
-                        this.setState({
-                            valid: { version: { alreadyExists: true } },
-                            isLoading: false,
-                        });
-                    } else {
-                        this.setState({ isLoading: false });
-                        Alert.error(intl.formatMessage({
-                            id: 'Apis.Details.NewVersion.NewVersion.error',
-                            defaultMessage: 'Something went wrong while creating a new version!. Error: ',
-                        }) + error.status);
-                    }
-                });
-        }
+                } else {
+                    this.setState({ isLoading: false });
+                    Alert.error(intl.formatMessage({
+                        id: 'Apis.Details.NewVersion.NewVersion.error',
+                        defaultMessage: 'Something went wrong while creating a new version!. Error: ',
+                    }) + error.status);
+                }
+            });
     }
 
     /**

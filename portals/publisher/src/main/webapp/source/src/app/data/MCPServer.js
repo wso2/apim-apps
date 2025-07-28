@@ -237,38 +237,6 @@ class MCPServer extends Resource {
         });
     }
 
-    // /**
-    //  * Update an MCP Server.
-    //  * @param {*} updatedProperties - The updated properties for the MCP Server.
-    //  * @returns {Promise<MCPServer>} A promise that resolves to the updated MCPServer instance.
-    //  */
-    // static updateMCPServer(updatedProperties) {
-    //     const updatedMCPServer = updatedProperties;
-    //     const apiClient = new APIClientFactory()
-    //         .getAPIClient(
-    //             Utils.getCurrentEnvironment(),
-    //             Utils.CONST.API_CLIENT
-    //         ).client;
-    //     const promisedUpdate = apiClient.then(client => {
-    //         const payload = {
-    //             apiId: updatedMCPServer.id,
-    //         };
-    //         const requestBody = {
-    //             requestBody: updatedMCPServer,
-    //         };
-    //         return client.apis['MCP Servers'].updateMCPServer(
-    //             payload,
-    //             requestBody
-    //         );
-    //     });
-    //     return promisedUpdate.then(response => {
-    //         if (response.body === null || response.body === undefined) {
-    //             throw new Error(`MCP Server with ID ${updatedMCPServer.id} not found.`);
-    //         }
-    //         return new MCPServer(response.body);
-    //     });
-    // }
-
     /**
      * Update an MCP Server.
      * @param {Object} updatedProperties - The updated properties for the MCP Server.
@@ -865,6 +833,32 @@ class MCPServer extends Resource {
         }
     }
 
+    /**
+     * Create a new version of an MCP Server.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {string} version - The version to create.
+     * @param {boolean} isDefaultVersion - Whether the new version should be the default version.
+     * @param {string} serviceVersion - The service version of the MCP Server.
+     * @returns {Promise} A promise that resolves to the created MCP Server version.
+     */
+    static createNewMCPServerVersion(mcpServerId, version, isDefaultVersion, serviceVersion) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            return client.apis['MCP Servers'].createNewMCPServerVersion(
+                {
+                    apiId: mcpServerId,
+                    newVersion: version,
+                    serviceVersion,
+                    defaultVersion: isDefaultVersion,
+                },
+                this._requestMetaData(),
+            );
+        });
+    }
 
 }
 
