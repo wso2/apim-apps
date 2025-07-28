@@ -282,7 +282,7 @@ function AddEditKeyManager(props) {
     const updateKeyManagerConnectorConfiguration = (keyManagerType) => {
         if (settings.keyManagerConfiguration) {
             settings.keyManagerConfiguration.map(({
-                type: key, defaultConsumerKeyClaim, defaultScopesClaim, authConfigs, configurations,
+                type: key, defaultConsumerKeyClaim, defaultScopesClaim, advancedConfigurations, configurations,
             }) => {
                 if (key === keyManagerType) {
                     if (!id) {
@@ -293,10 +293,10 @@ function AddEditKeyManager(props) {
                             dispatch({ field: 'scopesClaim', value: defaultScopesClaim });
                         }
                     }
-                    if (authConfigs === undefined || (Array.isArray(authConfigs) && authConfigs.length === 0)) {
+                    if (advancedConfigurations === undefined || (Array.isArray(advancedConfigurations) && advancedConfigurations.length === 0)) {
                         setKeyManagerConfiguration(configurations);
                     } else {
-                        setKeyManagerConfiguration(authConfigs);
+                        setKeyManagerConfiguration(advancedConfigurations);
                     }
                     return true;
                 } else {
