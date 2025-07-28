@@ -86,48 +86,41 @@ export default function KeyManagerConfiguration(props) {
         return current !== undefined ? current : defaultValue;
     };
 
-    // Helper function to remove all keys with a given prefix from additionalProperties
-    const removeKeysWithPrefix = (prefix) => {
-        const clonedAdditionalProperties = cloneDeep(additionalProperties);
-        const keysToRemove = Object.keys(clonedAdditionalProperties).filter((key) => key.startsWith(`${prefix}.`));
-
-        keysToRemove.forEach((key) => {
-            delete clonedAdditionalProperties[key];
-        });
-
-        if (keysToRemove.length > 0) {
-            console.log(`Removed keys with prefix "${prefix}":`, keysToRemove);
-            console.log('Before cleanup:', additionalProperties);
-            console.log('After cleanup:', clonedAdditionalProperties);
-            // Use a special flag to set entire object
-            setAdditionalProperties('', clonedAdditionalProperties, null, false, true);
-        } else {
-            console.log(`No keys found to remove with prefix "${prefix}"`);
-            console.log('Current additionalProperties keys:', Object.keys(additionalProperties));
-        }
-    };
-
     // Helper function to cleanup all other option fields when a dropdown/option changes
     const cleanupAllOtherOptions = (configPath, currentValue, configValues) => {
         if (!configValues || !Array.isArray(configValues)) {
             console.log(`No config values found for cleanup at path: ${configPath}`);
-            return;
+            return null;
         }
 
         console.log(`Cleaning up all options except "${currentValue}" for path "${configPath}"`);
+
+        const clonedAdditionalProperties = cloneDeep(additionalProperties);
+        let hasChanges = false;
 
         // Clean up all options except the current one
         configValues.forEach((option) => {
             if (option.name !== currentValue && option.values && Array.isArray(option.values)) {
                 const optionPath = `${configPath}.${option.name}`;
-                const existingKeysForOption = Object.keys(additionalProperties)
+                const existingKeysForOption = Object.keys(clonedAdditionalProperties)
                     .filter((key) => key.startsWith(`${optionPath}.`));
                 if (existingKeysForOption.length > 0) {
                     console.log(`Removing orphaned keys for option "${option.name}":`, existingKeysForOption);
-                    removeKeysWithPrefix(optionPath);
+                    existingKeysForOption.forEach((key) => {
+                        delete clonedAdditionalProperties[key];
+                        hasChanges = true;
+                    });
                 }
             }
         });
+
+        if (hasChanges) {
+            console.log('Before cleanup:', additionalProperties);
+            console.log('After cleanup:', clonedAdditionalProperties);
+            return clonedAdditionalProperties;
+        }
+
+        return null;
     };
 
     // Helper function to set nested value in additionalProperties
@@ -186,9 +179,6 @@ export default function KeyManagerConfiguration(props) {
             // For dropdown and options changes, cleanup all other option fields
             const previousValue = getNestedValue(fullPath);
 
-            // First set the new value
-            setNestedValue(fullPath, value);
-
             // Then cleanup other options if this is a dropdown/options field with nested values
             if (previousValue !== value) {
                 console.log(`Field "${fullPath}" changed from "${previousValue}" to "${value}"`);
@@ -216,14 +206,34 @@ export default function KeyManagerConfiguration(props) {
                 const config = findConfigForPath(keymanagerConnectorConfigurations, fullPath);
                 if (config && config.values) {
                     console.log(`Found config for "${fullPath}", cleaning up all other options except "${value}"`);
-                    cleanupAllOtherOptions(fullPath, value, config.values);
+
+                    // Get cleaned up properties
+                    const cleanedProperties = cleanupAllOtherOptions(fullPath, value, config.values);
+
+                    if (cleanedProperties) {
+                        // Update the entire object with cleaned properties and new value
+                        const updatedProperties = { ...cleanedProperties };
+
+                        // Set the new value in the cleaned properties using the same logic as setNestedValue
+                        updatedProperties[fullPath] = value;
+
+                        // Set the entire updated object at once
+                        setAdditionalProperties('', updatedProperties, null, false, true);
+                    } else {
+                        // No cleanup needed, just set the value normally
+                        setNestedValue(fullPath, value);
+                    }
                 } else {
                     console.log(`No config found for path "${fullPath}"`);
+                    // If no cleanup needed, just set the value normally
+                    setNestedValue(fullPath, value);
                 }
+            } else {
+                // If value hasn't changed, just set it normally
+                setNestedValue(fullPath, value);
             }
         }
     };
-
     useEffect(() => {
         const initializeDefaults = (configs, parentPath = '') => {
             configs.forEach((config) => {
