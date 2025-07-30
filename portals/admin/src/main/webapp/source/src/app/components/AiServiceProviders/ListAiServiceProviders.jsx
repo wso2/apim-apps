@@ -22,11 +22,11 @@ import React, { useEffect, useState } from 'react';
 import API from 'AppData/api';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Typography from '@mui/material/Typography';
-import DeleteAiVendor from 'AppComponents/AiVendors/DeleteAiVendor';
+import DeleteAiServiceProvider from 'AppComponents/AiServiceProviders/DeleteAiServiceProvider';
 import { Link as RouterLink } from 'react-router-dom';
 import Alert from '@mui/material/Alert';
 import Button from '@mui/material/Button';
-import { Menu, MenuItem, styled } from '@mui/material';
+import { styled } from '@mui/material';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import Toolbar from '@mui/material/Toolbar';
 import Grid from '@mui/material/Grid';
@@ -41,7 +41,6 @@ import InlineProgress from 'AppComponents/AdminPages/Addons/InlineProgress';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
-import ArrowDropDownIcon from '@mui/icons-material/ArrowDropDown';
 
 const styles = {
     searchBar: {
@@ -70,33 +69,19 @@ const StyledDiv = styled('div')({});
  * Render a list
  * @returns {JSX} Header AppBar components.
  */
-export default function ListAiVendors() {
+export default function ListAiServiceProviders() {
     // eslint-disable-next-line no-unused-vars
     const intl = useIntl();
     const [aiVendorsList, setAiVendorsList] = useState(null);
     const [searchText, setSearchText] = useState('');
     const [error, setError] = useState(null);
-    const [anchorEl, setAnchorEl] = useState(null);
-
-    const handleClick = (event) => {
-        setAnchorEl(event.currentTarget);
-    };
-
-    const handleClose = () => {
-        setAnchorEl(null);
-    };
-
-    const handleMenuItemClick = () => {
-        setAnchorEl(null);
-    };
 
     const fetchData = async () => {
         // Fetch data from backend when an apiCall is provided
         setAiVendorsList(null);
 
         try {
-            const result = await new API().getAiVendorsList();
-            console.log(result);
+            const result = await new API().getAiServiceProviderList();
             if (result) {
                 setError(null);
                 setAiVendorsList(result.body.list);
@@ -114,44 +99,18 @@ export default function ListAiVendors() {
 
     const addCreateButton = () => {
         return (
-            <>
-                <Button
-                    variant='contained'
-                    color='primary'
-                    size='small'
-                    data-testid='add-new-ai-vendor-button'
-                    onClick={handleClick}
-                    endIcon={<ArrowDropDownIcon />}
-                >
-                    {intl.formatMessage({
-                        id: 'AiVendors.ListAiVendors.addNewAiVendor',
-                        defaultMessage: 'Add AI/LLM Vendor',
-                    })}
-                </Button>
-                <Menu
-                    anchorEl={anchorEl}
-                    keepMounted
-                    open={Boolean(anchorEl)}
-                    onClose={handleClose}
-                >
-                    <MenuItem
-                        onClick={() => handleMenuItemClick(false)}
-                        component={RouterLink}
-                        to={{ pathname: '/settings/ai-vendors/create', state: { isSingleProvider: true } }}
-                        data-testid='add-single-provider-vendor-menu-item'
-                    >
-                        Add Single Provider Vendor
-                    </MenuItem>
-                    <MenuItem
-                        onClick={() => handleMenuItemClick(true)}
-                        component={RouterLink}
-                        to={{ pathname: '/settings/ai-vendors/create', state: { isSingleProvider: false } }}
-                        data-testid='add-multi-provider-vendor-menu-item'
-                    >
-                        Add Multi-Provider Vendor
-                    </MenuItem>
-                </Menu>
-            </>
+            <Button
+                component={RouterLink}
+                to='/settings/ai-service-providers/create'
+                variant='contained'
+                color='primary'
+                size='small'
+            >
+                {intl.formatMessage({
+                    id: 'AiVendors.ListAiVendors.addNewAiVendor',
+                    defaultMessage: 'Add AI Service Provider',
+                })}
+            </Button>
         );
     };
 
@@ -159,8 +118,8 @@ export default function ListAiVendors() {
         {
             name: 'name',
             label: intl.formatMessage({
-                id: 'AiVendors.ListAiVendors.table.header.label.aiVendorName',
-                defaultMessage: 'AI/LLM Vendor Name',
+                id: 'AiServiceProviders.ListAiServiceProviders.table.header.label.aiVendorName',
+                defaultMessage: 'AI Service Provider Name',
             }),
             options: {
                 customBodyRender: (value, tableMeta) => {
@@ -170,7 +129,7 @@ export default function ListAiVendors() {
                         return (
                             <RouterLink
                                 to={{
-                                    pathname: `/settings/ai-vendors/${artifactId}`,
+                                    pathname: `/settings/ai-service-providers/${artifactId}`,
                                 }}
                             >
                                 {value}
@@ -185,7 +144,7 @@ export default function ListAiVendors() {
         {
             name: 'description',
             label: intl.formatMessage({
-                id: 'AiVendors.ListAiVendors.table.header.label.description',
+                id: 'AiServiceProviders.ListAiServiceProviders.table.header.label.description',
                 defaultMessage: 'Description',
             }),
             options: {
@@ -217,7 +176,7 @@ export default function ListAiVendors() {
         {
             name: 'apiVersion',
             label: intl.formatMessage({
-                id: 'AiVendors.ListAiVendors.table.header.label.apiVersion',
+                id: 'AiServiceProviders.ListAiServiceProviders.table.header.label.apiVersion',
                 defaultMessage: 'API Version',
             }),
             options: {
@@ -227,7 +186,7 @@ export default function ListAiVendors() {
         {
             name: 'builtInSupport',
             label: intl.formatMessage({
-                id: 'AiVendors.ListAiVendors.table.header.label.builtInSupport',
+                id: 'AiServiceProviders.ListAiServiceProviders.table.header.label.builtInSupport',
                 defaultMessage: 'Type',
             }),
             options: {
@@ -254,8 +213,8 @@ export default function ListAiVendors() {
                     let tooltipTitle = '';
                     if (dataRow.builtInSupport) {
                         tooltipTitle = intl.formatMessage({
-                            id: 'AiVendors.ListAiVendors.table.is.used.delete.tooltip',
-                            defaultMessage: 'Default AI/LLM Vendors cannot be deleted',
+                            id: 'AiServiceProviders.ListAiServiceProviders.table.is.used.delete.tooltip',
+                            defaultMessage: 'Default AI Service Providers cannot be deleted',
                         });
                     }
                     return (
@@ -264,7 +223,7 @@ export default function ListAiVendors() {
                                 title={tooltipTitle}
                             >
                                 <span>
-                                    <DeleteAiVendor
+                                    <DeleteAiServiceProvider
                                         dataRow={dataRow}
                                         updateList={fetchData}
                                     />
@@ -281,8 +240,8 @@ export default function ListAiVendors() {
     const pageProps = {
         pageStyle: 'paperLess',
         title: intl.formatMessage({
-            id: 'AiVendors.ListAiVendors.List.title',
-            defaultMessage: 'AI/LLM Vendors',
+            id: 'AiServiceProviders.ListAiServiceProviders.List.title',
+            defaultMessage: 'AI Service Providers',
         }),
     };
 
@@ -296,7 +255,7 @@ export default function ListAiVendors() {
             >
                 <FormattedMessage
                     id='AdminPages.AiVendors.List.empty.content.Aivendors'
-                    defaultMessage='It is possible to register an AI/LLM Vendor.'
+                    defaultMessage='It is possible to register an AI Service Provider.'
                 />
             </Typography>
         ),
@@ -305,11 +264,11 @@ export default function ListAiVendors() {
                 gutterBottom
                 variant='h5'
                 component='h2'
-                id='AiVendors.ListAiVendors.empty.header'
+                id='AiServiceProviders.ListAiServiceProviders.empty.header'
             >
                 <FormattedMessage
-                    id='AiVendors.ListAiVendors.empty.title'
-                    defaultMessage='AI/LLM Vendors'
+                    id='AiServiceProviders.ListAiServiceProviders.empty.title'
+                    defaultMessage='AI Service Providers'
                 />
             </Typography>
         ),
