@@ -397,22 +397,25 @@ export default function AddEditAiServiceProvider(props) {
             } else {
                 models = [{ name: state.name, models: state.modelList }];
             }
-            const newState = {
-                ...state,
-                configurations: updatedConfigurations,
-                // modelList: JSON.stringify(state.modelList),
-                // Stringify modelVendorEntries before sending to API
-                modelList: JSON.stringify(models),
+
+            const requestPayload = {
+                name: state.name,
+                apiVersion: state.apiVersion,
+                description: state.description,
+                multipleModelProviderSupport: state.multipleModelProviderSupport,
+                configurations: JSON.stringify(updatedConfigurations),
+                modelList: models,
+                apiDefinition: file,
             };
 
-            if (vendorId) { // <-- Use vendorId instead of id
-                await new API().updateAIServiceProvider(vendorId, { ...newState, apiDefinition: file });
+            if (vendorId) {
+                await new API().updateAIServiceProvider(vendorId, requestPayload);
                 Alert.success(`${state.name} ${intl.formatMessage({
                     id: 'AiVendor.edit.success',
                     defaultMessage: ' - AI Service Provider edited successfully.',
                 })}`);
             } else {
-                await new API().addAIServiceProvider({ ...newState, apiDefinition: file });
+                await new API().addAIServiceProvider(requestPayload);
                 Alert.success(`${state.name} ${intl.formatMessage({
                     id: 'AiVendor.add.success.msg',
                     defaultMessage: ' - AI Service Provider added successfully.',

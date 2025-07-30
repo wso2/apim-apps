@@ -1217,7 +1217,12 @@ class API extends Resource {
             return client.apis['AIServiceProviders'].addAIServiceProvider(
                 payload,
                 { requestBody: {
-                    ...aiServiceProviderBody,
+                    name: aiServiceProviderBody.name,
+                    apiVersion: aiServiceProviderBody.apiVersion,
+                    description: aiServiceProviderBody.description,
+                    multitpleModelProviderSupport: aiServiceProviderBody.multipleModelProviderSupport,
+                    configurations: aiServiceProviderBody.configurations,
+                    apiDefinition: aiServiceProviderBody.apiDefinition,
                     modelProviders: JSON.stringify(aiServiceProviderBody.modelList)
                 }},
                 this._requestMetaData(),
@@ -1237,8 +1242,12 @@ class API extends Resource {
             return client.apis['AIServiceProvider'].updateAIServiceProvider(
                 payload,
                 { requestBody: {
-                    ...aiServiceProviderBody,
-                    aiServiceProviderId: aiServiceProviderId,
+                    name: aiServiceProviderBody.name,
+                    apiVersion: aiServiceProviderBody.apiVersion,
+                    description: aiServiceProviderBody.description,
+                    multitpleModelProviderSupport: aiServiceProviderBody.multipleModelProviderSupport,
+                    configurations: aiServiceProviderBody.configurations,
+                    apiDefinition: aiServiceProviderBody.apiDefinition,
                     modelProviders: JSON.stringify(aiServiceProviderBody.modelList)
                 }},
                 this._requestMetaData(),
