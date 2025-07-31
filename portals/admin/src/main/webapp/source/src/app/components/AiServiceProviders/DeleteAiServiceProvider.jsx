@@ -29,16 +29,16 @@ import FormDialogBase from 'AppComponents/AdminPages/Addons/FormDialogBase';
  * @param {JSON} props component props.
  * @returns {JSX} Loading animation.
  */
-function DeleteAiVendor({ updateList, dataRow }) {
+function DeleteAiServiceProvider({ updateList, dataRow }) {
     const { id, builtInSupport } = dataRow;
     const intl = useIntl();
     const formSaveCallback = () => {
         return new API()
-            .deleteAiVendor(id)
+            .deleteAIServiceProvider(id)
             .then(() => (
                 <FormattedMessage
-                    id='AdminPages.AiVendor.Delete.form.delete.successful'
-                    defaultMessage='AI/LLM Vendor deleted successfully'
+                    id='AiServiceProviders.DeleteAiServiceProvider.Delete.form.delete.successful'
+                    defaultMessage='AI Service Provider deleted successfully'
                 />
             ))
             .catch((error) => {
@@ -52,11 +52,11 @@ function DeleteAiVendor({ updateList, dataRow }) {
     return (
         <FormDialogBase
             title={intl.formatMessage({
-                id: 'AdminPages.AiVendor.Delete.form.delete.dialog.title',
-                defaultMessage: 'Delete AI/LLM Vendor ?',
+                id: 'AiServiceProviders.DeleteAiServiceProvider.delete.dialog.title',
+                defaultMessage: 'Delete AI Service Provider ?',
             })}
             saveButtonText={intl.formatMessage({
-                id: 'AdminPages.AiVendor.Delete.form.delete.dialog.btn',
+                id: 'AiServiceProviders.DeleteAiServiceProvider.delete.dialog.btn',
                 defaultMessage: 'Delete',
             })}
             icon={<DeleteForeverIcon aria-label='ai-vendor-delete-icon' />}
@@ -69,17 +69,17 @@ function DeleteAiVendor({ updateList, dataRow }) {
         >
             <DialogContentText>
                 <FormattedMessage
-                    id='AdminPages.AiVendor.Delete.form.delete.confirmation.message'
-                    defaultMessage='Are you sure you want to delete this AI/LLM Vendor ?'
+                    id='AiServiceProviders.DeleteAiServiceProvider.delete.confirmation.message'
+                    defaultMessage='Are you sure you want to delete this AI Service Provider ?'
                 />
             </DialogContentText>
         </FormDialogBase>
     );
 }
-DeleteAiVendor.propTypes = {
+DeleteAiServiceProvider.propTypes = {
     updateList: PropTypes.func.isRequired,
     dataRow: PropTypes.shape({
         id: PropTypes.string.isRequired,
     }).isRequired,
 };
-export default DeleteAiVendor;
+export default DeleteAiServiceProvider;

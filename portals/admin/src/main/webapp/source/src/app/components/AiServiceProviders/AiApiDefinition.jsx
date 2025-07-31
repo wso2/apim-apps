@@ -35,7 +35,7 @@ const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.d
  * @param {JSON} props Input props form parent components.
  * @returns {JSX} AI Vendor API Definition manage UI.
  */
-export default function AIAPIDefinition(props) {
+export default function AiApiDefinition(props) {
     const intl = useIntl();
     const {
         apiDefinition,
@@ -107,7 +107,7 @@ export default function AIAPIDefinition(props) {
                 <>
                     <InputLabel sx={{ position: 'relative', marginBottom: 1 }}>
                         <FormattedMessage
-                            id='AiVendors.AddEditAiVendor.apiDefinition.upload'
+                            id='AiServiceProviders.AiApiDefinition.apiDefinition.upload'
                             defaultMessage='Upload API Definition'
                         />
                         <StyledSpan>*</StyledSpan>

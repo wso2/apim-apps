@@ -39,6 +39,7 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 
 const AIEndpoints = ({
     apiObject,
+    endpointConfiguration,
 }) => {
     const [productionEndpoints, setProductionEndpoints] = useState([]);
     const [sandboxEndpoints, setSandboxEndpoints] = useState([]);
@@ -106,7 +107,6 @@ const AIEndpoints = ({
     useEffect(() => {
         fetchEndpoints();
     }, []);
-
     const handleDelete = (endpoint) => {
         // Check if endpoint is primary
         if (endpoint.id === apiObject.primaryProductionEndpointId ||
@@ -250,6 +250,7 @@ const AIEndpoints = ({
                                 onDelete={handleDelete}
                                 onSetPrimary={handleSetAsPrimary}
                                 onRemovePrimary={handleRemovePrimary}
+                                endpointConfiguration={endpointConfiguration}
                             />
                         ))
                     ) : (
@@ -281,6 +282,7 @@ const AIEndpoints = ({
                                 onDelete={handleDelete}
                                 onSetPrimary={handleSetAsPrimary}
                                 onRemovePrimary={handleRemovePrimary}
+                                endpointConfiguration={endpointConfiguration}
                             />
                         ))
                     ) : (
