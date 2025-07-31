@@ -311,12 +311,12 @@ const CustomizedMCPStepper = () => {
 
     /**
      * Update the LifeCycle state of the MCP Server
-     * @param {string} apiId - The ID of the MCP Server to update
+     * @param {string} id - The ID of the MCP Server to update
      * @param {string} state - The new lifecycle state to set for the MCP Server
      */
-    function updateLCStateOfAPI(apiId, state) {
+    function updateLCStateOfAPI(id, state) {
         setUpdating(true);
-        const promisedUpdate = MCPServer.updateLcState(apiId, state);
+        const promisedUpdate = MCPServer.updateLcState(id, state);
         promisedUpdate
             .then(() => {
                 updateAPI()
@@ -689,7 +689,7 @@ const CustomizedMCPStepper = () => {
                                                         component={RouterLink}
                                                         to={
                                                             api.isMCPServer()
-                                                                ? getBasePath(api) + api.id + '/mcp-inspector'
+                                                                ? getBasePath(api) + api.id + '/mcp-playground'
                                                                 : getBasePath(api) + api.id + '/test-console'
                                                         }
                                                     >

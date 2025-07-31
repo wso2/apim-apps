@@ -52,7 +52,6 @@ import Divider from '@mui/material/Divider';
 import { RevisionContextProvider } from 'AppComponents/Shared/RevisionContext';
 import DevelopSectionMenu from 'AppComponents/Apis/Details/components/leftMenu/DevelopSectionMenu';
 import { PROPERTIES as UserProperties } from 'AppData/User';
-import MCPInspector from 'AppComponents/MCPServers/Details/TryOut/MCPInspector';
 import Overview from './NewOverview/Overview';
 import DesignConfigurations from './Configuration/DesignConfigurations';
 import RuntimeConfiguration from './Configuration/RuntimeConfiguration';
@@ -989,14 +988,14 @@ class Details extends Component {
                                     </Typography>
                                     {api.isMCPServer() ? (
                                         <LeftMenuItem
-                                            route='test-console'
+                                            route='mcp-playground'
                                             text={intl.formatMessage({
-                                                id: 'Apis.Details.index.MCPInspector.menu.name',
-                                                defaultMessage: 'MCP Inspector',
+                                                id: 'Apis.Details.index.MCPPlayground.menu.name',
+                                                defaultMessage: 'MCP Playground',
                                             })}
-                                            to={pathPrefix + 'mcp-inspector'}
+                                            to={pathPrefix + 'mcp-playground'}
                                             iconText='test'
-                                            id='left-menu-itemMCPInspector'
+                                            id='left-menu-itemMCPPlayground'
                                         />
                                     ) : (
                                         <LeftMenuItem
@@ -1330,8 +1329,8 @@ class Details extends Component {
                                         component={() => <TryOutConsole apiObj={api} />}
                                     />
                                     <Route
-                                        path={Details.subPaths.MCP_INSPECTOR}
-                                        component={() => <MCPInspector api={api} />}
+                                        path={Details.subPaths.MCP_PLAYGROUND}
+                                        component={() => <TryOutConsole apiObj={api} />}
                                     />
                                     <Route path={Details.subPaths.EXTERNAL_STORES}
                                         component={ExternalStores} />
@@ -1431,7 +1430,7 @@ Details.subPaths = {
     EXTERNAL_STORES: '/apis/:api_uuid/external-devportals',
     TRYOUT: '/apis/:api_uuid/test-console',
     TRYOUT_PRODUCT: '/api-products/:apiprod_uuid/test-console',
-    MCP_INSPECTOR: '/mcp-servers/:mcpserver_uuid/mcp-inspector',
+    MCP_PLAYGROUND: '/mcp-servers/:mcpserver_uuid/mcp-playground',
     QUERYANALYSIS: '/apis/:api_uuid/queryanalysis',
     TOPICS: '/apis/:api_uuid/topics',
     ASYNCAPI_DEFINITION: '/apis/:api_uuid/asyncApi-definition',

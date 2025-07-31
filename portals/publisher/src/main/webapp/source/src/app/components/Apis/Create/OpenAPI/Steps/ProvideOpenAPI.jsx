@@ -45,7 +45,9 @@ import YAML from 'js-yaml';
 
 import APIValidation from 'AppData/APIValidation';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import DropZoneLocal, { humanFileSize } from 'AppComponents/Shared/DropZoneLocal';
+import Utils from 'AppData/Utils';
 import {  
     getLinterResultsFromContent } from "../../../Details/APIDefinition/Linting/Linting";
 import ValidationResults from './ValidationResults';
@@ -75,7 +77,7 @@ const Root = styled('div')((
  * @returns {React.Component} @inheritdoc
  */
 export default function ProvideOpenAPI(props) {
-    const { apiInputs, inputsDispatcher, onValidate, onLinterLineSelect } = props;
+    const { apiInputs, inputsDispatcher, onValidate, onLinterLineSelect, isMCPServer } = props;
     const isFileInput = apiInputs.inputType === 'file';
     const { inputType, inputValue } = apiInputs;
 
@@ -122,41 +124,87 @@ export default function ProvideOpenAPI(props) {
 
     const validateURLDebounced = useCallback(
         debounce((newURL) => { // Example: https://codesandbox.io/s/debounce-example-l7fq3?file=/src/App.js
-            API.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
-                const {
-                    body: {
-                        isValid: isValidURL, info, content, errors,
-                    },
-                } = response;
-                if (isValidURL) {
-                    let formattedContent;
-                    if (hasJSONStructure(content)) {
-                        formattedContent = JSON.stringify(JSON.parse(content), null, 2);
+            if (isMCPServer) {
+                MCPServer.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
+                    const {
+                        body: {
+                            isValid: isValidURL, info, content, errors,
+                        },
+                    } = response;
+                    if (isValidURL) {
+                        let formattedContent;
+                        if (hasJSONStructure(content)) {
+                            formattedContent = JSON.stringify(JSON.parse(content), null, 2);
+                        } else {
+                            formattedContent = JSON.stringify(YAML.load(content), null, 2);
+                        }
+                        lint(formattedContent);
+                        inputsDispatcher({ action: 'importingContent', value: formattedContent });
+                        info.content = content;
+                        // Store operations if available in the response (we only need target and verb)
+                        if (info.operations) {
+                            const filteredOperations = info.operations.map(op => ({
+                                id: Utils.generateUUID(),
+                                target: op.target,
+                                verb: op.verb
+                            }));
+                            inputsDispatcher({ action: 'operations', value: filteredOperations });
+                        }
+                        inputsDispatcher({ action: 'preSetAPI', value: info });
+                        setValidity({ ...isValid, url: null });
+                        setValidationErrors([]);
                     } else {
-                        formattedContent = JSON.stringify(YAML.load(content), null, 2);
+                        setValidity({ ...isValid, url: { message: intl.formatMessage({
+                            id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
+                            defaultMessage: 'OpenAPI content validation failed!'
+                        }) } });
+                        setValidationErrors(errors);
                     }
-                    lint(formattedContent);
-                    inputsDispatcher({ action: 'importingContent', value: formattedContent});
-                    info.content = content;
-                    inputsDispatcher({ action: 'preSetAPI', value: info });
-                    setValidity({ ...isValid, url: null });
-                    setValidationErrors([]);
-                } else {
-                    setValidity({ ...isValid, url: { message: intl.formatMessage({
-                        id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
-                        defaultMessage: 'OpenAPI content validation failed!'
-                    }) } });
-                    setValidationErrors(errors);
-                }
-                onValidate(isValidURL);
-                setIsValidating(false);
-            }).catch((error) => {
-                setValidity({ url: { message: error.message } });
-                onValidate(false);
-                setIsValidating(false);
-                console.error(error);
-                
-            });
+                    onValidate(isValidURL);
+                    setIsValidating(false);
+                }).catch((error) => {
+                    setValidity({ url: { message: error.message } });
+                    onValidate(false);
+                    setIsValidating(false);
+                    console.error(error);
+                });
+            } else {
+                API.validateOpenAPIByUrl(newURL, { returnContent: true }).then((response) => {
+                    const {
+                        body: {
+                            isValid: isValidURL, info, content, errors,
+                        },
+                    } = response;
+                    if (isValidURL) {
+                        let formattedContent;
+                        if (hasJSONStructure(content)) {
+                            formattedContent = JSON.stringify(JSON.parse(content), null, 2);
+                        } else {
+                            formattedContent = JSON.stringify(YAML.load(content), null, 2);
+                        }
+                        lint(formattedContent);
+                        inputsDispatcher({ action: 'importingContent', value: formattedContent});
+                        info.content = content;
+                        inputsDispatcher({ action: 'preSetAPI', value: info });
+                        setValidity({ ...isValid, url: null });
+                        setValidationErrors([]);
+                    } else {
+                        setValidity({ ...isValid, url: { message: intl.formatMessage({
+                            id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
+                            defaultMessage: 'OpenAPI content validation failed!'
+                        }) } });
+                        setValidationErrors(errors);
+                    }
+                    onValidate(isValidURL);
+                    setIsValidating(false);
+                }).catch((error) => {
+                    setValidity({ url: { message: error.message } });
+                    onValidate(false);
+                    setIsValidating(false);
+                    console.error(error);
+                    
+                });
+            }
         }, 750),
         [],
     );
@@ -173,16 +221,29 @@ export default function ProvideOpenAPI(props) {
         // accept the first file. This information is shown in the dropdown helper text
         const file = files.pop();
         let validFile = null;
-        API.validateOpenAPIByFile(file)
-            .then((response) => {
-                const {
-                    body: { isValid: isValidFile, info, errors },
-                } = response;
-                if (isValidFile) {
-                    validFile = file;
-                    inputsDispatcher({ action: 'preSetAPI', value: info });
-                    setValidity({ ...isValid, file: null });
-                } else {
+        if (isMCPServer) {
+            MCPServer.validateOpenAPIByFile(file)
+                .then((response) => {
+                    const {
+                        body: { isValid: isValidFile, info, errors },
+                    } = response;
+                    if (isValidFile) {
+                        validFile = file;
+                        inputsDispatcher({ action: 'preSetAPI', value: info });
+                        setValidity({ ...isValid, file: null });
+                    } else {
+                        setValidity({
+                            ...isValid, file: {
+                                message: intl.formatMessage({
+                                    id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
+                                    defaultMessage: 'OpenAPI content validation failed!'
+                                })
+                            }
+                        });
+                        setValidationErrors(errors);
+                    }
+                })
+                .catch((error) => {
                     setValidity({
                         ...isValid, file: {
                             message: intl.formatMessage({
@@ -191,34 +252,62 @@ export default function ProvideOpenAPI(props) {
                             })
                         }
                     });
-                    setValidationErrors(errors);
-                }
-            })
-            .catch((error) => {
-                setValidity({
-                    ...isValid, file: {
-                        message: intl.formatMessage({
-                            id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
-                            defaultMessage: 'OpenAPI content validation failed!'
-                        })
-                    }
+                    console.error(error);
+                })
+                .finally(() => {
+                    setIsValidating(false); // Stop the loading animation
+                    onValidate(validFile !== null); // If there is a valid file then validation has passed
+                    // If the given file is valid , we set it as the inputValue else set `null`
+                    inputsDispatcher({ action: 'inputValue', value: file });
                 });
-                console.error(error);
-            })
-            .finally(() => {
-                setIsValidating(false); // Stop the loading animation
-                onValidate(validFile !== null); // If there is a valid file then validation has passed
-                // If the given file is valid , we set it as the inputValue else set `null`
-                inputsDispatcher({ action: 'inputValue', value: file });
-            });
+        } else {
+            API.validateOpenAPIByFile(file)
+                .then((response) => {
+                    const {
+                        body: { isValid: isValidFile, info, errors },
+                    } = response;
+                    if (isValidFile) {
+                        validFile = file;
+                        inputsDispatcher({ action: 'preSetAPI', value: info });
+                        setValidity({ ...isValid, file: null });
+                    } else {
+                        setValidity({
+                            ...isValid, file: {
+                                message: intl.formatMessage({
+                                    id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
+                                    defaultMessage: 'OpenAPI content validation failed!'
+                                })
+                            }
+                        });
+                        setValidationErrors(errors);
+                    }
+                })
+                .catch((error) => {
+                    setValidity({
+                        ...isValid, file: {
+                            message: intl.formatMessage({
+                                id: 'Apis.Create.OpenAPI.create.api.openapi.content.validation.failed',
+                                defaultMessage: 'OpenAPI content validation failed!'
+                            })
+                        }
+                    });
+                    console.error(error);
+                })
+                .finally(() => {
+                    setIsValidating(false); // Stop the loading animation
+                    onValidate(validFile !== null); // If there is a valid file then validation has passed
+                    // If the given file is valid , we set it as the inputValue else set `null`
+                    inputsDispatcher({ action: 'inputValue', value: file });
+                });
 
-        if (!file.path.endsWith(".zip")){
-            const read = new FileReader();
-            read.readAsText(file);
-            read.onloadend = function(){
-                const content = read.result?.toString();
-                inputsDispatcher({ action: 'importingContent', value: content });
-                lint(content);
+            if (!file.path.endsWith(".zip")){
+                const read = new FileReader();
+                read.readAsText(file);
+                read.onloadend = function(){
+                    const content = read.result?.toString();
+                    inputsDispatcher({ action: 'importingContent', value: content });
+                    lint(content);
+                }
             }
         }
     }
@@ -431,6 +520,7 @@ export default function ProvideOpenAPI(props) {
 
 ProvideOpenAPI.defaultProps = {
     onValidate: () => { },
+    isMCPServer: false,
 };
 ProvideOpenAPI.INPUT_TYPES = {
     URL: 'url',
@@ -444,4 +534,5 @@ ProvideOpenAPI.propTypes = {
     }).isRequired,
     inputsDispatcher: PropTypes.func.isRequired,
     onValidate: PropTypes.func,
+    isMCPServer: PropTypes.bool,
 };

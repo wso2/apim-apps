@@ -798,7 +798,7 @@ export default function CustomizedStepper() {
                                                         component={RouterLink}
                                                         to={
                                                             isMCPServer
-                                                                ? getBasePath(api) + api.id + '/mcp-inspector'
+                                                                ? getBasePath(api) + api.id + '/mcp-playground'
                                                                 : getBasePath(api) + api.id + '/test-console'
                                                         }
                                                     >

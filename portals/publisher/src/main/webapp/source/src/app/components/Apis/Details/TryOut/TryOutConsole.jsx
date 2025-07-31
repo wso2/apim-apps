@@ -32,6 +32,7 @@ import React, {
 
 import Alert from 'AppComponents/Shared/MuiAlert';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import CONSTS from 'AppData/Constants';
@@ -53,6 +54,7 @@ import { useAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import { isRestricted } from 'AppData/AuthManager';
 import AdvertiseDetailsPanel from "AppComponents/Apis/Details/TryOut/AdvertiseDetailsPanel";
+import MCPPlayground from '@wso2-org/mcp-playground';
 
 const PREFIX = 'TryOutConsole';
 
@@ -285,6 +287,43 @@ const TryOutConsole = () => {
     };
     const decodedJWT = useMemo(() => Utils.decodeJWT(apiKey || ''), [apiKey]);
     const isAPIRetired = api.lifeCycleStatus === 'RETIRED';
+    const isMCPServer = api.type === MCPServer.CONSTS.MCP;
+
+    const getMCPServerUrl = () => {
+        if (selectedDeployment && selectedDeployment.vhost) {
+            const selectedGWEnvironment = publisherSettings.environment
+                .find((env) => env.name === selectedDeployment.name);
+            let selectedDeploymentVhost = selectedGWEnvironment && selectedGWEnvironment.vhosts
+                .find((vhost) => vhost.host === selectedDeployment.vhost);
+            
+            if (!selectedDeploymentVhost) {
+                selectedDeploymentVhost = { ...CONSTS.DEFAULT_VHOST, host: selectedDeployment.vhost };
+            }
+
+            const protocol = selectedDeploymentVhost.httpsPort !== -1 ? 'https' : 'http';
+            const port = protocol === 'https' 
+                ? selectedDeploymentVhost.httpsPort 
+                : selectedDeploymentVhost.httpPort;
+            let pathSeparator = '';
+            if (selectedDeploymentVhost.httpContext 
+                && !selectedDeploymentVhost.httpContext.startsWith('/')) {
+                pathSeparator = '/';
+            }
+
+            let url = `${protocol}://${selectedDeployment.vhost}:${port}${pathSeparator}`
+                + `${selectedDeploymentVhost.httpContext}${api.context}/${api.version}`;
+            
+            if (`${api.context}`.includes('{version}')) {
+                url = `${protocol}://${selectedDeployment.vhost}:${port}${pathSeparator}`
+                    + `${selectedDeploymentVhost.httpContext}${api.context}`
+                        .replaceAll('{version}', `${api.version}`);
+            }
+
+            return url + '/mcp';
+        }
+        // Fallback URL
+        return `https://localhost:8243${api.context}/${api.version}`;
+    };
 
     const accessTokenProvider = () => {
         if (isAdvertised) {
@@ -300,10 +339,28 @@ const TryOutConsole = () => {
         return 'Internal-Key';
     };
 
+    // Determine artifact type for display messages
+    const getArtifactType = () => {
+        if (isMCPServer) {
+            return 'MCP Server';
+        }
+        return api.isRevision ? 'Revision' : 'API';
+    };
+
     return (
         (<Root>
             <Typography id='itest-api-details-try-out-head' variant='h4' component='h2'>
-                <FormattedMessage id='Apis.Details.ApiConsole.ApiConsole.title' defaultMessage='Try Out' />
+                {isMCPServer ? (
+                    <FormattedMessage 
+                        id='Apis.Details.TryOut.TryOutConsole.mcp.playground.title' 
+                        defaultMessage='MCP Playground' 
+                    />
+                ) : (
+                    <FormattedMessage
+                        id='Apis.Details.TryOut.TryOutConsole.title'
+                        defaultMessage='Try Out'
+                    />
+                )}
             </Typography>
             <Paper elevation={0} sx={{ mt: 1, p: 3 }}>
                 {(!api.advertiseInfo || !api.advertiseInfo.advertised) ? (
@@ -385,7 +442,9 @@ const TryOutConsole = () => {
                                                 id='Apis.Details.ApiConsole.deployments.no'
                                                 defaultMessage={'{artifactType} is not deployed yet! Please deploy '
                                                 + 'the {artifactType} before trying out'}
-                                                values={{ artifactType: api.isRevision ? 'Revision' : 'API' }}
+                                                values={{ 
+                                                    artifactType: getArtifactType()
+                                                }}
                                             />
                                             <Link to={'/apis/' + api.id + '/deployments'}>
                                                 <LaunchIcon
@@ -463,20 +522,42 @@ const TryOutConsole = () => {
                         advertiseInfo={api.advertiseInfo}
                     />
                 )}
-                {updatedOasDefinition && apiKey !== null ? (
-                    <Suspense
-                        fallback={(
+                {isMCPServer && (
+                    // Render MCP Playground for MCP servers
+                    <>
+                        {apiKey !== null ? (
+                            <MCPPlayground
+                                url={getMCPServerUrl()}
+                                token={apiKey}
+                                headerName='internal-key'
+                                shouldSetHeaderNameExternally
+                            />
+                        ) : (
                             <CircularProgress />
                         )}
-                    >
-                        <SwaggerUI
-                            api={api}
-                            accessTokenProvider={accessTokenProvider}
-                            spec={updatedOasDefinition}
-                            authorizationHeader={getAuthorizationHeader()}
-                        />
-                    </Suspense>
-                ) : <CircularProgress />}
+                    </>
+                )}
+                {!isMCPServer && (
+                    // Render SwaggerUI for regular APIs
+                    <>
+                        {updatedOasDefinition && apiKey !== null ? (
+                            <Suspense
+                                fallback={(
+                                    <CircularProgress />
+                                )}
+                            >
+                                <SwaggerUI
+                                    api={api}
+                                    accessTokenProvider={accessTokenProvider}
+                                    spec={updatedOasDefinition}
+                                    authorizationHeader={getAuthorizationHeader()}
+                                />
+                            </Suspense>
+                        ) : (
+                            <CircularProgress />
+                        )}
+                    </>
+                )}
             </Paper>
         </Root>)
     );

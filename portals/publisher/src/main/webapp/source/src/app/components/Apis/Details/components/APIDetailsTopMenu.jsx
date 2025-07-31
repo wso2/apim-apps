@@ -254,6 +254,21 @@ const APIDetailsTopMenu = (props) => {
         return array.join(', ');
     }
 
+    /**
+     * Checks if the user has access to create APIs.
+     * @returns {boolean} Returns true if the user has access to create APIs, false otherwise.
+     */
+    const isAccessRestricted = () => {
+        if (api.isMCPServer()) {
+            return isRestricted(
+                ['apim:mcp_server_delete', 'apim:mcp_server_manage', 'apim:mcp_server_import_export'],
+                api
+            );
+        } else {
+            return isRestricted(['apim:api_create'], api);
+        }
+    }
+
     // todo: need to support rev proxy ~tmkb
     return (
         <Root>
@@ -514,7 +529,7 @@ const APIDetailsTopMenu = (props) => {
                     )}
                 </div>
                 {api.isRevision || (settings && settings.portalConfigurationOnlyModeEnabled)
-                    || isRestricted(['apim:api_create'], api)
+                    || isAccessRestricted()
                     ? (<div className={classes.revisionWrapper} />)
                     : (
                         <DeleteApiButton 

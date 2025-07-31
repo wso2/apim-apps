@@ -54,6 +54,7 @@ function mcpServerInputsReducer(currentState, inputAction) {
         case 'context':
         case 'policies':
         case 'isFormValid':
+        case 'operations':
             return { ...currentState, [action]: value };
         case 'inputType':
             return { ...currentState, [action]: value, inputValue: value === 'url' ? '' : null };
@@ -64,6 +65,7 @@ function mcpServerInputsReducer(currentState, inputAction) {
                 version: value.version,
                 context: value.context,
                 endpoint: value.endpoints && value.endpoints[0],
+                operations: value.operations || [],
             };
         default:
             return currentState;
@@ -95,6 +97,7 @@ const MCPServerCreateDefault = (props) => {
         inputType: 'url',
         inputValue: '',
         formValidity: false,
+        operations: [],
         gatewayType: multiGateway && (multiGateway.filter((gw) => gw.value === 'wso2/synapse').length > 0 ?
             'wso2/synapse' : multiGateway[0]?.value),
     });
@@ -127,7 +130,15 @@ const MCPServerCreateDefault = (props) => {
     const createMCPServer = () => {
         setCreating(true);
         const {
-            name, version, context, endpoint, gatewayType, policies = ["Unlimited"], inputValue, inputType,
+            name,
+            version,
+            context,
+            endpoint,
+            gatewayType,
+            policies = ["Unlimited"],
+            inputValue,
+            inputType,
+            operations = [],
         } = mcpServerInputs;
         let defaultGatewayType;
         if (settings && settings.gatewayTypes.length === 1 && settings.gatewayTypes.includes('Regular')) {
@@ -138,12 +149,25 @@ const MCPServerCreateDefault = (props) => {
             defaultGatewayType = 'default';
         }
 
+        // Transform operations from step 0 format to the required format for MCP Server creation
+        const transformedOperations = operations.map(operation => ({
+            verb: 'tool',
+            backendOperationMapping: {
+                backendId: '',
+                backendOperation: {
+                    target: operation.target,
+                    verb: operation.verb
+                }
+            }
+        }));
+
         const additionalProperties = {
             name,
             version,
             context,
             gatewayType: defaultGatewayType === 'default' ? gatewayType : defaultGatewayType,
             policies,
+            operations: transformedOperations,
         };
         if (endpoint) {
             additionalProperties.endpointConfig = {
@@ -236,13 +260,14 @@ const MCPServerCreateDefault = (props) => {
                             onValidate={handleOnValidate}
                             apiInputs={mcpServerInputs}
                             inputsDispatcher={inputsDispatcher}
+                            isMCPServer
                         />
                     )}
                     {wizardStep === 1 && (
                         <ToolSelection
                             onValidate={handleOnValidate}
-                            apiInputs={mcpServerInputs}
                             inputsDispatcher={inputsDispatcher}
+                            operations={mcpServerInputs.operations}
                         />
                     )}
                     {wizardStep === 2 && (

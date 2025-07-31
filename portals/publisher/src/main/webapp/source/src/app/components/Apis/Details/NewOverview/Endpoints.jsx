@@ -154,19 +154,19 @@ function Endpoints(props) {
             if (endpointType === 'sand') {
                 return api.advertiseInfo.apiExternalSandboxEndpoint;
             }
+        } else if (api.type === MCPServer.CONSTS.MCP) {
+            if (endpointType === 'prod') {
+                return getProductionEndpoint(endpointConfig);
+            }
+            if (endpointType === 'sand') {
+                return getSandboxEndpoint(endpointConfig);
+            }
         } else if (api.endpointConfig) {
             if (endpointType === 'prod') {
                 return api.getProductionEndpoint();
             }
             if (endpointType === 'sand') {
                 return api.getSandboxEndpoint();
-            }
-        } else if (api.type === MCPServer.CONSTS.MCP && endpointConfig) {
-            if (endpointType === 'prod') {
-                return getProductionEndpoint(endpointConfig);
-            }
-            if (endpointType === 'sand') {
-                return getSandboxEndpoint(endpointConfig);
             }
         }
         return null;

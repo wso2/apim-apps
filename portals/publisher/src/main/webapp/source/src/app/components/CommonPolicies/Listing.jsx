@@ -351,6 +351,8 @@ const Listing = () => {
                     disabled={isRestricted([
                         'apim:api_create',
                         'apim:api_manage',
+                        'apim:mcp_server_create',
+                        'apim:mcp_server_manage',
                         'apim:mediation_policy_create',
                         'apim:mediation_policy_manage',
                         'apim:api_mediation_policy_manage',

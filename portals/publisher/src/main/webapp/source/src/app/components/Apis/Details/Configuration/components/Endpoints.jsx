@@ -28,6 +28,7 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import { Link } from 'react-router-dom';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
+import MCPServer from 'AppData/MCPServer';
 import { withAPI } from 'AppComponents/Apis/Details/components/ApiContext';
 
 const PREFIX = 'Endpoints';
@@ -78,18 +79,6 @@ const Root = styled('div')(({ theme }) => ({
     }
 }));
 
-const showEndpoint = function (api, type) {
-    if (api.endpointConfig) {
-        if (type === 'prod') {
-            return api.getProductionEndpoint();
-        }
-        if (type === 'sand') {
-            return api.getSandboxEndpoint();
-        }
-    }
-    return null;
-};
-
 /**
  *
  *X
@@ -97,7 +86,41 @@ const showEndpoint = function (api, type) {
  * @returns
  */
 function Endpoints(props) {
-    const { api, endpointSecurity } = props;
+    const { api, endpointSecurity, endpointConfig } = props;
+
+    const showEndpoint = (type) => {
+        if (api.apiType === MCPServer.CONSTS.MCP && endpointConfig) {
+            if (type === 'prod') {
+                return endpointConfig.production_endpoints.url;
+            }
+            if (type === 'sand') {
+                return endpointConfig.sandbox_endpoints.url;
+            }
+        } else if (api.endpointConfig) {
+            if (type === 'prod') {
+                return api.getProductionEndpoint();
+            }
+            if (type === 'sand') {
+                return api.getSandboxEndpoint();
+            }
+        }
+        return null;
+    };
+
+    /**
+     * Gets the appropriate base path for API links based on API type
+     * @param {Object} api - The API object
+     * @returns {string} - The base path for links
+     */
+    const getBasePath = () => {
+        if (api.isAPIProduct()) {
+            return '/api-products/';
+        } else if (api.type === MCPServer.CONSTS.MCP) {
+            return '/mcp-servers/';
+        } else {
+            return '/apis/';
+        }
+    }
 
     const isPrototypedAvailable = api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped' && api.lifeCycleStatus === 'PROTOTYPED';
@@ -105,15 +128,15 @@ function Endpoints(props) {
     /**
      * Check whether the endpoint configuration is dynamic
      *
-     * @param {object} endpointConfig The endpoint configuration of the api.
+     * @param {object} endpointConfiguration The endpoint configuration of the api.
      * @return {boolean} True if the endpoint config is dynamic.
      * */
-    const isDynamicEndpoints = (endpointConfig) => {
-        if (!endpointConfig) {
+    const isDynamicEndpoints = (endpointConfiguration) => {
+        if (!endpointConfiguration) {
             return false;
         }
-        if (endpointConfig.production_endpoints && !Array.isArray(endpointConfig.production_endpoints)) {
-            return endpointConfig.production_endpoints.url === 'default';
+        if (endpointConfiguration.production_endpoints && !Array.isArray(endpointConfiguration.production_endpoints)) {
+            return endpointConfiguration.production_endpoints.url === 'default';
         }
         return false;
     };
@@ -163,21 +186,21 @@ function Endpoints(props) {
                                                 />
                                             </Typography>
                                         )}
-                                        {showEndpoint(api, 'prod')
+                                        {showEndpoint('prod')
                                     && (
                                         <Tooltip
-                                            title={showEndpoint(api, 'prod')}
+                                            title={showEndpoint('prod')}
                                             interactive
                                         >
                                             <Typography component='p' variant='body1' className={classes.textTrim}>
                                                 <>
-                                                    {showEndpoint(api, 'prod')}
+                                                    {showEndpoint('prod')}
                                                 </>
                                             </Typography>
                                         </Tooltip>
                                     )}
                                         <Typography component='p' variant='body1' className={classes.notConfigured}>
-                                            {!showEndpoint(api, 'prod') && (
+                                            {!showEndpoint('prod') && (
                                                 <>
                                                     <FormattedMessage
                                                         id={'Apis.Details.Configuration.'
@@ -199,21 +222,21 @@ function Endpoints(props) {
                                                 defaultMessage='Sandbox'
                                             />
                                         </Typography>
-                                        {showEndpoint(api, 'sand')
+                                        {showEndpoint('sand')
                                     && (
                                         <Tooltip
-                                            title={showEndpoint(api, 'sand')}
+                                            title={showEndpoint('sand')}
                                             interactive
                                         >
                                             <Typography component='p' variant='body1' className={classes.textTrim}>
                                                 <>
-                                                    {showEndpoint(api, 'sand')}
+                                                    {showEndpoint('sand')}
                                                 </>
                                             </Typography>
                                         </Tooltip>
                                     )}
                                         <Typography component='p' variant='body1' className={classes.notConfigured}>
-                                            {!showEndpoint(api, 'sand') && (
+                                            {!showEndpoint('sand') && (
                                                 <>
                                                     <FormattedMessage
                                                         id={'Apis.Details.Configuration.components.Endpoints.sandbox.'
@@ -228,11 +251,11 @@ function Endpoints(props) {
                             </>
                         )}
                     <Box width='100%' textAlign='right' m={1}>
-                        <Link to={'/apis/' + api.id + '/endpoints'}>
+                        <Link to={getBasePath() + api.id + '/endpoints'}>
                             <Typography className={classes.externalLink} variant='caption'>
                                 <FormattedMessage
                                     id='Apis.Details.Configuration.Configuration.Endpoints.edit.api.endpoints'
-                                    defaultMessage='Edit API Endpoints'
+                                    defaultMessage='Edit Endpoints'
                                 />
                                 <LaunchIcon style={{ marginLeft: '2px' }} fontSize='small' />
                             </Typography>

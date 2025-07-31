@@ -131,7 +131,7 @@ class MCPServer extends Resource {
                 }
             };
 
-            const promisedResponse = client.apis['MCP Servers'].importMCPServerDefinition(
+            const promisedResponse = client.apis['MCP Servers'].createMCPServerFromOpenAPI(
                 null,
                 payload,
                 this._requestMetaData({
@@ -160,7 +160,7 @@ class MCPServer extends Resource {
                 }
             };
 
-            const promisedResponse = client.apis['MCP Servers'].importMCPServerDefinition(
+            const promisedResponse = client.apis['MCP Servers'].createMCPServerFromOpenAPI(
                 null,
                 payload,
                 this._requestMetaData({
@@ -170,6 +170,71 @@ class MCPServer extends Resource {
             return promisedResponse.then(response => new MCPServer(response.body));
         });
         return promisedCreate;
+    }
+
+    /**
+     * Validate an OpenAPI file.
+     * This method is used to validate an OpenAPI file before creating an MCP Server.
+     * @param {*} openAPIData - The OpenAPI data to validate.
+     * @returns {Promise} A promise that resolves to the validation result.
+     */
+    static validateOpenAPIByFile(openAPIData) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            const payload = {
+                file: openAPIData,
+                'Content-Type': 'multipart/form-data',
+            };
+            const requestBody = {
+                requestBody: {
+                    file: openAPIData,
+                },
+            };
+            return client.apis.Validation.validateOpenAPIDefinitionOfMCPServer(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
+    }
+
+    /**
+     * Validate an OpenAPI URL.
+     * This method is used to validate an OpenAPI URL before creating an MCP Server.
+     * @param {string} url - The OpenAPI URL to validate.
+     * @param {Object} [params={ returnContent: false }] - Additional parameters for validation.
+     * @returns {Promise} A promise that resolves to the validation result.
+     */
+    static validateOpenAPIByUrl(url, params = { returnContent: false}) {
+        const apiClient = new APIClientFactory()
+            .getAPIClient(
+                Utils.getCurrentEnvironment(),
+                Utils.CONST.API_CLIENT
+            ).client;
+        return apiClient.then(client => {
+            const payload = {
+                'Content-Type': 'multipart/form-data',
+                ...params
+            };
+            const requestBody = {
+                requestBody: {
+                    url,
+                },
+            };
+            return client.apis.Validation.validateOpenAPIDefinitionOfMCPServer(
+                payload,
+                requestBody,
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
+            );
+        });
     }
 
     /**
@@ -224,7 +289,7 @@ class MCPServer extends Resource {
         const promisedAPI = apiClient.then(client => {
             return client.apis['MCP Servers'].getMCPServer(
                 {
-                    apiId: id,
+                    mcpServerId: id,
                 },
                 this._requestMetaData(),
             );
@@ -246,7 +311,7 @@ class MCPServer extends Resource {
         const updatedMCPServer = { ...this.toJSON(), ...updatedProperties };
         const promisedUpdate = this.client.then(client => {
             const payload = {
-                apiId: updatedMCPServer.id,
+                mcpServerId: updatedMCPServer.id,
             };
             const requestBody = {
                 requestBody: updatedMCPServer,
@@ -276,7 +341,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Servers'].deleteMCPServer(
                 {
-                    apiId: id,
+                    mcpServerId: id,
                 },
                 this._requestMetaData(),
             );
@@ -314,7 +379,7 @@ class MCPServer extends Resource {
             ).client;
         return apiClient.then(client => {
             return client.apis['MCP Server Revisions'].getMCPServerRevisions({
-                apiId: id,
+                mcpServerId: id,
             });
         });
     }
@@ -334,7 +399,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Server Revisions'].getMCPServerRevisions(
                 {
-                    apiId: id,
+                    mcpServerId: id,
                     query: 'deployed:true',
                 },
             );
@@ -356,7 +421,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Server Revisions'].createMCPServerRevision(
                 {
-                    apiId: mcpServerId,
+                    mcpServerId,
                 },
                 {
                     requestBody: revisionBody,
@@ -381,7 +446,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Server Revisions'].deleteMCPServerRevision(
                 {
-                    apiId: mcpServerId,
+                    mcpServerId,
                     revisionId,
                 },
                 this._requestMetaData(),
@@ -405,7 +470,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Server Revisions'].restoreMCPServerRevision(
                 {
-                    apiId: id,
+                    mcpServerId: id,
                     revisionId,
                 },
                 this._requestMetaData(),
@@ -427,7 +492,7 @@ class MCPServer extends Resource {
         return restApiClient.then(client => {
             return client.apis['MCP Server Endpoints'].getMCPServerEndpoints(
                 {
-                    apiId: id,
+                    mcpServerId: id,
                 },
                 this._requestMetaData(),
             );
@@ -449,7 +514,7 @@ class MCPServer extends Resource {
         return restApiClient.then(client => {
             return client.apis['MCP Server Endpoints'].getMCPServerEndpoint(
                 {
-                    apiId: id,
+                    mcpServerId: id,
                     endpointId,
                 },
                 this._requestMetaData(),
@@ -473,7 +538,7 @@ class MCPServer extends Resource {
         return restApiClient.then(client => {
             return client.apis['API Endpoints'].updateMCPServerEndpoint(
                 {
-                    apiId: id,
+                    mcpServerId: id,
                     endpointId,
                 },
                 {
@@ -499,7 +564,7 @@ class MCPServer extends Resource {
         return restApiClient.then(client => {
             return client.apis['MCP Server Endpoints'].deleteMCPServerEndpoint( // TODO: not implemented yet
                 {
-                    apiId: id,
+                    mcpServerId: id,
                     endpointId,
                 },
                 this._requestMetaData(),
@@ -548,7 +613,7 @@ class MCPServer extends Resource {
                 Utils.getCurrentEnvironment(),
                 Utils.CONST.API_CLIENT
             ).client;
-        const payload = { apiId: id };
+        const payload = { mcpServerId: id };
         return apiClient.then((client) => {
             return client.apis['MCP Servers'].getMCPServerSwagger(payload, this._requestMetaData());
         });
@@ -560,7 +625,7 @@ class MCPServer extends Resource {
      * @returns {Promise} A promise that resolves to the swagger of the MCP Server.
      */
     getSwagger(id) {
-        const payload = { apiId: id };
+        const payload = { mcpServerId: id };
         return this.client.then((client) => {
             return client.apis['MCP Servers'].getMCPServerSwagger(payload, this._requestMetaData());
         });
@@ -568,7 +633,7 @@ class MCPServer extends Resource {
 
     /**
      * Get the life cycle state of an MCP Server given its id (UUID)
-     * @param id {string} UUID of the MCP Server
+     * @param {string} id UUID of the MCP Server
      * @returns {Promise} A promise that resolves to the MCP Server lifecycle state.
      */
     static getMCPServerLcState(id) {
@@ -580,7 +645,7 @@ class MCPServer extends Resource {
         const promiseLcGet = apiClient.then(client => {
             return client.apis['MCP Server Lifecycle'].getMCPServerLifecycleState(
                 {
-                    apiId: id,
+                    mcpServerId: id,
                 },
                 this._requestMetaData(),
             );
@@ -602,7 +667,7 @@ class MCPServer extends Resource {
         const promiseLcHistoryGet = apiClient.then(client => {
             return client.apis['MCP Server Lifecycle'].getMCPServerLifecycleHistory(
                 {
-                    apiId: id,
+                    mcpServerId: id,
                 },
                 this._requestMetaData(),
             );
@@ -625,7 +690,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis.Validation.validateMCPServerEndpoint(
                 {
-                    apiId: id,
+                    mcpServerId: id,
                     endpointUrl,
                 },
                 this._requestMetaData(),
@@ -649,7 +714,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Server Revisions'].deployMCPServerRevision(
                 {
-                    apiId: mcpServerId,
+                    mcpServerId,
                     revisionId,
                 },
                 {
@@ -676,7 +741,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Server Revisions'].undeployMCPServerRevision(
                 {
-                    apiId: mcpServerId,
+                    mcpServerId,
                     revisionId,
                 },
                 {
@@ -728,13 +793,19 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Server Documents'].getMCPServerDocuments(
                 {
-                    apiId: mcpServerId,
+                    mcpServerId,
                 },
                 this._requestMetaData(),
             );
         });
     }
 
+    /**
+     * Get the file for a document.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {string} documentId - The ID of the document.
+     * @returns {Promise} A promise that resolves to the file content of the document.
+     */
     static getFileForDocument(mcpServerId, documentId) {
         const apiClient = new APIClientFactory()
             .getAPIClient(
@@ -744,7 +815,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Server Documents'].getMCPServerDocumentContent(
                 {
-                    apiId: mcpServerId,
+                    mcpServerId,
                     documentId,
                     Accept: 'application/octet-stream',
                 },
@@ -770,7 +841,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Server Documents'].getMCPServerDocumentContent(
                 {
-                    apiId: mcpServerId,
+                    mcpServerId,
                     documentId,
                 },
                 this._requestMetaData(),
@@ -778,6 +849,14 @@ class MCPServer extends Resource {
         });
     }
 
+    /**
+     * Get the inline content of a document.
+     * @param {string} mcpServerId - The ID of the MCP Server.
+     * @param {string} documentId - The ID of the document.
+     * @param {string} sourceType - The source type of the document.
+     * @param {string} inlineContent - The inline content to add to the document.
+     * @returns {Promise} A promise that resolves to the inline content of the document.
+     */
     static addInlineContentToDocument(mcpServerId, documentId, sourceType, inlineContent) {
         const apiClient = new APIClientFactory()
             .getAPIClient(
@@ -787,7 +866,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Server Documents'].addMCPServerDocumentContent(
                 {
-                    apiId: mcpServerId,
+                    mcpServerId,
                     documentId,
                     sourceType,
                     'Content-Type': 'application/json',
@@ -807,6 +886,7 @@ class MCPServer extends Resource {
     /**
      * Get all active Tenants
      * @param state state of the tenant
+     * @returns {Promise} A promise that resolves to the list of tenants in the given state.
      */
     getTenantsByState(state) {
         return this.client.then(client => {
@@ -817,6 +897,10 @@ class MCPServer extends Resource {
     /**
      * Get the available subscriptions for a given API
      * @param {String} apiId API UUID
+     * @param {Number} [offset=null] Offset for pagination
+     * @param {Number} [limit=null] Limit for pagination
+     * @param {String} [query=null] Query string for filtering subscriptions
+     * @param {Function} [callback=null] Callback function to handle the response
      * @returns {Promise} With given callback attached to the success chain else API invoke promise.
      */
     subscriptions(apiId, offset = null, limit = null, query = null, callback = null) {
@@ -850,7 +934,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Servers'].createNewMCPServerVersion(
                 {
-                    apiId: mcpServerId,
+                    mcpServerId,
                     newVersion: version,
                     serviceVersion,
                     defaultVersion: isDefaultVersion,
@@ -859,6 +943,57 @@ class MCPServer extends Resource {
             );
         });
     }
+
+    /**
+     * Return the deployed revisions of this API
+     * @returns
+     */
+    getDeployedRevisions() {  // TODO: Change to MCP
+        if (this.isRevision) {
+            return this.client.then(client => {
+                return client.apis['API Revisions'].getAPIRevisionDeployments({
+                    apiId: this.revisionedApiId,
+                },
+                ).then(res => {
+                    return { body: res.body.filter(a => a.revisionUuid === this.id) }
+                });
+            });
+        }
+        return this.client.then(client => {
+            return client.apis['API Revisions'].getAPIRevisionDeployments({
+                apiId: this.id,
+            },
+            );
+        });
+    }
+
+    // /**
+    //  * Return the deployed revisions of this API
+    //  * @returns
+    //  */
+    // static getDeployedRevisions() { // TODO: Change to MCP
+    //     const apiClient = new APIClientFactory()
+    //         .getAPIClient(
+    //             Utils.getCurrentEnvironment(),
+    //             Utils.CONST.API_CLIENT
+    //         ).client;
+    //     if (this.isRevision) {
+    //         return apiClient.then(client => {
+    //             return client.apis['API Revisions'].getAPIRevisionDeployments({
+    //                 apiId: this.revisionedApiId,
+    //             },
+    //             ).then(res => {
+    //                 return { body: res.body.filter(a => a.revisionUuid === this.id) }
+    //             });
+    //         });
+    //     }
+    //     return this.client.then(client => {
+    //         return client.apis['API Revisions'].getAPIRevisionDeployments({
+    //             apiId: this.id,
+    //         },
+    //         );
+    //     });
+    // }
 
 }
 
