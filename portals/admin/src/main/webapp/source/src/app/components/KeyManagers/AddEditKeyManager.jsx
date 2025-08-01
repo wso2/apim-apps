@@ -168,6 +168,7 @@ function AddEditKeyManager(props) {
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
     const [validOrgs, setValidOrgs] = useState([]);
     const [orgSelectionType, setOrgSelectionType] = useState(null);
+    const [keyManagerValidationFn, setKeyManagerValidationFn] = useState(null);
 
     const defaultKMType = (settings.keyManagerConfiguration
         && settings.keyManagerConfiguration.length > 0)
@@ -293,10 +294,11 @@ function AddEditKeyManager(props) {
                             dispatch({ field: 'scopesClaim', value: defaultScopesClaim });
                         }
                     }
-                    if (authConfigurations === undefined || (Array.isArray(authConfigurations) && authConfigurations.length === 0)) {
+                    if (authConfigurations === undefined
+                        || (Array.isArray(authConfigurations) && authConfigurations.length === 0)) {
                         setKeyManagerConfiguration(configurations);
                     } else {
-                        setKeyManagerConfiguration(authConfigurations);
+                        setKeyManagerConfiguration([...authConfigurations, ...configurations]);
                     }
                     return true;
                 } else {
@@ -489,81 +491,26 @@ function AddEditKeyManager(props) {
             }
         }
     };
-    // Helper function to validate connector configurations with nested structure support
-    const validateConnectorConfigurations = (configs, additionalProps, parentPath = '') => {
-        const errors = [];
-
-        // Helper function to get nested values
-        const getNestedValueInProps = (path) => {
-            // First try flattened dot notation key
-            if (additionalProps[path] !== undefined) {
-                return additionalProps[path];
-            }
-
-            // Then try nested object access
-            const pathArray = path.split('.');
-            let current = additionalProps;
-            for (const segment of pathArray) {
-                if (current && typeof current === 'object' && current[segment] !== undefined) {
-                    current = current[segment];
-                } else {
-                    return undefined;
-                }
-            }
-            return current;
-        };
-
-        configs.forEach((config) => {
-            const configPath = parentPath ? `${parentPath}.${config.name}` : config.name;
-
-            if (config.required) {
-                const value = getNestedValueInProps(configPath);
-                const isValueEmpty = value === null || value === undefined || value === ''
-                    || (Array.isArray(value) && value.length === 0);
-
-                if (isValueEmpty) {
-                    errors.push({
-                        path: configPath,
-                        name: config.name,
-                        label: config.label || config.name,
-                        message: `${config.label || config.name} is required`,
-                    });
-                }
-            }
-
-            // Check if this config has nested values based on current selection
-            if (config.values && Array.isArray(config.values)) {
-                const currentValue = getNestedValueInProps(configPath);
-
-                if (currentValue) {
-                    const selectedOption = config.values.find((option) => option.name === currentValue);
-                    if (selectedOption && selectedOption.values && Array.isArray(selectedOption.values)) {
-                        // Recursively validate nested configurations under the selected option
-                        const nestedPath = `${configPath}.${currentValue}`;
-                        const nestedErrors = validateConnectorConfigurations(
-                            selectedOption.values,
-                            additionalProps,
-                            nestedPath,
-                        );
-                        errors.push(...nestedErrors);
-                    }
-                }
-            }
-        });
-
-        return errors;
+    // Helper function to validate connector configurations with flat structure
+    const validateConnectorConfigurations = () => {
+        // Use the validation function stored in state from KeyManagerConfiguration component
+        if (keyManagerValidationFn) {
+            return keyManagerValidationFn();
+        }
+        // Fallback to window global for debugging
+        if (typeof window !== 'undefined' && window.validateKeyManagerFields) {
+            return window.validateKeyManagerFields();
+        }
+        return [];
     };
 
     const formHasErrors = (validatingActive = false) => {
         let connectorConfigHasErrors = false;
         let connectorConfigErrors = [];
 
-        // Use comprehensive validation for connector configurations
+        // Use simple validation for connector configurations with flat structure
         if (keymanagerConnectorConfigurations.length > 0) {
-            connectorConfigErrors = validateConnectorConfigurations(
-                keymanagerConnectorConfigurations,
-                additionalProperties,
-            );
+            connectorConfigErrors = validateConnectorConfigurations();
             connectorConfigHasErrors = connectorConfigErrors.length > 0;
 
             // Log validation errors for debugging
@@ -1939,6 +1886,9 @@ function AddEditKeyManager(props) {
                                                  setAdditionalProperties={setAdditionalProperties}
                                                  hasErrors={hasErrors}
                                                  validating={validating}
+                                                 onValidationFunctionReady={(validateFn) => (
+                                                     setKeyManagerValidationFn(() => validateFn)
+                                                 )}
                                              />
                                          </Box>
                                      </Grid>
