@@ -129,9 +129,8 @@ function Endpoints(props) {
     const [productionBackendList, setProductionBackendList] = useState([]);
     const [isValidSequenceBackend, setIsValidSequenceBackend] = useState(false);
     const [isCustomBackendSelected, setIsCustomBackendSelected] = useState(false);
-    const [apiKeyParamConfig, setApiKeyParamConfig] = useState({
-        authHeader: null,
-        authQueryParameter: null
+    const [endpointConfiguration, setEndpointConfiguration] = useState({
+        authenticationConfiguration: {"authenticationConfiguration":{"enabled":false,"type":null,parameters:{}}}
     });
     const [componentValidator, setComponentValidator] = useState([]);
     const [endpointSecurityTypes, setEndpointSecurityTypes] = useState([]);
@@ -142,7 +141,7 @@ function Endpoints(props) {
                 .then((response) => {
                     if (response.body) {
                         const config = response.body;
-                        setApiKeyParamConfig(config);
+                        setEndpointConfiguration(config);
                     }
                 });
         }
@@ -577,7 +576,8 @@ function Endpoints(props) {
             }
         } else if ((!endpointConfig || !endpointConfig.endpoint_security)
             && apiObject.subtypeConfiguration?.subtype === 'AIAPI'
-            && (apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParameter)) {
+            && (endpointConfiguration.authenticationConfiguration)
+            && (endpointConfiguration.authenticationConfiguration.enabled)) {
             return {
                 isValid: false,
                 message: intl.formatMessage({
@@ -802,7 +802,7 @@ function Endpoints(props) {
                                 onChangeAPI={apiDispatcher}
                                 endpointsDispatcher={apiDispatcher}
                                 saveAndRedirect={saveAndRedirect}
-                                apiKeyParamConfig={apiKeyParamConfig}
+                                endpointConfiguration={endpointConfiguration}
                             />
                         ))}
                         {(api.subtypeConfiguration?.subtype !== 'AIAPI') && (
@@ -824,7 +824,7 @@ function Endpoints(props) {
                                             setIsValidSequenceBackend={setIsValidSequenceBackend}
                                             isCustomBackendSelected={isCustomBackendSelected}
                                             setIsCustomBackendSelected={setIsCustomBackendSelected}
-                                            apiKeyParamConfig={apiKeyParamConfig}
+                                            endpointConfiguration={endpointConfiguration}
                                             componentValidator={componentValidator}
                                             endpointSecurityTypes={endpointSecurityTypes}
                                         />

@@ -7,7 +7,7 @@
  * in compliance with the License.
  * You may obtain a copy of the License at
  *
- *   http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing,
  * software distributed under the License is distributed on an
@@ -19,8 +19,9 @@
  */
 
 import React, { useReducer, useState, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid'; // Import the v4 UUID generator
 import { FormattedMessage, useIntl } from 'react-intl';
-import { Link as RouterLink } from 'react-router-dom';
+import { Link as RouterLink, useLocation } from 'react-router-dom';
 import {
     MenuItem,
     Typography,
@@ -35,9 +36,13 @@ import Grid from '@mui/material/Grid';
 import Select from '@mui/material/Select';
 import { styled } from '@mui/material/styles';
 import TextField from '@mui/material/TextField';
+import Radio from '@mui/material/Radio';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
 import { MuiChipsInput } from 'mui-chips-input';
 import ContentBase from 'AppComponents/AdminPages/Addons/ContentBase';
 import AIAPIDefinition from './AIAPIDefinition';
+import ModelFamily from './ModelFamily';
 
 const StyledSpan = styled('span')(({ theme }) => ({ color: theme.palette.error.dark }));
 
@@ -56,8 +61,9 @@ const StyledContentBase = styled(ContentBase)({
 
 /**
  * Reducer
- * @param {JSON} state The second number.
- * @returns {Promise}
+ * @param {JSON} state The current state.
+ * @param {Object} newValue The action object containing field and value.
+ * @returns {Promise} The new state.
  */
 function reducer(state, newValue) {
     const { field, value } = newValue;
@@ -66,7 +72,9 @@ function reducer(state, newValue) {
         case 'apiVersion':
         case 'description':
         case 'modelList':
+        case 'multipleModelProviderSupport':
         case 'apiDefinition':
+        case 'models': // New case for handling model vendor entries
             return { ...state, [field]: value };
         case 'requestModel':
         case 'responseModel':
@@ -103,18 +111,25 @@ function reducer(state, newValue) {
 }
 
 /**
- * Render a list
- * @returns {JSX} Header AppBar components.
+ * AddEditAiVendor component
+ * @param {*} props props passed from parents.
+ * @returns {JSX} AddEditAiVendor component.
  */
 export default function AddEditAiVendor(props) {
     const intl = useIntl();
     const [saving, setSaving] = useState(false);
-    const { match: { params: { id } }, history } = props;
-    const inputSources = ['payload', 'header', 'queryParams'];
-    const [authSource, setAuthSource] = useState('authHeader');
-    const authSources = ['unsecured', 'authHeader', 'authQueryParameter'];
+    const { match: { params: { id: vendorId } }, history } = props;
+    const inputSources = ['payload', 'header', 'queryParams', 'pathParams'];
+    const [authConfig, setAuthenticationConfiguration] = useState({
+        enabled: 'false',
+        type: 'none',
+        parameters: {},
+    });
+    const authSources = ['none', 'apikey', 'aws'];
     const [validating, setValidating] = useState(false);
     const [file, setFile] = useState(null);
+    const location = useLocation();
+
     const [initialState] = useState({
         name: '',
         apiVersion: '',
@@ -162,13 +177,15 @@ export default function AddEditAiVendor(props) {
             authQueryParameter: '',
             authHeader: '',
         },
+        multipleModelProviderSupport: false,
         apiDefinition: '',
         modelList: [],
+        models: [],
     });
 
     const [state, dispatch] = useReducer(reducer, initialState);
 
-    const pageTitle = id ? `${intl.formatMessage({
+    const pageTitle = vendorId ? `${intl.formatMessage({
         id: 'AiVendors.AddEditAiVendor.title.edit',
         defaultMessage: 'AI/LLM Vendor - Edit ',
     })} ${state.name}` : intl.formatMessage({
@@ -178,27 +195,61 @@ export default function AddEditAiVendor(props) {
 
     useEffect(() => {
         const fetchData = async () => {
-            if (id) {
-                const aiVendorResult = await new API().aiVendorGet(id);
+            if (vendorId) {
+                const aiVendorResult = await new API().aiVendorGet(vendorId);
                 const aiVendorBody = aiVendorResult.body;
-
                 if (aiVendorBody) {
+                    let models = [];
+                    let modelList = [];
+                    if (aiVendorBody.modelProviders) {
+                        models = JSON.parse(aiVendorBody.modelProviders);
+                        modelList = models.find((item) => item.name === aiVendorBody.name);
+                        modelList = modelList ? modelList.models : [];
+                        models = models.map((model) => ({
+                            ...model, id: uuidv4(),
+                        }));
+                    }
+                    if (aiVendorBody.configurations) {
+                        const config = JSON.parse(aiVendorBody.configurations);
+                        if (config.authenticationConfiguration) {
+                            setAuthenticationConfiguration({
+                                enabled: config.authenticationConfiguration.enabled,
+                                type: config.authenticationConfiguration.type,
+                                parameters: config.authenticationConfiguration.parameters ?? {},
+                            });
+                        } else {
+                            const hasAuthHeader = config.authHeader && config.authHeader.trim() !== '';
+                            const hasAuthQueryParameter = config.authQueryParameter
+                                && config.authQueryParameter.trim() !== '';
+                            if (hasAuthHeader || hasAuthQueryParameter) {
+                                setAuthenticationConfiguration({
+                                    enabled: 'true',
+                                    type: 'apikey',
+                                    parameters: {
+                                        headersEnabled: !!hasAuthHeader,
+                                        headerName: config.authHeader || '',
+                                        queryParameterEnabled: !!hasAuthQueryParameter,
+                                        queryParameterName: config.authQueryParameter || '',
+                                    },
+                                });
+                            } else {
+                                setAuthenticationConfiguration({
+                                    enabled: 'false',
+                                    type: 'none',
+                                });
+                            }
+                        }
+                    }
                     const newState = {
                         name: aiVendorBody.name || '',
                         apiVersion: aiVendorBody.apiVersion || '',
                         description: aiVendorBody.description || '',
                         configurations: JSON.parse(aiVendorBody.configurations),
                         apiDefinition: aiVendorBody.apiDefinition || '',
-                        modelList: aiVendorBody.modelList || [],
+                        modelList,
+                        models,
+                        multipleModelProviderSupport: aiVendorBody.multipleModelProviderSupport || false,
                     };
-                    if (newState.configurations.authQueryParameter) {
-                        setAuthSource('authQueryParameter');
-                    } else if (newState.configurations.authHeader) {
-                        setAuthSource('authHeader');
-                    } else {
-                        setAuthSource('unsecured');
-                    }
-
                     dispatch({ field: 'all', value: newState });
 
                     setFile(new Blob([aiVendorBody.apiDefinition || ''], { type: 'text/plain;charset=utf-8' }));
@@ -207,7 +258,19 @@ export default function AddEditAiVendor(props) {
         };
 
         fetchData();
-    }, [id]);
+    }, [vendorId]);
+
+    /**
+     * Effect to update the state when isSingleProvider changes.
+     */
+    useEffect(() => {
+        if (location.state?.isSingleProvider !== undefined) {
+            dispatch({
+                field: 'multipleModelProviderSupport',
+                value: !location.state.isSingleProvider,
+            });
+        }
+    }, []);
 
     const camelCaseToTitleCase = (camelCaseStr) => {
         return camelCaseStr
@@ -268,6 +331,14 @@ export default function AddEditAiVendor(props) {
                     });
                 }
                 break;
+            case 'providerName':
+                if (fieldValue.trim() === '') {
+                    error = intl.formatMessage({
+                        id: 'AiVendors.AddEditAiVendor.is.empty.error.providerName',
+                        defaultMessage: 'Provider name is required.',
+                    });
+                }
+                break;
             default:
                 break;
         }
@@ -280,10 +351,14 @@ export default function AddEditAiVendor(props) {
                 || hasErrors('inputSource', meta.inputSource, validatingActive);
         });
 
+        // Check for errors in model provider entries
+        const modelProviderEntriesErrors = state.models.some((entry) => entry.name.trim() === '');
+
         return hasErrors('name', state.name, validatingActive)
             || hasErrors('apiVersion', state.apiVersion, validatingActive)
             || hasErrors('connectorType', state.configurations.connectorType, validatingActive)
-            || metadataErrors.some((error) => error);
+            || metadataErrors.some((error) => error)
+            || modelProviderEntriesErrors;
     };
 
     const formSaveCallback = async () => {
@@ -303,20 +378,26 @@ export default function AddEditAiVendor(props) {
                 metadata: state.configurations.metadata,
                 connectorType: state.configurations.connectorType,
             };
-            if (state.configurations[authSource]) {
-                updatedConfigurations = {
-                    ...updatedConfigurations,
-                    [authSource]: state.configurations[authSource],
-                };
+            updatedConfigurations = {
+                ...updatedConfigurations,
+                authenticationConfiguration: authConfig,
+            };
+            let models;
+            if (state.multipleModelProviderSupport) {
+                models = state.models.map(({ id, ...rest }) => rest);
+            } else {
+                models = [{ name: state.name, models: state.modelList }];
             }
             const newState = {
                 ...state,
                 configurations: updatedConfigurations,
-                modelList: JSON.stringify(state.modelList),
+                // modelList: JSON.stringify(state.modelList),
+                // Stringify modelVendorEntries before sending to API
+                modelList: JSON.stringify(models),
             };
 
-            if (id) {
-                await new API().updateAiVendor(id, { ...newState, apiDefinition: file });
+            if (vendorId) { // <-- Use vendorId instead of id
+                await new API().updateAiVendor(vendorId, { ...newState, apiDefinition: file });
                 Alert.success(`${state.name} ${intl.formatMessage({
                     id: 'AiVendor.edit.success',
                     defaultMessage: ' - AI/LLM Vendor edited successfully.',
@@ -344,19 +425,64 @@ export default function AddEditAiVendor(props) {
     };
 
     const clearAuthHeader = () => {
-        dispatch({
-            field: 'authHeader',
-            value: '',
-        });
+        setAuthenticationConfiguration((prev) => ({
+            ...prev,
+            parameters: {},
+        }));
     };
 
-    const clearAuthQueryParameter = () => {
-        dispatch({
-            field: 'authQueryParameter',
-            value: '',
-        });
-    };
+    function setAuthType(type) {
+        if (type === 'none') {
+            authConfig.enabled = false;
+            authConfig.type = 'none';
+        } else {
+            authConfig.enabled = true;
+            authConfig.type = type;
+        }
+    }
 
+    // Add this helper function above your component
+    function getApiKeyLocation(authConfiguration) {
+        if (authConfiguration?.parameters?.headerEnabled) {
+            return 'header';
+        }
+        if (authConfiguration?.parameters?.queryParameterEnabled) {
+            return 'queryParameter';
+        }
+        return '';
+    }
+
+    // Add this function inside your component, above the return statement
+    const handleApiKeyLocationChange = (e) => {
+        const { value } = e.target;
+        setAuthenticationConfiguration((prev) => ({
+            ...prev,
+            parameters: {
+                ...prev.parameters,
+                headerEnabled: value === 'header',
+                queryParameterEnabled: value === 'queryParameter',
+            },
+        }));
+    };
+    /**
+     * Handles changes to the API key identifier input.
+     * Updates headerName or queryParameterName in authConfig.parameters.
+     */
+    const handleApiKeyIdentifierChange = (e) => {
+        const { value } = e.target;
+        setAuthenticationConfiguration((prev) => ({
+            ...prev,
+            parameters: {
+                ...prev.parameters,
+                ...(prev.parameters.headerEnabled
+                    ? { headerName: value }
+                    : {}),
+                ...(prev.parameters.queryParameterEnabled
+                    ? { queryParameterName: value }
+                    : {}),
+            },
+        }));
+    };
     return (
         <StyledContentBase
             pageStyle='half'
@@ -411,7 +537,7 @@ export default function AddEditAiVendor(props) {
                                         fullWidth
                                         variant='outlined'
                                         value={state.name}
-                                        disabled={!!id}
+                                        disabled={!!vendorId}
                                         onChange={(e) => dispatch({
                                             field: 'name',
                                             value: e.target.value,
@@ -432,7 +558,7 @@ export default function AddEditAiVendor(props) {
                                             fullWidth
                                             variant='outlined'
                                             value={state.apiVersion}
-                                            disabled={!!id}
+                                            disabled={!!vendorId}
                                             onChange={(e) => dispatch({
                                                 field: 'apiVersion',
                                                 value: e.target.value,
@@ -483,6 +609,73 @@ export default function AddEditAiVendor(props) {
                                 })}
                             />
                         </Box>
+                    </Grid>
+                    <Grid item xs={12}>
+                        <Box marginTop={2} marginBottom={2}>
+                            <StyledHr />
+                        </Box>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={3}>
+                        <Typography
+                            color='inherit'
+                            variant='subtitle2'
+                            component='div'
+                            id='AiVendors.AddEditAiVendor.provider.configurations.header'
+                        >
+                            <FormattedMessage
+                                id='AiVendors.AddEditAiVendor.provider.configurations'
+                                defaultMessage='Provider Configurations'
+                            />
+                        </Typography>
+                        <Typography
+                            color='inherit'
+                            variant='caption'
+                            component='p'
+                            id='AiVendors.AddEditAiVendor.provider.configurations.body'
+                        >
+                            <FormattedMessage
+                                id='AiVendors.AddEditAiVendor.AiVendor.provider.configurations.description'
+                                defaultMessage='Define provider configurations of the AI/LLM Vendor'
+                            />
+                        </Typography>
+                    </Grid>
+                    <Grid item xs={12} md={12} lg={9}>
+                        {state.multipleModelProviderSupport ? (
+                            <ModelFamily
+                                models={state.models}
+                                onModelsChange={(newModels) => dispatch({
+                                    field: 'models',
+                                    value: newModels,
+                                })}
+                                hasErrors={hasErrors}
+                                validating={validating}
+                            />
+                        ) : (
+                            <Box component='div' m={1}>
+                                <Grid container>
+                                    <MuiChipsInput
+                                        variant='outlined'
+                                        fullWidth
+                                        value={state.modelList}
+                                        onAddChip={(model) => {
+                                            const updatedList = [...state.modelList, model];
+                                            dispatch({ field: 'modelList', value: updatedList });
+                                        }}
+                                        onDeleteChip={(model) => {
+                                            const filteredModelList = state.modelList.filter(
+                                                (modelItem) => modelItem !== model,
+                                            );
+                                            dispatch({ field: 'modelList', value: filteredModelList });
+                                        }}
+                                        placeholder={intl.formatMessage({
+                                            id: 'AiVendors.AddEditAiVendor.modelList.placeholder',
+                                            defaultMessage: 'Type Model name and press Enter',
+                                        })}
+                                        data-testid='ai-vendor-llm-model-list'
+                                    />
+                                </Grid>
+                            </Box>
+                        )}
                     </Grid>
                     <>
                         <Grid item xs={12}>
@@ -580,8 +773,7 @@ export default function AddEditAiVendor(props) {
                                                                 + ' identifier'
                                                             }
                                                         />
-
-                                                        <StyledSpan>*</StyledSpan>
+                                                        {metadata.required && <StyledSpan>*</StyledSpan>}
                                                     </span>
                                                 )}
                                                 fullWidth
@@ -688,11 +880,10 @@ export default function AddEditAiVendor(props) {
                                             variant='outlined'
                                             id='Admin.AiVendor.form.llm.auth.select'
                                             name='authSource'
-                                            value={authSource}
+                                            value={authConfig.type}
                                             onChange={(e) => {
+                                                setAuthType(e.target.value);
                                                 clearAuthHeader();
-                                                clearAuthQueryParameter();
-                                                setAuthSource(e.target.value);
                                             }}
                                             data-testid='ai-vendor-llm-auth-select'
                                         >
@@ -703,33 +894,89 @@ export default function AddEditAiVendor(props) {
                                                     </MenuItem>
                                                 ))}
                                         </Select>
-                                        {authSource !== 'unsecured' && (
+                                        {(authConfig.type === 'apikey') && (
+                                            <>
+                                                <Box mb={2} mt={2}>
+                                                    <FormControl component='fieldset' fullWidth>
+                                                        <RadioGroup
+                                                            row
+                                                            aria-label='API Key Location'
+                                                            name='apikeyLocation'
+                                                            value={getApiKeyLocation(authConfig)}
+                                                            onChange={handleApiKeyLocationChange}
+                                                            data-testid='ai-vendor-llm-auth-apikey-location'
+                                                        >
+                                                            <FormControlLabel
+                                                                value='header'
+                                                                control={<Radio />}
+                                                                label='Header'
+                                                            />
+                                                            <FormControlLabel
+                                                                value='queryParameter'
+                                                                control={<Radio />}
+                                                                label='Query Parameter'
+                                                            />
+                                                        </RadioGroup>
+                                                    </FormControl>
+                                                </Box>
+                                                <TextField
+                                                    id='Admin.AiVendor.form.llm.auth.select.input'
+                                                    margin='dense'
+                                                    name='model.auth.attributeIdentifier'
+                                                    label={(
+                                                        <span>
+                                                            <FormattedMessage
+                                                                id={
+                                                                    'Admin.AiVendor.form.llm.'
+                                                                    + 'auth.select.input.message'
+                                                                }
+                                                                defaultMessage={
+                                                                    `${camelCaseToSentence(authConfig.type)} identifier`
+                                                                }
+                                                            />
+                                                        </span>
+                                                    )}
+                                                    fullWidth
+                                                    variant='outlined'
+                                                    value={
+                                                        (() => {
+                                                            if (authConfig?.parameters?.headerEnabled) {
+                                                                return authConfig.parameters.headerName ?? '';
+                                                            }
+                                                            if (authConfig?.parameters?.queryParameterEnabled) {
+                                                                return authConfig.parameters.queryParameterName ?? '';
+                                                            }
+                                                            return '';
+                                                        })()
+                                                    }
+                                                    onChange={handleApiKeyIdentifierChange}
+                                                />
+                                            </>
+                                        )}
+                                        {(authConfig.type === 'aws') && (
                                             <TextField
-                                                id='Admin.AiVendor.form.llm.auth.select.input'
+                                                id='Admin.AiVendor.form.llm.auth.aws.service'
                                                 margin='dense'
-                                                name='model.auth.attributeIdentifier'
+                                                name='awsServiceName'
                                                 label={(
                                                     <span>
                                                         <FormattedMessage
-                                                            id={
-                                                                'Admin.AiVendor.form.llm.'
-                                                                + 'auth.select.input.message'
-                                                            }
-                                                            defaultMessage={
-                                                                `${camelCaseToSentence(authSource)} identifier`
-                                                            }
+                                                            id='Admin.AiVendor.form.llm.auth.aws.service.label'
+                                                            defaultMessage='AWS Service Name'
                                                         />
                                                     </span>
                                                 )}
                                                 fullWidth
                                                 variant='outlined'
-                                                value={authSource === 'authHeader'
-                                                    ? state.configurations.authHeader ?? ''
-                                                    : state.configurations.authQueryParameter ?? ''}
-                                                onChange={(e) => dispatch({
-                                                    field: authSource,
-                                                    value: e.target.value,
-                                                })}
+                                                value={authConfig.parameters?.awsServiceName || ''}
+                                                onChange={(e) => setAuthenticationConfiguration((prev) => ({
+                                                    ...prev,
+                                                    parameters: {
+                                                        ...prev.parameters,
+                                                        awsServiceName: e.target.value,
+                                                    },
+                                                }))}
+                                                required
                                             />
                                         )}
                                     </FormControl>
@@ -785,7 +1032,7 @@ export default function AddEditAiVendor(props) {
                                 fullWidth
                                 variant='outlined'
                                 value={state.configurations.connectorType}
-                                disabled={!!id}
+                                disabled={!!vendorId}
                                 onChange={(e) => dispatch({
                                     field: 'connectorType',
                                     value: e.target.value,
@@ -807,67 +1054,6 @@ export default function AddEditAiVendor(props) {
                             <StyledHr />
                         </Box>
                     </Grid>
-                    <Grid item xs={12} md={12} lg={3}>
-                        <Typography
-                            color='inherit'
-                            variant='subtitle2'
-                            component='div'
-                            id='AiVendors.AddEditAiVendor.modelList.header'
-                        >
-                            <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.modelList'
-                                defaultMessage='Model List'
-                            />
-                        </Typography>
-                        <Typography
-                            color='inherit'
-                            variant='caption'
-                            component='p'
-                            id='AiVendors.AddEditAiVendor.modelList.body'
-                        >
-                            <FormattedMessage
-                                id='AiVendors.AddEditAiVendor.modelList.description'
-                                defaultMessage='AI/LLM Vendor supported model list'
-                            />
-                        </Typography>
-                    </Grid>
-                    <Grid item xs={12} md={12} lg={9}>
-                        <Box component='div' m={1}>
-                            <MuiChipsInput
-                                variant='outlined'
-                                fullWidth
-                                value={state.modelList}
-                                onAddChip={(model) => {
-                                    state.modelList.push(model);
-                                }}
-                                onDeleteChip={(model) => {
-                                    const filteredModelList = state.modelList.filter(
-                                        (modelItem) => modelItem !== model,
-                                    );
-                                    dispatch({ field: 'modelList', value: filteredModelList });
-                                }}
-                                placeholder={intl.formatMessage({
-                                    id: 'AiVendors.AddEditAiVendor.modelList.placeholder',
-                                    defaultMessage: 'Type Model name and press Enter',
-                                })}
-                                data-testid='ai-vendor-llm-model-list'
-                                helperText={(
-                                    <div style={{ position: 'absolute', marginTop: '10px' }}>
-                                        {intl.formatMessage({
-                                            id: 'AiVendors.AddEditAiVendor.modelList.help',
-                                            defaultMessage: 'Type available models and '
-                                                + 'press enter/return to add them.',
-                                        })}
-                                    </div>
-                                )}
-                            />
-                        </Box>
-                    </Grid>
-                    <Grid item xs={12}>
-                        <Box marginTop={2} marginBottom={2}>
-                            <StyledHr />
-                        </Box>
-                    </Grid>
                     <Grid item xs={12} mb={2}>
                         <Box component='span' m={1}>
                             <Button
@@ -879,7 +1065,7 @@ export default function AddEditAiVendor(props) {
                             >
                                 {saving ? (<CircularProgress size={16} />) : (
                                     <>
-                                        {id ? (
+                                        {vendorId ? (
                                             <FormattedMessage
                                                 id='AiVendors.AddEditAiVendor.form.update.btn'
                                                 defaultMessage='Update'
@@ -905,7 +1091,6 @@ export default function AddEditAiVendor(props) {
                     </Grid>
                 </Grid>
             </Box>
-
         </StyledContentBase>
     );
 }
