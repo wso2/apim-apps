@@ -383,8 +383,8 @@ export default function KeyManagerConfiguration(props) {
 
         const renderSelectedChildren = (parent) => {
             if (!parent?.values || !Array.isArray(parent.values)) return null;
-            return parent.values.map((child) => (
-                <Box key={child.name || Math.random()} ml={2} mt={2}>
+            return parent.values.map((child, index) => (
+                <Box key={child.name || `child-${index}`} ml={2} mt={2}>
                     {getComponent(child)}
                 </Box>
             ));
