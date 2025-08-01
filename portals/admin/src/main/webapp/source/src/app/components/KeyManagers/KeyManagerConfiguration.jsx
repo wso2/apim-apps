@@ -35,9 +35,9 @@ function certificateReducer(state, action) {
             value: action.value.value || '',
         };
     }
-    // If we receive a field update
+    // If we receive a field update - use dynamic field name check
     const { field, value } = action;
-    if (field === 'tenantWideCertificates') {
+    if (field && typeof field === 'string') {
         return {
             type: value.type || state.type,
             value: value.value || '',
@@ -56,23 +56,45 @@ export default function KeyManagerConfiguration(props) {
         onValidationFunctionReady, // New prop to expose validation function
     } = props;
 
-    // Change from constant to state
-    const [tenantWideCertificates, dispatch] = useReducer(certificateReducer,
-        additionalProperties?.certificates || {
+    // Find certificate field name dynamically from configuration
+    const certificateFieldName = useMemo(() => {
+        const findCertificateField = (configs) => {
+            if (!configs || !Array.isArray(configs)) return null;
+
+            for (const config of configs) {
+                if (config?.type === 'certificate' && config?.name) {
+                    return config.name;
+                }
+                // Check nested configurations
+                if (config?.values && Array.isArray(config.values)) {
+                    const nested = findCertificateField(config.values);
+                    if (nested) return nested;
+                }
+            }
+            return null;
+        };
+
+        return findCertificateField(keymanagerConnectorConfigurations);
+    }, [keymanagerConnectorConfigurations]);
+
+    // Change from constant to state - use dynamic field name
+    const [certificateData, dispatch] = useReducer(certificateReducer,
+        (certificateFieldName && additionalProperties?.[certificateFieldName]) || {
             type: 'PEM',
             value: '',
         });
+
     // Add effect to watch for changes and sync with additionalProperties
     useEffect(() => {
-        if (tenantWideCertificates) {
+        if (certificateData && certificateFieldName) {
             // Ensure we only pass the correct structure
-            const certificateData = {
-                type: tenantWideCertificates.type || 'PEM',
-                value: tenantWideCertificates.value || '',
+            const certData = {
+                type: certificateData.type || 'PEM',
+                value: certificateData.value || '',
             };
-            setAdditionalProperties('certificates', certificateData);
+            setAdditionalProperties(certificateFieldName, certData);
         }
-    }, [tenantWideCertificates, setAdditionalProperties]);
+    }, [certificateData, certificateFieldName, setAdditionalProperties]);
 
     // Helper function to get value from flat additionalProperties using field name as key
     const getValue = useCallback((fieldName, defaultValue = '') => {
@@ -352,8 +374,9 @@ export default function KeyManagerConfiguration(props) {
 
         if (!name) return null; // Skip if no name
 
-        const value = type === 'certificate' ? (additionalProperties?.certificates
-            || { type: 'PEM', value: '' }) : getValue(name, defaultVal || '');
+        const value = type === 'certificate' ? (certificateFieldName
+            && (additionalProperties?.[certificateFieldName]
+            || { type: 'PEM', value: '' })) : getValue(name, defaultVal || '');
         const error = hasFieldError(name, value, required, validating);
 
         const selectedObject = values.find((v) => v && v.name === value);
@@ -551,8 +574,8 @@ export default function KeyManagerConfiguration(props) {
                     </FormLabel>
                     <Box sx={{ width: '100%' }}>
                         <Certificates
-                            fieldName='tenantWideCertificates'
-                            tenantWideCertificates={tenantWideCertificates}
+                            fieldName={name}
+                            {...{ [name]: certificateData }}
                             dispatch={dispatch}
                             isJwksNeeded={false}
                         />
@@ -621,7 +644,8 @@ export default function KeyManagerConfiguration(props) {
         onChangeCheckBox,
         setValue,
         additionalProperties,
-        tenantWideCertificates,
+        certificateData,
+        certificateFieldName,
         dispatch,
     ]);
 
