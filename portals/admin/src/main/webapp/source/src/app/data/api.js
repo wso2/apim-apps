@@ -1220,7 +1220,7 @@ class API extends Resource {
                     name: aiServiceProviderBody.name,
                     apiVersion: aiServiceProviderBody.apiVersion,
                     description: aiServiceProviderBody.description,
-                    multitpleModelProviderSupport: aiServiceProviderBody.multipleModelProviderSupport,
+                    multipleModelProviderSupport: aiServiceProviderBody.multipleModelProviderSupport,
                     configurations: aiServiceProviderBody.configurations,
                     apiDefinition: aiServiceProviderBody.apiDefinition,
                     modelProviders: JSON.stringify(aiServiceProviderBody.modelList)
@@ -1245,7 +1245,7 @@ class API extends Resource {
                     name: aiServiceProviderBody.name,
                     apiVersion: aiServiceProviderBody.apiVersion,
                     description: aiServiceProviderBody.description,
-                    multitpleModelProviderSupport: aiServiceProviderBody.multipleModelProviderSupport,
+                    multipleModelProviderSupport: aiServiceProviderBody.multipleModelProviderSupport,
                     configurations: aiServiceProviderBody.configurations,
                     apiDefinition: aiServiceProviderBody.apiDefinition,
                     modelProviders: JSON.stringify(aiServiceProviderBody.modelList)

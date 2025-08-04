@@ -204,7 +204,7 @@ export default function AddEditAiServiceProvider(props) {
                         let models = [];
                         let modelList = [];
                         if (aiVendorBody.modelProviders) {
-                            models = JSON.parse(aiVendorBody.modelProviders);
+                            models = aiVendorBody.modelProviders;
                             modelList = models.find((item) => item.name === aiVendorBody.name);
                             modelList = modelList ? modelList.models : [];
                             models = models.map((model) => ({
