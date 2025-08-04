@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Radio from '@mui/material/Radio';
 import RadioGroup from '@mui/material/RadioGroup';
 import FormControlLabel from '@mui/material/FormControlLabel';
@@ -16,7 +16,6 @@ import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import Alert from 'AppComponents/Shared/Alert';
 
-const cache = {};
 /**
  * Renders the certificate add/edit page.
  * @param {JSON} props Input props form parent components.
@@ -24,21 +23,44 @@ const cache = {};
  */
 export default function Certificates(props) {
     const intl = useIntl();
-    const { certificates: { type, value }, dispatch } = props;
+    const {
+        fieldName,
+        [fieldName]: { type, value },
+        dispatch,
+        isJwksNeeded,
+    } = props;
     const [selectedTab, setSelectedTab] = useState(0);
     const [file, setFile] = useState(null);
-    cache[type] = value;
+    // Keep certificate cache local to this instance
+    const [certCache, setCertCache] = useState({
+        PEM: '',
+        JWKS: '',
+    });
+
+    // Update cache when value changes
+    useEffect(() => {
+        setCertCache((prev) => ({
+            ...prev,
+            [type]: value,
+        }));
+    }, [type, value]);
 
     const onDrop = (acceptedFile) => {
         const reader = new FileReader();
         setFile(acceptedFile[0]);
         reader.readAsText(acceptedFile[0], 'UTF-8');
         reader.onload = (evt) => {
+            const newValue = btoa(evt.target.result);
+            // Update both cache and parent
+            setCertCache((prev) => ({
+                ...prev,
+                [type]: newValue,
+            }));
             dispatch({
-                field: 'certificates',
+                field: fieldName,
                 value: {
                     type,
-                    value: btoa(evt.target.result),
+                    value: newValue,
                 },
             });
         };
@@ -53,19 +75,26 @@ export default function Certificates(props) {
     const handleChange = (event) => {
         const { value: selected, name } = event.target;
         if (name === 'certificateType') {
+            // When switching certificate type, use the cached value for that type
             dispatch({
-                field: 'certificates',
+                field: fieldName,
                 value: {
                     type: selected,
-                    value: cache[selected],
+                    value: certCache[selected] || '',
                 },
             });
         } else {
+            // When updating certificate value, update both cache and parent
+            const newValue = name === 'certificateValueUrl' ? selected : btoa(selected);
+            setCertCache((prev) => ({
+                ...prev,
+                [type]: newValue,
+            }));
             dispatch({
-                field: 'certificates',
+                field: fieldName,
                 value: {
                     type,
-                    value: name === 'certificateValueUrl' ? selected : btoa(selected),
+                    value: newValue,
                 },
             });
         }
@@ -75,18 +104,20 @@ export default function Certificates(props) {
     };
     return (
         <>
-            <FormControl variant='standard' component='fieldset'>
-                <RadioGroup
-                    style={{ flexDirection: 'row' }}
-                    aria-label='certificate'
-                    name='certificateType'
-                    value={type}
-                    onChange={handleChange}
-                >
-                    <FormControlLabel id='pem-certificate' value='PEM' control={<Radio />} label='PEM' />
-                    <FormControlLabel id='jwks-certificate' value='JWKS' control={<Radio />} label='JWKS' />
-                </RadioGroup>
-            </FormControl>
+            {isJwksNeeded && (
+                <FormControl variant='standard' component='fieldset'>
+                    <RadioGroup
+                        style={{ flexDirection: 'row' }}
+                        aria-label='certificate'
+                        name='certificateType'
+                        value={type}
+                        onChange={handleChange}
+                    >
+                        <FormControlLabel id='pem-certificate' value='PEM' control={<Radio />} label='PEM' />
+                        <FormControlLabel id='jwks-certificate' value='JWKS' control={<Radio />} label='JWKS' />
+                    </RadioGroup>
+                </FormControl>
+            )}
             {type === 'JWKS' && (
                 <TextField
                     id='jwks-url'
@@ -103,7 +134,7 @@ export default function Certificates(props) {
                     onChange={handleChange}
                 />
             )}
-            {type === 'PEM' && (
+            {(!isJwksNeeded || type === 'PEM') && (
                 <>
                     <AppBar position='static' color='default'>
                         <Tabs value={selectedTab} onChange={handleTabChange}>
@@ -172,7 +203,13 @@ export default function Certificates(props) {
         </>
     );
 }
+Certificates.defaultProps = {
+    fieldName: 'certificates',
+    isJwksNeeded: true,
+};
+
 Certificates.propTypes = {
-    certificates: PropTypes.shape({}).isRequired,
+    fieldName: PropTypes.string,
     dispatch: PropTypes.func.isRequired,
+    isJwksNeeded: PropTypes.bool,
 };
