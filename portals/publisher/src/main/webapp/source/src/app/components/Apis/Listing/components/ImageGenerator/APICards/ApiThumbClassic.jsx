@@ -320,12 +320,29 @@ class APIThumb extends Component {
                         </Link>
                     </div>
                     <div className={classes.row}>
-                        <Typography variant='caption' gutterBottom align='left'>
-                            <FormattedMessage id='by' defaultMessage='By' />
-                            <FormattedMessage id='colon' defaultMessage=':' />
-                            &nbsp;
-                            {api.provider}
-                        </Typography>
+                        <div className={classes.thumbLeft}>
+                            <Typography variant='caption' gutterBottom align='left'>
+                                <FormattedMessage id='by' defaultMessage='By' />
+                                <FormattedMessage id='colon' defaultMessage=':' />
+                                &nbsp;
+                                {api.provider}
+                            </Typography>
+                        </div>
+                        <div className={classes.thumbRight}>
+                            <Typography variant='caption' gutterBottom align='right'>
+                                <FormattedMessage id='by' defaultMessage='Vendor' />
+                                <FormattedMessage id='colon' defaultMessage=':' />
+                                &nbsp;
+                                {api.gatewayType === 'wso2/synapse' || api.gatewayType === 'wso2/apk' ? (
+                                    <FormattedMessage
+                                        defaultMessage='WSO2'
+                                        id='Apis.Listing.ApiThumb.vendor.wso2'
+                                    />
+                                ) : 
+                                    api.gatewayType
+                                }
+                            </Typography>
+                        </div>
                     </div>
                     <div className={classes.row}>
                         <div className={classes.thumbLeft}>

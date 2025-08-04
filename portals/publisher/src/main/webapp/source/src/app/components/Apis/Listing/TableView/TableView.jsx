@@ -411,6 +411,28 @@ class TableView extends React.Component {
                 },
             },
             {
+                name: 'gatewayType',
+                label: intl.formatMessage({
+                    id: 'Apis.Listing.ApiTableView.vendor',
+                    defaultMessage: 'Gateway Vendor',
+                }),
+                options: {
+                    customBodyRender: (value, tableMeta, updateValue, tableViewObj = this) => {
+                        if (tableMeta.rowData) {
+                            const {gatewayType} = tableViewObj.state.apisAndApiProducts[tableMeta.rowIndex];
+                            if (gatewayType === 'wso2/synapse' || gatewayType === 'wso2/apk') {
+                                return 'WSO2';
+                            } else {
+                                return gatewayType;
+                            }
+                        }
+                        return '-';
+                    },
+                    sort: false,
+                    filter: false,
+                },
+            },
+            {
                 name: 'context',
                 label: intl.formatMessage({
                     id: 'Apis.Listing.ApiTableView.context',

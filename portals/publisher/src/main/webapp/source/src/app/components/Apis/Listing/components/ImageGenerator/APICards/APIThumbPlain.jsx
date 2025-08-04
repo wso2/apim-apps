@@ -149,7 +149,7 @@ function APIThumbPlain(props) {
     } = props;
     const { custom: { thumbnail } } = theme;
     const {
-        name, version, context, provider,
+        name, version, context, provider, gatewayType
     } = api;
 
     const [imageConf, setImageConf] = useState({
@@ -305,6 +305,23 @@ function APIThumbPlain(props) {
                                     <FormattedMessage defaultMessage=' : ' id='Apis.Listing.ApiThumb.by.colon' />
                                 </Typography>
                                 <Typography variant='body2' component='span'>{provider}</Typography>
+                            </>
+                        )}
+                    </Box>
+                    <Box>
+                        {gatewayType && (
+                            <>
+                                <Typography
+                                    variant='caption'
+                                    gutterBottom
+                                    align='right'
+                                    className={classes.caption}
+                                    component='span'
+                                >
+                                    <FormattedMessage defaultMessage='Vendor' id='Apis.Listing.ApiThumb.vendor' />
+                                    <FormattedMessage defaultMessage=' : ' id='Apis.Listing.ApiThumb.vendor.colon' />
+                                </Typography>
+                                <Typography variant='body2' component='span'>{gatewayType}</Typography>
                             </>
                         )}
                     </Box>
