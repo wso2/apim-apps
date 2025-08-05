@@ -241,7 +241,8 @@ class Comment extends React.Component {
      * @memberof Comment
      */
     handleClickDeleteComment() {
-        const apiClient = new API();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const apiClient = isMCPServersRoute ? new MCPServer() : new API();
 
         const { deleteComment } = this.state;
         const {

@@ -18,11 +18,11 @@
 import React from 'react';
 import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
-import {TextField, Button, Typography, InputLabel, useTheme} from '@mui/material';
+import {
+    TextField, Button, Typography, InputLabel, useTheme,
+} from '@mui/material';
 import Grid from '@mui/material/Grid';
-import FormControl from '@mui/material/FormControl';
-import MenuItem from '@mui/material/MenuItem';
-import Select from '@mui/material/Select';
+import MCPServer from 'AppData/MCPServer';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Alert from '../../../Shared/Alert';
 import API from '../../../../data/api';
@@ -141,9 +141,10 @@ class CommentAddLegacy extends React.Component {
             apiId, intl, replyTo, handleShowReply, addComment, addReply,
         } = this.props;
         const { content } = this.state;
-        const Api = new API();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const Api = isMCPServersRoute ? new MCPServer() : new API();
         const comment = {
-            content: content.trim(), category: "general"
+            content: content.trim(), category: 'general',
         };
 
         // to check whether a string does not contain only white spaces

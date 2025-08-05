@@ -113,7 +113,7 @@ const StyledApiContextConsumer = styled(ApiContext.Consumer)((
 
     [`& .${classes.button}`]: {
         textTransform: 'capitalize',
-    }
+    },
 }));
 
 /**
@@ -156,10 +156,12 @@ class CommentsLegacy extends Component {
         let {
             apiId, match, intl, isOverview, setCount,
         } = this.props;
-        if (match) apiId = match.params.apiUuid;
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        if (match) {
+            apiId = isMCPServersRoute ? match.params.serverUuid : match.params.apiUuid;
+        }
         this.setState({ apiId });
 
-        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
         const restApi = isMCPServersRoute ? new MCPServer() : new API();
         const limit = this.props.commentsLimit;
         const offset = 0;

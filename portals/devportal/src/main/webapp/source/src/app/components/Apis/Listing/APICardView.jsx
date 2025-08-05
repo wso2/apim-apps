@@ -89,7 +89,8 @@ class APICardView extends React.Component {
 
     // get data
     getData = () => {
-        const { intl } = this.props;
+        const { intl, entityType } = this.props;
+        const isMCPServersRoute = entityType === 'mcp' || window.location.pathname.includes('/mcp-servers');
         this.xhrRequest()
             .then((data) => {
                 const { body } = data;
@@ -109,8 +110,8 @@ class APICardView extends React.Component {
                     }));
                 } else {
                     Alert.error(intl.formatMessage({
-                        defaultMessage: 'Error While Loading APIs',
-                        id: 'Apis.Listing.ApiTableView.error.loading',
+                        defaultMessage: isMCPServersRoute ? 'Error While Loading MCP Servers' : 'Error While Loading APIs',
+                        id: isMCPServersRoute ? 'Apis.Listing.MCPServerCardView.error.loading' : 'Apis.Listing.ApiTableView.error.loading',
                     }));
                 }
             })
@@ -136,7 +137,8 @@ class APICardView extends React.Component {
     }
 
     changePage = (page) => {
-        const { intl } = this.props;
+        const { intl, entityType } = this.props;
+        const isMCPServersRoute = entityType === 'mcp' || window.location.pathname.includes('/mcp-servers');
         this.page = page;
         this.setState({ loading: true });
         this.xhrRequest()
@@ -149,8 +151,8 @@ class APICardView extends React.Component {
             })
             .catch(() => {
                 Alert.error(intl.formatMessage({
-                    defaultMessage: 'Error While Loading APIs',
-                    id: 'Apis.Listing.ApiTableView.error.loading',
+                    defaultMessage: isMCPServersRoute ? 'Error While Loading MCP Servers' : 'Error While Loading APIs',
+                    id: isMCPServersRoute ? 'Apis.Listing.MCPServerCardView.error.loading' : 'Apis.Listing.ApiTableView.error.loading',
                 }));
             })
             .finally(() => {
@@ -159,9 +161,10 @@ class APICardView extends React.Component {
     };
 
     xhrRequest = () => {
-        const { searchText } = this.props;
+        const { searchText, entityType } = this.props;
         const { page, rowsPerPage } = this;
-        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        // Determine entity type from props, fallback to route-based detection
+        const isMCPServersRoute = entityType === 'mcp' || window.location.pathname.includes('/mcp-servers');
         const api = isMCPServersRoute ? new MCPServer() : new API();
 
         if (searchText && searchText !== '') {
@@ -218,13 +221,14 @@ class APICardView extends React.Component {
         }
 
         const {
-            handleSubscribe, applicationId, intl,
+            handleSubscribe, applicationId, intl, entityType,
         } = this.props;
+        const isMCPServersRoute = entityType === 'mcp' || window.location.pathname.includes('/mcp-servers');
         const columns = [
             {
                 name: 'id',
                 label: intl.formatMessage({
-                    id: 'Apis.Listing.APIList.id',
+                    id: isMCPServersRoute ? 'Apis.Listing.MCPServerList.id' : 'Apis.Listing.APIList.id',
                     defaultMessage: 'Id',
                 }),
                 options: {
@@ -234,7 +238,9 @@ class APICardView extends React.Component {
             {
                 name: 'isSubscriptionAvailable',
                 label: intl.formatMessage({
-                    id: 'Apis.Listing.APIList.isSubscriptionAvailable',
+                    id: isMCPServersRoute
+                        ? 'Apis.Listing.MCPServerList.isSubscriptionAvailable'
+                        : 'Apis.Listing.APIList.isSubscriptionAvailable',
                     defaultMessage: 'Is Subscription Available',
                 }),
                 options: {
@@ -244,21 +250,23 @@ class APICardView extends React.Component {
             {
                 name: 'name',
                 label: intl.formatMessage({
-                    id: 'Apis.Listing.APIList.name',
+                    id: isMCPServersRoute ? 'Apis.Listing.MCPServerList.name' : 'Apis.Listing.APIList.name',
                     defaultMessage: 'Name',
                 }),
             },
             {
                 name: 'version',
                 label: intl.formatMessage({
-                    id: 'Apis.Listing.APIList.version',
+                    id: isMCPServersRoute ? 'Apis.Listing.MCPServerList.version' : 'Apis.Listing.APIList.version',
                     defaultMessage: 'Version',
                 }),
             },
             {
                 name: 'throttlingPolicies',
                 label: intl.formatMessage({
-                    id: 'Apis.Listing.APIList.subscription.status',
+                    id: isMCPServersRoute
+                        ? 'Apis.Listing.MCPServerList.subscription.status'
+                        : 'Apis.Listing.APIList.subscription.status',
                     defaultMessage: 'Subscription Status',
                 }),
                 options: {
@@ -269,13 +277,17 @@ class APICardView extends React.Component {
                             const policies = value;
                             if (!isSubscriptionAvailable) {
                                 return (intl.formatMessage({
-                                    id: 'Apis.Listing.APICardView.not.allowed',
+                                    id: isMCPServersRoute
+                                        ? 'Apis.Listing.MCPServerCardView.not.allowed'
+                                        : 'Apis.Listing.APICardView.not.allowed',
                                     defaultMessage: 'Not Allowed',
                                 }));
                             }
                             if (!policies) {
                                 return (intl.formatMessage({
-                                    id: 'Apis.Listing.APICardView.already.subscribed',
+                                    id: isMCPServersRoute
+                                        ? 'Apis.Listing.MCPServerCardView.already.subscribed'
+                                        : 'Apis.Listing.APICardView.already.subscribed',
                                     defaultMessage: 'Subscribed',
                                 }));
                             }
@@ -328,7 +340,9 @@ class APICardView extends React.Component {
             textLabels: {
                 pagination: {
                     rowsPerPage: intl.formatMessage({
-                        id: 'Apis.Listing.APICardView.rows.per.page',
+                        id: isMCPServersRoute
+                            ? 'Apis.Listing.MCPServerCardView.rows.per.page'
+                            : 'Apis.Listing.APICardView.rows.per.page',
                         defaultMessage: 'Rows per page',
                     }),
                 },
@@ -341,7 +355,7 @@ class APICardView extends React.Component {
             return <NoApi />;
         }
         return (
-            <Root id='subscribe-to-api-table'>
+            <Root id={isMCPServersRoute ? 'subscribe-to-mcp-server-table' : 'subscribe-to-api-table'}>
                 <MUIDataTable
                     title=''
                     data={data}
@@ -357,5 +371,20 @@ APICardView.propTypes = {
     intl: PropTypes.shape({
         formatMessage: PropTypes.func,
     }).isRequired,
+    subscriptions: PropTypes.arrayOf(PropTypes.shape({})),
+    searchText: PropTypes.string,
+    handleSubscribe: PropTypes.func.isRequired,
+    applicationId: PropTypes.string.isRequired,
+    apisNotFound: PropTypes.bool,
+    setTenantDomain: PropTypes.func,
+    entityType: PropTypes.oneOf(['api', 'mcp']),
+};
+
+APICardView.defaultProps = {
+    subscriptions: [],
+    searchText: '',
+    apisNotFound: false,
+    setTenantDomain: () => {},
+    entityType: 'api',
 };
 export default injectIntl((APICardView));

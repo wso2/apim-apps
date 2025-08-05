@@ -41,12 +41,17 @@ function Documents(props) {
     const { api } = useContext(ApiContext);
     const { intl, setbreadcrumbDocument } = props;
     const { location: { pathname } } = props;
+
+    const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+    const pathPattern = isMCPServersRoute ? '/mcp-servers/:serverUuid/documents/:documentId' : '/apis/:apiUuid/documents/:documentId';
+
     let match = matchPath(pathname, {
-        path: '/apis/:apiUuid/documents/:documentId',
+        path: pathPattern,
         exact: true,
         strict: false,
     });
-    const apiId = props.match.params.apiUuid;
+
+    const apiId = isMCPServersRoute ? props.match.params.serverUuid : props.match.params.apiUuid;
     let documentId = match ? match.params.documentId : null;
     const [documentList, changeDocumentList] = useState(null);
     const [selectedDoc, setSelectedDoc] = useState(null);
@@ -57,7 +62,6 @@ function Documents(props) {
         }
     }, [selectedDoc]);
     useEffect(() => {
-        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
         let promise;
         if (isMCPServersRoute) {
             promise = new MCPServer().getDocuments(apiId);
@@ -99,7 +103,7 @@ function Documents(props) {
     useEffect(() => {
         if (documentList) {
             match = matchPath(pathname, {
-                path: '/apis/:apiUuid/documents/:documentId',
+                path: pathPattern,
                 exact: true,
                 strict: false,
             });
@@ -184,10 +188,20 @@ function Documents(props) {
 
     return (
         <Switch>
-            { selectedDoc && <Redirect exact from={`/apis/${apiId}/documents`} to={`/apis/${apiId}/documents/${selectedDoc.documentId}`} />}
+            { selectedDoc && (
+                <Redirect
+                    exact
+                    from={isMCPServersRoute
+                        ? `/mcp-servers/${apiId}/documents`
+                        : `/apis/${apiId}/documents`}
+                    to={isMCPServersRoute
+                        ? `/mcp-servers/${apiId}/documents/${selectedDoc.documentId}`
+                        : `/apis/${apiId}/documents/${selectedDoc.documentId}`}
+                />
+            )}
             { selectedDoc && (
                 <Route
-                    path='/apis/:apiUuid/documents/:documentId'
+                    path={pathPattern}
                     render={() => (
                         <DocList
                             {...props}
