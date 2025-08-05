@@ -39,6 +39,7 @@ import { MuiChipsInput } from 'mui-chips-input';
 import Error from '@mui/icons-material/Error';
 import InputAdornment from '@mui/material/InputAdornment';
 import { red } from '@mui/material/colors/';
+import Joi from '@hapi/joi';
 import AddEditVhost from 'AppComponents/GatewayEnvironments/AddEditVhost';
 import GatewayConfiguration from 'AppComponents/GatewayEnvironments/GatewayConfiguration';
 import cloneDeep from 'lodash.clonedeep';
@@ -154,7 +155,8 @@ function AddEditGWEnvironment(props) {
 
     const [state, dispatch] = useReducer(reducer, initialState);
     const {
-        name, displayName, description, vhosts, type, gatewayType, gatewayMode, scheduledInterval, permissions, additionalProperties,
+        name, displayName, description, vhosts, type, gatewayType, gatewayMode, scheduledInterval, permissions,
+        additionalProperties,
     } = state;
 
     const [roles, setRoles] = useState([]);
@@ -405,7 +407,7 @@ function AddEditGWEnvironment(props) {
         if (vhostErrors) {
             errorText += vhostErrors + '\n';
         }
-        const unitTimeErrors = validate('unitTime', unitTime);
+        // const unitTimeErrors = validate('unitTime', unitTime);
         return errorText;
     };
     const formSaveCallback = () => {
@@ -596,24 +598,6 @@ function AddEditGWEnvironment(props) {
                 break;
         }
         return error;
-    };
-
-    const getAllFormErrors = () => {
-        let errorText = '';
-        const policyNameErrors = validate('policyName', policyName);
-        const requestCountErrors = validate('requestCount', requestCount);
-        const eventCountErrors = validate('eventCount', eventCount);
-        const dataAmountErrors = validate('dataAmount', dataAmount);
-        const unitTimeErrors = validate('unitTime', unitTime);
-
-        if (type === 'BANDWIDTHLIMIT') {
-            errorText += policyNameErrors + dataAmountErrors + unitTimeErrors;
-        } else if (type === 'REQUESTCOUNTLIMIT') {
-            errorText += policyNameErrors + requestCountErrors + unitTimeErrors;
-        } else {
-            errorText += policyNameErrors + eventCountErrors + unitTimeErrors;
-        }
-        return errorText;
     };
 
     return (
