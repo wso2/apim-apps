@@ -185,13 +185,13 @@ function ListLabels() {
                             target='_blank'
                             href={Configurations.app.docUrl
                                 + 'consume/manage-application/advanced-topics/'
-                                + 'adding-an-application-creation-workflow/#adding-an-application-creation-workflow'}
+                                + 'adding-an-application-update-workflow/#adding-an-application-update-workflow'}
                             underline='hover'
                         >
                             <ListItemText primary={(
                                 <FormattedMessage
-                                    id='Workflow.ApplicationCreation.help.link.one'
-                                    defaultMessage='Create a Application Creation approval workflow Request'
+                                    id='Workflow.ApplicationUpdate.help.link.one'
+                                    defaultMessage='Create an Application Update approval workflow Request'
                                 />
                             )}
                             />
