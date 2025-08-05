@@ -323,21 +323,15 @@ class APIThumb extends Component {
                         <div className={classes.thumbLeft}>
                             <Typography variant='caption' gutterBottom align='left'>
                                 <FormattedMessage id='by' defaultMessage='By' />
-                                <FormattedMessage id='colon' defaultMessage=':' />
                                 &nbsp;
-                                {api.provider}
-                            </Typography>
-                        </div>
-                        <div className={classes.thumbRight}>
-                            <Typography variant='caption' gutterBottom align='right'>
-                                <FormattedMessage id='by' defaultMessage='Vendor' />
-                                <FormattedMessage id='colon' defaultMessage=':' />
+                                <span className={classes.truncateProvider}>
+                                    {api.provider}
+                                </span>
                                 &nbsp;
-                                {api.gatewayType === 'wso2/synapse' || api.gatewayType === 'wso2/apk' ? (
-                                    <FormattedMessage
-                                        defaultMessage='WSO2'
-                                        id='Apis.Listing.ApiThumb.vendor.wso2'
-                                    />
+                                <FormattedMessage id='on' defaultMessage='on' />
+                                &nbsp;
+                                {api.gatewayVendor === 'wso2' || api.gatewayVendor === 'solace' ? (
+                                    api.gatewayVendor.toUpperCase()
                                 ) : 
                                     api.gatewayType
                                 }

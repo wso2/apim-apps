@@ -414,14 +414,15 @@ class TableView extends React.Component {
                 name: 'gatewayType',
                 label: intl.formatMessage({
                     id: 'Apis.Listing.ApiTableView.vendor',
-                    defaultMessage: 'Gateway Vendor',
+                    defaultMessage: 'Gateway Provider',
                 }),
                 options: {
                     customBodyRender: (value, tableMeta, updateValue, tableViewObj = this) => {
-                        if (tableMeta.rowData) {
-                            const {gatewayType} = tableViewObj.state.apisAndApiProducts[tableMeta.rowIndex];
-                            if (gatewayType === 'wso2/synapse' || gatewayType === 'wso2/apk') {
-                                return 'WSO2';
+                        const apiData = tableViewObj.state.apisAndApiProducts?.[tableMeta.rowIndex];
+                        if (apiData) {
+                            const { gatewayType, gatewayVendor } = apiData;
+                            if (gatewayVendor === 'wso2' || gatewayVendor === 'solace') {
+                                return gatewayVendor.toUpperCase();
                             } else {
                                 return gatewayType;
                             }
