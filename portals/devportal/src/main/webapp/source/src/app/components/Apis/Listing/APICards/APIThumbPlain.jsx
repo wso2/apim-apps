@@ -151,10 +151,10 @@ function APIThumbPlain(props) {
     const [technicalAnchorEl, setTechnicalAnchorEl] = useState(null);
     const [businessOpenPopover, setBusinessOpenPopover] = useState(false);
     const [technicalOpenPopover, setTechnicalOpenPopover] = useState(false);
+    const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+    const pathPrefix = isMCPServersRoute ? '/mcp-servers/' : '/apis/';
 
     useEffect(() => {
-        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
-
         let promisedThumbnail;
         if (isMCPServersRoute) {
             promisedThumbnail = new MCPServer().getMCPServerThumbnail(api.id);
@@ -204,7 +204,7 @@ function APIThumbPlain(props) {
 
     if (!showInfo) {
         return (
-            <Link to={'/apis/' + api.id} aria-hidden='true'>
+            <Link to={`${pathPrefix}${api.id}`} aria-hidden='true'>
                 <Box display='flex'>
                     <Box>
                         {!thumbnail.defaultApiImage && ImageView}
@@ -245,7 +245,7 @@ function APIThumbPlain(props) {
             </Box>
             <CardContent>
                 <Box>
-                    <Link to={'/apis/' + api.id} aria-hidden='true'>
+                    <Link to={`${pathPrefix}${api.id}`} aria-hidden='true'>
                         <Box display='flex'>
                             <Box>
                                 {!thumbnail.defaultApiImage && ImageView}

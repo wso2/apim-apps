@@ -362,8 +362,8 @@ class ApiThumbClassicLegacy extends React.Component {
      * @memberof ApiThumb
      */
     getPathPrefix() {
-        const path = '/apis/';
-        return path;
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        return isMCPServersRoute ? '/mcp-servers/' : '/apis/';
     }
 
     handleBusinessPopoverOpen = (event) => {

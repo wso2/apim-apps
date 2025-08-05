@@ -21,6 +21,7 @@ import PropTypes from 'prop-types';
 import MUIDataTable from 'mui-datatables';
 import { injectIntl } from 'react-intl';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import CONSTANTS from 'AppData/Constants';
 import NoApi from 'AppComponents/Apis/Listing/NoApi';
 import Loading from 'AppComponents/Base/Loading/Loading';
@@ -160,11 +161,22 @@ class APICardView extends React.Component {
     xhrRequest = () => {
         const { searchText } = this.props;
         const { page, rowsPerPage } = this;
-        const api = new API();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const api = isMCPServersRoute ? new MCPServer() : new API();
 
         if (searchText && searchText !== '') {
+            if (isMCPServersRoute) {
+                return api.getAllMCPServers(
+                    { query: `${searchText} status:published`, limit: this.rowsPerPage, offset: page * rowsPerPage },
+                );
+            }
+            // Default case for APIs
             return api.getAllAPIs({ query: `${searchText} status:published`, limit: this.rowsPerPage, offset: page * rowsPerPage });
         } else {
+            if (isMCPServersRoute) {
+                return api.getAllMCPServers({ query: 'status:published', limit: this.rowsPerPage, offset: page * rowsPerPage });
+            }
+            // Default case for APIs
             return api.getAllAPIs({ query: 'status:published', limit: this.rowsPerPage, offset: page * rowsPerPage });
         }
     };

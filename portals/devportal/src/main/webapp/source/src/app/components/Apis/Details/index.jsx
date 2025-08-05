@@ -71,15 +71,33 @@ const LoadableSwitch = withRouter((props) => {
         setbreadcrumbDocument,
         apiChatEnabled,
     } = props;
-    const { apiUuid } = match.params;
-    const path = '/apis/';
-    const redirectURL = path + apiUuid + '/overview';
+
+    // Detect if we're on MCP servers route or APIs route
+    const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+    const { apiUuid, serverUuid } = match.params;
+    const entityUuid = isMCPServersRoute ? serverUuid : apiUuid;
+    const basePath = isMCPServersRoute ? '/mcp-servers/' : '/apis/';
+    const redirectURL = basePath + entityUuid + '/overview';
+
+    // Route patterns based on entity type
+    const overviewPath = isMCPServersRoute ? '/mcp-servers/:serverUuid/overview' : '/apis/:apiUuid/overview';
+    const documentsPath = isMCPServersRoute ? '/mcp-servers/:serverUuid/documents' : '/apis/:apiUuid/documents';
+    const definitionPath = '/apis/:apiUuid/definition';
+    const solaceTopicsPath = isMCPServersRoute ? '/mcp-servers/:serverUuid/solaceTopicsInfo' : '/apis/:apiUuid/solaceTopicsInfo';
+    const credentialsWizardPath = isMCPServersRoute ? '/mcp-servers/:serverUuid/credentials/wizard' : '/apis/:apiUuid/credentials/wizard';
+    const commentsPath = isMCPServersRoute ? '/mcp-servers/:serverUuid/comments' : '/apis/:apiUuid/comments';
+    const credentialsPath = isMCPServersRoute ? '/mcp-servers/:serverUuid/credentials' : '/apis/:apiUuid/credentials';
+    const apiChatPath = '/apis/:apiUuid/api-chat';
+    const sdkPath = '/apis/:apiUuid/sdk';
+    const redirectFromPath = isMCPServersRoute ? '/mcp-servers/:serverUuid' : '/apis/:apiUuid';
 
     let tryoutRoute;
-    if (api.type === CONSTANTS.API_TYPES.GRAPHQL) {
+    if (isMCPServersRoute) {
+        tryoutRoute = <Route path='/mcp-servers/:serverUuid/mcp-playground' component={ApiConsole} />;
+    } else if (api && api.type === CONSTANTS.API_TYPES.GRAPHQL) {
         tryoutRoute = <Route path='/apis/:apiUuid/api-console' component={GraphQLConsole} />;
-    } else if (api.type === CONSTANTS.API_TYPES.WS || api.type === CONSTANTS.API_TYPES.WEBSUB
-        || api.type === CONSTANTS.API_TYPES.SSE || api.type === CONSTANTS.API_TYPES.ASYNC) {
+    } else if (api && (api.type === CONSTANTS.API_TYPES.WS || api.type === CONSTANTS.API_TYPES.WEBSUB
+        || api.type === CONSTANTS.API_TYPES.SSE || api.type === CONSTANTS.API_TYPES.ASYNC)) {
         tryoutRoute = <Route path='/apis/:apiUuid/api-console' component={AsyncApiConsole} />;
     } else {
         tryoutRoute = <Route path='/apis/:apiUuid/api-console' component={ApiConsole} />;
@@ -88,22 +106,22 @@ const LoadableSwitch = withRouter((props) => {
     return (
         <Suspense fallback={<Progress />}>
             <Switch>
-                <Redirect exact from='/apis/:apiUuid' to={redirectURL} />
-                <Route path='/apis/:apiUuid/overview' render={() => <Overview {...props} />} />
+                <Redirect exact from={redirectFromPath} to={redirectURL} />
+                <Route path={overviewPath} render={() => <Overview {...props} />} />
                 <Route
-                    path='/apis/:apiUuid/documents'
+                    path={documentsPath}
                     render={() => <Documents {...props} setbreadcrumbDocument={setbreadcrumbDocument} />}
                 />
-                <Route path='/apis/:apiUuid/definition' component={AsyncApiDefinition} />
-                <Route path='/apis/:apiUuid/solaceTopicsInfo' component={SolaceTopicsInfo} />
-                <Route exact path='/apis/:apiUuid/credentials/wizard' component={Wizard} />
-                <Route path='/apis/:apiUuid/comments' component={Comments} />
-                <Route path='/apis/:apiUuid/credentials' component={Credentials} />
+                <Route path={definitionPath} component={AsyncApiDefinition} />
+                {!isMCPServersRoute && <Route path={solaceTopicsPath} component={SolaceTopicsInfo} />}
+                <Route exact path={credentialsWizardPath} component={Wizard} />
+                <Route path={commentsPath} component={Comments} />
+                <Route path={credentialsPath} component={Credentials} />
                 {tryoutRoute}
-                {apiChatEnabled && (
-                    <Route path='/apis/:apiUuid/api-chat' component={ApiChat} />
+                {!isMCPServersRoute && apiChatEnabled && (
+                    <Route path={apiChatPath} component={ApiChat} />
                 )}
-                <Route path='/apis/:apiUuid/sdk' component={Sdk} />
+                {!isMCPServersRoute && <Route path={sdkPath} component={Sdk} />}
                 <Route component={ResourceNotFound} />
             </Switch>
         </Suspense>
@@ -415,7 +433,7 @@ class DetailsLegacy extends React.Component {
             apiChatEnabled: false,
         };
         this.setDetailsAPI = this.setDetailsAPI.bind(this);
-        this.api_uuid = this.props.match.params.apiUuid;
+        this.api_uuid = this.props.match.params.apiUuid || this.props.match.params.serverUuid;
         this.handleDrawerClose = this.handleDrawerClose.bind(this);
         this.handleDrawerOpen = this.handleDrawerOpen.bind(this);
         this.setbreadcrumbDocument = this.setbreadcrumbDocument.bind(this);
@@ -444,10 +462,12 @@ class DetailsLegacy extends React.Component {
      * @param {JSON} prevProps previous props
      */
     componentDidUpdate(prevProps) {
-        const { match: { params: { apiUuid: prevApiUuid } } } = prevProps;
-        const { match: { params: { apiUuid: newApiUuid } } } = this.props;
-        if (prevApiUuid !== newApiUuid) {
-            this.api_uuid = newApiUuid;
+        const { match: { params: { apiUuid: prevApiUuid, serverUuid: prevServerUuid } } } = prevProps;
+        const { match: { params: { apiUuid: newApiUuid, serverUuid: newServerUuid } } } = this.props;
+        const prevUuid = prevApiUuid || prevServerUuid;
+        const newUuid = newApiUuid || newServerUuid;
+        if (prevUuid !== newUuid) {
+            this.api_uuid = newUuid;
             this.updateSubscriptionData();
         }
     }
@@ -531,7 +551,8 @@ class DetailsLegacy extends React.Component {
             },
         } = theme;
         const globalStyle = 'body{ font-family: ' + theme.typography.fontFamily + '}';
-        const pathPrefix = '/apis/' + this.api_uuid + '/';
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const pathPrefix = (isMCPServersRoute ? '/mcp-servers/' : '/apis/') + this.api_uuid + '/';
         if (!api && notFound) {
             return <ResourceNotFound />;
         }
@@ -573,12 +594,27 @@ class DetailsLegacy extends React.Component {
                                 'left-menu',
                             )}
                         >
+                            {' '}
                             {rootIconVisible && (
-                                <Link to='/apis' className={classes.leftLInkMain} aria-label='ALL APIs'>
-                                    <CustomIcon width={rootIconSize} height={rootIconSize} icon='api' />
+                                <Link
+                                    to={isMCPServersRoute ? '/mcp-servers' : '/apis'}
+                                    className={classes.leftLInkMain}
+                                    aria-label={isMCPServersRoute ? 'ALL MCP SERVERS' : 'ALL APIs'}
+                                >
+                                    <CustomIcon
+                                        width={rootIconSize}
+                                        height={rootIconSize}
+                                        icon={isMCPServersRoute ? 'mcp-server' : 'api'}
+                                    />
                                     {rootIconTextVisible && (
                                         <Typography className={classes.leftLInkMainText}>
-                                            <FormattedMessage id='Apis.Details.index.all.apis' defaultMessage='ALL APIs' />
+                                            <FormattedMessage
+                                                id={isMCPServersRoute
+                                                    ? 'MCPServers.Details.index.all.mcpservers'
+                                                    : 'Apis.Details.index.all.apis'}
+                                                defaultMessage={isMCPServersRoute
+                                                    ? 'ALL MCP SERVERS' : 'ALL APIs'}
+                                            />
                                         </Typography>
                                     )}
                                 </Link>
@@ -657,20 +693,37 @@ class DetailsLegacy extends React.Component {
                                             }
                                         >
                                             <div>
-                                                <LeftMenuItem
-                                                    text={(
-                                                        <FormattedMessage
-                                                            id='Apis.Details.index.try.out.api.console'
-                                                            defaultMessage='API Console'
-                                                        />
-                                                    )}
-                                                    route='api-console'
-                                                    iconText='api-console'
-                                                    to={pathPrefix + 'api-console'}
-                                                    open={open}
-                                                    id='left-menu-test'
-                                                />
-                                                {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi && apiChatEnabled
+                                                {isMCPServersRoute ? (
+                                                    <LeftMenuItem
+                                                        text={(
+                                                            <FormattedMessage
+                                                                id='Apis.Details.index.try.out.mcp.playground'
+                                                                defaultMessage='MCP Playground'
+                                                            />
+                                                        )}
+                                                        route='mcp-playground'
+                                                        iconText='mcp-server'
+                                                        to={pathPrefix + 'mcp-playground'}
+                                                        open={open}
+                                                        id='left-menu-test'
+                                                    />
+                                                ) : (
+                                                    <LeftMenuItem
+                                                        text={(
+                                                            <FormattedMessage
+                                                                id='Apis.Details.index.try.out.api.console'
+                                                                defaultMessage='API Console'
+                                                            />
+                                                        )}
+                                                        route='api-console'
+                                                        iconText='api-console'
+                                                        to={pathPrefix + 'api-console'}
+                                                        open={open}
+                                                        id='left-menu-test'
+                                                    />
+                                                )}
+                                                {api.type !== CONSTANTS.API_TYPES.GRAPHQL && !isAsyncApi
+                                                && apiChatEnabled && !isMCPServersRoute
                                                 && (api.gatewayVendor === 'wso2' || !api.gatewayVendor) && (
                                                     <LeftMenuItem
                                                         text={(
@@ -691,7 +744,7 @@ class DetailsLegacy extends React.Component {
                                     </Accordion>
                                 </>
                             )}
-                            {(showSolaceTopics && api.gatewayVendor === 'solace') && (
+                            {(showSolaceTopics && !isMCPServersRoute && api.gatewayVendor === 'solace') && (
                                 <LeftMenuItem
                                     text={(
                                         <FormattedMessage
@@ -706,7 +759,7 @@ class DetailsLegacy extends React.Component {
                                     id='left-menu-solace-info'
                                 />
                             )}
-                            {isAsyncApi && showAsyncSpecification && (
+                            {isAsyncApi && showAsyncSpecification && !isMCPServersRoute && (
                                 <LeftMenuItem
                                     text={(
                                         <FormattedMessage
@@ -754,7 +807,7 @@ class DetailsLegacy extends React.Component {
                                 />
 
                             )}
-                            {!isAsyncApi && showSdks && (
+                            {!isAsyncApi && showSdks && !isMCPServersRoute && (
 
                                 <LeftMenuItem
                                     text={<FormattedMessage id='Apis.Details.index.sdk' defaultMessage='SDKs' />}
@@ -852,6 +905,11 @@ DetailsLegacy.propTypes = {
     }).isRequired,
 };
 
+/**
+ * Details component wrapper that provides theme context to DetailsLegacy
+ * @param {Object} props - Component props
+ * @returns {JSX.Element} - Rendered DetailsLegacy component with theme
+ */
 function Details(props) {
     const theme = useTheme();
     return (
