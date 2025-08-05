@@ -27,6 +27,7 @@ import { Link } from 'react-router-dom';
 import PropTypes from 'prop-types';
 import MaterialIcons from 'MaterialIcons';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
+import MCPServer from 'AppData/MCPServer';
 import classNames from 'classnames';
 import { useTheme } from '@mui/material';
 import ImageGenerator from './APICards/ImageGenerator';
@@ -211,10 +212,14 @@ class RecommendedApiThumbLegacy extends React.Component {
      */
     componentDidMount() {
         const { api } = this.props;
-        const restApi = new Api();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
 
-        const promisedThumbnail = restApi.getAPIThumbnail(api.id);
-
+        let promisedThumbnail;
+        if (isMCPServersRoute) {
+            promisedThumbnail = new MCPServer().getMCPServerThumbnail(api.id);
+        } else {
+            promisedThumbnail = new Api().getAPIThumbnail(api.id);
+        }
         promisedThumbnail.then((response) => {
             if (response && response.data) {
                 if (response.headers['content-type'] === 'application/json') {

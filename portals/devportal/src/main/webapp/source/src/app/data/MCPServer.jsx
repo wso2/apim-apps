@@ -70,14 +70,15 @@ export default class MCPServer extends Resource {
     }
 
     /**
-     * Get the Swagger definition of a MCP server.
+     * Get the Swagger definition of a MCP server by its ID and environment.
      * @param {*} mcpServerId - The ID of the MCP server.
+     * @param {*} environmentName - The name of the environment.
      * @param {*} callback - Optional callback function to handle the response.
      * @returns {Promise} - Promise resolving to the API response.
      */
-    getSwaggerByMCPServerId(mcpServerId, callback = null) {
+    getSwaggerByMCPServerIdAndEnvironment(mcpServerId, environmentName, callback = null) {
         const promise = this.client.then((client) => {
-            return client.apis['MCP Servers'].getMCPServerSwagger({ mcpServerId }, this._requestMetaData());
+            return client.apis['MCP Servers'].getMCPServerSwagger({ mcpServerId, environmentName }, this._requestMetaData());
         });
         if (callback) {
             return promise.then(callback);
@@ -250,7 +251,7 @@ export default class MCPServer extends Resource {
      * @param {number} rating - The rating to add.
      * @returns {Promise} - Promise resolving to the API response.
      */
-    addRatingToMCPServer(mcpServerId, rating) {
+    addRating(mcpServerId, rating) {
         const promise = this.client.then((client) => {
             return client.apis.Ratings.addMCPServerRating(
                 { mcpServerId },
@@ -262,11 +263,11 @@ export default class MCPServer extends Resource {
     }
 
     /**
-     * Delete a rating from a MCP server.
+     * Remove rating details from a MCP server.
      * @param {string} mcpServerId - The ID of the MCP server.
      * @returns {Promise} - Promise resolving to the API response.
      */
-    deleteMCPServerRating(mcpServerId) {
+    removeRatingOfUser(mcpServerId) {
         const promise = this.client.then((client) => {
             return client.apis.Ratings.deleteMCPServerRating(
                 { mcpServerId },
@@ -313,6 +314,22 @@ export default class MCPServer extends Resource {
     }
 
     /**
+     * Get the file for a document for a MCP server.
+     * @param {*} mcpServerId - The ID of the MCP server.
+     * @param {*} documentId - The ID of the document.
+     * @returns {Promise} - Promise resolving to the API response.
+     */
+    getFileForDocument(mcpServerId, documentId) {
+        const promise = this.client.then((client) => {
+            return client.apis['MCP Server Documents'].getMCPServerDocumentFile(
+                { mcpServerId, documentId },
+                this._requestMetaData(),
+            );
+        });
+        return promise;
+    }
+
+    /**
      * Get the inline content of a document for a MCP server.
      * @param {string} mcpServerId - The ID of the MCP server.
      * @param {string} documentId - The ID of the document.
@@ -324,74 +341,13 @@ export default class MCPServer extends Resource {
                 {
                     mcpServerId,
                     documentId,
+                    Accept: 'application/octet-stream',
                 },
-                this._requestMetaData(),
+                this._requestMetaData({
+                    'Content-Type': 'multipart/form-data',
+                }),
             );
         });
         return promise;
-    }
-
-    // TODO: try to remove code duplication with api.jsx
-    /**
-     * Get all tags.
-     * @param {*} limit - The maximum number of tags to retrieve.
-     * @returns {Promise} - Promise resolving to the API response.
-     */
-    getAllTags(limit = 25) {
-        const promiseGet = this.client.then((client) => {
-            return client.apis.Tags.get_tags({ limit }, this._requestMetaData());
-        }).catch((error) => {
-            console.error(error);
-        });
-        return promiseGet;
-    }
-
-    /**
-     * Get API categories.
-     * @param {*} params - The parameters for the API request.
-     * @returns {Promise} - Promise resolving to the API response.
-     */
-    apiCategories(params) {
-        return this.client.then((client) => {
-            return client.apis['API Categories'].get_api_categories(
-                params, this._requestMetaData(),
-            );
-        });
-    }
-
-    /**
-     * Get key managers.
-     * @returns {Promise} - Promise resolving to the API response.
-     */
-    getKeyManagers() {
-        return this.client.then((client) => {
-            return client.apis['Key Managers'].get_key_managers(this._requestMetaData());
-        });
-    }
-
-    /**
-     * Create a subscription
-     * @param {string} apiId id of the API that needs to be subscribed
-     * @param {string} applicationId id of the application that needs to be subscribed
-     * @param {string} policy throttle policy applicable for the subscription
-     * @param {function} callback callback url
-     * @returns {promise} With given callback attached to the success chain else API invoke promise.
-     */
-    subscribe(apiId, applicationId, policy, callback = null) {
-        const promiseCreateSubscription = this.client.then((client) => {
-            let subscriptionData = null;
-
-            subscriptionData = {
-                apiId, applicationId, throttlingPolicy: policy,
-            };
-
-            const payload = { requestBody: subscriptionData };
-            return client.apis.Subscriptions.post_subscriptions({}, payload, { 'Content-Type': 'application/json' });
-        });
-        if (callback) {
-            return promiseCreateSubscription.then(callback);
-        } else {
-            return promiseCreateSubscription;
-        }
     }
 }

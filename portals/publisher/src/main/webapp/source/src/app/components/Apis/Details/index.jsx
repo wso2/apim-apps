@@ -515,6 +515,10 @@ class Details extends Component {
                         />
                     </>
                 );
+            case 'MCP':
+                return (
+                    <></>
+                )
             default:
                 return (
                     <>
@@ -1112,10 +1116,6 @@ class Details extends Component {
                                         component={() => <APIDefinition api={api} />}
                                     />
                                     <Route
-                                        path={Details.subPaths.API_DEFINITION_MCP}
-                                        component={() => <APIDefinition api={api} />}
-                                    />
-                                    <Route
                                         path={Details.subPaths.SCHEMA_DEFINITION}
                                         component={() => <APIDefinition api={api} />}
                                     />
@@ -1382,7 +1382,6 @@ Details.subPaths = {
     API_DEFINITION: '/apis/:api_uuid/api-definition',
     WSDL: '/apis/:api_uuid/wsdl',
     API_DEFINITION_PRODUCT: '/api-products/:apiprod_uuid/api-definition',
-    API_DEFINITION_MCP: '/mcp-servers/:mcpserver_uuid/api-definition',
     SCHEMA_DEFINITION: '/apis/:api_uuid/schema definition',
     LIFE_CYCLE: '/apis/:api_uuid/lifecycle',
     LIFE_CYCLE_PRODUCT: '/api-products/:apiprod_uuid/lifecycle',

@@ -286,7 +286,15 @@ class CreateNewVersion extends React.Component {
             isDefaultVersion, newVersion, redirectToReferrer, apiId, valid, serviceVersion, versionList, isLoading
         } = this.state;
         if (redirectToReferrer) {
-            return <Redirect to={(api.apiType === 'APIPRODUCT' ? '/api-products/' : '/apis/') + apiId + '/overview'} />;
+            let redirectPath;
+            if (api.apiType === 'APIPRODUCT') {
+                redirectPath = '/api-products/' + apiId + '/overview';
+            } else if (api.apiType === MCPServer.CONSTS.MCP) {
+                redirectPath = '/mcp-servers/' + apiId + '/overview';
+            } else {
+                redirectPath = '/apis/' + apiId + '/overview';
+            }
+            return <Redirect to={redirectPath} />;
         }
 
         let helperText = '';
@@ -463,7 +471,15 @@ class CreateNewVersion extends React.Component {
                                             </div>
                                         </Grid>
                                         <Grid item>
-                                            <Link to={'/apis/' + api.id + '/overview'}>
+                                            <Link to={(() => {
+                                                if (api.apiType === 'APIPRODUCT') {
+                                                    return '/api-products/' + api.id + '/overview';
+                                                } else if (api.apiType === MCPServer.CONSTS.MCP) {
+                                                    return '/mcp-servers/' + api.id + '/overview';
+                                                } else {
+                                                    return '/apis/' + api.id + '/overview';
+                                                }
+                                            })()}>
                                                 <Button id='cancelBtn'>
                                                     <FormattedMessage
                                                         id='Apis.Details.NewVersion.NewVersion.cancel'

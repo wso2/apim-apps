@@ -616,35 +616,6 @@ class MCPServer extends Resource {
     }
 
     /**
-     * Get the swagger of an MCP Server
-     * @param {String} id UUID of the MCP Server in which the swagger is needed
-     * @returns {promise} With given id and environmentName, it returns the swagger of the MCP Server
-     */
-    static getSwagger(id) {
-        const apiClient = new APIClientFactory()
-            .getAPIClient(
-                Utils.getCurrentEnvironment(),
-                Utils.CONST.API_CLIENT
-            ).client;
-        const payload = { mcpServerId: id };
-        return apiClient.then((client) => {
-            return client.apis['MCP Servers'].getMCPServerSwagger(payload, this._requestMetaData());
-        });
-    }
-
-    /**
-     * Get the swagger of an MCP Server
-     * @param {string} id UUID of the MCP Server in which the swagger is needed 
-     * @returns {Promise} A promise that resolves to the swagger of the MCP Server.
-     */
-    getSwagger(id) {
-        const payload = { mcpServerId: id };
-        return this.client.then((client) => {
-            return client.apis['MCP Servers'].getMCPServerSwagger(payload, this._requestMetaData());
-        });
-    }
-
-    /**
      * Get the life cycle state of an MCP Server given its id (UUID)
      * @param {string} id UUID of the MCP Server
      * @returns {Promise} A promise that resolves to the MCP Server lifecycle state.
@@ -947,7 +918,7 @@ class MCPServer extends Resource {
         return apiClient.then(client => {
             return client.apis['MCP Servers'].createNewMCPServerVersion(
                 {
-                    mcpServerId,
+                    apiId: mcpServerId, // TODO: Change apiId to mcpServerId
                     newVersion: version,
                     serviceVersion,
                     defaultVersion: isDefaultVersion,

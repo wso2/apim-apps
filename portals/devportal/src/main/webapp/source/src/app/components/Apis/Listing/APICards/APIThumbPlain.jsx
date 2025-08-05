@@ -12,6 +12,7 @@ import { FormattedMessage } from 'react-intl';
 import StarRatingBar from 'AppComponents/Apis/Listing/StarRatingBar';
 import { app, apis } from 'Settings';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Popover from '@mui/material/Popover';
 import classNames from 'classnames';
 import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
@@ -152,10 +153,14 @@ function APIThumbPlain(props) {
     const [technicalOpenPopover, setTechnicalOpenPopover] = useState(false);
 
     useEffect(() => {
-        const restApi = new Api();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
 
-        const promisedThumbnail = restApi.getAPIThumbnail(api.id);
-
+        let promisedThumbnail;
+        if (isMCPServersRoute) {
+            promisedThumbnail = new MCPServer().getMCPServerThumbnail(api.id);
+        } else {
+            promisedThumbnail = new Api().getAPIThumbnail(api.id);
+        }
         promisedThumbnail.then((response) => {
             if (response && response.data) {
                 if (response.headers['content-type'] === 'application/json') {

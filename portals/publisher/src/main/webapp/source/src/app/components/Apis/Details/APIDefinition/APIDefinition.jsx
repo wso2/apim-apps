@@ -44,7 +44,6 @@ import CircularProgress from '@mui/material/CircularProgress';
 import YAML from 'js-yaml';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api.js';
-import MCPServer from 'AppData/MCPServer';
 import { doRedirectToLogin } from 'AppComponents/Shared/RedirectToLogin';
 import { withRouter } from 'react-router';
 import { isRestricted } from 'AppData/AuthManager';
@@ -203,8 +202,6 @@ class APIDefinition extends React.Component {
             promisedApi = api.getSchema(api.id);
         } else if (api.type === 'WS' || api.type === 'WEBSUB' || api.type === 'SSE' || api.type === 'ASYNC') {
             promisedApi = api.getAsyncAPIDefinition(api.id);
-        } else if (api.type === MCPServer.CONSTS.MCP) {
-            promisedApi = MCPServer.getSwagger(api.id);
         } else {
             promisedApi = api.getSwagger(api.id);
         }
@@ -747,7 +744,6 @@ class APIDefinition extends React.Component {
         const { settings } = this.context;
 
         const isApiProduct = match.path.search('/api-products/') !== -1 ;
-        const isMCPServer = api.type === MCPServer.CONSTS.MCP;
 
         let downloadLink;
         let fileName;
@@ -817,7 +813,7 @@ class APIDefinition extends React.Component {
                             />
                         </Button>
                     ) : (
-                        !(graphQL || isApiProduct || isMCPServer) && (
+                        !(graphQL || isApiProduct) && (
                             <Button
                                 size='small'
                                 className={classes.button}

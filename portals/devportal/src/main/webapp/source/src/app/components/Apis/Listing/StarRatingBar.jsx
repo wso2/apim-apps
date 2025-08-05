@@ -30,6 +30,7 @@ import StarBorderIcon from '@mui/icons-material/StarBorder';
 import ClickAwayListener from '@mui/material/ClickAwayListener';
 import Alert from 'AppComponents/Shared/Alert';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import AuthManager from 'AppData/AuthManager';
 import StarRatingSummary from 'AppComponents/Apis/Details/StarRatingSummary';
 import Rating from '@mui/material/Rating';
@@ -159,10 +160,11 @@ class StarRatingBarLegacy extends React.Component {
     getApiRating() {
         const { apiId, setRatingUpdate } = this.props;
         const user = AuthManager.getUser();
-        const api = new Api();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const restApi = isMCPServersRoute ? new MCPServer() : new Api();
         // get api rating
         if (user != null) {
-            const promisedRating = api.getRatingFromUser(apiId, null);
+            const promisedRating = restApi.getRatingFromUser(apiId, null);
             promisedRating.then((response) => {
                 this.setState({
                     avgRating: response.body.avgRating,
@@ -189,9 +191,10 @@ class StarRatingBarLegacy extends React.Component {
      */
     doRate(rateIndex) {
         const { apiId, intl } = this.props;
-        const api = new Api();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const restApi = isMCPServersRoute ? new MCPServer() : new Api();
         const ratingInfo = { rating: rateIndex };
-        const promise = api.addRating(apiId, ratingInfo);
+        const promise = restApi.addRating(apiId, ratingInfo);
         promise
             .then(() => {
                 this.getApiRating();

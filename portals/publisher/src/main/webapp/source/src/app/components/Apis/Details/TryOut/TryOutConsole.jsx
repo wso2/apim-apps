@@ -121,6 +121,7 @@ const TryOutConsole = () => {
     const [advAuthHeaderValue, setAdvAuthHeaderValue] = useState('');
     const [selectedEndpoint, setSelectedEndpoint] = useState('PRODUCTION');
     const { data: publisherSettings } = usePublisherSettings();
+    const isMCPServer = api.type === MCPServer.CONSTS.MCP;
 
     const [tasksStatus, tasksStatusDispatcher] = useReducer(tasksReducer, {
         generateKey: { inProgress: false, completed: false, error: false },
@@ -157,7 +158,9 @@ const TryOutConsole = () => {
             }).catch(
                 (error) => tasksStatusDispatcher({ name: 'getDeployments', status: { inProgress: false, error } }),
             );
-            api.getSwagger().then((swaggerResponse) => setOasDefinition(swaggerResponse.body));
+            if (!isMCPServer) {
+                api.getSwagger().then((swaggerResponse) => setOasDefinition(swaggerResponse.body));
+            }
         }
     }, [publisherSettings]);
 
@@ -287,7 +290,6 @@ const TryOutConsole = () => {
     };
     const decodedJWT = useMemo(() => Utils.decodeJWT(apiKey || ''), [apiKey]);
     const isAPIRetired = api.lifeCycleStatus === 'RETIRED';
-    const isMCPServer = api.type === MCPServer.CONSTS.MCP;
 
     const getMCPServerUrl = () => {
         if (selectedDeployment && selectedDeployment.vhost) {

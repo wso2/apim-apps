@@ -25,6 +25,7 @@ import Typography from '@mui/material/Typography';
 import InlineMessage from 'AppComponents/Shared/InlineMessage';
 import Alert from 'AppComponents/Shared/Alert';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import Progress from 'AppComponents/Shared/Progress';
 import { matchPath } from 'react-router';
 import DocList from 'AppComponents/Apis/Details/Documents/DocList';
@@ -56,9 +57,14 @@ function Documents(props) {
         }
     }, [selectedDoc]);
     useEffect(() => {
-        const restApi = new API();
-        const promisedApi = restApi.getDocumentsByAPIId(apiId);
-        promisedApi
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        let promise;
+        if (isMCPServersRoute) {
+            promise = new MCPServer().getDocuments(apiId);
+        } else {
+            promise = new API().getDocumentsByAPIId(apiId);
+        }
+        promise
             .then((response) => {
                 const overviewDoc = response.body.list.filter((item) => item.otherTypeName !== '_overview');
                 if (api.type === 'HTTP') {

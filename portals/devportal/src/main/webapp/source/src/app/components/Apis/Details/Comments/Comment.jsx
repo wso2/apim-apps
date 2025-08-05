@@ -26,15 +26,17 @@ import Divider from '@mui/material/Divider';
 import Box from '@mui/material/Box';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-dayjs.extend(relativeTime);
 
 import classNames from 'classnames';
 import Alert from 'AppComponents/Shared/Alert';
 import ConfirmDialog from 'AppComponents/Shared/ConfirmDialog';
 import API from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import CommentEdit from './CommentEdit';
 import CommentOptions from './CommentOptions';
 import CommentAdd from './CommentAdd';
+
+dayjs.extend(relativeTime);
 
 const PREFIX = 'Comment';
 
@@ -47,14 +49,14 @@ const classes = {
     contentWrapperOverview: `${PREFIX}-contentWrapperOverview`,
     divider: `${PREFIX}-divider`,
     paper: `${PREFIX}-paper`,
-    cleanBack: `${PREFIX}-cleanBack`
+    cleanBack: `${PREFIX}-cleanBack`,
 };
 
 // TODO jss-to-styled codemod: The Fragment root was replaced by div. Change the tag if needed.
 const Root = styled('div')((
     {
-        theme
-    }
+        theme,
+    },
 ) => ({
     [`& .${classes.link}`]: {
         color: theme.palette.getContrastText(theme.palette.background.default),
@@ -105,7 +107,7 @@ const Root = styled('div')((
         background: 'transparent',
         width: '100%',
         boxShadow: 'none',
-    }
+    },
 }));
 
 /**
@@ -272,8 +274,7 @@ class Comment extends React.Component {
                 console.error(error);
                 if (error.response) {
                     Alert.error(error.response.body.message);
-                }
-                else {
+                } else {
                     Alert.error(
                         intl.formatMessage({
                             defaultMessage: 'Something went wrong while deleting comment',
@@ -294,9 +295,10 @@ class Comment extends React.Component {
     handleLoadMoreReplies(comment) {
         const { apiId, comments, updateComment } = this.props;
         const { id, replies: { count, list } } = comment;
-        const restApi = new API();
+        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+        const restApiClient = isMCPServersRoute ? new MCPServer() : new API();
 
-        restApi
+        restApiClient
             .getAllCommentReplies(apiId, id, 3, count)
             .then((result) => {
                 if (result.body) {
@@ -344,8 +346,9 @@ class Comment extends React.Component {
         const newCount = replies.count - 1;
 
         if (newTotal > newCount) {
-            const restApi = new API();
-            restApi
+            const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+            const restApiClient = isMCPServersRoute ? new MCPServer() : new API();
+            restApiClient
                 .getAllCommentReplies(apiId, parentCommentId, 1, newLimit - 1)
                 .then((result) => {
                     if (result.body) {
@@ -453,9 +456,9 @@ class Comment extends React.Component {
                                         </Grid>
                                         <Grid item xs zeroMinWidth>
                                             <Typography noWrap className={classes.commentText}>
-                                                {(comment.commenterInfo && comment.commenterInfo.firstName) ?
-                                                    (comment.commenterInfo.firstName + comment.commenterInfo.lastName) :
-                                                    comment.createdBy}
+                                                {(comment.commenterInfo && comment.commenterInfo.firstName)
+                                                    ? (comment.commenterInfo.firstName + comment.commenterInfo.lastName)
+                                                    : comment.createdBy}
                                             </Typography>
                                             <Tooltip title={comment.createdTime} aria-label={comment.createdTime}>
                                                 <Typography noWrap className={classes.commentText} variant='caption'>
@@ -510,7 +513,8 @@ class Comment extends React.Component {
 
                                                                 {index !== editIndex && (
                                                                     <Typography className={classes.commentText}>
-                                                                        {reply.content}</Typography>
+                                                                        {reply.content}
+                                                                    </Typography>
                                                                 )}
 
                                                                 {index === editIndex && (
@@ -571,22 +575,30 @@ class Comment extends React.Component {
                 </div>
                 <ConfirmDialog
                     key='key-dialog'
-                    labelCancel={<FormattedMessage
-                        id='Apis.Details.Comments.Comment.delete.dialog.label.cancel'
-                        defaultMessage='Cancel'
-                    />}
-                    title={<FormattedMessage
-                        id='Apis.Details.Comments.Comment.delete.dialog.title'
-                        defaultMessage='Confirm Delete'
-                    />}
-                    message={<FormattedMessage
-                        id='Apis.Details.Comments.Comment.delete.dialog.message'
-                        defaultMessage='Are you sure you want to delete this comment?'
-                    />}
-                    labelOk={<FormattedMessage
-                        id='Apis.Details.Comments.Comment.delete.dialog.label.ok'
-                        defaultMessage='Yes'
-                    />}
+                    labelCancel={(
+                        <FormattedMessage
+                            id='Apis.Details.Comments.Comment.delete.dialog.label.cancel'
+                            defaultMessage='Cancel'
+                        />
+                    )}
+                    title={(
+                        <FormattedMessage
+                            id='Apis.Details.Comments.Comment.delete.dialog.title'
+                            defaultMessage='Confirm Delete'
+                        />
+                    )}
+                    message={(
+                        <FormattedMessage
+                            id='Apis.Details.Comments.Comment.delete.dialog.message'
+                            defaultMessage='Are you sure you want to delete this comment?'
+                        />
+                    )}
+                    labelOk={(
+                        <FormattedMessage
+                            id='Apis.Details.Comments.Comment.delete.dialog.label.ok'
+                            defaultMessage='Yes'
+                        />
+                    )}
                     callback={this.handleConfirmDialog}
                     open={openDialog}
                 />

@@ -29,6 +29,7 @@ import {
 import Typography from '@mui/material/Typography';
 import { FormattedMessage, injectIntl } from 'react-intl';
 import Api from 'AppData/api';
+import MCPServer from 'AppData/MCPServer';
 import AuthManager from 'AppData/AuthManager';
 import withSettings from 'AppComponents/Shared/withSettingsContext';
 import SolaceTopicsInfo from 'AppComponents/Apis/Details/SolaceApi/SolaceTopicsInfo';
@@ -314,12 +315,14 @@ class DetailsLegacy extends React.Component {
             let existingSubscriptions = null;
             let promisedApplications = null;
 
-            const restApi = new Api();
-
-            // const subscriptionClient = new Subscription();
-            const promisedAPI = restApi.getAPIById(this.api_uuid);
-
-            promisedAPI
+            const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
+            let promisedApi;
+            if (isMCPServersRoute) {
+                promisedApi = new MCPServer().getMCPServerById(this.api_uuid);
+            } else {
+                promisedApi = new Api().getAPIById(this.api_uuid);
+            }
+            promisedApi
                 .then((api) => {
                     this.setState({ api: api.body });
                 })
@@ -347,6 +350,7 @@ class DetailsLegacy extends React.Component {
             }
             if (user != null) {
                 this.setState({ open: user.isSideBarOpen });
+                const restApi = new Api();
                 existingSubscriptions = restApi.getSubscriptions(this.api_uuid, null);
                 const subscriptionLimit = app.subscribeApplicationLimit || 5000;
                 existingSubscriptions = restApi.getSubscriptions(this.api_uuid, null, subscriptionLimit);
