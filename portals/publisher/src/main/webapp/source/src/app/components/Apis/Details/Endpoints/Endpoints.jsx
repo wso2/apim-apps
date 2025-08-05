@@ -587,7 +587,7 @@ function Endpoints(props) {
                 }),
             };
         }
-        if (endpointConfig === null) {
+        if (endpointConfig === undefined || endpointConfig === null) {
             return { isValid: true, message: '' };
         }
         const endpointType = endpointConfig.endpoint_type;

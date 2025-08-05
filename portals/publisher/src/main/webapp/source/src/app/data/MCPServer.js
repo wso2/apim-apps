@@ -43,7 +43,7 @@ class MCPServer extends Resource {
             this.isDefaultVersion = false;
             this.transport = ['http', 'https'];
             this.visibility = 'PUBLIC';
-            this.endpointConfig = {
+            this.backendAPIEndpointConfig = {
                 endpoint_type: 'http',
                 sandbox_endpoints: {
                     url: '',
@@ -58,6 +58,10 @@ class MCPServer extends Resource {
             if (Object.prototype.hasOwnProperty.call(properties, key)) {
                 this[key] = properties[key];
             }
+        }
+        // Default the type to 'MCP' if not provided by backend response
+        if (!this.type) {
+            this.type = MCPServer.CONSTS.MCP;
         }
         this.apiType = MCPServer.CONSTS.MCP;
     }
@@ -309,12 +313,14 @@ class MCPServer extends Resource {
      */
     updateMCPServer(updatedProperties) {
         const updatedMCPServer = { ...this.toJSON(), ...updatedProperties };
+        // Remove type field from the final payload
+        const { type, ...finalPayload } = updatedMCPServer;
         const promisedUpdate = this.client.then(client => {
             const payload = {
-                mcpServerId: updatedMCPServer.id,
+                mcpServerId: finalPayload.id,
             };
             const requestBody = {
-                requestBody: updatedMCPServer,
+                requestBody: finalPayload,
             }
             return client.apis['MCP Servers'].updateMCPServer(
                 payload,
@@ -358,10 +364,17 @@ class MCPServer extends Resource {
         const {properties} = client.spec.components.schemas.API;
         const data = {};
         Object.keys(this).forEach(apiAttribute => {
-            if (apiAttribute in properties) {
+            if ((apiAttribute in properties)
+                && apiAttribute !== 'type') {
                 data[apiAttribute] = this[apiAttribute];
             }
         });
+        
+        // Ensure backendAPIEndpointConfig is always included if it exists on the instance
+        if (this.backendAPIEndpointConfig !== undefined && !('backendAPIEndpointConfig' in data)) {
+            data.backendAPIEndpointConfig = this.backendAPIEndpointConfig;
+        }
+        
         return data;
     }
 
@@ -490,7 +503,7 @@ class MCPServer extends Resource {
                 Utils.CONST.API_CLIENT
             ).client;
         return restApiClient.then(client => {
-            return client.apis['MCP Server Endpoints'].getMCPServerEndpoints(
+            return client.apis['MCP Server Backend APIs'].getMCPServerBackendAPIs(
                 {
                     mcpServerId: id,
                 },
@@ -512,7 +525,7 @@ class MCPServer extends Resource {
                 Utils.CONST.API_CLIENT
             ).client;
         return restApiClient.then(client => {
-            return client.apis['MCP Server Endpoints'].getMCPServerEndpoint(
+            return client.apis['MCP Server Backend APIs'].getMCPServerBackendAPI(
                 {
                     mcpServerId: id,
                     endpointId,
@@ -536,7 +549,7 @@ class MCPServer extends Resource {
                 Utils.CONST.API_CLIENT
             ).client;
         return restApiClient.then(client => {
-            return client.apis['API Endpoints'].updateMCPServerEndpoint(
+            return client.apis['MCP Server Backend APIs'].updateMCPServerBackendAPI(
                 {
                     mcpServerId: id,
                     endpointId,
@@ -588,7 +601,7 @@ class MCPServer extends Resource {
             ).client;
         const payload = {
             action: state,
-            apiId: id,
+            mcpServerId: id,
             lifecycleChecklist: checkedItems,
             'Content-Type': 'application/json',
         };

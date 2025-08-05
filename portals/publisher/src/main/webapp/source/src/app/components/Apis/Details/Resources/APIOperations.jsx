@@ -21,6 +21,7 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import { FormattedMessage } from 'react-intl';
 
+import Tools from 'AppComponents/MCPServers/Details/Tools/Tools';
 import Resources from './Resources';
 
 /**
@@ -59,7 +60,11 @@ export default function APIOperations() {
                     })()}
                 </Typography>
             </Box>
-            <Resources />
+            {api.isMCPServer() ? (
+                <Tools />
+            ) : (
+                <Resources />
+            )}
         </>
     );
 }

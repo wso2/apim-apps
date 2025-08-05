@@ -144,6 +144,14 @@ const EndpointCard = ({
         }
     }
 
+    const getEndpointName = () => {
+        if (isMCPServer) {
+            return endpoint.backendApiName || 'No Name Configured';
+        } else {
+            return endpoint.name || 'No Name Configured';
+        }
+    }
+
     const getApiDefinition = () => {
         const apiDef = endpoint.apiDefinition || '{}';
         if (typeof apiDef === 'string') {
@@ -235,7 +243,7 @@ const EndpointCard = ({
             <CardContent className={classes.cardContent}>
                 <div className={classes.endpointInfo}>
                     <Typography variant='subtitle1'>
-                        {endpoint.name}
+                        {getEndpointName()}
                         {isPrimary && (
                             <Chip
                                 label='Primary'

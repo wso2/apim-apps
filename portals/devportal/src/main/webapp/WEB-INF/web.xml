@@ -103,6 +103,7 @@
         <url-pattern>/api-products/*</url-pattern>
         <url-pattern>/home/*</url-pattern>
         <url-pattern>/apis/*</url-pattern>
+        <url-pattern>/mcp-servers/*</url-pattern>
         <url-pattern>/policy/*</url-pattern>
         <url-pattern>/apiGroups/*</url-pattern>
         <url-pattern>/sign-up/*</url-pattern>

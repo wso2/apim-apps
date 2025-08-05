@@ -17,6 +17,7 @@
  */
 
 import React, { useEffect, useState } from 'react';
+import { styled } from '@mui/material/styles';
 import PropTypes from 'prop-types';
 import Grid from '@mui/material/Grid';
 import List from '@mui/material/List';
@@ -28,6 +29,24 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import Checkbox from '@mui/material/Checkbox';
 import Button from '@mui/material/Button';
 import Divider from '@mui/material/Divider';
+import MethodView from 'AppComponents/Apis/Details/ProductResources/MethodView';
+
+const PREFIX = 'ToolSelection';
+
+const classes = {
+    methodView: `${PREFIX}-methodView`,
+};
+
+const Root = styled('div')((
+    {
+        theme
+    }
+) => ({
+    [`& .${classes.methodView}`]: {
+        marginLeft: theme.spacing(1),
+        marginRight: theme.spacing(1),
+    },
+}));
 
 // Helper functions for managing lists and selections
 // `listA` is the array of actual items (objects in this case)
@@ -128,7 +147,7 @@ const ToolSelection = ({ operations, onValidate, inputsDispatcher }) => {
     const customList = (title, items) => {
         const keyExtractor = (item) => `${item.verb}-${item.target}`;
         const checkedItemsInList = getCheckedItemsInList(items, keyExtractor);
-        
+
         return (
             <Card>
                 <CardHeader
@@ -153,8 +172,8 @@ const ToolSelection = ({ operations, onValidate, inputsDispatcher }) => {
                 <Divider />
                 <List
                     sx={{
-                        width: 200,
-                        height: 230,
+                        width: '100%',
+                        height: 300,
                         bgcolor: 'background.paper',
                         overflow: 'auto',
                     }}
@@ -184,55 +203,69 @@ const ToolSelection = ({ operations, onValidate, inputsDispatcher }) => {
                                 </ListItemIcon>
                                 <ListItemText
                                     id={labelId}
-                                    primary={`${value.verb} ${value.target}`}
+                                    primary={(
+                                        <div>
+                                            <MethodView
+                                                method={value.verb}
+                                                className={classes.methodView}
+                                            />
+                                            <span>{value.target}</span>
+                                        </div>
+                                    )}
                                 />
                             </ListItemButton>
                         );
                     })}
                 </List>
             </Card>
-        )};
+        )
+    };
 
     return (
-        <Grid
-            container
-            spacing={2}
-            my={4}
-            sx={{ justifyContent: 'center', alignItems: 'center' }}
-        >
-            <Grid>{customList('Available Operations', availableOperations)}</Grid>
-            <Grid px={2}>
-                <Grid container direction='column' sx={{ alignItems: 'center' }}>
-                    <Button
-                        sx={{ my: 0.5 }}
-                        variant='outlined'
-                        size='small'
-                        onClick={handleCheckedObjectsRight}
-                        disabled={getCheckedItemsInList(
-                            availableOperations, 
-                            (obj) => `${obj.verb}-${obj.target}`
-                        ).length === 0}
-                        aria-label='move selected right'
-                    >
-                        &gt;
-                    </Button>
-                    <Button
-                        sx={{ my: 0.5 }}
-                        variant='outlined'
-                        size='small'
-                        onClick={handleCheckedObjectsLeft}
-                        disabled={getCheckedItemsInList(
-                            selectedOperations, 
-                            (obj) => `${obj.verb}-${obj.target}`
-                        ).length === 0}
-                        aria-label='move selected left'
-                    >
-                        &lt;
-                    </Button>
+        <Root>
+            <Grid container spacing={2} py={2}>
+                <Grid item xs={5}>
+                    {customList('Available Operations', availableOperations)}
+                </Grid>
+                <Grid item xs={2} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Grid container direction='column' spacing={1} px={2}>
+                        <Grid item>
+                            <Button
+                                variant='outlined'
+                                size='small'
+                                onClick={handleCheckedObjectsRight}
+                                disabled={getCheckedItemsInList(
+                                    availableOperations,
+                                    (obj) => `${obj.verb}-${obj.target}`
+                                ).length === 0}
+                                aria-label='move selected right'
+                                fullWidth
+                            >
+                                &gt;
+                            </Button>
+                        </Grid>
+                        <Grid item>
+                            <Button
+                                variant='outlined'
+                                size='small'
+                                onClick={handleCheckedObjectsLeft}
+                                disabled={getCheckedItemsInList(
+                                    selectedOperations,
+                                    (obj) => `${obj.verb}-${obj.target}`
+                                ).length === 0}
+                                aria-label='move selected left'
+                                fullWidth
+                            >
+                                &lt;
+                            </Button>
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid item xs={5}>
+                    {customList('Selected Operations', selectedOperations)}
                 </Grid>
             </Grid>
-            <Grid>{customList('Selected Operations', selectedOperations)}</Grid>
-        </Grid>
+        </Root>
     );
 }
 

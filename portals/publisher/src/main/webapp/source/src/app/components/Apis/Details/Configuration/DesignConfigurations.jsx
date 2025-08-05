@@ -55,6 +55,7 @@ import UpdateWithoutDetails from 'AppComponents/Apis/Details/Configuration/compo
 import ThumbnailView from 'AppComponents/Apis/Listing/components/ImageGenerator/ThumbnailView';
 import { isRestricted } from 'AppData/AuthManager';
 import API from 'AppData/api.js';
+import MCPServer from 'AppData/MCPServer';
 import APIProduct from 'AppData/APIProduct';
 import { usePublisherSettings } from 'AppComponents/Shared/AppContext';
 import DefaultVersion from './components/DefaultVersion';
@@ -813,7 +814,8 @@ export default function DesignConfigurations() {
                                         />
                                     </Box>
                                     <Box py={1}>
-                                        {api.apiType !== API.CONSTS.APIProduct &&
+                                        {api.apiType !== API.CONSTS.APIProduct
+                                        && api.apiType !== MCPServer.CONSTS.MCP &&
                                             settings && settings.gatewayFeatureCatalog
                                             .gatewayFeatures[api.gatewayType ? api.gatewayType : 'wso2/synapse']
                                             .basic.includes("advertised") && (

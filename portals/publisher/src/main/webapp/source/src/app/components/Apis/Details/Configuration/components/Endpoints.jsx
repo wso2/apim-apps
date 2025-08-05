@@ -122,7 +122,7 @@ function Endpoints(props) {
         }
     }
 
-    const isPrototypedAvailable = api.endpointConfig !== null
+    const isPrototypedAvailable = !api.isMCPServer() && api.endpointConfig !== null
         && api.endpointConfig.implementation_status === 'prototyped' && api.lifeCycleStatus === 'PROTOTYPED';
 
     /**

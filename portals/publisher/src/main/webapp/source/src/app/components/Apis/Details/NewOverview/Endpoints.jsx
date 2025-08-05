@@ -95,9 +95,6 @@ const getSandboxEndpoint = (endpointConfig) => {
  */
 function Endpoints(props) {
     const { parentClasses, api } = props;
-    const isPrototypedAvailable = api.endpointConfig !== null
-        && api.endpointConfig.implementation_status === 'prototyped'
-        && api.lifeCycleStatus === 'PROTOTYPED';
     
     const [productionEndpointSecurity, setProductionEndpointSecurity] = useState(null);
     const [sandboxEndpointSecurity, setSandboxEndpointSecurity] = useState(null);
@@ -110,9 +107,13 @@ function Endpoints(props) {
         DIGEST: 'Digest Auth',
         OAUTH: 'OAuth2',
     };
+    const isMCPServer = api.type === MCPServer.CONSTS.MCP;
+    const isPrototypedAvailable = !isMCPServer && api.endpointConfig !== null
+        && api.endpointConfig.implementation_status === 'prototyped'
+        && api.lifeCycleStatus === 'PROTOTYPED';
 
     useEffect(() => {
-        if (api.type === MCPServer.CONSTS.MCP) {
+        if (isMCPServer) {
             setLoading(true);
             MCPServer.getMCPServerEndpoints(api.id)
                 .then((response) => {

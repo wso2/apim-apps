@@ -152,8 +152,8 @@ const MCPServerCreateDefault = (props) => {
         // Transform operations from step 0 format to the required format for MCP Server creation
         const transformedOperations = operations.map(operation => ({
             verb: 'tool',
-            backendOperationMapping: {
-                backendId: '',
+            backendAPIOperationMapping: {
+                backendAPIId: '',
                 backendOperation: {
                     target: operation.target,
                     verb: operation.verb
@@ -170,7 +170,7 @@ const MCPServerCreateDefault = (props) => {
             operations: transformedOperations,
         };
         if (endpoint) {
-            additionalProperties.endpointConfig = {
+            additionalProperties.backendAPIEndpointConfig = {
                 endpoint_type: 'http',
                 sandbox_endpoints: {
                     url: endpoint,
@@ -238,7 +238,7 @@ const MCPServerCreateDefault = (props) => {
                         <StepLabel>
                             <FormattedMessage
                                 id='MCPServers.Create.MCPServerCreateDefault.wizard.two'
-                                defaultMessage='Select Resources for Tool Generation'
+                                defaultMessage='Select Operations for Tool Generation'
                             />
                         </StepLabel>
                     </Step>
