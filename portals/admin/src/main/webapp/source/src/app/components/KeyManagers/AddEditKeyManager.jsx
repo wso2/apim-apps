@@ -168,7 +168,6 @@ function AddEditKeyManager(props) {
     const isSuperAdmin = isSuperTenant && _scopes.includes('apim:admin_settings');
     const [validOrgs, setValidOrgs] = useState([]);
     const [orgSelectionType, setOrgSelectionType] = useState(null);
-    const [keyManagerValidationFn, setKeyManagerValidationFn] = useState(null);
 
     const defaultKMType = (settings.keyManagerConfiguration
         && settings.keyManagerConfiguration.length > 0)
@@ -283,7 +282,7 @@ function AddEditKeyManager(props) {
     const updateKeyManagerConnectorConfiguration = (keyManagerType) => {
         if (settings.keyManagerConfiguration) {
             settings.keyManagerConfiguration.map(({
-                type: key, defaultConsumerKeyClaim, defaultScopesClaim, authConfigurations, configurations,
+                type: key, defaultConsumerKeyClaim, defaultScopesClaim, configurations,
             }) => {
                 if (key === keyManagerType) {
                     if (!id) {
@@ -294,12 +293,7 @@ function AddEditKeyManager(props) {
                             dispatch({ field: 'scopesClaim', value: defaultScopesClaim });
                         }
                     }
-                    if (authConfigurations === undefined
-                        || (Array.isArray(authConfigurations) && authConfigurations.length === 0)) {
-                        setKeyManagerConfiguration(configurations);
-                    } else {
-                        setKeyManagerConfiguration([...authConfigurations, ...configurations]);
-                    }
+                    setKeyManagerConfiguration(configurations);
                     return true;
                 } else {
                     return false;
@@ -414,50 +408,7 @@ function AddEditKeyManager(props) {
     };
 
     const resetAdditionalProperties = () => {
-        // For nested configurations, we need to preserve structure but reset values
-        if (keymanagerConnectorConfigurations.length > 0) {
-            const hasNestedConfigs = keymanagerConnectorConfigurations.some((config) => (
-                config.values && Array.isArray(config.values)
-                && config.values.some((value) => value.values && Array.isArray(value.values))
-            ));
-            if (hasNestedConfigs) {
-                // Initialize nested structure with default values
-                const initialNestedProps = {};
-                const initializeNestedDefaults = (configs, parentPath = '', targetObj = initialNestedProps) => {
-                    configs.forEach((config) => {
-                        const configPath = parentPath ? `${parentPath}.${config.name}` : config.name;
-                        const pathArray = configPath.split('.');
-                        let current = targetObj;
-                        // Create nested structure
-                        for (let i = 0; i < pathArray.length - 1; i++) {
-                            const segment = pathArray[i];
-                            if (!current[segment]) {
-                                current[segment] = {};
-                            }
-                            current = current[segment];
-                        }
-                        // Set default value
-                        const finalKey = pathArray[pathArray.length - 1];
-                        current[finalKey] = config.default || '';
-
-                        // Recursively initialize nested configs
-                        if (config.values && Array.isArray(config.values)) {
-                            config.values.forEach((value) => {
-                                if (value.values && Array.isArray(value.values)) {
-                                    initializeNestedDefaults(value.values, configPath, targetObj);
-                                }
-                            });
-                        }
-                    });
-                };
-                initializeNestedDefaults(keymanagerConnectorConfigurations);
-                dispatch({ field: 'additionalProperties', value: initialNestedProps });
-            } else {
-                dispatch({ field: 'additionalProperties', value: {} });
-            }
-        } else {
-            dispatch({ field: 'additionalProperties', value: {} });
-        }
+        dispatch({ field: 'additionalProperties', value: {} });
     };
 
     const onChange = (e) => {
@@ -491,42 +442,15 @@ function AddEditKeyManager(props) {
             }
         }
     };
-    // Helper function to validate connector configurations with flat structure
-    const validateConnectorConfigurations = () => {
-        // Use the validation function stored in state from KeyManagerConfiguration component
-        if (keyManagerValidationFn) {
-            return keyManagerValidationFn();
-        }
-        // Fallback to window global for debugging
-        if (typeof window !== 'undefined' && window.validateKeyManagerFields) {
-            return window.validateKeyManagerFields();
-        }
-        return [];
-    };
 
     const formHasErrors = (validatingActive = false) => {
         let connectorConfigHasErrors = false;
-        let connectorConfigErrors = [];
-
-        // Use simple validation for connector configurations with flat structure
-        if (keymanagerConnectorConfigurations.length > 0) {
-            connectorConfigErrors = validateConnectorConfigurations();
-            connectorConfigHasErrors = connectorConfigErrors.length > 0;
-
-            // Log validation errors for debugging
-            if (connectorConfigHasErrors) {
-                console.log('Connector configuration validation errors:', connectorConfigErrors);
+        keymanagerConnectorConfigurations.forEach((connector) => {
+            if (connector.required && (!additionalProperties[connector.name]
+                || additionalProperties[connector.name] === '')) {
+                connectorConfigHasErrors = true;
             }
-        } else {
-            // Fallback to old validation for simple configurations
-            keymanagerConnectorConfigurations.forEach((connector) => {
-                if (connector.required && (!additionalProperties[connector.name]
-                    || additionalProperties[connector.name] === '')) {
-                    connectorConfigHasErrors = true;
-                }
-            });
-        }
-
+        });
         if (enableDirectToken) {
             return hasErrors('name', name, validatingActive)
                 || hasErrors('displayName', displayName, validatingActive)
@@ -540,12 +464,13 @@ function AddEditKeyManager(props) {
                 || hasErrors('userInfoEndpoint', userInfoEndpoint, validatingActive)
                 || hasErrors('scopeManagementEndpoint', scopeManagementEndpoint, validatingActive)
                 || hasErrors('selectOrgs', validOrgs, validatingActive);
+        } else {
+            return hasErrors('name', name, validatingActive)
+                || hasErrors('displayName', displayName, validatingActive)
+                || hasErrors('issuer', issuer, validatingActive)
+                || hasErrors('tokenEndpoint', tokenEndpoint, validatingActive)
+                || hasErrors('alias', alias, validatingActive);
         }
-        return hasErrors('name', name, validatingActive)
-            || hasErrors('displayName', displayName, validatingActive)
-            || hasErrors('issuer', issuer, validatingActive)
-            || hasErrors('tokenEndpoint', tokenEndpoint, validatingActive)
-            || hasErrors('alias', alias, validatingActive);
     };
     const formSaveCallback = () => {
         setValidating(true);
@@ -630,36 +555,9 @@ function AddEditKeyManager(props) {
     const setClaimMapping = (updatedClaimMappings) => {
         dispatch({ field: 'claimMapping', value: updatedClaimMappings });
     };
-    const setAdditionalProperties = (key, value, parentPath = null, shouldRemove = false, isFullObject = false) => {
+    const setAdditionalProperties = (key, value) => {
         const clonedAdditionalProperties = cloneDeep(additionalProperties);
-
-        // Special case: if isFullObject is true, replace the entire additionalProperties object
-        if (isFullObject && typeof value === 'object') {
-            dispatch({ field: 'additionalProperties', value });
-            return;
-        }
-
-        let targetKey;
-
-        if (parentPath) {
-            // Handle nested properties using flattened dot notation keys
-            // This preserves parent dropdown values while allowing child field storage
-            const pathArray = Array.isArray(parentPath) ? parentPath : parentPath.split('.');
-            targetKey = `${pathArray.join('.')}.${key}`;
-        } else {
-            // Handle both flat properties and flattened nested keys
-            targetKey = key;
-        }
-
-        // If shouldRemove is true or value is empty, remove the key from additionalProperties
-        const isValueEmpty = value === null || value === undefined || value === ''
-                       || (Array.isArray(value) && value.length === 0);
-        if (shouldRemove || isValueEmpty) {
-            delete clonedAdditionalProperties[targetKey];
-        } else {
-            clonedAdditionalProperties[targetKey] = value;
-        }
-
+        clonedAdditionalProperties[key] = value;
         dispatch({ field: 'additionalProperties', value: clonedAdditionalProperties });
     };
     const setTokenValidations = (value) => {
@@ -1833,12 +1731,7 @@ function AddEditKeyManager(props) {
                     </Grid>
                     <Grid item xs={12} md={12} lg={9}>
                         <Box component='div' m={1}>
-                            <Certificates
-                                fieldName='certificates'
-                                certificates={certificates}
-                                dispatch={dispatch}
-                                isJwksNeeded
-                            />
+                            <Certificates certificates={certificates} dispatch={dispatch} />
                         </Box>
                     </Grid>
                     <Grid item xs={12}>
@@ -1886,9 +1779,6 @@ function AddEditKeyManager(props) {
                                                  setAdditionalProperties={setAdditionalProperties}
                                                  hasErrors={hasErrors}
                                                  validating={validating}
-                                                 onValidationFunctionReady={(validateFn) => (
-                                                     setKeyManagerValidationFn(() => validateFn)
-                                                 )}
                                              />
                                          </Box>
                                      </Grid>
