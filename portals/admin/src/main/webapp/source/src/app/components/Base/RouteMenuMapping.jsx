@@ -35,7 +35,7 @@ import AdvancedThrottlePolicies from 'AppComponents/Throttling/Advanced';
 import CustomThrottlingPolicies from 'AppComponents/Throttling/Custom';
 import TenantTheme from 'AppComponents/TenantTheme/UploadTheme';
 import KeyManagers from 'AppComponents/KeyManagers';
-import AiVendors from 'AppComponents/AiVendors';
+import AiServiceProviders from 'AppComponents/AiServiceProviders';
 import ListRoles from 'AppComponents//RolePermissions/ListRoles.jsx';
 import TenantConfSave from 'AppComponents/AdvancedSettings/TenantConfSave';
 import Policies from 'AppComponents/Governance/Policies';
@@ -274,30 +274,30 @@ const RouteMenuMapping = (intl) => [
         ],
     },
     {
-        id: 'Ai Vendors',
+        id: 'AI Service Providers',
         displayText: intl.formatMessage({
-            id: 'Base.RouteMenuMapping.aivendors',
-            defaultMessage: 'AI/LLM Vendors',
+            id: 'Base.RouteMenuMapping.aiServiceProviders',
+            defaultMessage: 'AI Service Providers',
         }),
-        path: '/settings/ai-vendors',
-        component: AiVendors,
+        path: '/settings/ai-service-providers',
+        component: AiServiceProviders,
         icon: <AssistantIcon />,
         addEditPageDetails: [
             {
-                id: 'Add AI Vendor',
+                id: 'Add AI Service Provider',
                 displayText: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.aivendors.items.Adding',
-                    defaultMessage: 'Add AI/LLM Vendor',
+                    id: 'Base.RouteMenuMapping.aiServiceProviders.items.Adding',
+                    defaultMessage: 'Add AI Service Provider',
                 }),
-                path: '/settings/ai-vendors/create',
+                path: '/settings/ai-service-providers/create',
             },
             {
-                id: 'Edit AI Vendor',
+                id: 'Edit AI Service Provider',
                 displayText: intl.formatMessage({
-                    id: 'Base.RouteMenuMapping.aivendors.items.Editing',
-                    defaultMessage: 'Edit AI/LLM Vendor',
+                    id: 'Base.RouteMenuMapping.aiServiceProviders.items.Editing',
+                    defaultMessage: 'Edit AI Service Provider',
                 }),
-                path: '/settings/ai-vendors/(.*?)$',
+                path: '/settings/ai-service-providers/(.*?)$',
             },
         ],
     },

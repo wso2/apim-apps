@@ -250,9 +250,11 @@ const AddEditAIEndpoint = ({
             endpoint_security: {},
         }
     });
-    const [apiKeyParamConfig, setApiKeyParamConfig] = useState({
-        authHeader: null,
-        authQueryParameter: null
+    const [endpointConfiguration, setEndpointConfiguration] = useState({
+        authenticationConfiguration: {
+            "authenticationConfiguration":
+                { "enabled": false, "type": null, parameters: {} }
+        }
     });
     const [isEndpointSaving, setEndpointSaving] = useState(false);
     const iff = (condition, then, otherwise) => (condition ? then : otherwise);
@@ -262,6 +264,9 @@ const AddEditAIEndpoint = ({
     const { updateAPI } = useContext(APIContext);
 
     const [apiKeyValue, setApiKeyValue] = useState(null);
+    const [accessKey, setAccessKey] = useState(null);
+    const [secretKey, setSecretKey] = useState(null);
+    const [region, setRegion] = useState(null);
     const [showApiKey, setShowApiKey] = useState(false);
 
     const subtypeConfig = apiObject.subtypeConfiguration && JSON.parse(apiObject.subtypeConfiguration.configuration);
@@ -291,7 +296,6 @@ const AddEditAIEndpoint = ({
 
         return isDuplicate;
     };
-
     useEffect(() => {
         if (endpointId) {
             setIsEditing(true);
@@ -327,9 +331,19 @@ const AddEditAIEndpoint = ({
 
                 // Set API key value
                 const envType = isProd ? 'production' : 'sandbox';
-                const apiKeyConfig = endpointConfig.endpoint_security?.[envType];
-                if (apiKeyConfig?.apiKeyValue === '') {
+                const securityConfig = endpointConfig.endpoint_security?.[envType];
+                if (securityConfig?.apiKeyValue === '') {
                     setApiKeyValue('********');
+                }
+                // Set AWS related values
+                if (securityConfig?.accessKey) {
+                    setAccessKey(securityConfig?.accessKey);
+                }
+                if (securityConfig?.secretKey === '') {
+                    setSecretKey('********');
+                }
+                if (securityConfig?.region) {
+                    setRegion(securityConfig?.region);
                 }
             } else {
                 // Load custom endpoint data from API
@@ -347,9 +361,19 @@ const AddEditAIEndpoint = ({
 
                         // Set API key value
                         const envType = body.deploymentStage === "PRODUCTION" ? 'production' : 'sandbox';
-                        const apiKeyConfig = body.endpointConfig.endpoint_security?.[envType];
-                        if (apiKeyConfig?.apiKeyValue === '') {
+                        const securityConfig = body.endpointConfig.endpoint_security?.[envType];
+                        if (securityConfig?.apiKeyValue === '') {
                             setApiKeyValue('********');
+                        }
+                        // Set AWS related values
+                        if (securityConfig?.accessKey) {
+                            setAccessKey(securityConfig?.accessKey);
+                        }
+                        if (securityConfig?.secretKey === '') {
+                            setSecretKey('********');
+                        }
+                        if (securityConfig?.region) {
+                            setRegion(securityConfig?.region);
                         }
                     })
                     .catch((error) => {
@@ -419,11 +443,24 @@ const AddEditAIEndpoint = ({
         }
 
         const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
+        let apiKeyIdentifier;
+        let apiKeyIdentifierType;
+        if (endpointConfiguration.authenticationConfiguration.enabled
+            && endpointConfiguration.authenticationConfiguration.type === "apikey") {
+            if (endpointConfiguration.authenticationConfiguration.parameters.headerEnabled) {
+                apiKeyIdentifier = endpointConfiguration.authenticationConfiguration.parameters.headerName;
+                apiKeyIdentifierType = "HEADER";
+            }
+            if (endpointConfiguration.authenticationConfiguration.parameters.queryParameterEnabled) {
+                apiKeyIdentifier = endpointConfiguration.authenticationConfiguration.parameters.queryParameterName;
+                apiKeyIdentifierType = "QUERY_PARAMETER";
+            }
+        }
         saveEndpointSecurityConfig({
             ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
-            type: 'apikey',
-            apiKeyIdentifier: apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParam,
-            apiKeyIdentifierType: apiKeyParamConfig.authHeader ? 'HEADER' : 'QUERY_PARAMETER',
+            type: endpointConfiguration.authenticationConfiguration.type,
+            apiKeyIdentifier,
+            apiKeyIdentifierType,
             apiKeyValue: updatedApiKeyValue,
             enabled: true,
         }, isProduction ? 'production' : 'sandbox');
@@ -445,7 +482,7 @@ const AddEditAIEndpoint = ({
                 .then((response) => {
                     if (response.body) {
                         const config = response.body;
-                        setApiKeyParamConfig(config);
+                        setEndpointConfiguration(config);
                     }
                 });
         }
@@ -539,11 +576,55 @@ const AddEditAIEndpoint = ({
                 }
                 return false;
             case 'apiKey':
-                if (!fieldValue) {
-                    return intl.formatMessage({
-                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.apiKey',
-                        defaultMessage: 'API Key cannot be empty',
-                    });
+                if (
+                    endpointConfiguration.authenticationConfiguration?.enabled === true &&
+                    endpointConfiguration.authenticationConfiguration?.type === "apikey"
+                ) {
+                    if (!fieldValue) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.apiKey',
+                            defaultMessage: 'API Key cannot be empty',
+                        });
+                    }
+                }
+                return false;
+            case 'accessKey':
+                if (
+                    endpointConfiguration.authenticationConfiguration?.enabled === true &&
+                    endpointConfiguration.authenticationConfiguration?.type === "aws"
+                ) {
+                    if (!fieldValue) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.accessKey',
+                            defaultMessage: 'AWS AccessKey cannot be empty',
+                        });
+                    }
+                }
+                return false;
+            case 'secretKey':
+                if (
+                    endpointConfiguration.authenticationConfiguration?.enabled === true &&
+                    endpointConfiguration.authenticationConfiguration?.type === "aws"
+                ) {
+                    if (!fieldValue) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.secretKey',
+                            defaultMessage: 'AWS SecretKey cannot be empty',
+                        });
+                    }
+                }
+                return false;
+            case 'region':
+                if (
+                    endpointConfiguration.authenticationConfiguration?.enabled === true &&
+                    endpointConfiguration.authenticationConfiguration?.type === "aws"
+                ) {
+                    if (!fieldValue) {
+                        return intl.formatMessage({
+                            id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.error.empty.region',
+                            defaultMessage: 'AWS region cannot be empty',
+                        });
+                    }
                 }
                 return false;
             default:
@@ -554,7 +635,10 @@ const AddEditAIEndpoint = ({
     const formHasErrors = (validateActive = false) => {
         if (hasErrors('name', state.name, validateActive) ||
             hasErrors('url', endpointUrl, validateActive) ||
-            hasErrors('apiKey', apiKeyValue, validateActive)) {
+            hasErrors('apiKey', apiKeyValue, validateActive) ||
+            hasErrors('secretKey', secretKey, validateActive) ||
+            hasErrors('region', region, validateActive) ||
+            hasErrors('accessKey', accessKey, validateActive)) {
             return true;
         }
         return false;
@@ -647,7 +731,40 @@ const AddEditAIEndpoint = ({
             });
         }
     };
+    const handleAWSCredentials = (e, field) => {
+        if (field === "accessKey") {
+            setAccessKey(e.target.value)
+        } else if (field === "secretKey") {
+            let seretKeyValue = e.target.value;
+            if (seretKeyValue === '********') {
+                seretKeyValue = '';
+            } else if (seretKeyValue === '') {
+                seretKeyValue = null;
+            } else if (seretKeyValue.includes('********')) {
+                seretKeyValue = seretKeyValue.replace('********', '');
+            }
+            setSecretKey(seretKeyValue)
+        } else if (field === "region") {
+            setRegion(e.target.value)
+        }
+    }
+    const handleOnBlurOnAWSCredentials = () => {
+        const isProduction = state.deploymentStage === CONSTS.DEPLOYMENT_STAGE.production;
 
+        // Skip if apiKeyValue is null, empty, or ********
+        if (!secretKey || secretKey === '********') {
+            return;
+        }
+        saveEndpointSecurityConfig({
+            ...CONSTS.DEFAULT_ENDPOINT_SECURITY,
+            type: endpointConfiguration.authenticationConfiguration.type,
+            service: endpointConfiguration.authenticationConfiguration.parameters.awsServiceName,
+            accessKey,
+            secretKey,
+            region,
+            enabled: true,
+        }, isProduction ? 'production' : 'sandbox');
+    }
     const formSave = () => {
         setValidating(true);
         if (formHasErrors(true)) {
@@ -657,7 +774,7 @@ const AddEditAIEndpoint = ({
             }));
             return false;
         }
-        
+
         setEndpointSaving(true);
 
         let savePromise;
@@ -727,6 +844,28 @@ const AddEditAIEndpoint = ({
         return true;
     };
 
+    // Add this before the return statement, after all hooks and state
+    const apiKeyParamConfig = {
+        authHeader:
+            endpointConfiguration.authenticationConfiguration?.enabled &&
+                endpointConfiguration.authenticationConfiguration?.type === "apikey" &&
+                endpointConfiguration.authenticationConfiguration?.parameters?.headerEnabled
+                ? endpointConfiguration.authenticationConfiguration.parameters.headerName
+                : null,
+        authQueryParam:
+            endpointConfiguration.authenticationConfiguration?.enabled &&
+                endpointConfiguration.authenticationConfiguration?.type === "apikey" &&
+                endpointConfiguration.authenticationConfiguration?.parameters?.queryParameterEnabled
+                ? endpointConfiguration.authenticationConfiguration.parameters.queryParameterName
+                : null,
+    };
+
+    const IS_APIKEY_AUTH_ENABLED = (config) =>
+        config.authenticationConfiguration?.enabled === true &&
+        config.authenticationConfiguration?.type === "apikey";
+    const IS_AWS_SIGV4_AUTH_ENABLED = (config) =>
+        config.authenticationConfiguration?.enabled === true &&
+        config.authenticationConfiguration?.type === "aws";
     return (
         <StyledGrid container justifyContent='center'>
             <Grid item sm={12} md={12} lg={8}>
@@ -904,66 +1043,165 @@ const AddEditAIEndpoint = ({
                                 </FormControl>
                             </Grid>
                             {/* AI Endpoint Auth Fields */}
-                            <Grid item xs={6}>
-                                <TextField
-                                    disabled
-                                    label={apiKeyParamConfig.authHeader ? (
-                                        <FormattedMessage
-                                            id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.api.key.header'
-                                            defaultMessage='Authorization Header'
+                            {IS_APIKEY_AUTH_ENABLED(endpointConfiguration) && (
+                                <>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            disabled
+                                            label={apiKeyParamConfig.authHeader ? (
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.AIEndpoints.Edit.api.key.header'
+                                                    defaultMessage='Authorization Header'
+                                                />
+                                            ) : (
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.AIEndpoints.Edit.api.key.query.param'
+                                                    defaultMessage='Authorization Query Param'
+                                                />
+                                            )}
+                                            fullWidth
+                                            id='api-key-id'
+                                            value={apiKeyParamConfig.authHeader ||
+                                                apiKeyParamConfig.authQueryParam}
+                                            placeholder={apiKeyParamConfig.authHeader ||
+                                                apiKeyParamConfig.authQueryParam}
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                            helperText=' '
+                                            required
                                         />
-                                    ) : (
-                                        <FormattedMessage
-                                            id={'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.' +
-                                                'api.key.query.param'}
-                                            defaultMessage='Authorization Query Param'
+                                    </Grid>
+                                    <Grid item xs={6}>
+                                        <TextField
+                                            disabled={isRestricted(['apim:api_create'], apiObject)}
+                                            label={
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.AIEndpoints.Edit.api.key.value'
+                                                    defaultMessage='API Key'
+                                                />
+                                            }
+                                            id='api-key-value'
+                                            value={apiKeyValue}
+                                            placeholder={intl.formatMessage({
+                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.api.key.placeholder',
+                                                defaultMessage: 'Enter API Key',
+                                            })}
+                                            fullWidth
+                                            onChange={handleApiKeyChange}
+                                            onBlur={handleApiKeyBlur}
+                                            error={hasErrors('apiKey', apiKeyValue, validating)}
+                                            helperText={hasErrors('apiKey', apiKeyValue, validating)}
+                                            required
+                                            type={showApiKey ? 'text' : 'password'}
+                                            InputLabelProps={{
+                                                shrink: Boolean(apiKeyValue),
+                                            }}
+                                            InputProps={{
+                                                endAdornment: (
+                                                    <InputAdornment position='end'>
+                                                        <IconButton
+                                                            onClick={handleToggleApiKeyVisibility}
+                                                            edge='end'
+                                                        >
+                                                            {showApiKey ? <VisibilityIcon /> : <VisibilityOffIcon />}
+                                                        </IconButton>
+                                                    </InputAdornment>
+                                                ),
+                                            }}
                                         />
-                                    )}
-                                    fullWidth
-                                    id='api-key-id'
-                                    value={apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParam}
-                                    placeholder={apiKeyParamConfig.authHeader || apiKeyParamConfig.authQueryParam}
-                                    InputLabelProps={{
-                                        shrink: true,
-                                    }}
-                                    helperText=' '
-                                    required
-                                />
-                            </Grid>
-                            <Grid item xs={6}>
-                                <TextField
-                                    disabled={isRestricted(['apim:api_create'], apiObject)}
-                                    label={<FormattedMessage
-                                        id='Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.api.key.value'
-                                        defaultMessage='API Key'
-                                    />}
-                                    id='api-key-value'
-                                    value={apiKeyValue}
-                                    placeholder={intl.formatMessage({
-                                        id: 'Apis.Details.Endpoints.AIEndpoints.AddEditAIEndpoint.api.key.placeholder',
-                                        defaultMessage: 'Enter API Key',
-                                    })}
-                                    fullWidth
-                                    onChange={handleApiKeyChange}
-                                    onBlur={handleApiKeyBlur}
-                                    error={hasErrors('apiKey', apiKeyValue, validating)}
-                                    helperText={hasErrors('apiKey', apiKeyValue, validating)}
-                                    required
-                                    type={showApiKey ? 'text' : 'password'}
-                                    InputLabelProps={{
-                                        shrink: Boolean(apiKeyValue),
-                                    }}
-                                    InputProps={{
-                                        endAdornment: (
-                                            <InputAdornment position='end'>
-                                                <IconButton onClick={handleToggleApiKeyVisibility} edge='end'>
-                                                    {showApiKey ? <VisibilityIcon /> : <VisibilityOffIcon />}
-                                                </IconButton>
-                                            </InputAdornment>
-                                        ),
-                                    }}
-                                />
-                            </Grid>
+                                    </Grid>
+                                </>
+                            )}
+
+                            {/* AWS SigV4 Auth Fields */}
+                            {IS_AWS_SIGV4_AUTH_ENABLED(endpointConfiguration) && (
+                                <>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            disabled={isRestricted(
+                                                ['apim:api_create'],
+                                                apiObject
+                                            )}
+                                            label={
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.AIEndpoints.Edit.acessKey'
+                                                    defaultMessage='AWS Access Key'
+                                                />
+                                            }
+                                            id='aws-access-key'
+                                            value={accessKey}
+                                            placeholder={intl.formatMessage({
+                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.acessKey.placeholder',
+                                                defaultMessage: 'Enter AWS Access Key',
+                                            })}
+                                            fullWidth
+                                            onChange={(e) => handleAWSCredentials(e, 'accessKey')}
+                                            onBlur={handleOnBlurOnAWSCredentials}
+                                            required
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            disabled={isRestricted(
+                                                ['apim:api_create'],
+                                                apiObject
+                                            )}
+                                            label={
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.AIEndpoints.Edit.secretKey'
+                                                    defaultMessage='AWS Secret Key'
+                                                />
+                                            }
+                                            id='aws-secret-key'
+                                            type='password'
+                                            value={secretKey}
+                                            placeholder={intl.formatMessage({
+                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.secretKey.placeholder',
+                                                defaultMessage: 'Enter AWS Secret Key',
+                                            })}
+                                            fullWidth
+                                            onChange={(e) => handleAWSCredentials(e, 'secretKey')}
+                                            onBlur={handleOnBlurOnAWSCredentials}
+                                            required
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    </Grid>
+                                    <Grid item xs={4}>
+                                        <TextField
+                                            disabled={isRestricted(
+                                                ['apim:api_create'],
+                                                apiObject
+                                            )}
+                                            label={
+                                                <FormattedMessage
+                                                    id='Apis.Details.Endpoints.AIEndpoints.Edit.aws.region'
+                                                    defaultMessage='AWS Region'
+                                                />
+                                            }
+                                            id='aws-region'
+                                            value={region}
+                                            placeholder={intl.formatMessage({
+                                                id: 'Apis.Details.Endpoints.AIEndpoints.Edit.aws.region.placeholder',
+                                                defaultMessage: 'Enter AWS Region',
+                                            })}
+                                            fullWidth
+                                            onChange={(e) => handleAWSCredentials(e, 'region')}
+                                            onBlur={handleOnBlurOnAWSCredentials}
+                                            required
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    </Grid>
+                                </>
+                            )}
+
                         </Grid>
 
                         {/* Action Buttons */}

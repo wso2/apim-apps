@@ -1168,57 +1168,62 @@ class API extends Resource {
     }
 
     /**
-     * Get list of AI Vendors Configured
+     * Get list of AI Service Providers Configured
      */
-    getAiVendorsList() {
+    getAiServiceProviderList() {
         return this.client.then((client) => {
-            return client.apis['LLMProviders'].getLLMProviders(
+            return client.apis['AIServiceProviders'].getAIServiceProviders(
                 this._requestMetaData(),
             );
         });
     }
 
     /**
-     * Get AI Vendor Configuration by id
-     * @param aiVendorId AI Vendor configuration id
+     * Get AI Service Provider Configuration by id
+     * @param aiServiceProviderId AI Service Provider id
      * @returns {*}
      */
-   aiVendorGet(aiVendorId) {
+   getAiServiceProvider(aiServiceProviderId) {
         return this.client.then((client) => {
-            return client.apis['LLMProvider'].getLLMProvider(
-                { llmProviderId: aiVendorId },
+            return client.apis['AIServiceProvider'].getAIServiceProvider(
+                { aiServiceProviderId },
                 this._requestMetaData(),
             );
         });
     }
 
     /**
-     * Delete an AI Vendor
-     * @param aiVendorId AI Vendor configuration id
+     * Delete an AI Service Provider
+     * @param aiServiceProviderId AI Service Provider id
      * @returns {*}
      */
-    deleteAiVendor(aiVendorId) {
+    deleteAIServiceProvider(aiServiceProviderId) {
         return this.client.then((client) => {
-            return client.apis['LLMProvider'].deleteLLMProvider(
-                { llmProviderId: aiVendorId },
+            return client.apis['AIServiceProvider'].deleteAIServiceProvider(
+                { aiServiceProviderId },
                 this._requestMetaData(),
             );
         });
     }
 
     /**
-     * Add an AI Vendor
+     * Add an AI Service Provider
      */
-    addAiVendor(aiVendorBody) {
+    addAIServiceProvider(aiServiceProviderBody) {
         return this.client.then((client) => {
             const payload = {
                 'Content-Type': 'multipart/form-data',
             };
-            return client.apis['LLMProviders'].addLLMProvider(
+            return client.apis['AIServiceProviders'].addAIServiceProvider(
                 payload,
                 { requestBody: {
-                    ...aiVendorBody,
-                    modelList: JSON.stringify(aiVendorBody.modelList)
+                    name: aiServiceProviderBody.name,
+                    apiVersion: aiServiceProviderBody.apiVersion,
+                    description: aiServiceProviderBody.description,
+                    multipleModelProviderSupport: aiServiceProviderBody.multipleModelProviderSupport,
+                    configurations: aiServiceProviderBody.configurations,
+                    apiDefinition: aiServiceProviderBody.apiDefinition,
+                    modelProviders: JSON.stringify(aiServiceProviderBody.modelList)
                 }},
                 this._requestMetaData(),
             );
@@ -1226,20 +1231,24 @@ class API extends Resource {
     }
 
     /**
-     * Update an AI Vendor
+     * Update an AI Service Provider
      */
-    updateAiVendor(aiVendorId, aiVendorBody) {
+    updateAIServiceProvider(aiServiceProviderId, aiServiceProviderBody) {
         return this.client.then((client) => {
             const payload = {
-                llmProviderId: aiVendorId,
+                aiServiceProviderId,
                 'Content-Type': 'multipart/form-data',
             };
-            return client.apis['LLMProvider'].updateLLMProvider(
+            return client.apis['AIServiceProvider'].updateAIServiceProvider(
                 payload,
                 { requestBody: {
-                    ...aiVendorBody,
-                    llmProviderId: aiVendorId,
-                    modelList: JSON.stringify(aiVendorBody.modelList)
+                    name: aiServiceProviderBody.name,
+                    apiVersion: aiServiceProviderBody.apiVersion,
+                    description: aiServiceProviderBody.description,
+                    multipleModelProviderSupport: aiServiceProviderBody.multipleModelProviderSupport,
+                    configurations: aiServiceProviderBody.configurations,
+                    apiDefinition: aiServiceProviderBody.apiDefinition,
+                    modelProviders: JSON.stringify(aiServiceProviderBody.modelList)
                 }},
                 this._requestMetaData(),
             );

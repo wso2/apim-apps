@@ -3606,7 +3606,7 @@ class API extends Resource {
     static getLLMProviders() {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['LLMProviders'].getLLMProviders();
+            return client.apis['AIServiceProviders'].getAIServiceProviders();
         });
     }
 
@@ -3618,8 +3618,8 @@ class API extends Resource {
     static getLLMProviderById(llmProviderId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['LLMProvider'].getLLMProvider(
-                {llmProviderId},
+            return client.apis['AIServiceProvider'].getAIServiceProvider(
+                {aiServiceProviderId:llmProviderId},
                 this._requestMetaData(),
             );
         });
@@ -3633,8 +3633,8 @@ class API extends Resource {
     static getLLMProviderAPIDefinition(llmProviderId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['LLMProvider'].getLLMProviderApiDefinition(
-                { llmProviderId },
+            return client.apis['AIServiceProvider'].getAIServiceProviderApiDefinition(
+                {aiServiceProviderId:llmProviderId},
                 this._requestMetaData(),
             );
         });
@@ -3648,8 +3648,8 @@ class API extends Resource {
     static getLLMProviderEndpointConfiguration(llmProviderId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['LLMProvider'].getLLMProviderEndpointConfiguration(
-                { llmProviderId },
+            return client.apis['AIServiceProvider'].getAIServiceProviderEndpointConfiguration(
+                {aiServiceProviderId:llmProviderId},
                 this._requestMetaData(),
             );
         });
@@ -3664,8 +3664,8 @@ class API extends Resource {
     static getLLMProviderModelList(llmProviderId) {
         const restApiClient = new APIClientFactory().getAPIClient(Utils.getCurrentEnvironment(), Utils.CONST.API_CLIENT).client;
         return restApiClient.then(client => {
-            return client.apis['LLMProvider'].getLLMProviderModels(
-                { llmProviderId },
+            return client.apis['AIServiceProvider'].getAIServiceProviderModels(
+                {aiServiceProviderId:llmProviderId},
                 this._requestMetaData(),
             )
         });
