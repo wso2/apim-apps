@@ -18,7 +18,28 @@
 
 import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
+import { styled } from '@mui/material/styles';
 import MCPPlayground from '@wso2-org/mcp-playground';
+
+const PREFIX = 'MCPTryOut';
+
+const classes = {
+    mcpPlaygroundWrapper: `${PREFIX}-mcpPlaygroundWrapper`,
+};
+
+const Root = styled('div')(({ theme }) => ({
+    [`& .${classes.mcpPlaygroundWrapper}`]: {
+        // Apply the portal's font family to the MCP playground
+        fontFamily: theme.typography.fontFamily,
+        '& *': {
+            fontFamily: theme.typography.fontFamily,
+        },
+        // Ensure all text elements within the playground inherit the font family
+        '& input, & textarea, & select, & button, & div, & span, & p, & label, & h1, & h2, & h3, & h4, & h5, & h6': {
+            fontFamily: theme.typography.fontFamily,
+        },
+    },
+}));
 
 const MCPTryOut = ({
     api, accessToken, authorizationHeader, securitySchemeType,
@@ -41,13 +62,23 @@ const MCPTryOut = ({
         }
     }, [securitySchemeType, authorizationHeader, accessToken]);
 
+    const getMCPServerUrl = () => {
+        const url = api.endpointURLs[0].URLs.https || api.endpointURLs[0].URLs.http;
+        return `${url}/mcp`;
+    };
+
     return (
-        <MCPPlayground
-            url={api.endpointURLs[0].URLs.https || api.endpointURLs[0].URLs.http}
-            token={token}
-            headerName={authorizationHeader}
-            shouldSetHeaderNameExternally
-        />
+        <Root>
+            <div className={classes.mcpPlaygroundWrapper}>
+                <MCPPlayground
+                    disableTitle
+                    url={getMCPServerUrl()}
+                    token={token}
+                    headerName={authorizationHeader}
+                    shouldSetHeaderNameExternally
+                />
+            </div>
+        </Root>
     );
 };
 

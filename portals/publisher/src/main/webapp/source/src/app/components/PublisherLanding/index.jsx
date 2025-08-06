@@ -162,12 +162,29 @@ const PublisherLanding = () => {
     const renderApisTable = () => {
         return (
             <Box mb={4}>
-                <Typography variant='h4' gutterBottom>
-                    <FormattedMessage
-                        id='Publisher.Landing.apis.section.title'
-                        defaultMessage='APIs'
-                    />
-                </Typography>
+                <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
+                    <Typography variant='h4'>
+                        <FormattedMessage
+                            id='Publisher.Landing.apis.section.title'
+                            defaultMessage='APIs'
+                        />
+                    </Typography>
+                    {apis.length > 0 && (
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            component={Link}
+                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                            to='/apis/create'
+                            startIcon={<AddIcon />}
+                        >
+                            <FormattedMessage
+                                id='Publisher.Landing.create.api.button'
+                                defaultMessage='Create API'
+                            />
+                        </Button>
+                    )}
+                </Box>
                 {apis.length === 0 ? (
                     <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
                         <img
@@ -233,7 +250,7 @@ const PublisherLanding = () => {
                             </TableHead>
                             <TableBody>
                                 {apis.map((api) => (
-                                    <TableRow 
+                                    <TableRow
                                         key={api.id}
                                         onClick={() => history.push(`/apis/${api.id}/overview`)}
                                         style={{ cursor: 'pointer' }}
@@ -264,8 +281,8 @@ const PublisherLanding = () => {
                                         </TableCell>
                                         <TableCell>
                                             <Typography variant='body2'>
-                                                {api.description && api.description.length > 30 
-                                                    ? `${api.description.substring(0, 30)}...` 
+                                                {api.description && api.description.length > 30
+                                                    ? `${api.description.substring(0, 30)}...`
                                                     : api.description || 'No description available'}
                                             </Typography>
                                         </TableCell>
@@ -296,12 +313,29 @@ const PublisherLanding = () => {
     const renderMcpServersTable = () => {
         return (
             <Box mb={4}>
-                <Typography variant='h4' gutterBottom>
-                    <FormattedMessage
-                        id='Publisher.Landing.mcpServers.section.title'
-                        defaultMessage='MCP Servers'
-                    />
-                </Typography>
+                <Box display='flex' justifyContent='space-between' alignItems='center' mb={2}>
+                    <Typography variant='h4'>
+                        <FormattedMessage
+                            id='Publisher.Landing.mcpServers.section.title'
+                            defaultMessage='MCP Servers'
+                        />
+                    </Typography>
+                    {mcpServers.length > 0 && (
+                        <Button
+                            variant='contained'
+                            color='primary'
+                            component={Link}
+                            disabled={isRestricted(['apim:api_publish', 'apim:api_create'])}
+                            to='/mcp-servers/create'
+                            startIcon={<AddIcon />}
+                        >
+                            <FormattedMessage
+                                id='Publisher.Landing.create.mcp.button'
+                                defaultMessage='Create MCP Server'
+                            />
+                        </Button>
+                    )}
+                </Box>
                 {mcpServers.length === 0 ? (
                     <Box display='flex' flexDirection='column' alignItems='center' justifyContent='center'>
                         <img
@@ -367,7 +401,7 @@ const PublisherLanding = () => {
                             </TableHead>
                             <TableBody>
                                 {mcpServers.map((server) => (
-                                    <TableRow 
+                                    <TableRow
                                         key={server.id}
                                         onClick={() => history.push(`/mcp-servers/${server.id}/overview`)}
                                         style={{ cursor: 'pointer' }}

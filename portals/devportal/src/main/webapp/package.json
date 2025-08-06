@@ -42,7 +42,7 @@
         "@mui/material": "^5.15.6",
         "@stoplight/elements": "^8.3.2",
         "@ui5/webcomponents-icons": "^1.9.3",
-        "@wso2-org/mcp-playground": "^1.0.5",
+        "@wso2-org/mcp-playground": "^1.0.6",
         "ajv": "^8.12.0",
         "async-mutex": "^0.5.0",
         "autosuggest-highlight": "^3.3.4",
