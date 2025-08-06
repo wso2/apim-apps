@@ -36,7 +36,7 @@ import { CircularProgress, Typography } from '@mui/material';
 import Utils from 'AppData/Utils';
 import AuthManager from 'AppData/AuthManager';
 import { fetchToCurl } from 'fetch-to-curl';
-import SecurityDetailsPanel from 'AppComponents/SharedApiTryOut/SecurityDetailsPanel';
+import SecurityDetailsPanel from 'AppComponents/Shared/ApiTryOut/SecurityDetailsPanel';
 import ApiChatPoweredBy from './components/ApiChatPoweredBy';
 import ApiChatBanner from './components/ApiChatBanner';
 import ApiChatExecute from './components/ApiChatExecute';
