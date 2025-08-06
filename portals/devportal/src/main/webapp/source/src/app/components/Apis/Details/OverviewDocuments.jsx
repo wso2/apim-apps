@@ -175,11 +175,7 @@ function OverviewDocuments(props) {
     }, []);
 
     const gotoDoc = (documentId) => {
-        const isMCPServersRoute = window.location.pathname.includes('/mcp-servers');
-        const routePath = isMCPServersRoute
-            ? `/mcp-servers/${apiId}/documents/${documentId}`
-            : `/apis/${apiId}/documents/${documentId}`;
-        history.push(routePath);
+        history.push('/apis/' + apiId + '/documents/' + documentId);
     };
     /**
      *
