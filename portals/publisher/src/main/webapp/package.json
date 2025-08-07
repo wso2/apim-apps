@@ -172,5 +172,10 @@
         "webpack-cli": "^5.1.4",
         "webpack-deadcode-plugin": "^0.1.17",
         "webpack-dev-server": "^5.2.2"
+    },
+    "overrides": {
+        "react-syntax-highlighter": {
+            "prismjs": "^1.30.0"
+        }
     }
 }
