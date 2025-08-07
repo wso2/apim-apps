@@ -91,7 +91,7 @@
         "react-markdown": "^8.0.4",
         "react-router": "^5.2.1",
         "react-router-dom": "^5.2.1",
-        "react-syntax-highlighter": "^15.5.0",
+        "react-syntax-highlighter": "^15.6.1",
         "react-tagsinput": "3.20.0",
         "remark-gfm": "^3.0.1",
         "rich-textarea": "^0.26.4",
